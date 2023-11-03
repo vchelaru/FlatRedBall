@@ -746,7 +746,7 @@ namespace FlatRedBall.Gui
                 }
                 else
                 {
-#if !MONOGAME && !UNIT_TESTS
+#if !MONOGAME && !UNIT_TESTS && !FNA
                     var windowLocation =
                                 System.Windows.Forms.Form.FromHandle(FlatRedBallServices.WindowHandle).Location;
 
@@ -1144,29 +1144,6 @@ namespace FlatRedBall.Gui
         {
             return GetSpriteOver(spriteLayer.Sprites);
         }
-
-        #region XML Docs
-        /// <summary>
-        /// Returns the Sprite that the cursor is over in the argument SpriteGridArray.
-        /// </summary>
-        /// <param name="sga">Reference to the SpriteGridArray.</param>
-        /// <returns>The Sprite that the cursor is over.</returns>
-        #endregion
-        public Sprite GetSpriteOver(List<SpriteGrid> sga)
-        {
-            List<Sprite> saa = new List<Sprite>();
-
-            foreach (SpriteGrid sg in sga)
-            {
-                for (int i = 0; i < sg.VisibleSprites.Count; i++)
-                {
-                    saa.AddRange(sg.VisibleSprites[i]);
-                }
-            }
-
-            return GetSpriteOver(saa);
-        }
-
 
         #region XML Docs
         /// <summary>
@@ -1861,7 +1838,7 @@ namespace FlatRedBall.Gui
         }
 
 
-#if !MONODROID && !MONOGAME
+#if !MONODROID && !MONOGAME && !FNA
         public bool IsInWindow(System.Windows.Forms.Control control)
         {
             if (!mUsingWindowsCursor)

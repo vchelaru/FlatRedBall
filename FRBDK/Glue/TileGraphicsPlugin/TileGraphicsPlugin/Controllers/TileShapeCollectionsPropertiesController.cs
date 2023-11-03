@@ -60,7 +60,7 @@ namespace TileGraphicsPlugin.Controllers
                             existingNos.SetProperty(e.PropertyName, currentNos.Properties.GetValue(e.PropertyName));
                         }
                     }
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
             }
         }

@@ -37,9 +37,10 @@ namespace Npc.Managers
             private set;
         }
 
-        public void ProcessCommandLineArguments()
+        public void ProcessCommandLineArguments(string[] forcedArgs = null)
         {
-            foreach (string arg in Environment.GetCommandLineArgs())
+            var args = forcedArgs ?? Environment.GetCommandLineArgs();
+            foreach (string arg in args)
             {
                 if (arg.StartsWith("directory=", StringComparison.OrdinalIgnoreCase))
                 {
@@ -57,7 +58,7 @@ namespace Npc.Managers
                 {
                     EmptyProjectsOnly = true;
                 }
-                else if (string.Equals(arg, "showsourcecheckbox", StringComparison.OrdinalIgnoreCase)) ;
+                else if (string.Equals(arg, "showsourcecheckbox", StringComparison.OrdinalIgnoreCase))
                 {
                     ShowSourceCheckbox = true;
                 }

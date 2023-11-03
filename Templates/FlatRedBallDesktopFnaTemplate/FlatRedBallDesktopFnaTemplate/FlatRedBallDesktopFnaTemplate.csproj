@@ -1,0 +1,81 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <RollForward>Major</RollForward>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <TieredCompilation>false</TieredCompilation>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefineConstants>DESKTOP;XNA4;FRN_XNA;FNA</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <RootNamespace>FlatRedBallDesktopFnaTemplate</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Icon.ico" />
+    <None Remove="Icon.bmp" />
+    <None Remove="**\*.glsj" />
+	  <None Remove="**\*.glej" />
+	  <None Remove="**\*.gluj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Game1.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icon.ico" />
+    <EmbeddedResource Include="Icon.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp" Version="2.88.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FlatRedBall.FNA">
+      <HintPath>Libraries\FNA\Debug\FlatRedBall.FNA.dll</HintPath>
+    </Reference>
+    <Reference Include="FlatRedBall.Forms.FNA">
+      <HintPath>Libraries\FNA\Debug\FlatRedBall.Forms.FNA.dll</HintPath>
+    </Reference>
+    <Reference Include="FNA">
+      <HintPath>Libraries\FNA\Debug\FNA.dll</HintPath>
+    </Reference>
+    <Reference Include="GumCore.FNA">
+      <HintPath>Libraries\FNA\Debug\GumCore.FNA.dll</HintPath>
+    </Reference>
+    <Reference Include="StateInterpolation.FNA">
+      <HintPath>Libraries\FNA\Debug\StateInterpolation.FNA.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Content\Shader.fx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\shader.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\ShaderForcePoint.fx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\ShaderForcePoint.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FAudio.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FNA3D.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="libtheorafile.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="SDL2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
+    <Message Text="Restoring dotnet tools" Importance="High" />
+    <Exec Command="dotnet tool restore" />
+  </Target>
+</Project>

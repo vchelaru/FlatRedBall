@@ -195,7 +195,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             AddTask("Saving Project", () =>
             {
-                GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
                 return Task.CompletedTask;
             });
 
@@ -743,13 +743,6 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             playerEntity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(addEntityVm);
 
-
-
-            if (playerEntity == null)
-            {
-                int m = 3;
-            }
-
             if (vm.PlayerControlType == GameType.Platformer && vm.PlayerCollisionType == CollisionType.Rectangle)
             {
                 // this should have an AARect, so let's adjust it to match the right size/position as explained here:
@@ -804,7 +797,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 if (vm.AddPlayerToList)
                 {
                     AddObjectViewModel addPlayerVm = new AddObjectViewModel();
-
+                    addPlayerVm.ForcedElementToAddTo = gameScreen;
                     addPlayerVm.SourceType = SourceType.Entity;
                     addPlayerVm.SourceClassType = playerEntity.Name;
                     addPlayerVm.ObjectName = "Player1";
@@ -972,7 +965,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 displaySettings.AspectRatioWidth = aspectRatioWidth;
                 displaySettings.AspectRatioHeight = aspectRatioHeight;
-                displaySettings.FixedAspectRatio = true;
+                displaySettings.AspectRatioBehavior = AspectRatioBehavior.FixedAspectRatio;
 
                 displaySettings.Scale = scalePercent;
 

@@ -1,5 +1,6 @@
 ﻿
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using GlueFormsCore.Extensions;
 using GlueFormsCore.ViewModels;
@@ -14,7 +15,6 @@ namespace FlatRedBall.Glue.Controls
     public partial class AddVariableWindowWpf : Window
     {
         AddCustomVariableViewModel ViewModel => DataContext as AddCustomVariableViewModel;
-        GlueElement element;
 
         public AddVariableWindowWpf()
         {
@@ -26,8 +26,7 @@ namespace FlatRedBall.Glue.Controls
                 {
                     NewVariableTextBox.Focus();
                 }
-
-                this.MoveToCursor();
+                GlueCommands.Self.DialogCommands.MoveToCursor(this);
 
             };
         }

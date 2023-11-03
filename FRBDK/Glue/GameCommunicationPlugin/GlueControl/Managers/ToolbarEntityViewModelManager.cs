@@ -31,6 +31,13 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             .OrderBy(item => item.Member)
             .ToArray();
 
+        /// <summary>
+        /// Creates a new ToolbarEntityAndStateViewModel, which represents an item in the side view model
+        /// which can be used to drop items into the game during edit mode.
+        /// </summary>
+        /// <param name="namedObject">The NamedObject to use for the template.</param>
+        /// <param name="customPreviewLocation"></param>
+        /// <returns></returns>
         public static ToolbarEntityAndStateViewModel CreateNewViewModel(NamedObjectSave namedObject,
             string customPreviewLocation = null)
         {
@@ -45,23 +52,24 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     return;
                 }
 
-                var element = GlueState.Self.CurrentElement;
+                var elementToAddTo = GlueState.Self.CurrentElement;
 
                 NamedObjectSave newNos = null;
 
-                if (element != null)
+                if (elementToAddTo != null)
                 {
                     var addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ForcedElementToAddTo = elementToAddTo;
                     addObjectViewModel.SourceType = SourceType.Entity;
                     var entitySave = ObjectFinder.Self.GetEntitySave(namedObject.SourceClassType);
 
                     addObjectViewModel.SelectedEntitySave = entitySave;
 
-                    var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(entitySave.Name, element);
+                    var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(entitySave.Name, elementToAddTo);
 
                     newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(
                         addObjectViewModel,
-                        element,
+                        elementToAddTo,
                         listToAddTo);
 
                     var variablesToAssign = ExceptXYZ(namedObject.InstructionSaves);

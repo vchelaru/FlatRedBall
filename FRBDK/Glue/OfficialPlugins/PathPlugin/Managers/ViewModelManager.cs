@@ -208,7 +208,6 @@ namespace OfficialPlugins.PathPlugin.Managers
             {
                 UpdateModelToViewModel();
                 SendChangeToPluginManager();
-                //GlueCommands.Self.GluxCommands.SaveGlux();
 
             }, $"Modifying Segment for {nos}");
 

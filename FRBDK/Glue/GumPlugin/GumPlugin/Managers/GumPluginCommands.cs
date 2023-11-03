@@ -294,7 +294,7 @@ namespace GumPlugin.Managers
 
         internal void UpdateGumToGlueResolution()
         {
-            TaskManager.Self.AddOrRunIfTasked(() =>
+            _ = TaskManager.Self.AddOrRunIfTasked(async () =>
             {
                 var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
 
@@ -308,7 +308,7 @@ namespace GumPlugin.Managers
                         gumProject.DefaultCanvasWidth = displaySettings.ResolutionWidth;
                         gumProject.DefaultCanvasHeight = displaySettings.ResolutionHeight;
 
-                        GumPluginCommands.Self.SaveGumxAsync();
+                        await GumPluginCommands.Self.SaveGumxAsync();
                     }
 
                 }

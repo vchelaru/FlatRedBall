@@ -71,7 +71,7 @@ namespace RacingPlugin.Controllers
                 {
                     GlueCommands.Self.GluxCommands.SetPluginRequirement(MainPlugin, true);
                     GlueCommands.Self.PrintOutput("Added Racing Plugin as a required plugin because the entity was marked as a racing entity");
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
             }
 
@@ -110,7 +110,7 @@ namespace RacingPlugin.Controllers
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddRacingVariables)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 TaskManager.Self.Add(
                     () =>
                     {
@@ -196,7 +196,7 @@ namespace RacingPlugin.Controllers
                 if (rfs != null && rfs.CreatesDictionary == false)
                 {
                     rfs.CreatesDictionary = true;
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
                 }
 
@@ -216,7 +216,7 @@ namespace RacingPlugin.Controllers
                     {
                         FlatRedBall.Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
 
-                        GlueCommands.Self.GluxCommands.SaveGlux();
+                        GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     }
                 }
             },

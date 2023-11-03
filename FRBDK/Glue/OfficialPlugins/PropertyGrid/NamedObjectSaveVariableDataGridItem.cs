@@ -174,7 +174,8 @@ namespace OfficialPlugins.PropertyGrid
                 }
 
             }
-            else if (variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) && variableDefinition.Type == "float")
+            else if ((variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) || variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationY) || variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationX))
+                && variableDefinition.Type == "float")
             {
                 PreferredDisplayer = typeof(AngleSelectorDisplay);
             }
@@ -280,10 +281,13 @@ namespace OfficialPlugins.PropertyGrid
                         makeDefault = true;
 
                         // Let's also set the CurrentChainName to null
+                        // See below on why we don't use the async version:
+#pragma warning disable CS0618 // Type or member is obsolete
                         GlueCommands.Self.GluxCommands.SetVariableOn(
                             NamedObjectSave,
                             "CurrentChainName",
                             null);
+#pragma warning restore CS0618 // Type or member is obsolete
                     }
                 }
                 else if(foundVariable?.Type == nameof(FlatRedBall.Sprite))
@@ -311,10 +315,12 @@ namespace OfficialPlugins.PropertyGrid
                 // away. This can cause the property grid to display the old value after the user
                 // presses ENTER. Therefore, for now we need to use the obsolete SetVariableOn, and 
                 // think of a more sophisticated solution.
+#pragma warning disable CS0618 // Type or member is obsolete
                 GlueCommands.Self.GluxCommands.SetVariableOn(
-                NamedObjectSave,
+                    NamedObjectSave,
                     NameOnInstance,
                     value, performSaveAndGenerateCode: false, updateUi: false);
+#pragma warning restore CS0618 // Type or member is obsolete
 
 
                 // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
@@ -348,7 +354,7 @@ namespace OfficialPlugins.PropertyGrid
                     }
                     else
                     {
-                        GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                        GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
                     }
 
 
@@ -414,7 +420,7 @@ namespace OfficialPlugins.PropertyGrid
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 }
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
                 MainGlueWindow.Self.PropertyGrid.Refresh();
 

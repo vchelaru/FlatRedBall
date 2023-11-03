@@ -31,6 +31,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.Utilities;
 using System.Windows.Media.Imaging;
 using L = Localization;
+using FlatRedBall.Glue.Plugins.Interfaces;
 
 namespace FlatRedBall.Glue.FormHelpers;
 
@@ -1016,6 +1017,7 @@ public static class RightClickHelper
     {
         var viewModel = new AddObjectViewModel();
 
+        viewModel.ForcedElementToAddTo = currentElement;
         viewModel.SourceType = SourceType.FlatRedBallType;
         viewModel.SourceClassType = "CollisionRelationship";
 
@@ -1335,7 +1337,7 @@ public static class RightClickHelper
                 CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
                 GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
 
         }
@@ -1373,6 +1375,8 @@ public static class RightClickHelper
     private static void HandleAddLayerClick(object sender, EventArgs e)
     {
         var viewModel = new AddObjectViewModel();
+
+        viewModel.ForcedElementToAddTo = GlueState.Self.CurrentElement;
         viewModel.SourceType = SourceType.FlatRedBallType;
         viewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Layer;
         viewModel.IsTypePredetermined = true;
@@ -1526,7 +1530,7 @@ public static class RightClickHelper
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
     }
 
@@ -1608,7 +1612,7 @@ public static class RightClickHelper
         }
         CodeWriter.GenerateCode(GlueState.Self.CurrentElement);
         GlueCommands.Self.ProjectCommands.SaveProjects();
-        GluxCommands.Self.SaveGlux();
+        GluxCommands.Self.SaveProjectAndElements();
 
     }
 
@@ -1741,7 +1745,7 @@ public static class RightClickHelper
 
                         PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
 
-                        GluxCommands.Self.SaveGlux();
+                        GluxCommands.Self.SaveProjectAndElements();
                     }
 
                     #endregion
@@ -1912,7 +1916,7 @@ public static class RightClickHelper
 
 
                         GluxCommands.Self.ProjectCommands.SaveProjects();
-                        GluxCommands.Self.SaveGlux();
+                        GluxCommands.Self.SaveProjectAndElements();
                     }
                 }
             }
@@ -1998,17 +2002,18 @@ public static class RightClickHelper
 
             if (CustomVariableHelper.IsStateMissingFor(variable, element))
             {
-                var mbmb = new MultiButtonMessageBox();
+                var mbmb = new MultiButtonMessageBoxWpf();
                 mbmb.MessageText = String.Format(L.Texts.VariableHasNoStates, variable);
 
                 mbmb.AddButton(L.Texts.VariableRemove, DialogResult.OK);
                 mbmb.AddButton(L.Texts.VariableRemoveNothing, DialogResult.Cancel);
 
-                if (mbmb.ShowDialog() == DialogResult.OK)
+                if(mbmb.ShowDialog() == true && mbmb.ClickedResult is DialogResult asDialogResult && asDialogResult == DialogResult.OK)
                 {
                     element.CustomVariables.RemoveAt(i);
                     i--;
                 }
+
             }
         }
     }
@@ -2138,7 +2143,7 @@ public static class RightClickHelper
     /// are folders.
     /// </summary>
     /// <param name="targetNode">The tree node to delete.</param>
-    public static void DeleteFolderClick(ITreeNode targetNode)
+    public static async void DeleteFolderClick(ITreeNode targetNode)
     {
         // delete folder, deletefolder
 
@@ -2174,7 +2179,7 @@ public static class RightClickHelper
                 foreach (EntitySave entitySave in allEntitySaves)
                 {
                     GlueState.Self.CurrentEntitySave = entitySave;
-                    RemoveFromProjectOptionalSaveAndRegenerate(entitySave == allEntitySaves[^1], false, false);
+                    await RemoveFromProjectOptionalSaveAndRegenerate(entitySave == allEntitySaves[^1], false, false);
 
                 }
             }
@@ -2187,7 +2192,7 @@ public static class RightClickHelper
                 {
                     GlueState.Self.CurrentReferencedFileSave = rfs;
                     // I guess we won't ask to delete here, but maybe eventually we want to?
-                    RemoveFromProjectOptionalSaveAndRegenerate(rfs == allReferencedFileSaves[allReferencedFileSaves.Count - 1], false, false);
+                    await RemoveFromProjectOptionalSaveAndRegenerate(rfs == allReferencedFileSaves[allReferencedFileSaves.Count - 1], false, false);
                 }
             }
 
@@ -2281,26 +2286,26 @@ public static class RightClickHelper
         }, L.Texts.MovingToTop, TaskExecutionPreference.Asap);
     }
 
-    private static void MoveUpClick(object sender, EventArgs e)
+    private static async void MoveUpClick(object sender, EventArgs e)
     {
-        MoveSelectedObjectUp();
+        await MoveSelectedObjectUp();
     }
 
-    private static void MoveDownClick(object sender, EventArgs e)
+    private static async void MoveDownClick(object sender, EventArgs e)
     {
-        MoveSelectedObjectDown();
+        await MoveSelectedObjectDown();
     }
 
-    public static void MoveSelectedObjectUp()
+    public static async Task MoveSelectedObjectUp()
     {
         int direction = -1;
-        MoveObjectInDirection(direction);
+        await MoveObjectInDirection(direction);
     }
 
-    public static void MoveSelectedObjectDown()
+    public static async Task MoveSelectedObjectDown()
     {
         int direction = 1;
-        MoveObjectInDirection(direction);
+        await MoveObjectInDirection(direction);
     }
 
     private static async Task MoveObjectInDirection(int direction)
@@ -2366,14 +2371,14 @@ public static class RightClickHelper
             if (listToRemoveFrom != null)
             {
 
-                int index = listToRemoveFrom.IndexOf(objectToMove);
+                int oldIndex = listToRemoveFrom.IndexOf(objectToMove);
 
-                if (index < listToRemoveFrom.Count - 1)
+                if (oldIndex < listToRemoveFrom.Count - 1)
                 {
                     listToRemoveFrom.Remove(objectToMove);
                     var newIndex = listToRemoveFrom.Count;
                     listToRemoveFrom.Insert(newIndex, objectToMove);
-                    PostMoveActivity(objectToMove, index, newIndex);
+                    PostMoveActivity(objectToMove, oldIndex, newIndex);
                 }
             }
         }, L.Texts.MovingToBottom, TaskExecutionPreference.Asap);
@@ -2528,6 +2533,8 @@ public static class RightClickHelper
         {
             GlueCommands.Self.GluxCommands.SaveElementAsync(elementToSave, TaskExecutionPreference.AddOrMoveToEnd);
         }
+
+        PluginManager.ReactToObjectReordered(objectMoved, oldIndex, newIndex);
     }
 
     public static void SetExternallyBuiltFileIfHigherThanCurrent(string directoryOfFile, bool performSave)
@@ -2555,7 +2562,7 @@ public static class RightClickHelper
 
             if (performSave)
             {
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
         }
     }
@@ -2663,7 +2670,7 @@ public static class RightClickHelper
 
             GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
     }
 

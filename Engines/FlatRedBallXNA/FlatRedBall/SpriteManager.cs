@@ -672,6 +672,11 @@ namespace FlatRedBall
 
         #region AddLayer, AddToLayer
 
+        /// <summary>
+        /// Adds the argument layer at the end of the Layer list (above all layers except the TopLayer).
+        /// </summary>
+        /// <param name="layerToAdd">The layer ot add.</param>
+        /// <exception cref="InvalidOperationException">Throws InvalidOperationException if this is not called on the primary thread.</exception>
         public static void AddLayer(Layer layerToAdd)
         {
 #if DEBUG
@@ -684,6 +689,29 @@ namespace FlatRedBall
             mLayers.Add(layerToAdd);
         }
 
+        /// <summary>
+        /// Inserts the argument layer at the argument index.
+        /// </summary>
+        /// <param name="layer">The layer to add.</param>
+        /// <param name="index">The insertion index.</param>
+        /// <exception cref="InvalidOperationException">Throws InvalidOperationException if this is not called on the primary thread.</exception>
+        public static void InsertLayer(Layer layer, int index)
+        {
+#if DEBUG
+
+            if (!FlatRedBallServices.IsThreadPrimary())
+            {
+                throw new InvalidOperationException("Objects can only be added on the primary thread");
+            }
+#endif
+            mLayers.Insert(index, layer);
+        }
+
+        /// <summary>
+        /// Creates a new layer, adds it to the internal Layer list on top of all other layers (except the TopLayer), and returns it.
+        /// </summary>
+        /// <returns>The newly-created Layer</returns>
+        /// <exception cref="InvalidOperationException">Throws InvalidOperationException if this is not called on the primary thread.</exception>
         static public Layer AddLayer()
         {
 #if DEBUG

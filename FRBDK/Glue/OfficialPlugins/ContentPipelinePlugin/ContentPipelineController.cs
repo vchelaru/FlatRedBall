@@ -114,7 +114,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             TaskManager.Self.Add(() =>
             {
                 GlueCommands.ProjectCommands.SaveProjects();
-                GlueCommands.GluxCommands.SaveGlux();
+                GlueCommands.GluxCommands.SaveProjectAndElements();
             },
             "Saving due to RFS changes");
         }
@@ -226,7 +226,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
                     }
                     else
                     {
-                        throw e;
+                        throw;
                     }
                 }
 

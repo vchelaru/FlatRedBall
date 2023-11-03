@@ -38,7 +38,7 @@ namespace FlatRedBall.Content.SpriteGrid
 
     #endregion
 
-
+    [Obsolete]
     public class SpriteGridSave : SpriteGridSaveBase<SpriteSave>
     {
         #region Fields
@@ -56,6 +56,7 @@ namespace FlatRedBall.Content.SpriteGrid
         #region Properties
 
         [XmlIgnore]
+        [Obsolete]
         public float XLeftFilledBound
         {
             get
@@ -69,6 +70,7 @@ namespace FlatRedBall.Content.SpriteGrid
         }
 
         [XmlIgnore]
+        [Obsolete]
         public float XRightFilledBound
         {
             get
@@ -132,6 +134,7 @@ namespace FlatRedBall.Content.SpriteGrid
 
         #region Public Methods
 
+        [Obsolete]
         public FlatRedBall.ManagedSpriteGroups.SpriteGrid ToSpriteGrid(Camera camera, string contentManagerName) 
            // where SpriteGridType : FlatRedBall.ManagedSpriteGroups.SpriteGrid, new()
         {
@@ -167,6 +170,7 @@ namespace FlatRedBall.Content.SpriteGrid
             // lastBlueprintPosition = Blueprint.ToVector3();
         }
 
+        [Obsolete]
         private void SetOrderingMode(FlatRedBall.ManagedSpriteGroups.SpriteGrid spriteGrid)
         {
 #if FRB_MDX
@@ -182,6 +186,7 @@ namespace FlatRedBall.Content.SpriteGrid
             }
         }
 
+        [Obsolete]
         private void SetBoundsValues(FlatRedBall.ManagedSpriteGroups.SpriteGrid spriteGrid)
         {
             spriteGrid.XLeftBound = XLeftBound;
@@ -192,6 +197,7 @@ namespace FlatRedBall.Content.SpriteGrid
             spriteGrid.ZFarBound = ZFarBound;
         }
 
+        [Obsolete]
         private void CreateDisplayRegionGrid(FlatRedBall.ManagedSpriteGroups.SpriteGrid spriteGrid)
         {
             #region Create the DisplayRegionGrid
@@ -214,6 +220,7 @@ namespace FlatRedBall.Content.SpriteGrid
             #endregion
         }
 
+        [Obsolete]
         private void CreateAnimationChainGrid(string contentManagerName, FlatRedBall.ManagedSpriteGroups.SpriteGrid spriteGrid)
         {
             #region Create the AnimationChainGrid
@@ -309,6 +316,7 @@ namespace FlatRedBall.Content.SpriteGrid
             return textureGrid;
         }
 
+        [Obsolete]
         private FlatRedBall.ManagedSpriteGroups.SpriteGrid.Plane GetPlaneFromAxis()
         {
             FlatRedBall.ManagedSpriteGroups.SpriteGrid.Plane plane;
@@ -321,6 +329,7 @@ namespace FlatRedBall.Content.SpriteGrid
             return plane;
         }
 
+        [Obsolete]
         public static SpriteGridSave FromSpriteGrid(FlatRedBall.ManagedSpriteGroups.SpriteGrid spriteGrid)
         {
             SpriteGridSave spriteGridSave = new SpriteGridSave();

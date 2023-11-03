@@ -126,7 +126,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             }
             GlueCommands.GenerateCodeCommands.GenerateElementCode(element as GlueElement);
             GlueCommands.GenerateCodeCommands.GenerateGlobalContentCode();
-            GlueCommands.GluxCommands.SaveGlux();
+            GlueCommands.GluxCommands.SaveProjectAndElements();
 
         }
 

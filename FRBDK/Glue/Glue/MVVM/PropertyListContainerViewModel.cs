@@ -466,14 +466,8 @@ namespace FlatRedBall.Glue.MVVM
                 toSet = converter.ConvertBack(toSet);
             }
 
-            try
-            {
-                Set<T>((T)toSet, propertyName);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            Set<T>((T)toSet, propertyName);
+
         }
     }
 }

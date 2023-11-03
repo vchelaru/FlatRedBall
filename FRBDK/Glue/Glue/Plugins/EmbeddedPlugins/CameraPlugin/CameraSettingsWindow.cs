@@ -169,7 +169,7 @@ namespace FlatRedBall.Glue.Controls
 
             CameraSetupCodeGenerator.GenerateCallInGame1(ProjectManager.GameClassFileName, whetherToCall);
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
             GlueCommands.Self.ProjectCommands.SaveProjects();
         }
 
@@ -222,7 +222,7 @@ namespace FlatRedBall.Glue.Controls
 
                     glueProject.ResolutionPresets.Add(resolutionValues);
 
-                    GluxCommands.Self.SaveGlux();
+                    GluxCommands.Self.SaveProjectAndElements();
                     RefreshPresetTreeView();
                 }
             }
@@ -285,7 +285,7 @@ namespace FlatRedBall.Glue.Controls
                     PresetsTreeView.Nodes.Remove(PresetsTreeView.SelectedNode);
 
                     ObjectFinder.Self.GlueProject.ResolutionPresets.Remove(values);
-                    GluxCommands.Self.SaveGlux();
+                    GluxCommands.Self.SaveProjectAndElements();
                 }
             }
         }

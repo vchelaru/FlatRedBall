@@ -31,6 +31,7 @@ namespace OfficialPlugins.SpritePlugin.Views
                     if(value == null || value.Exists() == false)
                     {
                         MainSprite.Texture = null;
+                        textureFilePath = null;
                     }
                     else
                     {
@@ -40,11 +41,13 @@ namespace OfficialPlugins.SpritePlugin.Views
                             {
                                 // cache?
                                 MainSprite.Texture = SKBitmap.Decode(stream);
+                                textureFilePath = null;
                             }
                         }
                         catch
                         {
                             // do we do anything?
+                            textureFilePath = null;
                         }
                     }
                 }

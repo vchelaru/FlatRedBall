@@ -210,7 +210,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             await TaskManager.Self.AddAsync(async () =>
             {
                 var addObjectModel = new AddObjectViewModel();
-
+                addObjectModel.ForcedElementToAddTo = container;
 
                 var firstNos = container.GetNamedObjectRecursively(firstNosName);
                 var secondNos = container.GetNamedObjectRecursively(secondNosName);

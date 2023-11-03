@@ -321,7 +321,7 @@ namespace TiledPluginCore.Controllers
 
             if(shouldSave)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }

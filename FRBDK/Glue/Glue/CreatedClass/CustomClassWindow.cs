@@ -181,7 +181,7 @@ namespace FlatRedBall.Glue.Controls
                         if (result == System.Windows.Forms.DialogResult.Yes)
                         {
                             ProjectManager.GlueProjectSave.CustomClasses.Remove(CurrentCustomClassSave);
-                            GluxCommands.Self.SaveGlux();
+                            GluxCommands.Self.SaveProjectAndElements();
                             shouldRemoveCurrent = true;
                         }
                     }

@@ -512,9 +512,6 @@ namespace GumPlugin.Managers
 
                 string oldRelative = FileManager.RelativeDirectory;
 
-                string gumxFile = null;
-
-
                 FileManager.RelativeDirectory = GetGumxDirectory(fileName);
                 LoadGumxIfNecessaryFromDirectory(FileManager.RelativeDirectory);
 

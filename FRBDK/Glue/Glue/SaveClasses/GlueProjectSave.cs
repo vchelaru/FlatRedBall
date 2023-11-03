@@ -118,14 +118,16 @@ namespace FlatRedBall.Glue.SaveClasses
             RendererHasExternalEffectManager = 44,
             SpriteHasSetCollisionFromAnimation = 45,
             HasIGumScreenOwner = 46,
-            ScreenIsINameable = 47
+            ScreenIsINameable = 47,
+            SpriteManagerHasInsertLayer = 48,
+            GumUsesSystemTypes = 49,
         }
 
         #endregion
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.ScreenIsINameable;
+        public const int LatestVersion = (int)GluxVersions.GumUsesSystemTypes;
 
         public int FileVersion { get; set; }
 

@@ -442,8 +442,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
 
                     GluxCommands.Self.ProjectCommands.SaveProjects();
-                    //GluxCommands.Self.SaveGlux();
-                    foreach(var owner in owners)
+                    //GluxCommands.Self.SaveProjectAndElements();
+                    foreach (var owner in owners)
                     {
                         _ = GluxCommands.Self.SaveElementAsync(owner);
                     }

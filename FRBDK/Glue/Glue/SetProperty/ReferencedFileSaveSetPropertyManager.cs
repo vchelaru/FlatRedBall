@@ -385,7 +385,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 AdjustDataFilesIfIsCsv(oldName, rfs);
 
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
 
                 GlueCommands.Self.ProjectCommands.SaveProjects();
             }, $"ForceReactToRenamedReferencedFileAsync {oldName} -> {newName}");

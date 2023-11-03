@@ -164,7 +164,7 @@ namespace FlatRedBall.Input
         }
 
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
         public bool IsOwnerFocused
         {
             get

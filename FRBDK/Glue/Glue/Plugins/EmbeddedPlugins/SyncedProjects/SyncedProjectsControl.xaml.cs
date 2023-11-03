@@ -46,7 +46,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                     GlueGui.ShowMessageBox(L.Texts.ProjectIsAlreadySynced);
                 }
 
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
 
             }
@@ -60,7 +60,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 ProjectManager.RemoveSyncedProject(selectedItem.ProjectBase);
                 ViewModel.Refresh();
 
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }

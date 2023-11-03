@@ -168,6 +168,13 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("Children Layout");
             mVariableNamesToSkipForProperties.Add("StackSpacing");
 
+            // eventually add these, but for now this is a quick fix:
+            mVariableNamesToSkipForProperties.Add("AutoGridHorizontalCells");
+            mVariableNamesToSkipForProperties.Add("AutoGridVerticalCells");
+
+            
+
+
             // This restriction is only enforced Gum-side, not runtime-side (yet? ever?)
             mVariableNamesToSkipForProperties.Add("Contained Type");
 
@@ -194,6 +201,14 @@ namespace GumPlugin.CodeGeneration
                 Name = "Color"
             });
 
+
+            // It turns out we dont' have a way to skip/include properties by version. To be safe we are going to exclude these for now. In the future we need to have version-based
+            // include/exclude just like the StateCodeGenerator:
+            mVariableNamesToSkipForProperties.Add("CustomFrameTextureCoordinateWidth");
+            mVariableNamesToSkipForProperties.Add("LineHeightMultiplier");
+
+
+
         }
 
 
@@ -213,7 +228,7 @@ namespace GumPlugin.CodeGeneration
 
             // This needs to be public because it can be exposed as public in a public class
             //ICodeBlock currentBlock = codeBlock.Class("partial", runtimeClassName, " : Gum.Wireframe.GraphicalUiElement");
-            ICodeBlock classBodyBlock = codeBlock.Class("public partial", runtimeClassName, " : Gum.Wireframe.GraphicalUiElement");
+            ICodeBlock classBodyBlock = codeBlock.Class("public partial", runtimeClassName, " : global::Gum.Wireframe.GraphicalUiElement");
 
             GueDerivingClassCodeGenerator.Self.GenerateConstructor(standardElementSave, classBodyBlock, runtimeClassName);
 
@@ -574,10 +589,22 @@ namespace GumPlugin.CodeGeneration
 
                 if(!string.IsNullOrEmpty(colorComponent))
                 {
+                    var version = GlueState.Self.CurrentGlueProject.FileVersion;
+                    if(version >= (int)GluxVersions.GumUsesSystemTypes || GlueState.Self.CurrentMainProject.IsFrbSourceLinked())
+                    {
+                        //setter.Line($"var color = {containedObject}.Color;");
+                        setter.Line("// The new version of Glue is moving away from XNA color values. This code converts color values. If this doesn't run, you need to upgrade your GLUX version.");
+                        setter.Line("// More info here: https://flatredball.com/documentation/tools/glue-reference/glujglux/");
 
-                    setter.Line($"var color = {containedObject}.Color;");
-                    setter.Line($"color.{colorComponent} = (byte)value;");
-                    setter.Line($"{containedObject}.Color = color;");
+                        setter.Line($"var color = ToolsUtilitiesStandard.Helpers.ColorExtensions.With{variable.Name}({containedObject}.Color, (byte)value);");
+                        setter.Line($"{containedObject}.Color = color;");
+                    }
+                    else
+                    {
+                        setter.Line($"var color = {containedObject}.Color;");
+                        setter.Line($"color.{colorComponent} = (byte)value;");
+                        setter.Line($"{containedObject}.Color = color;");
+                    }
                     return true;
                 }
             }
@@ -667,7 +694,13 @@ namespace GumPlugin.CodeGeneration
             {
                 value = "Gum.RenderingLibrary.BlendExtensions.ToBlend(" + value + ")";
             }
-
+            else if (variableSave.Type == "Microsoft.Xna.Framework.Color")
+            {
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumUsesSystemTypes || GlueState.Self.CurrentMainProject.IsFrbSourceLinked())
+                {
+                    value = $"RenderingLibrary.Graphics.XNAExtensions.ToXNA({value})";
+                }
+            }
             return value;
         }
 
@@ -676,6 +709,13 @@ namespace GumPlugin.CodeGeneration
             if (variableSave.Type == "Blend")
             {
                 value = "Gum.RenderingLibrary.BlendExtensions.ToBlendState(" + value + ")";
+            }
+            else if(variableSave.Type == "Microsoft.Xna.Framework.Color")
+            {
+                if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumUsesSystemTypes || GlueState.Self.CurrentMainProject.IsFrbSourceLinked())
+                {
+                    value = $"RenderingLibrary.Graphics.XNAExtensions.ToSystemDrawing({value})";
+                }
             }
 
 

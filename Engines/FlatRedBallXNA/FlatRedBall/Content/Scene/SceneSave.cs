@@ -8,7 +8,10 @@ using System.Xml.Serialization;
 namespace FlatRedBall.Content.Scene
 {
     [XmlRoot("SpriteEditorScene")]
-    public partial class SceneSave : SpriteEditorScene
+    public partial class SceneSave :
+#pragma warning disable CS0618 // Type or member is obsolete
+        SpriteEditorScene
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         internal static int AsInt(System.Xml.Linq.XElement element)
         {

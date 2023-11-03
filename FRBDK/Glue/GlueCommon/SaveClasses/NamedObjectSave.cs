@@ -92,8 +92,7 @@ namespace FlatRedBall.Glue.SaveClasses
             return Properties != null && Properties.Count != 0;
         }
 
-        private List<TypedMemberBase> mTypedMembers = new List<TypedMemberBase>();
-        private ReadOnlyCollection<TypedMemberBase> mTypedMembersReadOnly;
+        
 
         [XmlElementAttribute("CustomProperty")]
         public List<CustomVariableInNamedObject> InstructionSaves { get; set; } = new List<CustomVariableInNamedObject>();
@@ -127,20 +126,8 @@ namespace FlatRedBall.Glue.SaveClasses
             return IsNewCamera;
         }
 
-        /// <summary>
-        /// A list of typed members which is populated according to the SourceType and related variables.
-        /// This is public so that runtime libraries can populate it.  You should not modify this unless
-        /// you really know what you're doing.
-        /// </summary>
-        [XmlIgnore]
-        [JsonIgnore]
-        [Browsable(false)]
-        public List<TypedMemberBase> TypedMembers
-        {
-            get { return mTypedMembers; }
-        }
 
-        #region XML Docs
+
         /// <summary>
         /// Defines the source type of this NamedObjectSave.  The SourceType is the broadest type of categorization.
         /// </summary>
@@ -150,13 +137,17 @@ namespace FlatRedBall.Glue.SaveClasses
         /// an Entity.  This restriction will be enforced
         /// in the PropertyGridHelper in Glue.
         /// </remarks>
-        #endregion
-        // made to use properties on June 23, 2019. Ever want to XML ignore this?
         [CategoryAttribute("Source")]
         public SourceType SourceType
         {
-            get => Properties.GetValue<SourceType>(nameof(SourceType));
-            set => Properties.SetValue(nameof(SourceType), value);
+            // made to use properties on June 23, 2019. Ever want to XML ignore this?
+            // Update October 4, 2023 - this is so common that we want it to be fast, so let's
+            // remove the Properties. Also, Properties are good to prevent JSON from getting too big
+            // but we can do this with cleanup and defautls, so I'm going to change this back to a regular
+            // property:
+            //get => Properties.GetValue<SourceType>(nameof(SourceType));
+            //set => Properties.SetValue(nameof(SourceType), value);
+            get; set;
         }
 
         [CategoryAttribute("Source")]
@@ -816,7 +807,6 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             GenerateTimedEmit = true;
             Instantiate = true;
-            mTypedMembersReadOnly = new ReadOnlyCollection<TypedMemberBase>(mTypedMembers);
             //Events = new List<EventSave>();
 
             IncludeInIVisible = true;
@@ -915,24 +905,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
 
-        /// <summary>
-        /// Returns whether this instance has the argument variable. This controls whether the variable should appear in the property grid.
-        /// </summary>
-        /// <param name="customVariableName"></param>
-        /// <returns></returns>
-        public bool HasCustomVariable(string customVariableName)
-        {
-            for (int i = 0; i < mTypedMembers.Count; i++)
-            {
-                if (mTypedMembers[i].MemberName == customVariableName)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         public void ReplaceLayerRecursively(string oldLayer, string newLayer)
         {
             if (LayerOn == oldLayer)
@@ -964,15 +936,6 @@ namespace FlatRedBall.Glue.SaveClasses
                 if (cvino.Member == oldVariable)
                 {
                     cvino.Member = newVariable;
-                    returnValue = true;
-                }
-            }
-
-            foreach (TypedMemberBase typedMember in mTypedMembers)
-            {
-                if (typedMember.MemberName == oldVariable)
-                {
-                    typedMember.MemberName = newVariable;
                     returnValue = true;
                 }
             }

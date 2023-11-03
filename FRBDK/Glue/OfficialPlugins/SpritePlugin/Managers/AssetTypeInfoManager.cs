@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math;
+using GlueFormsCore.ViewModels;
 using OfficialPlugins.Common.Controls;
 using OfficialPlugins.SpritePlugin.Views;
 using System;
@@ -62,12 +63,12 @@ namespace OfficialPlugins.SpritePlugin.Managers
             colorHexValueDefinition.UsesCustomCodeGeneration = true;
             colorHexValueDefinition.PreferredDisplayer = typeof(ColorHexTextBox);
             colorHexValueDefinition.CustomVariableGet = ColorHexVariableGet;
-            colorHexValueDefinition.CustomVariableSet = ColorHexVariableSet;
+            colorHexValueDefinition.CustomVariableSet = (element, nos, variableName, newValue) => _=ColorHexVariableSet(element, nos, variableName, newValue);
             ati.VariableDefinitions.Insert(blueIndex + 1, colorHexValueDefinition);
 
         }
 
-        private static void ColorHexVariableSet(GlueElement element, NamedObjectSave nos, string variableName, object newValue)
+        private static async Task ColorHexVariableSet(GlueElement element, NamedObjectSave nos, string variableName, object newValue)
         {
             var colorConverter = new ColorConverter();
             var newValueAsString = newValue as string;
@@ -86,9 +87,9 @@ namespace OfficialPlugins.SpritePlugin.Managers
                         !string.IsNullOrEmpty(blueVariableName))
                     {
                         var color = (Color)colorConverter.ConvertFromString(newValueAsString);
-                        GlueCommands.Self.GluxCommands.SetVariableOn(nos, redVariableName, color.R / 255.0f, performSaveAndGenerateCode: false, updateUi: false);
-                        GlueCommands.Self.GluxCommands.SetVariableOn(nos, greenVariableName, color.G / 255.0f, performSaveAndGenerateCode: false, updateUi: false);
-                        GlueCommands.Self.GluxCommands.SetVariableOn(nos, blueVariableName, color.B / 255.0f, performSaveAndGenerateCode: true, updateUi: true);
+                        await GlueCommands.Self.GluxCommands.SetVariableOnAsync(nos, redVariableName, color.R / 255.0f, performSaveAndGenerateCode: false, updateUi: false);
+                        await GlueCommands.Self.GluxCommands.SetVariableOnAsync(nos, greenVariableName, color.G / 255.0f, performSaveAndGenerateCode: false, updateUi: false);
+                        await GlueCommands.Self.GluxCommands.SetVariableOnAsync(nos, blueVariableName, color.B / 255.0f, performSaveAndGenerateCode: true, updateUi: true);
                     }
                 }
                 catch
@@ -253,8 +254,10 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
             var existingUseAnimationTextureVariableDefinition = ati.VariableDefinitions
                 .FirstOrDefault(item => item.Name == nameof(FlatRedBall.Sprite.UseAnimationTextureFlip));
+#pragma warning disable CS0618 // using as nameof, that's okay
             var existingIgnoreAnimationTextureFlipVariableDefinition = ati.VariableDefinitions
                 .FirstOrDefault(item => item.Name == nameof(FlatRedBall.Sprite.IgnoreAnimationChainTextureFlip));
+#pragma warning restore CS0618 // Type or member is obsolete
 
             var doesAtiAlreadyHaveUseAnimationTextureFlip = existingUseAnimationTextureVariableDefinition != null;
 
@@ -294,7 +297,9 @@ namespace OfficialPlugins.SpritePlugin.Managers
             {
                 var ignoreAnimationTextureFlipVariableDefinition = new VariableDefinition();
                 ignoreAnimationTextureFlipVariableDefinition.Type = "bool";
+#pragma warning disable CS0618 // Type or member is obsolete
                 ignoreAnimationTextureFlipVariableDefinition.Name = nameof(FlatRedBall.Sprite.IgnoreAnimationChainTextureFlip);
+#pragma warning restore CS0618 // Type or member is obsolete
                 ignoreAnimationTextureFlipVariableDefinition.Category = "Animation";
                 ignoreAnimationTextureFlipVariableDefinition.DefaultValue = "false";
 

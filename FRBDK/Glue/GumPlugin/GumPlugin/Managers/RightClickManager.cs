@@ -145,6 +145,8 @@ namespace GumPlugin.Managers
                     var ati = AssetTypeInfoManager.Self.GetAtiFor(gumComponent);
 
                     var addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ForcedElementToAddTo = entity;
+
                     addObjectViewModel.SourceType = SourceType.FlatRedBallType;
                     addObjectViewModel.SourceClassType = ati.QualifiedRuntimeTypeName.QualifiedType;
                     addObjectViewModel.ObjectName = "GumObject";
@@ -178,8 +180,6 @@ namespace GumPlugin.Managers
 
                 if (System.IO.File.Exists(fullFileName))
                 {
-                    string error;
-
                     // Calling Load does a deep load.  We only want references, so we're
                     // going to do a shallow load for perf reasons.
                     //GumProjectSave gps = GumProjectSave.Load(fullFileName, out error);

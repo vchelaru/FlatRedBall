@@ -26,198 +26,15 @@ namespace FlatRedBall.Glue.SaveClasses
         /// <param name="instance">The NamedObject to update properties on.</param>
         public static void UpdateCustomProperties(this NamedObjectSave instance)
         {
-            // If the project hasn't been loaded yet, then this doesn't know what
-            // members it has from its Entity.  Therefore, we shouldn't do anything here
-            // or else we'll wipe out the set values.
-
-            if (ObjectFinder.Self.GlueProject != null)
-            {
-                UpdateTypedMembers(instance);
-
-                instance.InstructionSaves.Sort((first, second) => first.Member?.CompareTo(second.Member) ?? 0);
-
-                #region Note about removing variables - why we don't do it anymore.
-                // October 3, 2011
-                // Victor Chelaru
-                // We used to remove
-                // unused variables, but
-                // now we're going to keep
-                // them.  This will allow users
-                // to switch between different source
-                // types and return without losing data.
-                // Sure, it means a tiny bit of bloat in the
-                // glux and at runtime in the ram, but I think
-                // we can live with it.
-                //List<string> keysToRemove = new List<string>();
-                //// Are there any removed members?
-                //for (int index = InstructionSaves.Count - 1; index > -1; index--)
-                //{
-                //    InstructionSave instruction = InstructionSaves[index];
-
-                //    string key = instruction.Member;
-                //    bool isKeyContained = false;
-
-                //    for (int i = 0; i < mTypedMembers.Count; i++)
-                //    {
-                //        string member = mTypedMembers[i].MemberName;
-                //        if (key == member)
-                //        {
-                //            isKeyContained = true;
-                //            break;
-                //        }
-                //    }
-
-                //    if (isKeyContained == false)
-                //    {
-                //        InstructionSaves.RemoveAt(index);
-                //    }
-                //}
-                #endregion
-
-            }
+            instance.InstructionSaves.Sort((first, second) => first.Member?.CompareTo(second.Member) ?? 0);
         }
 
-        private static void UpdateTypedMembers(this NamedObjectSave instance)
-        {
-            if (instance.SourceType == SourceType.Entity)
-            {
-                if (string.IsNullOrEmpty(instance.SourceClassType) || instance.SourceClassType == "<NONE>")
-                {
-                    instance.TypedMembers.Clear();
-                }
-                else
-                {
-                    EntitySave entitySave = ObjectFinder.Self.GetEntitySave(
-                        instance.SourceClassType);
-                    if (entitySave != null)
-                    {
-                        instance.TypedMembers.Clear();
-                        // This is null if a property that calls
-                        // UpdateProperties is called before the project
-                        // is loaded - as is the case when the GLUX is 
-                        // deserialized.
-                        instance.TypedMembers.AddRange(entitySave.GetTypedMembers());
-                    }
-                }
-            }
-            else if (string.IsNullOrEmpty(instance.ClassType) || instance.ClassType.Contains("PositionedObjectList<"))
-            {
-                instance.TypedMembers.Clear();
-            }
-            else if (instance.IsList)
-            {
-                // do nothing.
-            }
-            else
-            {                
-                instance.TypedMembers.Clear();
-                // We used to only include members in the
-                // ATI.  Now we want to include every possible
-                // variable so that they all show up in the PropertyGrid.
-                //AssetTypeInfo ati = instance.GetAssetTypeInfo();
-
-                //if (ati == null)
-                //{
-                //    throw new NullReferenceException("Could not find an AssetType for the type " +
-                //        instance.SourceClassType + ".  This either means that your ContenTypes CSV is corrupt, out of date, missing, or that you have not loaded a content types CSV if you are using teh GluxViewManager in a custom app.");
-                //    instance.TypedMembers.Clear();
-                //}
-                //else
-                //{
-                //    instance.TypedMembers.Clear();
-                //    instance.TypedMembers.AddRange(ati.GetTypedMembers());
-                //}
-
-                List<MemberWithType> variables = ExposedVariableManager.GetExposableMembersFor(instance);
-
-                foreach (var member in variables)
-                {
-                    int errorCode = 0;
-                    try
-                    {
-                        errorCode = 0;
-                        string memberType = member.Type;
-                        errorCode = 1;
-                        memberType = TypeManager.GetCommonTypeName(memberType);
-                        errorCode = 2;
-
-                        Type type = TypeManager.GetTypeFromString(memberType);
-                        errorCode = 3;
-                        // Glue can't do anything with generic properties (yet)
-                        // Update: I'm adding support for it now
-                        //if (type != null && type.IsGenericType == false)
-                        TypedMemberBase typedMember = null;
-
-                        if (type != null )
-                        {
-                            try
-                            {
-                                typedMember = TypedMemberBase.GetTypedMemberUnequatable(member.Member, type);
-                            }
-                            catch
-                            {
-                                // oh well, I think be getting rid of these anyway
-                            }
-                        }
-                        else
-                        {
-                            typedMember = TypedMemberBase.GetTypedMemberUnequatable(member.Member, typeof(object));
-                            typedMember.CustomTypeName = memberType;
-                        }
-                        if(typedMember != null)
-                        {
-                            instance.TypedMembers.Add(typedMember);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Error trying to fix member " + member + " in object " + instance + ". Error code: " + errorCode + "Additional info:\n\n\n" + e.ToString(), e);
-
-                    }
-                }
-
-                var ati = instance.GetAssetTypeInfo();
-
-                if(ati != null)
-                {
-                    foreach(var member in ati.VariableDefinitions)
-                    {
-                        // Only consider this if it's not already handled:
-                        bool isAlreadyHandled = instance.TypedMembers.Any(item => item.MemberName == member.Name);
-
-                        if(!isAlreadyHandled)
-                        {
-                            string memberType = member.Type;
-                            memberType = TypeManager.GetCommonTypeName(memberType);
-
-                            Type type = TypeManager.GetTypeFromString(memberType);
-                            // Glue can't do anything with generic properties (yet)
-                            // Update: I'm adding support for it now
-                            //if (type != null && type.IsGenericType == false)
-                            TypedMemberBase typedMember = null;
-
-                            if (type != null)
-                            {
-                                typedMember = TypedMemberBase.GetTypedMemberUnequatable(member.Name, type);
-                            }
-                            else
-                            {
-                                typedMember = TypedMemberBase.GetTypedMemberUnequatable(member.Name, typeof(object));
-                                typedMember.CustomTypeName = memberType;
-                            }
-                            instance.TypedMembers.Add(typedMember);
-                        }
-                    }
-                }
-            }
-        }
         public static NamedObjectSave Clone(this NamedObjectSave instance)
         {
             // This doesn't work as well in XML due to enum values, so let's use Json instead
             //NamedObjectSave newNamedObjectSave = FileManager.CloneObject(instance);
             var serialized = JsonConvert.SerializeObject(instance);
             var newNamedObjectSave = JsonConvert.DeserializeObject<NamedObjectSave>(serialized);
-            newNamedObjectSave.TypedMembers.Clear();
 
             newNamedObjectSave.UpdateCustomProperties();
             // March 6, 2012
@@ -260,18 +77,22 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static AssetTypeInfo GetAssetTypeInfo(this NamedObjectSave instance)
         {
-            if(instance.SourceType == SourceType.Entity)
-            {
-                return null;
-            }
-
             if(instance == null)
             {
                 throw new ArgumentNullException(nameof(instance));
             }
+            if(instance.SourceType == SourceType.Entity)
+            {
+                return null;
+            }
             if (string.IsNullOrEmpty(instance.ClassType))
             {
                 return null;
+            }
+            // This is a common type, so let's go faster by returning the type:
+            if(instance.SourceType == SourceType.FlatRedBallType && instance.SourceClassType.StartsWith("FlatRedBall.Math.PositionedObjectList"))
+            {
+                return AvailableAssetTypes.CommonAtis.PositionedObjectList;
             }
 
             // If this NOS uses an EntireFile, then we should ask the file for its AssetTypeInfo,
@@ -681,16 +502,16 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (instruction == null)
             {
-                TypedMemberBase tmb = instance.TypedMembers.FirstOrDefault(member=>member.MemberName == variableName);
+                var variableDefinition = instance.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == variableName);
 
-                Type type = tmb?.MemberType ?? value?.GetType();
-                var customTypeName = tmb?.CustomTypeName;
-
-                instruction = instance.AddNewGenericInstructionFor(variableName, type);
-
-                if(customTypeName != null)
+                if(variableDefinition != null)
                 {
-                    instruction.Type = tmb.CustomTypeName;
+                    instruction = instance.AddInstruction(variableName, variableDefinition.Type);
+                }
+                else
+                {
+                    var type = value?.GetType();
+                    instruction = instance.AddNewGenericInstructionFor(variableName, type);
                 }
             }
 
@@ -707,6 +528,16 @@ namespace FlatRedBall.Glue.SaveClasses
                 return entitySave.GetCustomVariableRecursively("ScaleX") != null && entitySave.GetCustomVariableRecursively("ScaleY") != null;
             }
             return false;
+        }
+
+        public static CustomVariableInNamedObject AddInstruction(this NamedObjectSave instance, string member, string type)
+        {
+            CustomVariableInNamedObject instructionSave = new CustomVariableInNamedObject();
+            instructionSave.Value = null; // make it the default
+            instructionSave.Type = TypeManager.GetCommonTypeName(type);
+            instructionSave.Member = member;
+            instance.InstructionSaves.Add(instructionSave);
+            return instructionSave;
         }
 
         public static CustomVariableInNamedObject AddNewGenericInstructionFor(this NamedObjectSave instance, string member, Type type)

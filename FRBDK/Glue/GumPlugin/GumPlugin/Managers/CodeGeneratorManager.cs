@@ -663,8 +663,6 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
         System.IO.Directory.CreateDirectory(saveLocation.GetDirectoryContainingThis().FullPath);
 
-        bool didSave = false;
-
         var shouldAddToProject = false;
 
         if(!string.IsNullOrEmpty(generatedCode))
@@ -674,7 +672,6 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
             {
                 GlueCommands.Self.TryMultipleTimes(() =>
                     System.IO.File.WriteAllText(saveLocation.FullPath, generatedCode));
-                didSave = true;
             }
             catch (Exception e)
             {

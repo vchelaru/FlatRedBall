@@ -13,86 +13,112 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
     {
         static string glueControlFolder => GlueState.Self.CurrentGlueProjectDirectory + "GlueControl/";
 
-        public static void EmbedAll(bool fullyGenerate)
+        static List<string> filesToSave = new List<string>
         {
-            GlueControlCodeGenerator.GenerateFull = fullyGenerate;
-
-            SaveEmbeddedFile("CommandReceiver.cs");
-
-            SaveEmbeddedFile("Dtos.cs");
-            SaveEmbeddedFile("GlueCallsClassGenerationManager.cs");
-
-            SaveEmbeddedFile("Editing.CameraLogic.cs");
-            SaveEmbeddedFile("Editing.CopyPasteManager.cs");
-            SaveEmbeddedFile("Editing.EditingManager.cs");
-            SaveEmbeddedFile("Editing.EditorVisuals.cs");
-            SaveEmbeddedFile("Editing.Guides.cs");
-
-            SaveEmbeddedFile("Editing.Managers.GenerateCodeCommands.cs");
-            SaveEmbeddedFile("Editing.Managers.GlueCommands.cs");
-            SaveEmbeddedFile("Editing.Managers.GlueCommandsStateBase.cs");
-
+            "CommandReceiver.cs",
+            
+            "Dtos.cs",
+            "GlueCallsClassGenerationManager.cs",
+            
+            "Editing.CameraLogic.cs",
+            "Editing.CopyPasteManager.cs",
+            "Editing.EditingManager.cs",
+            "Editing.EditorVisuals.cs",
+            "Editing.Guides.cs",
+            
+            "Editing.Managers.GenerateCodeCommands.cs",
+            "Editing.Managers.GlueCommands.cs",
+            "Editing.Managers.GlueCommandsStateBase.cs",
+            
             // Vic says - Scott commented these out, but I'm not sure why....
-            // I know we were going to move to a new generated solution, but I don't
+            // I know we were going to move to a new generated solution, but I don
             // see this active in current projects.
             // actually it looks like they are generated...
             // See Editing_Managers_GlueState
             //SaveEmbeddedFile("Editing.Managers.GlueState.cs");
             //SaveEmbeddedFile("Editing.Managers.GluxCommands.cs");
-            SaveEmbeddedFile("Editing.Managers.ObjectFinder.cs");
-            SaveEmbeddedFile("Editing.Managers.RefreshCommands.cs");
+            "Editing.Managers.ObjectFinder.cs",
+            "Editing.Managers.RefreshCommands.cs",
+            
+            
+            "Editing.Markers.MeasurementMarker.cs",
+            "Editing.Markers.PolygonPointHandles.cs",
+            "Editing.Markers.SelectionMarker.cs",
+            "Editing.Markers.TileShapeCollectionMarker.cs",
+            
+            "Editing.MoveObjectToContainerLogic.cs",
+            
+            "Editing.SelectionLogic.cs",
+            
+            "Editing.VariableAssignmentLogic.cs",
+            
+            "Editing.Visuals.Arrow.cs",
+            
+            // We don't use this anymore...
+            //SaveEmbeddedFile("Forms.ObjectCreationWindow.cs");
+            
+            "GlueControlManager.cs",
+            
+            "InstanceLogic.cs",
+            
+            
+            "Models.CustomVariable.cs",
+            "Models.GlueElement.cs",
+            "Models.GlueElementFileReference.cs",
+            "Models.GlueProjectSave.cs",
+            "Models.GlueProjectSaveExtensions.cs",
+            "Models.IElementExtensionMethods.cs",
+            "Models.INamedObjectContainer.cs",
+            "Models.NamedObjectSave.cs",
+            "Models.NamedObjectSaveExtensionMethods.cs",
+            "Models.StateSave.cs",
+            "Models.ReferencedFileSave.cs",
+            "Models.StateSaveCategory.cs",
+            
+            "Runtime.DynamicEntity.cs",
+            
+            "Screens.EntityViewingScreen.cs"
+        };
 
+        public static void EmbedAll(bool fullyGenerate)
+        {
+            GlueControlCodeGenerator.GenerateFull = fullyGenerate;
 
-            SaveEmbeddedFile("Editing.Markers.MeasurementMarker.cs");
-            SaveEmbeddedFile("Editing.Markers.PolygonPointHandles.cs");
-            SaveEmbeddedFile("Editing.Markers.SelectionMarker.cs");
-            SaveEmbeddedFile("Editing.Markers.TileShapeCollectionMarker.cs");
+            foreach(var file in filesToSave)
+            {
+                SaveEmbeddedFile(file);
+            }
 
-            SaveEmbeddedFile("Editing.MoveObjectToContainerLogic.cs");
-
-            SaveEmbeddedFile("Editing.SelectionLogic.cs");
-
-            SaveEmbeddedFile("Editing.VariableAssignmentLogic.cs");
-
-            SaveEmbeddedFile("Editing.Visuals.Arrow.cs");
-
-            SaveEmbeddedFile("Forms.ObjectCreationWindow.cs");
-
-            SaveEmbeddedFile("GlueControlManager.cs");
-
-            SaveEmbeddedFile("InstanceLogic.cs");
-
-
-            SaveEmbeddedFile("Models.CustomVariable.cs");
-            SaveEmbeddedFile("Models.GlueElement.cs");
-            SaveEmbeddedFile("Models.GlueElementFileReference.cs");
-            SaveEmbeddedFile("Models.GlueProjectSave.cs");
-            SaveEmbeddedFile("Models.GlueProjectSaveExtensions.cs");
-            SaveEmbeddedFile("Models.IElementExtensionMethods.cs");
-            SaveEmbeddedFile("Models.INamedObjectContainer.cs");
-            SaveEmbeddedFile("Models.NamedObjectSave.cs");
-            SaveEmbeddedFile("Models.NamedObjectSaveExtensionMethods.cs");
-            SaveEmbeddedFile("Models.StateSave.cs");
-            SaveEmbeddedFile("Models.ReferencedFileSave.cs");
-            SaveEmbeddedFile("Models.StateSaveCategory.cs");
-
-            SaveEmbeddedFile("Runtime.DynamicEntity.cs");
             // This was a typo in old projects:
-            RemoveEmbeddedFile("Runtime/DynamicEntitys.Generated.cs");
-
-            SaveEmbeddedFile("Screens.EntityViewingScreen.cs");
-
+            RemoveEmbeddedFile("Runtime/DynamicEntitys.Generated.cs", saveAfterRemoving:true);
         }
 
-        
+        public static void RemoveAll()
+        {
+            int count = filesToSave.Count;
+            for (int i = 0; i < filesToSave.Count; i++)
+            {
+                string file = filesToSave[i];
 
-        
+                var withoutCs = file.Substring(0, file.Length - 3);
+                var withSlashes = withoutCs.Replace(".", "/");
 
-        private static void RemoveEmbeddedFile(string relativePath)
+                var withGenerated = withSlashes + ".Generated.cs";
+
+
+                var shouldSave = i == count - 1;
+                RemoveEmbeddedFile(withGenerated, shouldSave);
+            }
+        }
+
+
+
+
+        private static void RemoveEmbeddedFile(string relativePath, bool saveAfterRemoving)
         {
             FilePath absoluteFile = GlueState.Self.CurrentGlueProjectDirectory + "GlueControl/" + relativePath;
 
-            GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteFile);
+            GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteFile, saveAfterRemoving);
         }
 
         private static void SaveEmbeddedFile(string resourcePath)

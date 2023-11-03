@@ -152,7 +152,7 @@ namespace FlatRedBall.AnimationEditorForms.Wireframe
             mOffsetSprite.Name = "Ruler Offset Sprite";
 
             mRectangle = new SolidRectangle();
-            mRectangle.Color = Color.Yellow;
+            mRectangle.Color = Color.Yellow.ToSystemDrawing();
             mManagers.ShapeManager.Add(mRectangle, mLayer);
 
             ReactToRulerSides();
@@ -182,7 +182,7 @@ namespace FlatRedBall.AnimationEditorForms.Wireframe
 
         private void CreateRulerLines()
         {
-            CreateRulerLine(0, 10, Color.Black);
+            CreateRulerLine(0, 10, Color.Black.ToSystemDrawing());
 
             for (int i = 1; i < 100; i++)
             {
@@ -198,7 +198,7 @@ namespace FlatRedBall.AnimationEditorForms.Wireframe
                     length = 5;
                 }
 
-                CreateRulerLine(y, length, Color.DarkRed);
+                CreateRulerLine(y, length, Color.DarkRed.ToSystemDrawing());
             }
             for (int i = 1; i < 100; i++)
             {
@@ -214,18 +214,18 @@ namespace FlatRedBall.AnimationEditorForms.Wireframe
                     length = 5;
                 }
 
-                CreateRulerLine(y, length, Color.DarkGreen);
+                CreateRulerLine(y, length, Color.DarkGreen.ToSystemDrawing());
             }
         }
 
-        private void CreateRulerLine(float y, float length, Color color)
+        private void CreateRulerLine(float y, float length, System.Drawing.Color color)
         {
             Line line = new Line(mManagers);
                 line.X = 10 - length;
                 line.Y = RenderingLibrary.Math.MathFunctions.RoundToInt(y) + .5f;
 
             
-            line.RelativePoint = new Microsoft.Xna.Framework.Vector2(length, 0);
+            line.RelativePoint = new System.Numerics.Vector2(length, 0);
 
             line.Color = color;
             line.Z = 1;
@@ -443,15 +443,15 @@ namespace FlatRedBall.AnimationEditorForms.Wireframe
             {
                 line.X = 10;
                 line.Y = relevantValue;
-                line.RelativePoint = new Microsoft.Xna.Framework.Vector2(6000, 0);
+                line.RelativePoint = new System.Numerics.Vector2(6000, 0);
             }
             else if (this.RulerSide == Wireframe.RulerSide.Top)
             {
                 line.Y = 10;
                 line.X = relevantValue;
-                line.RelativePoint = new Microsoft.Xna.Framework.Vector2(0, 6000);
+                line.RelativePoint = new System.Numerics.Vector2(0, 6000);
             }
-            line.Color = new Color(1, 1, 1, .5f);
+            line.Color = new Color(1, 1, 1, .5f).ToSystemDrawing();
             line.Z = 2;
 
             line.Parent = mOffsetSprite;
@@ -467,15 +467,15 @@ namespace FlatRedBall.AnimationEditorForms.Wireframe
             {
                 if (i < countOnEachSide)
                 {
-                    mRulerLines[i].Color = Color.DarkGreen;
+                    mRulerLines[i].Color = Color.DarkGreen.ToSystemDrawing();
                 }
                 else if (i == countOnEachSide)
                 {
-                    mRulerLines[i].Color = Color.Black;
+                    mRulerLines[i].Color = Color.Black.ToSystemDrawing();
                 }
                 else
                 {
-                    mRulerLines[i].Color = Color.DarkRed;
+                    mRulerLines[i].Color = Color.DarkRed.ToSystemDrawing();
                 }
             }
 
@@ -494,7 +494,7 @@ namespace FlatRedBall.AnimationEditorForms.Wireframe
                     mRulerLines[i].X = 10 - length;
 
                     mRulerLines[i].RelativePoint = 
-                        new Microsoft.Xna.Framework.Vector2(length, 0);
+                        new System.Numerics.Vector2(length, 0);
                 }
             }
             else if (this.RulerSide == Wireframe.RulerSide.Top)
@@ -511,7 +511,7 @@ namespace FlatRedBall.AnimationEditorForms.Wireframe
                     mRulerLines[i].Y = 10 - length;
 
                     mRulerLines[i].RelativePoint =
-                        new Microsoft.Xna.Framework.Vector2(0, length);
+                        new System.Numerics.Vector2(0, length);
                 }
             }
         }

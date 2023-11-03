@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -38,7 +39,8 @@ namespace FlatRedBall.Glue.Controls
 
             this.WindowStartupLocation = WindowStartupLocation.Manual;
 
-            GlueFormsCore.Extensions.WpfExtensions.MoveToCursor(this);
+            GlueCommands.Self.DialogCommands.MoveToCursor(this);
+
 
             ValidationLabel.Visibility = Visibility.Hidden;
         }

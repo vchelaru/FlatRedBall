@@ -169,7 +169,7 @@ class ElementImporter
 
         GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
         GlueCommands.Self.ProjectCommands.SaveProjects();
-        GluxCommands.Self.SaveGlux();
+        GluxCommands.Self.SaveProjectAndElements();
 
         #endregion
 
@@ -215,7 +215,7 @@ class ElementImporter
         if(shouldSave)
         {
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newElement);
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
 
         return (desiredNamespace, newElement);

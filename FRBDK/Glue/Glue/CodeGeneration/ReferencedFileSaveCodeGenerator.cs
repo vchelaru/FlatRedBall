@@ -709,11 +709,15 @@ namespace FlatRedBall.Glue.CodeGeneration
             bool shouldAddExtensionOnNonXnaPlatforms = 
                 FileManager.GetExtension(fileNameToLoad) != extension && extension == "png";
 
+            if (GlueState.Self.CurrentMainProject is FnaDesktopProject) {
+              shouldAddExtensionOnNonXnaPlatforms = shouldAddExtensionOnNonXnaPlatforms || extension == "wav";
+            }
+
             if(!string.IsNullOrEmpty(formattableLine))
             {
                 if(shouldAddExtensionOnNonXnaPlatforms)
                 {
-                    codeBlock.Line("#if IOS || WINDOWS_8");
+                    codeBlock.Line("#if IOS || WINDOWS_8 || FNA");
 
                     codeBlock.Line(
                         string.Format(formattableLine,
@@ -1514,7 +1518,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if(ati.AddToManagersFunc != null)
                 {
-                    currentBlock.Line(ati.AddToManagersFunc(mSaveObject, null, referencedFile, "layerToAddTo"));
+                    var text = ati.AddToManagersFunc(mSaveObject, null, referencedFile, "layerToAddTo");
+                    if(!string.IsNullOrEmpty(text))
+                    {
+                        currentBlock.Line(text);
+                    }
                 }
                 else if (CodeWriter.IsOnOwnLayer(mSaveObject) && ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0]))
                 {

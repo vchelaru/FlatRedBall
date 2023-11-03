@@ -23,6 +23,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
             <Label Content="{x:Static localization:Texts.FrbGlueVersion}" />
@@ -39,6 +40,10 @@
             <Label Grid.Row="2" Grid.Column="1" Content="{Binding CopyrightText}" />
             <Label Grid.Row="3" Content="{x:Static localization:Texts.GlueProjectVersion}" />
             <Label Grid.Row="3" Grid.Column="1" Content="{Binding GluxVersionText}" />
+
+            <Label Grid.Row="4" Content="Main Project Type" />
+            <Label Grid.Row="4" Grid.Column="1" Content="{Binding MainProjectTypeText}" />
+
 
         </Grid>
     </Grid>

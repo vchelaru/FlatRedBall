@@ -32,13 +32,6 @@ namespace OfficialPlugins.StateDataPlugin.StateError
 
         private void AddErrorsFor(GlueElement element, List<ErrorViewModel> errorList)
         {
-            foreach(var variable in element.CustomVariables)
-            {
-                var variableType = variable.Type;
-
-                int m = 3;
-            }
-
             foreach(var nos in element.AllNamedObjects)
             {
                 var nosElement = ObjectFinder.Self.GetElement(nos);
@@ -52,7 +45,6 @@ namespace OfficialPlugins.StateDataPlugin.StateError
 
                         if(variableInElement?.GetIsVariableState(nosElement) == true)
                         {
-                            int m = 3;
                             var elementVariableType = variableInElement.Type;
 
                             var category = nosElement.GetStateCategoryRecursively(elementVariableType);

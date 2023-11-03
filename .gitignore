@@ -22,3 +22,6 @@ Tests/uwpTest/
 Thumbs.db
 bin/
 storage.ide
+
+# AnimationEditor doesn't build in TeamCity, so let's add this in:
+!/FRBDK/AnimationEditor/PreviewProject/bin/

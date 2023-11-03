@@ -1,0 +1,3 @@
+[submodule "Engines/FlatRedBallXNA/3rd Party Libraries/FNA"]
+	path = Engines/FlatRedBallXNA/3rd Party Libraries/FNA
+	url = https://github.com/FNA-XNA/FNA.git

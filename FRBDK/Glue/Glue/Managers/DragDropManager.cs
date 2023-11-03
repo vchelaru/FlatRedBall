@@ -88,7 +88,7 @@ public class DragDropManager : Singleton<DragDropManager>
                     GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
                 }
                 GlueCommands.Self.ProjectCommands.SaveProjects();
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
         }
     }
@@ -778,6 +778,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 var currentNosList = targetNamedObjectSave;
 
                 AddObjectViewModel viewModel = new AddObjectViewModel();
+                viewModel.ForcedElementToAddTo = targetElement;
                 viewModel.SourceType = SourceType.Entity;
                 viewModel.SourceClassType = entity.Name;
                 viewModel.ObjectName =
@@ -806,7 +807,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 PluginManager.ReactToObjectContainerChanged(namedObject, currentNosList);
 
                 // Don't save the Glux, the caller of this method will take care of it
-                // GluxCommands.Self.SaveGlux();
+                // GluxCommands.Self.SaveProjectAndElements();
                 newTreeNode = GlueState.Self.Find.TreeNodeByTag(namedObject);
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
@@ -839,7 +840,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
             GlueCommands.Self.ProjectCommands.SaveProjects();
 
             GlueState.Self.CurrentElement = entitySave;
@@ -874,7 +875,7 @@ public class DragDropManager : Singleton<DragDropManager>
         return newTreeNode;
     }
 
-    public async Task<NamedObjectSave> CreateNewNamedObjectInElement(IElement elementToCreateIn, 
+    public async Task<NamedObjectSave> CreateNewNamedObjectInElement(GlueElement elementToCreateIn, 
         EntitySave blueprintEntity, bool createList = false)
     {
         if (blueprintEntity == null)
@@ -911,6 +912,7 @@ public class DragDropManager : Singleton<DragDropManager>
         }
 
         var addObjectViewModel = new AddObjectViewModel();
+        addObjectViewModel.ForcedElementToAddTo = elementToCreateIn;
         // We'll add "List" or "Instance" below
         //string newName = FileManager.RemovePath(blueprintEntity.Name);
 
@@ -1006,7 +1008,7 @@ public class DragDropManager : Singleton<DragDropManager>
             GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
     }
 
@@ -1061,7 +1063,7 @@ public class DragDropManager : Singleton<DragDropManager>
                     else
                     {
                         string targetDirectory = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
-                        response = MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
+                        response = await MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
                     }
                 }
                 else
@@ -1080,7 +1082,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 else
                 {
                     string targetDirectory = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
-                    response = MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
+                    response = await MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
                 }
 
             }
@@ -1091,9 +1093,15 @@ public class DragDropManager : Singleton<DragDropManager>
                 viewModel.SourceFile = (treeNodeMoving.Tag as ReferencedFileSave);
 
                 // ShowAddNewobjectDialog depends on the selected element:
-                GlueState.Self.CurrentElement = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+                //GlueState.Self.CurrentElement = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+                // Update October 5, 2023 - no it doesn't, we can set it on the VM:
+                viewModel.ForcedElementToAddTo = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
 
-                await GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
+                if(viewModel.ForcedElementToAddTo != null)
+                {
+                    await GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
+                }
+
             }
             else if (targetNode.IsNamedObjectNode() &&
                 // dropping on an object in the same element
@@ -1213,7 +1221,7 @@ public class DragDropManager : Singleton<DragDropManager>
                         if(isRelativeToElementBeforeMove)
                         {
                             string targetDirectory = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
-                            response = MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
+                            response = await MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
                         }
                         else
                         {
@@ -1299,14 +1307,14 @@ public class DragDropManager : Singleton<DragDropManager>
                 GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
 
                 GlueCommands.Self.ProjectCommands.SaveProjects();
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
 
         }
 
     }
 
-    private static GeneralResponse MoveReferencedFileToDirectory(ReferencedFileSave referencedFileSave, string targetDirectory)
+    private static async Task<GeneralResponse> MoveReferencedFileToDirectory(ReferencedFileSave referencedFileSave, string targetDirectory)
     {
         // Things to do:
         // 1 Move the TreeNode from one parent TreeNode to another UPDATE:  We will just refresh the UI for the Element or GlobalContent
@@ -1381,7 +1389,7 @@ public class DragDropManager : Singleton<DragDropManager>
             // 5 Re-generate the containing Element (Screen or Entity)
             if (elementContainingMovedFile != null)
             {
-                CodeWriter.GenerateCode(elementContainingMovedFile);
+                await CodeWriter.GenerateCode(elementContainingMovedFile);
             }
             else
             {
@@ -1401,7 +1409,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
 
             // 6 Save everything
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
             GlueCommands.Self.ProjectCommands.SaveProjects();
         }
 
@@ -1610,7 +1618,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 }
             }
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
         else if (targetNode.Tag is ScreenSave || targetNode.Tag is EntitySave)
         {
@@ -1638,7 +1646,7 @@ public class DragDropManager : Singleton<DragDropManager>
             }
             if (any)
             {
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
         }
     }
@@ -1708,7 +1716,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 }
 
 
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
 
         }

@@ -66,7 +66,7 @@ namespace FlatRedBall.Glue.CreatedClass
                     else
                     {
                         oldCustomClass.CsvFilesUsingThis.Remove(currentReferencedFile.Name);
-                        GluxCommands.Self.SaveGlux();
+                        GluxCommands.Self.SaveProjectAndElements();
                         succeeded = true;
                     }
                 }

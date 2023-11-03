@@ -26,6 +26,7 @@ using ToolsUtilities;
 using FileManager = ToolsUtilities.FileManager;
 using FilePath = global::ToolsUtilities.FilePath;
 using FlatRedBall.AnimationEditorForms.Managers;
+using RenderingLibrary.Graphics;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -335,7 +336,10 @@ namespace FlatRedBall.AnimationEditorForms
             
             if(fileName != null)
             {
-                CameraPositionsForTexture[fileName] = new Vector3(mManagers.Renderer.Camera.Position, 0);
+                CameraPositionsForTexture[fileName] = new Vector3(
+                    mManagers.Renderer.Camera.Position.X,
+                    mManagers.Renderer.Camera.Position.Y,
+                    0);
 
             }
         }
@@ -346,11 +350,11 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 var vector3 = CameraPositionsForTexture[WireframeEditControlsViewModel.SelectedTextureFilePath];
 
-                mManagers.Renderer.Camera.Position = new Vector2(vector3.X, vector3.Y);
+                mManagers.Renderer.Camera.Position = new System.Numerics.Vector2(vector3.X, vector3.Y);
             }
             else
             {
-                mManagers.Renderer.Camera.Position = new Vector2();
+                mManagers.Renderer.Camera.Position = new System.Numerics.Vector2();
             }
         }
 
@@ -442,12 +446,12 @@ namespace FlatRedBall.AnimationEditorForms
             mSpriteOutline = new LineRectangle(managers);
             managers.ShapeManager.Add(mSpriteOutline);
             mSpriteOutline.Visible = false;
-            mSpriteOutline.Color = OutlineColor;
+            mSpriteOutline.Color = OutlineColor.ToSystemDrawing();
 
             selectionPreviewRectangle = new LineRectangle(managers);
             managers.ShapeManager.Add(selectionPreviewRectangle);
             selectionPreviewRectangle.Visible = false;
-            selectionPreviewRectangle.Color = MagicWandPreviewColor;
+            selectionPreviewRectangle.Color = MagicWandPreviewColor.ToSystemDrawing();
             // Move them up one Z to put them above the sprites:
             selectionPreviewRectangle.Z = 1;
 
@@ -455,7 +459,7 @@ namespace FlatRedBall.AnimationEditorForms
             mLineGrid.Name = "MainWireframeManager LineGrid";
             managers.ShapeManager.Add(mLineGrid);
             mLineGrid.Visible = false;
-            mLineGrid.Color = LineGridColor;
+            mLineGrid.Color = LineGridColor.ToSystemDrawing();
             mLineGrid.Z = -1;
             mControl.Click += new EventHandler(HandleClick);
 

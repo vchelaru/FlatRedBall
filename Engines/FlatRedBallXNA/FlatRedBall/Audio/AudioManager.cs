@@ -252,7 +252,7 @@ namespace FlatRedBall.Audio
         {
             AreSoundEffectsEnabled = true;
             AreSongsEnabled = true;
-#if !MONOGAME
+#if !MONOGAME && !FNA
             SoundListener = new PositionedSoundListener();
             PositionedSounds = new PositionedObjectList<PositionedSound>();
 #endif
@@ -505,12 +505,14 @@ namespace FlatRedBall.Audio
 
 #if UWP
                 MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", new Type[1] { typeof(Song) });
-#else
-                MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", BindingFlags.Public | BindingFlags.Static, null, new Type[1] { typeof(Song) }, null);
-#endif
                 InstructionManager.Add(new StaticMethodInstruction(playMethod,
                                                                     new object[1] { mPreviousSong },
                                                                     TimeManager.CurrentTime + toPlay.Duration.TotalSeconds));
+#else
+                var instruction = new DelegateInstruction(() => PlaySong(mPreviousISong, forceRestart: false, mPreviousSongUsesGlobalContent));
+                instruction.TimeToExecute = TimeManager.CurrentTime + toPlay.Duration.TotalSeconds;
+                InstructionManager.Add(instruction);
+#endif
             }
             catch
             {
@@ -692,7 +694,7 @@ namespace FlatRedBall.Audio
 
         internal static void UpdateDependencies()
         {
-#if !MONOGAME
+#if !MONOGAME && !FNA
             SoundListener.UpdateDependencies(TimeManager.CurrentTime);
             SoundListener.UpdateAudio();
 
@@ -724,7 +726,7 @@ namespace FlatRedBall.Audio
 
 
             // TODO:  Execute instructions
-#if !MONOGAME
+#if !MONOGAME && !FNA
             for (int i = 0; i < PositionedSounds.Count; i++)
             {
                 PositionedSounds[i].TimedActivity(

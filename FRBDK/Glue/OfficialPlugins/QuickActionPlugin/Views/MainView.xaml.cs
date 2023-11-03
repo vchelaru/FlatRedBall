@@ -94,13 +94,14 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         private async void AddInstanceOfEntityButton_Clicked(object sender, RoutedEventArgs e)
         {
+            var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
             var viewModel = new AddObjectViewModel();
+            viewModel.ForcedElementToAddTo = gameScreen;
             viewModel.SourceType = SourceType.Entity;
 
             viewModel.SelectedEntitySave = GlueState.Self.CurrentEntitySave;
             viewModel.ObjectName = GlueState.Self.CurrentEntitySave.GetStrippedName() + "1";
 
-            var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
 
             var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(GlueState.Self.CurrentEntitySave, gameScreen);
 
@@ -113,14 +114,15 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         private async void AddListOfEntityButton_Clicked(object sender, RoutedEventArgs e)
         {
+            var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
             var viewModel = new AddObjectViewModel();
+            viewModel.ForcedElementToAddTo = gameScreen;
             viewModel.SourceType = SourceType.FlatRedBallType;
 
             viewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
             viewModel.SourceClassGenericType = GlueState.Self.CurrentEntitySave.Name;
             viewModel.ObjectName = GlueState.Self.CurrentEntitySave.GetStrippedName() + "List";
 
-            var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
             var newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(viewModel, gameScreen, null);
 
             newNos.ExposedInDerived = true;
@@ -137,7 +139,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
                 nameof(entity.CreatedByOtherEntities), false, nameof(entity.CreatedByOtherEntities), null);
 
-            GlueCommands.Self.GluxCommands.SaveGlux();
+            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
             AnyButtonClicked();
         }

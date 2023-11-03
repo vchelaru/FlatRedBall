@@ -86,8 +86,6 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForStates.Add("IsOverrideInCodeGen");
             //mVariableNamesToSkipForStates.Add("IsBold");
 
-
-
             // Eventually we'll support this but first Gum needs to support 
             // setting categorized states on instances
             // September 17 2014
@@ -104,16 +102,50 @@ namespace GumPlugin.CodeGeneration
 
             if (version >= (int)GluxVersions.GumSupportsStackSpacing)
             {
-                if (mVariableNamesToSkipForStates.Contains("StackSpacing"))
-                {
-                    mVariableNamesToSkipForStates.Remove("StackSpacing");
-                }
+                Include("StackSpacing");
             }
             else
             {
-                if (!mVariableNamesToSkipForStates.Contains("StackSpacing"))
+                Skip("StackSpacing");
+            }
+
+            if(version >= (int)GluxVersions.GumUsesSystemTypes)
+            {
+                // todo - StateCodeGenerator supports version-specific include/skip, but
+                // the StandardsCodeGenerator does not (yet). Therefore even if we include
+                // conditionally here, we will get compile errors. Change this back to include
+                // once the StandardsCodeGenerator is fixed:
+                //Include("CustomFrameTextureCoordinateWidth");
+                //Include("AutoGridHorizontalCells");
+                //Include("AutoGridVerticalCells");
+                //Include("LineHeightMultiplier");
+                Skip("CustomFrameTextureCoordinateWidth");
+                Skip("AutoGridHorizontalCells");
+                Skip("AutoGridVerticalCells");
+                Skip("LineHeightMultiplier");
+            }
+            else
+            {
+                Skip("CustomFrameTextureCoordinateWidth");
+                Skip("AutoGridHorizontalCells");
+                Skip("AutoGridVerticalCells");
+                Skip("LineHeightMultiplier");
+            }
+
+            return;
+
+            void Include(string variable)
+            {
+                if (mVariableNamesToSkipForStates.Contains(variable))
                 {
-                    mVariableNamesToSkipForStates.Add("StackSpacing");
+                    mVariableNamesToSkipForStates.Remove(variable);
+                }
+            }
+            void Skip(string variable)
+            {
+                if (!mVariableNamesToSkipForStates.Contains(variable))
+                {
+                    mVariableNamesToSkipForStates.Add(variable);
                 }
             }
         }

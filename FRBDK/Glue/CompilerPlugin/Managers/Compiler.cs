@@ -225,7 +225,15 @@ namespace CompilerPlugin.Managers
 
                             if (printMsBuildCommand)
                             {
-                                printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
+                                if(msBuildPath == "dotnet")
+                                {
+                                    // no need to put quotes around "dotnet"
+                                    printOutput?.Invoke($"{msBuildPath} {arguments}");
+                                }
+                                else
+                                {
+                                    printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
+                                }
                             }
 
                             succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
@@ -307,7 +315,8 @@ namespace CompilerPlugin.Managers
 
         private async Task<bool> StartMsBuildWithParameters(Action<string> printOutput, Action<string> printError, string startOutput, string endOutput, string arguments, string msbuildLocation)
         {
-            Process process = CreateProcess("\"" + msbuildLocation + "\"", arguments);
+            var effectiveMsBuildLocation = msBuildLocation == "dotnet" ? "dotnet" : $"\"{msbuildLocation}\"";
+            Process process = CreateProcess(effectiveMsBuildLocation, arguments);
             printOutput(startOutput);
             // This is noisy and technical. Reducing output window verbosity
             //printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);

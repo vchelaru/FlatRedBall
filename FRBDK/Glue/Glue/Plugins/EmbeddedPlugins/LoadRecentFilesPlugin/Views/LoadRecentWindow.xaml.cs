@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewModels;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.Extensions;
 using System;
 using System.Windows;
@@ -22,7 +23,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views
 
         private void HandleLoaded(object sender, RoutedEventArgs e)
         {
-            this.MoveToCursor();
+            GlueCommands.Self.DialogCommands.MoveToCursor(this);
 
             this.SearchBar.FocusTextBox();
         }
