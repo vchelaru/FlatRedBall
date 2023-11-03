@@ -369,21 +369,29 @@ namespace OfficialPlugins.ContentPreview.Views
 
             Dispatcher.Invoke(() =>
             {
-                MainAnimationSprite.Width = 100;
-                MainAnimationSprite.Height = 100;
+                // don't use percentage, because that will result in a flipped sprite having negative width and height
+                //MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+                //MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+                MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.Absolute;
+                MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.Absolute;
                 MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
                 MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
                 MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
                 MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
                 MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
-                MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-                MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
                 
                 if(frame.FlipHorizontal)
                 {
                     MainAnimationSprite.TextureLeft += MainAnimationSprite.TextureWidth;
                     MainAnimationSprite.TextureWidth = -MainAnimationSprite.TextureWidth;
                 }
+                if(frame.FlipVertical)
+                {
+                    MainAnimationSprite.TextureTop += MainAnimationSprite.TextureHeight;
+                    MainAnimationSprite.TextureHeight = -MainAnimationSprite.TextureHeight;
+                }
+                MainAnimationSprite.Width = System.Math.Abs(MainAnimationSprite.TextureWidth);
+                MainAnimationSprite.Height = System.Math.Abs(MainAnimationSprite.TextureHeight);
 
                 MainAnimationSprite.Visible = true;
 

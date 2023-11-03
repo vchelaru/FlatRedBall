@@ -153,6 +153,12 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         public void RefreshCameraZoomToViewModel()
         {
+            /////////////////Early Out////////////////
+            if(ViewModel == null)
+            {
+                return;
+            }
+            //////////////End Early Out///////////////
             Camera.Zoom = ViewModel.CurrentZoomScale;
             UpdateBackgroundPosition();
             Canvas.InvalidateVisual();
