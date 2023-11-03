@@ -243,7 +243,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     //    BackingData.SetValue(viewModel.VariableName, viewModel.Value);
                     //}
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     break;
             }
         }

@@ -196,7 +196,7 @@ namespace OfficialPlugins.SpritePlugin.Views
 
             if (didAnyChange)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
             }
         }

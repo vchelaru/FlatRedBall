@@ -159,7 +159,7 @@ namespace FlatRedBall.Glue.Controls
 
             GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
 
         private void CloseButton_Click(object sender, EventArgs e)
@@ -180,7 +180,7 @@ namespace FlatRedBall.Glue.Controls
 
             GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
 
         private void ListBox_DragOver(object sender, DragEventArgs e)

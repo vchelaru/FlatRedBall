@@ -26,7 +26,7 @@ namespace OfficialPlugins.ForceSavePlugin
         {
             if(GlueState.Self.CurrentGlueProject != null)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
         }
 
@@ -60,7 +60,7 @@ namespace OfficialPlugins.ForceSavePlugin
                         }
                     }
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }, "Setting all variable SetByDerived = true");
             }
         }

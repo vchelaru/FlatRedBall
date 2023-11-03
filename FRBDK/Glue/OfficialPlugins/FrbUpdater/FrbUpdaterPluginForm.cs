@@ -27,11 +27,6 @@ namespace OfficialPlugins.FrbUpdater
 
             cbSyncTo.Items.Add("Daily Build");
 
-            // Current is now the daily build:
-            if (ShowCurrent)
-            {
-                cbSyncTo.Items.Add("Current");
-            }
             var date = DateTime.Now;
 
             for (var i = 0; i < 7; i++)

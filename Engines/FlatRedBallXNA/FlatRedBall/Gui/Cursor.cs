@@ -1147,29 +1147,6 @@ namespace FlatRedBall.Gui
 
         #region XML Docs
         /// <summary>
-        /// Returns the Sprite that the cursor is over in the argument SpriteGridArray.
-        /// </summary>
-        /// <param name="sga">Reference to the SpriteGridArray.</param>
-        /// <returns>The Sprite that the cursor is over.</returns>
-        #endregion
-        public Sprite GetSpriteOver(List<SpriteGrid> sga)
-        {
-            List<Sprite> saa = new List<Sprite>();
-
-            foreach (SpriteGrid sg in sga)
-            {
-                for (int i = 0; i < sg.VisibleSprites.Count; i++)
-                {
-                    saa.AddRange(sg.VisibleSprites[i]);
-                }
-            }
-
-            return GetSpriteOver(saa);
-        }
-
-
-        #region XML Docs
-        /// <summary>
         /// Grabs a Window with the Cursor.
         /// </summary>
         /// <remarks>

@@ -1125,7 +1125,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             GlueState.Self.CurrentStateSaveCategory = newCategory;
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }, nameof(AddStateSaveCategoryAsync));
     }
 
@@ -1240,7 +1240,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                     GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFileSaveToReturn);
 
                     PluginManager.ReactToNewFile(referencedFileSaveToReturn, ati);
-                    GluxCommands.Self.SaveGlux();
+                    GluxCommands.Self.SaveProjectAndElements();
                     GlueCommands.Self.ProjectCommands.SaveProjects();
                     UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
 

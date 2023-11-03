@@ -125,39 +125,40 @@ namespace BuildServerUploaderConsole.Data
 
             // UWP
             {
-                var engine = new EngineData();
+                // UWP removed November 1, 2023
+                //var engine = new EngineData();
 
-                engine.RelativeToLibrariesDebugFolder = @"UWP\Debug";
-                engine.RelativeToLibrariesReleaseFolder = @"UWP\Release";
-                engine.TemplateFolder = @"FlatRedBallUwpTemplate\FlatRedBallUwpTemplate\";
+                //engine.RelativeToLibrariesDebugFolder = @"UWP\Debug";
+                //engine.RelativeToLibrariesReleaseFolder = @"UWP\Release";
+                //engine.TemplateFolder = @"FlatRedBallUwpTemplate\FlatRedBallUwpTemplate\";
 
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\FlatRedBall.Forms.Uwp.dll");
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\FlatRedBall.Forms.Uwp.pdb");
+                //engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\FlatRedBall.Forms.Uwp.dll");
+                //engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\FlatRedBall.Forms.Uwp.pdb");
 
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\GumCoreUwp.dll");
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\GumCoreUwp.pdb");
+                //engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\GumCoreUwp.dll");
+                //engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\GumCoreUwp.pdb");
 
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\FlatRedBallUwp.dll");
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\FlatRedBallUwp.pdb");
+                //engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\FlatRedBallUwp.dll");
+                //engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\FlatRedBallUwp.pdb");
 
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\StateInterpolation.Uwp.dll");
-                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\StateInterpolation.Uwp.pdb");
-
-
-                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\FlatRedBall.Forms.Uwp.dll");
-                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\FlatRedBall.Forms.Uwp.pdb");
-
-                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\GumCoreUwp.dll");
-                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\GumCoreUwp.pdb");
-
-                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\FlatRedBallUwp.dll");
-                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\FlatRedBallUwp.pdb");
-
-                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\StateInterpolation.Uwp.dll");
-                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\StateInterpolation.Uwp.pdb");
+                //engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\StateInterpolation.Uwp.dll");
+                //engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\Debug\StateInterpolation.Uwp.pdb");
 
 
-                Engines.Add(engine);
+                //engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\FlatRedBall.Forms.Uwp.dll");
+                //engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\FlatRedBall.Forms.Uwp.pdb");
+
+                //engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\GumCoreUwp.dll");
+                //engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\GumCoreUwp.pdb");
+
+                //engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\FlatRedBallUwp.dll");
+                //engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\FlatRedBallUwp.pdb");
+
+                //engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\StateInterpolation.Uwp.dll");
+                //engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Uwp\bin\x86\Release\StateInterpolation.Uwp.pdb");
+
+
+                //Engines.Add(engine);
             }
 
             // Desktop GL

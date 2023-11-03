@@ -187,7 +187,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin
 
                 if(wereVariablesAddedOrRemoved)
                 {
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                     GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
                     GlueCommands.Self.RefreshCommands.RefreshVariables();

@@ -339,10 +339,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             if (indexOfTreeNode != i)
             {
                 treeNode.Parent.Remove(treeNode);
-                if(i >= currentNode.Children.Count)
-                {
-                    int m = 3;
-                }
                 currentNode.Children.Insert(i, treeNode);
                 treeNode.Parent = currentNode;
             }

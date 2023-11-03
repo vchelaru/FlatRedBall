@@ -66,7 +66,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
                         if (element != null)
                         {
                             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                            GlueCommands.Self.GluxCommands.SaveGlux();
+                            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
                             GlueCommands.Self.RefreshCommands.RefreshVariables();
                         }

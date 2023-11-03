@@ -226,7 +226,7 @@ namespace EditorObjects.Parsing
                 {
                     if (errorBehavior == ErrorBehavior.ThrowException)
                     {
-                        throw e;
+                        throw;
                     }
                     else
                     {

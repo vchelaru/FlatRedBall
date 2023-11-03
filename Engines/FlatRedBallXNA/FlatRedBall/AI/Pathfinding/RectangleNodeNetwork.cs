@@ -32,7 +32,7 @@ namespace FlatRedBall.AI.Pathfinding
             base.AddNode(node);
         }
 
-        public virtual List<PositionedNode> GetPathOrClosest(ref Vector3 startPoint, ref Vector3 endPoint)
+        public override List<PositionedNode> GetPathOrClosest(ref Vector3 startPoint, ref Vector3 endPoint)
         {
             var startNode = GetClosestNodeTo(ref startPoint);
             var  endNode = GetClosestNodeTo(ref endPoint);

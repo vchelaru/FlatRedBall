@@ -114,7 +114,7 @@ public class GluxCommands : IGluxCommands
 
 
                 GlueState.Self.CurrentGlueProject.StartUpScreen = value;
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
                 if (string.IsNullOrEmpty(ProjectManager.GameClassFileName))
                 {
                     GlueCommands.Self.DialogCommands.ShowMessageBox(
@@ -517,7 +517,7 @@ public class GluxCommands : IGluxCommands
 
                 PluginManager.ReactToNewFile(rfs, resultAssetTypeInfo);
 
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
 
         }, $"Adding file with name {viewModel.FileName}");
@@ -621,7 +621,7 @@ public class GluxCommands : IGluxCommands
 
         if (generateAndSave)
         {
-            GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+            GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
             GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
         }
 
@@ -780,7 +780,7 @@ public class GluxCommands : IGluxCommands
 
             TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(toReturn), $"Updating file membership for file {toReturn}");
             PluginManager.ReactToNewFile(toReturn, assetTypeInfo);
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
             GluxCommands.Self.ProjectCommands.SaveProjects();
 
         }
@@ -1010,7 +1010,7 @@ public class GluxCommands : IGluxCommands
 
             if(performSaveAndGenerateCode)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
             }
 
             if(updateUi)
@@ -1226,7 +1226,7 @@ public class GluxCommands : IGluxCommands
 
         if (regenerateAndSave)
         {
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
     }
 
@@ -2279,7 +2279,7 @@ public class GluxCommands : IGluxCommands
             // when deleting an instance from a base object
             // which is exposed. Therefore, we should add to end
             // so these don't stack
-            //GluxCommands.Self.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+            //GluxCommands.Self.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
             // Actually why not just save the element
             var throwaway = GluxCommands.Self.SaveElementAsync(element);
         }
@@ -2360,7 +2360,7 @@ public class GluxCommands : IGluxCommands
             }
             else
             {
-                GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
     }
@@ -2578,7 +2578,7 @@ public class GluxCommands : IGluxCommands
 
         if (performSaveAndGenerateCode)
         {
-            GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+            GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
         }
     }
 
@@ -2735,7 +2735,7 @@ public class GluxCommands : IGluxCommands
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(owner);
         }
 
-        GluxCommands.Self.SaveGlux();
+        GluxCommands.Self.SaveProjectAndElements();
     }
 
     #endregion
@@ -3041,7 +3041,7 @@ public class GluxCommands : IGluxCommands
 
 
 
-        RemoveUnreferencedFiles(entityToRemove, filesThatCouldBeRemoved);
+        await RemoveUnreferencedFiles(entityToRemove, filesThatCouldBeRemoved);
 
         for (int i = 0; i < namedObjectsToRemove.Count; i++)
         {
@@ -3074,7 +3074,7 @@ public class GluxCommands : IGluxCommands
 
         GlueCommands.Self.ProjectCommands.SaveProjects();
 
-        GluxCommands.Self.SaveGlux();
+        GluxCommands.Self.SaveProjectAndElements();
     }
 
     private static bool UpdateNamespaceOnCodeFiles(EntitySave entitySave)
@@ -3149,7 +3149,7 @@ public class GluxCommands : IGluxCommands
         // If we're going to remove the Screen, we should remove all referenced objects that it references
         // as well as any ReferencedFiles
 
-        RemoveUnreferencedFiles(screenToRemove, filesThatCouldBeRemoved);
+        await RemoveUnreferencedFiles(screenToRemove, filesThatCouldBeRemoved);
 
         for (int i = 0; i < inheritingScreens.Count; i++)
         {
@@ -3183,7 +3183,7 @@ public class GluxCommands : IGluxCommands
         GluxCommands.Self.SaveProjectAndElements();
     }
 
-    private static void RemoveUnreferencedFiles(IElement element, List<string> filesThatCouldBeRemoved)
+    private static async Task RemoveUnreferencedFiles(IElement element, List<string> filesThatCouldBeRemoved)
     {
         var allReferencedFiles = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
 
@@ -3203,7 +3203,7 @@ public class GluxCommands : IGluxCommands
 
             if (shouldRemove)
             {
-                GluxCommands.Self.RemoveReferencedFile(rfs, filesThatCouldBeRemoved);
+                await GluxCommands.Self.RemoveReferencedFileAsync(rfs, filesThatCouldBeRemoved);
             }
         }
     }
@@ -3468,7 +3468,7 @@ public class GluxCommands : IGluxCommands
                 GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
 
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
 
             }

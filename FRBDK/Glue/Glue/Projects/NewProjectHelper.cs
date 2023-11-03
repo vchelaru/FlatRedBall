@@ -139,7 +139,7 @@ public static class NewProjectHelper
             var newProjectBase = ProjectManager.AddSyncedProject(createdProject);
             ProjectManager.SyncedProjects[^1].SaveAsRelativeSyncedProject = true;
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
 
             // These are now part of the engine, so don't do anything here.
             // Wait, these may be part of old templates, so let's keep this here.

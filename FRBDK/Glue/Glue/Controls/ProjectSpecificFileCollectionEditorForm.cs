@@ -119,7 +119,7 @@ namespace FlatRedBall.Glue.Controls
             //    ProjectManager.RefreshUnreferencedFiles();
             //}
 
-            //GluxCommands.Self.SaveGlux();
+            //GluxCommands.Self.SaveProjectAndElements();
 
 
             RefreshList();

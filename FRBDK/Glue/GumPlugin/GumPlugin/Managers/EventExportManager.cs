@@ -265,7 +265,7 @@ namespace GumPlugin.Managers
 
                             if(elementsToRegen.Count > 0)
                             {
-                                GlueCommands.Self.GluxCommands.SaveGlux();
+                                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                             }
                         }
                         catch (Exception e)

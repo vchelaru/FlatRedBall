@@ -11,8 +11,6 @@ namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
 {
     internal class SameNamedReferencedFilesViewModel : ErrorViewModel
     {
-        string uniqueId;
-
         ReferencedFileSave firstRfs;
         string firstRfsPropertyName;
         ReferencedFileSave secondRfs;

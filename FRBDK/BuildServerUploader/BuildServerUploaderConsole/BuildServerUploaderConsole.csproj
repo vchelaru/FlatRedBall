@@ -170,7 +170,6 @@
     <Compile Include="Processes\CopyBuiltEnginesToReleaseFolder.cs" />
     <Compile Include="Processes\CopyFrbdkAndPluginsToReleaseFolder.cs" />
     <Compile Include="Processes\DirectoryHelper.cs" />
-    <Compile Include="Processes\EmailResults.cs" />
     <Compile Include="Processes\IResults.cs" />
     <Compile Include="Processes\ProcessStep.cs" />
     <Compile Include="Processes\ZipFrbdk.cs" />

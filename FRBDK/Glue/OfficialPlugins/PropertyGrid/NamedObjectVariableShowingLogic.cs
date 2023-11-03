@@ -487,7 +487,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 instance.SourceName = value as string;
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
@@ -583,7 +583,7 @@ namespace OfficialPlugins.VariableDisplay
                 //    value);
 
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
@@ -839,7 +839,7 @@ namespace OfficialPlugins.VariableDisplay
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             }
 
-            GlueCommands.Self.GluxCommands.SaveGlux();
+            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
             MainGlueWindow.Self.PropertyGrid.Refresh();
 

@@ -405,7 +405,7 @@ public partial class MainGlueWindow : Form
                     action();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (!IsDisposed && !ProjectManager.WantsToCloseProject)
                 {
@@ -433,7 +433,7 @@ public partial class MainGlueWindow : Form
                     func();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (!IsDisposed)
                 {
@@ -457,7 +457,7 @@ public partial class MainGlueWindow : Form
             {
                 toReturn = wasInTask ? RunOnUiThreadTasked(func) : func();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (!IsDisposed)
                 {
@@ -490,11 +490,11 @@ public partial class MainGlueWindow : Form
                     toReturn = func();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (!IsDisposed)
                 {
-                    throw e;
+                    throw;
                 }
                 // otherwise, we don't care, they're exiting
             }

@@ -22,7 +22,7 @@ namespace FlatRedBall.Glue.SetVariable
 {
     class EntitySaveSetPropertyLogic
     {
-        internal void ReactToEntityChangedProperty(string changedMember, object oldValue, EntitySave entitySave)
+        internal async void ReactToEntityChangedProperty(string changedMember, object oldValue, EntitySave entitySave)
         {
             entitySave = entitySave ?? GlueState.Self.CurrentEntitySave;
 
@@ -59,7 +59,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                     if (result == DialogResult.Yes)
                     {
-                        FactoryManager.Self.SetResetVariablesForEntitySave(entitySave);
+                        await FactoryManager.Self.SetResetVariablesForEntitySave(entitySave);
                     }
                 }
                 else // user set it to false
@@ -284,8 +284,8 @@ namespace FlatRedBall.Glue.SetVariable
                     itemTypeAsEntity.ImplementsIVisible = true;
 
                     // Gotta regen this thing
-                    var entityForItem = ObjectFinder.Self.GetIElement(entitySave.ItemType);
-                    CodeWriter.GenerateCode(entityForItem);
+                    var entityForItem = ObjectFinder.Self.GetElement(entitySave.ItemType);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entityForItem);
                 }
             }
 
@@ -294,7 +294,7 @@ namespace FlatRedBall.Glue.SetVariable
 
         private static async void RegenerateAllContainersForNamedObjectsThatUseEntity(EntitySave entitySave)
         {
-            await TaskManager.Self.AddAsync(async () =>
+            await TaskManager.Self.AddAsync(() =>
             {
                 var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(entitySave);
                 var elementsToGenerate = new List<GlueElement>();

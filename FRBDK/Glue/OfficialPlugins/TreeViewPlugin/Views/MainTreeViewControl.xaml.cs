@@ -696,7 +696,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
                     ViewModel.Bookmarks.Add(bookmarkViewModel);
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
             }
         }
@@ -790,7 +790,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 if (modelToRemove != null)
                 {
                     GlueState.Self.CurrentGlueProject.Bookmarks.Remove(modelToRemove);
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
             }
         }

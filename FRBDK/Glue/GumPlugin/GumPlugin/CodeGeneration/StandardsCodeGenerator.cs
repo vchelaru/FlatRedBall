@@ -228,7 +228,7 @@ namespace GumPlugin.CodeGeneration
 
             // This needs to be public because it can be exposed as public in a public class
             //ICodeBlock currentBlock = codeBlock.Class("partial", runtimeClassName, " : Gum.Wireframe.GraphicalUiElement");
-            ICodeBlock classBodyBlock = codeBlock.Class("public partial", runtimeClassName, " : Gum.Wireframe.GraphicalUiElement");
+            ICodeBlock classBodyBlock = codeBlock.Class("public partial", runtimeClassName, " : global::Gum.Wireframe.GraphicalUiElement");
 
             GueDerivingClassCodeGenerator.Self.GenerateConstructor(standardElementSave, classBodyBlock, runtimeClassName);
 

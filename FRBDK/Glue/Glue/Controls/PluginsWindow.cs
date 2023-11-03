@@ -65,17 +65,11 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
-        PluginViewModel lastPluginViewModel;
         PluginViewModel SelectedPluginViewModel
         {
             get
             {
                 PluginViewModel toReturn = null;
-
-                if(lastPluginViewModel != null)
-                {
-                    lastPluginViewModel.PropertyChanged -= HandlePluginPropertyChanged;
-                }
 
                 if (SelectedPlugin != null)
                 {

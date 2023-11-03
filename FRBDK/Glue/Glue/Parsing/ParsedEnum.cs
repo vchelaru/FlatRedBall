@@ -65,11 +65,6 @@ namespace FlatRedBall.Glue.Parsing
             string untrimmed;
             while (true)
             {            
-                if (entireString.Contains("public  enum"))
-                {
-                    int m = 3;
-                }
-
                 int indexBeforeParsing = startOfEnum;
                 untrimmed = ParsedClass.GetLine(entireString, ref startOfEnum);
                 line = untrimmed.Trim();

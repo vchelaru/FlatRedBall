@@ -2423,8 +2423,6 @@ namespace FlatRedBall.Glue.Plugins
 
         public static void WriteInstanceVariableAssignment(NamedObjectSave namedObject, ICodeBlock codeBlock, InstructionSave instructionSave)
         {
-            TypeConverter toReturn = null;
-
             SaveRelativeDirectory();
 
             CallMethodOnPlugin(

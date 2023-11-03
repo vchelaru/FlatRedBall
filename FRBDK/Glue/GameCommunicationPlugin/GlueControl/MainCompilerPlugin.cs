@@ -90,7 +90,6 @@ namespace GameCommunicationPlugin.GlueControl
 
         bool ignoreViewModelChanges = false;
 
-        Timer busyUpdateTimer;
         Timer dragDropTimer;
 
         System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1, 1);

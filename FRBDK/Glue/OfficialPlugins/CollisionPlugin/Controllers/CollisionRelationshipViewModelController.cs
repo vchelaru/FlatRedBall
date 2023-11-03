@@ -561,7 +561,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             if (changedAny)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             }
         }
@@ -790,7 +790,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
 
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element as GlueElement);
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element as GlueElement);
                 }
             }
@@ -832,7 +832,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             if(didMakeChange)
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
 
             return didMakeChange;
