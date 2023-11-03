@@ -235,18 +235,7 @@ namespace OfficialPlugins.ContentPreview.Views
                 if (ViewModel.SelectedAnimationFrame != null || ViewModel.SelectedShape != null)
                 {
                     var frame = ViewModel.SelectedAnimationFrame ?? ViewModel.SelectedShape.Parent;
-                    MainAnimationSprite.Width = 100;
-                    MainAnimationSprite.Height = 100;
-                    MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
-                    MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
-                    MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
-                    MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
-                    MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
-                    MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-                    MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-
-                    MainAnimationSprite.Visible = true;
-
+                    
                     List<ShapeViewModel> shapes;
                     if(ViewModel.SelectedShape != null)
                     {
@@ -260,7 +249,7 @@ namespace OfficialPlugins.ContentPreview.Views
                         shapes = ViewModel.SelectedAnimationFrame.VisibleChildren.ToList();
                     }
 
-                    RenderShapes(shapes);
+                    RenderFrame(frame, shapes);
                 }
                 else if (ViewModel.SelectedAnimationChain != null)
                 {
@@ -369,36 +358,43 @@ namespace OfficialPlugins.ContentPreview.Views
 
             Dispatcher.Invoke(() =>
             {
-                // don't use percentage, because that will result in a flipped sprite having negative width and height
-                //MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-                //MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-                MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.Absolute;
-                MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.Absolute;
-                MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
-                MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
-                MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
-                MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
-                MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
+                RenderFrame(frame, frame.VisibleChildren.ToList());
                 
-                if(frame.FlipHorizontal)
-                {
-                    MainAnimationSprite.TextureLeft += MainAnimationSprite.TextureWidth;
-                    MainAnimationSprite.TextureWidth = -MainAnimationSprite.TextureWidth;
-                }
-                if(frame.FlipVertical)
-                {
-                    MainAnimationSprite.TextureTop += MainAnimationSprite.TextureHeight;
-                    MainAnimationSprite.TextureHeight = -MainAnimationSprite.TextureHeight;
-                }
-                MainAnimationSprite.Width = System.Math.Abs(MainAnimationSprite.TextureWidth);
-                MainAnimationSprite.Height = System.Math.Abs(MainAnimationSprite.TextureHeight);
-
-                MainAnimationSprite.Visible = true;
-
-                RenderShapes(frame.VisibleChildren.ToList());
-
                 CameraLogicAnimation.RefreshCameraZoomToViewModel();
             });
+        }
+
+        private void RenderFrame(AnimationFrameViewModel frame, List<ShapeViewModel> shapes)
+        {
+            // don't use percentage, because that will result in a flipped sprite having negative width and height
+            //MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            //MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.Absolute;
+            MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.Absolute;
+            MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
+            MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
+            MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
+            MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
+            MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
+            MainAnimationSprite.Visible = true;
+            MainAnimationSprite.Y = 0;
+
+            if (frame.FlipHorizontal)
+            {
+                MainAnimationSprite.TextureLeft += MainAnimationSprite.TextureWidth;
+                MainAnimationSprite.TextureWidth = -MainAnimationSprite.TextureWidth;
+            }
+            if (frame.FlipVertical)
+            {
+                MainAnimationSprite.TextureTop += MainAnimationSprite.TextureHeight;
+                MainAnimationSprite.TextureHeight = -MainAnimationSprite.TextureHeight;
+                MainAnimationSprite.Y -= MainAnimationSprite.TextureHeight;
+            }
+            MainAnimationSprite.Width = System.Math.Abs(MainAnimationSprite.TextureWidth);
+            MainAnimationSprite.Height = System.Math.Abs(MainAnimationSprite.TextureHeight);
+
+
+            RenderShapes(shapes);
         }
 
         private void CreatePolygonFor(AnimationFrameSave frame)
