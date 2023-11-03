@@ -58,6 +58,18 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             set => Set(value);
         }
 
+        public bool FlipHorizontal
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool FlipVertical
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public ObservableCollection<ShapeViewModel> VisibleChildren
         {
             get => Get<ObservableCollection<ShapeViewModel>>();
@@ -92,6 +104,10 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
             ResolutionWidth = resolutionWidth;
             ResolutionHeight = resolutionHeight;
+
+            FlipHorizontal = animationFrame.FlipHorizontal;
+            FlipVertical = animationFrame.FlipVertical;
+
 
             var rectangles = animationFrame.ShapeCollectionSave?.AxisAlignedRectangleSaves;
             if (rectangles != null)

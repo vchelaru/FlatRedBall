@@ -378,6 +378,12 @@ namespace OfficialPlugins.ContentPreview.Views
                 MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
                 MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
                 MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+                
+                if(frame.FlipHorizontal)
+                {
+                    MainAnimationSprite.TextureLeft += MainAnimationSprite.TextureWidth;
+                    MainAnimationSprite.TextureWidth = -MainAnimationSprite.TextureWidth;
+                }
 
                 MainAnimationSprite.Visible = true;
 
