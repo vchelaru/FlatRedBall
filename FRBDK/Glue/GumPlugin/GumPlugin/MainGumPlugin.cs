@@ -917,7 +917,7 @@ public class MainGumPlugin : PluginBase
 
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // no biggie, this could be in a location that doesn't exist...
         }
@@ -931,7 +931,7 @@ public class MainGumPlugin : PluginBase
 
         if (changed)
         {
-            GlueCommands.Self.GluxCommands.SaveGlux();
+            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
         }
     }
 

@@ -30,7 +30,9 @@ namespace GumPluginCore.CodeGeneration
 
         public override void GenerateInitialize(ICodeBlock codeBlock)
         {
-            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing)
+            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+            if (hasCommon)
             {
                 codeBlock.Line("global::GumRuntime.ElementSaveExtensions.CustomCreateGraphicalComponentFunc = Gum.Wireframe.RuntimeObjectCreator.TryHandleAsBaseType;");
 
@@ -86,7 +88,9 @@ namespace GumPluginCore.CodeGeneration
 
         public override void GenerateClassScope(ICodeBlock codeBlock)
         {
-            if(hasSkia && GlueState.Self.CurrentGlueProject.FileVersion < (int)GluxVersions.GumCommonCodeReferencing)
+            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                GlueState.Self.CurrentMainProject.IsFrbSourceLinked(); 
+            if (hasSkia && !hasCommon)
             {
                 var function = codeBlock.Function("RenderingLibrary.Graphics.IRenderable", "GetSkiaType", "string name");
                 var switchStatement = function.Switch("name");

@@ -37,9 +37,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels
             EditorObjects.IoC.Container.Get<PluginUpdater>().StartDownload(RssItem.DirectLink, HandleDownloadComplete);
         }
 
-        private void HandleDownloadComplete()
-        {
-            int m = 3;
-        }
+        private void HandleDownloadComplete() { }
     }
 }

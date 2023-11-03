@@ -235,7 +235,7 @@ namespace OfficialPlugins.MonoGameContent
 
             foreach (VisualStudioProject syncedProject in GlueState.SyncedProjects)
             {
-                BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(syncedProject, rfs, viewModel.UseContentPipelineOnPngs);
+                _=BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(syncedProject, rfs, viewModel.UseContentPipelineOnPngs);
             }
         }
 
@@ -244,13 +244,13 @@ namespace OfficialPlugins.MonoGameContent
 
             if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( GlueState.CurrentMainProject ))
             {
-                BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(GlueState.CurrentMainProject, newFile, viewModel.UseContentPipelineOnPngs);
+                _=BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(GlueState.CurrentMainProject, newFile, viewModel.UseContentPipelineOnPngs);
             }
             foreach(VisualStudioProject project in GlueState.SyncedProjects)
             {
                 if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( project ))
                 {
-                    BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(project, newFile, viewModel.UseContentPipelineOnPngs);
+                    _=BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(project, newFile, viewModel.UseContentPipelineOnPngs);
                 }
             }
         }

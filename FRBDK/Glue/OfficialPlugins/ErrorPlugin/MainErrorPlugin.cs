@@ -58,7 +58,7 @@ namespace OfficialPlugins.ErrorPlugin
 
 
             this.ReactToLoadedGlux += HandleLoadedGlux;
-            this.ReactToFileChangeHandler += HandleFileChanged;
+            this.ReactToFileChange += HandleFileChanged;
             this.ReactToFileRemoved += HandleFileRemoved;
             this.ReactToUnloadedGlux += HandleUnloadedGlux;
             this.ReactToFileReadError += HandleFileReadError ;
@@ -102,9 +102,9 @@ namespace OfficialPlugins.ErrorPlugin
             RefreshLogic.HandleReferencedFileRemoved(removedFile, errorListViewModel);
         }
 
-        private void HandleFileChanged(string fileName)
+        private void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)
         {
-            RefreshLogic.HandleFileChange(fileName, errorListViewModel);
+            RefreshLogic.HandleFileChange(filePath, errorListViewModel);
         }
 
         private void RefreshTabText()

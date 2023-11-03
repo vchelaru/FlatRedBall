@@ -560,8 +560,12 @@ namespace GumPlugin.CodeGeneration
         private void GenerateCreateChildrenRecursively(ElementSave elementSave, ICodeBlock currentBlock)
         {
             var parameters = "Gum.DataTypes.ElementSave elementSave, RenderingLibrary.SystemManagers systemManagers";
-            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)FlatRedBall.Glue.SaveClasses.GlueProjectSave.GluxVersions.GumCommonCodeReferencing;
-            if(hasCommon)
+            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)FlatRedBall.Glue.SaveClasses.GlueProjectSave.GluxVersions.GumCommonCodeReferencing ||
+                // A little risky, but if the user is linking source, then the user is likely both running FRB Editor from source and their game from the same source:
+                GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+
+
+            if (hasCommon)
             {
                 parameters = "Gum.DataTypes.ElementSave elementSave, RenderingLibrary.ISystemManagers systemManagers";
             }

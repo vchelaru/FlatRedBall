@@ -51,7 +51,7 @@ namespace OfficialPlugins.ErrorPlugin.ViewModels
                     }
                     System.Diagnostics.Process.Start(fileToOpen);
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
                 }
             }

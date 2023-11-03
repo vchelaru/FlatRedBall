@@ -148,7 +148,9 @@ namespace GumPlugin.Managers
 
                         var addToManagersStatement = $"{name}.AddToManagers();";
 
-                        if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GumCommonCodeReferencing)
+                        var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                            GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+                        if (hasCommon)
                         {
                             addToManagersStatement = $"{name}.AddToManagers(global::RenderingLibrary.SystemManagers.Default, null);";
                         }
@@ -700,7 +702,9 @@ namespace GumPlugin.Managers
                 var version =
                     GlueState.Self.CurrentGlueProject?.FileVersion;
 
-                if(version >= (int)GlueProjectSave.GluxVersions.GumCommonCodeReferencing)
+                var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                    GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+                if (hasCommon)
                 {
                     newAti.ActivityMethod = "this?.AnimateSelf(FlatRedBall.TimeManager.SecondDifference)";
                 }

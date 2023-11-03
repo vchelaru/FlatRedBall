@@ -112,7 +112,7 @@ namespace OfficialPlugins.PointEditingPlugin
         }
 
         bool respondToVmChanges = true;
-        private async void HandleDataChanged(object sender, PropertyChangedEventArgs e)
+        private void HandleDataChanged(object sender, PropertyChangedEventArgs e)
         {
             var shouldRespondToProperty = e.PropertyName == nameof(ViewModel.Points);
             //GlueCommands.Self.GluxCommands.SetVariableOn

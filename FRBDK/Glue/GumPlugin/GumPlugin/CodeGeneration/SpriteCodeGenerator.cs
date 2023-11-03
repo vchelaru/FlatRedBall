@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace GumPluginCore.CodeGeneration
 {
@@ -30,9 +31,9 @@ namespace GumPluginCore.CodeGeneration
 
         private void GenerateCurrentChainNameProperty(ICodeBlock classBodyBlock)
         {
-            var version = GlueState.Self.CurrentGlueProject.FileVersion;
-            var usesGumCommonCode = version >= (int)GlueProjectSave.GluxVersions.GumCommonCodeReferencing;
-            if(usesGumCommonCode)
+            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+            if (hasCommon)
             {
                 var sourceFileNameProperty = classBodyBlock.Property("public string", "CurrentChainName");
                 sourceFileNameProperty.Line("get => ContainedSprite.CurrentChainName;");
@@ -49,13 +50,14 @@ namespace GumPluginCore.CodeGeneration
         private static void GeneratePlayAnimationsAsync(ICodeBlock classBodyBlock)
         {
             var version = GlueState.Self.CurrentGlueProject.FileVersion;
-            var usesGumCommonCode = version >= (int)GlueProjectSave.GluxVersions.GumCommonCodeReferencing;
+            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
             var hasProtectedAnimationProperties = version >= (int)GlueProjectSave.GluxVersions.GraphicalUiElementProtectedAnimationProperties;
 
             var playAnimationsAsyncMethodBlock = classBodyBlock.Function("public async System.Threading.Tasks.Task", "PlayAnimationsAsync", "params string[] animations");
             var foreachBlock = playAnimationsAsyncMethodBlock.ForEach("var animation in animations");
             {
-                if(usesGumCommonCode)
+                if(hasCommon)
                 {
                     foreachBlock.Line("var sprite = this.RenderableComponent as RenderingLibrary.Graphics.Sprite;");
                     foreachBlock.Line("sprite.CurrentChainName = animation;");

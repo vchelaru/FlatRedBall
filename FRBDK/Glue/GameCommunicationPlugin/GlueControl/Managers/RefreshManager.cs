@@ -1035,7 +1035,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     response = JsonConvert.DeserializeObject<RemoveObjectDtoResponse>(responseAsstring);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     printOutput($"Error parsing response from game:\n\n{responseAsstring}");
                 }
