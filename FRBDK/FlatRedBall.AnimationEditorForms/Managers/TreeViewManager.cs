@@ -71,8 +71,8 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 var serialized = System.IO.File.ReadAllText(WireframeSettingsFileName);
 
-                WireframeManager.Self.CameraPositionsForTexture = 
-                    Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<FilePath, Microsoft.Xna.Framework.Vector3>>(serialized);
+                WireframeManager.Self.CameraPositionsForTexture =
+                    global::Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<FilePath, Microsoft.Xna.Framework.Vector3>>(serialized);
             }
         }
 
