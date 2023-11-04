@@ -561,6 +561,8 @@ namespace OfficialPlugins.ContentPreview.Views
 
             MainAnimationSprite = new SpriteRuntime();
             MainAnimationSprite.Visible = false;
+            MainAnimationSprite.XOrigin = RenderingLibrary.Graphics.HorizontalAlignment.Center;
+            MainAnimationSprite.YOrigin = RenderingLibrary.Graphics.VerticalAlignment.Center;
             MainAnimationSprite.Width = 100;
             MainAnimationSprite.Height = 100;
             MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;

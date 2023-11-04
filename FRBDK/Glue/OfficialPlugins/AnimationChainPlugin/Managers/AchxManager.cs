@@ -40,6 +40,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             {
                 View = new AchxPreviewView();
                 ViewModel = new AchxViewModel();
+                ViewModel.IsShowGuidesChecked = true;
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
                 View.DataContext = ViewModel;
                 View.Initialize(new SpritePlugin.Managers.CameraLogic(), new SpritePlugin.Managers.CameraLogic());
