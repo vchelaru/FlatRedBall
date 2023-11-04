@@ -9,6 +9,8 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
 
 namespace OfficialPlugins.FrbUpdater
 {
@@ -209,7 +211,7 @@ namespace OfficialPlugins.FrbUpdater
                 {
                     response = (HttpWebResponse)request.GetResponse();
 
-                    DoDownloadAndSaveFile(ref cancelled, fileData, url, response);
+                    DoDownloadAndSaveFile(fileData, url, response);
                     PluginManager.ReceiveOutput("Successfully downloaded " + fileData.ServerFile);
                     successfullyDownloadedFiles.Add(fileData);
                     response.Close();
@@ -232,17 +234,17 @@ namespace OfficialPlugins.FrbUpdater
             }
         }
 
-        private void DoDownloadAndSaveFile(ref bool cancelled, FileData fileData, Uri url, HttpWebResponse response)
+        private async void DoDownloadAndSaveFile(FileData fileData, Uri url, HttpWebResponse response)
         {
             int bytesDownloaded = 0;
             var fileSize = response.ContentLength;
             var fileTimeStamp = response.LastModified;
 
-            using (var mClient = new WebClient())
+            using (var mClient = new HttpClient())
             {
                 if (!AlreadyDownloaded(fileData, fileTimeStamp))
                 {
-                    using (var webStream = mClient.OpenRead(url))
+                    using (var webStream = await mClient.GetStreamAsync(url))
                     {
                         using (var fileStream = new FileStream(fileData.DiskFile, FileMode.Create, FileAccess.Write,
                                                         FileShare.None))
