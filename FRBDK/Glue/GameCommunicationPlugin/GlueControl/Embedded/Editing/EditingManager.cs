@@ -873,6 +873,22 @@ namespace GlueControl.Editing
                     }
                 }
 
+                if (CurrentGlueElement != null)
+                {
+                    var derivedElements = ObjectFinder.Self.GetAllBaseElementsRecursively(CurrentGlueElement);
+                    foreach (var derivedElement in derivedElements)
+                    {
+                        foreach (var item in derivedElement.AllNamedObjects)
+                        {
+                            // let the derived have priority, check if it already exists:
+                            if (namedObjectSaveDictionary.ContainsKey(item.InstanceName) == false)
+                            {
+                                namedObjectSaveDictionary.Add(item.InstanceName, item);
+                            }
+                        }
+                    }
+                }
+
                 var isFirst = true;
 
                 var cache = SelectionLogic.GetAvailableObjects(ElementEditingMode).ToArray();
