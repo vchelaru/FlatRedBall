@@ -427,6 +427,8 @@ public class TileGraphicsPluginClass : PluginBase
         this.RegisterCodeGenerator(new TileShapeCollectionCodeGenerator());
 
         this.RegisterCodeGenerator(new TileNodeNetworkCodeGenerator());
+
+        this.RegisterCodeGenerator(new TiledGame1CodeGenerator());
     }
 
     #endregion

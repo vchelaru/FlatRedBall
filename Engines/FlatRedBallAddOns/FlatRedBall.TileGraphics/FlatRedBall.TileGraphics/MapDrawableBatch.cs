@@ -1520,8 +1520,8 @@ namespace FlatRedBall.TileGraphics
 
         private void AdjustOffsetAndParallax(Camera camera)
         {
-            float leftView = camera.AbsoluteLeftXEdgeAt(0);
-            float topView = camera.AbsoluteTopYEdgeAt(0);
+            float leftView = NativeCameraWidth != null ? camera.X - NativeCameraWidth.Value / 2f : camera.AbsoluteLeftXEdgeAt(0);
+            float topView = NativeCameraHeight != null ? camera.Y + NativeCameraHeight.Value / 2.0f : camera.AbsoluteTopYEdgeAt(0);
 
             float cameraOffsetX = leftView - CameraOriginX;
             float cameraOffsetY = topView - CameraOriginY;
@@ -1545,6 +1545,9 @@ namespace FlatRedBall.TileGraphics
                 this.RelativeY = cameraOffsetY * _parallaxMultiplierY;
             }
         }
+
+        public static float? NativeCameraWidth;
+        public static float? NativeCameraHeight;
 
         // TODO: I would like to somehow make this a property on the LayeredTileMap, but right now it is easier to put them here
         public float CameraOriginY { get; set; }
