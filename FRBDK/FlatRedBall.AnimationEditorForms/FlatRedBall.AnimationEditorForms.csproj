@@ -87,8 +87,8 @@
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\AnimationEditor\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\AnimationEditor\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -124,7 +124,6 @@
     </Compile>
     <Compile Include="..\Glue\Glue\Controls\MultiButtonMessageBox.cs">
       <Link>Controls\MultiButtonMessageBox.cs</Link>
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="..\Glue\Glue\Controls\MultiButtonMessageBox.designer.cs">
       <Link>Controls\MultiButtonMessageBox.designer.cs</Link>
@@ -132,7 +131,6 @@
     </Compile>
     <Compile Include="..\Glue\Glue\Controls\TextInputWindow.cs">
       <Link>Controls\TextInputWindow.cs</Link>
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="..\Glue\Glue\Controls\TextInputWindow.designer.cs">
       <Link>Controls\TextInputWindow.designer.cs</Link>
@@ -157,27 +155,19 @@
     <Compile Include="Controls\AnimationAddFramesWPF.xaml.cs">
       <DependentUpon>AnimationAddFramesWPF.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\AnimationChainTimeScaleWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Controls\AnimationChainTimeScaleWindow.cs" />
     <Compile Include="Controls\AnimationChainTimeScaleWindow.Designer.cs">
       <DependentUpon>AnimationChainTimeScaleWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\AnimationsListToolBar.xaml.cs">
       <DependentUpon>AnimationsListToolBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\CustomNodeColorTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\PreviewControls.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Controls\CustomNodeColorTreeView.cs" />
+    <Compile Include="Controls\PreviewControls.cs" />
     <Compile Include="Controls\PreviewControls.Designer.cs">
       <DependentUpon>PreviewControls.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\WireframeEditControls.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Controls\WireframeEditControls.cs" />
     <Compile Include="Controls\WireframeEditControls.Designer.cs">
       <DependentUpon>WireframeEditControls.cs</DependentUpon>
     </Compile>
@@ -209,18 +199,14 @@
     <Compile Include="Preview\ShapePreviewManager.cs" />
     <Compile Include="PropertyGrids\AnimationChainDisplayer.cs" />
     <Compile Include="PropertyGrids\AnimationFrameDisplayer.cs" />
-    <Compile Include="Controls\TileMapInfoWindow.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Controls\TileMapInfoWindow.cs" />
     <Compile Include="Controls\TileMapInfoWindow.Designer.cs">
       <DependentUpon>TileMapInfoWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Converters\SpriteSheetCellWidthConverter.cs" />
     <Compile Include="Data\TileMapInformation.cs" />
     <Compile Include="Data\TileMapInformationList.cs" />
-    <Compile Include="MainControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="MainControl.cs" />
     <Compile Include="MainControl.Designer.cs">
       <DependentUpon>MainControl.cs</DependentUpon>
     </Compile>
@@ -232,9 +218,7 @@
     <Compile Include="SelectedState.cs" />
     <Compile Include="Singleton.cs" />
     <Compile Include="StatusBarManager.cs" />
-    <Compile Include="TextureCoordinateSelectionWindow.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="TextureCoordinateSelectionWindow.cs" />
     <Compile Include="TextureCoordinateSelectionWindow.Designer.cs">
       <DependentUpon>TextureCoordinateSelectionWindow.cs</DependentUpon>
     </Compile>
