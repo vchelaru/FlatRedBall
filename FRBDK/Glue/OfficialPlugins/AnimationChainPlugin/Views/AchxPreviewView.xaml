@@ -52,10 +52,9 @@
 
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="5"></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
             <wpf1:GumSKElement x:Name="GumCanvas" Grid.Row="0"
                     MouseDown="GumCanvas_MouseDown"
@@ -63,20 +62,31 @@
                     MouseWheel="GumCanvas_MouseWheel"
                                ></wpf1:GumSKElement>
             <GridSplitter Grid.Row="1"
+                          Background="#cccccc"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Center"
-                          Background="Black"
+                          ResizeBehavior="PreviousAndNext"
                           ShowsPreview="True"
-                          Height="2"
+                          Height="5"
                           />
-            <wpf1:GumSKElement x:Name="GumCanvasAnimation" Grid.Row="2"
-                    MouseDown="GumAnimationCanvas_MouseDown"
-                    MouseMove="GumAnimationCanvas_MouseMove"
-                    MouseWheel="GumAnimationCanvas_MouseWheel"
-                           ></wpf1:GumSKElement>
-            <StackPanel Grid.Row="3" Orientation="Horizontal">
-                <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>
-            </StackPanel>
+            <Grid x:Name="BottomHalfGrid" Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <CheckBox IsChecked="{Binding IsShowGuidesChecked}">Show Guides</CheckBox>
+                </StackPanel>
+                <wpf1:GumSKElement x:Name="GumCanvasAnimation" Grid.Row="1"
+                        MouseDown="GumAnimationCanvas_MouseDown"
+                        MouseMove="GumAnimationCanvas_MouseMove"
+                        MouseWheel="GumAnimationCanvas_MouseWheel"
+                               ></wpf1:GumSKElement>
+                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                    <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

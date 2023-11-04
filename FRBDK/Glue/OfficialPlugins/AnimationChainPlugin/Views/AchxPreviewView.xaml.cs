@@ -65,6 +65,10 @@ namespace OfficialPlugins.ContentPreview.Views
         List<PolygonRuntime> Outlines = new List<PolygonRuntime>();
         List<SkiaShapeRuntime> AnimationShapes = new List<SkiaShapeRuntime>();
 
+        // todo - Vic says - let's move all the bototm grid stuff into its own class:
+        PolygonRuntime BottomWindowHorizontalGuide;
+        PolygonRuntime BottomWindowVerticalGuide;
+
         SolidRectangleRuntime GumBackground { get; set; }
         SolidRectangleRuntime GumAnimationBackground { get; set; }
 
@@ -93,14 +97,28 @@ namespace OfficialPlugins.ContentPreview.Views
 
         private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == nameof(ViewModel.SelectedAnimationChain))
+            switch (e.PropertyName)
             {
-                RefreshOutlines();
-                RefreshAnimation();
+                case nameof(ViewModel.SelectedAnimationChain):
 
-                GumCanvas.InvalidateVisual();
-                GumCanvasAnimation.InvalidateVisual();
+                    RefreshOutlines();
+                    RefreshAnimation();
+
+                    GumCanvas.InvalidateVisual();
+                    GumCanvasAnimation.InvalidateVisual();
+
+                    break;
+                case nameof(ViewModel.IsShowGuidesChecked):
+                    RefreshBottomGuideVisibility();
+                    break;
             }
+        }
+
+        private void RefreshBottomGuideVisibility()
+        {
+            BottomWindowVerticalGuide.Visible = ViewModel.IsShowGuidesChecked;
+            BottomWindowHorizontalGuide.Visible = ViewModel.IsShowGuidesChecked;
+            GumCanvasAnimation.InvalidateVisual();
         }
 
         public void ForceRefreshAchx(FilePath achxFilePath = null, bool preserveSelection = false)
@@ -395,6 +413,8 @@ namespace OfficialPlugins.ContentPreview.Views
 
 
             RenderShapes(shapes);
+
+
         }
 
         private void CreatePolygonFor(AnimationFrameSave frame)
@@ -495,6 +515,8 @@ namespace OfficialPlugins.ContentPreview.Views
             CreateBackground();
             CreateMainSprite();
 
+            CreateBottomGuideLines();
+
             // do this after creating the background so that it can be passed here:
             CameraLogic.Initialize(this, (this.DataContext as AchxViewModel)?.WholeZoom, this.GumCanvas, this.GumBackground);
             CameraLogicAnimation.Initialize(this, (this.DataContext as AchxViewModel)?.SingleZoom, this.GumCanvasAnimation, this.GumAnimationBackground);
@@ -504,6 +526,29 @@ namespace OfficialPlugins.ContentPreview.Views
             _animationTimer.Start();
         }
 
+        private void CreateBottomGuideLines()
+        {
+            this.BottomWindowHorizontalGuide = new PolygonRuntime();
+            BottomWindowHorizontalGuide.IsFilled = false;
+            BottomWindowHorizontalGuide.Color = SKColors.White;
+            BottomWindowHorizontalGuide.Points = new List<SKPoint>
+            {
+                new SKPoint(-100_000, 0),
+                new SKPoint(100_000, 0),
+            };
+
+            this.GumCanvasAnimation.Children.Add(BottomWindowHorizontalGuide);
+
+            this.BottomWindowVerticalGuide = new PolygonRuntime();
+            BottomWindowVerticalGuide.IsFilled = false;
+            BottomWindowVerticalGuide.Color = SKColors.White;
+            BottomWindowVerticalGuide.Points = new List<SKPoint>
+            {
+                new SKPoint(0, -100_000),
+                new SKPoint(0, 100_000),
+            };
+            this.GumCanvasAnimation.Children.Add(BottomWindowVerticalGuide);
+        }
 
         private void CreateMainSprite()
         {

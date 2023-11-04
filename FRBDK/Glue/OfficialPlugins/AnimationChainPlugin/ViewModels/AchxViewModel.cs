@@ -59,6 +59,12 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             }
         }
 
+        public bool IsShowGuidesChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(SelectedItem))]
         public AnimationFrameViewModel SelectedAnimationFrame => 
             SelectedItem as AnimationFrameViewModel;
