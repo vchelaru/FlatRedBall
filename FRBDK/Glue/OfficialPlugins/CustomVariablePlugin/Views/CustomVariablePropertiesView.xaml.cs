@@ -64,18 +64,6 @@ public partial class CustomVariablePropertiesView : UserControl
 
         MainGrid.Categories.RemoveAll(item => item.Members.Count == 0);
 
-        //RemoveMember(nameof(CustomVariable.Properties));
-        //RemoveMember(nameof(CustomVariable.DefaultValue));
-        //RemoveMember(nameof(CustomVariable.VariableDefinition));
-
-        void RemoveMember(string memberName)
-        {
-            foreach (var category in MainGrid.Categories)
-            {
-                category.Members.RemoveAll(member => member.Name == memberName);
-            }
-        }
-
         MainGrid.InsertSpacesInCamelCaseMemberNames();
 
         RefreshVariableDefinitionGrid(customVariable);

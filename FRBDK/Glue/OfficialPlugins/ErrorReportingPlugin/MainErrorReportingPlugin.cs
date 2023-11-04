@@ -1,7 +1,9 @@
-﻿using FlatRedBall.Glue.Plugins;
+﻿using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -28,7 +30,7 @@ namespace OfficialPlugins.ErrorReportingPlugin
             AddErrorReporter(new CustomVariableSaveErrorReporter());
             AddErrorReporter(new ElementInheritanceErrorReporter());
 
-            this.ReactToFileChangeHandler += HandleFileChanged;
+            this.ReactToFileChange += HandleFileChanged;
             //this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
             this.ReactToChangedNamedObjectPropertyList += HandleChangedNamedObjectPropertyList;
         }
@@ -46,7 +48,7 @@ namespace OfficialPlugins.ErrorReportingPlugin
         //}
 
 
-        private void HandleFileChanged(string fileName)
+        private void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)
         {
             this.RefreshErrors();
         }

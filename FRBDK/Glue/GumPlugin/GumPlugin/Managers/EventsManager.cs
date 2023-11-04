@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Gum.DataTypes;
+using Gum.DataTypes.Variables;
 using GumPlugin.CodeGeneration;
 using System;
 using System.Collections.Generic;
@@ -169,5 +170,23 @@ namespace GumPlugin.Managers
 
         }
 
+    }
+
+    static class ElementSaveExtensionMethods
+    {
+        public static object GetValueFromThisOrBase(this ElementSave element, string variable, bool forceDefault = false)
+        {
+            var stateToPullFrom = element.DefaultState;
+
+            var variableSave = stateToPullFrom.GetVariableRecursive(variable);
+            if (variableSave != null)
+            {
+                return variableSave.Value;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

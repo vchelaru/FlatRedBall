@@ -1,6 +1,9 @@
 ﻿using FlatRedBall.Gui;
+using Gum.DataTypes;
 using Gum.Wireframe;
 using GumCoreShared.FlatRedBall.Embedded;
+using GumRuntime;
+using RenderingLibrary;
 using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
@@ -595,7 +598,7 @@ namespace Gum.Wireframe
                 float worldX;
                 float worldY;
 
-                var managers = this.EffectiveManagers;
+                var managers = this.EffectiveManagers as SystemManagers;
 
 
                 // If there are no managers, we an still fall back to the default:
@@ -1203,8 +1206,9 @@ namespace Gum.Wireframe
             }
         }
 
-#endregion
+        #endregion
 
-
+        // This is added for compatability for projects created before GumCommon:
+        public void AddToManagers() => this.AddToManagers(SystemManagers.Default, layer: null);
     }
 }

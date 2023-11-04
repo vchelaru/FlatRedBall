@@ -146,7 +146,16 @@ namespace GumPlugin.Managers
                     {
                         var name = nos?.InstanceName ?? rfs?.GetInstanceName();
 
-                        if(nos?.SourceType == SourceType.File && nos.IsEntireFile)
+                        var addToManagersStatement = $"{name}.AddToManagers();";
+
+                        var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                            GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+                        if (hasCommon)
+                        {
+                            addToManagersStatement = $"{name}.AddToManagers(global::RenderingLibrary.SystemManagers.Default, null);";
+                        }
+
+                        if (nos?.SourceType == SourceType.File && nos.IsEntireFile)
                         {
                             // don't generate anything, it's handled by the file
                             return null;
@@ -154,11 +163,11 @@ namespace GumPlugin.Managers
                         else if(string.IsNullOrEmpty(element.BaseElement))
                         {
 
-                            return $"{name}.AddToManagers(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += RefreshLayoutInternal;";
+                            return $"{addToManagersStatement} FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += RefreshLayoutInternal;";
                         }
                         else
                         {
-                            return $"{name}.AddToManagers();";
+                            return addToManagersStatement;
                         }
                     };
 
@@ -690,7 +699,16 @@ namespace GumPlugin.Managers
 
                 newAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos, qualifiedName);
 
-                if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GumSupportsAchxAnimation)
+                var version =
+                    GlueState.Self.CurrentGlueProject?.FileVersion;
+
+                var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                    GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+                if (hasCommon)
+                {
+                    newAti.ActivityMethod = "this?.AnimateSelf(FlatRedBall.TimeManager.SecondDifference)";
+                }
+                else if (version >= (int)GlueProjectSave.GluxVersions.GumSupportsAchxAnimation)
                 {
                     newAti.ActivityMethod = "this?.AnimateSelf()";
                 }
