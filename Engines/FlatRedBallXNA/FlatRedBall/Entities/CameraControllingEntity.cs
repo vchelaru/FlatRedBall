@@ -244,11 +244,11 @@ namespace FlatRedBall.Entities
                 }
                 if(canFitY)
                 {
-                    if(Y - Camera.OrthogonalHeight / 2 < Map.Top)
+                    if(Y + Camera.OrthogonalHeight / 2 > Map.Top)
                     {
                         lerpSmoothY = false;
                     }
-                    else if(Y + Camera.OrthogonalHeight / 2 > Map.Top + Map.Height)
+                    else if(Y - Camera.OrthogonalHeight / 2 < Map.Top - Map.Height)
                     {
                         lerpSmoothY = false;
                     }
@@ -455,6 +455,16 @@ namespace FlatRedBall.Entities
                 if (atI.Y < min.Y) min.Y = atI.Y;
                 if (atI.Y > max.Y) max.Y = atI.Y;
             }
+
+            if(Map != null)
+            {
+                min.X = System.Math.Max(min.X, Map.Left);
+                min.Y = System.Math.Max(min.Y, Map.Top - Map.Height);
+
+                max.X = System.Math.Min(max.X, Map.Left + Map.Width);
+                max.Y = System.Math.Min(max.Y, Map.Top);
+            }
+
 
             return max - min;
         }
