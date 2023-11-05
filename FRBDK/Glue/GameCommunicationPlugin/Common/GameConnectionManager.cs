@@ -362,7 +362,7 @@ namespace GameJsonCommunicationPlugin.Common
             public string PacketType { get; set; }
             public string Payload { get; set; }
         }
-
+#nullable enable
         public class WaitingPacket
         {
             public Guid WaitingFor { get; set; }
@@ -372,7 +372,7 @@ namespace GameJsonCommunicationPlugin.Common
 
         public class PacketReceivedArgs : EventArgs
         {
-            public Packet Packet { get; set; }
+            public Packet? Packet { get; set; }
         }
         #endregion
 

@@ -1,4 +1,5 @@
 ﻿using CompilerLibrary.ViewModels;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
@@ -47,28 +48,32 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             this.viewModel = viewModel;
         }
 
-        public void HandleFileChanged(string fileName)
+        public void HandleFileChanged(FilePath filePath, FileChangeType changeType)
         {
+            if(changeType != FileChangeType.Modified)
+            {
+                return;
+            }
             // If a file changed, always copy it over - why only do so if we're in edit mode?
 
-            var extension = FileManager.GetExtension(fileName);
+            var extension = filePath.Extension;
 
-            ToolbarEntityViewModelManager.ReactToFileChanged(fileName);
+            ToolbarEntityViewModelManager.ReactToFileChanged(filePath);
 
             var shouldCopy = copiedExtensions.Contains(extension);
 
             if(shouldCopy)
             {
-                shouldCopy = !IsFileIgnored(fileName);
+                shouldCopy = !IsFileIgnored(filePath);
             }
 
             if (shouldCopy)
             {
-                GlueCommands.Self.ProjectCommands.CopyToBuildFolder(fileName);
+                GlueCommands.Self.ProjectCommands.CopyToBuildFolder(filePath);
 
             }
 
-            _refreshManager.HandleFileChanged(fileName);
+            _refreshManager.HandleFileChanged(filePath);
         }
 
         private bool IsFileIgnored(FilePath fileName)

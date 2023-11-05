@@ -113,17 +113,17 @@ namespace OfficialPlugins.GameHost.Views
             e.Effects = DragDropEffects.Move;
         }
 
-        private async void WinformsHost_Drop(object sender, DragEventArgs e)
-        {
-            // this doesn't work due to the airspace problem in wpf
-            ////https://stackoverflow.com/questions/5978917/render-wpf-control-on-top-of-windowsformshost/5979041#5979041
-            //var vm = GlueState.Self.DraggedTreeNode;
+        //private async void WinformsHost_Drop(object sender, DragEventArgs e)
+        //{
+        //    // this doesn't work due to the airspace problem in wpf
+        //    ////https://stackoverflow.com/questions/5978917/render-wpf-control-on-top-of-windowsformshost/5979041#5979041
+        //    //var vm = GlueState.Self.DraggedTreeNode;
 
-            //if (vm != null && ViewModel.IsRunning)
-            //{
-            //    await DragDropManagerGameWindow.HandleDragDropOnGameWindow(vm);
-            //}
-        }
+        //    //if (vm != null && ViewModel.IsRunning)
+        //    //{
+        //    //    await DragDropManagerGameWindow.HandleDragDropOnGameWindow(vm);
+        //    //}
+        //}
 
         public async Task EmbedHwnd(IntPtr handle)
         {

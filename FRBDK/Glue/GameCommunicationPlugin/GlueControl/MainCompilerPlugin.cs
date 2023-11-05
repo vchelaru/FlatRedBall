@@ -93,7 +93,6 @@ namespace GameCommunicationPlugin.GlueControl
         Timer dragDropTimer;
 
         System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1, 1);
-        DateTime lastGetCall;
 
         #endregion
 
@@ -144,7 +143,7 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             
             this.ReactToNewFileHandler += _refreshManager.HandleNewFile;
-            this.ReactToFileChangeHandler += manager.HandleFileChanged;
+            this.ReactToFileChange += manager.HandleFileChanged;
             this.ReactToCodeFileChange += _refreshManager.HandleFileChanged;
             this.ReactToElementRenamed += ToolbarController.Self.HandleScreenRenamed;
 
@@ -848,34 +847,6 @@ namespace GameCommunicationPlugin.GlueControl
             await CommandSender.Self.Send(setCameraAspectRatioDto);
         }
 
-        private SetCameraSetupDto ToDto(DisplaySettings displaySettings)
-        {
-            var toReturn = new SetCameraSetupDto();
-            toReturn.AllowWindowResizing = displaySettings.AllowWindowResizing;
-
-            if(displaySettings.FixedAspectRatio)
-            {
-                toReturn.AspectRatio = displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight;
-            }
-
-            toReturn.DominantInternalCoordinates = displaySettings.DominantInternalCoordinates;
-            toReturn.Is2D = displaySettings.Is2D;
-            toReturn.IsFullScreen = displaySettings.RunInFullScreen;
-            toReturn.IsGenerateCameraDisplayCodeEnabled = displaySettings.GenerateDisplayCode;
-            toReturn.ResizeBehavior = displaySettings.ResizeBehavior;
-            toReturn.ResizeBehaviorGum = displaySettings.ResizeBehaviorGum;
-            toReturn.ResolutionHeight = displaySettings.ResolutionHeight;
-            toReturn.ResolutionWidth = displaySettings.ResolutionWidth;
-            toReturn.Scale = displaySettings.Scale;
-            toReturn.ScaleGum = displaySettings.ScaleGum;
-            toReturn.TextureFilter = (Microsoft.Xna.Framework.Graphics.TextureFilter)displaySettings.TextureFilter;
-
-            return toReturn;
-
-
-
-        }
-
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
         {
             ReactToPluginEvent("Compiler_Output_Standard", "Applying changes");
@@ -1176,7 +1147,8 @@ namespace GameCommunicationPlugin.GlueControl
                 
                 case "GameCommunicationPlugin_PacketReceived_OldDTO":
                     var commands = new List<string> { payload };
-                    _commandReceiver.HandleCommandsFromGame(commands, GlueViewSettingsViewModel.PortNumber);
+                    // do we want to await this?
+                    _=_commandReceiver.HandleCommandsFromGame(commands, GlueViewSettingsViewModel.PortNumber);
                     break;
             }
         }

@@ -119,7 +119,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             "Saving due to RFS changes");
         }
 
-        public void AddPngXnbsReferencesAndBuild()
+        public async void AddPngXnbsReferencesAndBuild()
         {
             var referencedPngs = GetReferencedPngs();
 
@@ -128,11 +128,11 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
             foreach (var referencedPng in referencedPngs)
             {
-                BuildLogic.Self.TryAddXnbReferencesAndBuild(referencedPng, mainProject, saveProjectAfterAdd: false);
+                await BuildLogic.Self.TryAddXnbReferencesAndBuild(referencedPng, mainProject, saveProjectAfterAdd: false);
 
                 foreach (VisualStudioProject project in syncedProjects)
                 {
-                    BuildLogic.Self.TryAddXnbReferencesAndBuild(referencedPng, project, saveProjectAfterAdd: false);
+                    await BuildLogic.Self.TryAddXnbReferencesAndBuild(referencedPng, project, saveProjectAfterAdd: false);
                 }
             }
         }
@@ -217,7 +217,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
                 {
                     absolute = GlueCommands.GetAbsoluteFileName(rfs);
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
                     // See if the project has been unloaded:
                     if(GlueState.CurrentGlueProject == null)

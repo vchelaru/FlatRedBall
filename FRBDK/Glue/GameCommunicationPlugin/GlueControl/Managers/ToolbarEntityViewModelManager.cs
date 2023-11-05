@@ -329,15 +329,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
         }
 
-        internal static void ReactToFileChanged(string fileName)
+        internal static void ReactToFileChanged(FilePath filePath)
         {
             foreach(var item in CompilerViewModel.ToolbarEntitiesAndStates)
             {
                 var previewFilePath = GetPreviewPathFor(item);
 
-                if(previewFilePath == fileName)
+                if(previewFilePath == filePath)
                 {
-                    ApplyImageToViewModel(fileName, item);
+                    ApplyImageToViewModel(filePath, item);
                 }
             }
         }

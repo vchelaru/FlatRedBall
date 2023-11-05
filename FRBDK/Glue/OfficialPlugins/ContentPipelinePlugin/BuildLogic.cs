@@ -42,7 +42,7 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
-        public void RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline, ContentPipelineController controller)
+        public async Task RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline, ContentPipelineController controller)
         {
 
             var mgcbToUse = GetCommandLineBuildExe(project);
@@ -73,7 +73,7 @@ namespace OfficialPlugins.MonoGameContent
 
                 foreach (var fileToBeBuilt in allReferencedFileSaves)
                 {
-                    UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
+                    await UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
                 }
             }
 

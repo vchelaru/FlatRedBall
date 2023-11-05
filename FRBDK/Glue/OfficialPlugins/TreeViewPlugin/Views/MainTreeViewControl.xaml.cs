@@ -332,7 +332,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 }
                 else
                 {
-                    SelectionLogic.SelectByTag(targetNode.Tag, false);
+                    await SelectionLogic.SelectByTag(targetNode.Tag, false);
 
                     var items = RightClickHelper.GetRightClickItems(targetNode, MenuShowingAction.RightButtonDrag, nodePushed);
 
@@ -367,10 +367,6 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 menuItem.Header = item.Text;
                 menuItem.Click += (not, used) =>
                 {
-                    if(item?.Click == null)
-                    {
-                        int m = 3;
-                    }
                     item?.Click?.Invoke(menuItem, null);
                 };
 
@@ -540,7 +536,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         #region Searching
 
-        private void SearchBar_ClearSearchButtonClicked()
+        private async void SearchBar_ClearSearchButtonClicked()
         {
             var whatWasSelected = SelectionLogic.CurrentNode?.Tag;
 
@@ -550,7 +546,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             ViewModel.GlobalContentRootNode.IsExpanded = false;
             if (whatWasSelected != null)
             {
-                SelectionLogic.SelectByTag(whatWasSelected, false);
+                await SelectionLogic.SelectByTag(whatWasSelected, false);
                 SelectionLogic.CurrentNode?.ExpandParentsRecursively();
             }
         }

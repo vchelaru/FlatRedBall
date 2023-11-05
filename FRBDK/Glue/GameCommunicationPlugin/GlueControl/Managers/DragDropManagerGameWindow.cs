@@ -152,7 +152,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 var variableName = $"Current{stateCategory.Name}State";
                 string stateName = stateToSet.Name;
-                GlueCommands.Self.GluxCommands.SetVariableOn(newNamedObject, variableName, stateName);
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(newNamedObject, variableName, stateName);
             }
         }
     }

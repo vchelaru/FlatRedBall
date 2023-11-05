@@ -31,16 +31,16 @@ namespace GameJsonCommunicationPlugin.JsonManager
             //Turning this plugin off
             return true;
 
-            ReactToLoadedGlux -= HandleGluxLoaded;
-            ReactToGlueJsonLoad -= HandleReactToGlueJsonLoad;
-            ReactToScreenJsonLoad -= HandleReactToScreenJsonLoad;
-            ReactToEntityJsonLoad -= HandleReactToEntityJsonLoad;
+            //ReactToLoadedGlux -= HandleGluxLoaded;
+            //ReactToGlueJsonLoad -= HandleReactToGlueJsonLoad;
+            //ReactToScreenJsonLoad -= HandleReactToScreenJsonLoad;
+            //ReactToEntityJsonLoad -= HandleReactToEntityJsonLoad;
 
-            ReactToGlueJsonSave -= HandleReactToGlueJsonSave;
-            ReactToScreenJsonSave -= HandleReactToScreenJsonSave;
-            ReactToEntityJsonSave -= HandleReactToEntityJsonSave;
+            //ReactToGlueJsonSave -= HandleReactToGlueJsonSave;
+            //ReactToScreenJsonSave -= HandleReactToScreenJsonSave;
+            //ReactToEntityJsonSave -= HandleReactToEntityJsonSave;
 
-            _glueJsonManager = null;
+            //_glueJsonManager = null;
 
             return true;
         }
@@ -50,17 +50,17 @@ namespace GameJsonCommunicationPlugin.JsonManager
             //Turning this plugin off
             return;
 
-            _glueJsonManager = new GlueJsonManager();
+            //_glueJsonManager = new GlueJsonManager();
 
-            ReactToGlueJsonLoad += HandleReactToGlueJsonLoad;
-            ReactToScreenJsonLoad += HandleReactToScreenJsonLoad;
-            ReactToEntityJsonLoad += HandleReactToEntityJsonLoad;
+            //ReactToGlueJsonLoad += HandleReactToGlueJsonLoad;
+            //ReactToScreenJsonLoad += HandleReactToScreenJsonLoad;
+            //ReactToEntityJsonLoad += HandleReactToEntityJsonLoad;
 
-            ReactToGlueJsonSave += HandleReactToGlueJsonSave;
-            ReactToScreenJsonSave += HandleReactToScreenJsonSave;
-            ReactToEntityJsonSave += HandleReactToEntityJsonSave;
+            //ReactToGlueJsonSave += HandleReactToGlueJsonSave;
+            //ReactToScreenJsonSave += HandleReactToScreenJsonSave;
+            //ReactToEntityJsonSave += HandleReactToEntityJsonSave;
 
-            ReactToLoadedGlux += HandleGluxLoaded;
+            //ReactToLoadedGlux += HandleGluxLoaded;
         }
 
         private void HandleGluxLoaded()
@@ -181,20 +181,20 @@ namespace GameJsonCommunicationPlugin.JsonManager
         {
             //Turning plugin off
             return;
-            base.HandleEvent(eventName, payload);
+            //base.HandleEvent(eventName, payload);
 
-            switch(eventName)
-            {
-                case "GameCommunication_Connected":
-                    foreach(var item in _glueJsonManager.GetAll())
-                    {
-                        var mgr = _glueJsonManager.Get(item.Type, item.Name);
+            //switch(eventName)
+            //{
+            //    case "GameCommunication_Connected":
+            //        foreach(var item in _glueJsonManager.GetAll())
+            //        {
+            //            var mgr = _glueJsonManager.Get(item.Type, item.Name);
 
-                        HandleLoad(item.Type, item.Name, mgr.CurrentJson.ToString());
-                    }
+            //            HandleLoad(item.Type, item.Name, mgr.CurrentJson.ToString());
+            //        }
 
-                    break;
-            }
+            //        break;
+            //}
         }
     }
 

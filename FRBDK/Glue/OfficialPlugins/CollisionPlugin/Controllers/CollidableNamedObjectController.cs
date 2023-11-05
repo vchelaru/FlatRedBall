@@ -160,7 +160,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             var name2 = collidable?.InstanceName;
 
             var pairViewModel = new NamedObjectPairRelationshipViewModel();
-            pairViewModel.AddObjectClicked += (not, used) => HandleAddCollisionRelationshipAddClicked(pairViewModel);
+            pairViewModel.AddObjectClicked += (_, _) => _=HandleAddCollisionRelationshipAddClicked(pairViewModel);
             pairViewModel.OtherObjectName = name2;
             pairViewModel.SelectedNamedObjectName = thisNamedObject.InstanceName;
 

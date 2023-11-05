@@ -59,7 +59,7 @@ namespace OfficialPlugins.FrbUpdater
             _plugin = plugin;
         }
 
-        private void FrmMainLoad(object sender, EventArgs e)
+        private async void FrmMainLoad(object sender, EventArgs e)
         {
             _settings = FrbUpdaterSettings.LoadSettings(_userAppPath);
 
@@ -77,7 +77,7 @@ namespace OfficialPlugins.FrbUpdater
                     // picked 10 years.
                     // Update - this actually hits the web server, so we should probably not do 10 years.  Let's go to 1 year
                     int numberOfTries = 0;
-                    while (!IsMonthValid(date) && numberOfTries < 1*12)
+                    while (!await IsMonthValid(date) && numberOfTries < 1*12)
                     {
                         PluginManager.ReceiveOutput("Attempting to find valid month, but the following date is invalid: " + date);
                         date = date.AddMonths(-1);
@@ -110,7 +110,7 @@ namespace OfficialPlugins.FrbUpdater
                     break;
             }
 
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 PopulateFiles();
 
@@ -120,25 +120,26 @@ namespace OfficialPlugins.FrbUpdater
             });
         }
 
-        private bool IsMonthValid(DateTime date)
+        private async Task<bool> IsMonthValid(DateTime date)
         {
             const string path = "http://files.flatredball.com/content/FrbXnaTemplates/";
+            HttpClient httpClient = new HttpClient();
 
             try
             {
                 //This Month
                 var curPath = path + date.ToString("yyyy") + "/" + date.ToString("MMMM") + "/FlatRedBallInstaller.exe";
                 var url = new Uri(curPath);
-                var request = (HttpWebRequest)WebRequest.Create(url);
-                var response = (HttpWebResponse)request.GetResponse();
-                response.Close();
+                var response = await httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
 
                 return true;
             }
-            catch (Exception)
+            catch (HttpRequestException)
             {
                 return false;
             }
+
         }
 
         private void PopulateFiles()
@@ -205,7 +206,10 @@ namespace OfficialPlugins.FrbUpdater
                 _currentFile = fileData;
 
                 var url = new Uri(fileData.ServerFile);
+
+#pragma warning disable SYSLIB0014 // Type or member is obsolete. Fixing this is a pain since it would also require fixing DoDownloadAndSaveFile
                 var request = (HttpWebRequest)WebRequest.Create(url);
+#pragma warning restore SYSLIB0014 // Type or member is obsolete
                 HttpWebResponse response = null;
                 try
                 {
@@ -231,6 +235,7 @@ namespace OfficialPlugins.FrbUpdater
                     //PluginManager.ReceiveError("Unable to download " + fileData.ServerFile);
                     continue;
                 }
+
             }
         }
 

@@ -468,7 +468,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     {
                         addResponse = JsonConvert.DeserializeObject<AddObjectDtoResponse>(addResponseAsString);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         printOutput($"Error parsing string:\n\n{addResponseAsString}");
                     }
@@ -547,12 +547,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             if (newPosition.X != 0)
             {
-                gluxCommands.SetVariableOn(newNamedObject, "X", newPosition.X, false, updateUi:false);
+                await gluxCommands.SetVariableOnAsync(newNamedObject, "X", newPosition.X, false, updateUi:false);
                 didSetValue = true;
             }
             if (newPosition.Y != 0)
             {
-                gluxCommands.SetVariableOn(newNamedObject, "Y", newPosition.Y, false, updateUi: false);
+                await gluxCommands.SetVariableOnAsync(newNamedObject, "Y", newPosition.Y, false, updateUi: false);
 
                 didSetValue = true;
             }
