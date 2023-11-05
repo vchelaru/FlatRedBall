@@ -93,6 +93,13 @@ namespace FlatRedBall.Entities
         public bool LerpSmooth { get; set; } = true;
 
         /// <summary>
+        /// Whether to smoothly approach the desired zoom. If false, the camera immediately adjusts zoom without any smoothing.
+        /// </summary>
+        public bool LerpSmoothZoom { get; set; } = true;
+
+        public float CurrentZoom { get; set; } = 1;
+
+        /// <summary>
         /// The amount of smoothing. The larger the number, the longer the camera takes to smooth. This value is ignored if LerpSmooth is false.
         /// </summary>
         /// <remarks>
@@ -206,17 +213,49 @@ namespace FlatRedBall.Entities
                 windowVisualization.Height = ScrollingWindowHeight;
             }
 
-
-            var target = GetTarget();
-
-
-
-            ApplyTarget(target, hasActivityBeenCalled ? LerpSmooth : false);
-
+            // Zoom should be happening first, and then targeting:
             if(isAutoZoomEnabled)
             {
                 ApplyZoom();
             }
+
+            var target = GetTarget();
+
+            var lerpSmoothX = hasActivityBeenCalled ? LerpSmooth : false;
+            var lerpSmoothY = hasActivityBeenCalled ? LerpSmooth : false;
+
+            // Even if we want to lerp, if we are outside of the bounds of the map and if
+            // the camera can fit within the map (on either axis) then we don't lerp smooth:
+
+            if(Map != null && (lerpSmoothX || lerpSmoothY))
+            {
+                var canFitX = Camera.OrthogonalWidth <= Map.Width;
+                var canFitY = Camera.OrthogonalHeight <= Map.Height;
+                if(canFitX)
+                {
+                    if(X - Camera.OrthogonalWidth / 2 < Map.Left)
+                    {
+                        lerpSmoothX = false;
+                    }
+                    else if(X + Camera.OrthogonalWidth / 2 > Map.Left + Map.Width)
+                    {
+                        lerpSmoothX = false;
+                    }
+                }
+                if(canFitY)
+                {
+                    if(Y - Camera.OrthogonalHeight / 2 < Map.Top)
+                    {
+                        lerpSmoothY = false;
+                    }
+                    else if(Y + Camera.OrthogonalHeight / 2 > Map.Top + Map.Height)
+                    {
+                        lerpSmoothY = false;
+                    }
+                }
+            }
+
+            ApplyTarget(target, lerpSmoothX, lerpSmoothY);
 
             hasActivityBeenCalled = true;
         }
@@ -428,22 +467,32 @@ namespace FlatRedBall.Entities
 
         public void ApplyTarget(Vector2 target, bool lerpSmooth = true)
         {
+            ApplyTarget(target, lerpSmooth, lerpSmooth);
+        }
+
+        public void ApplyTarget(Vector2 target, bool lerpSmoothX, bool lerpSmoothY)
+        {
             var effectiveThis = this.Parent ?? this;
 
-            if (lerpSmooth == false)
+            if (lerpSmoothX == false)
             {
                 effectiveThis.Position.X = target.X;
-                effectiveThis.Position.Y = target.Y;
             }
             else
             {
                 float xDifference = 0;
-                float yDifference = 0;
-
                 xDifference = target.X - effectiveThis.Position.X;
-                yDifference = target.Y - effectiveThis.Position.Y;
-
                 effectiveThis.Velocity.X = xDifference * LerpCoefficient;
+            }
+
+            if (lerpSmoothY == false)
+            {
+                effectiveThis.Position.Y = target.Y;
+            }
+            else
+            {
+                float yDifference = 0;
+                yDifference = target.Y - effectiveThis.Position.Y;
                 effectiveThis.Velocity.Y = yDifference * LerpCoefficient;
             }
 
@@ -473,9 +522,11 @@ namespace FlatRedBall.Entities
 
             var currentSeparationDistance = separationVector.Length();
 
+            float desiredZoom;
+
             if(currentSeparationDistance > noZoomDistance)
             {
-                var newZoom = System.Math.Min(furthestZoom, currentSeparationDistance / noZoomDistance);
+                desiredZoom = System.Math.Min(furthestZoom, currentSeparationDistance / noZoomDistance);
 
                 if(Map != null)
                 {
@@ -484,15 +535,25 @@ namespace FlatRedBall.Entities
 
                     var maxZoomX = mapWidth / defaultOrthoWidth;
                     var maxZoomY = mapHeight / defaultOrthoHeight;
-                    newZoom = System.Math.Min(System.Math.Min(newZoom, maxZoomX), maxZoomY);
+                    desiredZoom = System.Math.Min(System.Math.Min(desiredZoom, maxZoomX), maxZoomY);
                 }
 
-                Camera.OrthogonalHeight = defaultOrthoHeight * newZoom;
             }
             else
             {
-                Camera.OrthogonalHeight = defaultOrthoHeight;
+                desiredZoom = 1;
             }
+
+            if(LerpSmoothZoom)
+            {
+                CurrentZoom = MathHelper.Lerp(CurrentZoom, desiredZoom, .1f);
+            }
+            else
+            {
+                CurrentZoom = desiredZoom;
+            }
+
+            Camera.OrthogonalHeight = defaultOrthoHeight * CurrentZoom;
             Camera.FixAspectRatioYConstant();
         }
 
