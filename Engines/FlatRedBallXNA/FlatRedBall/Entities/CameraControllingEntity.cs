@@ -476,6 +476,17 @@ namespace FlatRedBall.Entities
             if(currentSeparationDistance > noZoomDistance)
             {
                 var newZoom = System.Math.Min(furthestZoom, currentSeparationDistance / noZoomDistance);
+
+                if(Map != null)
+                {
+                    var mapHeight = Map.Height;
+                    var mapWidth = Map.Width;
+
+                    var maxZoomX = mapWidth / defaultOrthoWidth;
+                    var maxZoomY = mapHeight / defaultOrthoHeight;
+                    newZoom = System.Math.Min(System.Math.Min(newZoom, maxZoomX), maxZoomY);
+                }
+
                 Camera.OrthogonalHeight = defaultOrthoHeight * newZoom;
             }
             else
