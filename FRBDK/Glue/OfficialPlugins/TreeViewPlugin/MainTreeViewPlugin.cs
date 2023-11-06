@@ -157,7 +157,7 @@ namespace OfficialPlugins.TreeViewPlugin
                 SelectionLogic.SuppressFocus = true;
                 SelectionLogic.IsPushingSelectionOutToGlue = false;
 
-                MainViewModel.DeselectResursively();
+                MainViewModel.DeselectResursively(true);
 
                 for (int i = 0; i < selectedTreeNodes.Count; i++)
                 {

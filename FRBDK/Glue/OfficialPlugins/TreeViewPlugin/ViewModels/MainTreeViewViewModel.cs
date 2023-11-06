@@ -686,11 +686,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             GlobalContentRootNode.Children.Clear();
         }
 
-        internal void DeselectResursively()
+        internal void DeselectResursively(bool callSelectionLogic)
         {
-            ScreenRootNode.DeselectResursively();
-            EntityRootNode.DeselectResursively();
-            GlobalContentRootNode.DeselectResursively();
+            ScreenRootNode.DeselectResursively(callSelectionLogic);
+            EntityRootNode.DeselectResursively(callSelectionLogic);
+            GlobalContentRootNode.DeselectResursively(callSelectionLogic);
         }
 
         #region Collapse

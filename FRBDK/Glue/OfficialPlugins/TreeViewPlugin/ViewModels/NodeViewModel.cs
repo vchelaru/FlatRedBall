@@ -209,7 +209,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     if(value)
                     {
-                        SelectionLogic.HandleSelected(this);
+                        SelectionLogic.HandleSelected(this, focus:true, replaceSelection:false);
                     }
                     else
                     {
@@ -219,9 +219,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
-        public void SelectNoFocus()
+        public void SetSelectNoSelectionLogic(bool isSelected)
         {
-            Set(true, nameof(IsSelected));
+            Set(isSelected, nameof(IsSelected));
         }
 
         public int Level
@@ -299,13 +299,20 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
-        internal void DeselectResursively()
+        internal void DeselectResursively(bool callSelectionLogic)
         {
-            this.IsSelected = false;
+            if(callSelectionLogic)
+            {
+                this.IsSelected = false;
+            }
+            else
+            {
+                SetSelectNoSelectionLogic(false);
+            }    
 
             foreach (var child in this.Children)
             {
-                child.DeselectResursively();
+                child.DeselectResursively(callSelectionLogic);
             }
         }
 
