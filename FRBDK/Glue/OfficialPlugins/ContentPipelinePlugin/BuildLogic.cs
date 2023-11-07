@@ -337,6 +337,8 @@ namespace OfficialPlugins.MonoGameContent
 
             var commandLineBuildExe = GetCommandLineBuildExe(project);
 
+            var contentDirectory = GlueState.ContentDirectory;
+
             //////////////EARLY OUT////////////////////////
             if (commandLineBuildExe == null)
             {
@@ -367,10 +369,15 @@ namespace OfficialPlugins.MonoGameContent
 
                 return toReturn;
             }
+
+            if(string.IsNullOrEmpty(contentDirectory))
+            {
+                return toReturn;
+            }
+
             ////////////END EARLY OUT//////////////////////
 
 
-            var contentDirectory = GlueState.ContentDirectory;
 
             var relativeToContent = FileManager.MakeRelative(rfsFilePath.FullPath, contentDirectory);
 
