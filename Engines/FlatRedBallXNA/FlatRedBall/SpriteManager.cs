@@ -22,11 +22,6 @@ using System.Diagnostics;
 using FlatRedBall.Instructions;
 using FlatRedBall.Performance.Measurement;
 
-#if UWP
-using Windows.System.Threading;
-using Windows.Foundation;
-#endif
-
 
 namespace FlatRedBall
 {
@@ -45,38 +40,23 @@ namespace FlatRedBall
 
 
 
-#if UWP
-        IAsyncAction mAction = null;
-#else
         ManualResetEvent mManualResetEvent;
 
-#endif
 
         public Updater()
         {
-#if !UWP
             mManualResetEvent = new ManualResetEvent(false);
-#endif
         }
 
         public void Reset()
         {
             
-#if UWP
-            mAction = null;
-#else
             mManualResetEvent.Reset();
-
-#endif
         }
 
         public void Wait()
         {
-#if UWP
-            mAction.AsTask().Wait();
-#else
             mManualResetEvent.WaitOne();
-#endif
         }
 
         internal void TimedActivity()
@@ -141,11 +121,8 @@ namespace FlatRedBall
         internal void ExecuteInstructions()
         {
             Reset();
-#if UWP
-            mAction = Windows.System.Threading.ThreadPool.RunAsync(ExecuteInstructionsInternal);
-#else
+
             ThreadPool.QueueUserWorkItem(ExecuteInstructionsInternal);
-#endif
         }
         void ExecuteInstructionsInternal(object unusedState)
         {
@@ -168,11 +145,7 @@ namespace FlatRedBall
         internal void UpdateDependencies()
         {
             Reset();
-#if UWP
-            mAction = Windows.System.Threading.ThreadPool.RunAsync(UpdateDependenciesInternal);
-#else
             ThreadPool.QueueUserWorkItem(UpdateDependenciesInternal);
-#endif
         }
         void UpdateDependenciesInternal(object unusedState)
         {
@@ -183,16 +156,8 @@ namespace FlatRedBall
             {
                 Sprite s = AutomaticallyUpdatedSprites[i];
                 s.UpdateDependencies(currentTime);
-
-#if SILVERLIGHT
-                s.UpdateVertices(SpriteManager.Camera);
-
-#endif
-
             }
-#if !UWP
             mManualResetEvent.Set();
-#endif
         }
 
     }
