@@ -395,13 +395,6 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         [CategoryAttribute("Interface"), DefaultValue(true)]
-        public bool IncludeInIVisible
-        {
-            get;
-            set;
-        }
-
-        [CategoryAttribute("Interface"), DefaultValue(true)]
         public bool IncludeInICollidable
         {
             get;
@@ -809,7 +802,6 @@ namespace FlatRedBall.Glue.SaveClasses
             Instantiate = true;
             //Events = new List<EventSave>();
 
-            IncludeInIVisible = true;
             IncludeInIClickable = true;
             IncludeInICollidable = true;
             CallActivity = true;

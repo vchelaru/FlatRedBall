@@ -337,7 +337,6 @@ namespace FlatRedBall.Glue.SaveClasses
                 nos1.SourceFile != nos2.SourceFile ||
                 nos1.SourceClassGenericType != nos2.SourceClassGenericType ||
                 nos1.AddToManagers != nos2.AddToManagers ||
-                nos1.IncludeInIVisible != nos2.IncludeInIVisible ||
                 nos1.IncludeInICollidable != nos2.IncludeInICollidable ||
                 nos1.IncludeInIClickable != nos2.IncludeInIClickable ||
                 nos1.SourceName != nos2.SourceName;

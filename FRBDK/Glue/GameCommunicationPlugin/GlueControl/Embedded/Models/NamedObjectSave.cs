@@ -247,12 +247,6 @@ namespace GlueControl.Models
             set;
         }
 
-        public bool IncludeInIVisible
-        {
-            get;
-            set;
-        }
-
         public bool IncludeInICollidable
         {
             get;

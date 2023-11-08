@@ -260,10 +260,6 @@ namespace FlatRedBall.Glue.SetVariable
                                     GlueCommands.Self.GenerateCodeCommands
                                         .GenerateElementAndReferencedObjectCode(nosEntitySave);
                                 }
-                                else if (dialogResult == DialogResult.No)
-                                {
-                                    nos.IncludeInIVisible = false;
-                                }
                             }
                         }
                     }

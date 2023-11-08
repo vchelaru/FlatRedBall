@@ -284,10 +284,6 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 currentValue = nos.RemoveFromManagersWhenInvisible;
             }
-            else if(changedMember == nameof(NamedObjectSave.IncludeInIVisible))
-            {
-                currentValue = nos.IncludeInIVisible;
-            }
             else if (changedMember == nameof(NamedObjectSave.IncludeInICollidable))
             {
                 currentValue = nos.IncludeInICollidable;
