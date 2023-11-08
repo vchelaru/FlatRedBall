@@ -5,6 +5,8 @@
 [![Join the chat](https://img.shields.io/discord/586997072373481494)](https://discord.gg/tG5RBgw)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fflatredball.com)](https://flatredball.com)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2FFlatRedBall)](https://twitter.com/FlatRedBall)
+
+Star Velocity:
 [![Sparkline](https://stars.medv.io/vchelaru/FlatRedBall.svg)](https://stars.medv.io/vchelaru/FlatRedBall)
 
 The FlatRedBall Game Engine is designed to boost your productivity as a game developer, with a particular focus on building 2D games of any genre. It provides a powerful editor to help you organize your projects. At runtime, the FlatRedBall engine provides efficiency, stability, and features which have been refined for over two decades.
@@ -20,7 +22,7 @@ The fastest way to get help is to ask in our discord chat: https://discord.gg/tG
 
 If you prefer, you can also file issues on Github: https://github.com/vchelaru/FlatRedBall/issues
 
-Of course, FlatRedBall has the best documentation: https://flatredball.com/documentation/
+Of course, FlatRedBall has the best documentation: https://docs.flatredball.com/
 
 ## FlatRedBall Games
 
