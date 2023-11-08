@@ -412,7 +412,7 @@
     <value>Snapping</value>
   </data>
   <data name="WarningLocalizationFileChange" xml:space="preserve">
-    <value>This will also reload if localization CSV files change.\nIf unchecked, the game will only respond to file changes (like TMX) in edit mode</value>
+    <value>This will also reload if localization CSV files change. If unchecked, the game will only respond to file changes (like TMX) in edit mode</value>
   </data>
   <data name="ErrorGameThrewNullString" xml:space="preserve">
     <value>Null string returned back from the game</value>

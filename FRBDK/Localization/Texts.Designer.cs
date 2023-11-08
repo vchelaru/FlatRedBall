@@ -7900,7 +7900,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will also reload if localization CSV files change.\nIf unchecked, the game will only respond to file changes (like TMX) in edit mode.
+        ///   Looks up a localized string similar to This will also reload if localization CSV files change. If unchecked, the game will only respond to file changes (like TMX) in edit mode.
         /// </summary>
         public static string WarningLocalizationFileChange {
             get {

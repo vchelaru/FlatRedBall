@@ -403,7 +403,6 @@ namespace GlueControl.Models
             //mTypedMembersReadOnly = new ReadOnlyCollection<TypedMemberBase>(mTypedMembers);
             ////Events = new List<EventSave>();
 
-            IncludeInIVisible = true;
             IncludeInIClickable = true;
             IncludeInICollidable = true;
             //CallActivity = true;

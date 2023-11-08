@@ -50,7 +50,11 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         public void HandleFileChanged(FilePath filePath, FileChangeType changeType)
         {
-            if(changeType != FileChangeType.Modified)
+            if(changeType != FileChangeType.Modified &&
+                // tiled renames when saving
+                changeType != FileChangeType.Renamed &&
+                // Some aps delete/recreate:
+                changeType != FileChangeType.Created)
             {
                 return;
             }
