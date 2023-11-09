@@ -128,6 +128,13 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>float</Type>
+      <Name>LineHeightMultiplier</Name>
+      <Value xsi:type="xsd:float">1</Value>
+      <Category>Font</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>int?</Type>
       <Name>MaxLettersToShow</Name>
       <Category>Text</Category>
