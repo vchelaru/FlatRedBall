@@ -164,5 +164,18 @@ namespace OfficialPlugins.ContentPreview.Views
 
             _cameraLogic.RefreshCameraZoomToViewModel();
         }
+
+        private void GumCanvas_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Do we want to have CTRL required? Theres no nudging or other behavior so
+            // might as well just handle it without CTRL. If we decide to have a keyboard
+            // in the future.
+            //if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            //{
+            //    // CTRL key is pressed
+            //}
+            _cameraLogic.HandleKey(e);
+
+        }
     }
 }

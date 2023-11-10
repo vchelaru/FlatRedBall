@@ -122,6 +122,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             if (nodeViewModel != null)
             {
                 currentNodes.Add(nodeViewModel);
+                nodeViewModel.SetSelectNoSelectionLogic(true);
             }
 
             if (nodeViewModel != null && nodeViewModel.IsSelected && focus)

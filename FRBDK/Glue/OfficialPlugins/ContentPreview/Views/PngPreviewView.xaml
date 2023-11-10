@@ -18,6 +18,7 @@
                 MouseDown="GumCanvas_MouseDown"
                 MouseMove="GumCanvas_MouseMove"
                 MouseWheel="GumCanvas_MouseWheel"
+                KeyDown="GumCanvas_KeyDown"
                            ></wpf1:GumSKElement>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
             <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>

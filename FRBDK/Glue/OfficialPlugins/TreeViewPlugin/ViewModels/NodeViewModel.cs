@@ -209,7 +209,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     if(value)
                     {
-                        SelectionLogic.HandleSelected(this, focus:true, replaceSelection:false);
+                        SelectionLogic.HandleSelected(this, focus:true, replaceSelection:true);
                     }
                     else
                     {
