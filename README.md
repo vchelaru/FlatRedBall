@@ -11,6 +11,10 @@ Star Velocity:
 
 The FlatRedBall Game Engine is designed to boost your productivity as a game developer, with a particular focus on building 2D games of any genre. It provides a powerful editor to help you organize your projects. At runtime, the FlatRedBall engine provides efficiency, stability, and features which have been refined for over two decades.
 
+![image](https://github.com/vchelaru/FlatRedBall/assets/729631/8fc4fbcb-93d7-4d26-9cbb-9b48329d6c36)
+
+The FlatRedBall Engine utilizes the C# programming language, operating on the full version of .NET for uncompromised access to modern C# features and all NuGet packages. Games can be launched effortlessly via the FlatRedBall Editor or directly from Visual Studio, streamlining the development process.
+
 ## Downloading FlatRedBall
 
 For instructions on how to download FlatRedBall (both prebuilt and how to build from source), see https://flatredball.com/download/
