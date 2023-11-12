@@ -176,6 +176,9 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         private void MainTreeView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
 
+            var objectPushed = e.OriginalSource;
+            var frameworkElementPushed = (objectPushed as FrameworkElement);
+
             if (e.ChangedButton == MouseButton.Left && e.LeftButton == MouseButtonState.Pressed)
             {
                 var timeSinceLastClick = DateTime.Now - lastClick;
@@ -186,10 +189,12 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 lastClick = DateTime.Now;
                 startPoint = e.GetPosition(null);
             }
-            var objectPushed = e.OriginalSource;
-            var frameworkElementPushed = (objectPushed as FrameworkElement);
 
-            nodePushed = frameworkElementPushed?.DataContext as NodeViewModel;
+
+            if(e.RightButton == MouseButtonState.Pressed)
+            {
+                nodePushed = frameworkElementPushed?.DataContext as NodeViewModel;
+            }
             // tree nodes may get selected when they are created rather than through a click (which changes the 
             // view model). Vic isn't sure why so this is a little bit of a hack:
             RefreshRightClickMenu(nodePushed);
@@ -264,6 +269,14 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void MainTreeView_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
+            var objectPushed = e.OriginalSource;
+            var frameworkElementPushed = (objectPushed as FrameworkElement);
+            if (frameworkElementPushed?.DataContext as NodeViewModel == nodePushed)
+            {
+                SelectionLogic.HandleSelected(nodePushed, focus: true, replaceSelection: true);
+
+            }
+
             nodePushed = null;
         }
 

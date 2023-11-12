@@ -606,6 +606,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             container ??= GlueState.Self.CurrentElement;
 
+            if(container == null)
+            {
+                throw new NullReferenceException("The current element is null)");
+            }
+
             var viewModel = new AddCustomVariableViewModel(container)
             {
                 SetByDerived = true,

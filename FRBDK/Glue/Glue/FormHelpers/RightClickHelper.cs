@@ -453,8 +453,6 @@ public static class RightClickHelper
     static GeneralToolStripMenuItem addEntityToolStripMenuItem;
     static GeneralToolStripMenuItem removeFromProjectToolStripMenuItem;
 
-    static GeneralToolStripMenuItem addVariableToolStripMenuItem;
-
     static GeneralToolStripMenuItem editResetVariablesToolStripMenuItem;
 
     static GeneralToolStripMenuItem setCreatedClassToolStripMenuItem;
@@ -747,7 +745,18 @@ public static class RightClickHelper
 
         else if (targetNode.IsRootCustomVariablesNode())
         {
-            AddItem(addVariableToolStripMenuItem);
+            var targetElement = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+
+            if(targetElement == null)
+            {
+                // for Vic to figure out what's up... This should never be null because the target node 
+                System.Diagnostics.Debugger.Break();
+            }
+
+            Add(L.Texts.VariableAdd, () => 
+                GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog(CustomVariableType.New, container: targetElement));
+
+            
         }
 
         #endregion
@@ -1190,10 +1199,6 @@ public static class RightClickHelper
         mMoveToTop = new GeneralToolStripMenuItem($"^^ {L.Texts.MoveToTop}");
         mMoveToTop.ShortcutKeyDisplayString = "Alt+Shift+Up";
         mMoveToTop.Click += MoveToTopClick;
-
-        addVariableToolStripMenuItem = new GeneralToolStripMenuItem();
-        addVariableToolStripMenuItem.Text = L.Texts.VariableAdd;
-        addVariableToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog(CustomVariableType.New);
 
         editResetVariablesToolStripMenuItem = new GeneralToolStripMenuItem();
         editResetVariablesToolStripMenuItem.Text = L.Texts.VariableResetEdit;

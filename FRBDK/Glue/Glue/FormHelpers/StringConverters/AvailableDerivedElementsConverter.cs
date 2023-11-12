@@ -39,7 +39,8 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
 
             var derived = ObjectFinder.Self.GetAllDerivedElementsRecursive(BaseElement);
 
-            stringsToReturn.AddRange(derived.Select(item => item.Name));
+            var names = derived.Select(item => item.Name).OrderBy(item => item);
+            stringsToReturn.AddRange(names);
 
             return new StandardValuesCollection(stringsToReturn);
         }

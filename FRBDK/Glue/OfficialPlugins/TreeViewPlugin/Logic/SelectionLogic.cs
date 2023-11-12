@@ -93,7 +93,10 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             {
                 didSelectionChange = false;
             }
-            else if (currentNodes.Count == 0 && newTag == null)
+            // Someone could change from a node without a tag to a different node without a tag,
+            // so base it on the nodeViewModel
+            //else if (currentNodes.Count == 0 && newTag == null)
+            else if (currentNodes.Count == 0 && nodeViewModel == null)
             {
                 didSelectionChange = false;
             }
