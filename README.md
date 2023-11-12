@@ -6,10 +6,16 @@
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fflatredball.com)](https://flatredball.com)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2FFlatRedBall)](https://twitter.com/FlatRedBall)
 
-Star Velocity:
-[![Sparkline](https://stars.medv.io/vchelaru/FlatRedBall.svg)](https://stars.medv.io/vchelaru/FlatRedBall)
-
 The FlatRedBall Game Engine is designed to boost your productivity as a game developer, with a particular focus on building 2D games of any genre. It provides a powerful editor to help you organize your projects. At runtime, the FlatRedBall engine provides efficiency, stability, and features which have been refined for over two decades.
+
+![image](https://github.com/vchelaru/FlatRedBall/assets/729631/8fc4fbcb-93d7-4d26-9cbb-9b48329d6c36)
+
+The FlatRedBall Engine utilizes the C# programming language, operating on the full version of .NET for uncompromised access to modern C# features and all NuGet packages. Games can be launched effortlessly via the FlatRedBall Editor or directly from Visual Studio, streamlining the development process.
+
+FlatRedBall is mature and continually improving. Reported issues are resolved or commented soon after they are created. We actively watch PRs and keep them from piling up. Commits are being made almost daily - [check the commit history to see the activity for yourself.](https://github.com/vchelaru/FlatRedBall/commits/NetStandard)
+
+### Star Velocity
+[![Sparkline](https://stars.medv.io/vchelaru/FlatRedBall.svg)](https://stars.medv.io/vchelaru/FlatRedBall)
 
 ## Downloading FlatRedBall
 
