@@ -1413,7 +1413,7 @@ namespace GlueControl.Editing
                     {
                         return (T)(object)parsedInt;
                     }
-#if MONOGAME_381
+#if MONOGAME_381 || FNA
                     else if (Enum.TryParse(typeof(T), asString, out object parsedAsObject))
                     {
                         return (T)parsedAsObject;

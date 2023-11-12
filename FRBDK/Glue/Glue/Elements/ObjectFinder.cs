@@ -1193,7 +1193,9 @@ public class ObjectFinder : IObjectFinder
 
 
 
-            if (isTunneled)
+            if (isTunneled && 
+                // This could be the case on an unload of the project:
+                containingElement != null)
             {
                 string property = customVariable.SourceObjectProperty;
 
