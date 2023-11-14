@@ -546,6 +546,7 @@ namespace FlatRedBall.Entities
                     var maxZoomX = mapWidth / defaultOrthoWidth;
                     var maxZoomY = mapHeight / defaultOrthoHeight;
                     desiredZoom = System.Math.Min(System.Math.Min(desiredZoom, maxZoomX), maxZoomY);
+                    desiredZoom = System.Math.Max(desiredZoom, 1);
                 }
 
             }
