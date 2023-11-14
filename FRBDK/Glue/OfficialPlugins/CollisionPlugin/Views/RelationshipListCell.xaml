@@ -8,7 +8,7 @@
     <Grid>
         <Grid Visibility="{Binding RelationshipDetailsVisibility}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock VerticalAlignment="Center"  Margin="0,4,0,4" >
@@ -16,6 +16,9 @@
                     <TextBlock                
                         Text="{Binding RelationshipDetails, FallbackValue=CollisionName}"></TextBlock>
                 </Hyperlink>
+            </TextBlock>
+            <TextBlock Grid.Column="1" Text="{Binding RelationshipPhysicsDetails}" VerticalAlignment="Center" Margin="5,0,0,0">
+                
             </TextBlock>
         </Grid>
         

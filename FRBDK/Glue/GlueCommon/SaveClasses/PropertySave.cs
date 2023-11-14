@@ -95,6 +95,18 @@ namespace FlatRedBall.Glue.SaveClasses
                     {
                         return (T)((object)(int)asLong2);
                     }
+                    else if( typeof(T) == typeof(int?) && uncastedValue is long asLong3)
+                    {
+                        return (T)((object)(int?)asLong3);
+                    }
+                    else if( typeof(T) == typeof(float?) && uncastedValue is double asDouble3)
+                    {
+                        return (T)((object)(float?)asDouble3);
+                    }
+                    else if (typeof(T) == typeof(decimal?) && uncastedValue is double asDouble4)
+                    {
+                        return (T)((object)(decimal?)asDouble4);
+                    }
                     else if (typeof(T).IsEnum && uncastedValue is int asInt)
                     {
                         return (T)((object)asInt);
