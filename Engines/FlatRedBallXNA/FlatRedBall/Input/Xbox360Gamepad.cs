@@ -1304,7 +1304,7 @@ namespace FlatRedBall.Input
             var isConnected = mGamePadState.IsConnected;
             var wasConnected = mGamePadState.IsConnected;
 
-#if MONOGAME
+#if MONOGAME || FNA
             // In MonoGame, calling the GamePadState constructor makes it connected.
             if(isConnected)
             {
@@ -1312,21 +1312,36 @@ namespace FlatRedBall.Input
             }
             else
             {
+#if FNA
+                mGamePadState = new GamePadState();
+#endif
+
+#if MONOGAME
                 mGamePadState = GamePadState.Default;
+#endif
             }
-            if(wasConnected)
+            if (wasConnected)
             {
                 mLastGamePadState = new GamePadState(new GamePadThumbSticks(), new GamePadTriggers(), new GamePadButtons(), new GamePadDPad());
             }
             else
             {
+#if FNA
+                mLastGamePadState = new GamePadState();
+#endif
+
+#if MONOGAME
                 mLastGamePadState = GamePadState.Default;
+#endif
             }
 #else
-            // XNA doesn't have .Default
-            mGamePadState = new GamePadState();
+                // XNA doesn't have .Default
+                mGamePadState = new GamePadState();
             mLastGamePadState = new GamePadState() ;
 #endif
+
+
+
 
 
             mLeftStick.Clear();

@@ -216,6 +216,12 @@ namespace OfficialPlugins.GameHost.Views
         {
             SetGameToEmbeddedGameWindow();
 
+            // In FNA, if the game resizes externally, the internal methods for resizing do not get called, so the
+            // camera doesn't adjust, aspect ratio isn't fixed, etc. We need to force this
+            if (GlueState.Self.CurrentMainProject is FnaDesktopProject && ViewModel.IsRunning && ViewModel.IsWindowEmbedded)
+            {
+                _ = CommandSender.Self.Send(new ForceClientSizeUpdatesDto());
+            }
         }
 
         static double? windowsScaleFactor = null;
@@ -393,12 +399,7 @@ namespace OfficialPlugins.GameHost.Views
         public async void ReactToMainWindowResizeEnd()
         {
             await ForceRefreshGameArea();
-            // In FNA, if the game resizes externally, the internal methods for resizing do not get called, so the
-            // camera doesn't adjust, aspect ratio isn't fixed, etc. We need to force this
-            if(GlueState.Self.CurrentMainProject is FnaDesktopProject && ViewModel.IsRunning && ViewModel.IsWindowEmbedded)
-            {
-                _=CommandSender.Self.Send(new ForceClientSizeUpdatesDto());
-            }
+
         }
 
         /// <summary>
