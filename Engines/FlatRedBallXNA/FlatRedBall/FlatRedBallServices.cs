@@ -325,7 +325,7 @@ namespace FlatRedBall
                     // above
                     mGraphicsOptions.ResumeDeviceReset();
 
-#if WINDOWS 
+#if WINDOWS || FNA
                     FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
 #endif
 
@@ -350,7 +350,7 @@ namespace FlatRedBall
 
             mGraphicsOptions.ResumeDeviceReset();
 
-    #if WINDOWS
+    #if WINDOWS || FNA
             FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
     #endif
             //mGraphicsOptions.ResumeDeviceReset();
@@ -1549,7 +1549,6 @@ namespace FlatRedBall
             }
         }
 
-#if !FRB_MDX && !XNA3
         public static void SuspendEngine(string textureToDraw, Rectangle sourceRect)
         {
             Unload("SuspendEngine");
@@ -1583,7 +1582,6 @@ namespace FlatRedBall
                 }
             }
         }
-#endif
 
         #endregion
 

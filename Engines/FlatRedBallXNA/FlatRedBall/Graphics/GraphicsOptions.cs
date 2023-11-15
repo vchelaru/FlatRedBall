@@ -369,7 +369,7 @@ namespace FlatRedBall.Graphics
 
         void HandleClientSizeOrOrientationChange(object sender, EventArgs e)
         {
-#if !WINDOWS
+#if !WINDOWS && !FNA
             SizeOrOrientationChanged?.Invoke(this, null);
 #endif
         }
@@ -498,7 +498,7 @@ namespace FlatRedBall.Graphics
 
             // Not sure why but the GameWindow's resolution change doesn't fire
             // That's okay, we now have a custom event for it.  Glue will generate against this:
-#if !WINDOWS
+#if !WINDOWS && !FNA
 
             SizeOrOrientationChanged?.Invoke(this, null);
 #endif
@@ -526,7 +526,7 @@ namespace FlatRedBall.Graphics
             mResolutionWidth = width;
             mResolutionHeight = height;
             ResetDevice();
-#if !WINDOWS
+#if !WINDOWS && !FNA
 
             SizeOrOrientationChanged?.Invoke(this, null);
 #endif
@@ -803,4 +803,4 @@ namespace FlatRedBall.Graphics
         #endregion
     }
 
-    }
+}
