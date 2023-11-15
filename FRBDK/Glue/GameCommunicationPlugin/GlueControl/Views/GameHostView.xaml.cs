@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using CompilerLibrary.ViewModels;
+using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace OfficialPlugins.GameHost.Views
 {
@@ -392,6 +393,12 @@ namespace OfficialPlugins.GameHost.Views
         public async void ReactToMainWindowResizeEnd()
         {
             await ForceRefreshGameArea();
+            // In FNA, if the game resizes externally, the internal methods for resizing do not get called, so the
+            // camera doesn't adjust, aspect ratio isn't fixed, etc. We need to force this
+            if(GlueState.Self.CurrentMainProject is FnaDesktopProject && ViewModel.IsRunning && ViewModel.IsWindowEmbedded)
+            {
+                _=CommandSender.Self.Send(new ForceClientSizeUpdatesDto());
+            }
         }
 
         /// <summary>
@@ -424,6 +431,7 @@ namespace OfficialPlugins.GameHost.Views
                 await Task.Delay(msDelayBetweenResizes);
                 MainPanelControl.ViewModel.LeftPanelWidth = new GridLength(leftPixel);
             }
+
         }
 
         public void HandleGluxLoaded()

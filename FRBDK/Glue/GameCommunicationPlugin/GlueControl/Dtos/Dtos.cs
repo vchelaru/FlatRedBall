@@ -335,6 +335,13 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
 
     #endregion
 
+    #region ForceClientSizeUpdatesDto
+
+    public class ForceClientSizeUpdatesDto { }
+
+    #endregion
+
+
     #region CreateNewEntityDto
     public class CreateNewEntityDto
     {

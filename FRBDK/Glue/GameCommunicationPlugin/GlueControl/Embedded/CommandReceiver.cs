@@ -798,7 +798,11 @@ namespace GlueControl
 
         #endregion
 
+        #region ForceClientSizeUpdatesDto
 
+        private static void HandleDto(ForceClientSizeUpdatesDto dto) => FlatRedBallServices.ForceClientSizeUpdates();
+
+        #endregion
 
         #region ChangeZoomDto
 
