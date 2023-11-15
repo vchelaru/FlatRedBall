@@ -3139,7 +3139,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Glue Wizard can help you get a fully functional game set up in seconds..
+        ///   Looks up a localized string similar to The New Project Wizard can help you get a fully functional game set up in seconds..
         /// </summary>
         public static string GlueWizardDescription {
             get {
@@ -3148,7 +3148,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Run Glue Wizard.
+        ///   Looks up a localized string similar to Run Wizard.
         /// </summary>
         public static string GlueWizardRun {
             get {

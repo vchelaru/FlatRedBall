@@ -1690,10 +1690,10 @@
     <value>Project Commands</value>
   </data>
   <data name="GlueWizardRun" xml:space="preserve">
-    <value>Run Glue Wizard</value>
+    <value>Run Wizard</value>
   </data>
   <data name="GlueWizardDescription" xml:space="preserve">
-    <value>The Glue Wizard can help you get a fully functional game set up in seconds.</value>
+    <value>The New Project Wizard can help you get a fully functional game set up in seconds.</value>
   </data>
   <data name="ProjectCreateNew" xml:space="preserve">
     <value>Create New Project</value>
