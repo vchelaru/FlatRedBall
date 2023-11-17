@@ -132,6 +132,11 @@ namespace FlatRedBall.Forms.Controls.Games
 
         #endregion
 
+        /// <summary>
+        /// Shows the dialog box (adds it to managers and sets IsVisible to true) and begins showing the text.
+        /// </summary>
+        /// <param name="text">The text to print out, either immediately or letter-by-letter according to LettersPerSecond.</param>
+        /// <param name="frbLayer">The FlatRedBall Layer to add the DialogBox to. If null, the dialog box will not be layered. This will attempt to use a Gum layer matching the FRB layer. This will automatically work if the Layer has been added through the FlatRedBall Editor.</param>
         public void Show(string text, FlatRedBall.Graphics.Layer frbLayer = null)
         {
             base.Show(frbLayer);
@@ -155,7 +160,12 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
-        public Task ShowAsync(string page) => ShowAsync(new string[] { page });
+        /// <summary>
+        /// Shows the dialog box (adds it to managers and sets IsVisible to true) and begins showing the text.
+        /// </summary>
+        /// <param name="text">The text to print out, either immediately or letter-by-letter according to LettersPerSecond.</param>
+        /// <returns>A task which completes when the text has been displayed and the DialogBox has been dismissed.</returns>
+        public Task ShowAsync(string text) => ShowAsync(new string[] { text });
 
         public async Task ShowAsync(IEnumerable<string> pages, FlatRedBall.Graphics.Layer frbLayer = null)
         {

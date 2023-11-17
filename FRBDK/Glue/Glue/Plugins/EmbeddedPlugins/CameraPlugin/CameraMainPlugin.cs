@@ -20,7 +20,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         CameraSettingsControl control;
         DisplaySettingsViewModel viewModel = new DisplaySettingsViewModel();
         PluginTab tab;
-            
+        CameraToolbar cameraToolbar;
+
         public static CameraMainPlugin Self { get; private set; }
 
         private bool respondToViewModelChanges = true;
@@ -32,17 +33,27 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             viewModel.PropertyChanged += HandleDisplaySettingsChanged;
 
             this.ReactToLoadedGlux += HandleLoadedGlux;
+            this.ReactToUnloadedGlux += HandleUnloadedGlux;
+
+            cameraToolbar = new CameraToolbar();
 
             base.AddMenuItemTo(L.Texts.CameraSettings, L.MenuIds.CameraSettingsId, HandleCameraSettings, L.MenuIds.SettingsId);
+        }
 
-            base.AddToToolBar(new CameraToolbar(), "Standard");
+        private void HandleUnloadedGlux()
+        {
+            base.RemoveFromToolbar(cameraToolbar, "Standard");
         }
 
         private void HandleLoadedGlux()
         {
+
+                
+            base.AddToToolBar(cameraToolbar, "Standard");
+            
             // When the project loads, immediately set the ATI so 
             // that Glue behaves properly
-            if(GlueState.Self.CurrentGlueProject?.DisplaySettings != null)
+            if (GlueState.Self.CurrentGlueProject?.DisplaySettings != null)
             {
                 respondToViewModelChanges = false;
                 {

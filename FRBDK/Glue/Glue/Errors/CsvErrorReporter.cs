@@ -17,46 +17,49 @@ namespace FlatRedBall.Glue.Errors
 
             List<ErrorViewModel> errors = new List<ErrorViewModel>();
 
-            var csvs = glueProject.GetAllReferencedFiles()
-                .Where(item => item.IsCsvOrTreatedAsCsv)
-                .ToArray();
-            var customClasses = glueProject.CustomClasses;
-            foreach (var rfs in csvs)
+            if(glueProject != null)
             {
-                var classWithError = customClasses.FirstOrDefault(item =>
+                var csvs = glueProject.GetAllReferencedFiles()
+                    .Where(item => item.IsCsvOrTreatedAsCsv)
+                    .ToArray();
+                var customClasses = glueProject.CustomClasses;
+                foreach (var rfs in csvs)
                 {
-                    return CsvAndCustomClassSameName.IsError(rfs, item);
-                });
-
-                if (classWithError != null)
-                {
-                    var error = new CsvAndCustomClassSameName(rfs, classWithError);
-
-                    errors.Add(error);
-                }
-
-                var filePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
-
-                // See if this has a duplicate 
-                CsvCodeGenerator.DeserializeToRcr(
-                    rfs.CsvDelimiter, 
-                    filePath,
-                    out RuntimeCsvRepresentation rcr, out bool succeeded);
-                
-                if(succeeded)
-                {
-                    var duplicateError = CsvCodeGenerator.GetDuplicateMessageIfDuplicatesFound(
-                        rcr,
-                        rfs.CreatesDictionary,
-                        filePath.FullPath);
-
-                    if(!string.IsNullOrEmpty(duplicateError))
+                    var classWithError = customClasses.FirstOrDefault(item =>
                     {
-                        var vm = new CsvDuplicateItemInFileViewModel();
-                        vm.FilePath = filePath;
-                        vm.UpdateDetails();
-                        errors.Add(vm);
+                        return CsvAndCustomClassSameName.IsError(rfs, item);
+                    });
+
+                    if (classWithError != null)
+                    {
+                        var error = new CsvAndCustomClassSameName(rfs, classWithError);
+
+                        errors.Add(error);
+                    }
+
+                    var filePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+
+                    // See if this has a duplicate 
+                    CsvCodeGenerator.DeserializeToRcr(
+                        rfs.CsvDelimiter, 
+                        filePath,
+                        out RuntimeCsvRepresentation rcr, out bool succeeded);
+                
+                    if(succeeded)
+                    {
+                        var duplicateError = CsvCodeGenerator.GetDuplicateMessageIfDuplicatesFound(
+                            rcr,
+                            rfs.CreatesDictionary,
+                            filePath.FullPath);
+
+                        if(!string.IsNullOrEmpty(duplicateError))
+                        {
+                            var vm = new CsvDuplicateItemInFileViewModel();
+                            vm.FilePath = filePath;
+                            vm.UpdateDetails();
+                            errors.Add(vm);
                         
+                        }
                     }
                 }
             }

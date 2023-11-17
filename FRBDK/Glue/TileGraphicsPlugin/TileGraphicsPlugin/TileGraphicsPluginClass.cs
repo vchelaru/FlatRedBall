@@ -273,10 +273,12 @@ public class TileGraphicsPluginClass : PluginBase
 
         this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
 
-        this.ReactToLoadedGlux += () =>
+        this.ReactToUnloadedGlux += HandleGluxUnload;
+
+        this.ReactToLoadedGlux += async () =>
         {
             HandleGluxLoad();
-            tiledObjectTypeCreator.RefreshFile();
+            await tiledObjectTypeCreator.RefreshFile();
         };
 
         // Adds all objects contained within a file (like TMX)
@@ -295,13 +297,13 @@ public class TileGraphicsPluginClass : PluginBase
 
         //TilesetController.Self.GetTsxDirectoryRelativeToTmx = () => "../Tilesets/";
 
-        this.ReactToChangedPropertyHandler += (changedMember, oldalue, glueElement) =>
+        this.ReactToChangedPropertyHandler += async (changedMember, oldalue, glueElement) =>
         {
             if(GlueState.Self.CurrentCustomVariable != null)
             {
                 if (changedMember == nameof(CustomVariable.Name))
                 {
-                    tiledObjectTypeCreator.RefreshFile();
+                    await tiledObjectTypeCreator.RefreshFile();
                 }
 
             }
@@ -309,40 +311,40 @@ public class TileGraphicsPluginClass : PluginBase
             {
                 if (changedMember == nameof(EntitySave.CreatedByOtherEntities) || changedMember == nameof(EntitySave.Name))
                 {
-                    tiledObjectTypeCreator.RefreshFile();
+                    await tiledObjectTypeCreator.RefreshFile();
                 }
             }
         };
 
-        this.ReactToElementVariableChange += (element, variable) =>
+        this.ReactToElementVariableChange += async (element, variable) =>
         {
             if ((element as EntitySave)?.CreatedByOtherEntities == true)
             {
-                tiledObjectTypeCreator.RefreshFile();
+                await tiledObjectTypeCreator.RefreshFile();
             }
         };
 
-        this.ReactToVariableAdded += (newVariable) =>
+        this.ReactToVariableAdded += async (newVariable) =>
         {
             var element = EditorObjects.IoC.Container.Get<IGlueState>().CurrentElement;
             if ((element as EntitySave)?.CreatedByOtherEntities == true)
             {
-                tiledObjectTypeCreator.RefreshFile();
+                await tiledObjectTypeCreator.RefreshFile();
             }
         };
 
-        this.ReactToVariableRemoved += (removedVariable) =>
+        this.ReactToVariableRemoved += async (removedVariable) =>
         {
             var element = EditorObjects.IoC.Container.Get<IGlueState>().CurrentElement;
             if ((element as EntitySave)?.CreatedByOtherEntities == true)
             {
-                tiledObjectTypeCreator.RefreshFile();
+                await tiledObjectTypeCreator.RefreshFile();
             }
         };
 
-        this.NewEntityCreated += (newEntityCreated) =>
+        this.NewEntityCreated += async (newEntityCreated) =>
         {
-            tiledObjectTypeCreator.RefreshFile();
+            await tiledObjectTypeCreator.RefreshFile();
         };
 
         //this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
@@ -358,13 +360,15 @@ public class TileGraphicsPluginClass : PluginBase
         //this.CreateNewFileHandler += TmxCreationManager.Self.HandleNewTmxCreation;
     }
 
+    private void HandleGluxUnload()
+    {
+        base.RemoveFromToolbar(tiledToolbar, "Tools");
+    }
 
     private void CreateToolbar()
     {
         tiledToolbar = new TiledToolbar();
         tiledToolbar.Opened += HandleToolbarOpened;
-        //gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
-        base.AddToToolBar(tiledToolbar, "Tools");
     }
 
     private void HandleToolbarOpened(object sender, EventArgs e)
@@ -767,6 +771,8 @@ public class TileGraphicsPluginClass : PluginBase
 
     void HandleGluxLoad()
     {
+        base.AddToToolBar(tiledToolbar, "Tools");
+
         CodeItemAdderManager.Self.RefreshAppendGenerated();
 
         // Add the .cs files which include the map drawable batch classes

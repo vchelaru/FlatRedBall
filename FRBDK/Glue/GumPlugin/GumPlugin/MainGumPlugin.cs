@@ -466,7 +466,6 @@ public class MainGumPlugin : PluginBase
         gumToolbar = new GumToolbar();
         gumToolbar.DataContext = toolbarViewModel;
         gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
-        base.AddToToolBar(gumToolbar, Localization.Texts.Tools);
     }
 
     public bool HasGum() => AppState.Self.GumProjectSave != null;
@@ -623,6 +622,8 @@ public class MainGumPlugin : PluginBase
 
     private void HandleUnloadedGlux()
     {
+        base.RemoveFromToolbar(gumToolbar, Localization.Texts.Tools);
+
         AssetTypeInfoManager.Self.UnloadProjectSpecificAtis();
 
         AppState.Self.GumProjectSave = null;
@@ -955,6 +956,8 @@ public class MainGumPlugin : PluginBase
 
     private async void HandleGluxLoad()
     {
+        base.AddToToolBar(gumToolbar, Localization.Texts.Tools);
+
         var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
         toolbarViewModel.HasGumProject = gumRfs != null;
