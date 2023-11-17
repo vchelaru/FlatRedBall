@@ -19,13 +19,14 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
+        path: 'FRB'
 
     - name: Checkout Gum
       uses: actions/checkout@v4
       with:
-        name: ${{github.repository_owner}}/Gum
+        repository: ${{ github.repository_owner }}/Gum
         fetch-depth: 1
-        path: '..'
+        path: 'Gum'
 
     # Install the .NET Core workload
     - name: Install .NET Core
@@ -38,4 +39,10 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Build
-      run: dotnet build '.\FRBDK\Glue\Glue with All.sln'
+      run: dotnet build -c ${{ matrix.configuration }} 'FRB\FRBDK\Glue\Glue with All.sln'
+
+    - name: Package
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.configuration }}
+        path: FRB/FRBDK/Glue/Glue/bin/${{ matrix.configuration }}
