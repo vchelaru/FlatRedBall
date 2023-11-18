@@ -40,6 +40,11 @@ namespace FlatRedBall.Input
         PlayStationDualShock,
     }
 
+    /// <summary>
+    /// A list of button positions on the face of a controller which can be used to generalize
+    /// a button regardless of the button letter. This addresses the inconsistent button names between
+    /// Nintendo and Xbox controllers.
+    /// </summary>
     public enum ButtonPosition
     {
         FaceDown,
@@ -840,6 +845,7 @@ namespace FlatRedBall.Input
             return returnValue;
 
         }
+        public bool ButtonDown(ButtonPosition buttonPosition) => ButtonDown(GetButtonFromPosition(buttonPosition));
 
         /// <summary>
         /// Returns whether the argument button type is pushed. For analog buttons, such as LeftTrigger 
@@ -1007,7 +1013,7 @@ namespace FlatRedBall.Input
 
             return returnValue;
         }
-
+        public bool ButtonPushed(ButtonPosition buttonPosition) => ButtonPushed(GetButtonFromPosition(buttonPosition));
 
         public bool ButtonReleased(Button button)
         {
@@ -1156,6 +1162,7 @@ namespace FlatRedBall.Input
             return returnValue;
 
         }
+        public bool ButtonReleased(ButtonPosition buttonPosition) => ButtonReleased(GetButtonFromPosition(buttonPosition));
 
         /// <summary>
         /// Returns whether the argument was pushed this frame, or whether it is continually being held down and a "repeat" press
@@ -1194,6 +1201,8 @@ namespace FlatRedBall.Input
             return false;
 
         }
+        public bool ButtonRepeatRate(ButtonPosition buttonPosition, double timeAfterPush = .35, double timeBetweenRepeating = .12) => 
+            ButtonRepeatRate(GetButtonFromPosition(buttonPosition), timeAfterPush, timeBetweenRepeating);
 
         /// <summary>
         /// Returns an Xbox360ButtonReference for the argument Button.
@@ -1212,11 +1221,15 @@ namespace FlatRedBall.Input
             return cachedButtons[button];
         }
 
-        public Xbox360ButtonReference GetButton(ButtonPosition buttonPosition)
+        public Xbox360ButtonReference GetButton(ButtonPosition buttonPosition) =>
+            GetButton(GetButtonFromPosition(buttonPosition));
+        
+
+        public Button GetButtonFromPosition(ButtonPosition buttonPosition)
         {
             Button button = Button.A;
 
-            if(this.ButtonLayout == ButtonLayout.NintendoPro)
+            if (this.ButtonLayout == ButtonLayout.NintendoPro)
             {
                 switch (buttonPosition)
                 {
@@ -1234,7 +1247,7 @@ namespace FlatRedBall.Input
                         break;
                 }
             }
-            else if(this.ButtonLayout == ButtonLayout.GameCube)
+            else if (this.ButtonLayout == ButtonLayout.GameCube)
             {
                 switch (buttonPosition)
                 {
@@ -1271,7 +1284,7 @@ namespace FlatRedBall.Input
                 }
             }
 
-            return GetButton(button);
+            return button;
         }
 
         #endregion
@@ -1473,8 +1486,10 @@ namespace FlatRedBall.Input
         public void IgnoreButtonForOneFrame(Button buttonToIgnore)
         {
             mButtonsIgnoredForThisFrame[(int)buttonToIgnore] = true;
-
         }
+
+        public void IgnoreButtonForOneFrame(ButtonPosition buttonPosition) => 
+            IgnoreButtonForOneFrame(GetButtonFromPosition(buttonPosition));
 
 
         /// <summary>
