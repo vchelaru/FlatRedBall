@@ -22,7 +22,7 @@ namespace BuildServerUploaderConsole.Data
 
         public string RelativeToLibrariesDebugFolder { get; set; }
         public string RelativeToLibrariesReleaseFolder { get; set; }
-        public string TemplateFolder { get; set; }
+        public string TemplateCsProjFolder { get; set; }
 
         public string EngineCSProjLocation { get; set; }
 
@@ -30,15 +30,15 @@ namespace BuildServerUploaderConsole.Data
         {
             get
             {
-                var firstIndex = TemplateFolder.Replace("\\", "/").IndexOf("/");
+                var firstIndex = TemplateCsProjFolder.Replace("\\", "/").IndexOf("/");
 
-                return TemplateFolder.Substring(0, firstIndex);
+                return TemplateCsProjFolder.Substring(0, firstIndex);
             }
         }
 
         public override string ToString()
         {
-            return $"{TemplateFolder}{TemplateName}";
+            return $"{TemplateCsProjFolder}{TemplateName}";
         }
     }
 }

@@ -19,7 +19,7 @@ namespace BuildServerUploaderConsole.Data
 
                 engine.RelativeToLibrariesDebugFolder = @"Xna4Pc\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"Xna4Pc\Release";
-                engine.TemplateFolder = @"FlatRedBallXna4Template\FlatRedBallXna4Template\FlatRedBallXna4Template\";
+                engine.TemplateCsProjFolder = @"FlatRedBallXna4Template\FlatRedBallXna4Template\FlatRedBallXna4Template\";
 
                 engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\x86\Debug\FlatRedBall.Forms.dll");
                 engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\x86\Debug\FlatRedBall.Forms.pdb");
@@ -57,7 +57,7 @@ namespace BuildServerUploaderConsole.Data
 
                 engine.RelativeToLibrariesDebugFolder = @"Android\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"Android\Release";
-                engine.TemplateFolder = @"FlatRedBallAndroidTemplate\FlatRedBallAndroidTemplate\";
+                engine.TemplateCsProjFolder = @"FlatRedBallAndroidTemplate\FlatRedBallAndroidTemplate\";
 
                 engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\Android\Debug\FlatRedBallAndroid.dll");
                 engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\Android\Debug\FlatRedBallAndroid.pdb");
@@ -94,7 +94,7 @@ namespace BuildServerUploaderConsole.Data
 
                 engine.RelativeToLibrariesDebugFolder = @"iOS\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"iOS\Release";
-                engine.TemplateFolder = @"FlatRedBalliOSTemplate\FlatRedBalliOSTemplate\";
+                engine.TemplateCsProjFolder = @"FlatRedBalliOSTemplate\FlatRedBalliOSTemplate\";
 
                 engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\iOS\Debug\FlatRedBalliOS.dll");
                 engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\iOS\Debug\FlatRedBalliOS.pdb");
@@ -167,7 +167,7 @@ namespace BuildServerUploaderConsole.Data
 
                 engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
-                engine.TemplateFolder = @"FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\";
+                engine.TemplateCsProjFolder = @"FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\";
 
                 engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.dll");
                 engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.pdb");
@@ -207,7 +207,7 @@ namespace BuildServerUploaderConsole.Data
 
                 engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
-                engine.TemplateFolder = @"FlatRedBallDesktopGlNet6Template\FlatRedBallDesktopGlNet6Template\";
+                engine.TemplateCsProjFolder = @"FlatRedBallDesktopGlNet6Template\FlatRedBallDesktopGlNet6Template\";
                                        
                 // This is the built folder when building FlatRedBall.Forms sln
                 // All files below (DebugFiles and ReleaseFiles) should be contained
@@ -251,7 +251,57 @@ namespace BuildServerUploaderConsole.Data
                 Engines.Add(engine);
 
             }
+            // FNA Desktop
+            {
+                var engine = new EngineData();
 
+                engine.EngineCSProjLocation = @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.FNA\FlatRedBall.FNA.csproj";
+
+                engine.RelativeToLibrariesDebugFolder = @"FNA\Debug";
+                engine.RelativeToLibrariesReleaseFolder = @"FNA\Release";
+                engine.TemplateCsProjFolder = @"FlatRedBallDesktopFnaTemplate\FlatRedBallDesktopFnaTemplate\";
+
+                // This is the built folder when building FlatRedBall.Forms sln
+                // All files below (DebugFiles and ReleaseFiles) should be contained
+                // in that output folder because the project should reference those files
+                var debugBinFolder = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA\bin\Debug\net7.0\";
+                var releaseBinFolder = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA\bin\Release\net7.0\";
+
+                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBall.FNA.dll");
+                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBall.FNA.pdb");
+
+                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBall.Forms.FNA.dll");
+                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBall.Forms.FNA.deps.json");
+                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBall.Forms.FNA.pdb");
+
+                engine.DebugFiles.Add($"{debugBinFolder}FNA.dll");
+                engine.DebugFiles.Add($"{debugBinFolder}FNA.dll.config");
+                engine.DebugFiles.Add($"{debugBinFolder}FNA.pdb");
+
+                engine.DebugFiles.Add($"{debugBinFolder}GumCore.FNA.dll");
+                engine.DebugFiles.Add($"{debugBinFolder}GumCore.FNA.pdb");
+
+                engine.DebugFiles.Add($"{debugBinFolder}StateInterpolation.FNA.dll");
+                engine.DebugFiles.Add($"{debugBinFolder}StateInterpolation.FNA.pdb");
+
+                engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBall.FNA.dll");
+                engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBall.FNA.pdb");
+
+                engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBall.Forms.FNA.dll");
+                engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBall.Forms.FNA.pdb");
+
+                engine.ReleaseFiles.Add($"{releaseBinFolder}FNA.dll");
+                engine.ReleaseFiles.Add($"{releaseBinFolder}FNA.dll.config");
+                engine.ReleaseFiles.Add($"{releaseBinFolder}FNA.pdb");
+
+                engine.ReleaseFiles.Add($"{releaseBinFolder}GumCore.FNA.dll");
+                engine.ReleaseFiles.Add($"{releaseBinFolder}GumCore.FNA.pdb");
+
+                engine.ReleaseFiles.Add($"{releaseBinFolder}StateInterpolation.FNA.dll");
+                engine.ReleaseFiles.Add($"{releaseBinFolder}StateInterpolation.FNA.pdb");
+
+                Engines.Add(engine);
+            }
 
         }
     }

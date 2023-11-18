@@ -157,8 +157,14 @@ namespace GumPlugin.Managers
                         }
                         catch(Exception e)
                         {
-                            // it's okay, I think?
-                            GlueCommands.Self.PrintError($"Could not save Gum last change file {file}:\n{e}");
+                            // it's okay, I think? 
+                            // Update November 17, 2023 
+                            // Ya, this is a warning, but
+                            // we should not print an error
+                            // here. We'll just output a warning:
+                            GlueCommands.Self.PrintOutput($"Warning: Could not save Gum last change file {file}." +
+                                $"You can continue to work normally, but you may want to see if something is " +
+                                $"blocking access to this file if your team relies on this being part of the repository:\n{e}");
                         }
                     }
                 }

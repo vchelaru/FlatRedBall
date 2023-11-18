@@ -58,7 +58,7 @@ namespace BuildServerUploaderConsole.Processes
             ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"AnimationEditor\PreviewProject\AnimationEditor.csproj", VersionString);
 
             var net6Engine = AllData.Engines.First(item => item.EngineCSProjLocation?.Contains("FlatRedBallDesktopGLNet6.csproj") == true);
-            var templateLocation = net6Engine.TemplateFolder + "FlatRedBallDesktopGlNet6Template.csproj";
+            var templateLocation = net6Engine.TemplateCsProjFolder + "FlatRedBallDesktopGlNet6Template.csproj";
             ModifyNugetVersionInAssembly(DirectoryHelper.TemplateDirectory + templateLocation, VersionString);
 
             Results.WriteMessage("Glue assembly versions updated to " + VersionString);
