@@ -334,11 +334,20 @@ public class CustomVariableSaveSetPropertyLogic
     {
         bool didErrorOccur = false;
 
-        if (customVariable.SetByDerived && customVariable.IsShared)
-        {
-            GlueCommands.Self.DialogCommands.ShowMessageBox("Variables that are IsShared cannot be SetByDerived");
-            didErrorOccur = true;
-        }
+        // November 20, 2023
+        // This was a limitation 
+        // for a long time, but we
+        // want to have the ability
+        // to define variables in the
+        // base class, and have those overridden 
+        // in the derived. For example, an Enemy's
+        // display name should be defined in base, but
+        // set on derived like "Skeleton" or "Goblin".
+        //if (customVariable.SetByDerived && customVariable.IsShared)
+        //{
+            //GlueCommands.Self.DialogCommands.ShowMessageBox("Variables that are IsShared cannot be SetByDerived");
+            //didErrorOccur = true;
+        //}
 
         if (didErrorOccur)
         {
