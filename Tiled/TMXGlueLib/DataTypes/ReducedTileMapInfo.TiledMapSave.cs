@@ -150,12 +150,6 @@ namespace TMXGlueLib.DataTypes
 
                     firstGid = firstObjectWithTexture?.gid;
                 }
-                else
-                {
-                    //Image layers and any other future layer types in Tiled are not supported at
-                    //this time. Just move onto the next layer and ignore this one.
-                    continue;
-                }
 
                 if (firstGid > 0)
                 {
@@ -184,6 +178,14 @@ namespace TMXGlueLib.DataTypes
                         {
                             throw new NotImplementedException();
                         }
+                    }
+                }
+                else if (tiledLayer is MapImageLayer mapImageLayer)
+                {
+                    if (!string.IsNullOrEmpty(mapImageLayer.ImageObject?.Source))
+                    {
+                        directory = tmxDirectory;
+                        texture = FlatRedBall.IO.FileManager.RemoveDotDotSlash(directory + mapImageLayer.ImageObject.Source);
                     }
                 }
 
@@ -216,6 +218,11 @@ namespace TMXGlueLib.DataTypes
                 else if (tiledLayer is mapObjectgroup)
                 {
                     AddObjectLayerTiles(reducedLayerInfo, tiledLayer, tileSet, tileWidth, tileHeight);
+                }
+
+                else if (tiledLayer is MapImageLayer mapImageLayer)
+                {
+                    AddImageLayerTiles(reducedLayerInfo, mapImageLayer, tileWidth, tileHeight);
                 }
             }
         }
@@ -345,6 +352,42 @@ namespace TMXGlueLib.DataTypes
 
                 }
             }
+        }
+
+        private static void AddImageLayerTiles(ReducedLayerInfo reducedLayerInfo, MapImageLayer mapImageLayer, int tileWidth, int tileHeight)
+        {
+            ///////////////////////Early Out/////////////////////////
+            if (mapImageLayer.ImageObject == null)
+            {
+                return;
+            }
+            ///////////////////////End Early Out/////////////////////////
+
+            ReducedQuadInfo quad = new DataTypes.ReducedQuadInfo();
+
+            quad.LeftQuadCoordinate = 0;
+            quad.BottomQuadCoordinate = (float)-mapImageLayer.ImageObject.Height;
+
+            quad.OverridingWidth = mapImageLayer.ImageObject.Width;
+            quad.OverridingHeight = mapImageLayer.ImageObject.Height;
+
+            quad.RotationDegrees = (float)0;
+
+            // todo...
+            quad.FlipFlags = 0;
+
+            int leftPixelCoord = 0;
+            int topPixelCoord = 0;
+            int rightPixelCoord = (int)mapImageLayer.ImageObject.Width;
+            int bottomPixelCoord = (int)mapImageLayer.ImageObject.Height;
+
+            quad.LeftTexturePixel = (ushort)Math.Min(leftPixelCoord, rightPixelCoord);
+            quad.TopTexturePixel = (ushort)Math.Min(topPixelCoord, bottomPixelCoord);
+
+            quad.Name = mapImageLayer.Name;
+
+            reducedLayerInfo?.Quads.Add(quad);
+
         }
 
         private static void CreateFromSpriteEditorScene(TiledMapSave tiledMapSave, float scale, float zOffset, FileReferenceType referenceType, ReducedTileMapInfo toReturn)
