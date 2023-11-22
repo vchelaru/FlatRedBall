@@ -391,33 +391,39 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
         #region Custom Forms
 
-        string customFormsSaveLocation = CustomFormsCodeLocationFor(element).FullPath; 
-        var customFormsCode = CustomCodeGenerator.Self.GetCustomFormsCodeTemplateCode(element);
+        // Check if generated code is created. If not, don't create a custom.
+        // Generated may not be created if this maps to a standard Forms object
+        // like Button.
+        if (shouldGeneratedFormsBeInProject)
+        { 
+            string customFormsSaveLocation = CustomFormsCodeLocationFor(element).FullPath; 
+            var customFormsCode = CustomCodeGenerator.Self.GetCustomFormsCodeTemplateCode(element);
 
-        if(string.IsNullOrEmpty(customFormsCode))
-        {
-            resultToReturn.DidSaveCustomForms = false;
-        }
-        else if(!System.IO.File.Exists(customFormsSaveLocation))
-        {
-            resultToReturn.DidSaveCustomForms = true;
-        }
-
-        if (resultToReturn.DidSaveCustomForms)
-        {
-
-            var directory = FileManager.GetDirectory(customFormsSaveLocation);
-            System.IO.Directory.CreateDirectory(directory);
-
-            GlueCommands.Self.TryMultipleTimes(() =>
-                System.IO.File.WriteAllText(customFormsSaveLocation, customFormsCode));
-            
-            bool wasAnythingAdded =
-                FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                GlueState.Self.CurrentMainProject, customFormsSaveLocation);
-            if (wasAnythingAdded)
+            if(string.IsNullOrEmpty(customFormsCode))
             {
-                shouldSaveProject = true;
+                resultToReturn.DidSaveCustomForms = false;
+            }
+            else if(!System.IO.File.Exists(customFormsSaveLocation))
+            {
+                resultToReturn.DidSaveCustomForms = true;
+            }
+
+            if (resultToReturn.DidSaveCustomForms)
+            {
+
+                var directory = FileManager.GetDirectory(customFormsSaveLocation);
+                System.IO.Directory.CreateDirectory(directory);
+
+                GlueCommands.Self.TryMultipleTimes(() =>
+                    System.IO.File.WriteAllText(customFormsSaveLocation, customFormsCode));
+            
+                bool wasAnythingAdded =
+                    FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
+                    GlueState.Self.CurrentMainProject, customFormsSaveLocation);
+                if (wasAnythingAdded)
+                {
+                    shouldSaveProject = true;
+                }
             }
         }
 
