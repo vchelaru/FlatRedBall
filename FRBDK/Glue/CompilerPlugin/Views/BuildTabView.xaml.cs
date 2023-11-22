@@ -146,6 +146,11 @@ namespace CompilerPlugin.Views
             }
         }
 
+        void Button_Click(object sender, RoutedEventArgs e)
+        {
+            TextBox.Document.Blocks.Clear();
+        }
+
         private void TextBox_KeyEnterUpdate(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
