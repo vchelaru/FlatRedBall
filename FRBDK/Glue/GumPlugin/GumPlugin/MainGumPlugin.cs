@@ -384,8 +384,8 @@ public class MainGumPlugin : PluginBase
 
         this.NewScreenCreated += HandleNewScreen;
 
-
         this.ReactToScreenRemoved += HandleScreenRemoved;
+
         #endregion
 
         this.TryAddContainedObjects += ContainedObjectsManager.Self.HandleTryAddContainedObjects;
@@ -551,7 +551,7 @@ public class MainGumPlugin : PluginBase
     }
 
 
-    private async void HandleScreenRemoved(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen, List<string> listToFillWithAdditionalFilesToRemove)
+    private void HandleScreenRemoved(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen, List<string> listToFillWithAdditionalFilesToRemove)
     {
         if (AppState.Self.GumProjectSave != null)
         {
@@ -565,10 +565,25 @@ public class MainGumPlugin : PluginBase
                     String.Format(Localization.Texts.GumConfirmDeleteScreen,gumScreen.Name, glueScreen));
                 if(result == System.Windows.MessageBoxResult.Yes)
                 {
-                    await GumPluginCommands.Self.RemoveScreen(gumScreen);
+                    // don't await this, we want this method to immediately add to the lists
+                    _=GumPluginCommands.Self.RemoveScreen(gumScreen);
 
                     listToFillWithAdditionalFilesToRemove.Add(CodeGeneratorManager.Self.CustomRuntimeCodeLocationFor(gumScreen).FullPath);
                     listToFillWithAdditionalFilesToRemove.Add(CodeGeneratorManager.Self.GeneratedRuntimeCodeLocationFor(gumScreen).FullPath);
+
+                    // If there are forms screens, remove those too:
+                    var formsCustomFilePath = CodeGeneratorManager.Self.CustomFormsCodeLocationFor(gumScreen);
+
+                    if(formsCustomFilePath.Exists())
+                    {
+                        listToFillWithAdditionalFilesToRemove.Add(formsCustomFilePath.FullPath);
+                    }
+
+                    var formsGeneratedFilePath = CodeGeneratorManager.Self.GeneratedFormsCodeLocationFor(gumScreen);
+                    if(formsGeneratedFilePath.Exists())
+                    {
+                        listToFillWithAdditionalFilesToRemove.Add(formsGeneratedFilePath.FullPath);
+                    }
                 }
 
             }

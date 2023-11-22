@@ -60,7 +60,22 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
     public FilePath CustomRuntimeCodeLocationFor(ElementSave gumElement) => GumRuntimesFolder + gumElement.Name + "Runtime.cs";
     public FilePath GeneratedRuntimeCodeLocationFor(ElementSave gumElement) =>
         GumRuntimesFolder + gumElement.Name + "Runtime.Generated.cs";
+    public FilePath CustomFormsCodeLocationFor(ElementSave gumElement)
+    {
+        var subfolder = gumElement is Gum.DataTypes.ScreenSave ? "Screens/"
+        : gumElement is ComponentSave ? "Components/"
+        : "Standard/";
+        return FormsFolder + subfolder + gumElement.Name + "Forms.cs";
+    }
 
+    public FilePath GeneratedFormsCodeLocationFor(ElementSave gumElement)
+    {
+        var subfolder = gumElement is Gum.DataTypes.ScreenSave ? "Screens/"
+        : gumElement is ComponentSave ? "Components/"
+        : "Standard/";
+
+        return FormsFolder + subfolder + gumElement.Name + "Forms.Generated.cs";
+    }
 
     FilePath GumBehaviorsFolder => GumRuntimesFolder + @"Behaviors\";
 
@@ -326,7 +341,6 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
         // creating the custom code files.
         string generatedGumRuntimeCode = mGueDerivingClassCodeGenerator.GenerateCodeFor(element);
 
-        var formsFolder = FormsFolder;
         var shouldGeneratedFormsBeInProject = false;
         string generatedFormsCode = FormsClassCodeGenerator.Self.GenerateCodeFor(element);
 
@@ -377,9 +391,10 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
         #region Custom Forms
 
-        string customFormsSaveLocation = formsFolder + subfolder + element.Name + "Forms.cs";
+        string customFormsSaveLocation = CustomFormsCodeLocationFor(element).FullPath; 
+        var customFormsCode = CustomCodeGenerator.Self.GetCustomFormsCodeTemplateCode(element);
 
-        if(string.IsNullOrEmpty(generatedFormsCode))
+        if(string.IsNullOrEmpty(customFormsCode))
         {
             resultToReturn.DidSaveCustomForms = false;
         }
@@ -390,17 +405,13 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
         if (resultToReturn.DidSaveCustomForms)
         {
-            var customCode = CustomCodeGenerator.Self.GetCustomFormsCodeTemplateCode(element);
 
             var directory = FileManager.GetDirectory(customFormsSaveLocation);
             System.IO.Directory.CreateDirectory(directory);
 
             GlueCommands.Self.TryMultipleTimes(() =>
-                System.IO.File.WriteAllText(customFormsSaveLocation, customCode));
-        }
-
-        if(shouldGeneratedFormsBeInProject)
-        { 
+                System.IO.File.WriteAllText(customFormsSaveLocation, customFormsCode));
+            
             bool wasAnythingAdded =
                 FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
                 GlueState.Self.CurrentMainProject, customFormsSaveLocation);
@@ -477,7 +488,7 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
         #region Generated Forms
 
-        FilePath generatedFormsSaveLocation = formsFolder + subfolder +  element.Name + "Forms.Generated.cs";
+        FilePath generatedFormsSaveLocation = GeneratedFormsCodeLocationFor(element);
 
         if(string.IsNullOrEmpty(generatedFormsCode))
         {
@@ -529,6 +540,8 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
         if (shouldSaveProject && saveProjects)
         {
+            // November 21, 2023 - this isnt working but I'm not sure why - will investigate some time in the future.
+            // The Forms generated file wasn't embedded.
             GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
             GlueCommands.Self.ProjectCommands.SaveProjects();
         }

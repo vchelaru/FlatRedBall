@@ -364,7 +364,8 @@
     <value>Gum Plugin - handle new FRB screen {0}</value>
   </data>
   <data name="GumConfirmDeleteScreen" xml:space="preserve">
-    <value>Delete the Gum Screen {0}\nfor {1}?</value>
+    <value>Delete the Gum Screen {0}
+for {1}?</value>
   </data>
   <data name="GumProjectFileCanOnlyAddedToGlobal" xml:space="preserve">
     <value>The Gum project file (.gumx) can only be added to global content.</value>

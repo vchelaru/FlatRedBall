@@ -3256,7 +3256,8 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete the Gum Screen {0}\nfor {1}?.
+        ///   Looks up a localized string similar to Delete the Gum Screen {0}
+        ///for {1}?.
         /// </summary>
         public static string GumConfirmDeleteScreen {
             get {
