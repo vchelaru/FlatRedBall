@@ -1788,11 +1788,12 @@ namespace FlatRedBall
             foreach(var animation in animations)
             {
                 CurrentChainName = animation;
-                try
-                {
+                // This should not try/catch. If it does, then any caller will continue after it's finished, causing additional logic to run after a screen has ended:
+                //try
+                //{
                     await TimeManager.DelaySeconds(CurrentChain.TotalLength);
-                }
-                catch (TaskCanceledException) { return; }
+                //}
+                //catch (TaskCanceledException) { return; }
             }
         }
 
