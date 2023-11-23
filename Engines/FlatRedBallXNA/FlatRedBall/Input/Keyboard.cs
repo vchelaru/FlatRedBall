@@ -44,7 +44,7 @@ namespace FlatRedBall.Input
 
         public bool AutomaticallyPushEventsToInputReceiver { get; set; } = true;
 
-        public bool IsShiftDown => KeyDown(Keys.LeftShift) || KeyDown(Keys.LeftShift);
+        public bool IsShiftDown => KeyDown(Keys.LeftShift) || KeyDown(Keys.RightShift);
         public bool IsCtrlDown => KeyDown(Keys.LeftControl) || KeyDown(Keys.RightControl);
         public bool IsControlDown => IsCtrlDown;
         public bool IsAltDown => KeyDown(Keys.LeftAlt) || KeyDown(Keys.RightAlt);
