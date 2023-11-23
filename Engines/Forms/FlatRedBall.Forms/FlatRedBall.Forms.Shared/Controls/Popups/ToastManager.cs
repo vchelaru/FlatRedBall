@@ -110,7 +110,18 @@ namespace FlatRedBall.Forms.Controls.Popups
             foreach (var message in toastMessages.GetConsumingEnumerable(CancellationToken.None))
             {
                 Toast toast = null;
-                
+
+                // November 23, 2023
+                // Note: Calling await
+                // in this method results
+                // in the SynchronizationContext
+                // resuming the method on the main 
+                // thread. Not sure if this is desirable
+                // or not. For now I'll leave it as-is since
+                // all seems to work, but if we want to keep this
+                // on a separate thread, then we need to do this:
+                //  'Task. Delay().configureawait(false)`
+
                 // This must be done on the primary thread in case it loads
                 // the PNG for the first time:
                 await Instructions.InstructionManager.DoOnMainThreadAsync(() =>
