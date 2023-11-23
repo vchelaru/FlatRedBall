@@ -134,10 +134,28 @@ namespace FlatRedBall.Forms.Controls.Popups
                     toast.Show(message.FrbLayer ?? DefaultToastLayer);
                     await Task.Delay( TimeSpan.FromSeconds(message.DurationInSeconds) );
                     toast.Close();
-                    liveToasts.Remove(toast);
+                    // Moving this to be in the instruction:
+                    //liveToasts.Remove(toast);
+
                     await Instructions.InstructionManager.DoOnMainThreadAsync(() =>
                     {
-                        toast.Visual.RemoveFromManagers();
+                        // liveToasts.Remove used to be called outside
+                        // of the DoOnMainThreadAsync method. The reason 
+                        // we do it in here is because it is possible for
+                        // the Screen to end inbetween the instruction getting
+                        // created and the instruction getting removed. If that
+                        // happens and if we had liveToasts.Remove sitting outside
+                        // of this call, then the toast would get removed from the list
+                        // but still be part of managers. This can result in a crash because
+                        // the engine believes the screen has exited while there is still a live
+                        // toast. We'll keep the toast as part of the liveToasts until it is removed 
+                        // from managers so that it can get cleaned up in DestroyLiveToasts.
+                        // Just in case this gets cleaned up elsewhere:
+                        if(liveToasts.Contains(toast))
+                        {
+                            liveToasts.Remove(toast);
+                            toast.Visual.RemoveFromManagers();
+                        }
                     });
                     // so there's a small gap between toasts
                     await Task.Delay(msDelayBetweenToasts);
