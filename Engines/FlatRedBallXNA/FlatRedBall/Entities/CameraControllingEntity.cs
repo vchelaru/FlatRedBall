@@ -13,6 +13,14 @@ namespace FlatRedBall.Entities
     {
         PositionLocking,
     }
+
+    public enum TargetApproachStyle
+    {
+        Immediate,
+        Smooth,
+        ConstantSpeed
+    }
+
     #endregion
 
     // Influenced by https://www.gamedeveloper.com/design/scroll-back-the-theory-and-practice-of-cameras-in-side-scrollers
@@ -58,7 +66,7 @@ namespace FlatRedBall.Entities
         {
             set
             {
-                if(Targets == null)
+                if (Targets == null)
                 {
                     Targets = new PositionedObjectList<PositionedObject>();
                 }
@@ -66,9 +74,9 @@ namespace FlatRedBall.Entities
                 {
                     Targets.Clear();
                 }
-                
 
-                if(value != null)
+
+                if (value != null)
                 {
                     Targets.Add(value);
                 }
@@ -90,7 +98,25 @@ namespace FlatRedBall.Entities
         /// <summary>
         /// Whether to smoothly approach the target location. If false, the camera follows the entity without any smoothing.
         /// </summary>
-        public bool LerpSmooth { get; set; } = true;
+        [Obsolete("This variable is incorrectly named. Lerp means linear interpolation. While this is technically doing a liner interpolation every frame," +
+            "the effect is not linear in the end, so this can be confusing. Use TargetApproachStyle instead.")]
+        public bool LerpSmooth
+        {
+            get => TargetApproachStyle == TargetApproachStyle.Smooth;
+            set
+            {
+                if (value)
+                {
+                    TargetApproachStyle = TargetApproachStyle.Smooth;
+                }
+                else
+                {
+                    TargetApproachStyle = TargetApproachStyle.Immediate;
+                }
+            }
+        }
+
+        public TargetApproachStyle TargetApproachStyle { get; set; } = TargetApproachStyle.Smooth;
 
         /// <summary>
         /// Whether to smoothly approach the desired zoom. If false, the camera immediately adjusts zoom without any smoothing.
@@ -100,13 +126,21 @@ namespace FlatRedBall.Entities
         public float CurrentZoom { get; set; } = 1;
 
         /// <summary>
-        /// The amount of smoothing. The larger the number, the longer the camera takes to smooth. This value is ignored if LerpSmooth is false.
+        /// The amount of smoothing. The larger the number, faster the Camera moves. This value is ignored if TargetApproachStyle is Immediate.
         /// </summary>
         /// <remarks>
-        /// Mathematically this is the velocity value per pixel offset from the target. For example, if this value is 5, and the target is 20 pixels away,
-        /// then the velocity of the camera will be 20*5 = 100.
+        /// If TargetApproachStyle is Smooth, this is the velocity value per pixel offset from the target. For example, if this value is 5, and the target is 20 pixels away,
+        /// then the velocity of the camera will be 20*5 = 100. 
+        /// If TargetApproachStyle is ConstantSpeed, this is the speed of the camera in pixels per second. regardless of the distance to the target.
         /// </remarks>
-        public float LerpCoefficient { get; set; } = 5;
+        [Obsolete("Use ApproachCoefficient instead, since this value is confusingly named.")]
+        public float LerpCoefficient
+        {
+            get => ApproachCoefficient;
+            set => ApproachCoefficient = value;
+        }
+
+        public float ApproachCoefficient { get; set; } = 5;
 
         /// <summary>
         /// Whether to snap the camera position to the screen pixel. This value can be used to prevent half-pixels from being drawn.
@@ -151,11 +185,11 @@ namespace FlatRedBall.Entities
             }
             set
             {
-                if(value != visible)
+                if (value != visible)
                 {
                     visible = value;
 
-                    if(visible)
+                    if (visible)
                     {
                         windowVisualization = new AxisAlignedRectangle();
                         windowVisualization.Name = "CameraControllingEntity WindowVisualization Rectangle";
@@ -164,7 +198,7 @@ namespace FlatRedBall.Entities
                     }
                     else
                     {
-                        if(windowVisualization != null)
+                        if (windowVisualization != null)
                         {
                             ShapeManager.Remove(windowVisualization);
                             windowVisualization = null;
@@ -207,55 +241,63 @@ namespace FlatRedBall.Entities
             }
             //////////////////End Early Out//////////////////
 
-            if(windowVisualization != null)
+            if (windowVisualization != null)
             {
                 windowVisualization.Width = ScrollingWindowWidth;
                 windowVisualization.Height = ScrollingWindowHeight;
             }
 
             // Zoom should be happening first, and then targeting:
-            if(isAutoZoomEnabled)
+            if (isAutoZoomEnabled)
             {
                 ApplyZoom();
             }
 
             var target = GetTarget();
 
-            var lerpSmoothX = hasActivityBeenCalled ? LerpSmooth : false;
-            var lerpSmoothY = hasActivityBeenCalled ? LerpSmooth : false;
+            var effectiveTargetApproachStyleX =
+                TargetApproachStyle.Immediate;
+            var effectiveTargetApproachStyleY =
+                TargetApproachStyle.Immediate;
+
+
+            if (hasActivityBeenCalled)
+            {
+                effectiveTargetApproachStyleX = TargetApproachStyle;
+                effectiveTargetApproachStyleY = TargetApproachStyle;
+            }
 
             // Even if we want to lerp, if we are outside of the bounds of the map and if
             // the camera can fit within the map (on either axis) then we don't lerp smooth:
-
-            if(Map != null && (lerpSmoothX || lerpSmoothY))
+            if (Map != null && (effectiveTargetApproachStyleX != TargetApproachStyle.Immediate))
             {
                 var canFitX = Camera.OrthogonalWidth <= Map.Width;
                 var canFitY = Camera.OrthogonalHeight <= Map.Height;
-                if(canFitX)
+                if (canFitX)
                 {
-                    if(X - Camera.OrthogonalWidth / 2 < Map.Left)
+                    if (X - Camera.OrthogonalWidth / 2 < Map.Left)
                     {
-                        lerpSmoothX = false;
+                        effectiveTargetApproachStyleX = TargetApproachStyle.Immediate;
                     }
-                    else if(X + Camera.OrthogonalWidth / 2 > Map.Left + Map.Width)
+                    else if (X + Camera.OrthogonalWidth / 2 > Map.Left + Map.Width)
                     {
-                        lerpSmoothX = false;
+                        effectiveTargetApproachStyleX = TargetApproachStyle.Immediate;
                     }
                 }
-                if(canFitY)
+                if (canFitY)
                 {
-                    if(Y + Camera.OrthogonalHeight / 2 > Map.Top)
+                    if (Y + Camera.OrthogonalHeight / 2 > Map.Top)
                     {
-                        lerpSmoothY = false;
+                        effectiveTargetApproachStyleY = TargetApproachStyle.Immediate;
                     }
-                    else if(Y - Camera.OrthogonalHeight / 2 < Map.Top - Map.Height)
+                    else if (Y - Camera.OrthogonalHeight / 2 < Map.Top - Map.Height)
                     {
-                        lerpSmoothY = false;
+                        effectiveTargetApproachStyleY = TargetApproachStyle.Immediate;
                     }
                 }
             }
 
-            ApplyTarget(target, lerpSmoothX, lerpSmoothY);
+            ApplyTarget(target, effectiveTargetApproachStyleX, effectiveTargetApproachStyleY);
 
             hasActivityBeenCalled = true;
         }
@@ -276,7 +318,7 @@ namespace FlatRedBall.Entities
 
             Vector2 centerOfTargets = this.Position.ToVector2();
 
-            if(Targets.Count > 0)
+            if (Targets.Count > 0)
             {
                 var first = (PositionedObject)Targets[0];
 
@@ -286,7 +328,7 @@ namespace FlatRedBall.Entities
                 float minY = first.Y;
                 float maxY = first.Y;
 
-                if(Map != null)
+                if (Map != null)
                 {
                     minX = System.Math.Max(minX, Map.Left);
                     maxX = System.Math.Min(maxX, Map.Left + Map.Width);
@@ -295,12 +337,12 @@ namespace FlatRedBall.Entities
                     maxY = System.Math.Min(maxY, Map.Top);
                 }
 
-                for(int i = 1; i < Targets.Count; i++)
+                for (int i = 1; i < Targets.Count; i++)
                 {
                     var positionable = ((PositionedObject)Targets[i]);
                     var position = positionable.Position;
 
-                    if(Map != null)
+                    if (Map != null)
                     {
                         position.X = System.Math.Max(position.X, Map.Left);
                         position.X = System.Math.Min(position.X, Map.Left + Map.Width);
@@ -310,20 +352,20 @@ namespace FlatRedBall.Entities
                     }
 
 
-                    if(position.X < minX)
+                    if (position.X < minX)
                     {
                         minX = position.X;
                     }
-                    if(position.X > maxX)
+                    if (position.X > maxX)
                     {
                         maxX = position.X;
                     }
 
-                    if(position.Y < minY)
+                    if (position.Y < minY)
                     {
                         minY = position.Y;
                     }
-                    if(position.Y > maxY)
+                    if (position.Y > maxY)
                     {
                         maxY = position.Y;
                     }
@@ -362,11 +404,11 @@ namespace FlatRedBall.Entities
             var windowBottom = effectiveThis.Y - windowHeightHalf;
             var windowTop = effectiveThis.Y + windowHeightHalf;
 
-            if(centerOfTargets.X < windowLeft)
+            if (centerOfTargets.X < windowLeft)
             {
                 target.X = centerOfTargets.X + windowWidthHalf;
             }
-            else if(centerOfTargets.X > windowRight)
+            else if (centerOfTargets.X > windowRight)
             {
                 target.X = centerOfTargets.X - windowWidthHalf;
             }
@@ -375,11 +417,11 @@ namespace FlatRedBall.Entities
                 target.X = effectiveThis.X;
             }
 
-            if(centerOfTargets.Y < windowBottom)
+            if (centerOfTargets.Y < windowBottom)
             {
                 target.Y = centerOfTargets.Y + windowHeightHalf;
             }
-            else if(centerOfTargets.Y > windowTop)
+            else if (centerOfTargets.Y > windowTop)
             {
                 target.Y = centerOfTargets.Y - windowHeightHalf;
             }
@@ -434,7 +476,7 @@ namespace FlatRedBall.Entities
         private Vector2 GetTargetSeparation()
         {
             //////// Early Out///////////////
-            if(Targets.Count == 0)
+            if (Targets.Count == 0)
             {
                 return Vector2.Zero;
             }
@@ -445,7 +487,7 @@ namespace FlatRedBall.Entities
             Vector2 min = firstTargetPosition.ToVector2();
             Vector2 max = min;
 
-            for(int i = 1; i < Targets.Count; i++)
+            for (int i = 1; i < Targets.Count; i++)
             {
                 var atI = Targets[i] as PositionedObject;
 
@@ -456,7 +498,7 @@ namespace FlatRedBall.Entities
                 if (atI.Y > max.Y) max.Y = atI.Y;
             }
 
-            if(Map != null)
+            if (Map != null)
             {
                 min.X = System.Math.Max(min.X, Map.Left);
                 min.Y = System.Math.Max(min.Y, Map.Top - Map.Height);
@@ -477,34 +519,51 @@ namespace FlatRedBall.Entities
 
         public void ApplyTarget(Vector2 target, bool lerpSmooth = true)
         {
-            ApplyTarget(target, lerpSmooth, lerpSmooth);
+            var approachStyle = lerpSmooth ? TargetApproachStyle.Smooth : TargetApproachStyle.Immediate;
+            ApplyTarget(target, approachStyle, approachStyle);
         }
 
         public void ApplyTarget(Vector2 target, bool lerpSmoothX, bool lerpSmoothY)
         {
+            var approachStyleX = lerpSmoothX ? TargetApproachStyle.Smooth : TargetApproachStyle.Immediate;
+            var approachStyleY = lerpSmoothY ? TargetApproachStyle.Smooth : TargetApproachStyle.Immediate;
+
+            ApplyTarget(target, approachStyleX, approachStyleY);
+        }
+
+        public void ApplyTarget(Vector2 target, TargetApproachStyle approachStyleX, TargetApproachStyle approachStyleY)
+        {
             var effectiveThis = this.Parent ?? this;
 
-            if (lerpSmoothX == false)
+
+            switch (approachStyleX)
             {
-                effectiveThis.Position.X = target.X;
-            }
-            else
-            {
-                float xDifference = 0;
-                xDifference = target.X - effectiveThis.Position.X;
-                effectiveThis.Velocity.X = xDifference * LerpCoefficient;
+                case TargetApproachStyle.Smooth:
+                    effectiveThis.Velocity.X = (target.X - effectiveThis.Position.X) * ApproachCoefficient;
+                    break;
+                case TargetApproachStyle.ConstantSpeed:
+                    // todo - need to have a test here to see if we're within a range so we don't overshoot/jitter
+                    effectiveThis.Velocity.X = System.Math.Sign(target.X - effectiveThis.Position.X) * ApproachCoefficient;
+                    break;
+                case TargetApproachStyle.Immediate:
+                    effectiveThis.Position.X = target.X;
+                    break;
             }
 
-            if (lerpSmoothY == false)
+            switch (approachStyleY)
             {
-                effectiveThis.Position.Y = target.Y;
+                case TargetApproachStyle.Smooth:
+                    effectiveThis.Velocity.Y = (target.Y - effectiveThis.Position.Y) * ApproachCoefficient;
+                    break;
+                case TargetApproachStyle.ConstantSpeed:
+                    // todo - need to have a test here to see if we're within a range so we don't overshoot/jitter
+                    effectiveThis.Velocity.Y = System.Math.Sign(target.Y - effectiveThis.Position.Y) * ApproachCoefficient;
+                    break;
+                case TargetApproachStyle.Immediate:
+                    effectiveThis.Position.Y = target.Y;
+                    break;
             }
-            else
-            {
-                float yDifference = 0;
-                yDifference = target.Y - effectiveThis.Position.Y;
-                effectiveThis.Velocity.Y = yDifference * LerpCoefficient;
-            }
+
 
 
             if (SnapToPixel)
@@ -534,11 +593,11 @@ namespace FlatRedBall.Entities
 
             float desiredZoom;
 
-            if(currentSeparationDistance > noZoomDistance)
+            if (currentSeparationDistance > noZoomDistance)
             {
                 desiredZoom = System.Math.Min(furthestZoom, currentSeparationDistance / noZoomDistance);
 
-                if(Map != null)
+                if (Map != null)
                 {
                     var mapHeight = Map.Height;
                     var mapWidth = Map.Width;
@@ -555,7 +614,7 @@ namespace FlatRedBall.Entities
                 desiredZoom = 1;
             }
 
-            if(LerpSmoothZoom)
+            if (LerpSmoothZoom)
             {
                 CurrentZoom = MathHelper.Lerp(CurrentZoom, desiredZoom, .1f);
             }
@@ -573,7 +632,7 @@ namespace FlatRedBall.Entities
             const float individualShakeDurationInSeconds = .05f;
 
             var random = FlatRedBallServices.Random;
-            for(float timePassed = 0; timePassed < durationInSeconds; timePassed += individualShakeDurationInSeconds)
+            for (float timePassed = 0; timePassed < durationInSeconds; timePassed += individualShakeDurationInSeconds)
             {
                 var point = random.PointInCircle(shakeRadius);
 
