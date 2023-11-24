@@ -84,8 +84,21 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             {
                 if (CollisionRelationshipNamedObject != null)
                 {
-                    var collision = CollisionRelationshipNamedObject.Properties.GetValue(
-                        nameof(CollisionRelationshipViewModel.CollisionType)) as int?;
+                    int? collision = null;
+                    
+                    var collisionTypeAsObject = CollisionRelationshipNamedObject.Properties.GetValue(
+                        nameof(CollisionRelationshipViewModel.CollisionType));
+
+                    if(collisionTypeAsObject is int asInt)
+                    {
+                        collision = asInt;
+                    }
+                    else if(collisionTypeAsObject is long asLong)
+                    {
+                        // There's a bug in FRB where the Type would not get saved properly on a collision property. Let's tolerate that here
+                        // for now. This bug has been fixed in FRB in November 2023, but we'll still add this here for Cranky Chibi Cthulhu
+                        collision = (int)asLong;
+                    }
 
                     string physicsText = "No Physics";
 

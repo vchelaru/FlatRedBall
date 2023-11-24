@@ -156,35 +156,80 @@ namespace FlatRedBall.Glue.SaveClasses
                     newPropertySave.Name = nameToSearchFor;
                     newPropertySave.Value = value;
 
-                    if(typeof(T) == typeof(int))
-                    {
-                        newPropertySave.Type = "int";
-                    }
-                    else if(typeof(T) == typeof(float))
-                    {
-                        newPropertySave.Type = "float";
-                    }
-                    else if (typeof(T) == typeof(decimal))
-                    {
-                        newPropertySave.Type = "decimal";
-                    }
-                    else
-                    {
-                        newPropertySave.Type = typeof(T).Name;
-                    }
-
+                    AssignTypeOnProperty<T>(newPropertySave);
 
                     propertySaveList.Add(newPropertySave);
                 }
             }
         }
 
-        public static void SetValuePersistIfDefault(this List<PropertySave> propertySaveList, string nameToSearchFor, object value)
+        private static void AssignTypeOnProperty<T>(PropertySave newPropertySave)
+        {
+            if (typeof(T) == typeof(int))
+            {
+                newPropertySave.Type = "int";
+            }
+            else if(typeof(T) == typeof(int?))
+            {
+                newPropertySave.Type = "int?";
+            }
+            else if (typeof(T) == typeof(long))
+            {
+                newPropertySave.Type = "long";
+            }
+            else if (typeof(T) == typeof(long?))
+            {
+                newPropertySave.Type = "long?";
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                newPropertySave.Type = "float";
+            }
+            else if (typeof(T) == typeof(float?))
+            {
+                newPropertySave.Type = "float?";
+            }
+            else if (typeof(T) == typeof(decimal))
+            {
+                newPropertySave.Type = "decimal";
+            }
+            else if (typeof(T) == typeof(decimal?))
+            {
+                newPropertySave.Type = "decimal?";
+            }
+
+            else if (typeof(T) == typeof(bool))
+            {
+                newPropertySave.Type = "bool";
+            }
+
+            else if (typeof(T) == typeof(bool?))
+            {
+                newPropertySave.Type = "bool?";
+            }
+
+            else if (typeof(T) == typeof(byte))
+            {
+                newPropertySave.Type = "byte";
+            }
+
+            else if (typeof(T) == typeof(byte?))
+            {
+                newPropertySave.Type = "byte?";
+            }
+
+            else
+            {
+                newPropertySave.Type = typeof(T).Name;
+            }
+        }
+
+        public static void SetValuePersistIfDefault<T>(this List<PropertySave> propertySaveList, string nameToSearchFor, T value)
         {
             SetValue(propertySaveList, nameToSearchFor, value, true);
         }
 
-        public static void SetValue(this List<PropertySave> propertySaveList, string nameToSearchFor, object value, bool persistIfDefault)
+        public static void SetValue<T>(this List<PropertySave> propertySaveList, string nameToSearchFor, T value, bool persistIfDefault)
         {
             var handled = false;
             if(!persistIfDefault)
@@ -211,6 +256,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     PropertySave newPropertySave = new PropertySave();
                     newPropertySave.Name = nameToSearchFor;
                     newPropertySave.Value = value;
+                    AssignTypeOnProperty<T>(newPropertySave);
                     propertySaveList.Add(newPropertySave);
                 }
             }
