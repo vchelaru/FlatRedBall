@@ -38,6 +38,8 @@ namespace FlatRedBall.Graphics.Animation
         /// is facing left/right.
         /// </remarks>
         public Func<string> EveryFrameAction;
+        public Func<List<string>> EveryFrameActionSequence;
+
         public Action OnAnimationFinished;
 
         /// <summary>
@@ -102,6 +104,49 @@ namespace FlatRedBall.Graphics.Animation
             if (EveryFrameAction != null)
             {
                 cachedChainName = EveryFrameAction();
+            }
+            else if(EveryFrameActionSequence != null)
+            {
+                var list = EveryFrameActionSequence();
+
+                if(list?.Count > 0)
+                {
+                    // start the sequence, just in case there are no other animations...
+
+                    cachedChainName = list[0];
+                    var animatable = Container?.AnimatedObject;
+
+                    if(animatable != null)
+                    {
+
+                        var indexToShow = 0;
+
+                        int? matchingIndex = 0;
+                        for(int i = 0; i < list.Count; i++)
+                        {
+                            if (animatable.IsPlayingAnimation(list[i]))
+                            {
+                                matchingIndex = i;
+                                if(animatable.DidAnimationFinishOrLoop)
+                                {
+                                    var nextIndex = i < list.Count-1 
+                                        ? i + 1
+                                        : i; // don't loop the sequence. Maybe we'll add that option later.
+                                    cachedChainName = list[nextIndex];
+                                }
+                                else
+                                {
+                                    cachedChainName = list[i];
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    cachedChainName = null;
+                }
             }
             else
             {
