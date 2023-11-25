@@ -66,7 +66,14 @@ namespace FlatRedBall.Entities
         {
             set
             {
-                if (Targets == null)
+                if (Targets == null || 
+                    // This is a little inefficient but the reason we need this is a user
+                    // may use Targets initially and then switch to using a single Target.
+                    // If Targets are used, the user may assign the Targets to a list that is
+                    // not compatible with the assigned value. For example, Targets could be assigned
+                    // to a List<Enemy>, but then the Target is set to a Player. This would result in an
+                    // invalid cast operation when the Player is added to the List<Enemy>.
+                    Targets is PositionedObjectList<PositionedObject> == false)
                 {
                     Targets = new PositionedObjectList<PositionedObject>();
                 }
@@ -133,14 +140,14 @@ namespace FlatRedBall.Entities
         /// then the velocity of the camera will be 20*5 = 100. 
         /// If TargetApproachStyle is ConstantSpeed, this is the speed of the camera in pixels per second. regardless of the distance to the target.
         /// </remarks>
-        [Obsolete("Use ApproachCoefficient instead, since this value is confusingly named.")]
+        [Obsolete("Use TargetApproachCoefficient instead, since this value is confusingly named.")]
         public float LerpCoefficient
         {
-            get => ApproachCoefficient;
-            set => ApproachCoefficient = value;
+            get => TargetApproachCoefficient;
+            set => TargetApproachCoefficient = value;
         }
 
-        public float ApproachCoefficient { get; set; } = 5;
+        public float TargetApproachCoefficient { get; set; } = 5;
 
         /// <summary>
         /// Whether to snap the camera position to the screen pixel. This value can be used to prevent half-pixels from being drawn.
@@ -539,11 +546,11 @@ namespace FlatRedBall.Entities
             switch (approachStyleX)
             {
                 case TargetApproachStyle.Smooth:
-                    effectiveThis.Velocity.X = (target.X - effectiveThis.Position.X) * ApproachCoefficient;
+                    effectiveThis.Velocity.X = (target.X - effectiveThis.Position.X) * TargetApproachCoefficient;
                     break;
                 case TargetApproachStyle.ConstantSpeed:
                     // todo - need to have a test here to see if we're within a range so we don't overshoot/jitter
-                    effectiveThis.Velocity.X = System.Math.Sign(target.X - effectiveThis.Position.X) * ApproachCoefficient;
+                    effectiveThis.Velocity.X = System.Math.Sign(target.X - effectiveThis.Position.X) * TargetApproachCoefficient;
                     break;
                 case TargetApproachStyle.Immediate:
                     effectiveThis.Position.X = target.X;
@@ -553,11 +560,11 @@ namespace FlatRedBall.Entities
             switch (approachStyleY)
             {
                 case TargetApproachStyle.Smooth:
-                    effectiveThis.Velocity.Y = (target.Y - effectiveThis.Position.Y) * ApproachCoefficient;
+                    effectiveThis.Velocity.Y = (target.Y - effectiveThis.Position.Y) * TargetApproachCoefficient;
                     break;
                 case TargetApproachStyle.ConstantSpeed:
                     // todo - need to have a test here to see if we're within a range so we don't overshoot/jitter
-                    effectiveThis.Velocity.Y = System.Math.Sign(target.Y - effectiveThis.Position.Y) * ApproachCoefficient;
+                    effectiveThis.Velocity.Y = System.Math.Sign(target.Y - effectiveThis.Position.Y) * TargetApproachCoefficient;
                     break;
                 case TargetApproachStyle.Immediate:
                     effectiveThis.Position.Y = target.Y;
