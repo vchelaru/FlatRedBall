@@ -2198,5 +2198,23 @@ namespace FlatRedBall.Math.Geometry
         {
             return cursor.IsOn3D(this, layer);
         }
+
+        public void KeepThisInsideOf(AxisAlignedRectangle rectangle)
+        {
+            for(int i = 0; i < mCircles.Count; i++)
+            {
+                mCircles[i].KeepThisInsideOf(rectangle);
+            }
+
+            for(int i = 0; i < mAxisAlignedRectangles.Count; i++)
+            {
+                mAxisAlignedRectangles[i].KeepThisInsideOf(rectangle);
+            }
+
+            for(int i = 0; i < mPolygons.Count; i++)
+            {
+                mPolygons[i].KeepThisInsideOf(rectangle);
+            }
+        }
     }
 }
