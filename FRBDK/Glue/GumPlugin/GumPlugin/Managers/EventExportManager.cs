@@ -221,26 +221,29 @@ namespace GumPlugin.Managers
                         {
                             if(oldCodeFileName.Exists())
                             {
-                                System.IO.File.Copy(oldCodeFileName.FullPath, newCodeFileName.FullPath, overwrite: true);
-
-                                var contents = System.IO.File.ReadAllText(newCodeFileName.FullPath);
-                                RefactorManager.Self.RenameClassInCode(
-                                    oldCodeFileName.NoPathNoExtension,
-                                    newCodeFileName.NoPathNoExtension,
-                                    ref contents);
-
-                                var oldNamespace = GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(false, exportedEvent.OldName);
-                                var newNamespace = GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(false, exportedEvent.NewName);
-
-                                if(oldNamespace != newNamespace)
+                                GlueCommands.Self.TryMultipleTimes(() =>
                                 {
-                                    RefactorManager.Self.RenameNamespaceInCode(
-                                        oldNamespace,
-                                        newNamespace,
-                                        ref contents);
-                                }
+                                    System.IO.File.Copy(oldCodeFileName.FullPath, newCodeFileName.FullPath, overwrite: true);
 
-                                System.IO.File.WriteAllText(newCodeFileName.FullPath, contents);
+                                    var contents = System.IO.File.ReadAllText(newCodeFileName.FullPath);
+                                    RefactorManager.Self.RenameClassInCode(
+                                        oldCodeFileName.NoPathNoExtension,
+                                        newCodeFileName.NoPathNoExtension,
+                                        ref contents);
+
+                                    var oldNamespace = GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(false, exportedEvent.OldName);
+                                    var newNamespace = GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(false, exportedEvent.NewName);
+
+                                    if (oldNamespace != newNamespace)
+                                    {
+                                        RefactorManager.Self.RenameNamespaceInCode(
+                                            oldNamespace,
+                                            newNamespace,
+                                            ref contents);
+                                    }
+
+                                    System.IO.File.WriteAllText(newCodeFileName.FullPath, contents);
+                                });
 
                                 await GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(newCodeFileName, saveOnAdd:true);
                             }

@@ -27,6 +27,7 @@ namespace FlatRedBall.Forms.Controls.Popups
 
     /// <summary>
     /// Object responsible for manging the lifecycle of toasts. This can be used to perform fire-and-forget showing of Toast objects.
+    /// Internally this creates a Toast object using the FlatRedBall.Forms Toast control.
     /// </summary>
     public static class ToastManager 
     {
@@ -39,8 +40,6 @@ namespace FlatRedBall.Forms.Controls.Popups
         public static Layer DefaultToastLayer { get; set; }
         static IList liveToasts;
         static bool hasBeenStarted;
-#if !UWP
-        // threading works differently in UWP. do we care? Is UWP going to live?
 
         static void Start()
         {
@@ -59,13 +58,18 @@ namespace FlatRedBall.Forms.Controls.Popups
                 thread.Start();
             }
         }
-#endif
 
+        /// <summary>
+        /// Queues a toast to be shown for the given duration. This method can be called from any thread.
+        /// If a toast is currently shown, then this message is queued and will be shown on the next toast.
+        /// </summary>
+        /// <param name="message">The message to display</param>
+        /// <param name="frbLayer">The layer for the Toast instance.</param>
+        /// <param name="durationInSeconds">The number of seconds to display the toast.</param>
         public static void Show(string message, Layer frbLayer = null, double durationInSeconds = 2.0)
         {
             if(!hasBeenStarted)
             {
-#if !UWP
                 if(FlatRedBallServices.IsThreadPrimary())
                 {
                     Start();
@@ -74,7 +78,6 @@ namespace FlatRedBall.Forms.Controls.Popups
                 {
                     Instructions.InstructionManager.AddSafe(Start);
                 }
-#endif
             }
 
             var toastInfo = new ToastInfo { Message = message, FrbLayer = frbLayer, DurationInSeconds = durationInSeconds};
@@ -82,6 +85,9 @@ namespace FlatRedBall.Forms.Controls.Popups
             toastMessages.Add(toastInfo);
         }
 
+        /// <summary>
+        /// Removes all live toasts from all managers. This is called automatically when a Screen is destroyed.
+        /// </summary>
         public static void DestroyLiveToasts()
         {
             int numberOfToastsToClean = liveToasts?.Count ?? 0;
