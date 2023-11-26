@@ -25,7 +25,11 @@ namespace GumPluginCore.CodeGeneration
                 GenerateSetTextureCoordinatesFrom(classBodyBlock);
                 GenerateSourceFileNameProperty(classBodyBlock);
                 GenerateCurrentChainNameProperty(classBodyBlock);
-                GeneratePlayAnimationsAsync(classBodyBlock);
+
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.TimeManagerHasDelaySeconds)
+                {
+                    GeneratePlayAnimationsAsync(classBodyBlock);
+                }
             }
         }
 

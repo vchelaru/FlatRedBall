@@ -68,6 +68,13 @@ namespace FlatRedBall.Glue.SaveClasses
             // file version for supporting named subcollisions.
             ScreensHaveActivityEditMode = 8,
             SupportsNamedSubcollisions = 8,
+
+            // This was added 5/5/2021, 
+            TimeManagerHasDelaySeconds = 8,
+
+            // Added 8/24/2021
+            GumTextHasIsBold = 8,
+
             GlueSavedToJson = 9,
             IEntityInFrb = 10,
             SeparateJsonFilesForElements = 11,
@@ -100,6 +107,10 @@ namespace FlatRedBall.Glue.SaveClasses
             GeneratedCameraSetupFile = 26,
             ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX = 27,
             AutoNameCollisionListsAsSingle = 28,
+
+            // Added retroactively to address problem with project template:
+            GumHasIgnoredByParentSize = 29,
+
             GumTextObjectsUpdateTextWith0ChildDepth = 29,
             HasFrameworkElementManager = 30,
             HasGumSkiaElements = 31,

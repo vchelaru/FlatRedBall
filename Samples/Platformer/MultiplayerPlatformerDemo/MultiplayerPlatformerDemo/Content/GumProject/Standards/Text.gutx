@@ -102,6 +102,20 @@
     </Variable>
     <Variable>
       <Type>bool</Type>
+      <Name>IgnoredByParentSize</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Parent</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>IsBold</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Font</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
       <Name>IsItalic</Name>
       <Value xsi:type="xsd:boolean">false</Value>
       <Category>Font</Category>
@@ -111,6 +125,13 @@
       <Type>bool</Type>
       <Name>IsXamarinFormsControl</Name>
       <Value xsi:type="xsd:boolean">false</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>LineHeightMultiplier</Name>
+      <Value xsi:type="xsd:float">1</Value>
+      <Category>Font</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -129,6 +150,7 @@
     <Variable>
       <Type>string</Type>
       <Name>Parent</Name>
+      <Category>Parent</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -155,6 +177,20 @@
       <Type>string</Type>
       <Name>Text</Name>
       <Value xsi:type="xsd:string">Hello</Value>
+      <Category>Text</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>TextOverflowHorizontalMode</Type>
+      <Name>TextOverflowHorizontalMode</Name>
+      <Value xsi:type="xsd:int">0</Value>
+      <Category>Text</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>TextOverflowVerticalMode</Type>
+      <Name>TextOverflowVerticalMode</Name>
+      <Value xsi:type="xsd:int">0</Value>
       <Category>Text</Category>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -241,9 +277,18 @@
       <Category>Position</Category>
       <SetsValue>true</SetsValue>
     </Variable>
+    <VariableList xsi:type="VariableListSaveOfString">
+      <Type>string</Type>
+      <Name>VariableReferences</Name>
+      <Category>References</Category>
+      <IsFile>false</IsFile>
+      <IsHiddenInPropertyGrid>false</IsHiddenInPropertyGrid>
+      <Value />
+    </VariableList>
   </State>
   <Category>
     <Name>ColorCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Gray</Name>
       <Variable>
@@ -293,4 +338,5 @@
       </Variable>
     </State>
   </Category>
+  <Behaviors />
 </StandardElementSave>

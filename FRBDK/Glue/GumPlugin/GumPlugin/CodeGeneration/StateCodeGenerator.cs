@@ -132,6 +132,24 @@ namespace GumPlugin.CodeGeneration
                 Skip("LineHeightMultiplier");
             }
 
+            if ( version >= (int) GluxVersions.GumHasIgnoredByParentSize)
+            {
+                Skip("IgnoredByParentSize");
+            }
+            else
+            {
+                Skip("IgnoredByParentSize");
+            }
+
+            if( version >= (int) GluxVersions.GumTextHasIsBold)
+            {
+                Skip("IsBold");
+            }
+            else
+            {
+                Skip("IsBold");
+            }
+
             return;
 
             void Include(string variable)

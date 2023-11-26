@@ -195,19 +195,26 @@ namespace FlatRedBall.TileCollisions
 
         ShapeCollection ICollidable.Collision => this.mShapes;
 
+#if ICollidableHasItemsCollidedAgainst
+
+
         HashSet<string> ICollidable.ItemsCollidedAgainst => this.mShapes.ItemsCollidedAgainst;
 
         HashSet<string> ICollidable.LastFrameItemsCollidedAgainst => this.mShapes.LastFrameItemsCollidedAgainst;
 
+#endif
+
+#if ICollidableHasObjectsCollidedAgainst
+
         HashSet<object> ICollidable.ObjectsCollidedAgainst => this.mShapes.ObjectsCollidedAgainst;
 
         HashSet<object> ICollidable.LastFrameObjectsCollidedAgainst => this.mShapes.LastFrameObjectsCollidedAgainst;
-
+#endif
 
         public RepositionUpdateStyle RepositionUpdateStyle { get; set; } = RepositionUpdateStyle.Outward;
 
 
-        #endregion
+#endregion
 
         public TileShapeCollection()
         {

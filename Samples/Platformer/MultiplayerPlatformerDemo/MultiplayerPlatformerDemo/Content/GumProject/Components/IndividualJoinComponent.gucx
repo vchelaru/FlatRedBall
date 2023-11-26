@@ -17,7 +17,7 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>JoinCategoryState</Type>
+      <Type>JoinCategory</Type>
       <Name>JoinCategoryState</Name>
       <SetsValue>false</SetsValue>
     </Variable>
@@ -167,6 +167,7 @@
   </State>
   <Category>
     <Name>JoinCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>NotPluggedIn</Name>
       <Variable>
@@ -207,54 +208,42 @@
     <State>
       <Name>PluggedInNotJoined</Name>
       <Variable>
+        <Type>int</Type>
+        <Name>RectangleInstance.Blue</Name>
+        <Value xsi:type="xsd:int">128</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>RectangleInstance.Green</Name>
+        <Value xsi:type="xsd:int">128</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>RectangleInstance.Red</Name>
+        <Value xsi:type="xsd:int">128</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>bool</Type>
+        <Name>RectangleInstance.Visible</Name>
+        <Value xsi:type="xsd:boolean">true</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>string</Type>
         <Name>TextInstance.Text</Name>
         <Value xsi:type="xsd:string">Press A to join</Value>
         <Category>Text</Category>
         <SetsValue>true</SetsValue>
       </Variable>
-      <Variable>
-        <Type>bool</Type>
-        <Name>RectangleInstance.Visible</Name>
-        <Value xsi:type="xsd:boolean">true</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>int</Type>
-        <Name>RectangleInstance.Red</Name>
-        <Value xsi:type="xsd:int">128</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>int</Type>
-        <Name>RectangleInstance.Green</Name>
-        <Value xsi:type="xsd:int">128</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>int</Type>
-        <Name>RectangleInstance.Blue</Name>
-        <Value xsi:type="xsd:int">128</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
     </State>
     <State>
       <Name>Joined</Name>
       <Variable>
-        <Type>string</Type>
-        <Name>TextInstance.Text</Name>
-        <Value xsi:type="xsd:string">Player joined</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>bool</Type>
-        <Name>RectangleInstance.Visible</Name>
-        <Value xsi:type="xsd:boolean">true</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
         <Type>int</Type>
-        <Name>RectangleInstance.Red</Name>
+        <Name>RectangleInstance.Blue</Name>
         <Value xsi:type="xsd:int">255</Value>
         <Category>Rendering</Category>
         <SetsValue>true</SetsValue>
@@ -268,9 +257,21 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>RectangleInstance.Blue</Name>
+        <Name>RectangleInstance.Red</Name>
         <Value xsi:type="xsd:int">255</Value>
         <Category>Rendering</Category>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>bool</Type>
+        <Name>RectangleInstance.Visible</Name>
+        <Value xsi:type="xsd:boolean">true</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>string</Type>
+        <Name>TextInstance.Text</Name>
+        <Value xsi:type="xsd:string">Player joined</Value>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>
