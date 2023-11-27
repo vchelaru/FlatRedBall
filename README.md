@@ -5,6 +5,7 @@
 [![Join the chat](https://img.shields.io/discord/586997072373481494)](https://discord.gg/tG5RBgw)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fflatredball.com)](https://flatredball.com)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2FFlatRedBall)](https://twitter.com/FlatRedBall)
+![Activity](https://img.shields.io/github/last-commit/vchelaru/FlatRedBall/NetStandard)
 
 The FlatRedBall Game Engine is designed to boost your productivity as a game developer, with a particular focus on building 2D games of any genre. It provides a powerful editor to help you organize your projects. At runtime, the FlatRedBall engine provides efficiency, stability, and features which have been refined for over two decades.
 
