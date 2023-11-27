@@ -284,7 +284,14 @@ namespace OfficialPlugins.FrbUpdater
 
                                     };
 
-                                    lblSpeed.Invoke(updateDelegate);
+                                    try
+                                    {
+                                        lblSpeed.Invoke(updateDelegate);
+                                    }
+                                    catch(InvalidOperationException)
+                                    {
+                                        // do nothing, at times this can happen before the view is visible. It's okay, just carry on...
+                                    }
 
 
                                 }
