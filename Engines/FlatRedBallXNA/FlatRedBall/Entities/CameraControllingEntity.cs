@@ -130,7 +130,45 @@ namespace FlatRedBall.Entities
         /// </summary>
         public bool LerpSmoothZoom { get; set; } = true;
 
-        public float CurrentZoom { get; set; } = 1;
+        /// <summary>
+        /// The value used to mulitply the OrthogonalWidth and OrthogonalHeight. A larger value means the camera is more zoomed out, and can see more of the game world.
+        /// A smaller value means the camera is zoomed in, so it can see less of the game world.
+        /// </summary>
+        public float ViewableAreaMultiplier { get; private set; } = 1;
+
+        /// <summary>
+        /// Returns the maximum possible value that ViewableAreaMultiplier can be set to. This is based on the size of the presence and size of the map.
+        /// If Map is null, this returns float.PositiveInfinity.
+        /// </summary>
+        public float MaxViewableAreaMultiplier
+        {
+            get
+            {
+                float maxViewableMultiplier = float.PositiveInfinity;
+
+                if (Map != null)
+                {
+                    var mapHeight = Map.Height;
+                    var mapWidth = Map.Width;
+
+                    var maxViewableMultiplierX = mapWidth / defaultOrthoWidth;
+                    var maxViewableMultiplierY = mapHeight / defaultOrthoHeight;
+
+                    maxViewableMultiplier = System.Math.Min(maxViewableMultiplierX, maxViewableMultiplierY);
+                }
+                return System.Math.Max(1, maxViewableMultiplier);
+            }
+        }
+
+        /// <summary>
+        /// Returns the maximum possible viewable width when the camera is zoomed out as far as possible. This is based on the size of the presence and size of the map.
+        /// </summary>
+        public float MaxViewableAreaWidth => defaultOrthoWidth * MaxViewableAreaMultiplier;
+        /// <summary>
+        /// Returns the maximum possible viewable height when the camera is zoomed out as far as possible. This is based on the size of the presence and size of the map.
+        /// </summary>
+        public float MaxViewableAreaHeight => defaultOrthoHeight * MaxViewableAreaMultiplier;
+
 
         /// <summary>
         /// The amount of smoothing. The larger the number, faster the Camera moves. This value is ignored if TargetApproachStyle is Immediate.
@@ -604,17 +642,8 @@ namespace FlatRedBall.Entities
             {
                 desiredZoom = System.Math.Min(furthestZoom, currentSeparationDistance / noZoomDistance);
 
-                if (Map != null)
-                {
-                    var mapHeight = Map.Height;
-                    var mapWidth = Map.Width;
-
-                    var maxZoomX = mapWidth / defaultOrthoWidth;
-                    var maxZoomY = mapHeight / defaultOrthoHeight;
-                    desiredZoom = System.Math.Min(System.Math.Min(desiredZoom, maxZoomX), maxZoomY);
-                    desiredZoom = System.Math.Max(desiredZoom, 1);
-                }
-
+                desiredZoom = System.Math.Min(desiredZoom, MaxViewableAreaMultiplier);
+                desiredZoom = System.Math.Max(desiredZoom, 1);
             }
             else
             {
@@ -623,14 +652,14 @@ namespace FlatRedBall.Entities
 
             if (LerpSmoothZoom)
             {
-                CurrentZoom = MathHelper.Lerp(CurrentZoom, desiredZoom, .1f);
+                ViewableAreaMultiplier = MathHelper.Lerp(ViewableAreaMultiplier, desiredZoom, .1f);
             }
             else
             {
-                CurrentZoom = desiredZoom;
+                ViewableAreaMultiplier = desiredZoom;
             }
 
-            Camera.OrthogonalHeight = defaultOrthoHeight * CurrentZoom;
+            Camera.OrthogonalHeight = defaultOrthoHeight * ViewableAreaMultiplier;
             Camera.FixAspectRatioYConstant();
         }
 
