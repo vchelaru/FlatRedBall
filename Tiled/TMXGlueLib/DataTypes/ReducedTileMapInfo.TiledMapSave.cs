@@ -127,7 +127,6 @@ namespace TMXGlueLib.DataTypes
 
                 string texture = null;
 
-                uint tileIdOfTexture = 0;
                 Tileset tileSet = null;
                 uint? firstGid = null;
 
