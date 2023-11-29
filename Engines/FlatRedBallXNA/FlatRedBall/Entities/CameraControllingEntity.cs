@@ -16,8 +16,18 @@ namespace FlatRedBall.Entities
 
     public enum TargetApproachStyle
     {
+        /// <summary>
+        /// The camera moves to the target position immediately, effectively locking on to its position.
+        /// </summary>
         Immediate,
+        /// <summary>
+        /// The camera moves to the target position smoothly, but not at a constant speed. The camera will move faster
+        /// if it is further away from the target, and slower if it is closer.
+        /// </summary>
         Smooth,
+        /// <summary>
+        /// The camera moves to the target at a constant speed, regardless of the distance between the camera and the target.
+        /// </summary>
         ConstantSpeed
     }
 
@@ -36,6 +46,7 @@ namespace FlatRedBall.Entities
         private float minZoomPercent;
         private bool isAutoZoomEnabled;
         private float furthestZoom;
+        private AxisAlignedRectangle MaximumViewRectangle = new AxisAlignedRectangle();
 
 
         /// <summary>
@@ -123,6 +134,9 @@ namespace FlatRedBall.Entities
             }
         }
 
+        /// <summary>
+        /// The type of approach to use when moving the camera to the target position.
+        /// </summary>
         public TargetApproachStyle TargetApproachStyle { get; set; } = TargetApproachStyle.Smooth;
 
         /// <summary>
@@ -169,6 +183,7 @@ namespace FlatRedBall.Entities
         /// </summary>
         public float MaxViewableAreaHeight => defaultOrthoHeight * MaxViewableAreaMultiplier;
 
+        public bool IsKeepingTargetsInView { get; set; } = false;
 
         /// <summary>
         /// The amount of smoothing. The larger the number, faster the Camera moves. This value is ignored if TargetApproachStyle is Immediate.
@@ -292,11 +307,17 @@ namespace FlatRedBall.Entities
                 windowVisualization.Height = ScrollingWindowHeight;
             }
 
+            if (IsKeepingTargetsInView && hasActivityBeenCalled)
+            {
+                KeepTargetsInView();
+            }
+
             // Zoom should be happening first, and then targeting:
             if (isAutoZoomEnabled)
             {
                 ApplyZoom();
             }
+
 
             var target = GetTarget();
 
@@ -345,6 +366,40 @@ namespace FlatRedBall.Entities
             ApplyTarget(target, effectiveTargetApproachStyleX, effectiveTargetApproachStyleY);
 
             hasActivityBeenCalled = true;
+        }
+
+        private void KeepTargetsInView()
+        {
+            MaximumViewRectangle.Position = this.Position.AtZ(0);
+            MaximumViewRectangle.Width = MaxViewableAreaWidth;
+            MaximumViewRectangle.Height = MaxViewableAreaHeight;
+
+
+            for (int i = 0; i < Targets.Count; i++)
+            {
+                var target = Targets[i] as PositionedObject;
+
+                if(target != null)
+                {
+                    if(target.Y > MaximumViewRectangle.Y + MaximumViewRectangle.Height / 2)
+                    {
+                        target.Y = MaximumViewRectangle.Y + MaximumViewRectangle.Height / 2;
+                    }
+                    else if(target.Y < MaximumViewRectangle.Y - MaximumViewRectangle.Height / 2)
+                    {
+                        target.Y = MaximumViewRectangle.Y - MaximumViewRectangle.Height / 2;
+                    }
+
+                    if(target.X > MaximumViewRectangle.X + MaximumViewRectangle.Width / 2)
+                    {
+                        target.X = MaximumViewRectangle.X + MaximumViewRectangle.Width / 2;
+                    }
+                    else if(target.X < MaximumViewRectangle.X - MaximumViewRectangle.Width / 2)
+                    {
+                        target.X = MaximumViewRectangle.X - MaximumViewRectangle.Width / 2;
+                    }
+                }
+            }
         }
 
         private void ApplyZoom()
