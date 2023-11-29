@@ -395,7 +395,7 @@ namespace OfficialPlugins.MonoGameContent
                 await TaskManager.Self.AddAsync(() =>
                 {
                     // If the user closes the project while the startup is happening, just skip the task - no need to build
-                    if (GlueState.CurrentGlueProject != null)
+                    if (GlueState.CurrentGlueProject != null && GlueState.IsProjectLoaded(project))
                     {
 
                         if (contentItem.GetIfNeedsBuild(destinationDirectory) || rebuild)
