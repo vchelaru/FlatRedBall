@@ -94,7 +94,7 @@ namespace GlueFormsCore.Controls
         public async void ReactToCloseProject(bool shouldSave, bool isExiting, InitializationWindowWpf initWindow = null)
         {
             var didCreateOwnInitWindow = false;
-            if(initWindow == null)
+            if (initWindow == null)
             {
                 didCreateOwnInitWindow = true;
                 initWindow = new InitializationWindowWpf();
@@ -110,6 +110,55 @@ namespace GlueFormsCore.Controls
             // Let's set this to true so all tasks can end
             ProjectManager.WantsToCloseProject = true;
 
+            // It's possible that all tasks finish, but that an async function isn't finished running.
+            // This would result in more tasks getting added on. Therefore, we want to loop and make sure that:
+            // 1. All tasks are finished
+            // 2. We waited some time (1 second?)
+            // 3. No tasks were awaited
+            bool didAwaitTasks = false;
+            do
+            {
+                didAwaitTasks = WaitForAllTaksToFinish(initWindow);
+
+                if (didAwaitTasks)
+                {
+                    System.Threading.Thread.Sleep(1_000);
+                }
+            } while (didAwaitTasks);
+
+            if (shouldSave)
+            {
+                if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName?.FullPath))
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjectsImmediately();
+                    GlueCommands.Self.UpdateGlueSettingsFromCurrentGlueStateImmediately();
+                }
+            }
+
+
+            ProjectManager.UnloadProject(isExiting);
+
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                if (MainGlueWindow.Self.PropertyGrid != null)
+                {
+                    MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
+                }
+            });
+
+            GlueCommands.Self.DoOnUiThread(() => MainGlueWindow.Self.Text = Localization.Texts.FrbEditor);
+            ProjectManager.WantsToCloseProject = false;
+            TaskManager.Self.RecordTaskHistory($"--Ending Close Project Command --");
+
+            if (didCreateOwnInitWindow)
+            {
+                initWindow.Close();
+            }
+        }
+
+        private static bool WaitForAllTaksToFinish(InitializationWindowWpf initWindow)
+        {
+            bool didWait = false;
             long msWaited = 0;
             const int maxMsToWait = 60 * 1000;
 
@@ -154,43 +203,19 @@ namespace GlueFormsCore.Controls
                     // There shouldn't be any but just in case Vic messed up the code...
                     if (msWaited > maxMsToWait)
                     {
+                        // If the first task barfed, don't consider that awaited. Just move on...
                         TaskManager.Self.RecordTaskHistory($"--Waited maximum time to finish tasks, but still have {TaskManager.Self.TaskCount} tasks left --");
-
                         break;
+                    }
+                    else
+                    {
+                        didWait = true;
                     }
                 }
 
             }
 
-
-            if (shouldSave)
-            {
-                if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName?.FullPath))
-                {
-                    GlueCommands.Self.ProjectCommands.SaveProjectsImmediately();
-                    GlueCommands.Self.UpdateGlueSettingsFromCurrentGlueStateImmediately();
-                }
-            }
-
-
-            ProjectManager.UnloadProject(isExiting);
-
-            GlueCommands.Self.DoOnUiThread(() =>
-            {
-                if(MainGlueWindow.Self.PropertyGrid != null)
-                {
-                    MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
-                }
-            });
-
-            GlueCommands.Self.DoOnUiThread(() => MainGlueWindow.Self.Text = Localization.Texts.FrbEditor);
-            ProjectManager.WantsToCloseProject = false;
-            TaskManager.Self.RecordTaskHistory($"--Ending Close Project Command --");
-
-            if(didCreateOwnInitWindow)
-            {
-                initWindow.Close();
-            }
+            return didWait;
         }
 
         private void CreateFileWatchTimer()

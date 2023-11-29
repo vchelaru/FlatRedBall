@@ -196,6 +196,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                 GlueSettings.RecentFileList.RemoveAt(GlueSettings.RecentFileList.Count - 1);
             }
 
+            RefreshMenuItems();
 
             GlueCommands.Self.GluxCommands.SaveSettings();
         }

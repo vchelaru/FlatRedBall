@@ -647,7 +647,12 @@ namespace FlatRedBall.Glue.Plugins
             control.Background = ToolbarBackgroundBrush;
             control.BorderBrush = ToolbarBackgroundBrush;
 
-            toAddTo.Items.Add(control);
+            if(control.Parent == null)
+            {
+                toAddTo.Items.Add(control);
+
+            }
+
         }
 
         private void Toolbar_Loaded(object sender, RoutedEventArgs e)

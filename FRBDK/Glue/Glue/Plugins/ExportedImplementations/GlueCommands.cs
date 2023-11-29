@@ -408,7 +408,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 settingsSave.LastProjectFile = null;
             }
 
-            settingsSave.RecentFiles.RemoveAll(item => new FilePath(item) == filePath);
             settingsSave.RecentFileList.RemoveAll(item => new FilePath( item.FileName ) == filePath);
 
         }
