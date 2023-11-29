@@ -16,8 +16,18 @@ namespace FlatRedBall.Entities
 
     public enum TargetApproachStyle
     {
+        /// <summary>
+        /// The camera moves to the target position immediately, effectively locking on to its position.
+        /// </summary>
         Immediate,
+        /// <summary>
+        /// The camera moves to the target position smoothly, but not at a constant speed. The camera will move faster
+        /// if it is further away from the target, and slower if it is closer.
+        /// </summary>
         Smooth,
+        /// <summary>
+        /// The camera moves to the target at a constant speed, regardless of the distance between the camera and the target.
+        /// </summary>
         ConstantSpeed
     }
 
@@ -36,6 +46,7 @@ namespace FlatRedBall.Entities
         private float minZoomPercent;
         private bool isAutoZoomEnabled;
         private float furthestZoom;
+        private AxisAlignedRectangle MaximumViewRectangle = new AxisAlignedRectangle();
 
 
         /// <summary>
@@ -123,6 +134,9 @@ namespace FlatRedBall.Entities
             }
         }
 
+        /// <summary>
+        /// The type of approach to use when moving the camera to the target position.
+        /// </summary>
         public TargetApproachStyle TargetApproachStyle { get; set; } = TargetApproachStyle.Smooth;
 
         /// <summary>
@@ -130,7 +144,46 @@ namespace FlatRedBall.Entities
         /// </summary>
         public bool LerpSmoothZoom { get; set; } = true;
 
-        public float CurrentZoom { get; set; } = 1;
+        /// <summary>
+        /// The value used to mulitply the OrthogonalWidth and OrthogonalHeight. A larger value means the camera is more zoomed out, and can see more of the game world.
+        /// A smaller value means the camera is zoomed in, so it can see less of the game world.
+        /// </summary>
+        public float ViewableAreaMultiplier { get; private set; } = 1;
+
+        /// <summary>
+        /// Returns the maximum possible value that ViewableAreaMultiplier can be set to. This is based on the size of the presence and size of the map.
+        /// If Map is null, this returns float.PositiveInfinity.
+        /// </summary>
+        public float MaxViewableAreaMultiplier
+        {
+            get
+            {
+                float maxViewableMultiplier = float.PositiveInfinity;
+
+                if (Map != null)
+                {
+                    var mapHeight = Map.Height;
+                    var mapWidth = Map.Width;
+
+                    var maxViewableMultiplierX = mapWidth / defaultOrthoWidth;
+                    var maxViewableMultiplierY = mapHeight / defaultOrthoHeight;
+
+                    maxViewableMultiplier = System.Math.Min(maxViewableMultiplierX, maxViewableMultiplierY);
+                }
+                return System.Math.Max(1, maxViewableMultiplier);
+            }
+        }
+
+        /// <summary>
+        /// Returns the maximum possible viewable width when the camera is zoomed out as far as possible. This is based on the size of the presence and size of the map.
+        /// </summary>
+        public float MaxViewableAreaWidth => defaultOrthoWidth * MaxViewableAreaMultiplier;
+        /// <summary>
+        /// Returns the maximum possible viewable height when the camera is zoomed out as far as possible. This is based on the size of the presence and size of the map.
+        /// </summary>
+        public float MaxViewableAreaHeight => defaultOrthoHeight * MaxViewableAreaMultiplier;
+
+        public bool IsKeepingTargetsInView { get; set; } = false;
 
         /// <summary>
         /// The amount of smoothing. The larger the number, faster the Camera moves. This value is ignored if TargetApproachStyle is Immediate.
@@ -254,11 +307,17 @@ namespace FlatRedBall.Entities
                 windowVisualization.Height = ScrollingWindowHeight;
             }
 
+            if (IsKeepingTargetsInView && hasActivityBeenCalled)
+            {
+                KeepTargetsInView();
+            }
+
             // Zoom should be happening first, and then targeting:
             if (isAutoZoomEnabled)
             {
                 ApplyZoom();
             }
+
 
             var target = GetTarget();
 
@@ -307,6 +366,40 @@ namespace FlatRedBall.Entities
             ApplyTarget(target, effectiveTargetApproachStyleX, effectiveTargetApproachStyleY);
 
             hasActivityBeenCalled = true;
+        }
+
+        private void KeepTargetsInView()
+        {
+            MaximumViewRectangle.Position = this.Position.AtZ(0);
+            MaximumViewRectangle.Width = MaxViewableAreaWidth;
+            MaximumViewRectangle.Height = MaxViewableAreaHeight;
+
+
+            for (int i = 0; i < Targets.Count; i++)
+            {
+                var target = Targets[i] as PositionedObject;
+
+                if(target != null)
+                {
+                    if(target.Y > MaximumViewRectangle.Y + MaximumViewRectangle.Height / 2)
+                    {
+                        target.Y = MaximumViewRectangle.Y + MaximumViewRectangle.Height / 2;
+                    }
+                    else if(target.Y < MaximumViewRectangle.Y - MaximumViewRectangle.Height / 2)
+                    {
+                        target.Y = MaximumViewRectangle.Y - MaximumViewRectangle.Height / 2;
+                    }
+
+                    if(target.X > MaximumViewRectangle.X + MaximumViewRectangle.Width / 2)
+                    {
+                        target.X = MaximumViewRectangle.X + MaximumViewRectangle.Width / 2;
+                    }
+                    else if(target.X < MaximumViewRectangle.X - MaximumViewRectangle.Width / 2)
+                    {
+                        target.X = MaximumViewRectangle.X - MaximumViewRectangle.Width / 2;
+                    }
+                }
+            }
         }
 
         private void ApplyZoom()
@@ -604,17 +697,8 @@ namespace FlatRedBall.Entities
             {
                 desiredZoom = System.Math.Min(furthestZoom, currentSeparationDistance / noZoomDistance);
 
-                if (Map != null)
-                {
-                    var mapHeight = Map.Height;
-                    var mapWidth = Map.Width;
-
-                    var maxZoomX = mapWidth / defaultOrthoWidth;
-                    var maxZoomY = mapHeight / defaultOrthoHeight;
-                    desiredZoom = System.Math.Min(System.Math.Min(desiredZoom, maxZoomX), maxZoomY);
-                    desiredZoom = System.Math.Max(desiredZoom, 1);
-                }
-
+                desiredZoom = System.Math.Min(desiredZoom, MaxViewableAreaMultiplier);
+                desiredZoom = System.Math.Max(desiredZoom, 1);
             }
             else
             {
@@ -623,14 +707,14 @@ namespace FlatRedBall.Entities
 
             if (LerpSmoothZoom)
             {
-                CurrentZoom = MathHelper.Lerp(CurrentZoom, desiredZoom, .1f);
+                ViewableAreaMultiplier = MathHelper.Lerp(ViewableAreaMultiplier, desiredZoom, .1f);
             }
             else
             {
-                CurrentZoom = desiredZoom;
+                ViewableAreaMultiplier = desiredZoom;
             }
 
-            Camera.OrthogonalHeight = defaultOrthoHeight * CurrentZoom;
+            Camera.OrthogonalHeight = defaultOrthoHeight * ViewableAreaMultiplier;
             Camera.FixAspectRatioYConstant();
         }
 
