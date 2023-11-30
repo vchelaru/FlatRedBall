@@ -104,7 +104,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             {
                 Plugins.Add(Localization.Texts.PluginInstall, () => new InstallPluginWindow().Show(MainGlueWindow.Self));
                 Plugins.Add(Localization.Texts.PluginUninstall, () => new UninstallPluginWindow().Show(MainGlueWindow.Self));
-                Plugins.Add(Localization.Texts.PluginCreate, () => new CreatePluginWindow().Show());
+                Plugins.Add(Localization.Texts.PluginCreate, () => new CreatePluginWindow().ShowDialog());
                 Plugins.DropDownItems.Add(new ToolStripSeparator());
             }
 
