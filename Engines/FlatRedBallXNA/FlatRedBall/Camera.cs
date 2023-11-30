@@ -372,7 +372,7 @@ namespace FlatRedBall
                 }
                 else
                 {
-                    throw new NotImplementedException("Setting the AbsoluteRightXEdge is not supported for perspective cameras.")
+                    throw new NotImplementedException("Setting the AbsoluteRightXEdge is not supported for perspective cameras.");
                 }
             }
         }
