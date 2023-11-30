@@ -13,7 +13,13 @@ namespace FlatRedBall.Entities
         decimal CurrentHealth { get; set; }
         decimal MaxHealth { get; set; }
 
+        /// <summary>
+        /// Event raised before damave is dealt. This event can be used to modify the damage dealt.
+        /// </summary>
         Func<decimal, IDamageArea, decimal> ModifyDamageReceived { get; set; }
+        /// <summary>
+        /// Event raised when damage is received. This is called after CurrentHealth has been modified.
+        /// </summary>
         Action<decimal, IDamageArea> ReactToDamageReceived { get; set; }
         Action<decimal, IDamageArea> Died { get; set; }
 

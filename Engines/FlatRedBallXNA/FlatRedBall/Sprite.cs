@@ -587,7 +587,7 @@ namespace FlatRedBall
 
         /// <summary>
         /// The top pixel displayed on the sprite. Default is 0.
-        /// This value is in pixel coordiantes, so it typically ranges from 0 to the height of the referenced texture.
+        /// This value is in pixel coordinates, so it typically ranges from 0 to the height of the referenced texture.
         /// </summary>
         [ExportOrder(2)]
         public float TopTexturePixel
@@ -634,6 +634,10 @@ namespace FlatRedBall
         }
 
 
+        /// <summary>
+        /// The bottom pixel displayed on the sprite. Default is the height of the texture.
+        /// This value is in pixel coordiantes, so it typically ranges from 0 to the height of the referenced texture.
+        /// </summary>
         [ExportOrder(2)]
         public float BottomTexturePixel
         {
@@ -661,6 +665,10 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// The left coordinate in texture coordinates on the sprite. Default is 0.
+        /// This value is in texture coordinates, not pixels. A value of 1 represents the right side of the texture.
+        /// </summary>
         [ExportOrder(2)]
         public float LeftTextureCoordinate
         {
@@ -674,7 +682,10 @@ namespace FlatRedBall
             }
         }
 
-
+        /// <summary>
+        /// The left pixel displayed on the sprite. Default is 0.
+        /// This value is in pixel coordinates, so it typically ranges from 0 to the width of the referenced texture.
+        /// </summary>
         [ExportOrder(2)]
         public float LeftTexturePixel
         {
@@ -702,6 +713,10 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// The right coordinate in texture coordinates on the sprite. Default is 1.
+        /// This value is in texture coordinates, not pixels. A value of 1 represents the right side of the texture.
+        /// </summary>
         [ExportOrder(2)]
         public float RightTextureCoordinate
         {
@@ -715,7 +730,10 @@ namespace FlatRedBall
             }
         }
 
-       
+        /// <summary>
+        /// The right pixel displayed on the sprite. Default is the width of the texture.
+        /// This value is in pixel coordinates, so it typically ranges from 0 to the width of the referenced texture.
+        /// </summary>
         [ExportOrder(2)]
         public float RightTexturePixel
         {
@@ -1247,7 +1265,6 @@ namespace FlatRedBall
             set { mTimeCreated = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Controls the visibility of the Sprite
         /// </summary>
@@ -1257,7 +1274,6 @@ namespace FlatRedBall
         /// the Sprite will continue to behave regularly; custom behavior, movement, attachment,
         /// and animation are still executed, and collision is possible.
         /// </remarks>
-        #endregion
         public virtual bool Visible
         {
             get { return mVisible; }
