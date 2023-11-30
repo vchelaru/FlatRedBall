@@ -25,7 +25,7 @@ public static class NewProjectHelper
         string commandLineArguments = null;
         if (directoryForNewProject != null)
         {
-
+            // Directory is the location of the existing project to use when using synced projects
             commandLineArguments = "directory=\"" + directoryForNewProject.FullPath + "\"" +
                                    " namespace=" + namespaceForNewProject;
         }
@@ -48,6 +48,11 @@ public static class NewProjectHelper
         if(hasDefaultRepositories)
         {
             commandLineArguments += " showsourcecheckbox";
+        }
+
+        if(!string.IsNullOrEmpty(GlueState.Self.GlueSettingsSave?.DefaultNewProjectDirectory))
+        {
+            commandLineArguments += $" defaultdestinationdirectory=\"{GlueState.Self.GlueSettingsSave.DefaultNewProjectDirectory}\"";
         }
 
         //Process process = Process.Start(processStartInfo);
@@ -86,6 +91,14 @@ public static class NewProjectHelper
 
         if (!String.IsNullOrEmpty(createdProject))
         {
+            // see if the default directory changed:
+            var newDefaultDirectory = viewModel.ProjectDestinationLocation;
+            if(newDefaultDirectory != GlueState.Self.GlueSettingsSave.DefaultNewProjectDirectory)
+            {
+                GlueState.Self.GlueSettingsSave.DefaultNewProjectDirectory = newDefaultDirectory;
+                GlueCommands.Self.GluxCommands.SaveSettings();
+            }
+
             await GlueCommands.Self.LoadProjectAsync(createdProject);
 
             await TaskManager.Self.WaitForAllTasksFinished();

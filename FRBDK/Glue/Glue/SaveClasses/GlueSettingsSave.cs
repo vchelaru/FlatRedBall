@@ -41,6 +41,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
+    #region RecentFileSave
+
     public class RecentFileSave
     {
         public string FileName { get; set; }
@@ -49,6 +51,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public override string ToString() => $"{FileName} {LastTimeAccessed}";
     }
+
+    #endregion
 
     /// <summary>
     /// Global glue settings for the current user, not tied to any particular project.
@@ -141,6 +145,8 @@ namespace FlatRedBall.Glue.SaveClasses
         }
         [XmlIgnore] public CultureInfo CurrentCulture { get; set; }
 
+        public string DefaultNewProjectDirectory { get; set; }
+
         #endregion
 
         public void Save()
@@ -166,6 +172,8 @@ namespace FlatRedBall.Glue.SaveClasses
             Associations.ReAddExternals();
             BuildToolAssociations.ReAddExternals();
         }
+
+        #region Loading-related Methods
 
         public void FixAllTypes()
         {
@@ -204,5 +212,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             BuildToolAssociations.AddExternalRange(externals);
         }
-	}
+
+        #endregion
+    }
 }
