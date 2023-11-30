@@ -29,7 +29,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Audio\ISong.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Audio\SoundEffectPlayInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Audio\SoundGroup.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Camera.Common.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AI\Pathfinding\LinkSave.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AI\Pathfinding\NodeNetworkSave.cs" />
