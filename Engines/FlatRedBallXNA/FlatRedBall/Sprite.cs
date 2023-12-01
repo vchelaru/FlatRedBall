@@ -532,7 +532,6 @@ namespace FlatRedBall
         }
 
 
-        #region XML Docs
         /// <summary>
         /// Whether to flip the Sprite's texture on the y Axis (left and right switch).
         /// </summary>
@@ -543,14 +542,12 @@ namespace FlatRedBall
         /// is no efficiency consequence for using either method.  If a Sprite
         /// is animated, this value will be overwritten by the AnimationChain being used.
         /// </remarks>
-        #endregion
         public bool FlipHorizontal
         {
             get { return mFlipHorizontal; }
             set { mFlipHorizontal = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Whether to flip the Sprite's texture on the x Axis (top and bottom switch).
         /// </summary>
@@ -561,7 +558,6 @@ namespace FlatRedBall
         /// There is no efficiency consequence for using either method.  If a Sprite
         /// is animated, this value will be overwritten by the AnimationChain being used.
         /// </remarks>
-        #endregion
         public bool FlipVertical
         {
             get { return mFlipVertical; }
@@ -1804,6 +1800,11 @@ namespace FlatRedBall
             foreach(var animation in animations)
             {
                 CurrentChainName = animation;
+
+                if(CurrentChain == null)
+                {
+                    throw new InvalidOperationException($"Could not set the current chain to {animation} because this animation does not exist");
+                }
                 // This should not try/catch. If it does, then any caller will continue after it's finished, causing additional logic to run after a screen has ended:
                 //try
                 //{
@@ -2011,7 +2012,6 @@ namespace FlatRedBall
 
                     if (timeIntoAnimation < frameTime)
                     {
-                        mCurrentFrameIndex = frameIndex;
 
                         break;
                     }
@@ -2022,6 +2022,7 @@ namespace FlatRedBall
                         frameIndex = (frameIndex + 1) % CurrentChain.Count;
                     }
                 }
+                mCurrentFrameIndex = frameIndex;
             }
         }
 

@@ -18,9 +18,7 @@ using System.Globalization;
 namespace FlatRedBall.Content.AnimationChain
 {
     [XmlRoot("AnimationChain")]
-#if !UWP
     [Serializable]
-#endif
     public class AnimationChainSave
     {
         #region Fields

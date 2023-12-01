@@ -153,14 +153,12 @@ namespace FlatRedBall.Graphics.Animation
             return animationChain;
         }
 
-        #region XML Docs
         /// <summary>
         /// Searches for and returns the AnimationFrame with its Name matching
         /// the nameToSearchFor argument, or null if none are found.
         /// </summary>
         /// <param name="nameToSearchFor">The name of the AnimationFrame to search for.</param>
         /// <returns>The AnimationFrame with matching name, or null if none exists.</returns>
-        #endregion
         public AnimationFrame FindByName(string nameToSearchFor)
         {
             for (int i = 0; i < this.Count; i++)
@@ -172,7 +170,6 @@ namespace FlatRedBall.Graphics.Animation
             return null;
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the shortest absolute number of frames between the two argument frame numbers.  This
         /// method moves forward and backward and considers looping.
@@ -180,7 +177,6 @@ namespace FlatRedBall.Graphics.Animation
         /// <param name="frame1">The index of the first frame.</param>
         /// <param name="frame2">The index of the second frame.</param>
         /// <returns>The positive or negative number of frames between the two arguments.</returns>
-        #endregion
         public int FrameToFrame(int frame1, int frame2)
         {
 			int difference = frame2 - frame1;
@@ -192,7 +188,6 @@ namespace FlatRedBall.Graphics.Animation
 
             return difference;
         }
-
 
 		public void ReplaceTexture(Texture2D oldTexture, Texture2D newTexture)
 		{
@@ -211,9 +206,19 @@ namespace FlatRedBall.Graphics.Animation
             return Name + " (" + Count + ")";
         }
 
-		#endregion
+        public double GetTimeAtFrameIndex(int frameIndex)
+        {
+            var timeAtStartOfCurrentFrame = 0.0;
+            for (int i = 0; i < frameIndex; i++)
+            {
+                timeAtStartOfCurrentFrame += this[i].FrameLength;
+            }
+            return timeAtStartOfCurrentFrame;
+        }
 
-		#endregion
+        #endregion
+
+        #endregion
 
         #region IEquatable<AnimationChain> Members
 
