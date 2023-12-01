@@ -143,7 +143,8 @@ namespace GumPlugin.CodeGeneration
 
             if( version >= (int) GluxVersions.GumTextHasIsBold)
             {
-                Skip("IsBold");
+                // We can include this one, it's handled by 
+                Include("IsBold");
             }
             else
             {
