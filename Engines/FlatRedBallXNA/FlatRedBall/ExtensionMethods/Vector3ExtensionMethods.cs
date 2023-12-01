@@ -160,13 +160,30 @@ namespace Microsoft.Xna.Framework
 
         /// <summary>
         /// Returns a unit vector with a Z value of 0 pointing in the direction
-        /// specified by the radians value.
+        /// specified by the radians argument.
         /// </summary>
         /// <param name="radians">The direction in radians, where 0 is to the right, and
         /// values increase counterclockwise.</param>
         /// <returns>A new Vector3 pointing in the desired direction.</returns>
         public static Vector3 FromAngle(float radians)
         {
+            return new Vector3(
+                (float)Math.Cos(radians),
+                (float)Math.Sin(radians),
+                0
+                );
+        }
+
+        /// <summary>
+        /// Returns a unit vector with a Z value of 0 pointing in the direction
+        /// specified by the degrees argument.
+        /// </summary>
+        /// <param name="angleDegrees">The direction in angles, where 0 is to the right, and
+        /// values increase counterclockwise.</param>
+        /// <returns>A new Vector3 pointing in the desired direction.</returns>
+        public static Vector3 FromAngleDegrees(float angleDegrees)
+        {
+            var radians = MathHelper.ToRadians(angleDegrees);
             return new Vector3(
                 (float)Math.Cos(radians),
                 (float)Math.Sin(radians),

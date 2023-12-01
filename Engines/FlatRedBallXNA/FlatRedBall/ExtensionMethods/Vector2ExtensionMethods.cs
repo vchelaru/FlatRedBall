@@ -117,16 +117,29 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        /// <summary>
+        /// Returns a unit vector pointing in the direction specified by the radians argument.
+        /// </summary>
+        /// <param name="angleRadians">The direction in radians, where 0 is to the right, and values
+        /// increase counterclockwise.</param>
+        /// <returns></returns>
         public static Vector2 FromAngle(float angleRadians)
         {
             return new Vector2((float)Math.Cos(angleRadians),
                 (float)Math.Sin(angleRadians));
         }
 
+        /// <summary>
+        /// Returns a unit vector pointing in the direction specified by the degrees argument.
+        /// </summary>
+        /// <param name="angleDegrees">The direction in degrees, where 0 is to the right, and values
+        /// increasing counterclockwise.</param>
+        /// <returns></returns>
         public static Vector2 FromAngleDegrees(float angleDegrees)
         {
             var angleRadians = MathHelper.ToRadians(angleDegrees);
-            return new Vector2((float)Math.Cos(angleRadians),
+            return new Vector2(
+                (float)Math.Cos(angleRadians),
                 (float)Math.Sin(angleRadians));
         }
 
