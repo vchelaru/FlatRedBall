@@ -247,11 +247,26 @@ namespace GlueControl.Editing
             {
                 color = Color.Black;
             }
-            return EditorVisuals.ColoredRectangle(
+            var rectangle = EditorVisuals.ColoredRectangle(
                 textToSurround.Width + 4,
                 textToSurround.Height,
                 textToSurround.Position.AddZ(-.1f),
                 color);
+
+            switch (textToSurround.VerticalAlignment)
+            {
+                case VerticalAlignment.Center:
+                    // do nothing
+                    break;
+                case VerticalAlignment.Top:
+                    rectangle.Y -= textToSurround.Height / 2.0f;
+                    break;
+                case VerticalAlignment.Bottom:
+                    rectangle.Y += textToSurround.Height / 2.0f;
+                    break;
+            }
+
+            return rectangle;
         }
 
         public static AxisAlignedRectangle Rectangle(float width, float height, Vector3 centerPosition, Color? color = null)
