@@ -1628,6 +1628,12 @@ namespace FlatRedBall.TileGraphics
 
                     throw new InvalidOperationException($"The MapDrawableBatch {mdb.Name} has the texture {otherTexture} which is different than this layer's texture {thisTextureName}");
                 }
+                if(mdb.Z < this.Z)
+                {
+                    throw new Exception(
+                        $"The layer {mdb.Name} has a lower Z {mdb.Z} than this layer's Z ({this.Name} {this.Z}). Merging has to be called on the bottom-most layer");
+
+                }
             }
 #endif
 
