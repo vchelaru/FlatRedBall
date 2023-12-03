@@ -341,6 +341,8 @@ namespace FlatRedBall.Glue.ViewModels
 
         #endregion
 
+        #region Call Activity
+
         public bool IsCallActivityChecked
         {
             get => Get<bool>();
@@ -357,6 +359,8 @@ namespace FlatRedBall.Glue.ViewModels
 
         [DependsOn(nameof(IsGenericType))]
         public Visibility CallActivityCheckBoxVisibility => IsGenericType.ToVisibility();
+
+        #endregion
 
         // Properties to copy over to the NamedObjectSave when it is created.
         public List<PropertySave> Properties
@@ -377,6 +381,8 @@ namespace FlatRedBall.Glue.ViewModels
 
         public GlueElement EffectiveElement => ForcedElementToAddTo ?? GlueState.Self.CurrentElement;
 
+        #region Name in File
+
         public string SourceNameInFile
         {
             get => Get<string>();
@@ -388,21 +394,6 @@ namespace FlatRedBall.Glue.ViewModels
                 }
             }
         }
-        public string SourceClassGenericType 
-        {
-            get => Get<string>();
-            set
-            {
-                if(Set(value))
-                {
-                    RefreshDefaultIsCallActivityChecked();
-                    SetDefaultObjectName();
-                }
-            }
-        }
-
-        public List<string> AvailableListTypes { get; private set; } =
-            new List<string>();
 
         [DependsOn(nameof(SelectedItem))]
         public List<string> AvailableFileSourceNames
@@ -420,6 +411,24 @@ namespace FlatRedBall.Glue.ViewModels
                 return new List<string>();
             }
         }
+
+        #endregion
+
+        public string SourceClassGenericType 
+        {
+            get => Get<string>();
+            set
+            {
+                if(Set(value))
+                {
+                    RefreshDefaultIsCallActivityChecked();
+                    SetDefaultObjectName();
+                }
+            }
+        }
+
+        public List<string> AvailableListTypes { get; private set; } =
+            new List<string>();
 
         public List<AssetTypeInfo> FlatRedBallAndCustomTypes
         { 

@@ -464,6 +464,8 @@ public class TileGraphicsPluginClass : PluginBase
             foreach(var layer in save.MapLayers)
             {
                 availableObjects.Add($"{layer.Name} (FlatRedBall.TileCollisions.TileShapeCollection)");
+                availableObjects.Add($"{layer.Name} (FlatRedBall.TileGraphics.MapDrawableBatch)");
+
             }
         }
 
