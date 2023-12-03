@@ -493,7 +493,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             }
 
-            GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
+            AddNewtonsoft();
 
             gameHostView.HandleGluxLoaded();
         }
@@ -875,7 +875,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
             {
-                GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
+                AddNewtonsoft();
             }
 
             _refreshManager.CreateStopAndRestartTask($"{propertyName} changed");
@@ -883,6 +883,11 @@ namespace GameCommunicationPlugin.GlueControl
             ReactToPluginEvent("Compiler_Output_Standard", "Waiting for tasks to finish...");
             await TaskManager.Self.WaitForAllTasksFinished();
             ReactToPluginEvent("Compiler_Output_Standard", "Finishined adding/generating code for GlueControlManager");
+        }
+
+        private static void AddNewtonsoft()
+        {
+            GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "13.0.3");
         }
 
         private void SaveCompilerSettingsModel()
