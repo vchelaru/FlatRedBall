@@ -300,11 +300,20 @@ namespace OfficialPluginsCore.Wizard.Models
             get => Get<bool>();
             set => Set(value);
         }
+
+        [DependsOn(nameof(AddGameScreen))]
+        [DependsOn(nameof(AddPlayerEntity))]
+        [DependsOn(nameof(AddPlayerListToGameScreen))]
+        public bool FollowPlayersWithCameraVisibility => AddGameScreen && AddPlayerEntity && AddPlayerListToGameScreen;
+
         public bool KeepCameraInMap
         {
             get => Get<bool>();
             set => Set(value);
         }
+        [DependsOn(nameof(AddGameScreen))]
+        [DependsOn(nameof(AddTiledMap))]
+        public bool KeepCameraInMapVisibility => AddGameScreen && AddTiledMap;
 
         public CameraResolution SelectedCameraResolution
         {

@@ -991,7 +991,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 System.Diagnostics.Debugger.Break();
             }
 
-            if (vm.FollowPlayersWithCamera && vm.AddPlayerListToGameScreen)
+            if (vm.FollowPlayersWithCamera && vm.FollowPlayersWithCameraVisibility)
             {
                 await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
                     cameraNos,
@@ -1000,7 +1000,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     performSaveAndGenerateCode: false,
                     updateUi: false);
             }
-            if (vm.KeepCameraInMap && vm.AddTiledMap)
+            if (vm.KeepCameraInMap && vm.KeepCameraInMapVisibility)
             {
                 await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
                     cameraNos,
