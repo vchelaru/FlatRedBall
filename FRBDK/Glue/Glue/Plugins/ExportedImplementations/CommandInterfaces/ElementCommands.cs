@@ -1810,10 +1810,10 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         inDerived.SourceClassGenericType = inBase.SourceClassGenericType;
     }
 
-    private static NamedObjectSave AddSetByDerivedNos(INamedObjectContainer namedObjectContainer,
+    private static NamedObjectSave AddSetByDerivedNos(INamedObjectContainer derivedContainer,
         NamedObjectSave namedObjectInBase, bool instantiatedByBase, NamedObjectSave containerToAddTo = null)
     {
-        NamedObjectSave existingNamedObject = namedObjectContainer.AllNamedObjects
+        NamedObjectSave existingNamedObject = derivedContainer.AllNamedObjects
             .FirstOrDefault(item => item.InstanceName == namedObjectInBase.InstanceName);
 
         if (existingNamedObject != null)
@@ -1845,9 +1845,37 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             if (containerToAddTo == null)
             {
-                var indexToAddAt = namedObjectContainer.NamedObjects.Count;
+                var indexToAddAt = derivedContainer.NamedObjects.Count;
 
-                namedObjectContainer.NamedObjects.Insert(indexToAddAt, newNamedObject);
+                var baseContainer = ObjectFinder.Self.GetElementContaining(namedObjectInBase);
+                if(baseContainer != null)
+                {
+                    var indexOfNosInBase = baseContainer.NamedObjects.IndexOf(namedObjectInBase);
+                    if(indexOfNosInBase == -1)
+                    {
+                        var container = baseContainer.NamedObjects.FirstOrDefault(item => 
+                            item.ContainedObjects.Contains(namedObjectInBase));
+                        // todo - this is rare, but we need to find what index this is after in the base, and make this get added
+                        // after in the derived:
+                    }
+                    else
+                    {
+                        for(int i = indexOfNosInBase - 1; i > -1; i--)
+                        {
+                            var itemInBase = baseContainer.NamedObjects[i];
+                            var name = itemInBase.InstanceName;
+
+                            var foundMatchInDerived = derivedContainer.NamedObjects.Find(item => item.InstanceName ==  name);
+                            if(foundMatchInDerived != null)
+                            {
+                                indexToAddAt = derivedContainer.NamedObjects.IndexOf(foundMatchInDerived) + 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                derivedContainer.NamedObjects.Insert(indexToAddAt, newNamedObject);
             }
             else
             {
