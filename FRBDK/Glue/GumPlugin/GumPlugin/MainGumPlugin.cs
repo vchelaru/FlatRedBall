@@ -362,9 +362,9 @@ public class MainGumPlugin : PluginBase
 
         #region Glux-related
 
-        this.ReactToLoadedGlux += HandleGluxLoad;
-
         this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
+
+        this.ReactToLoadedGlux += HandleGluxLoad;
 
         this.ReactToUnloadedGlux += HandleUnloadedGlux;
 
@@ -967,6 +967,8 @@ public class MainGumPlugin : PluginBase
         GumPluginCommands.Self.RefreshGumViewModel();
 
         StateCodeGenerator.Self.RefreshVariableNamesToSkipBasedOnGlueVersion();
+
+        StandardsCodeGenerator.Self.RefreshVariableNamesToSkipForProperties();
     }
 
     private async void HandleGluxLoad()
