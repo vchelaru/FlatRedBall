@@ -87,7 +87,7 @@
 
                 <!--Defines a context menu-->
                 <ContextMenu x:Key="MyElementMenu">
-                    <MenuItem Header="{x:Static localization:Texts.Delete}" Click="DeleteBookmark_MenuItem_Click"/>
+                    <MenuItem Header="Remove from Favorites" Click="DeleteBookmark_MenuItem_Click"/>
                 </ContextMenu>
 
                 <!--Sets a context menu for each ListBoxItem in the current ListBox-->
