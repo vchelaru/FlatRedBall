@@ -357,13 +357,17 @@ namespace OfficialPlugins.FrbUpdater
 
             try
             {
+                // give the downloads a second to settle:
+                System.Threading.Thread.Sleep(1_000);
                 //Copy files
                 foreach (var fileData in mDownloadedFiles)
                 {
+
                     GlueCommands.Self.TryMultipleTimes(() =>
                     {
                         File.Copy(fileData.DiskFile, fileData.ProjectFile, true);
-                    });
+                        // increase the number and sleep a bit to avoi problems:
+                    }, numberOfTimesToTry:6, msSleepBetweenAttempts:400);
 
                 }
             }
