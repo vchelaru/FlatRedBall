@@ -11,6 +11,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
+using FlatRedBall.Glue.Managers;
 
 namespace OfficialPlugins.FrbUpdater
 {
@@ -280,7 +281,7 @@ namespace OfficialPlugins.FrbUpdater
                                             (byteBuffer.Length / (double)(1024 * 1024)).ToString("0.00") + " MB";
                                         lblSpeed.Text = _speed;
                                         lblFileName.Text = _fileName;
-                                        pbValue.Value = (int)(100 * bytesRead / (float)fileSize);
+                                        pbValue.Value = (int)(100 * bytesDownloaded / (float)fileSize);
 
                                     };
 
@@ -359,7 +360,11 @@ namespace OfficialPlugins.FrbUpdater
                 //Copy files
                 foreach (var fileData in mDownloadedFiles)
                 {
-                    File.Copy(fileData.DiskFile, fileData.ProjectFile, true);
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                    {
+                        File.Copy(fileData.DiskFile, fileData.ProjectFile, true);
+                    });
+
                 }
             }
             catch (Exception exception)
