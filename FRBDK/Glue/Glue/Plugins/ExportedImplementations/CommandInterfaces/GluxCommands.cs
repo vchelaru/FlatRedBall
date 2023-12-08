@@ -1823,7 +1823,7 @@ public class GluxCommands : IGluxCommands
         var toReturn = new List<ToolsUtilities.GeneralResponse<NamedObjectSave>>();
         foreach (var originalNos in nosList)
         {
-            var response = await CopyNamedObjectIntoElementInner(originalNos, targetElement, performSaveAndGenerateCode:false, updateUi: false, notifyPlugins: false);
+            var response = await CopyNamedObjectIntoElementInner(originalNos, targetElement, targetNos:null, performSaveAndGenerateCode:false, updateUi: false, notifyPlugins: false);
             toReturn.Add(response);
         }
 
@@ -1893,7 +1893,7 @@ public class GluxCommands : IGluxCommands
     }
 
 
-    public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElementInner(NamedObjectSave originalNos, GlueElement targetElement, NamedObjectSave targetNos = null, bool performSaveAndGenerateCode, bool updateUi,
+    private async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElementInner(NamedObjectSave originalNos, GlueElement targetElement, NamedObjectSave targetNos, bool performSaveAndGenerateCode, bool updateUi,
         bool notifyPlugins)
     {
         bool succeeded = true;
@@ -1921,11 +1921,25 @@ public class GluxCommands : IGluxCommands
 
 
 
-        NamedObjectSave listOfThisType = null;
-        
         // if the current object is a list, or if the current object is in a list that matches this type, then use that
+        var possibleLists = ObjectFinder.Self.GetPossibleListsToContain(newNos, targetElement);
+        NamedObjectSave listOfThisType = null;
+        if(targetNos != null)
+        {
+            // is it a list?
+            var targetList = targetNos.IsList ? targetNos : 
+                targetElement.NamedObjects.FirstOrDefault(item => item.ContainedObjects?.Contains(targetNos) == true);
 
-        listOfThisType = ObjectFinder.Self.GetDefaultListToContain(newNos, targetElement);
+            if(targetList != null && possibleLists.Contains(targetList))
+            {
+                listOfThisType = targetList;
+            }
+        }
+
+        if(listOfThisType == null)
+        {
+            listOfThisType = ObjectFinder.Self.GetDefaultListToContain(newNos, targetElement);
+        }
 
         if (listOfThisType != null)
         {
