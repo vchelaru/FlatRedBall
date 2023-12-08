@@ -210,8 +210,10 @@ namespace GumPlugin.CodeGeneration
             // include/exclude just like the StateCodeGenerator:
             ExcludeIfVersionLessThan("CustomFrameTextureCoordinateWidth", GluxVersions.GumUsesSystemTypes);
             ExcludeIfVersionLessThan("LineHeightMultiplier", GluxVersions.GumUsesSystemTypes);
-            ExcludeIfVersionLessThan("AutoGridHorizontalCells", GluxVersions.GumUsesSystemTypes);
-            ExcludeIfVersionLessThan("AutoGridVerticalCells", GluxVersions.GumUsesSystemTypes);
+
+            // Do not generate AutoGrid properties - they are already handled by GraphicalUiElement
+            mVariableNamesToSkipForProperties.Add("AutoGridHorizontalCells");
+            mVariableNamesToSkipForProperties.Add("AutoGridVerticalCells");
 
             // always ignore this because it's handled by GraphicalUiElement:
             mVariableNamesToSkipForProperties.Add("IgnoredByParentSize");
