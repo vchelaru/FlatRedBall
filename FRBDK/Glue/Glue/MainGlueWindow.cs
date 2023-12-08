@@ -203,9 +203,12 @@ public partial class MainGlueWindow : Form
         // We need to load the glue settings before loading the plugins so that we can shut off plugins according to settings
         GlueCommands.Self.LoadGlueSettings();
         var mainCulture = GlueState.Self.GlueSettingsSave.CurrentCulture;
-        Localization.Texts.Culture = mainCulture;
-        Thread.CurrentThread.CurrentCulture = mainCulture;
-        Thread.CurrentThread.CurrentUICulture = mainCulture;
+        if(mainCulture != null)
+        {
+            Localization.Texts.Culture = mainCulture;
+            Thread.CurrentThread.CurrentCulture = mainCulture;
+            Thread.CurrentThread.CurrentUICulture = mainCulture;
+        }
 
         // Some stuff can be parallelized.  We're going to run stuff
         // that can be parallelized in parallel, and then block to wait for
