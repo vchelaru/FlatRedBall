@@ -1882,18 +1882,24 @@ public class GluxCommands : IGluxCommands
         return toReturn;
     }
 
-    public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
+    public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave originalNos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
     {
-        return await CopyNamedObjectIntoElementInner(nos, targetElement, performSaveAndGenerateCode, updateUi, notifyPlugins: true);
+        return await CopyNamedObjectIntoElementInner(originalNos, targetElement, null, performSaveAndGenerateCode, updateUi, notifyPlugins: true);
     }
 
-    public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElementInner(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode, bool updateUi,
+    public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave originalNos, GlueElement targetElement, NamedObjectSave targetNos, bool performSaveAndGenerateCode = true, bool updateUi = true)
+    {
+        return await CopyNamedObjectIntoElementInner(originalNos, targetElement, targetNos, performSaveAndGenerateCode, updateUi, notifyPlugins: true);
+    }
+
+
+    public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElementInner(NamedObjectSave originalNos, GlueElement targetElement, NamedObjectSave targetNos = null, bool performSaveAndGenerateCode, bool updateUi,
         bool notifyPlugins)
     {
         bool succeeded = true;
 
         //// moving to another element, so let's copy
-        NamedObjectSave newNos = nos.Clone();
+        NamedObjectSave newNos = originalNos.Clone();
 
         UpdateNosAttachmentAfterDragDrop(newNos, targetElement);
 
@@ -1913,7 +1919,13 @@ public class GluxCommands : IGluxCommands
             newNos.InstanceName = StringFunctions.IncrementNumberAtEnd(newNos.InstanceName);
         }
 
-        var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(newNos, targetElement);
+
+
+        NamedObjectSave listOfThisType = null;
+        
+        // if the current object is a list, or if the current object is in a list that matches this type, then use that
+
+        listOfThisType = ObjectFinder.Self.GetDefaultListToContain(newNos, targetElement);
 
         if (listOfThisType != null)
         {
@@ -1930,7 +1942,7 @@ public class GluxCommands : IGluxCommands
 
         if (referenceCheck == ProjectManager.CheckResult.Failed)
         {
-            generalResponse.Message = $"Could not copy {nos.InstanceName} because it would result in a circular reference";
+            generalResponse.Message = $"Could not copy {originalNos.InstanceName} because it would result in a circular reference";
             succeeded = false;
             // VerifyReferenceGraph (currently) shows a popup so we don't have to here
             if (listOfThisType != null)
@@ -1942,10 +1954,10 @@ public class GluxCommands : IGluxCommands
                 targetElement.NamedObjects.Remove(newNos);
             }
         }
-        if (succeeded && nos.DefinedByBase)
+        if (succeeded && originalNos.DefinedByBase)
         {
             succeeded = false;
-            generalResponse.Message = $"Could not copy {nos.InstanceName} because it is defined by base. Select the object in the base screen/entity to copy it";
+            generalResponse.Message = $"Could not copy {originalNos.InstanceName} because it is defined by base. Select the object in the base screen/entity to copy it";
         }
 
         if (succeeded)
