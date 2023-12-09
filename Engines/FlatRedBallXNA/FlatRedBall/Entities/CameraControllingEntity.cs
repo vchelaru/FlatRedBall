@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
@@ -718,12 +719,30 @@ namespace FlatRedBall.Entities
             Camera.FixAspectRatioYConstant();
         }
 
+        const float individualShakeDurationInSeconds = .05f;
         public async void ShakeScreen(float shakeRadius, float durationInSeconds)
         {
-            const float individualShakeDurationInSeconds = .05f;
 
             var random = FlatRedBallServices.Random;
             for (float timePassed = 0; timePassed < durationInSeconds; timePassed += individualShakeDurationInSeconds)
+            {
+                var point = random.PointInCircle(shakeRadius);
+
+                // todo - use velocity here instead of snapping
+                CameraOffset.X = point.X;
+                CameraOffset.Y = point.Y;
+
+                await TimeManager.DelaySeconds(individualShakeDurationInSeconds);
+            }
+
+            CameraOffset.X = 0;
+            CameraOffset.Y = 0;
+        }
+
+        public async void ShakeScreenUntil(float shakeRadius, Task taskToAwait)
+        {
+            var random = FlatRedBallServices.Random;
+            while(!taskToAwait.IsCompleted)
             {
                 var point = random.PointInCircle(shakeRadius);
 
