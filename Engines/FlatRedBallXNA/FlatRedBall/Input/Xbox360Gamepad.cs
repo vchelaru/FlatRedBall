@@ -15,8 +15,11 @@ namespace FlatRedBall.Input
         Radial = 0,
         //BoundingBox = 1, // Not currently supported
         Cross
-
     }
+
+    /// <summary>
+    /// The button layout of the face and shoulder buttons. Xbox and Nintendo controllers swap the X/Y and A/B buttons.
+    /// </summary>
     public enum ButtonLayout
     {
         Unknown,
@@ -1291,10 +1294,12 @@ namespace FlatRedBall.Input
 
         /// <summary>
         /// Clears the input on this controller for this frame. This includes
-        /// analog stick values, button values, and trigger values.
+        /// analog stick values, button values, trigger values, and vibration motor values (resets to 0).
         /// </summary>
         public void Clear()
         {
+            this.SetVibration(0, 0);
+
             // do these before setting the states:
             for (int i = 0; i < NumberOfButtons; i++)
             {
@@ -1782,7 +1787,7 @@ namespace FlatRedBall.Input
 
         private void UpdateInputManagerBack()
         {
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME
             if (mGamePadState.IsButtonDown(Buttons.Back) && !mLastGamePadState.IsButtonDown(Buttons.Back))
             {
                 InputManager.BackPressed = true;
