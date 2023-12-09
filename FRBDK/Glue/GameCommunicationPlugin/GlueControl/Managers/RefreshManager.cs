@@ -27,6 +27,7 @@ using Newtonsoft.Json.Linq;
 using GameCommunicationPlugin.Common;
 using CompilerLibrary.ViewModels;
 using static FlatRedBall.Glue.Plugins.PluginManager;
+using CompilerLibrary.Error;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -1119,15 +1120,19 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
 
                 bool compileSucceeded = false;
+                var wasCancelled = false;
                 if (!DoesTaskManagerHaveAnotherRestartTask())
                 {
-                    var compileResult = JObject.Parse(await _eventCallerWithReturn("Compiler_DoCompile", JsonConvert.SerializeObject(new
-                    {
-                        Configuration = "Debug",
-                        PrintMsBuildCommand = false
-                    })));
+                    var doCompileJsonResult =
+                        await _eventCallerWithReturn("Compiler_DoCompile", JsonConvert.SerializeObject(new
+                        {
+                            Configuration = "Debug",
+                            PrintMsBuildCommand = false
+                        }));
 
-                    compileSucceeded = compileResult.Value<bool>("Succeeded");
+                    var compileResult = JsonConvert.DeserializeObject<CompileGeneralResponse>(doCompileJsonResult);
+                    wasCancelled = compileResult.WasCancelled;
+                    compileSucceeded = compileResult.Succeeded;
                 }
 
                 if (compileSucceeded)
@@ -1150,7 +1155,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
                 else
                 {
-                    failedToRebuildAndRestart = true;
+                    failedToRebuildAndRestart = !wasCancelled;
                 }
                 RefreshViewModelHotReload();
             }

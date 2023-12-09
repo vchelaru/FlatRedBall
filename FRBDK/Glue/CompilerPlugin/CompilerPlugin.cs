@@ -14,6 +14,8 @@ using Newtonsoft.Json.Linq;
 using System.ComponentModel;
 using CompilerLibrary.ViewModels;
 using System.Windows.Forms;
+using ToolsUtilities;
+using CompilerLibrary.Error;
 
 namespace CompilerPlugin
 {
@@ -70,7 +72,7 @@ namespace CompilerPlugin
         private Runner _runner;
         private CompilerViewModel _compilerViewModel;
 
-        FilePath BuildSettingsUserFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "BuildSettings.user.json";
+        FlatRedBall.IO.FilePath BuildSettingsUserFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "BuildSettings.user.json";
 
         public void HandleCompilerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -130,12 +132,12 @@ namespace CompilerPlugin
         {
             MainControl.BuildClicked += async (not, used) =>
             {
-                var succeeded = await _compiler.Compile(
+                var compileResponse = await _compiler.Compile(
                     (value) => ReactToPluginEvent("Compiler_Output_Standard", value), 
                     (value) => ReactToPluginEvent("Compiler_Output_Error", value), 
                     _compilerViewModel.Configuration, 
                     _compilerViewModel.IsPrintMsBuildCommandChecked);
-                if (!succeeded)
+                if (!compileResponse.Succeeded)
                 {
                     GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
                 }
@@ -148,22 +150,19 @@ namespace CompilerPlugin
 
             MainControl.RunClicked += async (not, used) =>
             {
-                var succeeded = await _compiler.Compile((value) => ReactToPluginEvent("Compiler_Output_Standard", value), (value) => ReactToPluginEvent("Compiler_Output_Error", value), _compilerViewModel.Configuration, _compilerViewModel.IsPrintMsBuildCommandChecked);
-                if (succeeded)
+                var response = await _compiler.Compile((value) => ReactToPluginEvent("Compiler_Output_Standard", value), (value) => ReactToPluginEvent("Compiler_Output_Error", value), _compilerViewModel.Configuration, _compilerViewModel.IsPrintMsBuildCommandChecked);
+                if (response.Succeeded)
                 {
-                    if (succeeded)
+                    _runner.IsRunning = false;
+                    await _runner.Run(preventFocus: false);
+                }
+                else
+                {
+                    var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
+                    var innerResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage);
+                    if(innerResult == System.Windows.MessageBoxResult.Yes)
                     {
-                        _runner.IsRunning = false;
                         await _runner.Run(preventFocus: false);
-                    }
-                    else
-                    {
-                        var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
-                        var innerResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage);
-                        if(innerResult == System.Windows.MessageBoxResult.Yes)
-                        {
-                            await _runner.Run(preventFocus: false);
-                        }
                     }
                 }
             };
@@ -246,17 +245,14 @@ namespace CompilerPlugin
                                 settings.ContainsKey("PrintMsBuildCommand") ? settings.Value<bool>("PrintMsBuildCommand") : _compilerViewModel.IsPrintMsBuildCommandChecked
                             );
 
-                            return JsonConvert.SerializeObject(new
-                            {
-                                Succeeded = result
-                            });
+                            return JsonConvert.SerializeObject(result);
                         }
                         catch (Exception ex)
                         {
-                            return JsonConvert.SerializeObject(new
+                            return JsonConvert.SerializeObject(new CompileGeneralResponse
                             {
                                 Succeeded = false,
-                                Error = ex.ToString()
+                                Message = ex.ToString()
                             });
                         }
                     }
