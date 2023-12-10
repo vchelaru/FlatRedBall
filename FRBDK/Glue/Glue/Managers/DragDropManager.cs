@@ -171,7 +171,10 @@ public class DragDropManager : Singleton<DragDropManager>
                 canBeCollidable = true;
             }
             
-            if(!canBeCollidable && movingNos.IsList && targetNos.IsList)
+            if(!canBeCollidable && movingNos.IsList
+                // If drag+dropping a list onto a non-list, we should still show the message:
+                //&& targetNos.IsList
+                )
             {
                 GlueCommands.Self.PrintOutput($"Cannot create relationship between {movingNos} and {targetNode} because both must be collidables." +
                     $"\n{movingNos.InstanceName} collidable: {isMovedNosCollidableOrCollidableList}" +

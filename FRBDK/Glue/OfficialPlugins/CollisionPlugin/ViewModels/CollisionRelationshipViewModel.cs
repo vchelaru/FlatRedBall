@@ -796,8 +796,11 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         [DependsOn(nameof(IsDestroyFirstOnDamageChecked))]
         [DependsOn(nameof(DestroyFirstOnDamageVisibility))]
+        [DependsOn(nameof(IsSecondDamageable))]
         public Visibility FirstDestructionOptionsVisibility =>
-            (IsDestroyFirstOnDamageChecked && DestroyFirstOnDamageVisibility == Visibility.Visible).ToVisibility();
+            (IsDestroyFirstOnDamageChecked && DestroyFirstOnDamageVisibility == Visibility.Visible && 
+                // If the 2nd isn't damageable, then there's no reason to show "if damage dealt" option
+                IsSecondDamageable).ToVisibility();
 
         [SyncedProperty]
         public CollisionDestroyType FirstCollisionDestroyType

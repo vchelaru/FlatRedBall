@@ -431,7 +431,7 @@ namespace OfficialPlugins.CollisionPlugin
                     var ifBlock = eventBlock.If("FlatRedBall.Entities.DamageableExtensionMethods.ShouldTakeDamage(second, first)");
                     if(destroyFirst)
                     {
-                        if(firstCollisionDestroyType == CollisionDestroyType.Always)
+                        if (firstCollisionDestroyType == CollisionDestroyType.Always)
                         {
                             ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(second, first);");
                             ifBlock.Line("first.RemovedByCollision?.Invoke(second);");
