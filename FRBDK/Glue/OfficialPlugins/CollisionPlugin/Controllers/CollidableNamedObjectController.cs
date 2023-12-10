@@ -60,6 +60,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             // Set this before updating from Glue object so that we don't persist values which 
             // don't apply
             viewModel.CanBePartitioned = CollisionCodeGenerator.CanBePartitioned(thisNamedObject);
+            viewModel.DefinedByBase = thisNamedObject.DefinedByBase;
             viewModel.UpdateFromGlueObject();
             if(viewModel.CanBePartitioned)
             {

@@ -1459,9 +1459,6 @@ for {1}?</value>
   <data name="ListSortEveryFrame" xml:space="preserve">
     <value>Sort List every frame</value>
   </data>
-  <data name="ObjectNoPartitioning" xml:space="preserve">
-    <value>This object has no partitioning options available.</value>
-  </data>
   <data name="HintObjectAutoPartition" xml:space="preserve">
     <value>This object is automatically partitioned, or it does not need partitioning</value>
   </data>

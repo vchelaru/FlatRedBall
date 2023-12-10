@@ -55,7 +55,11 @@
                         <CheckBox IsChecked="{Binding IsSortListEveryFrameChecked}" VerticalContentAlignment="Center" Content="{x:Static localization:Texts.ListSortEveryFrame}" />
                     </StackPanel>
                 </StackPanel>
-                <Label Visibility="{Binding AlreadyOrCantBePartitionedVisibility}"  Content="{x:Static localization:Texts.ObjectNoPartitioning}" />
+                <TextBlock Visibility="{Binding AlreadyOrCantBePartitionedVisibility}"  
+                       TextWrapping="Wrap"
+                       Width="{Binding ElementName=ScrollViewerInstance, Path=ViewportWidth}"
+                           
+                       Text="{Binding NoPartitioningText}" />
 
                 <!--Source https://stackoverflow.com/questions/1981137/c-sharp-wpf-scrollviewer-textblock-troubles-->
                 <TextBlock

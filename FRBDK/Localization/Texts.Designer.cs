@@ -5228,15 +5228,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This object has no partitioning options available..
-        /// </summary>
-        public static string ObjectNoPartitioning {
-            get {
-                return ResourceManager.GetString("ObjectNoPartitioning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There is an object named {0} in the base Element but it is not Set By Derived..
         /// </summary>
         public static string ObjectNotSetInDerived {

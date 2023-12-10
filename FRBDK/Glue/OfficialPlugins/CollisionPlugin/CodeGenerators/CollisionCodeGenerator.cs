@@ -606,7 +606,7 @@ namespace OfficialPlugins.CollisionPlugin
 
             if (isSecondTileShapeCollection == false)
             {
-                // return stackable vs stackable
+                // return stackable vs stackable    
                 block.Line($"return FlatRedBall.Math.Geometry.IStackableExtensionMethods.CollideAgainstBounceStackable(first, second, 1, 1);");
             }
             else
@@ -624,16 +624,38 @@ namespace OfficialPlugins.CollisionPlugin
 
         public static bool CanBePartitioned(NamedObjectSave nos)
         {
-            if (nos.IsList)
+            var canBePartitioned = true;
+            if(nos.IsList == false)
+            {
+                canBePartitioned = false;
+            }
+
+            if(canBePartitioned)
             {
                 var genericType = nos.SourceClassGenericType;
 
                 var entity = ObjectFinder.Self.GetEntitySave(genericType);
 
-                return entity?.IsICollidableRecursive() == true;
+                var isCollidable = entity?.IsICollidableRecursive() == true;
+                // If not collidable, then we don't need to partition...at least not now. Maybe in the future
+                // we could support this if people want manual partitioning?
+                canBePartitioned = isCollidable;
             }
 
-            return false;
+            if(canBePartitioned)
+            {
+                if (nos.DefinedByBase)
+                {
+                    var baseNos = ObjectFinder.Self.GetRootDefiningObject(nos);
+                    if (baseNos != null)
+                    {
+                        canBePartitioned = false;
+                    }
+                }
+            }
+            
+
+            return canBePartitioned;
         }
 
         public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
