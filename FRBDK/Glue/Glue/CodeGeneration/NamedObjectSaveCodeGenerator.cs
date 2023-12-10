@@ -401,7 +401,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
-
+            var doesElementHaveLayers = element.NamedObjects.Any(item => item.IsLayer);
+            
             for (int i = 0; i < element.NamedObjects.Count; i++)
             {
                 var nos = element.NamedObjects[i];
@@ -412,9 +413,28 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // layers, and if the Layer gets destroyed first, then
                 // the list will be cleared (all contained objects on the
                 // layer will have their RemoveSelfFromListsBelongingTo called).
-                // This means the Entities will never have the opportunity to call
-                // Destroy
-                if (ShouldGeneratePreDestroyMakeOneWay(nos))
+                // We need to call Destroy on all entity instances, and the way that 
+                // happens is by looping through the list. If the list gets emptied, then
+                // Destroy can't be called.
+                // Update December 10, 2023
+                // This code is getting called
+                // on all Lists, whether the list
+                // is DefinedByBase or not. This adds
+                // extra code to generated code files, and
+                // results in some extra calls on destroy. We
+                // could make this only happen on lists that are
+                // not SetByDerived, but that introduces a small problem:
+                // the list could be DefinedByBase, but the instances in a
+                // list could get added to layers that are in the derived screen.
+                // So we could do one of the following:
+                // 1. Say "who cares" and only make one-way on the base. This is the cleanest here, but 
+                //    it could result in entities not getting destroyed
+                // 2. Only do this if we have instances that have been added to lists explicitly in this screen
+                // 3. Only do this if in derived screens if we have layers in this screen.
+                // This isn't super bad in terms of performance, and in Vic's experience it's rare for
+                // derived screens to have layers that aren't defined in base.
+                // Therefore, let's do a check:
+                if (doesElementHaveLayers && ShouldGeneratePreDestroyMakeOneWay(nos))
                 {
                     codeBlock.Line(nos.InstanceName + ".MakeOneWay();");
                 }
@@ -434,15 +454,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 var nos = element.NamedObjects[i];
 
-                // Lists of Entities which inherit from FRB types
-                // should be made one-way before the destroy calls
-                // happen.  The reason is that the Entities may be on
-                // layers, and if the Layer gets destroyed first, then
-                // the list will be cleared (all contained objects on the
-                // layer will have their RemoveSelfFromListsBelongingTo called).
-                // This means the Entities will never have the opportunity to call
-                // Destroy
-                if (ShouldGeneratePreDestroyMakeOneWay(nos))
+                // Sewe the other call to ShouldGeneratePreDestroyMakeOneWay
+                // above for information on why this call is needed
+                if (doesElementHaveLayers && ShouldGeneratePreDestroyMakeOneWay(nos))
                 {
                     codeBlock.Line(nos.InstanceName + ".MakeTwoWay();");
                 }
