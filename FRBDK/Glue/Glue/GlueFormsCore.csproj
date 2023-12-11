@@ -87,7 +87,9 @@
 		<None Remove="Content\Icons\folder.png" />
 		<None Remove="Content\Icons\GlueIcon.png" />
 		<None Remove="Content\Icons\icon_collisions.png" />
+		<None Remove="Content\Icons\icon_entity.png" />
 		<None Remove="Content\Icons\icon_entity_derived.png" />
+		<None Remove="Content\Icons\icon_folder.png" />
 		<None Remove="Content\Icons\icon_screen.png" />
 		<None Remove="Content\Icons\IncreaseArea.Agif" />
 		<None Remove="Content\Icons\IncreaseArea.gif" />
@@ -207,7 +209,9 @@
 		<Resource Include="Content\Icons\folder.png" />
 		<Resource Include="Content\Icons\GlueIcon.png" />
 		<Resource Include="Content\Icons\icon_collisions.png" />
+		<Resource Include="Content\Icons\icon_entity.png" />
 		<Resource Include="Content\Icons\icon_entity_derived.png" />
+		<Resource Include="Content\Icons\icon_folder.png" />
 		<Resource Include="Content\Icons\icon_screen.png" />
 		<Resource Include="Content\Icons\SaveIcon.png" />
 		<EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseArea.Agif">

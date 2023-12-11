@@ -450,7 +450,7 @@ public static class RightClickHelper
     static GeneralToolStripMenuItem setAsStartUpScreenToolStripMenuItem;
 
     static GeneralToolStripMenuItem addObjectToolStripMenuItem;
-    static GeneralToolStripMenuItem addEntityToolStripMenuItem;
+    
     static GeneralToolStripMenuItem removeFromProjectToolStripMenuItem;
 
     static GeneralToolStripMenuItem editResetVariablesToolStripMenuItem;
@@ -504,9 +504,12 @@ public static class RightClickHelper
     #region Images
 
     static System.Windows.Controls.Image BookmarkImage;
-    static System.Windows.Controls.Image ScreenImage;
-    static System.Windows.Controls.Image DerivedEntity;
     static System.Windows.Controls.Image CollisionRelationshipImage;
+    static System.Windows.Controls.Image DerivedEntity;
+    static System.Windows.Controls.Image EntityImage;
+    static System.Windows.Controls.Image FolderImage;
+
+    static System.Windows.Controls.Image ScreenImage;
 
     static bool HasCreatedImages = false;
     private static void CreateImages()
@@ -515,9 +518,11 @@ public static class RightClickHelper
         {
 
             BookmarkImage = MakeImage("/Content/Icons/StarFilled.png");
-            ScreenImage = MakeImage("/Content/Icons/icon_screen.png");
-            DerivedEntity = MakeImage("/Content/Icons/icon_entity_derived.png");
             CollisionRelationshipImage = MakeImage("/Content/Icons/icon_collisions.png");
+            DerivedEntity = MakeImage("/Content/Icons/icon_entity_derived.png");
+            EntityImage = MakeImage("/Content/Icons/icon_entity.png");
+            FolderImage = MakeImage("/Content/Icons/icon_folder.png");
+            ScreenImage = MakeImage("/Content/Icons/icon_screen.png");
 
 
             HasCreatedImages = true;
@@ -529,10 +534,13 @@ public static class RightClickHelper
             bitmapImage.UriSource = new Uri(sourceName, UriKind.Relative);
             bitmapImage.EndInit();
 
-            return new System.Windows.Controls.Image()
+            var toReturn = new System.Windows.Controls.Image()
             {
                 Source = bitmapImage
             };
+
+
+            return toReturn;
         }
 
     }
@@ -542,7 +550,6 @@ public static class RightClickHelper
 
     private static void PopulateRightClickMenuItemsShared(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode draggedNode)
     {
-        CreateImages();
 
         #region IsScreenNode
 
@@ -595,13 +602,11 @@ public static class RightClickHelper
         {
             if (menuShowingAction == MenuShowingAction.RightButtonDrag && draggedNode.IsEntityNode())
             {
-                var mAddEntityInstance = new GeneralToolStripMenuItem(L.Texts.EntityAddInstance);
-                mAddEntityInstance.Click += (not, used) => OnAddEntityInstanceClick(targetNode, draggedNode);
 
                 var mAddEntityList = new GeneralToolStripMenuItem(L.Texts.EntityListAdd);
                 mAddEntityList.Click += (not, used) => OnAddEntityListClick(targetNode, draggedNode);
 
-                AddItem(mAddEntityInstance);
+                Add(L.Texts.EntityAddInstance, () => OnAddEntityInstanceClick(targetNode, draggedNode));
                 AddItem(mAddEntityList);
             }
             else
@@ -642,7 +647,7 @@ public static class RightClickHelper
         else if (targetNode.IsFilesContainerNode() || targetNode.IsFolderInFilesContainerNode())
         {
             AddItem(addFileToolStripMenuItem);
-            Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode));
+            Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode), image: FolderImage);
             AddSeparator();
             Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode));
             AddEvent(L.Texts.CopyPathClipboard, (_, _) => HandleCopyToClipboardClick(targetNode));
@@ -670,13 +675,10 @@ public static class RightClickHelper
 
             if (menuShowingAction == MenuShowingAction.RightButtonDrag && !isSameObject && draggedNode.IsEntityNode())
             {
-                var mAddEntityInstance = new GeneralToolStripMenuItem(L.Texts.EntityAddInstance);
-                mAddEntityInstance.Click += (not, used) => OnAddEntityInstanceClick(targetNode, draggedNode);
-
                 var mAddEntityList = new GeneralToolStripMenuItem(L.Texts.EntityListAdd);
                 mAddEntityList.Click += (not, used) => OnAddEntityListClick(targetNode, draggedNode);
 
-                AddItem(mAddEntityInstance);
+                Add(L.Texts.EntityAddInstance, () => OnAddEntityInstanceClick(targetNode, draggedNode));
                 AddItem(mAddEntityList);
             }
             else
@@ -712,7 +714,7 @@ public static class RightClickHelper
         else if (targetNode.IsGlobalContentContainerNode())
         {
             AddItem(addFileToolStripMenuItem);
-            Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode));
+            Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode), image: FolderImage);
             Add(L.Texts.CodeRegenerate, () => HandleReGenerateCodeClick(targetNode));
 
             Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode));
@@ -724,11 +726,11 @@ public static class RightClickHelper
         #region IsRootEntityNode
         else if (targetNode.IsRootEntityNode())
         {
-            AddItem(addEntityToolStripMenuItem);
+            Add(L.Texts.EntityAdd, () => GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog(), image: EntityImage);
+
+            Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode), image: FolderImage);
 
             Add(L.Texts.EntityImport, () => ImportElementClick(targetNode));
-
-            Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode));
         }
         #endregion
 
@@ -940,13 +942,15 @@ public static class RightClickHelper
             AddSeparator();
 
 
-            Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode));
+            Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode), image: FolderImage);
 
             bool isEntityContainingFolder = targetNode.Root.IsRootEntityNode();
 
             if (isEntityContainingFolder)
             {
-                AddItem(addEntityToolStripMenuItem);
+                //AddItem(addEntityToolStripMenuItem);
+
+                Add(L.Texts.EntityAdd, () => GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog(), image: EntityImage);
 
                 Add(L.Texts.EntityImport, () => ImportElementClick(targetNode));
             }
@@ -1147,15 +1151,14 @@ public static class RightClickHelper
 
     public static void Initialize()
     {
+        CreateImages();
+
         setAsStartUpScreenToolStripMenuItem = new GeneralToolStripMenuItem(L.Texts.SetAsStartupScreen);
         setAsStartUpScreenToolStripMenuItem.Click += (not, used) =>
         {
             SetStartupScreen();
         };
 
-        addEntityToolStripMenuItem = new GeneralToolStripMenuItem(L.Texts.EntityAdd);
-        addEntityToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog();
-        
         addObjectToolStripMenuItem = new GeneralToolStripMenuItem();
         addObjectToolStripMenuItem.Text = L.Texts.ObjectAdd;
         addObjectToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
