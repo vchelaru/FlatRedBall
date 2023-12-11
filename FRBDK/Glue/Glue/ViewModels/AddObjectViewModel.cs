@@ -358,7 +358,30 @@ namespace FlatRedBall.Glue.ViewModels
         public bool EffectiveCallActivity => IsGenericType == false || IsCallActivityChecked;
 
         [DependsOn(nameof(IsGenericType))]
-        public Visibility CallActivityCheckBoxVisibility => IsGenericType.ToVisibility();
+        [DependsOn(nameof(SourceClassGenericType))]
+        public Visibility CallActivityCheckBoxVisibility
+        {
+            get
+            {
+                var shouldShow = IsGenericType;
+
+                if(IsGenericType == false)
+                {
+                    shouldShow = false;
+                }
+
+                if(shouldShow)
+                {
+                    var genericType = this.SourceClassGenericType;
+
+                    // only call activity on generic types if they are entities
+                    var entityType = ObjectFinder.Self.GetEntitySave(genericType);
+                    shouldShow = entityType != null;
+                }
+
+                return shouldShow.ToVisibility();
+            }
+        }
 
         #endregion
 
