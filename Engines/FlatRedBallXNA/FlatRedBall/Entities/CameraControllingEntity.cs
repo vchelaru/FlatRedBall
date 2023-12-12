@@ -750,7 +750,16 @@ namespace FlatRedBall.Entities
                 CameraOffset.X = point.X;
                 CameraOffset.Y = point.Y;
 
-                await TimeManager.DelaySeconds(individualShakeDurationInSeconds);
+                try
+                {
+                    await TimeManager.DelaySeconds(individualShakeDurationInSeconds);
+                }
+                // do nothing, the user cancelled it, so let's just break out...
+                catch (TaskCanceledException) 
+                {
+                    break;
+                }
+
             }
 
             CameraOffset.X = 0;
