@@ -1309,6 +1309,11 @@ namespace GlueControl.Editing
             {
                 return true;
             }
+            // This may have snapping, which means if grabbed the mouse isn't physically over it, but it should still count
+            if (IsGrabbed)
+            {
+                return true;
+            }
             return false;
         }
 
