@@ -720,7 +720,7 @@ namespace FlatRedBall.Entities
         }
 
         const float individualShakeDurationInSeconds = .05f;
-        public async void ShakeScreen(float shakeRadius, float durationInSeconds)
+        public async Task ShakeScreen(float shakeRadius, float durationInSeconds)
         {
 
             var random = FlatRedBallServices.Random;
