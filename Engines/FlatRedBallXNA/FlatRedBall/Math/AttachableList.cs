@@ -22,7 +22,7 @@ namespace FlatRedBall.Math
         // A user asked me
         // why the AttachableList
         // class doesn't inherit from
-        // IList.  The reason is because
+        // List.  The reason is because
         // if we want the AttachableList to
         // have two-way functionality then we
         // need custom code in Add and Remove (and
