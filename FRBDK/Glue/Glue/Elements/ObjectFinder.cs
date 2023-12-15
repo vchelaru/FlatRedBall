@@ -1079,7 +1079,7 @@ public class ObjectFinder : IObjectFinder
 
             var baseContainer = GetBaseElement(container);
 
-            var nosInBase = baseContainer.AllNamedObjects.FirstOrDefault(item => item.InstanceName == derivedNos.InstanceName);
+            var nosInBase = baseContainer?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == derivedNos.InstanceName);
 
             if(nosInBase == null)
             {
