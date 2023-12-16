@@ -85,6 +85,12 @@ namespace FlatRedBall.NAudio
             var extension = FlatRedBall.IO.FileManager.GetExtension(fileName);
             if (extension == "mp3")
             {
+#if DEBUG
+                if(!System.IO.File.Exists(fileName))
+                {
+                    throw new FileNotFoundException($"Could not find NAudio song file: {fileName}");
+                }
+#endif
                 this.reader = new AudioFileReader(fileName);
                 loopStream = new LoopStream(reader);
             }
