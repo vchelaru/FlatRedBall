@@ -359,7 +359,6 @@ namespace FlatRedBall.Audio
                 mIsSongUsingGlobalContent = isSongGlobalContent;
 
 
-
 #if ANDROID
 				try
 				{
