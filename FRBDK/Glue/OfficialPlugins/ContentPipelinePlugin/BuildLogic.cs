@@ -544,7 +544,13 @@ namespace OfficialPlugins.MonoGameContent
         {
             var ati = file.GetAssetTypeInfo();
 
-            return IsBuiltByContentPipeline(file.Name, file.UseContentPipeline || ati?.MustBeAddedToContentPipeline == true, forcePngsToContentPipeline);
+            var supportsContentPipeline = file.UseContentPipeline || ati?.MustBeAddedToContentPipeline == true;
+            if(supportsContentPipeline && ati != null)
+            {
+                supportsContentPipeline = ati.CanBeAddedToContentPipeline;
+            }
+
+            return IsBuiltByContentPipeline(file.Name, supportsContentPipeline, forcePngsToContentPipeline);
         }
 
         private static bool IsBuiltByContentPipeline(string fileName, bool rfsUseContentPipeline, bool forcePngsToContentPipeline)

@@ -83,9 +83,9 @@ namespace FlatRedBall.NAudio
         public NAudio_Song(string fileName)
         {
             var fullFile = fileName;
-            if (FileManager.IsRelative(fullFile))
+            if (FlatRedBall.IO.FileManager.IsRelative(fullFile))
             {
-                fullFile = FileManager.RelativeDirectory + fileName;
+                fullFile = FlatRedBall.IO.FileManager.RelativeDirectory + fileName;
             }
             var extension = FlatRedBall.IO.FileManager.GetExtension(fullFile);
             if (extension == "mp3")
