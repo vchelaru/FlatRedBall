@@ -1622,6 +1622,10 @@ namespace FlatRedBall.Math.Collision
 
             for (int i = firstList.Count - 1; i > -1; i--)
             {
+                if(i >= firstList.Count)
+                {
+                    continue;
+                }
                 var first = firstList[i];
                 parameters.ItemInFirstList = first;
                 parameters.FirstIndex = i;
@@ -1685,6 +1689,10 @@ namespace FlatRedBall.Math.Collision
 
             for (int i = firstList.Count - 1; i > -1; i--)
             {
+                if (i >= firstList.Count)
+                {
+                    continue;
+                }
                 var first = firstList[i];
                 parameters.ItemInFirstList = first;
                 parameters.FirstIndex = i;
