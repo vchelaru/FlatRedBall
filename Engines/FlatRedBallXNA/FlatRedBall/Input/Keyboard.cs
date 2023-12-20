@@ -326,13 +326,7 @@ namespace FlatRedBall.Input
 
         public bool IsKeyLetter(Keys key)
         {
-#if FRB_MDX
-            return (key >= Keys.Q && key <= Keys.P) ||
-                (key >= Keys.A && key <= Keys.L) ||
-                (key >= Keys.Z && key <= Keys.M);
-#else
             return key >= Keys.A && key <= Keys.Z;
-#endif
         }
         
 
