@@ -73,6 +73,11 @@ namespace FlatRedBall.Glue.Managers
                 {
                     GlueCommands.Self.PrintError(response.Message);
                 }
+                else
+                {
+                    // the pasted object could be stuffed in a list. Select it so we know that it was created.
+                    GlueState.Self.CurrentNamedObjectSave = response.Data;
+                }
             }
             else if(copiedObjectClone is StateSave asStateSave)
             {
