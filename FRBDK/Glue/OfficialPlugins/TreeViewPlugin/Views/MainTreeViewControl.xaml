@@ -78,6 +78,7 @@
                  Drop="Bookmarks_Drop" 
                  SelectionChanged="Bookmarks_SelectionChanged"
                  KeyDown="Bookmarks_KeyDown"
+                 PreviewKeyDown="Bookmarks_PreviewKeyDown"
                  LostFocus="Bookmarks_LostFocus"
                  MouseDoubleClick="Bookmarks_MouseDoubleClick"
                  ItemsSource="{Binding Bookmarks}"

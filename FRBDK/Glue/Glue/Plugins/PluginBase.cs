@@ -535,6 +535,12 @@ namespace FlatRedBall.Glue.Plugins
         /// </summary>
         public Func<object, int, int, Task> ReactToObjectReordered;
 
+        /// <summary>
+        /// Raised to determine if a plugin should handle a hotkey. A plugin should return true if it has its own hotkey handling given
+        /// its current state, such as if a control has focus.
+        /// </summary>
+        public Func<bool> IsHandlingHotkeys;
+
         #endregion
 
         public abstract void StartUp();

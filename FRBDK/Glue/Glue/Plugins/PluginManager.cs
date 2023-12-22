@@ -1001,6 +1001,23 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToNewObjectHandler(newObject),
                 plugin => plugin.ReactToNewObjectHandler != null);
 
+        internal static bool IsHandlingHotkeys()
+        {
+            var toReturn = false;
+
+            CallMethodOnPlugin(
+                plugin =>
+                {
+                    if(toReturn == false && plugin.IsHandlingHotkeys())
+                    {
+                        toReturn = true;
+                    }
+                },
+                plugin => plugin.IsHandlingHotkeys != null);
+
+            return toReturn;
+        }
+
         public static Task ReactToNewObjectListAsync(List<NamedObjectSave> newObjectList)
         {
             return CallMethodOnPluginAsync(async (plugin) =>
@@ -1029,12 +1046,11 @@ namespace FlatRedBall.Glue.Plugins
             plugin => plugin.ReactToNewObjectHandler != null || plugin.ReactToNewObjectList != null || plugin.ReactToNewObjectListAsync != null);
         }
 
-        internal static void ReactToObjectRemoved(IElement element, NamedObjectSave removedObject)
-        {
+        internal static void ReactToObjectRemoved(IElement element, NamedObjectSave removedObject) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToObjectRemoved(element, removedObject),
                 plugin => plugin.ReactToObjectRemoved != null);
-        }
+        
 
         public static void TryAssignPreferredDisplayerFromName(CustomVariable customVariable)
         {
@@ -2497,6 +2513,7 @@ namespace FlatRedBall.Glue.Plugins
                 }
             }
         }
+
 
     }
 }
