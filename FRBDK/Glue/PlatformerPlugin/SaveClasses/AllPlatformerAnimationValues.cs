@@ -9,9 +9,11 @@ namespace PlatformerPluginCore.SaveClasses
         ForceTo1,
         NoAssignment,
         BasedOnVelocityMultiplier,
-        BasedOnMaxSpeedRatioMultiplier
+        BasedOnMaxSpeedRatioMultiplier,
+        BasedOnHorizontalInputMultiplier
+
     }
-    
+
     public class AllPlatformerAnimationValues
     {
         public List<IndividualPlatformerAnimationValues> Values { get; set; } = new List<IndividualPlatformerAnimationValues>();
@@ -28,6 +30,9 @@ namespace PlatformerPluginCore.SaveClasses
 
         public float? MinYVelocity { get; set; }
         public float? MaxYVelocity { get; set; }
+
+        public float? MinHorizontalInputAbsolute { get; set; }
+        public float? MaxHorizontalInputAbsolute { get; set; }
 
         public float? AbsoluteXVelocityAnimationSpeedMultiplier { get; set; }
         public float? AbsoluteYVelocityAnimationSpeedMultiplier { get; set; }

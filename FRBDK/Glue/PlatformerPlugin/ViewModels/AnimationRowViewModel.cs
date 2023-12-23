@@ -46,6 +46,17 @@ namespace PlatformerPluginCore.ViewModels
             set => Set(value);
         }
 
+        public float? MinHorizontalInputAbsolute
+        {
+            get => Get<float?>();
+            set => Set(value);
+        }
+        public float? MaxHorizontalInputAbsolute
+        {
+            get => Get<float?>();
+            set => Set(value);
+        }
+
         public float? AbsoluteXVelocityAnimationSpeedMultiplier
         {
             get => Get<float?>();
@@ -148,6 +159,10 @@ namespace PlatformerPluginCore.ViewModels
             model.MinYVelocity = MinYVelocity;
             model.MaxYVelocity = MaxYVelocity;
 
+            model.MinHorizontalInputAbsolute = MinHorizontalInputAbsolute;
+            model.MaxHorizontalInputAbsolute = MaxHorizontalInputAbsolute;
+
+
             model.AbsoluteXVelocityAnimationSpeedMultiplier = AbsoluteXVelocityAnimationSpeedMultiplier;
             model.AbsoluteYVelocityAnimationSpeedMultiplier = AbsoluteYVelocityAnimationSpeedMultiplier;
 
@@ -175,6 +190,9 @@ namespace PlatformerPluginCore.ViewModels
 
             this.MinYVelocity = model.MinYVelocity;
             this.MaxYVelocity = model.MaxYVelocity;
+
+            this.MinHorizontalInputAbsolute = model.MinHorizontalInputAbsolute;
+            this.MaxHorizontalInputAbsolute = model.MaxHorizontalInputAbsolute;
 
             this.AbsoluteXVelocityAnimationSpeedMultiplier = model.AbsoluteXVelocityAnimationSpeedMultiplier;
             this.AbsoluteYVelocityAnimationSpeedMultiplier = model.AbsoluteYVelocityAnimationSpeedMultiplier;
