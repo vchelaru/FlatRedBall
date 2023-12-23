@@ -858,13 +858,22 @@ namespace FlatRedBall.TileGraphics
                     cloned.SetPoint(i, point);
                 }
             }
+            // If we flip, it needs to be made clockwise, but if we flip 2x, it automatically reverts
+            // back to being clockwise
+            var shouldMakeClockwise = false;
             if (flipHorizontally)
             {
+                shouldMakeClockwise = !shouldMakeClockwise;
                 cloned.FlipRelativePointsHorizontally();
             }
             if (flipVertically)
             {
+                shouldMakeClockwise = !shouldMakeClockwise;
                 cloned.FlipRelativePointsVertically();
+            }
+            if (shouldMakeClockwise)
+            {
+                cloned.InvertPointOrder();
             }
         }
 
