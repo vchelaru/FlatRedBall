@@ -133,14 +133,15 @@ namespace FlatRedBall.Glue.SaveClasses
             SpriteManagerHasInsertLayer = 48,
             GumUsesSystemTypes = 49,
             // Technically this isn't referencing GumCommon project, but it's referencing code from GumCommon
-            GumCommonCodeReferencing = 50
+            GumCommonCodeReferencing = 50,
+            GumTextSupportsBbCode = 51
         }
 
         #endregion
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GumCommonCodeReferencing;
+        public const int LatestVersion = (int)GluxVersions.GumTextSupportsBbCode;
 
         public int FileVersion { get; set; }
 
