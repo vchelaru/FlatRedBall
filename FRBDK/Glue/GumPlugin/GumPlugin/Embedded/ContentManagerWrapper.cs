@@ -13,30 +13,6 @@ namespace FlatRedBall.Gum
             get;
             set;
         }
-        public T TryGetCachedDisposable<T>(string contentName)
-        {
-            var contentManager = FlatRedBall.FlatRedBallServices.GetContentManagerByName(ContentManagerName);
-
-            if (contentManager.IsAssetLoadedByName<T>(contentName))
-            {
-                return contentManager.Load<T>(contentName);
-            }
-            else
-            {
-                return default(T);
-            }
-        }
-
-        public void AddDisposable(string contentName, IDisposable disposable)
-        {
-            var contentManager = FlatRedBall.FlatRedBallServices.GetContentManagerByName(ContentManagerName);
-
-            contentManager.AddDisposable(contentName, disposable);
-        }
-
-
-
-
 
         public T TryLoadContent<T>(string contentName)
         {
