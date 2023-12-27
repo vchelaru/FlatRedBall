@@ -824,8 +824,9 @@ namespace FlatRedBall
                 //Window_ClientSizeChanged(sender, e);
 
                 // Update cameras
-                foreach (Camera camera in SpriteManager.Cameras)
+                for (int i = 0; i < SpriteManager.Cameras.Count; i++)
                 {
+                    Camera camera = SpriteManager.Cameras[i];
                     camera.UpdateOnResize();
                 }
 

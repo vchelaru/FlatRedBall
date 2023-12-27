@@ -102,8 +102,9 @@ namespace FlatRedBall.TileEntities
             {
                 var entitiesToRemove = new List<string>();
 
-                foreach (var layer in layeredTileMap.MapLayers)
+                for(int i = 0; i < layeredTileMap.MapLayers.Count; i++)
                 {
+                    var layer = layeredTileMap.MapLayers[i];
                     CreateEntitiesFrom(entitiesToRemove, layer, layeredTileMap.TileProperties, layeredTileMap.WidthPerTile ?? 16, restrictions);
                 }
                 if (CurrentSettings.RemoveTileObjectsAfterEntityCreation)

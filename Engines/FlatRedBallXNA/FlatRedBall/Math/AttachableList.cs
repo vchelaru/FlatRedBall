@@ -438,7 +438,8 @@ namespace FlatRedBall.Math
             return listToReturn;
         }
 
-
+        // Faster than LINQ:
+        public T FirstOrDefault() => Count == 0 ? default(T) : this[0];
 
         /// <summary>
         /// Inserts the argument IAttachable at the argument index and creates a 

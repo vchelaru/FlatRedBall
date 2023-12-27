@@ -251,7 +251,16 @@ namespace FlatRedBall.Debugging
             // SpriteManager
             stringBuilder.AppendLine(SpriteManager.ManagedPositionedObjects.Count + " PositionedObjects");
 
-            var entityCount = SpriteManager.ManagedPositionedObjects.Where(item => item.GetType().FullName.Contains(".Entities")).Count();
+            var entityCount = 0;
+            
+            for(int i = 0; i < SpriteManager.ManagedPositionedObjects.Count; i++)
+            {
+                var item = SpriteManager.ManagedPositionedObjects[i];
+                if(item.GetType().FullName.Contains(".Entities"))
+                {
+                    entityCount++;
+                }
+            }
             stringBuilder.AppendLine($"{indentString} {entityCount} Entities");
 
             total += SpriteManager.ManagedPositionedObjects.Count;
@@ -259,7 +268,15 @@ namespace FlatRedBall.Debugging
             var totalSpriteCount = SpriteManager.AutomaticallyUpdatedSprites.Count;
             stringBuilder.AppendLine(totalSpriteCount + " Sprites");
 
-            var spriteNonParticleEntityCount = SpriteManager.AutomaticallyUpdatedSprites.Where(item => item.GetType().FullName.Contains(".Entities")).Count();
+            var spriteNonParticleEntityCount = 0;
+            for(int i = 0; i < SpriteManager.AutomaticallyUpdatedSprites.Count; i++)
+            {
+                var item = SpriteManager.AutomaticallyUpdatedSprites[i];
+                if(item.GetType().FullName.Contains(".Entities"))
+                {
+                    spriteNonParticleEntityCount++;
+                }
+            }
             stringBuilder.AppendLine(indentString + spriteNonParticleEntityCount + " Entity Sprites");
             stringBuilder.AppendLine(indentString + SpriteManager.ParticleCount + " Particles");
             var normalSpriteCount = SpriteManager.AutomaticallyUpdatedSprites.Count - spriteNonParticleEntityCount - SpriteManager.ParticleCount;

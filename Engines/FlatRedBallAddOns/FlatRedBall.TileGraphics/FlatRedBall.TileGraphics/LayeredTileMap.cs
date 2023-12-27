@@ -1038,9 +1038,10 @@ namespace FlatRedBall.TileGraphics
             {
                 SpriteManager.AddPositionedObject(this);
             }
-            foreach (var item in this.mMapLists)
+            
+            for(int i = 0; i < mMapLists.Count; i++)
             {
-                item.AddToManagers(layer);
+                mMapLists[i].AddToManagers(layer);
             }
         }
 
@@ -1165,8 +1166,9 @@ namespace FlatRedBall.TileGraphics
             // Force execution now for performance reasons
             var filteredInfos = Properties.Values.Where(predicate).ToList();
 
-            foreach (var layer in map.MapLayers)
+            for(int i = 0; i < map.MapLayers.Count; i++)
             {
+                var layer = map.MapLayers[i];
                 RemoveTilesFromLayer(filteredInfos, layer);
             }
         }

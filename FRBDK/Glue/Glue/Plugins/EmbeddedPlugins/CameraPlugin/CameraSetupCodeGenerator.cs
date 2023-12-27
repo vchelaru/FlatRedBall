@@ -612,9 +612,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                     elseBlock.Line("x = (FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth - destinationRectangleWidth) / 2;");
                 }
 
-                var foreachBlock = functionBlock.ForEach("var camera in FlatRedBall.SpriteManager.Cameras");
+                var foreachBlock = functionBlock.For("int i = 0; i < FlatRedBall.SpriteManager.Cameras.Count; i++");
                 {
-
+                    foreachBlock.Line("var camera = FlatRedBall.SpriteManager.Cameras[i];");
                     foreachBlock.Line("int currentX = x;");
                     foreachBlock.Line("int currentY = y;");
                     foreachBlock.Line("int currentWidth = destinationRectangleWidth;");

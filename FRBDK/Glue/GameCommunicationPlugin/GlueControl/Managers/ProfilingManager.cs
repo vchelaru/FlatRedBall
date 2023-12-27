@@ -48,7 +48,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 var totalCollisionCount = response.Data.CollisionData.Sum(item => item.DeepCollisions);
                 text += $"Total Collisions: {totalCollisionCount}\n\n";
 
-                var ordered = response.Data.CollisionData.OrderByDescending(item => item.DeepCollisions);
+                var ordered = response.Data.CollisionData.OrderByDescending(item => item.DeepCollisions).Where(item => item.DeepCollisions > 0).ToArray();
 
                 foreach (var item in ordered)
                 {
@@ -70,6 +70,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                     text += $"{item.DeepCollisions} - {item.RelationshipName}{itemCountString}{partitionText}\n";
                 }
+
+                var itemsWith0 = response.Data.CollisionData.Count() - ordered.Length;
+
+                if(itemsWith0 > 0)
+                {
+                    text += $"{itemsWith0} relationship(s) with 0 deep collisions";
+                }
+
                 ProfilingViewModel.CollisionText = text;
             }
         }
