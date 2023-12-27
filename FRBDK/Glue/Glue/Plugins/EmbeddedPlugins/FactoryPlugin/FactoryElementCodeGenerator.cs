@@ -188,6 +188,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
 
                 }
             }
+            else if(element is EntitySave entitySave && entitySave.PooledByFactory && entitySave.CreatedByOtherEntities)
+            {
+                codeBlock.Line($"this.Instructions.Clear();");
+            }
 
             return codeBlock;
         }

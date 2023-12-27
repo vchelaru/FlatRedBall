@@ -56,10 +56,11 @@ namespace FlatRedBall.Debugging
 
         static List<string> mCommandLineOutput = new List<string>();
 
-#if DEBUG
+        // Why is this expensive to have in debug? If the user doesn't ask for memory, this doesn't get used.
+//#if DEBUG
         static RollingAverage mAllocationAverage = new RollingAverage(4);
         static long mLastMemoryUse = -1;
-#endif
+//#endif
 
         public static StringBuilder LogStringBuilder = new StringBuilder();
 
@@ -212,7 +213,6 @@ namespace FlatRedBall.Debugging
                 currentUsage = GC.GetTotalMemory(false);
                 memoryInformation = "Total Memory: " + currentUsage.ToString("N0");
 
-#if DEBUG
             if (mLastMemoryUse >= 0)
             {
                 long difference = currentUsage - mLastMemoryUse;
@@ -224,12 +224,9 @@ namespace FlatRedBall.Debugging
             }
             memoryInformation += "\nAverage Growth per second: " +
                 mAllocationAverage.Average.ToString("N0");
-#endif
 
             LastCalculationTime = TimeManager.CurrentTime;
-#if DEBUG
             mLastMemoryUse = currentUsage;
-#endif
 
 
             return memoryInformation;
