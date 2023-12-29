@@ -149,6 +149,13 @@ namespace GumCoreShared.FlatRedBall.Embedded
                 GumParent.Width = frbObjectAsScalable.ScaleX * 2;
                 GumParent.Height = frbObjectAsScalable.ScaleY * 2;
             }
+            else
+            {
+                // This allows the user to position things according to the top-left of the Gum canvas and
+                // have that align with the center of the entity. Otherwise, positioning seems arbitrary.
+                GumParent.Width = 0;
+                GumParent.Height = 0;
+            }
             if(frbObjectAsIVisible != null)
             {
                 GumParent.Visible = frbObjectAsIVisible.AbsoluteVisible;
