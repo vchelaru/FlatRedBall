@@ -292,8 +292,9 @@ namespace FlatRedBall
                     // If we're setting the mClientWith and mClientHeight, we need
                     // to adjust the cameras:
                     // Update cameras
-                    foreach (Camera camera in SpriteManager.Cameras)
+                    for (int i = 0; i < SpriteManager.Cameras.Count; i++)
                     {
+                        Camera camera = SpriteManager.Cameras[i];
                         camera.UpdateOnResize();
                     }
                 }
