@@ -1567,7 +1567,7 @@ namespace FlatRedBall
         ///  - Flip Horizontal (if IgnoreAnimationChainTextureFlip is true)
         ///  - Relative X and Y (if UseAnimationRelativePosition is true
         ///  - Executes AnimationFrame instructions
-        ///  - Adjusts the size of the sprite if its TextureScale
+        ///  - Adjusts the size of the sprite if its TextureScale is greater than 0
         /// </summary>
         /// <remarks>
         /// This method is automatically called for sprites which are automatically updated (default) and which are using
@@ -1580,42 +1580,47 @@ namespace FlatRedBall
                 mCurrentFrameIndex < mAnimationChains[mCurrentChainIndex].Count)
             {
                 var frame = mAnimationChains[mCurrentChainIndex][mCurrentFrameIndex];
-				// Set the property so that any necessary values change:
-//				mTexture = mAnimationChains[mCurrentChainIndex][mCurrentFrameIndex].Texture;
-                Texture = frame.Texture;
-                this.Vertices[0].TextureCoordinate.X = frame.LeftCoordinate;
-                this.Vertices[1].TextureCoordinate.X = frame.RightCoordinate;
-                this.Vertices[2].TextureCoordinate.X = frame.RightCoordinate;
-                this.Vertices[3].TextureCoordinate.X = frame.LeftCoordinate;
+                UpdateToAnimationFrame(frame);
 
-                this.Vertices[0].TextureCoordinate.Y = frame.TopCoordinate;
-                this.Vertices[1].TextureCoordinate.Y = frame.TopCoordinate;
-                this.Vertices[2].TextureCoordinate.Y = frame.BottomCoordinate;
-                this.Vertices[3].TextureCoordinate.Y = frame.BottomCoordinate;
-
-                if (mIgnoreAnimationChainTextureFlip == false)
-                {
-                    mFlipHorizontal = frame.FlipHorizontal;
-                    mFlipVertical = frame.FlipVertical;
-                }
-
-                if (mUseAnimationRelativePosition)
-                {
-                    RelativePosition.X = frame.RelativeX;
-                    RelativePosition.Y = frame.RelativeY;
-                }
-
-                foreach(var instruction in frame.Instructions)
-                {
-                    instruction.Execute();
-                }
-
-                UpdateScale();
-                
             }
         }
 
-        
+        public void UpdateToAnimationFrame(AnimationFrame frame)
+        {
+            // Set the property so that any necessary values change:
+            //				mTexture = mAnimationChains[mCurrentChainIndex][mCurrentFrameIndex].Texture;
+            this.Texture = frame.Texture;
+            this.Vertices[0].TextureCoordinate.X = frame.LeftCoordinate;
+            this.Vertices[1].TextureCoordinate.X = frame.RightCoordinate;
+            this.Vertices[2].TextureCoordinate.X = frame.RightCoordinate;
+            this.Vertices[3].TextureCoordinate.X = frame.LeftCoordinate;
+
+            this.Vertices[0].TextureCoordinate.Y = frame.TopCoordinate;
+            this.Vertices[1].TextureCoordinate.Y = frame.TopCoordinate;
+            this.Vertices[2].TextureCoordinate.Y = frame.BottomCoordinate;
+            this.Vertices[3].TextureCoordinate.Y = frame.BottomCoordinate;
+
+            if (mIgnoreAnimationChainTextureFlip == false)
+            {
+                mFlipHorizontal = frame.FlipHorizontal;
+                mFlipVertical = frame.FlipVertical;
+            }
+
+            if (mUseAnimationRelativePosition)
+            {
+                RelativePosition.X = frame.RelativeX;
+                RelativePosition.Y = frame.RelativeY;
+            }
+
+            foreach (var instruction in frame.Instructions)
+            {
+                instruction.Execute();
+            }
+
+            UpdateScale();
+        }
+
+
         #region XML Docs
         /// <summary>
         /// Returns a clone of this instance.
