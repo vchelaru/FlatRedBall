@@ -443,6 +443,10 @@ namespace FlatRedBall.Audio
             CurrentlyPlayingISong = null;
         }
 
+        /// <summary>
+        /// Stops the current song (either XNA or ISong) and sets the currently playing song
+        /// to null. This does not clear the CurrentSong/CurrentISong properties, so PlaySong can be called to resume the same song.
+        /// </summary>
         public static void StopSong()
         {
             if(mCurrentISong != null)
