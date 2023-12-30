@@ -845,8 +845,12 @@ namespace FlatRedBall.TileGraphics
                 out bool flipVertically,
                 out bool flipDiagonally);
 
+            // If we flip, it needs to be made clockwise, but if we flip 2x, it automatically reverts
+            // back to being clockwise
+            var shouldMakeClockwise = false;
             if (flipDiagonally)
             {
+                shouldMakeClockwise = !shouldMakeClockwise;
                 for (int i = 0; i < cloned.Points.Count; i++)
                 {
                     Point point = cloned.Points[i];
@@ -858,9 +862,6 @@ namespace FlatRedBall.TileGraphics
                     cloned.SetPoint(i, point);
                 }
             }
-            // If we flip, it needs to be made clockwise, but if we flip 2x, it automatically reverts
-            // back to being clockwise
-            var shouldMakeClockwise = false;
             if (flipHorizontally)
             {
                 shouldMakeClockwise = !shouldMakeClockwise;
