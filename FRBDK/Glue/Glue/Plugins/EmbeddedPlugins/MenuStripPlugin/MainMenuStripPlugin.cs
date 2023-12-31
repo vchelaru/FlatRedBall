@@ -113,7 +113,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             var Help = AddTopLevelMenuItem(Localization.Texts.Help, Localization.MenuIds.HelpId);
             {
-                Help.Add(Localization.Texts.Tutorials, () => OpenInBrowser("http://flatredball.com/documentation/tutorials/"));
+                Help.Add(Localization.Texts.Tutorials, () => OpenInBrowser("https://docs.flatredball.com/flatredball/tutorials"));
                 Help.Add(Localization.Texts.ReportABug, () => OpenInBrowser("https://github.com/vchelaru/flatredball/issues"));
             }
         }
