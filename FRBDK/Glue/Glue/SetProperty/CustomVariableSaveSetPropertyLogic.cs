@@ -413,13 +413,13 @@ public class CustomVariableSaveSetPropertyLogic
         bool didErrorOccur = false;
         if (customVariable.SetByDerived && customVariable.IsShared)
         {
-            MessageBox.Show("Variables which are SetByDerived cannot set IsShared to true");
+            GlueCommands.Self.DialogCommands.ShowMessageBox("Variables which are SetByDerived cannot set IsShared to true");
             didErrorOccur = true;
         }
 
         if (customVariable.GetIsExposingVariable(GlueState.Self.CurrentElement) && customVariable.IsShared)
         {
-            MessageBox.Show("Exposed variables cannot set IsShared to true");
+            GlueCommands.Self.DialogCommands.ShowMessageBox("Exposed variables cannot set IsShared to true");
             didErrorOccur = true;
         }
 
@@ -484,8 +484,23 @@ public class CustomVariableSaveSetPropertyLogic
 
         var newScope = customVariable.Scope;
 
-        SetDerivedElementVariables(owner, customVariable.Name, newScope);
+        var didErrorOccur = false;
 
+        if(newScope == Scope.Private && customVariable.SetByDerived)
+        {
+            GlueCommands.Self.DialogCommands.ShowMessageBox($"The variable {customVariable.Name} has its scope set to {newScope}, but it also has its SetByDerived to true " +
+                $"(requiring the variable to be virtual) which will result in compile errors. To set the scope to {newScope}, change SetByDerived to false.");
+            didErrorOccur = true;
+        }
+
+        if(didErrorOccur)
+        {
+            customVariable.Scope = (Scope)oldValue;
+        }
+        else
+        {
+            SetDerivedElementVariables(owner, customVariable.Name, newScope);
+        }
     }
 
     private void SetDerivedElementVariables(IElement owner, string name, Scope newScope)
