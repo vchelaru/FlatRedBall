@@ -4,6 +4,20 @@
   <State>
     <Name>Default</Name>
     <Variable>
+      <Type>int</Type>
+      <Name>AutoGridHorizontalCells</Name>
+      <Value xsi:type="xsd:int">4</Value>
+      <Category>Children</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>int</Type>
+      <Name>AutoGridVerticalCells</Name>
+      <Value xsi:type="xsd:int">4</Value>
+      <Category>Children</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>ChildrenLayout</Type>
       <Name>Children Layout</Name>
       <Value xsi:type="xsd:int">0</Value>
