@@ -133,12 +133,21 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 
         bool ShouldSkip(CustomVariable customVariable)
         {
-            switch(customVariable.Type)
+            var type = customVariable.Type;
+            switch (type)
             {
                 // Don't want to handle variables of certain types so we don't get unintentional loads:
                 case "FlatRedBall.TileGraphics.LayeredTileMap":
                     return true;
+
             }
+
+            if(type.EndsWith("DataTypes.TopDownValues"))
+            {
+                // This requires the content to have been loaded as well. We'll skip this for now, and come back to it later...
+                return true;
+            }
+
             return false;
         }
 
