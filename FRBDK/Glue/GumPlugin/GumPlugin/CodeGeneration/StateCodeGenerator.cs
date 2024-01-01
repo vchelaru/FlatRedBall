@@ -92,7 +92,6 @@ namespace GumPlugin.CodeGeneration
             // no longer needed:
             //mVariableNamesToSkipForStates.Add("State");
 
-            TextCodeGenerator.Self.AddVariableNamesToSkipForStates(mVariableNamesToSkipForStates);
 
         }
 
@@ -142,6 +141,9 @@ namespace GumPlugin.CodeGeneration
             {
                 Skip("IsBold");
             }
+
+            TextCodeGenerator.Self.AddVariableNamesToSkipForStates(mVariableNamesToSkipForStates);
+
 
             return;
 
