@@ -14,6 +14,7 @@ using GlueFormsCore.Managers;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using System.Windows.Media.Animation;
+using Gum.DataTypes;
 
 namespace FlatRedBall.Glue.SetVariable;
 
@@ -491,6 +492,60 @@ public class CustomVariableSaveSetPropertyLogic
             GlueCommands.Self.DialogCommands.ShowMessageBox($"The variable {customVariable.Name} has its scope set to {newScope}, but it also has its SetByDerived to true " +
                 $"(requiring the variable to be virtual) which will result in compile errors. To set the scope to {newScope}, change SetByDerived to false.");
             didErrorOccur = true;
+        }
+
+        if(!didErrorOccur)
+        {
+            if(newScope == Scope.Private || newScope == Scope.Protected)
+            {
+                // if any instances use this entity, and if those instances set those variables, we need to remove those variables:
+                var instances = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(owner);
+                List<NamedObjectSave> namedObjectsUsingVariable = new List<NamedObjectSave>();
+                foreach(var nos in instances)
+                {
+                    var variable = nos.GetCustomVariable(customVariable.Name);
+
+                    if(variable?.Value != null)
+                    {
+                        namedObjectsUsingVariable.Add(nos);
+                    }
+                }
+
+                if(namedObjectsUsingVariable.Count > 0)
+                {
+                    var message = $"By setting the variable's scope to {newScope}, the following variables would get removed:\n";
+
+                    foreach(var item in namedObjectsUsingVariable)
+                    {
+                        var variable = item.GetCustomVariable(customVariable.Name);
+                        message += $"\n{item.InstanceName}.{variable?.ToString()}";
+                    }
+
+                    message += "\n\nWould you like to continue?";
+
+                    var dialogResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message);
+
+                    if(dialogResult == System.Windows.MessageBoxResult.Yes)
+                    {
+                        var elementsToRegenerate = new HashSet<GlueElement>();
+
+                        foreach(var nos in namedObjectsUsingVariable)
+                        {
+                            nos.InstructionSaves.RemoveAll(item => item.Member == customVariable.Name);
+                            elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
+                        }
+
+                        foreach(var element in elementsToRegenerate)
+                        {
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element, generateDerivedElements: false);
+                        }
+                    }
+                    else
+                    {
+                        didErrorOccur = true;
+                    }
+                }
+            }
         }
 
         if(didErrorOccur)
