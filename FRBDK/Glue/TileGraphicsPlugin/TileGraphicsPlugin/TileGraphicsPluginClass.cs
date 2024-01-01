@@ -647,12 +647,17 @@ public class TileGraphicsPluginClass : PluginBase
             shouldRefreshErrors = true;
             if(allReferencedFileSaves.Length > 0)
             {
-                var nos = GlueState.Self.CurrentNamedObjectSave;
-                var element = GlueState.Self.CurrentElement;
-                if (collisionTab?.IsShown == true && nos != null)
+
+                GlueCommands.Self.DoOnUiThread(() =>
                 {
-                    TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(nos, element);
-                }
+                    var nos = GlueState.Self.CurrentNamedObjectSave;
+                    var element = GlueState.Self.CurrentElement;
+                    if (collisionTab?.IsShown == true && nos != null)
+                    {
+                        TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(nos, element);
+                    }
+                });
+
             }
 
         }
