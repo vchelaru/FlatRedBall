@@ -26,3 +26,4 @@ storage.ide
 # AnimationEditor doesn't build in TeamCity, so let's add this in:
 !/FRBDK/AnimationEditor/PreviewProject/bin/
 FRBDK/AnimationEditor/PreviewProject/bin/Debug/AESettings.json
+*.settings.user.json
