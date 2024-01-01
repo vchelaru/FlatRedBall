@@ -602,7 +602,7 @@ namespace FlatRedBall.Audio
             }
 #endif
             ///////////////////Early Out////////////////////////////////
-            if(!AreSongsEnabled || ScreenManager.IsInEditMode)
+            if(!AreSoundEffectsEnabled || ScreenManager.IsInEditMode)
             {
                 return;
             }
@@ -690,6 +690,29 @@ namespace FlatRedBall.Audio
         }
         public static int GetNumberOfTimesCurrentlyPlaying(SoundEffect soundEffect) =>
             mSoundEffectPlayInfos.Count(item => item.SoundEffect == soundEffect);
+        #endregion
+
+        #region SoundEffectInstance
+
+        public static void Play(SoundEffectInstance soundEffectInstance)
+        {
+            ///////////////////Early Out////////////////////////////////
+            if (!AreSoundEffectsEnabled || ScreenManager.IsInEditMode)
+            {
+                return;
+            }
+            ///////////////End Early Out////////////////////////////////
+
+            //bool shouldPlay = SoundEffectPlayingBehavior == Audio.SoundEffectPlayingBehavior.PlayAlways ||
+            // 
+            //    mSoundsPlayedThisFrame.Contains(soundEffectInstance.Name) == false;
+
+            soundEffectInstance.Volume = MasterSoundVolume;
+            soundEffectInstance.Play();
+
+            // todo - store information about max sound effects playing?
+        }
+
         #endregion
 
         #region Manager methods

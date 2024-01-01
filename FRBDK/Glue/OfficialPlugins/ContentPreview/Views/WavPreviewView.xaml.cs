@@ -72,6 +72,7 @@ namespace OfficialPlugins.ContentPreview.Views
             catch(Exception e)
             {
                 GlueCommands.Self.PrintError(Localization.Texts.ErrorPlayingWavFile + "\n" + e);
+                GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Output);
             }
         }
     }
