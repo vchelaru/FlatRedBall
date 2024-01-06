@@ -512,7 +512,7 @@ namespace GlueControl
                     if (ScreenManager.IsInEditMode)
                     {
                         var entityType = this.GetType().Assembly.GetType(entityNameGameType);
-                        var hasBeenLoadedProperty = entityType.GetProperty("HasBeenLoadedWithGlobalContentManager");
+                        var hasBeenLoadedProperty = entityType?.GetProperty("HasBeenLoadedWithGlobalContentManager");
                         if (hasBeenLoadedProperty != null)
                         {
                             var hasBeenLoaded = (bool)hasBeenLoadedProperty.GetValue(null);
