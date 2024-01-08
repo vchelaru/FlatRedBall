@@ -49,8 +49,9 @@ namespace TopDownPlugin.Views
                     var instanceMember = new InstanceMember();
 
                     instanceMember.Name = kvp.Key;
-                    instanceMember.CustomSetEvent += (owner, value) =>
+                    instanceMember.CustomSetPropertyEvent += (owner, args) =>
                     {
+                        var value = args.Value;
                         ViewModel.AdditionalProperties[kvp.Key].Value = value;
                         ViewModel.NotifyAdditionalPropertiesChanged();
 

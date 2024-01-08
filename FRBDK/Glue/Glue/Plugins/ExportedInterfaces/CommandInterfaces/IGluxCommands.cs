@@ -7,6 +7,7 @@ using FlatRedBall.Glue.Elements;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.FormHelpers;
+using WpfDataUi.DataTypes;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -195,7 +196,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="value">The value of the variable.</param>
         [Obsolete("Use SetVariableOnAsync")]
         void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true, bool recordUndo = true);
+            bool updateUi = true, bool recordUndo = true, SetPropertyCommitType commitType = SetPropertyCommitType.Full);
 
         Task SetVariableOnAsync(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true, bool recordUndo = true);

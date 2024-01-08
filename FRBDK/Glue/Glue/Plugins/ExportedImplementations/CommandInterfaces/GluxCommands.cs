@@ -43,6 +43,7 @@ using System.Windows.Forms.Design;
 using FlatRedBall.Glue.AutomatedGlue;
 using static FlatRedBall.Debugging.Debugger;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
+using WpfDataUi.DataTypes;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
@@ -2393,9 +2394,9 @@ public class GluxCommands : IGluxCommands
 
     [Obsolete("Use SetVariableOnAsync")]
     public async void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-        bool updateUi = true, bool recordUndo = true)
+        bool updateUi = true, bool recordUndo = true, SetPropertyCommitType commitType = SetPropertyCommitType.Full)
     {
-        await SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins: true, recordUndo:recordUndo);
+        await SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins: true, recordUndo:recordUndo, commitType);
     }
 
 
@@ -2408,7 +2409,7 @@ public class GluxCommands : IGluxCommands
     }
 
     private async Task SetVariableOnInner(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-        bool updateUi = true, bool notifyPlugins = true, bool recordUndo = true)
+        bool updateUi = true, bool notifyPlugins = true, bool recordUndo = true, SetPropertyCommitType commitType = SetPropertyCommitType.Full)
     {
         // XML serialization doesn't like enums
         var needsEnum = GlueState.Self.CurrentGlueProject.FileVersion < (int)GlueProjectSave.GluxVersions.GlueSavedToJson;
@@ -2509,7 +2510,8 @@ public class GluxCommands : IGluxCommands
                 {
                     NamedObjectSave = nos,
                     ChangedPropertyName = memberName,
-                    OldValue = oldValue
+                    OldValue = oldValue,
+                    CommitType = commitType
                 };
                 PluginManager.ReactToChangedProperty(memberName, oldValue, nosContainer, variableChange);
 
@@ -2520,7 +2522,8 @@ public class GluxCommands : IGluxCommands
                         NamedObject = nos,
                         ChangedMember = memberName,
                         OldValue = oldValue,
-                        RecordUndo = recordUndo
+                        RecordUndo = recordUndo,
+                        CommitType = commitType
                     }
                 });
             }

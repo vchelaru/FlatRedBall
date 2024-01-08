@@ -40,8 +40,9 @@ internal class PreferredDisplayerManager
 
         };
 
-            member.CustomSetEvent += (instance, value) =>
+            member.CustomSetPropertyEvent += (instance, args) =>
             {
+                var value = args.Value;
                 var variableDefinition = instance as VariableDefinition;
                 if (value is Type type)
                 {
@@ -109,8 +110,9 @@ internal class PreferredDisplayerManager
             var member = new InstanceMember();
             member.Name = propertyName;
             member.CustomGetTypeEvent += (_) => typeof(T);
-            member.CustomSetEvent += (_, newValue) =>
+            member.CustomSetPropertyEvent += (_, args) =>
             {
+                var newValue = args.Value;
                 variable.VariableDefinition.PropertiesToSetOnDisplayer[propertyName] = newValue;
             };
             member.CustomGetEvent += (_) =>

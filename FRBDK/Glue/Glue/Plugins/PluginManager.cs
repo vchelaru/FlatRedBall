@@ -43,6 +43,7 @@ using GlueFormsCore.ViewModels;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using WpfDataUi.DataTypes;
 //using Gum.Wireframe;
 //using Gum.Converters;
 
@@ -1615,6 +1616,7 @@ namespace FlatRedBall.Glue.Plugins
             public NamedObjectSave NamedObjectSave { get; set; }
             public string ChangedPropertyName { get; set; }
             public object OldValue { get; set; }
+            public SetPropertyCommitType CommitType { get; set; } = SetPropertyCommitType.Full;
 
             public bool RecordUndo { get; set; }
 

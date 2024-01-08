@@ -37,8 +37,11 @@ namespace OfficialPlugins.ErrorReportingPlugin
 
         private async void HandleChangedNamedObjectPropertyList(List<PluginManager.NamedObjectSavePropertyChange> obj)
         {
-            await GlueCommands.Self.RefreshCommands.ClearFixedErrors();
-            this.RefreshErrors();
+            if(obj.Count > 0 && obj[0].CommitType == WpfDataUi.DataTypes.SetPropertyCommitType.Full) 
+            { 
+                await GlueCommands.Self.RefreshCommands.ClearFixedErrors();
+                this.RefreshErrors();
+            }
         }
 
         //private async void HandleNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)

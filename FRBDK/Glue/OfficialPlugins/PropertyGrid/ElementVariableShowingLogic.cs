@@ -117,8 +117,9 @@ namespace OfficialPlugins.VariableDisplay
                 instanceMember.UiCreated += (view) => variableDefinition.UiCreated(view);
             }
 
-            instanceMember.CustomSetEvent += async (intance, value) =>
+            instanceMember.CustomSetPropertyEvent += async (intance, args) =>
             {
+                var value = args.Value;
                 instanceMember.IsDefault = false;
 
                 //RefreshLogic.IgnoreNextRefresh();
@@ -329,8 +330,9 @@ namespace OfficialPlugins.VariableDisplay
                 //TypeConverter converter = variable.GetTypeConverter(element);
                 //instanceMember.TypeConverter = converter;
 
-                instanceMember.CustomSetEvent += (intance, value) =>
+                instanceMember.CustomSetPropertyEvent += (intance, args) =>
                 {
+                    var value = args.Value;
                     instanceMember.IsDefault = false;
 
                     RefreshLogic.IgnoreNextRefresh();

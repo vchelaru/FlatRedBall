@@ -33,6 +33,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Windows;
 using System.Windows.Media;
+using WpfDataUi.DataTypes;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -188,7 +189,7 @@ namespace FlatRedBall.Glue.Plugins
         public object OldValue { get; set; }
         public NamedObjectSave NamedObject { get; set; }
         public bool RecordUndo { get; set; } = true;
-
+        public SetPropertyCommitType CommitType { get; set; } = SetPropertyCommitType.Full;
         public override string ToString()
         {
             return $"{NamedObject}.{ChangedMember}";
