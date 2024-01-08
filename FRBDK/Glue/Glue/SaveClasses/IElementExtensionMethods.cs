@@ -212,6 +212,15 @@ public static class IElementExtensionMethods
                 foundValue = toReturn != null;
             }
         }
+
+        // special case - if the element is IVisible, and if the variable is Visible, then FRB will generate its default
+        // as true, so return that to match what is code genned:
+        if(variableName == "Visible" && element is EntitySave entity && entity.ImplementsIVisible)
+        {
+            toReturn = true;
+            foundValue = true;
+        }
+
         if (!foundValue && variable != null)
         {
             // get the default value for the type:
