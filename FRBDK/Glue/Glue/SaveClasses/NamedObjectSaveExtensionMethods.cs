@@ -510,8 +510,20 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
                 else
                 {
-                    var type = value?.GetType();
-                    instruction = instance.AddNewGenericInstructionFor(variableName, type);
+                    // If it comes from an entity, try to assign the type from the entity. This is needed if the variable
+                    // is an Entity.Type property
+                    var nosEntity = ObjectFinder.Self.GetEntitySave(instance);
+                    var variable = nosEntity?.GetCustomVariableRecursively(variableName);
+
+                    if(variable != null)
+                    {
+                        instruction = instance.AddInstruction(variableName, variable.Type);
+                    }
+                    else
+                    {
+                        var type = value?.GetType();
+                        instruction = instance.AddNewGenericInstructionFor(variableName, type);
+                    }
                 }
             }
 
