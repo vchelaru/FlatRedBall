@@ -1902,6 +1902,11 @@ public class GluxCommands : IGluxCommands
         //// moving to another element, so let's copy
         NamedObjectSave newNos = originalNos.Clone();
 
+        // In case this is defined in base, we want to still allow copying it, but mark it 
+        // as not defined by base:
+        newNos.DefinedByBase = false;
+        newNos.InstantiatedByBase = false;
+
         UpdateNosAttachmentAfterDragDrop(newNos, targetElement);
 
         //clonedNos.InstanceName = IncrementNumberAtEndOfNewObject(elementMovingInto, clonedNos.InstanceName);
@@ -1968,11 +1973,6 @@ public class GluxCommands : IGluxCommands
             {
                 targetElement.NamedObjects.Remove(newNos);
             }
-        }
-        if (succeeded && originalNos.DefinedByBase)
-        {
-            succeeded = false;
-            generalResponse.Message = $"Could not copy {originalNos.InstanceName} because it is defined by base. Select the object in the base screen/entity to copy it";
         }
 
         if (succeeded)
