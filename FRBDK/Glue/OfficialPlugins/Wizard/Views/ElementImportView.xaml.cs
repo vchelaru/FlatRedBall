@@ -1,18 +1,8 @@
 ﻿using OfficialPluginsCore.Wizard.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OfficialPluginsCore.Wizard.Views
 {
@@ -53,10 +43,8 @@ namespace OfficialPluginsCore.Wizard.Views
                 }
             }
 
-            for(int i = 0; i < ViewModel.Items.Count; i++)
+            foreach (var vm in ViewModel.Items)
             {
-                var vm = ViewModel.Items[i];
-
                 var isVmReferenced = MainStackPanel.Children
                     .Any(item => ((ElementImportItem)item).DataContext == vm);
 

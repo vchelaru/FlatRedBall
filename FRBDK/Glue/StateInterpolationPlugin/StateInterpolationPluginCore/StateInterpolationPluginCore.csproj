@@ -1,8 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
-  <PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
@@ -21,7 +19,7 @@
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\..\Glue\GlueFormsCore.csproj" />
-    <ProjectReference Include="..\InterpolationCore\InterpolationCore.csproj" />
+    <ProjectReference Include="..\StateInterpolationNet6\StateInterpolationNet6.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

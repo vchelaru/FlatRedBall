@@ -59,10 +59,11 @@ namespace GumPluginCore.CodeGeneration
 
                 if (hasForms && rfs?.RuntimeType != "FlatRedBall.Gum.GumIdb")
                 {
+                    var rfsName = rfs.GetInstanceName();
                     var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
-                        "." + rfs.GetInstanceName() + "Forms";
+                        "." + rfsName + "Forms";
                     var formsInstantiationLine =
-                        $"Forms = new {formsObjectType}({rfs.GetInstanceName()});";
+                        $"Forms = {rfsName}.FormsControl ?? new {formsObjectType}({rfsName});";
                     codeBlock.Line(formsInstantiationLine);
                 }
 

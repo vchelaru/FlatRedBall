@@ -7,6 +7,7 @@ using FlatRedBall.Input;
 
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using FlatRedBall.Utilities;
+using System.Drawing;
 
 namespace FlatRedBall.Math.Geometry
 {
@@ -77,6 +78,9 @@ namespace FlatRedBall.Math.Geometry
             get { return mPolygons; }
         }
 
+        /// <summary>
+        /// Returns the list of AxisAlignedRectangles which collided with the object in the last call.
+        /// </summary>
         public List<AxisAlignedRectangle> LastCollisionAxisAlignedRectangles
         {
             get
@@ -868,6 +872,38 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
+        public void ForceUpdateDependencies()
+        {
+            for (int i = 0; i < mAxisAlignedRectangles.Count; i++)
+            {
+                mAxisAlignedRectangles[i].ForceUpdateDependencies();
+            }
+            for (int i = 0; i < mCircles.Count; i++)
+            {
+                mCircles[i].ForceUpdateDependencies();
+            }
+            for (int i = 0; i < mPolygons.Count; i++)
+            {
+                mPolygons[i].ForceUpdateDependencies();
+            }
+            for (int i = 0; i < mLines.Count; i++)
+            {
+                mLines[i].ForceUpdateDependencies();
+            }
+            for (int i = 0; i < mSpheres.Count; i++)
+            {
+                mSpheres[i].ForceUpdateDependencies();
+            }
+            for (int i = 0; i < mAxisAlignedCubes.Count; i++)
+            {
+                mAxisAlignedCubes[i].ForceUpdateDependencies();
+            }
+            for (int i = 0; i < mCapsule2Ds.Count; i++)
+            {
+                mCapsule2Ds[i].ForceUpdateDependencies();
+            }
+        }
+
         public void FlipHorizontally()
         {
             #region Flip the AxisAlignedRectangles
@@ -990,13 +1026,13 @@ namespace FlatRedBall.Math.Geometry
 
         internal void ResetLastUpdateTimes()
         {
-            foreach (var shape in mAxisAlignedRectangles) { shape.LastDependencyUpdate = -1; }
-            foreach (var shape in mCircles) { shape.LastDependencyUpdate = -1; }
-            foreach (var shape in mPolygons) { shape.LastDependencyUpdate = -1; }
-            foreach (var shape in mLines) { shape.LastDependencyUpdate = -1; }
-            foreach (var shape in mSpheres) { shape.LastDependencyUpdate = -1; }
-            foreach (var shape in mAxisAlignedCubes) { shape.LastDependencyUpdate = -1; }
-            foreach (var shape in mCapsule2Ds) { shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mAxisAlignedRectangles.Count; i++) { AxisAlignedRectangle shape = mAxisAlignedRectangles[i]; shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mCircles.Count; i++) { Circle shape = mCircles[i]; shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mPolygons.Count; i++) { Polygon shape = mPolygons[i]; shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mLines.Count; i++) { Line shape = mLines[i]; shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mSpheres.Count; i++) { Sphere shape = mSpheres[i]; shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mAxisAlignedCubes.Count; i++) { AxisAlignedCube shape = mAxisAlignedCubes[i]; shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mCapsule2Ds.Count; i++) { Capsule2D shape = mCapsule2Ds[i]; shape.LastDependencyUpdate = -1; }
         }
 
         #endregion
@@ -1672,23 +1708,25 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMoveSoft(ShapeCollection shapeCollection, float thisMass, float otherMass, float separationVelocity)
         {
-
             mSuppressLastCollisionClear = true;
             bool returnValue = false;
 
-            // currently we only support aarect vs aarect and
-            // circle vs circle
+            // Currently we only support AARect vs AARect, Circle vs Circle,
+            // Polygon vs AARect and Polygon vs Polygon.
+
+            // AARect vs AARect
             for (int i = 0; i < shapeCollection.AxisAlignedRectangles.Count; i++)
             {
-                AxisAlignedRectangle shape = shapeCollection.AxisAlignedRectangles[i];
+                var shape = shapeCollection.AxisAlignedRectangles[i];
 
-                for(int j = 0; j < this.AxisAlignedRectangles.Count; j++)
+                for(int j = 0; j < AxisAlignedRectangles.Count; j++)
                 {
                     returnValue |= shape.CollideAgainstMoveSoft(AxisAlignedRectangles[j], otherMass, thisMass, separationVelocity);
                 }
             }
 
-            for(int i = 0; i < shapeCollection.Circles.Count; i++)
+            // Circle vs Circle
+            for (int i = 0; i < shapeCollection.Circles.Count; i++)
             {
                 var shape = shapeCollection.Circles[i];
 
@@ -1698,14 +1736,161 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
+            // Other Polygon vs this AARect
+            for (int i = 0; i < shapeCollection.Polygons.Count; i++)
+            {
+                var shape = shapeCollection.Polygons[i];
+
+                for (int j = 0; j < AxisAlignedRectangles.Count; j++)
+                {
+                    returnValue |= shape.CollideAgainstMoveSoft(AxisAlignedRectangles[j], otherMass, thisMass, separationVelocity);
+                }
+            }
+
+            // This Polygon vs other AARect
+            for (int i = 0; i < Polygons.Count; i++)
+            {
+                var shape = Polygons[i];
+
+                for (int j = 0; j < shapeCollection.AxisAlignedRectangles.Count; j++)
+                {
+                    returnValue |= shape.CollideAgainstMoveSoft(shapeCollection.AxisAlignedRectangles[j], thisMass, otherMass, separationVelocity);
+                }
+            }
+
+            // Polygon vs Polygon
+            for (int i = 0; i < shapeCollection.Polygons.Count; i++)
+            {
+                var shape = shapeCollection.Polygons[i];
+
+                for (int j = 0; j < Polygons.Count; j++)
+                {
+                    returnValue |= shape.CollideAgainstMoveSoft(Polygons[j], otherMass, thisMass, separationVelocity);
+                }
+            }
+
             mSuppressLastCollisionClear = false;
             return returnValue;
         }
 
-		#endregion
+        public bool CollideAgainstMoveSoft(Polygon polygon, float thisMass, float otherMass, float separationVelocity)
+        {
+            mSuppressLastCollisionClear = true;
+            bool returnValue = false;
+
+            for (int i = 0; i < AxisAlignedRectangles.Count; i++)
+            {
+                returnValue |= polygon.CollideAgainstMoveSoft(AxisAlignedRectangles[i], otherMass, thisMass, separationVelocity);
+            }
+
+            for (int i = 0; i < Polygons.Count; i++)
+            {
+                returnValue |= polygon.CollideAgainstMoveSoft(Polygons[i], otherMass, thisMass, separationVelocity);
+            }
+
+            mSuppressLastCollisionClear = false;
+            return returnValue;
+        }
+
+        public bool CollideAgainstMovePositionSoft(ShapeCollection shapeCollection, float thisMass, float otherMass, float separationVelocity)
+        {
+            mSuppressLastCollisionClear = true;
+            bool returnValue = false;
+
+            // Currently we only support AARect vs AARect,
+            // Polygon vs AARect and Polygon vs Polygon.
+
+            // AARect vs AARect
+            for (int i = 0; i < shapeCollection.AxisAlignedRectangles.Count; i++)
+            {
+                var shape = shapeCollection.AxisAlignedRectangles[i];
+
+                for (int j = 0; j < AxisAlignedRectangles.Count; j++)
+                {
+                    returnValue |= shape.CollideAgainstMovePositionSoft(AxisAlignedRectangles[j], otherMass, thisMass, separationVelocity);
+                }
+            }
+
+            // Other Polygon vs this AARect
+            for (int i = 0; i < shapeCollection.Polygons.Count; i++)
+            {
+                var shape = shapeCollection.Polygons[i];
+
+                for (int j = 0; j < AxisAlignedRectangles.Count; j++)
+                {
+                    returnValue |= shape.CollideAgainstMovePositionSoft(AxisAlignedRectangles[j], otherMass, thisMass, separationVelocity);
+                }
+            }
+
+            // This Polygon vs other AARect
+            for (int i = 0; i < Polygons.Count; i++)
+            {
+                var shape = Polygons[i];
+
+                for (int j = 0; j < shapeCollection.AxisAlignedRectangles.Count; j++)
+                {
+                    returnValue |= shape.CollideAgainstMovePositionSoft(shapeCollection.AxisAlignedRectangles[j], thisMass, otherMass, separationVelocity);
+                }
+            }
+
+            // Polygon vs Polygon
+            for (int i = 0; i < shapeCollection.Polygons.Count; i++)
+            {
+                var shape = shapeCollection.Polygons[i];
+
+                for (int j = 0; j < Polygons.Count; j++)
+                {
+                    returnValue |= shape.CollideAgainstMovePositionSoft(Polygons[j], otherMass, thisMass, separationVelocity);
+                }
+            }
+
+            mSuppressLastCollisionClear = false;
+            return returnValue;
+        }
+
+        public bool CollideAgainstMovePositionSoft(Polygon polygon, float thisMass, float otherMass, float separationVelocity)
+        {
+            mSuppressLastCollisionClear = true;
+            bool returnValue = false;
+
+            for (int i = 0; i < AxisAlignedRectangles.Count; i++)
+            {
+                returnValue |= polygon.CollideAgainstMovePositionSoft(AxisAlignedRectangles[i], otherMass, thisMass, separationVelocity);
+            }
+
+            for (int i = 0; i < Polygons.Count; i++)
+            {
+                returnValue |= polygon.CollideAgainstMovePositionSoft(Polygons[i], otherMass, thisMass, separationVelocity);
+            }
+
+            mSuppressLastCollisionClear = false;
+            return returnValue;
+        }
+
+        public bool CollideAgainstMovePositionSoft(AxisAlignedRectangle rectangle, float thisMass, float otherMass, float separationVelocity)
+        {
+            mSuppressLastCollisionClear = true;
+            bool returnValue = false;
+
+            for (int i = 0; i < AxisAlignedRectangles.Count; i++)
+            {
+                returnValue |= AxisAlignedRectangles[i].CollideAgainstMovePositionSoft(rectangle, thisMass, otherMass, separationVelocity);
+            }
+
+            for (int i = 0; i < Polygons.Count; i++)
+            {
+                returnValue |= Polygons[i].CollideAgainstMovePositionSoft(rectangle, thisMass, otherMass, separationVelocity);
+            }
+
+            mSuppressLastCollisionClear = false;
+            return returnValue;
+        }
+
+        #endregion
 
         public bool CollideAgainstClosest(Line line, Axis? sortAxis, float? gridSize)
         {
+            this.ClearLastCollisionLists();
             line.LastCollisionPoint = new Point(double.NaN, double.NaN);
 
             Segment a = line.AsSegment();
@@ -1723,19 +1908,32 @@ namespace FlatRedBall.Math.Geometry
             var leftmost = (float)System.Math.Min(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
             var rightmost = (float)System.Math.Max(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
 
-            // todo - need to handle Y and top/bottom most
+            var topMost = (float)System.Math.Max(line.AbsolutePoint1.Y, line.AbsolutePoint2.Y);
+            var bottomMost = (float)System.Math.Min(line.AbsolutePoint1.Y, line.AbsolutePoint2.Y);
 
-            float clampedPosition = line.Position.X;
+            float clampedPositionX = line.Position.X;
+            float clampedPositionY = line.Position.Y;
 
             bool isPositionOnEnd = false;
-            if (clampedPosition <= leftmost)
+            if (clampedPositionX <= leftmost)
             {
-                clampedPosition = leftmost;
+                clampedPositionX = leftmost;
                 isPositionOnEnd = true;
             }
-            else if (clampedPosition >= rightmost)
+            else if (clampedPositionX >= rightmost)
             {
-                clampedPosition = rightmost;
+                clampedPositionX = rightmost;
+                isPositionOnEnd = true;
+            }
+
+            if(clampedPositionY <= bottomMost)
+            {
+                clampedPositionY = bottomMost;
+                isPositionOnEnd = true;
+            }
+            else if(clampedPositionY >= topMost)
+            {
+                clampedPositionY = topMost;
                 isPositionOnEnd = true;
             }
 
@@ -1746,20 +1944,23 @@ namespace FlatRedBall.Math.Geometry
             }
 
             Point? intersectionPoint = null;
+            Segment? intersectionSegment = null;
 
             if (sortAxis == Axis.X)
             {
-                var rectangles = this.AxisAlignedRectangles;
-
                 var firstIndex = 0;
                 var lastIndex = 0;
+
+                #region Rectangles
+
+                var rectangles = this.AxisAlignedRectangles;
                 if(gridSize != null)
                 {
                     firstIndex= rectangles.GetFirstAfter(leftmost - gridSize.Value, sortAxis.Value, 0, rectangles.Count);
                     lastIndex = rectangles.GetFirstAfter(rightmost + gridSize.Value, sortAxis.Value, firstIndex, rectangles.Count);
                 }
 
-                if (clampedPosition < rightmost)
+                if (clampedPositionX < rightmost)
                 {
                     // start at the beginning of the list, go up
                     for (int i = firstIndex; i < lastIndex; i++)
@@ -1770,8 +1971,8 @@ namespace FlatRedBall.Math.Geometry
                             break;
                         }
 
-                        FillSegments(currentShapeSegments, rectangle);
-                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                        rectangle.FillSegments(currentShapeSegments);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, rectangle);
                     }
                 }
                 else
@@ -1785,28 +1986,144 @@ namespace FlatRedBall.Math.Geometry
                             break;
                         }
 
-                        FillSegments(currentShapeSegments, rectangle);
-                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                        rectangle.FillSegments(currentShapeSegments);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, rectangle);
                     }
                 }
 
+                #endregion
+
+                #region Polygons
+
+                var polygons = this.Polygons;
+                if(gridSize != null)
+                {
+                    firstIndex = polygons.GetFirstAfter(leftmost - gridSize.Value, sortAxis.Value, 0, polygons.Count);
+                    lastIndex = polygons.GetFirstAfter(rightmost + gridSize.Value, sortAxis.Value, firstIndex, polygons.Count);
+                }
+
+                if (clampedPositionX < rightmost)
+                {
+                    // start at the beginning of the list, go up
+                    for (int i = firstIndex; i < lastIndex; i++)
+                    {
+                        var polygon = polygons[i];
+                        if(intersectionPoint?.X < polygon.Position.X - polygon.BoundingRadius)
+                        {
+                            break;
+                        }
+
+                        polygon.FillSegments(currentShapeSegments);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
+
+                    }
+                }
+                else
+                {
+                    // start at the end of the list, go down
+                    for (int i = lastIndex - 1; i >= firstIndex; i--)
+                    {
+                        var polygon = polygons[i];
+                        if(intersectionPoint?.X > polygon.Position.X + polygon.BoundingRadius)
+                        {
+                            break;
+                        }
+
+                        polygon.FillSegments(currentShapeSegments);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
+                    }
+                }
+                #endregion
             }
-            // April 29, 2022
-            // At the time of this writing, tile shape collections created the standard way (like solid collision) use the X axis for sorting. This is
-            // less efficient than using Y if the map is taller rather than wider, so once that is fixed, this needs to be fixed too. But...we'll handle that later.
+
             else if (sortAxis == Axis.Y)
             {
-                var rectangles = this.AxisAlignedRectangles;
 
                 var firstIndex = 0;
                 var lastIndex = 0;
+
+                #region Rectangles
+
+                var rectangles = this.AxisAlignedRectangles;
                 if (gridSize != null)
                 {
-                    firstIndex = rectangles.GetFirstAfter(leftmost - gridSize.Value, sortAxis.Value, 0, rectangles.Count);
-                    lastIndex = rectangles.GetFirstAfter(rightmost + gridSize.Value, sortAxis.Value, firstIndex, rectangles.Count);
+                    firstIndex = rectangles.GetFirstAfter(bottomMost - gridSize.Value, sortAxis.Value, 0, rectangles.Count);
+                    lastIndex = rectangles.GetFirstAfter(topMost + gridSize.Value, sortAxis.Value, firstIndex, rectangles.Count);
                 }
 
-                throw new NotImplementedException("Bug Vic to do Y. Currently just X is done");
+                if(clampedPositionY <= bottomMost)
+                {
+                    // start at the beginning of the list, go up
+                    for (int i = firstIndex; i < lastIndex; i++)
+                    {
+                        var rectangle = rectangles[i];
+                        if (intersectionPoint?.Y < rectangle.Bottom)
+                        {
+                            break;
+                        }
+
+                        rectangle.FillSegments(currentShapeSegments);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, rectangle);
+                    }
+                }
+                else
+                {
+                    // start at the end of the list, go down
+                    for (int i = lastIndex - 1; i >= firstIndex; i--)
+                    {
+                        var rectangle = rectangles[i];
+                        if (intersectionPoint?.Y > rectangle.Top)
+                        {
+                            break;
+                        }
+
+                        rectangle.FillSegments(currentShapeSegments);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, rectangle);
+                    }
+                }
+
+                #endregion
+
+                #region Polygons
+
+                var polygons = this.Polygons;
+                if(gridSize != null)
+                {
+                    firstIndex = polygons.GetFirstAfter(bottomMost - gridSize.Value, sortAxis.Value, 0, polygons.Count);
+                    lastIndex = polygons.GetFirstAfter(topMost + gridSize.Value, sortAxis.Value, firstIndex, polygons.Count);
+                }
+
+                if(clampedPositionY < topMost)
+                {
+                    for(int i = firstIndex; i < lastIndex; i++)
+                    {
+                        var polygon = polygons[i];
+                        if (intersectionPoint?.Y < polygon.Position.Y - polygon.BoundingRadius)
+                        {
+                            break;
+                        }
+
+                        polygon.FillSegments(currentShapeSegments);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
+                    }
+                }
+                else
+                {
+                    // start at the end of the list, go down
+                    for (int i = lastIndex - 1; i >= firstIndex; i--)
+                    {
+                        var polygon = polygons[i];
+                        if (intersectionPoint?.Y > polygon.Position.Y + polygon.BoundingRadius)
+                        {
+                            break;
+                        }
+
+                        polygon.FillSegments(currentShapeSegments);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
+                    }
+                }
+
+                #endregion
             }
             else
             {
@@ -1814,16 +2131,27 @@ namespace FlatRedBall.Math.Geometry
                 {
                     var rectangle = AxisAlignedRectangles[i];
 
-                    FillSegments(currentShapeSegments, rectangle);
-                    CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                    rectangle.FillSegments(currentShapeSegments);
+                    CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, rectangle);
                 }
                 for(int i = 0; i < Polygons.Count; i++)
                 {
                     var polygon = Polygons[i];
 
-                    FillSegments(currentShapeSegments, polygon);
-                    CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, polygon);
+                    polygon.FillSegments(currentShapeSegments);
+                    CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
                 }
+            }
+
+            if (collidedObject is AxisAlignedRectangle collidedRectangle)
+            {
+                collidedRectangle.mLastCollisionSegment = intersectionSegment ?? new Segment();
+                mLastCollisionAxisAlignedRectangles.Add(collidedRectangle);
+            }
+            else if (collidedObject is Polygon collidedPolygon)
+            {
+                collidedPolygon.mLastCollisionSegment = intersectionSegment ?? new Segment();
+                mLastCollisionPolygons.Add(collidedPolygon);
             }
 
             line.LastCollisionPoint = intersectionPoint ?? new Point(double.NaN, double.NaN);
@@ -1831,7 +2159,7 @@ namespace FlatRedBall.Math.Geometry
             return collidedObject != null;
         }
 
-        private static void CollideAgainstSegments(Line line, ref Segment a, List<Segment> currentShapeSegments, ref object collidedShape, ref Point? intersectionPoint, object currentShape)
+        private static void CollideAgainstSegments(Line line, ref Segment a, List<Segment> currentShapeSegments, ref object collidedShape, ref Point? intersectionPoint, ref Segment? intersectionSegment, object currentShape)
         {
             for (int segmentIndex = 0; segmentIndex < currentShapeSegments.Count; segmentIndex++)
             {
@@ -1840,8 +2168,9 @@ namespace FlatRedBall.Math.Geometry
                 {
                     if (intersectionPoint == null)
                     {
-                        intersectionPoint = tempPoint;
                         collidedShape = currentShape;
+                        intersectionPoint = tempPoint;
+                        intersectionSegment = segment;
                     }
                     else
                     {
@@ -1851,44 +2180,12 @@ namespace FlatRedBall.Math.Geometry
 
                         if (distanceToNewIntersectionSquared < distanceToOldIntersectionSquared)
                         {
-                            intersectionPoint = tempPoint;
                             collidedShape = currentShape;
+                            intersectionPoint = tempPoint;
+                            intersectionSegment = segment;
                         }
                     }
                 }
-            }
-        }
-
-        private static void FillSegments(List<Segment> currentShapeSegments, AxisAlignedRectangle rectangle)
-        {
-            currentShapeSegments.Clear();
-            Point tl = new Point(
-                                            rectangle.Position.X - rectangle.ScaleX,
-                                            rectangle.Position.Y + rectangle.ScaleY);
-            Point tr = new Point(
-                rectangle.Position.X + rectangle.ScaleX,
-                rectangle.Position.Y + rectangle.ScaleY);
-            Point bl = new Point(
-                rectangle.Position.X - rectangle.ScaleX,
-                rectangle.Position.Y - rectangle.ScaleY);
-            Point br = new Point(
-                rectangle.Position.X + rectangle.ScaleX,
-                rectangle.Position.Y - rectangle.ScaleY);
-
-            currentShapeSegments.Add(new Segment(tl, bl));
-            currentShapeSegments.Add(new Segment(bl, br));
-            currentShapeSegments.Add(new Segment(tl, tr));
-            currentShapeSegments.Add(new Segment(tr, br));
-        }
-
-        private static void FillSegments(List<Segment> currentShapeSegments, Polygon polygon)
-        {
-            currentShapeSegments.Clear();
-
-            for (int i = 0; i < polygon.Vertices.Length - 1; i++)
-            {
-                var segment = new Segment(polygon.Vertices[i].Position, polygon.Vertices[i + 1].Position);
-                currentShapeSegments.Add(segment);
             }
         }
 
@@ -1900,6 +2197,24 @@ namespace FlatRedBall.Math.Geometry
         public bool IsMouseOver(Gui.Cursor cursor, Layer layer)
         {
             return cursor.IsOn3D(this, layer);
+        }
+
+        public void KeepThisInsideOf(AxisAlignedRectangle rectangle)
+        {
+            for(int i = 0; i < mCircles.Count; i++)
+            {
+                mCircles[i].KeepThisInsideOf(rectangle);
+            }
+
+            for(int i = 0; i < mAxisAlignedRectangles.Count; i++)
+            {
+                mAxisAlignedRectangles[i].KeepThisInsideOf(rectangle);
+            }
+
+            for(int i = 0; i < mPolygons.Count; i++)
+            {
+                mPolygons[i].KeepThisInsideOf(rectangle);
+            }
         }
     }
 }

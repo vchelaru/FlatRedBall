@@ -1,9 +1,6 @@
 ﻿using FlatRedBall.Glue;
-using FlatRedBall.Glue.AutomatedGlue;
-using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
-using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -11,20 +8,10 @@ using FlatRedBall.Glue.SaveClasses;
 using Glue;
 using GlueFormsCore.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace GlueFormsCore.Controls
 {
@@ -107,7 +94,7 @@ namespace GlueFormsCore.Controls
         public async void ReactToCloseProject(bool shouldSave, bool isExiting, InitializationWindowWpf initWindow = null)
         {
             var didCreateOwnInitWindow = false;
-            if(initWindow == null)
+            if (initWindow == null)
             {
                 didCreateOwnInitWindow = true;
                 initWindow = new InitializationWindowWpf();
@@ -123,6 +110,55 @@ namespace GlueFormsCore.Controls
             // Let's set this to true so all tasks can end
             ProjectManager.WantsToCloseProject = true;
 
+            // It's possible that all tasks finish, but that an async function isn't finished running.
+            // This would result in more tasks getting added on. Therefore, we want to loop and make sure that:
+            // 1. All tasks are finished
+            // 2. We waited some time (1 second?)
+            // 3. No tasks were awaited
+            bool didAwaitTasks = false;
+            do
+            {
+                didAwaitTasks = WaitForAllTaksToFinish(initWindow);
+
+                if (didAwaitTasks)
+                {
+                    System.Threading.Thread.Sleep(1_000);
+                }
+            } while (didAwaitTasks);
+
+            if (shouldSave)
+            {
+                if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName?.FullPath))
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjectsImmediately();
+                    GlueCommands.Self.UpdateGlueSettingsFromCurrentGlueStateImmediately();
+                }
+            }
+
+
+            ProjectManager.UnloadProject(isExiting);
+
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                if (MainGlueWindow.Self.PropertyGrid != null)
+                {
+                    MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
+                }
+            });
+
+            GlueCommands.Self.DoOnUiThread(() => MainGlueWindow.Self.Text = Localization.Texts.FrbEditor);
+            ProjectManager.WantsToCloseProject = false;
+            TaskManager.Self.RecordTaskHistory($"--Ending Close Project Command --");
+
+            if (didCreateOwnInitWindow)
+            {
+                initWindow.Close();
+            }
+        }
+
+        private static bool WaitForAllTaksToFinish(InitializationWindowWpf initWindow)
+        {
+            bool didWait = false;
             long msWaited = 0;
             const int maxMsToWait = 60 * 1000;
 
@@ -167,43 +203,19 @@ namespace GlueFormsCore.Controls
                     // There shouldn't be any but just in case Vic messed up the code...
                     if (msWaited > maxMsToWait)
                     {
+                        // If the first task barfed, don't consider that awaited. Just move on...
                         TaskManager.Self.RecordTaskHistory($"--Waited maximum time to finish tasks, but still have {TaskManager.Self.TaskCount} tasks left --");
-
                         break;
+                    }
+                    else
+                    {
+                        didWait = true;
                     }
                 }
 
             }
 
-
-            if (shouldSave)
-            {
-                if (ProjectManager.ProjectBase != null && !string.IsNullOrEmpty(ProjectManager.ProjectBase.FullFileName?.FullPath))
-                {
-                    GlueCommands.Self.ProjectCommands.SaveProjectsImmediately();
-                    GlueCommands.Self.UpdateGlueSettingsFromCurrentGlueStateImmediately();
-                }
-            }
-
-
-            ProjectManager.UnloadProject(isExiting);
-
-            GlueCommands.Self.DoOnUiThread(() =>
-            {
-                if(MainGlueWindow.Self.PropertyGrid != null)
-                {
-                    MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
-                }
-            });
-
-            GlueCommands.Self.DoOnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall");
-            ProjectManager.WantsToCloseProject = false;
-            TaskManager.Self.RecordTaskHistory($"--Ending Close Project Command --");
-
-            if(didCreateOwnInitWindow)
-            {
-                initWindow.Close();
-            }
+            return didWait;
         }
 
         private void CreateFileWatchTimer()
@@ -264,23 +276,29 @@ namespace GlueFormsCore.Controls
 
         private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            // If this is coming from a text box, don't try to apply hotkeys
-            // Maybe in the future we want to be selective, like only apply certain
-            // hotkeys (ctrl+f) but not others (delete)?
-            var isTextBox = e.OriginalSource is TextBoxBase;
-
-            var isHandled = HotkeyManager.Self.TryHandleKeys(e, isTextBox).Result;
-
-            if (isHandled)
+            var handledByPlugin = PluginManager.IsHandlingHotkeys();
+            if (!handledByPlugin)
             {
-                e.Handled = true;
+                // If this is coming from a text box, don't try to apply hotkeys
+                // Maybe in the future we want to be selective, like only apply certain
+                // hotkeys (ctrl+f) but not others (delete)?
+                var isTextBox = e.OriginalSource is TextBoxBase;
+
+                var isHandled = HotkeyManager.Self.TryHandleKeys(e, isTextBox).Result;
+
+                if (isHandled)
+                {
+                    e.Handled = true;
+                }
             }
         }
 
         private void FileWatchTimer_Tick(object sender, EventArgs e)
         {
             if (ProjectManager.ProjectBase != null && GlueState.Self.CurrentGlueProject != null)
-                FileWatchManager.Flush();
+            {
+                var throwaway = FileWatchManager.Flush();
+            }
         }
 
         private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
@@ -295,6 +313,18 @@ namespace GlueFormsCore.Controls
                 // navigate forward
                 TreeNodeStackManager.Self.GoForward();
             }
+        }
+
+        internal void ApplyGlueSettings(GlueSettingsSave glueSettingsSave)
+        {
+            if(glueSettingsSave.LeftTabWidthPixels > 1)
+            {
+                ViewModel.LeftPanelWidth = new GridLength(glueSettingsSave.LeftTabWidthPixels.Value);
+                // To prevent expansion from resetting:
+                ViewModel.LeftSplitterWidth = new GridLength(4);
+
+            }
+
         }
     }
 }

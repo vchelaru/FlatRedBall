@@ -1,7 +1,9 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using Gum.Wireframe;
 using GumPlugin.Managers;
+using SkiaGum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,10 +30,27 @@ namespace GumPluginCore.CodeGeneration
 
         public override void GenerateInitialize(ICodeBlock codeBlock)
         {
-            if (hasSkia)
+            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+            if (hasCommon)
             {
-                codeBlock.Line("GumRuntime.InstanceSaveExtensionMethods.CustomObjectCreation = GetSkiaType;");
+                codeBlock.Line("global::GumRuntime.ElementSaveExtensions.CustomCreateGraphicalComponentFunc = GetRenderable;");
+
+                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.SetPropertyOnRenderable = global::Gum.Wireframe.CustomSetPropertyOnRenderable.SetPropertyOnRenderable;");
+                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.UpdateFontFromProperties = global::Gum.Wireframe.CustomSetPropertyOnRenderable.UpdateToFontValues;");
+                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.ThrowExceptionsForMissingFiles = global::Gum.Wireframe.CustomSetPropertyOnRenderable.ThrowExceptionsForMissingFiles;");
+                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.AddRenderableToManagers = global::Gum.Wireframe.CustomSetPropertyOnRenderable.AddRenderableToManagers;");
+                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.RemoveRenderableFromManagers = global::Gum.Wireframe.CustomSetPropertyOnRenderable.RemoveRenderableFromManagers;");
+
             }
+            else
+            {
+                if (hasSkia)
+                {
+                    codeBlock.Line("GumRuntime.InstanceSaveExtensionMethods.CustomObjectCreation = GetSkiaType;");
+                }
+            }
+
         }
 
         public override void GenerateDrawEarly(ICodeBlock codeBlock)
@@ -52,29 +71,50 @@ namespace GumPluginCore.CodeGeneration
 
         public override void GenerateInitialize(ICodeBlock codeBlock)
         {
-            var fileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
-            if (fileVersion >= (int)GluxVersions.HasFrameworkElementManager)
-            {
-                codeBlock.Line("FlatRedBall.FlatRedBallServices.AddManager(FlatRedBall.Forms.Managers.FrameworkElementManager.Self);");
-            }
+            // handled above in GumGame1CodeGeneratorEarly
+            //var fileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
+            //if (fileVersion >= (int)GluxVersions.HasFrameworkElementManager)
+            //{
+            //    codeBlock.Line("FlatRedBall.FlatRedBallServices.AddManager(FlatRedBall.Forms.Managers.FrameworkElementManager.Self);");
+            //}
 
-            if(hasSkia)
-            {
-                codeBlock.Line("GumRuntime.InstanceSaveExtensionMethods.CustomObjectCreation = GetSkiaType;");
-            }
+
+
+            //if(hasSkia)
+            //{
+            //    codeBlock.Line("GumRuntime.InstanceSaveExtensionMethods.CustomObjectCreation = GetSkiaType;");
+            //}
         }
 
         public override void GenerateClassScope(ICodeBlock codeBlock)
         {
-            if(hasSkia)
+            
+            if (hasSkia)
             {
                 var function = codeBlock.Function("RenderingLibrary.Graphics.IRenderable", "GetSkiaType", "string name");
                 var switchStatement = function.Switch("name");
-                switchStatement.CaseNoBreak("\"Arc\"").Line("return new SkiaPlugin.Renderables.RenderableArc();");
-                switchStatement.CaseNoBreak("\"ColoredCircle\"").Line("return new SkiaPlugin.Renderables.RenderableCircle();");
-                switchStatement.CaseNoBreak("\"RoundedRectangle\"").Line("return new SkiaPlugin.Renderables.RenderableRoundedRectangle();");
+                switchStatement.CaseNoBreak("\"Arc\"").Line("return new SkiaGum.Renderables.RenderableArc();");
+                switchStatement.CaseNoBreak("\"ColoredCircle\"").Line("return new SkiaGum.Renderables.RenderableCircle();");
+                switchStatement.CaseNoBreak("\"RoundedRectangle\"").Line("return new SkiaGum.Renderables.RenderableRoundedRectangle();");
                 function.Line("return null;");
             }
+
+
+            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+            if (hasCommon)
+            {
+                var function = codeBlock.Function("RenderingLibrary.Graphics.IRenderable", "GetRenderable", "string name, global::RenderingLibrary.ISystemManagers managers");
+                function.Line("var asBaseType = Gum.Wireframe.RuntimeObjectCreator.TryHandleAsBaseType(name, managers);");
+                if(hasSkia)
+                {
+                    var ifBlock = function.If("asBaseType == null");
+                    ifBlock.Line("asBaseType = GetSkiaType(name);");
+                }
+                function.Line("return asBaseType;");
+            }
+
+
         }
     }
 }

@@ -1,0 +1,16 @@
+{
+  "Tags": [
+    "GLUE"
+  ],
+  "Source": "GLUE",
+  "ReferencedFiles": [
+    {
+      "Name": "GumProject/Screens/OptionsScreenGum.gusx",
+      "IsSharedStatic": true,
+      "RuntimeType": "ChickenClicker.GumRuntimes.OptionsScreenGumRuntime",
+      "ProjectsToExcludeFrom": []
+    }
+  ],
+  "Name": "Screens\\OptionsScreen",
+  "CustomClassesForExport": []
+}

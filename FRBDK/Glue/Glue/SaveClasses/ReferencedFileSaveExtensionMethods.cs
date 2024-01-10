@@ -9,7 +9,6 @@ using FlatRedBall.Content;
 using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
 
 
-using FlatRedBall.Glue.Facades;
 using EditorObjects.Parsing;
 using FlatRedBall.Glue.Errors;
 using System.Windows.Forms;
@@ -122,20 +121,14 @@ namespace FlatRedBall.Glue.SaveClasses
         public static bool IsFileSourceForThis(this ReferencedFileSave instance, string fileName)
         {
             if (!string.IsNullOrEmpty(instance.SourceFile) &&
-                 FileManager.RemoveDotDotSlash( ObjectFinder.Self.MakeAbsoluteContent(instance.SourceFile) ).ToLower() == fileName)
+                 FileManager.RemoveDotDotSlash( ObjectFinder.Self.MakeAbsoluteContent(instance.SourceFile)).Equals(fileName, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
 
             if(instance.SourceFileCache != null)
             {
-                foreach (SourceReferencingFile srf in instance.SourceFileCache)
-                {
-                    if (srf.SourceFile == fileName)
-                    {
-                        return true;
-                    }
-                }
+                return instance.SourceFileCache.Any(srf => String.Equals(srf.SourceFile, fileName, StringComparison.OrdinalIgnoreCase));
             }
 
             return false;
@@ -204,6 +197,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     instance.CachedInstanceName = FileManager.RemovePath(instance.CachedInstanceName);
 
+                }
+
+                if(instance.CachedInstanceName.Length > 0 && char.IsDigit( instance.CachedInstanceName[0]))
+                {
+                    instance.CachedInstanceName = '_' + instance.CachedInstanceName;
                 }
 
             }

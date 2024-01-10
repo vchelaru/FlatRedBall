@@ -14,3 +14,8 @@ CollectionChanged,System.Collections.Specialized.NotifyCollectionChangedEventHan
 ResolutionOrOrientationChanged,System.EventHandler,FALSE,,"object sender, EventArgs e",FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged
 InitializeEvent,System.EventHandler,TRUE,,"object sender, EventArgs e",
 BeforeCollision,Action,FALSE,,,FlatRedBall.Math.Collision.CollisionManager.Self.BeforeCollision
+Died,"Action<decimal, IDamageArea>",FALSE,,"decimal damage, FlatRedBall.Entities.IDamageArea damageArea",
+ReactToDamageReceived,"Action<decimal, IDamageArea>",FALSE,,"decimal damage, FlatRedBall.Entities.IDamageArea damageArea",
+ReactToDamageDealt,"Action<decimal, IDamageable>",FALSE,,"decimal damage, FlatRedBall.Entities.IDamageable damageable",
+KilledDamageable,"Action<decimal, IDamageable>",FALSE,,"decimal damage, FlatRedBall.Entities.IDamageable damageable",
+RemovedByCollision,Action<IDamageable>,FALSE,,FlatRedBall.Entities.IDamageable damageable,

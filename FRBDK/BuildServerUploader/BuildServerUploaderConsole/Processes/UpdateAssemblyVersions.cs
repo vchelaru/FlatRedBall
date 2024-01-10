@@ -2,6 +2,8 @@
 using System.Globalization;
 using FlatRedBall.IO;
 using System.Collections.Generic;
+using BuildServerUploaderConsole.Data;
+using System.Linq;
 
 namespace BuildServerUploaderConsole.Processes
 {
@@ -19,13 +21,13 @@ namespace BuildServerUploaderConsole.Processes
         {
             string engineDirectory = DirectoryHelper.EngineDirectory;
 
-            List<string> folders = new List<string>();
-            folders.Add(engineDirectory + @"FlatRedBallXNA\");
-            folders.Add(engineDirectory + @"FlatRedBallMDX\");
+            List<string> engineFolders = new List<string>();
+            engineFolders.Add(engineDirectory + @"FlatRedBallXNA\");
+            engineFolders.Add(engineDirectory + @"FlatRedBallMDX\");
             
 
 
-            foreach (string folder in folders)
+            foreach (string folder in engineFolders)
             {
                 List<string> files = FileManager.GetAllFilesInDirectory(folder, "cs");
 
@@ -38,12 +40,16 @@ namespace BuildServerUploaderConsole.Processes
                     }
                 }
             }
-            //ModifyVersionInfo(engineDirectory + @"\FlatRedBallXNA\FlatRedBall\Properties\AssemblyInfo.cs", VersionString);
-            //Results.WriteMessage("XNA assembly version updated to " + VersionString);
 
-            //ModifyVersionInfo(engineDirectory + @"\FlatRedBallXNA\FlatRedBall.Content\Properties\AssemblyInfo.cs", VersionString);
-            //Results.WriteMessage("XNA content assembly version updated to " + VersionString);
-
+            // If we list a csproj, then update that:
+            foreach(var engine in AllData.Engines)
+            {
+                if(!string.IsNullOrEmpty(engine.EngineCSProjLocation))
+                {
+                    var csProjAbsolute = DirectoryHelper.CheckoutDirectory + engine.EngineCSProjLocation;
+                    ModifyCsprojAssemblyInfoVersion(csProjAbsolute, VersionString);
+                }
+            }
 
             //ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"\Glue\Glue\Properties\AssemblyInfo.cs", VersionString);
             ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\Glue\GlueFormsCore.csproj", VersionString);
@@ -51,6 +57,9 @@ namespace BuildServerUploaderConsole.Processes
 
             ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"AnimationEditor\PreviewProject\AnimationEditor.csproj", VersionString);
 
+            var net6Engine = AllData.Engines.First(item => item.EngineCSProjLocation?.Contains("FlatRedBallDesktopGLNet6.csproj") == true);
+            var templateLocation = net6Engine.TemplateCsProjFolder + "FlatRedBallDesktopGlNet6Template.csproj";
+            ModifyNugetVersionInAssembly(DirectoryHelper.TemplateDirectory + templateLocation, VersionString);
 
             Results.WriteMessage("Glue assembly versions updated to " + VersionString);
 
@@ -89,6 +98,25 @@ namespace BuildServerUploaderConsole.Processes
                         $"<Version>{versionString}</Version>");
             FileManager.SaveText(assemblyInfoText, csprojLocation);
 
+        }
+
+        private void ModifyNugetVersionInAssembly(string csprojLocation, string versionString)
+        {
+            if (System.IO.File.Exists(csprojLocation) == false)
+            {
+                throw new ArgumentException($"Could not find file {csprojLocation}");
+            }
+
+            string csprojText = FileManager.FromFileText(csprojLocation);
+
+            csprojText = System.Text.RegularExpressions.Regex.Replace(csprojText,
+                        "<PackageReference Include=\"FlatRedBallDesktopGLNet6\" Version=\"[0-9]*.[0-9]*.[0-9]*.[0-9]*\" />",
+                        $"<PackageReference Include=\"FlatRedBallDesktopGLNet6\" Version=\"{versionString}\" />");
+
+            Results.WriteMessage("Modified " + csprojLocation + $" to have FlatRedBall Nuget package {VersionString}");
+
+
+            FileManager.SaveText(csprojText, csprojLocation);
         }
 
     }

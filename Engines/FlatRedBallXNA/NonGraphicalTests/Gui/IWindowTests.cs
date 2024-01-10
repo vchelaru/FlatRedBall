@@ -29,6 +29,8 @@ namespace NonGraphicalTests.Gui
             get { throw new NotImplementedException(); }
         }
 
+
+
         public bool Enabled
         {
             get
@@ -219,12 +221,26 @@ namespace NonGraphicalTests.Gui
             }
         }
 
+        event WindowEvent IWindow.RemovedAsPushedWindow
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
 
+            remove
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public void Activity(FlatRedBall.Camera camera)
         {
 
         }
+
+        public void CallRemovedAsPushedWindow() { }
+        public void RemovedAsPushedWindow() { }
 
         public void CallRollOff()
         {

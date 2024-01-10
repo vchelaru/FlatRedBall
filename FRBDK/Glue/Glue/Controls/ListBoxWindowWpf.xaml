@@ -4,18 +4,24 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GlueFormsCore.Controls"
+        xmlns:localization="clr-namespace:Localization;assembly=Localization"
         mc:Ignorable="d"
         Title="" SizeToContent="Height" Width="400">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="DisplayTextLabel" TextWrapping="Wrap">This is the top row with information. Below is the list box, then the button stack</TextBlock>
-        <ListBox x:Name="ListBoxInstance" Grid.Row="1" MinHeight="120">
+        <TextBlock x:Name="DisplayTextLabel" TextWrapping="Wrap" Text="{x:Static localization:Texts.HintTopRowInformation}" />
+        <local:SearchBar x:Name="SearchBarInstance" Grid.Row="1" Visibility="Collapsed"></local:SearchBar>
+        <ListBox x:Name="ListBoxInstance" Grid.Row="2" MinHeight="120" ItemsSource="{Binding FilteredItems}">
         </ListBox>
-        <StackPanel MinHeight="20" x:Name="ButtonStackPanel" Grid.Row="2">
+        <StackPanel MinHeight="20" x:Name="AdditionalControlStackPanel" Grid.Row="3">
+        </StackPanel>
+        <StackPanel MinHeight="20" x:Name="ButtonStackPanel" Grid.Row="4">
         </StackPanel>
     </Grid>
 </Window>

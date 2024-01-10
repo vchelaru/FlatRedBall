@@ -88,6 +88,11 @@ namespace FlatRedBall.Math.Geometry
             return new Vector3((float)X, (float)Y, (float)Z);
         }
 
+        public Vector2 ToVector2()
+        {
+            return new Vector2((float)X, (float)Y);
+        }
+
         public override string ToString()
         {
             return string.Format("({0}, {1}, {2})", X, Y, Z);

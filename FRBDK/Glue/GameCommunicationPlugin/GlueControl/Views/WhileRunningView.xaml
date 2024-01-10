@@ -66,37 +66,6 @@
             </Button.ToolTip>
 
         </Button>
-
-        <Grid  Visibility="{Binding PauseButtonVisibility}" Margin="2,0,0,0">
-            <Button IsHitTestVisible="False"></Button>
-            <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal" Margin="3,0,3,0" >
-                <Button Height="18" Width="18" Click="SpeedDecreaseClicked" Background="Transparent" BorderBrush="Transparent">
-                    <Button.ToolTip>
-                        <ToolTip>
-                            <StackPanel>
-                                <TextBlock FontWeight="Bold">Slow Down</TextBlock>
-                                <TextBlock>Reudces game speed (makes it run in slow-motion)</TextBlock>
-                            </StackPanel>
-                        </ToolTip>
-                    </Button.ToolTip>
-                    <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/icon_minus.png"></Image>
-                </Button>
-                <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/SlowMotion.png" Height="16" Margin="0,0,-3,0"></Image>
-                <TextBlock VerticalAlignment="Center" Text="{Binding CurrentGameSpeed, FallbackValue=100%}" Margin="0,0,2,0"></TextBlock>
-                <Button Height="18" Width="18" Click="SpeedIncreaseClicked" Background="Transparent" BorderBrush="Transparent">
-                    <Button.ToolTip>
-                        <ToolTip>
-                            <StackPanel>
-                                <TextBlock FontWeight="Bold">Speed Up</TextBlock>
-                                <TextBlock>Increases game speed (makes it run in fast-forward)</TextBlock>
-                            </StackPanel>
-                        </ToolTip>
-                    </Button.ToolTip>
-                    <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/icon_plus.png"></Image>
-                </Button>
-            </StackPanel>
-            
-        </Grid>
         <Button VerticalAlignment="Center" Style="{DynamicResource ButtonStyleDark}" Margin="2,0,0,0" MinWidth="22"
                 Visibility="{Binding UnpauseButtonVisibility}"
                 
@@ -127,6 +96,39 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
+        <!--We used to only show the speed up/slow down UI when the game was running (not paused), but it's common
+            to pause the game and change the speed so it runs slower when unpausing-->
+        <Grid Margin="2,0,0,0">
+            <Button IsHitTestVisible="False"></Button>
+            <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal" Margin="3,0,3,0" >
+                <Button Height="18" Width="18" Click="SpeedDecreaseClicked" Background="Transparent" BorderBrush="Transparent">
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock FontWeight="Bold">Slow Down</TextBlock>
+                                <TextBlock>Reudces game speed (makes it run in slow-motion)</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </Button.ToolTip>
+                    <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/icon_minus.png"></Image>
+                </Button>
+                <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/SlowMotion.png" Height="16" Margin="0,0,-3,0"></Image>
+                <TextBlock VerticalAlignment="Center" Text="{Binding CurrentGameSpeed, FallbackValue=100%}" Margin="0,0,2,0"></TextBlock>
+                <Button Height="18" Width="18" Click="SpeedIncreaseClicked" Background="Transparent" BorderBrush="Transparent">
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock FontWeight="Bold">Speed Up</TextBlock>
+                                <TextBlock>Increases game speed (makes it run in fast-forward)</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </Button.ToolTip>
+                    <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/icon_plus.png"></Image>
+                </Button>
+            </StackPanel>
+            
+        </Grid>
+
         <Button VerticalAlignment="Center" Margin="2,0,0,0" Click="HandleStopClicked">
             <Image Source="/GameCommunicationPlugin;component/GlueControl/Icons/stop.png" Margin="1"></Image>
             <Button.ToolTip>

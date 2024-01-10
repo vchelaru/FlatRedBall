@@ -54,9 +54,7 @@ namespace OfficialPlugins.SongPlugin.ViewModels
         }
 
         [DependsOn(nameof(IsSetVolumeChecked))]
-        public Visibility VolumeSliderVisibility => IsSetVolumeChecked
-            ? Visibility.Visible
-            : Visibility.Collapsed;
+        public Visibility VolumeSliderVisibility => IsSetVolumeChecked.ToVisibility();
 
         public TimeSpan Duration
         {

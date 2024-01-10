@@ -628,7 +628,7 @@ namespace FlatRedBall.Math
         }
 
 
-        internal static bool IsOn3D<T>(T objectToTest, bool relativeToCamera, Ray mouseRay,
+        public static bool IsOn3D<T>(T objectToTest, bool relativeToCamera, Ray mouseRay,
             Camera camera,
             out Vector3 intersectionPoint) where T : IPositionable, IRotatable, IReadOnlyScalable
         {
@@ -731,12 +731,27 @@ namespace FlatRedBall.Math
 
         public static Vector3 Reflect(Vector3 vectorToReflect, Vector3 surfaceNormal)
         {
-            surfaceNormal.Normalize();
+            if(surfaceNormal != Vector3.Zero)
+            {
+                surfaceNormal.Normalize();
 
+                var dotProduct = Vector3.Dot(vectorToReflect, surfaceNormal);
 
-            Vector3 projected = surfaceNormal * Vector3.Dot(vectorToReflect, surfaceNormal);
-
-            return -(vectorToReflect - projected) + projected;
+                if(dotProduct < 0) // they are opposing
+                {
+                    Vector3 projected = surfaceNormal * dotProduct;
+                    return vectorToReflect - 2 * projected;
+                }
+                else
+                {
+                    return vectorToReflect;
+                }
+            }
+            // no reflection possible
+            else
+            {
+                return vectorToReflect;
+            }
 
         }
 
@@ -900,7 +915,7 @@ namespace FlatRedBall.Math
 
         public static float RegulateAngle(float angleToRegulate)
         {
-            angleToRegulate = angleToRegulate % ((float)System.Math.PI * 2);
+            angleToRegulate = angleToRegulate % MathHelper.TwoPi;
             while (angleToRegulate < 0)
                 angleToRegulate += (float)System.Math.PI * 2;
             return angleToRegulate;
@@ -908,26 +923,23 @@ namespace FlatRedBall.Math
 
         public static double RegulateAngle(double angleToRegulate)
         {
-            angleToRegulate = angleToRegulate % ((float)System.Math.PI * 2);
+            angleToRegulate = angleToRegulate % MathHelper.TwoPi;
             while (angleToRegulate < 0)
                 angleToRegulate += (float)System.Math.PI * 2;
             return angleToRegulate;
         }
 
-        #region XML Docs
         /// <summary>
         /// Keeps an angle between 0 and 2*PI.
         /// </summary>
         /// <param name="angleToRegulate">The angle to regulate.</param>
-        #endregion
         public static void RegulateAngle(ref float angleToRegulate)
         {
-            angleToRegulate = angleToRegulate % ((float)System.Math.PI * 2);
+            angleToRegulate = angleToRegulate % MathHelper.TwoPi;
             if (angleToRegulate < 0)
-                angleToRegulate += (float)System.Math.PI * 2;
+                angleToRegulate += MathHelper.TwoPi;
         }
 
-        #region XML Docs
         /// <summary>
         /// Rotates a point around another point by a given number of radians.
         /// </summary>
@@ -936,7 +948,6 @@ namespace FlatRedBall.Math
         /// <param name="xToRotate">X position to rotate (changes).</param>
         /// <param name="yToRotate">Y position to rotate (changes).</param>
         /// <param name="radiansToChangeBy">Radians to rotate by.</param>
-        #endregion
         public static void RotatePointAroundPoint(float xBase, float yBase, ref float xToRotate, ref float yToRotate, float radiansToChangeBy)
         {
 
@@ -954,14 +965,12 @@ namespace FlatRedBall.Math
             yToRotate = (float)(System.Math.Sin(angle) * distance + yBase);
         }
 
-        #region XML Docs
         /// <summary>
         /// Rotates a Point around another Point by a given number of radians.
         /// </summary>
         /// <param name="basePoint">Point to rotate around.</param>
         /// <param name="pointToRotate">Point to rotate (changes position).</param>
         /// <param name="radiansToChangeBy">Radians to rotate by.</param>
-        #endregion
         public static void RotatePointAroundPoint(Point basePoint, ref Point pointToRotate, float radiansToChangeBy)
         {
             double xDistance = pointToRotate.X - basePoint.X;
@@ -1207,9 +1216,18 @@ namespace FlatRedBall.Math
 
         public static void ScreenToAbsoluteDistance(int pixelX, int pixelY, out float x, out float y, float z, Camera camera)
         {
-            x = (MathFunctions.ForwardVector3.Z * (z - camera.Z) * camera.XEdge / 100.0f) * 2 * (float)pixelX / (float)FlatRedBallServices.ClientWidth;
-            // Y is inverted, so we multiply by negative 1
-            y = (MathFunctions.ForwardVector3.Z * (z - camera.Z) * camera.YEdge / 100.0f) * 2 * (float)pixelY / (float)FlatRedBallServices.ClientHeight;
+            var ratioX = pixelX / (float)camera.DestinationRectangle.Width;
+            var ratioY = pixelY / (float)camera.DestinationRectangle.Height;
+            if(camera.Orthogonal)
+            {
+                x = camera.OrthogonalWidth * ratioX;
+                y = camera.OrthogonalHeight * ratioY;
+            }
+            else
+            {
+                x = camera.RelativeXEdgeAt(z) * 2 * ratioX;
+                y = camera.RelativeYEdgeAt(z) * 2 * ratioY;
+            }
         }
 
         public static void SortAscending(List<int> integerList)

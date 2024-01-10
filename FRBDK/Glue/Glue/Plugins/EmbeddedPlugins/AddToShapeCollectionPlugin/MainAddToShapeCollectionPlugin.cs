@@ -99,7 +99,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
                 else
                 {
                     var viewModel = new AddObjectViewModel();
-
+                    viewModel.ForcedElementToAddTo = GlueState.Self.CurrentElement;
                     viewModel.ObjectName = tiw.Result;
                     viewModel.SourceType = SaveClasses.SourceType.FlatRedBallType;
                     viewModel.SelectedAti = ati;

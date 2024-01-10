@@ -3,11 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GlueFormsCore.Controls"
-             mc:Ignorable="d" 
-             Height="240" Width="550" WindowStartupLocation="CenterScreen">
-    <StackPanel Margin="12,0,12,12">
-        <TextBlock x:Name="TopLevelLabel" TextWrapping="Wrap" FontSize="22">Please wait...</TextBlock>
-        <TextBlock Margin="0,8,0,0" x:Name="SubLabel" TextWrapping="Wrap"></TextBlock>
-    </StackPanel>
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             mc:Ignorable="d" Title="{x:Static localization:Texts.FrbEditor}" WindowStyle="SingleBorderWindow" ResizeMode="NoResize"
+             Height="240" Width="550" WindowStartupLocation="CenterScreen" Icon="/Content/Icons/Icon.png">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="6*" />
+        </Grid.ColumnDefinitions>
+        <Image Source="/Content/Icons/Icon.png" VerticalAlignment="Top" Margin="15,14" />
+        <Rectangle Width="1" Fill="DarkGray" Margin="0,7" HorizontalAlignment="Left" Grid.Column="1" />
+        <StackPanel Margin="12,6,12,12" Grid.Column="1">
+            <TextBlock x:Name="TopLevelLabel" TextWrapping="Wrap" FontSize="22" Text="{x:Static localization:Texts.PleaseWait}" />
+            <TextBlock Margin="0,8,0,0" x:Name="SubLabel" TextWrapping="Wrap"></TextBlock>
+        </StackPanel>
+    </Grid>
 </Window>

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
+using System.Windows.Media;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
@@ -28,7 +29,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             this.IsEditable = true;
 
-            if(createChildrenNodes)
+            if (createChildrenNodes)
             {
                 FilesNode = new ReferencedFilesRootNodeViewModel(this, glueElement) { Text = "Files" };
                 Children.Add(FilesNode);
@@ -49,13 +50,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 Children.Add(CodeNode);
             }
 
-            if(glueElement is ScreenSave)
+            if (glueElement is ScreenSave)
             {
                 ImageSource = ScreenIcon;
             }
-            else if(glueElement is EntitySave)
+            else if (glueElement is EntitySave)
             {
-                if(string.IsNullOrEmpty(glueElement.BaseElement))
+                if (string.IsNullOrEmpty(glueElement.BaseElement))
                 {
                     ImageSource = EntityIcon;
                 }
@@ -76,40 +77,56 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             Text = glueElement.GetStrippedName();
 
-            if(Tag is ScreenSave asScreenSave)
+            switch (Tag)
             {
-                var startupScreen = GlueState.Self.CurrentGlueProject.StartUpScreen;
+                case ScreenSave asScreenSave:
+                {
+                    var startupScreen = GlueState.Self.CurrentGlueProject.StartUpScreen;
 
-                if(startupScreen == asScreenSave.Name)
-                {
-                    ImageSource = ScreenStartupIcon;
-                    FontWeight = FontWeights.Bold;
+                    if (startupScreen == asScreenSave.Name)
+                    {
+                        ImageSource = ScreenStartupIcon;
+                        FontWeight = FontWeights.Bold;
+                    }
+                    else
+                    {
+                        ImageSource = ScreenIcon;
+                        FontWeight = FontWeights.Normal;
+                    }
+
+                    break;
                 }
-                else
+                case EntitySave asEntitySave:
                 {
-                    ImageSource = ScreenIcon;
-                    FontWeight = FontWeights.Normal;
+                    var isDerived = !string.IsNullOrEmpty(asEntitySave.BaseEntity) &&
+                                    (asEntitySave.BaseEntity.StartsWith($"Entities\\", StringComparison.OrdinalIgnoreCase) ||
+                                     asEntitySave.BaseEntity.StartsWith($"Entities/", StringComparison.OrdinalIgnoreCase));
+
+                    ImageSource = isDerived ? EntityDerivedIcon : EntityIcon;
+                    break;
                 }
             }
 
-            if(treeNodeRefreshType == TreeNodeRefreshType.CustomVariables)
+            switch (treeNodeRefreshType)
             {
-                VariablesNode.RefreshTreeNodes(treeNodeRefreshType);
-            }
-            else if(treeNodeRefreshType == TreeNodeRefreshType.NamedObjects)
-            {
-                ObjectsNode.RefreshTreeNodes(treeNodeRefreshType);
-            }
-            else if(treeNodeRefreshType == TreeNodeRefreshType.StateSaves)
-            {
-                this.StatesNode.RefreshTreeNodes(treeNodeRefreshType);
-            }
-            else
-            {
-                // could add more here for the sake of performance, but only if needed
-                foreach(var node in Children)
+                case TreeNodeRefreshType.CustomVariables:
+                    VariablesNode.RefreshTreeNodes(treeNodeRefreshType);
+                    break;
+                case TreeNodeRefreshType.NamedObjects:
+                    ObjectsNode.RefreshTreeNodes(treeNodeRefreshType);
+                    break;
+                case TreeNodeRefreshType.StateSaves:
+                    this.StatesNode.RefreshTreeNodes(treeNodeRefreshType);
+                    break;
+                default:
                 {
-                    node.RefreshTreeNodes(treeNodeRefreshType);
+                    // could add more here for the sake of performance, but only if needed
+                    foreach (var node in Children)
+                    {
+                        node.RefreshTreeNodes(treeNodeRefreshType);
+                    }
+
+                    break;
                 }
             }
         }

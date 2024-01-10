@@ -20,6 +20,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
     public class PlayerJoinViewItem : FrameworkElement
     {
+        #region Fields/Properties
 
         ConnectedJoinedState connectedJoinedState;
 
@@ -96,6 +97,13 @@ namespace FlatRedBall.Forms.Controls.Games
                 }
             }
         }
+
+        public event EventHandler JoinedInput;
+        internal void CallJoinedInput() => JoinedInput?.Invoke(this, null);
+        public event EventHandler UnjoinedInput;
+        internal void CallUnjoinedInput() => UnjoinedInput?.Invoke(this, null);
+
+        #endregion
 
         public PlayerJoinViewItem() : base() { }
 

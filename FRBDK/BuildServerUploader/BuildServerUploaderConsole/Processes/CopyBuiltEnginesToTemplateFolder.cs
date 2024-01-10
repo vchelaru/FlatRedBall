@@ -34,41 +34,20 @@ namespace BuildServerUploaderConsole.Processes
                     string targetDirectory;
                     foreach(var engine in AllData.Engines)
                     {
-                        targetDirectory = engine.TemplateFolder + @"Libraries\" + engine.RelativeToLibrariesDebugFolder;
+                        targetDirectory = engine.TemplateCsProjFolder + @"Libraries\" + engine.RelativeToLibrariesDebugFolder;
 
                         foreach(var file in engine.DebugFiles)
                         {
                             Add(file, targetDirectory);
                         }
 
-                        targetDirectory = engine.TemplateFolder + @"Libraries\" + engine.RelativeToLibrariesReleaseFolder;
+                        targetDirectory = engine.TemplateCsProjFolder + @"Libraries\" + engine.RelativeToLibrariesReleaseFolder;
 
                         foreach (var file in engine.ReleaseFiles)
                         {
                             Add(file, targetDirectory);
                         }
                     }
-
-                    // June 2 2020
-                    // Glue plugin template
-                    // is broken anyway, no one
-                    // uses it. Now that we're on NET 
-                    // Core, the paths are different too
-                    // so let's just get rid of it.
-                    //string sourcePrefix = @"Glue\Glue\Bin\Debug\";
-                    //string destination = @"GluePluginTemplate\GluePluginTemplate\Libraries\XnaPc";
-                    //// Glue Plugin Template
-                    //AddFrbdk(sourcePrefix + "FlatRedBall.dll", destination);
-                    //AddFrbdk(sourcePrefix + "EditorObjectsXna.dll", destination);
-                    //AddFrbdk(sourcePrefix + "Glue.exe", destination);
-                    //AddFrbdk(sourcePrefix + "FlatRedBall.PropertyGrid.dll", destination);
-                    //AddFrbdk(sourcePrefix + "GlueSaveClasses.dll", destination);
-                    //AddFrbdk(sourcePrefix + "FlatRedBall.Plugin.dll", destination);
-
-                    
-                    //AddDirectory(sourcePrefix, @"GluePluginTemplate\TestWithGlue\Glue");
-
-                    
                 }
                 return mCopyInformation;
             }

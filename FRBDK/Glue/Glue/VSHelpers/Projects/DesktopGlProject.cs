@@ -65,7 +65,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             var returnValue = base.ProcessLink(path);
             // Linux is case-sensitive
-            return returnValue.ToLower();
+            return returnValue.ToLowerInvariant();
         }
     }
 }

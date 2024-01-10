@@ -7,7 +7,14 @@ using WpfDataUi.DataTypes;
 
 namespace OfficialPlugins.VariableDisplay.Data
 {
-    class FileInstanceMember : DataGridItem
+    public interface IFileInstanceMember
+    {
+        event Action View;
+
+        void OnView();
+    }
+
+    class FileInstanceMember : DataGridItem, IFileInstanceMember
     {
 
         public event Action View;

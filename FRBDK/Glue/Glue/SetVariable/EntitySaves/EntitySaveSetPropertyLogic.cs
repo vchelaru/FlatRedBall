@@ -16,12 +16,13 @@ using GlueFormsCore.Managers;
 using GlueFormsCore.SetVariable.EntitySaves;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
 
 namespace FlatRedBall.Glue.SetVariable
 {
     class EntitySaveSetPropertyLogic
     {
-        internal void ReactToEntityChangedProperty(string changedMember, object oldValue, EntitySave entitySave)
+        internal async void ReactToEntityChangedProperty(string changedMember, object oldValue, EntitySave entitySave)
         {
             entitySave = entitySave ?? GlueState.Self.CurrentEntitySave;
 
@@ -58,7 +59,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                     if (result == DialogResult.Yes)
                     {
-                        FactoryManager.Self.SetResetVariablesForEntitySave(entitySave);
+                        await FactoryManager.Self.SetResetVariablesForEntitySave(entitySave);
                     }
                 }
                 else // user set it to false
@@ -77,8 +78,8 @@ namespace FlatRedBall.Glue.SetVariable
                     }
                 }
 
-                FactoryCodeGenerator.AddGeneratedPerformanceTypes();
-                FactoryCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
+                FactoryElementCodeGenerator.AddGeneratedPerformanceTypes();
+                FactoryElementCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
             }
 
             #endregion
@@ -240,29 +241,25 @@ namespace FlatRedBall.Glue.SetVariable
 
                         if (nosEntitySave != null && nosEntitySave.ImplementsIVisible == false)
                         {
-                            MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                            var mbmb = new MultiButtonMessageBoxWpf();
                             mbmb.MessageText = entitySave + " implements IVisible, but its object " + nos + " does not.  Would would you like to do?";
 
                             mbmb.AddButton("Make " + nosEntitySave + " implement IVisible", DialogResult.Yes);
                             mbmb.AddButton("Ignore " + nos + " when setting Visible on " + entitySave, DialogResult.No);
                             mbmb.AddButton("Do nothing - this will likely cause compile errors so this must be fixed manually", DialogResult.Cancel);
 
-                            DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
+                            var result = mbmb.ShowDialog();
 
-                            if (result == DialogResult.Yes)
+                            if(result != null && mbmb.ClickedResult != null)
                             {
-                                nosEntitySave.ImplementsIVisible = true;
+                                var dialogResult = (DialogResult)mbmb.ClickedResult;
+                                if (dialogResult == DialogResult.Yes)
+                                {
+                                    nosEntitySave.ImplementsIVisible = true;
 
-                                GlueCommands.Self.GenerateCodeCommands
-                                    .GenerateElementAndReferencedObjectCode(nosEntitySave);
-                            }
-                            else if (result == DialogResult.No)
-                            {
-                                nos.IncludeInIVisible = false;
-                            }
-                            else if (result == DialogResult.Cancel)
-                            {
-                                // do nothing - the user better fix this!
+                                    GlueCommands.Self.GenerateCodeCommands
+                                        .GenerateElementAndReferencedObjectCode(nosEntitySave);
+                                }
                             }
                         }
                     }
@@ -283,8 +280,8 @@ namespace FlatRedBall.Glue.SetVariable
                     itemTypeAsEntity.ImplementsIVisible = true;
 
                     // Gotta regen this thing
-                    var entityForItem = ObjectFinder.Self.GetIElement(entitySave.ItemType);
-                    CodeWriter.GenerateCode(entityForItem);
+                    var entityForItem = ObjectFinder.Self.GetElement(entitySave.ItemType);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entityForItem);
                 }
             }
 
@@ -293,7 +290,7 @@ namespace FlatRedBall.Glue.SetVariable
 
         private static async void RegenerateAllContainersForNamedObjectsThatUseEntity(EntitySave entitySave)
         {
-            await TaskManager.Self.AddAsync(async () =>
+            await TaskManager.Self.AddAsync(() =>
             {
                 var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(entitySave);
                 var elementsToGenerate = new List<GlueElement>();
@@ -309,7 +306,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 foreach (var element in elementsToGenerate)
                 {
-                    await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 }
             }, nameof(RegenerateAllContainersForNamedObjectsThatUseEntity));
         }

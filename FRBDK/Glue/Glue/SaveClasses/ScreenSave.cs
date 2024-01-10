@@ -204,12 +204,29 @@ namespace FlatRedBall.Glue.SaveClasses
             return customVariable;
         }
 
+        // Vic says - Entities use JSON for cloning, but Screens still
+        // use XML. Should we migrate over to JSON? Not sure...
+        [Obsolete("Use CloneJson instead")]
         public ScreenSave Clone()
         {
-            return FileManager.CloneObject<ScreenSave>(this);
+            var clone = FileManager.CloneObject<ScreenSave>(this);
+
+            CopyVariablesAfterClone(clone);
+
+            return clone;
         }
 
-       
+        public ScreenSave CloneJson()
+        {
+            var serialized = JsonConvert.SerializeObject(this, Formatting.Indented);
+
+            var clone = JsonConvert.DeserializeObject<ScreenSave>(serialized);
+
+            CopyVariablesAfterClone(clone);
+
+            return clone;
+        }
+
         public object GetPropertyValue(string propertyName)
         {
             for (int i = 0; i < CustomVariables.Count; i++)

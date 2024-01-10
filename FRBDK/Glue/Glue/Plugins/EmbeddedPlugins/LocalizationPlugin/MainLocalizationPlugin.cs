@@ -1,10 +1,12 @@
 ﻿using EditorObjects.IoC;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using FlatRedBall.IO.Csv;
 using System;
 using System.Collections.Generic;
@@ -23,12 +25,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
             this.ReactToLoadedGlux += HandleGluxLoad;
             this.ReactToReferencedFileChangedValueHandler += HandleReactToRfsValueChanged;
             // This is if the user modifies the file while Glue is open
-            this.ReactToFileChangeHandler += HandleFileChanged;
+            this.ReactToFileChange += HandleFileChanged;
         }
 
-        private void HandleFileChanged(string fileName)
+        private void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)
         {
-            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(fileName);
+            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(filePath);
 
             if(rfs?.IsDatabaseForLocalizing == true)
             {

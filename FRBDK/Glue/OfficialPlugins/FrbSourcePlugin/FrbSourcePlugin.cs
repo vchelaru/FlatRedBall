@@ -16,6 +16,7 @@ using FlatRedBall.Glue.MVVM;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.FrbSourcePlugin.Managers;
+using System.Threading.Tasks;
 
 namespace PluginTestbed.GlobalContentManagerPlugins
 {
@@ -41,6 +42,11 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         public List<VSSolution.SharedProject> SharedProjects;
         public List<string> ProjectConfigurations;
         public List<string> SolutionConfigurations;
+
+        public override string ToString()
+        {
+            return ProjectName;
+        }
     }
 
     #endregion
@@ -48,14 +54,17 @@ namespace PluginTestbed.GlobalContentManagerPlugins
     [Export(typeof(PluginBase))]
     public class FrbSourcePlugin : PluginBase
     {
+        #region Fields/Properties
+
         private PluginTab Tab;
         private AddFrbSourceView control;
+        private AddFrbSourceViewModel ViewModel;
 
         private ToolStripMenuItem miLinkSource;
 
         public override string FriendlyName => "FRB Source";
 
-        public override Version Version => new Version(1, 0);
+        #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
@@ -69,7 +78,11 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         public override void StartUp()
         {
-            miLinkSource = this.AddMenuItemTo("Link Game to FRB Source", (_, _) => ShowGameToGlueSourceTab(), "Project");
+            miLinkSource = this.AddMenuItemTo(
+                Localization.Texts.LinkGameToFrbSource, 
+                Localization.MenuIds.LinkGameToFrbSourceId, 
+                ShowGameToGlueSourceTab, 
+                Localization.MenuIds.ProjectId);
 
             miLinkSource.Enabled = false;
 
@@ -84,7 +97,8 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         private void HandleGluxLoaded()
         {
-            if (GlueState.Self.CurrentMainProject is DesktopGlProject)
+            var mainProject = GlueState.Self.CurrentMainProject;
+            if (mainProject is DesktopGlProject or FnaDesktopProject or AndroidProject or IosMonogameProject or Xna4Project)
             {
                 miLinkSource.Enabled = true;
             }
@@ -94,23 +108,49 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         {
             CreateTabIfNecessary();
 
+            // Github for desktop has a standard folder for source files, so let's default to that if it exists
+
+            if (System.IO.Directory.Exists(AddSourceManager.DefaultFrbFilePath))
+            {
+                ViewModel.FrbRootFolder = AddSourceManager.DefaultFrbFilePath;
+            }
+            if (System.IO.Directory.Exists(AddSourceManager.DefaultGumFilePath))
+            {
+                ViewModel.GumRootFolder = AddSourceManager.DefaultGumFilePath;
+            }
+
+            var alreadyLinked = GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+            ViewModel.AlreadyLinkedMessageVisibility = alreadyLinked.ToVisibility();
+
             Tab.Show();
             Tab.Focus();
+
         }
 
         private void CreateTabIfNecessary()
         {
-            if(Tab == null)
+            if (Tab != null) 
+                return;
+
+            ViewModel = new AddFrbSourceViewModel();
+            
+            control = new AddFrbSourceView();
+            control.DataContext = ViewModel;
+            control.LinkToSourceClicked += async () =>
             {
-                control = new AddFrbSourceView();
-                control.LinkToSourceClicked += () =>
-                {
-                    AddSourceManager.HandleLinkToSourceClicked(control.ViewModel);
-                    Tab.Hide();
-                };
-                    Tab = CreateTab(control, "Add FRB Source");
-            }
+                await AddSourceManager.HandleLinkToSourceClicked(ViewModel);
+                Tab.Hide();
+            };
+            Tab = CreateTab(control, Localization.Texts.AddFrbSource);
         }
 
+        public bool HasFrbAndGumReposInDefaultLocation() => 
+            System.IO.Directory.Exists(AddSourceManager.DefaultFrbFilePath) &&
+            System.IO.Directory.Exists(AddSourceManager.DefaultGumFilePath);
+
+        public async Task AddFrbSourceToDefaultLocation()
+        {
+            await AddSourceManager.LinkToSourceUsingDefaults();
+        }
     }
 }

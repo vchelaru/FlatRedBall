@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using System.Windows.Forms;
 using FlatRedBall.Glue.Controls;
@@ -11,7 +10,6 @@ using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Reflection;
-using FlatRedBall.Instructions.Reflection;
 using System.ComponentModel;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Content.Instructions;
@@ -21,8 +19,6 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.IO;
-using System.Windows;
-using System.Collections.ObjectModel;
 using GlueFormsCore.Controls;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -32,8 +28,12 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using static FlatRedBall.Glue.Plugins.PluginManager;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Windows;
+using System.Windows.Media;
+using WpfDataUi.DataTypes;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -188,7 +188,8 @@ namespace FlatRedBall.Glue.Plugins
         public string ChangedMember { get; set; }
         public object OldValue { get; set; }
         public NamedObjectSave NamedObject { get; set; }
-
+        public bool RecordUndo { get; set; } = true;
+        public SetPropertyCommitType CommitType { get; set; } = SetPropertyCommitType.Full;
         public override string ToString()
         {
             return $"{NamedObject}.{ChangedMember}";
@@ -210,8 +211,8 @@ namespace FlatRedBall.Glue.Plugins
             set;
         }
 
-        public abstract string FriendlyName { get; }
-        public abstract Version Version { get; }
+        public virtual string FriendlyName => GetType().Name;
+        public virtual Version Version => new Version(1, 0);
         public virtual string GithubRepoOwner => null;
         public virtual string GithubRepoName => null;
         public virtual bool CheckGithubForNewRelease => false;
@@ -251,8 +252,11 @@ namespace FlatRedBall.Glue.Plugins
         /// <summary>
         /// Delegate raised whenever a property on either a variable or an element has changed.
         /// </summary>
+        /// <remarks>
+        /// New plugins should use ReactToChangedNamedObjectVariableList instead if they intend to handle variables specifically
+        /// </remarks>
         public ReactToChangedPropertyDelegate ReactToChangedPropertyHandler { get; protected set; }
-        public Action<List<NamedObjectSaveVariableChange>> ReactToChangedNamedObjectVariableList { get; protected set; }
+        public Action<List<NamedObjectSavePropertyChange>> ReactToChangedNamedObjectPropertyList { get; protected set; }
         [Obsolete("Use ReactToFileChange")]
         public ReactToFileChangeDelegate ReactToFileChangeHandler { get; protected set; }
         public Action<FilePath, FileChangeType> ReactToFileChange { get; protected set; }
@@ -262,7 +266,19 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action ReactToChangedStartupScreen { get; protected set; }
         public Action<FilePath> ReactToCodeFileChange { get; protected set; }
+
+        /// <summary>
+        /// Delegate raised when a tree node is selected. If multiple tree nodes are selected, only the first is passed
+        /// to this delegate. For multi-select support, use ReactToItemsSelected;
+        /// </summary>
         public ReactToItemSelectDelegate ReactToItemSelectHandler { get; protected set; }
+
+        /// <summary>
+        /// Delegate raised when the tree node selection changes. The argument list is all of the currently-selected tree nodes.
+        /// </summary>
+        public Action<List<ITreeNode>> ReactToItemsSelected { get; protected set; }
+
+
         /// <summary>
         /// Delegate raised when a NamedObjectSave's variable or property changed. 
         /// </summary>
@@ -387,8 +403,10 @@ namespace FlatRedBall.Glue.Plugins
         public AdjustDisplayedCustomVariableDelegate AdjustDisplayedCustomVariable { get; protected set; }
 
         /// <summary>
-        /// Adjusts the properties for the selected NamedObject (not Variables window)
+        /// Adjusts the properties for the selected NamedObject (not Variables window).
         /// </summary>
+        /// <remarks>
+        /// To modify variables, the best way is to change the AssetTypeInfo. There is (currently) no way to dynamically add/remove variables from the property grid.</remarks>
         public AdjustDisplayedNamedObjectDelegate AdjustDisplayedNamedObject { get; protected set; }
 
         public Func<IElement, IEnumerable<VariableDefinition>> GetVariableDefinitionsForElement;
@@ -455,6 +473,8 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action ReactToCtrlF;
 
+        public Action<System.Windows.Input.Key> ReactToCtrlKey;
+
         public Action ReactToGlobalTimer;
 
         public Action<StateSaveCategory, string, StateCategoryVariableAction> ReactToStateCategoryExcludedVariablesChanged;
@@ -467,12 +487,14 @@ namespace FlatRedBall.Glue.Plugins
         public Action<string, string> ReactToEntityJsonLoad;
         public Action<string> ReactToGlueJsonLoad;
 
+        public Action<int?> ReactToSelectedSubIndexChanged;
+
         public event Action<IPlugin, string, string> ReactToPluginEventAction;
         public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
         protected void ReactToPluginEvent(string eventName, string payload)
-        { 
-        
-            if(ReactToPluginEventAction != null)
+        {
+
+            if (ReactToPluginEventAction != null)
                 ReactToPluginEventAction(this, eventName, payload);
         }
 
@@ -483,6 +505,7 @@ namespace FlatRedBall.Glue.Plugins
                 ReactToPluginEventAction(this, eventName, JsonConvert.SerializeObject(payload));
         }
 
+        public Action<CustomVariable> TryAssignPreferredDisplayerFromName;
 
         private ConcurrentDictionary<Guid, string> _pendingRequests = new ConcurrentDictionary<Guid, string>();
         protected async Task<string> ReactToPluginEventWithReturn(string eventName, string payload)
@@ -507,35 +530,56 @@ namespace FlatRedBall.Glue.Plugins
             return result2;
         }
 
+        /// <summary>
+        /// Raised whenever an object is reordered. The object may be a NamedObjectSave, StateSave, or CustomVariable. The integer values are
+        /// oldIndex, newIndex, respectively.
+        /// </summary>
+        public Func<object, int, int, Task> ReactToObjectReordered;
+
+        /// <summary>
+        /// Raised to determine if a plugin should handle a hotkey. A plugin should return true if it has its own hotkey handling given
+        /// its current state, such as if a control has focus.
+        /// </summary>
+        public Func<bool> IsHandlingHotkeys;
+
         #endregion
 
         public abstract void StartUp();
 
-        public abstract bool ShutDown(PluginShutDownReason shutDownReason);
+        public virtual bool ShutDown(PluginShutDownReason shutDownReason)
+        {
+            UnregisterAllCodeGenerators();
+            UnregisterAssetTypeInfos();
+            this.RemoveAllMenuItems();
+            return true;
+        }
 
         #region Menu items
 
-        protected ToolStripMenuItem AddTopLevelMenuItem(string whatToAdd)
+        protected ToolStripMenuItem AddTopLevelMenuItem(string whatToAdd, string id)
         {
             ToolStripMenuItem menuItem = new ToolStripMenuItem(whatToAdd);
+            menuItem.Name = id;
             GlueGui.MenuStrip.Items.Add(menuItem);
             return menuItem;
         }
 
-        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, EventHandler eventHandler, string container)
+        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, string whatToAddId, EventHandler eventHandler, string container)
         {
-            return AddMenuItemTo(whatToAdd, eventHandler, container, -1);
+            return AddMenuItemTo(whatToAdd, whatToAddId, eventHandler, container, -1);
         }
 
-        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, Action action, string container)
+        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, string whatToAddId, Action action, string container)
         {
-            return AddMenuItemTo(whatToAdd, (not, used) => action?.Invoke(), container, -1);
+            return AddMenuItemTo(whatToAdd, whatToAddId, (not, used) => action?.Invoke(), container, -1);
         }
 
-        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, EventHandler eventHandler, string container, int preferredIndex)
+        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, string whatToAddId, EventHandler eventHandler, string container, int preferredIndex)
         {
-            ToolStripMenuItem menuItem = new ToolStripMenuItem(whatToAdd, null, eventHandler);
-            ToolStripMenuItem itemToAddTo = GetItem(container);
+            var menuItem = new ToolStripMenuItem(whatToAdd, null, eventHandler);
+            menuItem.Name = whatToAddId;
+            var itemToAddTo = GetItem(container);
+            Debug.Assert(itemToAddTo != null);
             toolStripItemsAndParents.Add(menuItem, itemToAddTo);
 
 
@@ -557,7 +601,7 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (ToolStripMenuItem item in GlueGui.MenuStrip.Items)
             {
-                if (item.Text == name)
+                if (item.Name == name)
                 {
                     return item;
                 }
@@ -580,6 +624,8 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Toolbar
 
+        static SolidColorBrush ToolbarBackgroundBrush = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
+
         protected void AddToToolBar(System.Windows.Controls.UserControl control, string toolbarName)
         {
             var tray = PluginManager.ToolBarTray;
@@ -589,15 +635,53 @@ namespace FlatRedBall.Glue.Plugins
             if (toAddTo == null)
             {
                 toAddTo = new System.Windows.Controls.ToolBar();
-
+                toAddTo.Loaded += Toolbar_Loaded;
                 toAddTo.Name = toolbarName;
                 tray.ToolBars.Add(toAddTo);
             }
 
-            control.Padding = new System.Windows.Thickness(3, 0, 3, 0);
+            if (tray.ToolBars.Count == 1 && toAddTo.Items.Count == 0)
+            {
+                // Align first item with the other main window panels
+                control.Margin = new System.Windows.Thickness(1, 0, 3, 0);
+            }
+            else
+            {
+                control.Margin = new System.Windows.Thickness(3, 0, 3, 0);
+            }
 
-            toAddTo.Items.Add(control);
+            // Remove default color for background
+            control.Background = ToolbarBackgroundBrush;
+            control.BorderBrush = ToolbarBackgroundBrush;
 
+            if(control.Parent == null)
+            {
+                toAddTo.Items.Add(control);
+
+            }
+
+        }
+
+        private void Toolbar_Loaded(object sender, RoutedEventArgs e)
+        {
+            // This removes the overflow buttons at the end of the toolbars
+            System.Windows.Controls.ToolBar toolBar = sender as System.Windows.Controls.ToolBar;
+
+            var overflowGrid = toolBar.Template.FindName("OverflowGrid", toolBar) as FrameworkElement;
+            if (overflowGrid != null)
+            {
+                overflowGrid.Visibility = Visibility.Collapsed;
+            }
+
+            var mainPanelBorder = toolBar.Template.FindName("MainPanelBorder", toolBar) as FrameworkElement;
+            if (mainPanelBorder != null)
+            {
+                mainPanelBorder.Margin = new Thickness(0);
+            }
+
+            // Remove default color for background
+            toolBar.Background = ToolbarBackgroundBrush;
+            toolBar.BorderBrush = ToolbarBackgroundBrush;
         }
 
         protected bool RemoveFromToolbar(System.Windows.Controls.UserControl control, string toolbarName)
@@ -683,7 +767,7 @@ namespace FlatRedBall.Glue.Plugins
         {
             // see if it already exists
             var alreadyExists = AddedAssetTypeInfos.Any(item => item.QualifiedRuntimeTypeName.QualifiedType == ati.QualifiedRuntimeTypeName.QualifiedType);
-            if(!alreadyExists)
+            if (!alreadyExists)
             {
                 AddedAssetTypeInfos.Add(ati);
                 AvailableAssetTypes.Self.AddAssetType(ati);

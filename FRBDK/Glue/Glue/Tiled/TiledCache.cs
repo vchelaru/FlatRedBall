@@ -114,6 +114,8 @@ namespace FlatRedBall.Glue.Tiled
                 dictionary[item.Key] = item.Value;
             }
 
+            List<string> tmxErrors = new List<string>();
+
             Parallel.ForEach(tmxFiles, fileName =>
             {
                 if (!CachedTiledMapSaves.ContainsKey(fileName) && fileName.Exists())
@@ -126,7 +128,7 @@ namespace FlatRedBall.Glue.Tiled
                     }
                     catch (Exception e) 
                     {
-                        GlueCommands.Self.PrintError($"Could not load TMX file {fileName} because of error: {e.ToString()}");
+                        tmxErrors.Add($"Could not load TMX file {fileName} because of error: {e.ToString()}");
                     }
                     if(tms != null)
                     {
@@ -137,6 +139,14 @@ namespace FlatRedBall.Glue.Tiled
 
                 }
             });
+
+            foreach (var error in tmxErrors)
+            {
+                // PrintError was messing with the parallel loop making
+                // it hang indeterminately when the tmx wasn't loading
+                // so we move it outside.
+                GlueCommands.Self.PrintError(error);
+            }
 
             CachedTiledMapSaves.Clear();
             foreach (var kvp in dictionary)
@@ -247,7 +257,7 @@ namespace FlatRedBall.Glue.Tiled
             }
         }
 
-        public CroppedBitmap GetBitmapForStandardTilesetId(int tileId)
+        public CroppedBitmap GetBitmapForStandardTilesetId(int tileId, string tileType)
         {
             if(standardTilesetImage == null)
             {
@@ -255,14 +265,23 @@ namespace FlatRedBall.Glue.Tiled
             }
 
             var unwrappedX = tileId * 16;
-            var y = 16 * (unwrappedX / (int)standardTilesetImage.Width);
-            var x = unwrappedX % (int)standardTilesetImage.Width;
+            var y = 16 * (unwrappedX / (int)standardTilesetImage.PixelWidth);
+            var x = unwrappedX % (int)standardTilesetImage.PixelWidth;
 
             CroppedBitmap croppedBitmap = new CroppedBitmap();
-            croppedBitmap.BeginInit();
-            croppedBitmap.SourceRect = new Int32Rect(x, y, 16, 16);
-            croppedBitmap.Source = standardTilesetImage;
-            croppedBitmap.EndInit();
+
+            try
+            {
+                croppedBitmap.BeginInit();
+                croppedBitmap.SourceRect = new Int32Rect(x, y, 16, 16);
+                croppedBitmap.Source = standardTilesetImage;
+                croppedBitmap.EndInit();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error creating cropped bitmap at X,Y {x},{y} for tile ID {tileId} with type {tileType}");
+            }
+
 
             return croppedBitmap;
         }

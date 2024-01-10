@@ -614,6 +614,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 mTimeJumpPushed = CurrentTime;
                 this.YVelocity = CurrentMovement.JumpVelocity;
                 ValuesJumpedWith = CurrentMovement;
+                mIsOnGround = false;
 
                 mCanContinueToApplyJumpToHold = true;
 
@@ -1198,7 +1199,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 return false;
             }
 
-            var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(element);
+            var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(element as GlueElement);
 
             return allBase.Any(GetIfIsPlatformer);
         }

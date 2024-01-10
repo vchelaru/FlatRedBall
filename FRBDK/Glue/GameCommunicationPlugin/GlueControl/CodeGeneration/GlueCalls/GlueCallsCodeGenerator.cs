@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls.GenerationConfiguration;
+using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 
 namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
 {
@@ -20,9 +21,29 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
 
         public static void GenerateAll()
         {
-            foreach(var item in GlueCallsGenerated)
+            foreach (var item in GlueCallsGenerated)
             {
                 SaveGlueCommunicationGeneratedFile(item.Key, item.Value);
+            }
+        }
+
+        public static void RemoveAll()
+        {
+            var names = GlueCallsGenerated.Keys.ToArray();
+            for (int i = 0; i < names.Length; i++)
+            {
+                string key = names[i];
+                var noCs = key.Substring(0, key.Length - 3);
+                var withSlashes = noCs.Replace(".", "/");
+                var withGenerated = withSlashes + ".Generated.cs";
+
+                FilePath absoluteFile = GlueState.Self.CurrentGlueProjectDirectory + "GlueControl/" + withGenerated;
+
+                var shouldSave = i == names.Length - 1;
+
+                GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteFile, shouldSave);
+
+
             }
         }
 
@@ -78,7 +99,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
             bldr.AppendLine();
             bldr.AppendLine("   {");
 
-            if(generationOptions.AddStaticSelfReference)
+            if (generationOptions.AddStaticSelfReference)
             {
                 bldr.AppendLine($"       public static {generationOptions.Name} Self {{ get; }}");
                 bldr.AppendLine($"       static {generationOptions.Name}() => Self = new {generationOptions.Name}();");
@@ -86,24 +107,33 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
 
             foreach (var prop in generationOptions.Properties)
             {
-                if(!string.IsNullOrEmpty(prop.GetSimpleBody) || !string.IsNullOrEmpty(prop.GetBody))
+
+                if (!string.IsNullOrEmpty(prop.GetSimpleBody) || !string.IsNullOrEmpty(prop.GetBody) || prop.IsAutomaticProperty)
                 {
-                    bldr.AppendLine($"      public {prop.ReturnType} {prop.Name}");
-                    bldr.AppendLine($"      {{");
-                    if(!string.IsNullOrEmpty(prop.GetSimpleBody))
+                    var propertyBlock = new CodeBlockProperty(null, $"public {prop.ReturnType}", prop.Name);
+                    if (prop.IsAutomaticProperty)
                     {
-                        bldr.AppendLine($"          get => {prop.GetSimpleBody};");
+                        propertyBlock.AutoGet();
+                        propertyBlock.AutoSet();
+
+                    }
+                    else if (!string.IsNullOrEmpty(prop.GetSimpleBody))
+                    {
+                        propertyBlock.Get().Line($"return {prop.GetSimpleBody};");
+                        //bldr.AppendLine($"          get => {prop.GetSimpleBody};");
                     }
                     else
                     {
-                        bldr.AppendLine($"           get {{");
-                        bldr.AppendLine(prop.GetBody);
-                        bldr.AppendLine($"          }}");
+                        propertyBlock.Get().Line(prop.GetBody);
                     }
-                    bldr.AppendLine($"      }}");
+
+
+                    bldr.AppendLine(propertyBlock.ToString());
                 }
 
-                if(prop.SetMethod != null)
+
+
+                if (prop.SetMethod != null)
                 {
                     var m = prop.SetMethod;
 
@@ -132,16 +162,16 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
                         first = false;
                     }
 
-                    bldr.Append($")");
+                    bldr.AppendLine($")");
                     bldr.AppendLine($"      {{");
-                    bldr.Append($"          var parameter = new GlueCallsClassGenerationManager.GlueParameters {{ Value = {m.Parameters[0].Name}");
+                    bldr.AppendLine($"          var parameter = new GlueCallsClassGenerationManager.GlueParameters {{ Value = {m.Parameters[0].Name}");
 
-                    if (m.Parameters[0].Dependencies.Length > 0)
+                    if (m.Parameters[0].Dependencies?.Length > 0)
                     {
                         bldr.Append($", Dependencies = new Dictionary<string, object> {{");
 
                         bool firstD = true;
-                        foreach(var d in m.Parameters[0].Dependencies)
+                        foreach (var d in m.Parameters[0].Dependencies)
                         {
                             if (!firstD)
                                 bldr.Append($",");
@@ -153,16 +183,17 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
                         bldr.Append($"}}");
                     }
 
-                    bldr.Append($"}};");
+                    bldr.AppendLine($"}};");
                     bldr.AppendLine();
                     bldr.AppendLine();
 
                     bldr.AppendLine($"          return await GlueCallsClassGenerationManager.ConvertToPropertyCallToGame(nameof({prop.Name}), typeof({prop.ReturnType}), parameter, new GlueCallsClassGenerationManager.CallPropertyParameters");
                     bldr.AppendLine($"          {{");
-                    bldr.AppendLine($"              ReturnToPropertyType = {prop.ReturnToPropertyType.ToString().ToLower()}");
+                    bldr.AppendLine($"              ReturnToPropertyType = {prop.ReturnToPropertyType.ToString().ToLowerInvariant()}");
                     bldr.AppendLine($"          }});");
                     bldr.AppendLine($"      }}");
                 }
+
             }
 
             foreach (var m in generationOptions.Methods)

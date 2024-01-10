@@ -96,8 +96,9 @@ namespace FlatRedBall.IO.Csv
 
             T runtimeCsvRepresentation = null;
 
-            string extension = FileManager.GetExtension(fileName).ToLower();
-            if (extension == "csv" || extension == "txt")
+            var extension = FileManager.GetExtension(fileName);
+            if (string.Equals(extension, "csv", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(extension, "txt", StringComparison.OrdinalIgnoreCase))
             {
 #if MONOGAME
                 

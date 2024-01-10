@@ -1,24 +1,13 @@
-﻿using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.MVVM;
+﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.IO;
 using GameCommunicationPlugin.GlueControl.CommandSending;
-using GameCommunicationPlugin.GlueControl.ViewModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TMXGlueLib;
 
 namespace GameCommunicationPlugin.GlueControl.Views
@@ -33,18 +22,12 @@ namespace GameCommunicationPlugin.GlueControl.Views
         Dictionary<int, CroppedBitmap> CroppedBitmaps = new Dictionary<int, CroppedBitmap>();
 
         List<ToggleButton> tileToggleButtons = new List<ToggleButton>();
-        private CommandSender _commandSender;
 
         #endregion
 
         public EditingToolsView()
         {
             InitializeComponent();
-        }
-
-        public EditingToolsView(CommandSender commandSender) : this()
-        {
-            _commandSender = commandSender;
         }
 
         public void HandleGluxUnloaded()
@@ -57,23 +40,38 @@ namespace GameCommunicationPlugin.GlueControl.Views
             //var filePath = asdf;
             var tilesetImage = GlueState.Self.TiledCache.StandardTilesetImage;
             var tileset = GlueState.Self.TiledCache.StandardTileset;
-            if (tilesetImage != null)
+
+            List<mapTilesetTile> tilesWithType = GetTilesWithType(tilesetImage, tileset);
+
+            foreach (var tile in tilesWithType)
             {
-                foreach(var tile in tileset.Tiles)
-                {
-                    if(!string.IsNullOrEmpty(tile.Type))
-                    {
-                        var button = CreateButtonForTilesetTile(tile, tilesetImage);
-                        button.Visibility = Visibility.Collapsed;
-                    }
-                }
+                var button = CreateButtonForTilesetTile(tile, tilesetImage);
+                button.Visibility = Visibility.Collapsed;
             }
 
         }
 
+        private static List<mapTilesetTile> GetTilesWithType(BitmapImage tilesetImage, Tileset tileset)
+        {
+            List<mapTilesetTile> tilesWithType = new List<mapTilesetTile>();
+
+            if (tilesetImage != null)
+            {
+                foreach (var tile in tileset.Tiles)
+                {
+                    if (!string.IsNullOrEmpty(tile.Type))
+                    {
+                        tilesWithType.Add(tile);
+                    }
+                }
+            }
+
+            return tilesWithType;
+        }
+
         private ToggleButton CreateButtonForTilesetTile(mapTilesetTile tile, BitmapImage standardTilesetImage)
         {
-            CroppedBitmap croppedBitmap = GlueState.Self.TiledCache.GetBitmapForStandardTilesetId(tile.id);
+            CroppedBitmap croppedBitmap = GlueState.Self.TiledCache.GetBitmapForStandardTilesetId(tile.id, tile.Type);
 
             var button = new ToggleButton();
             button.Tag = tile;
@@ -114,7 +112,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
 
                 if(currentElement == null)
                 {
-                    currentElement = await _commandSender.GetCurrentInGameScreen();
+                    currentElement = await CommandSender.Self.GetCurrentInGameScreen();
                 }
                 if (currentElement != null)
                 {
@@ -148,11 +146,25 @@ namespace GameCommunicationPlugin.GlueControl.Views
                         var properties = item.Properties;
                         var collisionCreationOptions = properties.GetValue("CollisionCreationOptions");
                         var type = properties.GetValue<string>("CollisionTileTypeName");
-                        if (collisionCreationOptions?.ToString() == "FromType" || collisionCreationOptions?.ToString() == "4")
+                        var tmxCollisionName = properties.GetValue<string>("TmxCollisionName");
+
+                        if (collisionCreationOptions?.ToString() == "FromType" || 
+                            // FromType = 4
+                            collisionCreationOptions?.ToString() == "4" ||
+                            // FromMapCollision = 6
+                            collisionCreationOptions?.ToString() == "6" 
+                            )
                         {
                             var tilesetTile = button.Tag as mapTilesetTile;
-                            return tilesetTile.Type == type;
 
+                            if(!string.IsNullOrEmpty(type))
+                            {
+                                return tilesetTile.Type == type;
+                            }
+                            else
+                            {
+                                return tilesetTile.Type == tmxCollisionName;
+                            }
                         }
                     }
                     return false;

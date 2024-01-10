@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RenderingLibrary.Graphics;
 
 namespace GumPluginCore.Managers
 {
@@ -62,7 +63,6 @@ namespace GumPluginCore.Managers
                 AddGradientVariables(filledCircleState);
 
                 AddDropshadowVariables(filledCircleState);
-
 
                 AddStrokeAndFilledVariables(filledCircleState);
 
@@ -144,6 +144,25 @@ namespace GumPluginCore.Managers
 
                 AddVariableReferenceList(roundedRectangleState);
                 Gum.Managers.StandardElementsManager.Self.DefaultStates.Add("RoundedRectangle", roundedRectangleState);
+            }
+
+
+            {
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //                                                       Canvas                                                       //
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                var canvasState = new StateSave();
+                canvasState.Name = "Default";
+                AddVisibleVariable(canvasState);
+
+                StandardElementsManager.AddPositioningVariables(canvasState);
+                StandardElementsManager.AddDimensionsVariables(canvasState, 100, 100,
+                    StandardElementsManager.DimensionVariableAction.ExcludeFileOptions);
+
+                AddVariableReferenceList(canvasState);
+
+                Gum.Managers.StandardElementsManager.Self.DefaultStates.Add("Canvas", canvasState);
             }
 
         }

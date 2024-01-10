@@ -116,4 +116,5 @@
     <BaseType>Controls/TextBox</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
+  <Behaviors />
 </ScreenSave>

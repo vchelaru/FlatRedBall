@@ -4,6 +4,7 @@
 using FlatRedBall;
 using FlatRedBall.Entities;
 using FlatRedBall.Graphics;
+using FlatRedBall.Input;
 using FlatRedBall.Gui;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
@@ -15,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GlueControl.Managers;
+using GlueControl.Models;
 
 namespace GlueControl.Editing
 {
@@ -38,10 +40,6 @@ namespace GlueControl.Editing
         public static void GetItemsOver(List<INameable> currentEntities, List<INameable> itemsOverToFill, List<ISelectionMarker> currentSelectionMarkers,
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
-            if (GuiManager.Cursor.SecondaryPush)
-            {
-                int m = 3;
-            }
             if (itemsOverToFill.Count > 0)
             {
                 itemsOverToFill.Clear();
@@ -49,18 +47,18 @@ namespace GlueControl.Editing
 
             INameable objectOver = null;
 
-            var ray = GuiManager.Cursor.GetRay();
+            var ray = InputManager.Mouse.GetMouseRay(Camera.Main);
 
             if (currentEntities.Count > 0 && punchThrough == false)
             {
                 // Vic asks - why do we use the the current entities rather than the markers?
                 var currentObjectOver = currentEntities.FirstOrDefault(item =>
                 {
-                    return item is PositionedObject asPositionedObject && IsCursorOver(item as PositionedObject, ray);
+                    return item is PositionedObject asPositionedObject && IsRayIntersecting(item as PositionedObject, ray);
                 });
                 if (currentObjectOver == null)
                 {
-                    var markerOver = currentSelectionMarkers.FirstOrDefault(item => item.IsCursorOverThis());
+                    var markerOver = currentSelectionMarkers.FirstOrDefault(item => item.IsMouseOverThis());
                     if (markerOver != null)
                     {
                         var index = currentSelectionMarkers.IndexOf(markerOver);
@@ -88,11 +86,10 @@ namespace GlueControl.Editing
                     {
                         if (IsSelectable(objectAtI))
                         {
-                            if (IsCursorOver(objectAtI, ray))
+                            if (IsRayIntersecting(objectAtI, ray))
                             {
-                                var nos =
-                                    GlueState.Self.CurrentElement?.AllNamedObjects.FirstOrDefault(
-                                        item => item.InstanceName == objectAtI.Name);
+                                var allNamedObjects = GlueState.Self.CurrentElement.GetAllNamedObjectsRecurisvely();
+                                var nos = allNamedObjects.FirstOrDefault(item => item.InstanceName == objectAtI.Name);
 
                                 // don't select it if it is locked
                                 var isLocked = nos?.IsEditingLocked == true;
@@ -157,20 +154,20 @@ namespace GlueControl.Editing
                     }
                 }
             }
-
-            if (objectOver != null)
+            // If doing a rectangle selection, no need to also add the item over, it will be part of the rectangle:
+            else if (objectOver != null)
             {
                 itemsOverToFill.Add(objectOver);
             }
         }
 
-        internal static void DoDragSelectLogic()
+        internal static void DoDragSelectLogic(bool gameBecameActive)
         {
-            var cursor = GuiManager.Cursor;
+            var mouse = InputManager.Mouse;
 
             PerformedRectangleSelection = false;
 
-            if (cursor.PrimaryDown == false && !cursor.PrimaryClick)
+            if (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) == false && !mouse.ButtonReleased(Mouse.MouseButtons.LeftButton))
             {
                 LeftSelect = null;
                 RightSelect = null;
@@ -178,11 +175,23 @@ namespace GlueControl.Editing
                 BottomSelect = null;
             }
 
-            if (cursor.PrimaryPush)
+            var effectivePush = mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) ||
+                (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && gameBecameActive);
+
+            if (effectivePush)
             {
-                if (FlatRedBallServices.Game.IsActive)
+                var isCursorUsingMouse = FlatRedBall.Gui.GuiManager.Cursor.DevicesControllingCursor.Contains(mouse);
+
+                // We can use the cursor to tell if the mouse is over a FRB window, but only
+                // if the cursor and mouse are the same thing. If the cursor is not the mouse,
+                // then the mouse and cursor may not be in the same spot, so we can't use the WindowOver check
+                bool isOverWindow = isCursorUsingMouse &&
+                    FlatRedBall.Gui.GuiManager.Cursor.WindowOver != null;
+
+
+                if (FlatRedBallServices.Game.IsActive && !isOverWindow)
                 {
-                    PushStartLocation = cursor.WorldPosition;
+                    PushStartLocation = new Vector2(mouse.WorldXAt(0), mouse.WorldYAt(0));
                     LeftSelect = null;
                     RightSelect = null;
                     TopSelect = null;
@@ -193,13 +202,13 @@ namespace GlueControl.Editing
                     PushStartLocation = null;
                 }
             }
-            if (cursor.PrimaryDown && PushStartLocation != null)
+            if (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && PushStartLocation != null)
             {
-                LeftSelect = Math.Min(PushStartLocation.Value.X, cursor.WorldX);
-                RightSelect = Math.Max(PushStartLocation.Value.X, cursor.WorldX);
+                LeftSelect = Math.Min(PushStartLocation.Value.X, mouse.WorldXAt(0));
+                RightSelect = Math.Max(PushStartLocation.Value.X, mouse.WorldXAt(0));
 
-                TopSelect = Math.Max(PushStartLocation.Value.Y, cursor.WorldY);
-                BottomSelect = Math.Min(PushStartLocation.Value.Y, cursor.WorldY);
+                TopSelect = Math.Max(PushStartLocation.Value.Y, mouse.WorldYAt(0));
+                BottomSelect = Math.Min(PushStartLocation.Value.Y, mouse.WorldYAt(0));
 
                 var centerX = (LeftSelect.Value + RightSelect.Value) / 2.0f;
                 var centerY = (TopSelect.Value + BottomSelect.Value) / 2.0f;
@@ -211,7 +220,7 @@ namespace GlueControl.Editing
 
                 EditorVisuals.Rectangle(width, height, new Vector3(centerX, centerY, 0), selectionColor);
             }
-            if (cursor.PrimaryClick)
+            if (mouse.ButtonReleased(Mouse.MouseButtons.LeftButton))
             {
                 if (FlatRedBallServices.Game.IsActive == false)
                 {
@@ -223,6 +232,11 @@ namespace GlueControl.Editing
                     PerformedRectangleSelection = LeftSelect != RightSelect && TopSelect != BottomSelect;
                 }
             }
+        }
+
+        public static void DoInactiveWindowLogic()
+        {
+            PerformedRectangleSelection = false;
         }
 
         public static IEnumerable<PositionedObject> GetAvailableObjects(ElementEditingMode elementEditingMode)
@@ -287,7 +301,7 @@ namespace GlueControl.Editing
 
         static PolygonFast polygonForCursorOver = new PolygonFast();
 
-        private static bool IsCursorOver(PositionedObject positionedObject, Ray ray)
+        private static bool IsRayIntersecting(PositionedObject positionedObject, Ray ray)
         {
             if (IsOverSpecificItem(positionedObject, ray))
             {
@@ -308,7 +322,7 @@ namespace GlueControl.Editing
 
                     if (shouldConsiderChild)
                     {
-                        var isOverChild = IsCursorOver(child, ray);
+                        var isOverChild = IsRayIntersecting(child, ray);
                         if (isOverChild)
                         {
                             return true;
@@ -324,7 +338,6 @@ namespace GlueControl.Editing
             GetShapeFor(collisionObject, out PolygonFast polygon, out Circle circle);
             if (polygon != null)
             {
-                //return polygon.IsMouseOver(GuiManager.Cursor);
                 Matrix inverseRotation = polygon.RotationMatrix;
 
                 Matrix.Invert(ref inverseRotation, out inverseRotation);
@@ -346,12 +359,34 @@ namespace GlueControl.Editing
             }
             else if (circle != null)
             {
-                return circle.IsMouseOver(GuiManager.Cursor);
+                return IsOn3D(circle);
             }
             else
             {
                 return false;
             }
+        }
+
+        static bool IsOn3D(Circle circle)
+        {
+            Ray ray = InputManager.Mouse.GetMouseRay(Camera.Main);
+            Matrix inverseRotation = circle.RotationMatrix;
+
+            Matrix.Invert(ref inverseRotation, out inverseRotation);
+
+            Plane plane = new Plane(circle.Position, circle.Position + circle.RotationMatrix.Up,
+                circle.Position + circle.RotationMatrix.Right);
+
+            float? result = ray.Intersects(plane);
+
+            if (!result.HasValue)
+            {
+                return false;
+            }
+
+            Vector3 intersection = ray.Position + ray.Direction * result.Value;
+
+            return circle.IsPointInside(ref intersection);
         }
 
         public class PolygonFast
@@ -511,6 +546,19 @@ namespace GlueControl.Editing
 
                 polygon.RotationMatrix = asLine.RotationMatrix;
             }
+
+            else if (collisionObject is FlatRedBall.TileGraphics.LayeredTileMap layeredTileMap)
+            {
+                minX = layeredTileMap.X;
+                maxX = layeredTileMap.X + layeredTileMap.Width;
+
+                maxY = layeredTileMap.Y;
+                minY = layeredTileMap.Y - layeredTileMap.Height;
+
+                MakePolygonRectangleMinMax(minX, maxX, minY, maxY);
+                polygon = polygonForCursorOver;
+
+            }
 #if HasGum
             else if (collisionObject is GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper gumWrapper)
             {
@@ -598,7 +646,7 @@ namespace GlueControl.Editing
             out float minX, out float maxX, out float minY, out float maxY)
         {
             // We used to use the position as part of the min and max bounds, but this causes problems
-            // if some objects are only visible when the cursor is over them. Therefore, always use half dimension
+            // if some objects are only visible when the mouse is over them. Therefore, always use half dimension
             // width for selection:
             minX = itemOver.X;
             maxX = itemOver.X;
@@ -653,7 +701,9 @@ namespace GlueControl.Editing
                 UpdateMinsAndMaxes(circle, ref minX, ref maxX, ref minY, ref maxY);
             }
 
-            if (itemOver is PositionedObject positionedObject)
+            // This section uses the children sizes to position the object. However, we don't want to do that
+            // if this is IScalable - if it is IScalable, then it determines its own size:
+            if (itemOver is PositionedObject positionedObject && itemOver is IReadOnlyScalable == false)
             {
                 for (int i = 0; i < positionedObject.Children.Count; i++)
                 {

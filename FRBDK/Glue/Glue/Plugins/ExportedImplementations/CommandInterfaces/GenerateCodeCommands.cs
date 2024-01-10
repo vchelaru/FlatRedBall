@@ -13,6 +13,10 @@ using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Elements;
 using System.Threading.Tasks;
+using Xceed.Wpf.Toolkit;
+using FlatRedBall.Glue.VSHelpers;
+using System.Text;
+using System.IO;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -47,29 +51,44 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public void GenerateElementCode(GlueElement element)
+        public void GenerateElementCode(GlueElement element, bool generateDerivedElements = true)
         {
             if(element == null)
             {
                 throw new ArgumentNullException(nameof(element));
             }
-            string taskName = nameof(GenerateElementCode) + " " + element.ToString();
 
-            var throwaway = TaskManager.Self.AddAsync(async () => await CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
-                taskName,
+            // Don't wait for it, just put it on the task and go on
+            // If this has a LOT of derived elements (like a GameScreen and tons of levels),
+            // it could be heavy to do each one, so let's dice them up so the UI can be responsive
+            // and other operations can inject themselves at higher priority:
+
+            //TaskManager.Self.Add(async () => await CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
+            //    taskName,
+            //    TaskExecutionPreference.AddOrMoveToEnd);
+
+            TaskManager.Self.Add(
+                () => CodeGeneratorIElement.GenerateSpecificElement(element),
+                nameof(GenerateElementCode) + " " + element.ToString(), 
                 TaskExecutionPreference.AddOrMoveToEnd);
+
+            if(generateDerivedElements)
+            {
+                List<GlueElement> derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(element);
+
+                foreach (var derivedElement in derivedElements)
+                {
+                    TaskManager.Self.Add(
+                        () => CodeGeneratorIElement.GenerateSpecificElement(derivedElement),
+                        nameof(GenerateElementCode) + " " + derivedElement.ToString(),
+                        TaskExecutionPreference.AddOrMoveToEnd);
+                }
+            }
         }
 
-        public Task GenerateElementCodeAsync(GlueElement element)
-        {
-            string taskName = nameof(GenerateElementCode) + " " + element.ToString();
 
-            return TaskManager.Self.AddAsync(async () => await CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
-                taskName,
-                TaskExecutionPreference.AddOrMoveToEnd);
-        }
 
-        public async Task GenerateElementAndReferencedObjectCode(GlueElement element)
+        public void GenerateElementAndReferencedObjectCode(GlueElement element)
         {
             HashSet<GlueElement> toRegenerateHashSet = new HashSet<GlueElement>();
             if (element != null)
@@ -88,7 +107,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             foreach(var elementToRegenerate in toRegenerateHashSet)
             {
-                await GenerateElementCodeAsync(elementToRegenerate);
+                TaskManager.Self.Add(
+                    () => CodeGeneratorIElement.GenerateSpecificElement(elementToRegenerate),
+                    nameof(GenerateElementCode) + " " + elementToRegenerate.ToString(),
+                    TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
 
@@ -264,7 +286,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 var code = Game1CodeGeneratorManager.GetGame1GeneratedContents();
 
-                FilePath filePath = GlueState.CurrentGlueProjectDirectory + "Game1.Generated.cs";
+                string rawGameName = "Game1";
+                if(!string.IsNullOrEmpty(GlueState.CurrentGlueProject.CustomGameClass))
+                {
+                    rawGameName = GlueState.CurrentGlueProject.CustomGameClass;
+                }
+
+                FilePath filePath = GlueState.CurrentGlueProjectDirectory + $"{rawGameName}.Generated.cs";
 
                 GlueCommands.TryMultipleTimes(() =>
                 {
@@ -276,5 +304,42 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        public string ReplaceGlueVersionString(string contents)
+        {
+            if (contents.Contains("$GLUE_VERSIONS$"))
+            {
+                return contents.Replace("$GLUE_VERSIONS$", CodeBuildItemAdder.GetGlueVersionsString());
+            }
+            return contents;
+        }
+
+        public void GenerateElementCustomCode(GlueElement element)
+        {
+            var customCodeFilePath =
+                GlueCommands.FileCommands.GetCustomCodeFilePath(element);
+            var template = element is EntitySave ? CodeWriter.EntityTemplateCode : CodeWriter.ScreenTemplateCode;
+
+            string elementNamespace = GlueCommands.GenerateCodeCommands.GetNamespaceForElement(element);
+
+            StringBuilder stringBuilder = new StringBuilder(template);
+
+            CodeWriter.SetClassNameAndNamespace(
+                elementNamespace,
+                element.ClassName,
+                stringBuilder);
+
+            string additionalUsings = "";
+
+            if(element is ScreenSave && GlueState.CurrentGlueProject.Entities.Count > 0)
+            {
+                additionalUsings = $"using {GlueState.ProjectNamespace}.Entities;";
+            }
+
+            stringBuilder.Replace("// Additional usings", additionalUsings);
+
+            string modifiedTemplate = stringBuilder.ToString();
+
+            FileManager.SaveText(modifiedTemplate, customCodeFilePath.FullPath);
+        }
     }
 }

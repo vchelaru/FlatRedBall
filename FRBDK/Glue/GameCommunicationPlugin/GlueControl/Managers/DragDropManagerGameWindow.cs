@@ -20,20 +20,22 @@ namespace GameCommunicationPlugin.GlueControl.Managers
     public class DragDropManagerGameWindow
     {
         private RefreshManager _refreshManager;
-        private CommandSender _commandSender;
 
         public CompilerViewModel CompilerViewModel { get; set; }
 
-        public DragDropManagerGameWindow(RefreshManager refreshManager, CommandSender commandSender)
+        public DragDropManagerGameWindow(RefreshManager refreshManager)
         {
             _refreshManager = refreshManager;
-            _commandSender = commandSender;
         }
 
 
 
         public async void HandleDragDropTimerElapsed(GameHostView gameHostView)
         {
+            if(CompilerViewModel?.IsRunning != true)
+            {
+                return;
+            }
             try
             {
                 // These suck - they dont' return anything if the user is over only the wpf item:
@@ -87,7 +89,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 return;
             }
-            GlueElement element = await _commandSender.GetCurrentInGameScreen();
+            GlueElement element = await CommandSender.Self.GetCurrentInGameScreen();
             if(element == null)
             {
                 element = GlueState.Self.CurrentElement;
@@ -120,7 +122,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             if(entityToDrop != null)
             { 
                 FlatRedBall.Content.Scene.CameraSave cameraSave = null;
-                cameraSave = await _commandSender.GetCameraSave();
+                cameraSave = await CommandSender.Self.GetCameraSave();
 
 
                 if(cameraSave != null)
@@ -150,7 +152,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 var variableName = $"Current{stateCategory.Name}State";
                 string stateName = stateToSet.Name;
-                GlueCommands.Self.GluxCommands.SetVariableOn(newNamedObject, variableName, stateName);
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(newNamedObject, variableName, stateName);
             }
         }
     }

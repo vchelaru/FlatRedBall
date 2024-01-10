@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ToolsUtilities;
 
 namespace GameCommunicationPlugin.GlueControl.Dtos
 {
@@ -31,12 +32,12 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     #region RemoveObjectDto
     public class RemoveObjectDto : UpdateCurrentElementDto
     {
-        public string ElementNameGlue { get; set; }
+        public List<string> ElementNamesGlue { get; set; }
         public List<string> ObjectNames { get; set; } = new List<string>();
 
         public override string ToString()
         {
-            string toReturn = $"Remove {ElementNameGlue}.";
+            string toReturn = $"Remove ";
 
             foreach (var name in ObjectNames)
             {
@@ -56,6 +57,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
         public string VariableName { get; set; }
         public object VariableValue { get; set; }
         public string Type { get; set; }
+
     }
 
     public class SetVariableDtoList
@@ -76,7 +78,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     #region SelectObjectDto
     class SelectObjectDto : UpdateCurrentElementDto
     {
-        public NamedObjectSave NamedObject { get; set; }
+        public List<string> NamedObjectNames { get; set; } = new List<string>();
 
         public string ElementNameGlue { get; set; }
 
@@ -90,10 +92,32 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    #region SelectSubIndex
+
+    public class SelectSubIndexDto
+    {
+        public int? Index { get; set; }
+    }
+
+    #endregion
+
     #region SelectPrevious/Next 
 
     class SelectPreviousDto { }
     class SelectNextDto { }
+
+    #endregion
+
+    #region ObjectReorderedDto
+
+    // could eventually add variables and states if we care, but 
+    // this isn't important for now.
+    class NamedObjectReorderedDto : UpdateCurrentElementDto
+    {
+        public string NamedObjectName { get; set; }
+        public int OldIndex { get; set; }
+        public int NewIndex { get; set; }
+    }
 
     #endregion
 
@@ -126,6 +150,8 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
         public string VariableValue { get; set; }
         public string Type { get; set; }
         public bool IsState { get; set; }
+
+        public string AbsoluteGlueProjectFilePath { get; set; }
 
         public override string ToString() => $"{VariableName}={VariableValue}";
     }
@@ -221,7 +247,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     #region AddObjectDtoResponse
     public class AddObjectDtoResponse
     {
-        public bool WasObjectCreated { get; set; }
+        public OptionallyAttemptedGeneralResponse CreationResponse { get; set; }
     }
 
     public class AddObjectDtoListResponse
@@ -309,6 +335,13 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
 
     #endregion
 
+    #region ForceClientSizeUpdatesDto
+
+    public class ForceClientSizeUpdatesDto { }
+
+    #endregion
+
+
     #region CreateNewEntityDto
     public class CreateNewEntityDto
     {
@@ -323,6 +356,16 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
         public string CategoryName { get; set; }
         public string ElementNameGame { get; set; }
     }
+    #endregion
+
+    #region UpdateStateSaveCategory
+
+    public class UpdateStateSaveCategory
+    {
+        public StateSaveCategory Category { get; set; }
+        public string ElementNameGame { get; set; }
+    }
+
     #endregion
 
     #region ChangeStateVariableDto
@@ -395,11 +438,13 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    #region ForceGameResolution
     public class ForceGameResolution
     {
         public int Width { get; set; }
         public int Height { get; set; }
     }
+    #endregion
 
     #region GlueViewSettingsDto
     public class GlueViewSettingsDto
@@ -407,6 +452,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
         public bool ShowScreenBoundsWhenViewingEntities { get; set; }
 
         public bool ShowGrid { get; set; }
+        public decimal GridAlpha { get; set; }
         public decimal GridSize { get; set; }
 
         public bool SetBackgroundColor { get; set; }
@@ -428,16 +474,46 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
-    #region GetCommandsDto
-    public class GetCommandsDto
-    {
-
-    }
-
+    #region Get commands dto
     public class GetCommandsDtoResponse
     {
         public List<string> Commands { get; set; } = new List<string>();
     }
+
+    /// <summary>
+    /// Used to fetch commands that the game will re-run on
+    /// a screen reload. This is used for diagnostics.
+    /// </summary>
+    public class GetGlueToGameCommandRerunList
+    {
+
+    }
+    #endregion
+
+    #region Profiling
+
+    public class GetProfilingDataDto
+    {
+
+    }
+
+    public class ProfilingDataDto
+    {
+        public string SummaryData { get; set; }
+        public List<CollisionRelationshipInfo> CollisionData { get; set; } = new List<CollisionRelationshipInfo>();
+    }
+
+    public class CollisionRelationshipInfo
+    {
+        public string RelationshipName { get; set; }
+        public int DeepCollisions { get; set; }
+        public bool IsPartitioned { get; set; }
+        public FlatRedBall.Math.Axis? FirstPartitionAxis { get; set; }
+        public FlatRedBall.Math.Axis? SecondPartitionAxis { get; set; }
+        public int? FirstItemListCount { get; set; }
+        public int? SecondItemListCount { get; set; }
+    }
+
     #endregion
 
     #region Glue/XXXX/CommandsDto

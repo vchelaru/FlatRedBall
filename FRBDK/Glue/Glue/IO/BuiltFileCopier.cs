@@ -77,7 +77,7 @@ namespace FlatRedBall.Glue.IO
 
             if (rfs != null)
             {
-                string outputFile = ProjectManager.ProjectBase.Directory + "bin/x86/debug/Content/" + rfs.Name;
+                string outputFile = ProjectManager.ProjectBase.Directory + "bin/debug/Content/" + rfs.Name;
                 outputFile = FileManager.RemoveExtension(outputFile) + ".xnb";
 
 
@@ -93,7 +93,7 @@ namespace FlatRedBall.Glue.IO
 
         }
 
-        void HandleNewFile(ReferencedFileSave rfs)
+        void HandleNewFile(ReferencedFileSave rfs, AssetTypeInfo assetTypeInfo)
         {
             HandleBuiltFileChange(GlueCommands.Self.GetAbsoluteFileName(rfs));
         }

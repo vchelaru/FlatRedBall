@@ -137,7 +137,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
+    #region Delegates
+
     public delegate string ReferencedFileSaveToString(ReferencedFileSave rfs);
+
+    #endregion
 
     public class ReferencedFileSave : IPropertyListContainer
     {
@@ -190,10 +194,10 @@ namespace FlatRedBall.Glue.SaveClasses
         /// </summary>
         public string Name
         {
-            get { return mName; }
+            get => mName;
             set
             {
-                if (!String.IsNullOrEmpty(value) && value.ToLower().Replace("\\", "/").StartsWith("content/"))
+                if (!String.IsNullOrEmpty(value) && value.Replace("\\", "/").StartsWith("content/", StringComparison.OrdinalIgnoreCase))
                     value = value.Substring("content/".Length);
 
                 mName = value;

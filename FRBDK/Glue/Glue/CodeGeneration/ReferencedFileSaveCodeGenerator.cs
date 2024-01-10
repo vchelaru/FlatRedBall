@@ -15,12 +15,13 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
+    #region LoadType enum
     public enum LoadType
     {
         CompleteLoad,
         MaintainInstance
     }
-
+    #endregion
 
     public class ReferencedFileSaveCodeGenerator : ElementComponentCodeGenerator
     {
@@ -63,6 +64,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
+        #region Generate Fields (Static Members)
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock,  SaveClasses.IElement element)
         {
@@ -98,6 +100,83 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             return codeBlock;
         }
+
+        public static void AppendFieldOrPropertyForReferencedFile(ICodeBlock codeBlock, ReferencedFileSave referencedFile,
+            IElement element)
+        {
+            AppendFieldOrPropertyForReferencedFile(codeBlock, referencedFile, element, "ContentManagerName");
+        }
+
+        public static void AppendFieldOrPropertyForReferencedFile(ICodeBlock codeBlock, ReferencedFileSave referencedFile,
+            IElement element, string contentManagerName)
+        {
+            /////////////////////////////////////EARLY OUT//////////////////////////////////////////////
+            // If the referenced file is a database for localizing, it will just be stuffed right into the localization manager
+            if (!referencedFile.LoadedAtRuntime || referencedFile.IsDatabaseForLocalizing) return;
+            ///////////////////////////////////END EARLY OUT/////////////////////////////////////////////
+
+            string fileName = referencedFile.Name;
+            string extension = FileManager.GetExtension(fileName);
+            AssetTypeInfo ati = referencedFile.GetAssetTypeInfo();
+
+            string variableName = referencedFile.GetInstanceName();
+
+
+            #region Get the typeName
+            string typeName = null;
+
+            if (ati != null && !referencedFile.TreatAsCsv && ati.QualifiedRuntimeTypeName.QualifiedType != null)
+            {
+                typeName = ati.QualifiedRuntimeTypeName.QualifiedType;
+            }
+            else if (extension == "csv" || referencedFile.TreatAsCsv)
+            {
+                typeName = CsvCodeGenerator.GetEntireGenericTypeForCsvFile(referencedFile);
+            }
+
+            #endregion
+
+            //////////////////////////////EARLY OUT///////////////////////////////////////
+            if (typeName == null) return;
+            ///////////////////////////END EARLY OUT//////////////////////////////////////
+
+            AddIfConditionalSymbolIfNecesssary(codeBlock, referencedFile);
+
+            if (NeedsFullProperty(referencedFile, element))
+            {
+                AppendPropertyForReferencedFileSave(codeBlock, referencedFile, element, contentManagerName, ati, variableName, typeName);
+            }
+            else
+            {
+                if (element == null)
+                {
+                    var scope = referencedFile.HasPublicProperty ? Scope.Public : Scope.Protected;
+                    // Global Content will always have the content as properties.  This is so that you can switch between
+                    // async and sync loading and not have to change reflection code
+                    codeBlock.AutoProperty(variableName,
+                                           scope,
+
+                                           Static: referencedFile.IsSharedStatic,
+                                           Type: typeName);
+                }
+                else
+                {
+                    codeBlock.Line(StringHelper.Modifiers(
+                        Public: referencedFile.HasPublicProperty,
+                        // Should be protected so derived classes can access this
+                        Protected: !referencedFile.HasPublicProperty,
+                        Static: referencedFile.IsSharedStatic,
+                        Type: typeName,
+                        Name: variableName) + ";");
+                }
+
+            }
+
+            AddEndIfIfNecessary(codeBlock, referencedFile);
+
+        }
+
+        #endregion
 
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock,  SaveClasses.IElement element)
         {
@@ -177,7 +256,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // should also remove:
                     var ati = referencedFile.GetAssetTypeInfo();
 
-                    if(!string.IsNullOrEmpty(ati.DestroyMethod))
+                    if (ati.DestroyFunc != null)
+                    {
+                        AddIfConditionalSymbolIfNecesssary(codeBlock, referencedFile);
+
+                        ati.DestroyFunc(element, null, referencedFile);
+
+                        AddEndIfIfNecessary(codeBlock, referencedFile);
+                    }
+
+                    else if (!string.IsNullOrEmpty(ati.DestroyMethod))
                     {
                         var lineToAdd = ati.DestroyMethod.Replace("this",
                             referencedFile.GetInstanceName());
@@ -360,9 +448,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                         // but these will not have
                         // an AssetTypeInfo, so we need
                         // to check for that.
-                        if (ati != null &&  !string.IsNullOrEmpty(ati.DestroyMethod))
+                        if (ati != null)
                         {
-                            codeBlock.Line(ati.DestroyMethod.Replace("this", fieldName) + ";");
+                            if(ati.DestroyFunc != null)
+                            {
+                                codeBlock.Line(ati.DestroyFunc(element, null, rfs));
+                            }
+                            else if ( !string.IsNullOrEmpty(ati.DestroyMethod))
+                            {
+                                codeBlock.Line(ati.DestroyMethod.Replace("this", fieldName) + ";");
+                            }
                         }
                         codeBlock.Line(fieldName + "= null;");
                     }
@@ -377,80 +472,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public static void AppendFieldOrPropertyForReferencedFile(ICodeBlock codeBlock,  ReferencedFileSave referencedFile,
-            IElement element)
-        {
-            AppendFieldOrPropertyForReferencedFile(codeBlock, referencedFile, element, "ContentManagerName");
-        }
 
-        public static void AppendFieldOrPropertyForReferencedFile(ICodeBlock codeBlock,  ReferencedFileSave referencedFile,
-            IElement element, string contentManagerName)
-        {
-            /////////////////////////////////////EARLY OUT//////////////////////////////////////////////
-            // If the referenced file is a database for localizing, it will just be stuffed right into the localization manager
-            if (!referencedFile.LoadedAtRuntime || referencedFile.IsDatabaseForLocalizing) return;
-            ///////////////////////////////////END EARLY OUT/////////////////////////////////////////////
-
-            string fileName = referencedFile.Name;
-            string extension = FileManager.GetExtension(fileName);
-            AssetTypeInfo ati = referencedFile.GetAssetTypeInfo();
-
-            string variableName = referencedFile.GetInstanceName();
-
-
-            #region Get the typeName
-            string typeName = null;
-
-            if (ati != null && !referencedFile.TreatAsCsv && ati.QualifiedRuntimeTypeName.QualifiedType != null)
-            {
-                typeName = ati.QualifiedRuntimeTypeName.QualifiedType;
-            }
-            else if (extension == "csv" || referencedFile.TreatAsCsv)
-            {
-                typeName = CsvCodeGenerator.GetEntireGenericTypeForCsvFile(referencedFile);
-            }
-
-            #endregion
-
-            //////////////////////////////EARLY OUT///////////////////////////////////////
-            if (typeName == null) return;
-            ///////////////////////////END EARLY OUT//////////////////////////////////////
-
-            AddIfConditionalSymbolIfNecesssary(codeBlock, referencedFile);
-
-            if (NeedsFullProperty(referencedFile, element))
-            {
-                AppendPropertyForReferencedFileSave(codeBlock, referencedFile, element, contentManagerName, ati, variableName, typeName);
-            }
-            else
-            {
-                if (element == null)
-                {
-                    var scope = referencedFile.HasPublicProperty ? Scope.Public : Scope.Protected;
-                    // Global Content will always have the content as properties.  This is so that you can switch between
-                    // async and sync loading and not have to change reflection code
-                    codeBlock.AutoProperty(variableName,
-                                           scope,
-
-                                           Static: referencedFile.IsSharedStatic, 
-                                           Type: typeName);
-                }
-                else
-                {
-                    codeBlock.Line(StringHelper.Modifiers(
-                        Public: referencedFile.HasPublicProperty,
-                        // Should be protected so derived classes can access this
-                        Protected: !referencedFile.HasPublicProperty,
-                        Static: referencedFile.IsSharedStatic,
-                        Type: typeName,
-                        Name: variableName) + ";");
-                }
-
-            }
-
-            AddEndIfIfNecessary(codeBlock, referencedFile);
-
-        }
 
         private static void AppendPropertyForReferencedFileSave(ICodeBlock codeBlock, ReferencedFileSave referencedFile, IElement element, string contentManagerName, AssetTypeInfo ati, string variableName, string typeName)
         {
@@ -687,11 +709,15 @@ namespace FlatRedBall.Glue.CodeGeneration
             bool shouldAddExtensionOnNonXnaPlatforms = 
                 FileManager.GetExtension(fileNameToLoad) != extension && extension == "png";
 
+            if (GlueState.Self.CurrentMainProject is FnaDesktopProject) {
+              shouldAddExtensionOnNonXnaPlatforms = shouldAddExtensionOnNonXnaPlatforms || extension == "wav";
+            }
+
             if(!string.IsNullOrEmpty(formattableLine))
             {
                 if(shouldAddExtensionOnNonXnaPlatforms)
                 {
-                    codeBlock.Line("#if IOS || WINDOWS_8");
+                    codeBlock.Line("#if IOS || WINDOWS_8 || FNA");
 
                     codeBlock.Line(
                         string.Format(formattableLine,
@@ -804,15 +830,14 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static string GetFileToLoadForRfs(ReferencedFileSave referencedFile, AssetTypeInfo ati = null)
         {
-            string referencedFileName = "content/" +  referencedFile.Name;
-            ati = ati ?? referencedFile.GetAssetTypeInfo();
+            var referencedFileName = "content/" +  referencedFile.Name;
+            ati ??= referencedFile.GetAssetTypeInfo();
             if (ati?.MustBeAddedToContentPipeline == true || referencedFile.UseContentPipeline)
             {
                 referencedFileName = FileManager.RemoveExtension(referencedFileName);
             }
             
-            referencedFileName = referencedFileName.ToLower();
-            return referencedFileName;
+            return referencedFileName.ToLowerInvariant();
         }
 
         public static void AppendAddUnloadMethod(ICodeBlock codeBlock, IElement element)
@@ -839,10 +864,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                 var ati = referencedFile.GetAssetTypeInfo();
                 if (referencedFile.IsCsvOrTreatedAsCsv && referencedFile.CreatesDictionary)
                 {
-                    var fileName = ProjectBase.AccessContentDirectory + referencedFile.Name.ToLower().Replace("\\", "/");
+                    var fileName = ProjectBase.AccessContentDirectory + referencedFile.Name.ToLowerInvariant().Replace("\\", "/");
                     var instanceName = referencedFile.GetInstanceName();
-                    string line =
-                        $"FlatRedBall.IO.Csv.CsvFileManager.UpdateDictionaryValuesFromCsv({instanceName}, \"{fileName}\");";
+                    string line = $"FlatRedBall.IO.Csv.CsvFileManager.UpdateDictionaryValuesFromCsv({instanceName}, \"{fileName}\");";
                     codeBlock.Line(line);
                 }
                 else if (ati?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Graphics.Texture2D")
@@ -913,7 +937,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 else
                 {
-                    fileName = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(referencedFile, referencedFile.GetAssetTypeInfo());
+                    fileName = GetFileToLoadForRfs(referencedFile, referencedFile.GetAssetTypeInfo());
 
                     project = ProjectManager.ProjectBase;
                 }
@@ -924,7 +948,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     containerName = container.Name;
                 }
                 AddCodeforFileLoad(referencedFile, ref codeBlock, container,
-                    ref directives, isProjectSpecific, fileName, project, loadType, containerName);
+                    ref directives, isProjectSpecific, fileName, project, loadType);
             }
 
             if (directives == true)
@@ -965,7 +989,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void AddCodeforFileLoad(ReferencedFileSave referencedFile, ref ICodeBlock codeBlock, 
             IElement container, ref bool directives, bool isProjectSpecific, 
-            string fileName, ProjectBase project, LoadType loadType, string containerName)
+            string fileName, ProjectBase project, LoadType loadType)
         {
             if (project != null)
             {
@@ -1185,7 +1209,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 typeName = "System.Collections.Generic.List<" + FileManager.RemovePath(FileManager.RemoveExtension(fileName)) + ">";
             }
 
-            if (typeName.ToLower().EndsWith("file"))
+            if (typeName.EndsWith("file", StringComparison.OrdinalIgnoreCase))
             {
                 typeName = typeName.Substring(0, typeName.Length - "file".Length);
             }
@@ -1392,8 +1416,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
 
 
-
-                if (!string.IsNullOrEmpty(ati.DestroyMethod))
+                if(ati.DestroyFunc != null)
+                {
+                    codeBlock.Line(ati.DestroyFunc(element, null, referencedFile));
+                }
+                else if (!string.IsNullOrEmpty(ati.DestroyMethod))
                 {
                     if (isScreenSave && recycleMethod != destroyMethod)
                     {
@@ -1417,7 +1444,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                 }
 
-                if (ati.ShouldBeDisposed && element.UseGlobalContent == false)
+                var shouldDispose = ati.ShouldBeDisposed && 
+                    element.UseGlobalContent == false &&
+                    // If this is also in global content, then it's being loaded and managed as global content:
+                    !GlueState.Self.CurrentGlueProject.GlobalFiles.Any(item => item.Name == referencedFile.Name);
+
+                if (shouldDispose)
                 {
                     codeBlock = codeBlock.If("this.UnloadsContentManagerWhenDestroyed && ContentManagerName != \"Global\"");
                     codeBlock.Line(string.Format("{0}.Dispose();", variableName));
@@ -1486,7 +1518,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if(ati.AddToManagersFunc != null)
                 {
-                    currentBlock.Line(ati.AddToManagersFunc(mSaveObject, null, referencedFile, "layerToAddTo"));
+                    var text = ati.AddToManagersFunc(mSaveObject, null, referencedFile, "layerToAddTo");
+                    if(!string.IsNullOrEmpty(text))
+                    {
+                        currentBlock.Line(text);
+                    }
                 }
                 else if (CodeWriter.IsOnOwnLayer(mSaveObject) && ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0]))
                 {
@@ -1659,8 +1695,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         /// <summary>
         /// Returns whether the argument RFS must be loaded before other RFS's. Right now
-        /// there's only the concept of a RFS being high priority or not - and no granual sorting.
-        /// In the future this may need to expland. Also, high priority not only means load first, but
+        /// there's only the concept of a RFS being high priority or not - and no granular sorting.
+        /// In the future this may need to expand. Also, high priority not only means load first, but
         /// when in global content it also means to load synchronously before any async loading begins.
         /// </summary>
         /// <remarks>
@@ -1670,7 +1706,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         /// the methods up - one for ordering, one for loading before any async occurs.
         /// </remarks>
         /// <param name="rfs">The file to return whether high priority.</param>
-        /// <returns>Wehther it's considered high priority</returns>
+        /// <returns>Whether it's considered high priority</returns>
         public static bool IsRfsHighPriority(ReferencedFileSave rfs)
         {
             return rfs.IsDatabaseForLocalizing ||

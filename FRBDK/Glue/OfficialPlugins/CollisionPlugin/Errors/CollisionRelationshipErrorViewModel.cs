@@ -40,7 +40,7 @@ namespace OfficialPluginsCore.CollisionPlugin.Errors
             {
                 if (string.IsNullOrWhiteSpace(secondCollidable))
                 {
-                    var isFirstList = container.GetNamedObject(firstCollidable).IsList;
+                    var isFirstList = container.GetNamedObject(firstCollidable)?.IsList == true;
                     // As of this writing (Apr 11, 2021) only list vs "null" can create an Always collision
                     return !isFirstList;
                 }

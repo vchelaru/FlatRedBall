@@ -11,14 +11,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 {
     public class ReferenceCopierViewModel : ViewModel
     {
-        enum SourceTypeEnum
-        {
-            Project,
-            File
-        };
-
-        SourceTypeEnum sourceType = SourceTypeEnum.Project;
-
         string fromFile;
         string toFile;
 

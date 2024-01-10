@@ -1,12 +1,15 @@
 using System;
- 
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FlatRedBall.Audio;
 using FlatRedBall.Graphics;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Collision;
 using FlatRedBall.Math.Geometry;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media;
 
 namespace FlatRedBall.Debugging
 {
@@ -53,10 +56,11 @@ namespace FlatRedBall.Debugging
 
         static List<string> mCommandLineOutput = new List<string>();
 
-#if DEBUG
+        // Why is this expensive to have in debug? If the user doesn't ask for memory, this doesn't get used.
+//#if DEBUG
         static RollingAverage mAllocationAverage = new RollingAverage(4);
         static long mLastMemoryUse = -1;
-#endif
+//#endif
 
         public static StringBuilder LogStringBuilder = new StringBuilder();
 
@@ -184,6 +188,21 @@ namespace FlatRedBall.Debugging
             Write(MemoryInformation);
         }
 
+        public static void WriteSongInformation(Song song)
+        {
+            var format = song.Duration.TotalMinutes > 60
+                ? @"hh\:mm\:ss"
+                : @"mm\:ss";
+
+#if MONOGAME && !UWP && !__IOS__
+            var currentTime = song.Position.ToString(format);
+#else
+            var currentTime = song == AudioManager.CurrentSong ?  Microsoft.Xna.Framework.Media.MediaPlayer.PlayPosition.ToString(format) : new TimeSpan(0).ToString(format);
+#endif
+            var totalDuration = song.Duration.ToString(format);
+            Write($"{song.Name} {currentTime} / {totalDuration}");
+        }
+
         public static string ForceGetMemoryInformation()
         {
 
@@ -192,9 +211,8 @@ namespace FlatRedBall.Debugging
             long currentUsage;
 
                 currentUsage = GC.GetTotalMemory(false);
-                memoryInformation = "Total Memory: " + currentUsage;
+                memoryInformation = "Total Memory: " + currentUsage.ToString("N0");
 
-#if DEBUG
             if (mLastMemoryUse >= 0)
             {
                 long difference = currentUsage - mLastMemoryUse;
@@ -205,13 +223,10 @@ namespace FlatRedBall.Debugging
                 }
             }
             memoryInformation += "\nAverage Growth per second: " +
-                mAllocationAverage.Average.ToString("0,000");
-#endif
+                mAllocationAverage.Average.ToString("N0");
 
             LastCalculationTime = TimeManager.CurrentTime;
-#if DEBUG
             mLastMemoryUse = currentUsage;
-#endif
 
 
             return memoryInformation;
@@ -233,7 +248,16 @@ namespace FlatRedBall.Debugging
             // SpriteManager
             stringBuilder.AppendLine(SpriteManager.ManagedPositionedObjects.Count + " PositionedObjects");
 
-            var entityCount = SpriteManager.ManagedPositionedObjects.Where(item => item.GetType().FullName.Contains(".Entities")).Count();
+            var entityCount = 0;
+            
+            for(int i = 0; i < SpriteManager.ManagedPositionedObjects.Count; i++)
+            {
+                var item = SpriteManager.ManagedPositionedObjects[i];
+                if(item.GetType().FullName.Contains(".Entities"))
+                {
+                    entityCount++;
+                }
+            }
             stringBuilder.AppendLine($"{indentString} {entityCount} Entities");
 
             total += SpriteManager.ManagedPositionedObjects.Count;
@@ -241,7 +265,15 @@ namespace FlatRedBall.Debugging
             var totalSpriteCount = SpriteManager.AutomaticallyUpdatedSprites.Count;
             stringBuilder.AppendLine(totalSpriteCount + " Sprites");
 
-            var spriteNonParticleEntityCount = SpriteManager.AutomaticallyUpdatedSprites.Where(item => item.GetType().FullName.Contains(".Entities")).Count();
+            var spriteNonParticleEntityCount = 0;
+            for(int i = 0; i < SpriteManager.AutomaticallyUpdatedSprites.Count; i++)
+            {
+                var item = SpriteManager.AutomaticallyUpdatedSprites[i];
+                if(item.GetType().FullName.Contains(".Entities"))
+                {
+                    spriteNonParticleEntityCount++;
+                }
+            }
             stringBuilder.AppendLine(indentString + spriteNonParticleEntityCount + " Entity Sprites");
             stringBuilder.AppendLine(indentString + SpriteManager.ParticleCount + " Particles");
             var normalSpriteCount = SpriteManager.AutomaticallyUpdatedSprites.Count - spriteNonParticleEntityCount - SpriteManager.ParticleCount;
@@ -399,10 +431,35 @@ namespace FlatRedBall.Debugging
             stringBuilder.AppendLine();
             stringBuilder.AppendLine($"Render breaks: {Renderer.LastFrameRenderBreakList.Count}");
 
+            int sameRenderBreaks = 0;
+            string lastRenderBreak = null;
+
             foreach(var renderBreak in Renderer.LastFrameRenderBreakList)
             {
-                stringBuilder.AppendLine(renderBreak.ToString());
+                var currentRenderBreak = renderBreak.ToString();    
+                if(currentRenderBreak == lastRenderBreak)
+                {
+                    sameRenderBreaks++;
+                }
+                else
+                {
+                    WrapUpCurrentRenderBreaks();
+                    stringBuilder.AppendLine(currentRenderBreak);
+                    lastRenderBreak = currentRenderBreak;
+                }
             }
+
+            WrapUpCurrentRenderBreaks();
+
+            void WrapUpCurrentRenderBreaks()
+            {
+                if(sameRenderBreaks != 0)
+                {
+                    stringBuilder.AppendLine($"{lastRenderBreak} x {sameRenderBreaks}");
+                }
+                sameRenderBreaks = 0;
+            }
+
             stringBuilder.AppendLine();
             var collisionInformation = GetCollisionInformation();
             stringBuilder.AppendLine(collisionInformation);
@@ -420,7 +477,7 @@ namespace FlatRedBall.Debugging
             return stringBuilder.ToString();
         }
 
-        private static string GetCollisionInformation()
+        public static string GetCollisionInformation()
         {
             var collisionManager = Math.Collision.CollisionManager.Self;
             int numberOfCollisions = 0;
@@ -441,6 +498,50 @@ namespace FlatRedBall.Debugging
             $"Deep collisions: {Math.Collision.CollisionManager.Self.DeepCollisionsThisFrame}";
             if(collisionRelationshipWithMost != null)
             {
+                var firstCollisionObject = collisionRelationshipWithMost.FirstAsObject;
+                var secondObject = collisionRelationshipWithMost.SecondAsObject;
+
+                IEnumerable listWithoutPartition = null;
+                if(firstCollisionObject is IEnumerable firstAsIEnumerable)
+                {
+                    var isPartitioned = false;
+                    foreach(var item in CollisionManager.Self.Partitions)
+                    {
+                        if(item.PartitionedObject == firstCollisionObject)
+                        {
+                            isPartitioned = true;
+                            break;
+                        }
+                    }
+
+                    if(!isPartitioned)
+                    {
+                        listWithoutPartition = firstAsIEnumerable;
+                    }
+                }
+
+                if (secondObject is IEnumerable secondAsIEnumerable)
+                {
+                    var isPartitioned = false;
+                    foreach (var item in CollisionManager.Self.Partitions)
+                    {
+                        if (item.PartitionedObject == secondObject)
+                        {
+                            isPartitioned = true;
+                            break;
+                        }
+                    }
+
+                    if (!isPartitioned)
+                    {
+                        listWithoutPartition = secondAsIEnumerable;
+                    }
+                }
+
+                if(listWithoutPartition != null)
+                {
+                    collisionsThisFrame += $"\n!!!!!!!{listWithoutPartition} - NOT PARTITIONED:!!!!!!!!";
+                }
                 collisionsThisFrame += 
                     $"\nHighest Relationship: {collisionRelationshipWithMost.Name} with {collisionRelationshipWithMost.DeepCollisionsThisFrame}";
             }

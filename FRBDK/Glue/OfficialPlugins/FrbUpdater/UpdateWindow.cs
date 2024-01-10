@@ -9,6 +9,9 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+using FlatRedBall.Glue.Managers;
 
 namespace OfficialPlugins.FrbUpdater
 {
@@ -57,7 +60,7 @@ namespace OfficialPlugins.FrbUpdater
             _plugin = plugin;
         }
 
-        private void FrmMainLoad(object sender, EventArgs e)
+        private async void FrmMainLoad(object sender, EventArgs e)
         {
             _settings = FrbUpdaterSettings.LoadSettings(_userAppPath);
 
@@ -75,7 +78,7 @@ namespace OfficialPlugins.FrbUpdater
                     // picked 10 years.
                     // Update - this actually hits the web server, so we should probably not do 10 years.  Let's go to 1 year
                     int numberOfTries = 0;
-                    while (!IsMonthValid(date) && numberOfTries < 1*12)
+                    while (!await IsMonthValid(date) && numberOfTries < 1*12)
                     {
                         PluginManager.ReceiveOutput("Attempting to find valid month, but the following date is invalid: " + date);
                         date = date.AddMonths(-1);
@@ -108,7 +111,7 @@ namespace OfficialPlugins.FrbUpdater
                     break;
             }
 
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 PopulateFiles();
 
@@ -118,25 +121,26 @@ namespace OfficialPlugins.FrbUpdater
             });
         }
 
-        private bool IsMonthValid(DateTime date)
+        private async Task<bool> IsMonthValid(DateTime date)
         {
             const string path = "http://files.flatredball.com/content/FrbXnaTemplates/";
+            HttpClient httpClient = new HttpClient();
 
             try
             {
                 //This Month
                 var curPath = path + date.ToString("yyyy") + "/" + date.ToString("MMMM") + "/FlatRedBallInstaller.exe";
                 var url = new Uri(curPath);
-                var request = (HttpWebRequest)WebRequest.Create(url);
-                var response = (HttpWebResponse)request.GetResponse();
-                response.Close();
+                var response = await httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
 
                 return true;
             }
-            catch (Exception)
+            catch (HttpRequestException)
             {
                 return false;
             }
+
         }
 
         private void PopulateFiles()
@@ -203,13 +207,16 @@ namespace OfficialPlugins.FrbUpdater
                 _currentFile = fileData;
 
                 var url = new Uri(fileData.ServerFile);
+
+#pragma warning disable SYSLIB0014 // Type or member is obsolete. Fixing this is a pain since it would also require fixing DoDownloadAndSaveFile
                 var request = (HttpWebRequest)WebRequest.Create(url);
+#pragma warning restore SYSLIB0014 // Type or member is obsolete
                 HttpWebResponse response = null;
                 try
                 {
                     response = (HttpWebResponse)request.GetResponse();
 
-                    DoDownloadAndSaveFile(ref cancelled, fileData, url, response);
+                    DoDownloadAndSaveFile(fileData, url, response);
                     PluginManager.ReceiveOutput("Successfully downloaded " + fileData.ServerFile);
                     successfullyDownloadedFiles.Add(fileData);
                     response.Close();
@@ -229,20 +236,21 @@ namespace OfficialPlugins.FrbUpdater
                     //PluginManager.ReceiveError("Unable to download " + fileData.ServerFile);
                     continue;
                 }
+
             }
         }
 
-        private void DoDownloadAndSaveFile(ref bool cancelled, FileData fileData, Uri url, HttpWebResponse response)
+        private async void DoDownloadAndSaveFile(FileData fileData, Uri url, HttpWebResponse response)
         {
             int bytesDownloaded = 0;
             var fileSize = response.ContentLength;
             var fileTimeStamp = response.LastModified;
 
-            using (var mClient = new WebClient())
+            using (var mClient = new HttpClient())
             {
                 if (!AlreadyDownloaded(fileData, fileTimeStamp))
                 {
-                    using (var webStream = mClient.OpenRead(url))
+                    using (var webStream = await mClient.GetStreamAsync(url))
                     {
                         using (var fileStream = new FileStream(fileData.DiskFile, FileMode.Create, FileAccess.Write,
                                                         FileShare.None))
@@ -273,11 +281,18 @@ namespace OfficialPlugins.FrbUpdater
                                             (byteBuffer.Length / (double)(1024 * 1024)).ToString("0.00") + " MB";
                                         lblSpeed.Text = _speed;
                                         lblFileName.Text = _fileName;
-                                        pbValue.Value = (int)(100 * bytesRead / (float)fileSize);
+                                        pbValue.Value = (int)(100 * bytesDownloaded / (float)fileSize);
 
                                     };
 
-                                    lblSpeed.Invoke(updateDelegate);
+                                    try
+                                    {
+                                        lblSpeed.Invoke(updateDelegate);
+                                    }
+                                    catch(InvalidOperationException)
+                                    {
+                                        // do nothing, at times this can happen before the view is visible. It's okay, just carry on...
+                                    }
 
 
                                 }
@@ -342,10 +357,18 @@ namespace OfficialPlugins.FrbUpdater
 
             try
             {
+                // give the downloads a second to settle:
+                System.Threading.Thread.Sleep(1_000);
                 //Copy files
                 foreach (var fileData in mDownloadedFiles)
                 {
-                    File.Copy(fileData.DiskFile, fileData.ProjectFile, true);
+
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                    {
+                        File.Copy(fileData.DiskFile, fileData.ProjectFile, true);
+                        // increase the number and sleep a bit to avoi problems:
+                    }, numberOfTimesToTry:6, msSleepBetweenAttempts:400);
+
                 }
             }
             catch (Exception exception)

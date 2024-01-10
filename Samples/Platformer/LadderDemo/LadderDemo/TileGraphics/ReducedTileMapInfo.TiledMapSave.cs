@@ -91,16 +91,39 @@ namespace TMXGlueLib.DataTypes
 
         }
 
+        static List<AbstractMapLayer> GetAllMapLayers(TiledMapSave tiledMapSave)
+        {
+            var layers = new List<AbstractMapLayer>();
+            layers.AddRange(tiledMapSave.MapLayers);
+
+            foreach (var group in tiledMapSave.Group)
+            {
+                GetAllMapLayers(group, layers);
+            }
+
+            return layers;
+        }
+
+        static void GetAllMapLayers(LayerGroup layerGroup, List<AbstractMapLayer> layers)
+        {
+            layers.AddRange(layerGroup.MapLayers);
+            foreach (var group in layerGroup.Group)
+            {
+                GetAllMapLayers(group, layers);
+            }
+        }
+
         private static void CreateFromTiledMapSave(TiledMapSave tiledMapSave, string tmxDirectory, FileReferenceType referenceType,
             ReducedTileMapInfo reducedTileMapInfo)
         {
             ReducedLayerInfo reducedLayerInfo = null;
 
-            for (int i = 0; i < tiledMapSave.MapLayers.Count; i++)
+            var allLayers = GetAllMapLayers(tiledMapSave);
+            for (int i = 0; i < allLayers.Count; i++)
             {
                 string directory = tmxDirectory;
 
-                var tiledLayer = tiledMapSave.MapLayers[i];
+                var tiledLayer = allLayers[i];
 
                 string texture = null;
 
@@ -164,8 +187,8 @@ namespace TMXGlueLib.DataTypes
                     }
                 }
 
-                int tileWidth = FlatRedBall.Math.MathFunctions.RoundToInt(tiledMapSave.tilewidth);
-                int tileHeight = FlatRedBall.Math.MathFunctions.RoundToInt(tiledMapSave.tileheight);
+                int tileWidth = tiledMapSave.tilewidth;
+                int tileHeight = tiledMapSave.tileheight;
 
                 reducedLayerInfo = new ReducedLayerInfo
                 {
@@ -192,7 +215,7 @@ namespace TMXGlueLib.DataTypes
 
                 else if (tiledLayer is mapObjectgroup)
                 {
-                    AddObjectLayerTiles(reducedLayerInfo, tiledLayer, tileSet, firstGid, tileWidth, tileHeight);
+                    AddObjectLayerTiles(reducedLayerInfo, tiledLayer, tileSet, tileWidth, tileHeight);
                 }
             }
         }
@@ -201,7 +224,7 @@ namespace TMXGlueLib.DataTypes
         private static void AddTileLayerTiles(TiledMapSave tiledMapSave, ReducedLayerInfo reducedLayerInfo, int i, AbstractMapLayer tiledLayer, Tileset tileSet, int tileWidth, int tileHeight)
         {
             var asMapLayer = tiledLayer as MapLayer;
-            var count = asMapLayer.data[0].tiles.Count;
+            var count = asMapLayer.data[0].tiles.Length;
             for (int dataId = 0; dataId < count; dataId++)
             {
                 var dataAtIndex = asMapLayer.data[0].tiles[dataId];
@@ -273,7 +296,7 @@ namespace TMXGlueLib.DataTypes
             }
         }
 
-        private static void AddObjectLayerTiles(ReducedLayerInfo reducedLayerInfo, AbstractMapLayer tiledLayer, Tileset tileSet, uint? gid, int tileWidth, int tileHeight)
+        private static void AddObjectLayerTiles(ReducedLayerInfo reducedLayerInfo, AbstractMapLayer tiledLayer, Tileset tileSet, int tileWidth, int tileHeight)
         {
             var asMapLayer = tiledLayer as mapObjectgroup;
 
@@ -297,15 +320,15 @@ namespace TMXGlueLib.DataTypes
 
                     quad.RotationDegrees = (float)objectInstance.Rotation;
 
-                    quad.FlipFlags = (byte)(gid.Value & 0xf0000000 >> 7);
+                    quad.FlipFlags = (byte)(objectInstance.gid & 0xf0000000 >> 7);
 
-                    var valueWithoutFlip = gid.Value & 0x0fffffff;
+                    var valueWithoutFlip = objectInstance.gid & 0x0fffffff;
 
                     int leftPixelCoord;
                     int topPixelCoord;
                     int rightPixelCoord;
                     int bottomPixelCoord;
-                    TiledMapSave.GetPixelCoordinatesFromGid(gid.Value, tileSet,
+                    TiledMapSave.GetPixelCoordinatesFromGid((uint)valueWithoutFlip, tileSet,
                         out leftPixelCoord, out topPixelCoord, out rightPixelCoord, out bottomPixelCoord);
 
                     quad.LeftTexturePixel = (ushort)Math.Min(leftPixelCoord, rightPixelCoord);

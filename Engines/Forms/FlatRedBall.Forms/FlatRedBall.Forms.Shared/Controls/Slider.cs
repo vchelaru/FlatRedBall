@@ -20,6 +20,8 @@ namespace FlatRedBall.Forms.Controls
 
         public bool IsMoveToPointEnabled { get; set; }
 
+        public bool IsThumbGrabbed => GuiManager.Cursor.WindowPushed == this.thumb?.Visual;
+
         public List<Keys> IgnoredKeys => throw new NotImplementedException();
 
         public bool TakingInput => throw new NotImplementedException();
@@ -32,12 +34,12 @@ namespace FlatRedBall.Forms.Controls
 
         #region Events
 
-        #endregion
-
         public event FocusUpdateDelegate FocusUpdate;
 
         public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
         public event Action<int> GenericGamepadButtonPushed;
+
+        #endregion
 
         #region Initialize
 
@@ -57,6 +59,9 @@ namespace FlatRedBall.Forms.Controls
             Maximum = 100;
             LargeChange = 25;
             SmallChange = 5;
+
+            // by default sliders use left/right to change the slider value
+            this.IsUsingLeftAndRightGamepadDirectionsForNavigation = false;
         }
 
         protected override void ReactToVisualChanged()
@@ -118,6 +123,7 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandleTrackPush(IWindow window)
         {
+            var valueBefore = Value;
             if(IsMoveToPointEnabled)
             {
                 var left = Track.GetAbsoluteX();
@@ -150,6 +156,11 @@ namespace FlatRedBall.Forms.Controls
 
                     ApplyValueConsideringSnapToTicks(newValue);
                 }
+            }
+
+            if(valueBefore != Value)
+            {
+                RaiseValueChangedByUi();
             }
         }
 
@@ -254,6 +265,8 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void UpdateThumbPositionToCursorDrag(Cursor cursor)
         {
+            var valueBefore = Value;
+
             var cursorScreenX = cursor.GumX();
 
             var cursorXRelativeToTrack = cursorScreenX - Track.GetAbsoluteX();
@@ -292,6 +305,10 @@ namespace FlatRedBall.Forms.Controls
             {
                 Value = Minimum;
             }
+            if (valueBefore != Value)
+            {
+                RaiseValueChangedByUi();
+            }
         }
 
         #endregion
@@ -306,9 +323,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 var gamepad = gamepads[i];
 
-                HandleGamepadNavigation(gamepad, 
-                    // for sliders, left and right are reserved for changing the value
-                    considerLeftAndRight:false);
+                HandleGamepadNavigation(gamepad);
 
 
                 if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadLeft) ||
@@ -343,7 +358,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 var gamepad = genericGamepads[i];
 
-                HandleGamepadNavigation(gamepad, considerLeftAndRight:false);
+                HandleGamepadNavigation(gamepad);
 
                 var leftStick = gamepad.AnalogSticks.Length > 0
                     ? gamepad.AnalogSticks[0]

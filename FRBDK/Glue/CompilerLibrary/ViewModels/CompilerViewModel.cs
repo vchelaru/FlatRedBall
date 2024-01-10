@@ -76,6 +76,20 @@ namespace CompilerLibrary.ViewModels
             set => Set(value);
         }
 
+        public bool IsConnectedToGame
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsRunning))]
+        [DependsOn(nameof(IsConnectedToGame))]
+        public Visibility ConnectedButtonVisibility => (IsRunning && IsConnectedToGame).ToVisibility();
+
+        [DependsOn(nameof(IsRunning))]
+        [DependsOn(nameof(IsConnectedToGame))]
+        public Visibility CancelButtonVisibility => (IsRunning && !IsConnectedToGame).ToVisibility();
+
         [DependsOn(nameof(IsCompiling))]
         public Visibility BuildingActivitySpinnerVisibility => IsCompiling.ToVisibility();
 
@@ -103,6 +117,48 @@ namespace CompilerLibrary.ViewModels
 
         [DependsOn(nameof(IsRunning))]
         public Visibility WhileRunningViewVisibility => IsRunning.ToVisibility();
+
+        [DependsOn(nameof(IsRunning))]
+        [DependsOn(nameof(IsWindowEmbedded))]
+        public Visibility WhileRunningEmbeddedVisibility => (IsRunning && IsWindowEmbedded).ToVisibility();
+
+        public bool HasWindowPointer
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsWindowEmbedded
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(HasWindowPointer))]
+        [DependsOn(nameof(IsWindowEmbedded))]
+        [DependsOn(nameof(IsRunning))]
+        public string GameRunningNotInWindowDisplay
+        {
+            get
+            {
+                if(!IsRunning)
+                {
+                    return string.Empty;
+                }
+                else if(!HasWindowPointer)
+                {
+                    return "The game is running in the background (no window is visible)";
+                }
+                else if(!IsWindowEmbedded)
+                {
+                    return "The game is running in an external window";
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
 
         [DependsOn(nameof(IsEditChecked))]
         [DependsOn(nameof(IsRunning))]
@@ -212,6 +268,11 @@ namespace CompilerLibrary.ViewModels
             set => Set(value);
         }
 
+        public ObservableCollection<string> AvailableConfigurations
+        {
+            get; set;
+        }
+
         public List<string> GameSpeedList { get; set; } =
             new List<string>
             {
@@ -290,53 +351,11 @@ namespace CompilerLibrary.ViewModels
         [DependsOn(nameof(PlayOrEdit))]
         public Visibility FocusButtonVisibility => (PlayOrEdit == PlayOrEdit.Edit).ToVisibility();
 
-        public double LastWaitTimeInSeconds
-        {
-            get => Get<double>();
-            set => Set(value);
-        }
-
         [DependsOn(nameof(PlayOrEdit))]
         [DependsOn(nameof(IsRunning))]
         public Visibility ConnectedFrameVisibility
         {
             get => (PlayOrEdit == PlayOrEdit.Edit && IsRunning).ToVisibility();
-        }
-
-        [DependsOn(nameof(LastWaitTimeInSeconds))]
-        public string ConnectedString
-        {
-            get
-            {
-                if(LastWaitTimeInSeconds < 1)
-                {
-                    return $"Connected {LastWaitTimeInSeconds:0.0}";
-                }
-                else
-                {
-                    return $"Waiting for game {LastWaitTimeInSeconds:0.0}";
-                }
-            }
-        }
-
-        [DependsOn(nameof(LastWaitTimeInSeconds))]
-        public Brush ConnectedFrameBackgroundColor
-        {
-            get
-            {
-                if(LastWaitTimeInSeconds < 1)
-                {
-                    return Brushes.Green;
-                }
-                else if(LastWaitTimeInSeconds < 3)
-                {
-                    return Brushes.Yellow;
-                }
-                else
-                {
-                    return Brushes.Red;
-                }
-            }
         }
 
         public bool HasDraggedTreeNodeOverView
@@ -400,8 +419,13 @@ namespace CompilerLibrary.ViewModels
 
         CompilerViewModel()
         {
+            AvailableConfigurations = new ObservableCollection<string>();
+
             CurrentGameSpeed = "100%";
             ToolbarEntitiesAndStates = new ObservableCollection<ToolbarEntityAndStateViewModel>();
+
+            AvailableConfigurations.Add("Debug");
+            AvailableConfigurations.Add("Release");
         }
 
         #endregion

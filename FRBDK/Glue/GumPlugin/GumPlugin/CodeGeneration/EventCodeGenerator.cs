@@ -63,7 +63,7 @@ namespace GumPlugin.CodeGeneration
             bool exposeChildrenEvents = false;
             if (exposeEventsAsObject is bool)
             {
-                exposeChildrenEvents = (bool)elementSave.GetValueFromThisOrBase("ExposeChildrenEvents");
+                exposeChildrenEvents = (bool)exposeEventsAsObject;
             }
 
             List<EventSave> exposedChildrenEvents = new List<EventSave>();

@@ -48,7 +48,7 @@ namespace OfficialPlugins.ErrorPlugin
                 .Add(new ErrorCreateRemoveLogic());
 
             control = new ErrorWindow();
-            tab = CreateAndAddTab(control, "Errors", TabLocation.Bottom);
+            tab = CreateAndAddTab(control, Localization.Texts.Error, TabLocation.Bottom);
 
             errorListViewModel = GlueState.Self.ErrorList;
             errorListViewModel.Errors.CollectionChanged += HandleErrorsCollectionChanged;
@@ -58,7 +58,7 @@ namespace OfficialPlugins.ErrorPlugin
 
 
             this.ReactToLoadedGlux += HandleLoadedGlux;
-            this.ReactToFileChangeHandler += HandleFileChanged;
+            this.ReactToFileChange += HandleFileChanged;
             this.ReactToFileRemoved += HandleFileRemoved;
             this.ReactToUnloadedGlux += HandleUnloadedGlux;
             this.ReactToFileReadError += HandleFileReadError ;
@@ -66,7 +66,7 @@ namespace OfficialPlugins.ErrorPlugin
             RefreshCommands.RefreshErrorsAction = () => RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
         }
 
-        public void RefreshErrors() => RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
+        public void RefreshAllErrors() => RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
 
         private void HandleRefreshClicked(object sender, EventArgs e)
         {
@@ -102,15 +102,15 @@ namespace OfficialPlugins.ErrorPlugin
             RefreshLogic.HandleReferencedFileRemoved(removedFile, errorListViewModel);
         }
 
-        private void HandleFileChanged(string fileName)
+        private void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)
         {
-            RefreshLogic.HandleFileChange(fileName, errorListViewModel);
+            RefreshLogic.HandleFileChange(filePath, errorListViewModel);
         }
 
         private void RefreshTabText()
         {
             var numberOfErrors = errorListViewModel.Errors.Count;
-            var tabText = $"Errors ({numberOfErrors})";
+            var tabText = $"{Localization.Texts.Errors} ({numberOfErrors})";
 
             if(tab.Title != tabText)
             {

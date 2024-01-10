@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.SpritePlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              Height="36" d:DesignWidth="120">
     <Grid>
-        <Button Click="Button_Click">Map Sprite Texture</Button>
+        <Button Click="Button_Click" Content="{x:Static localization:Texts.MapSpriteTexture}" />
     </Grid>
 </UserControl>

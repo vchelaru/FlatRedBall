@@ -4,14 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using Microsoft.Xna.Framework.Graphics;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 {
@@ -21,7 +20,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         CameraSettingsControl control;
         DisplaySettingsViewModel viewModel = new DisplaySettingsViewModel();
         PluginTab tab;
-            
+        CameraToolbar cameraToolbar;
+
         public static CameraMainPlugin Self { get; private set; }
 
         private bool respondToViewModelChanges = true;
@@ -33,18 +33,27 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             viewModel.PropertyChanged += HandleDisplaySettingsChanged;
 
             this.ReactToLoadedGlux += HandleLoadedGlux;
+            this.ReactToUnloadedGlux += HandleUnloadedGlux;
 
-            base.AddMenuItemTo(
-                "Camera Settings", HandleCameraSettings, "Settings");
+            cameraToolbar = new CameraToolbar();
 
-            base.AddToToolBar(new CameraToolbar(), "Standard");
+            base.AddMenuItemTo(L.Texts.CameraSettings, L.MenuIds.CameraSettingsId, HandleCameraSettings, L.MenuIds.SettingsId);
+        }
+
+        private void HandleUnloadedGlux()
+        {
+            base.RemoveFromToolbar(cameraToolbar, "Standard");
         }
 
         private void HandleLoadedGlux()
         {
+
+                
+            base.AddToToolBar(cameraToolbar, "Standard");
+            
             // When the project loads, immediately set the ATI so 
             // that Glue behaves properly
-            if(GlueState.Self.CurrentGlueProject?.DisplaySettings != null)
+            if (GlueState.Self.CurrentGlueProject?.DisplaySettings != null)
             {
                 respondToViewModelChanges = false;
                 {
@@ -71,7 +80,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
                     // This should only modify gluj, this will be faster.
 
-                    //GlueCommands.Self.GluxCommands.SaveGlux();
+                    //GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     GlueCommands.Self.GluxCommands.SaveGlujFile(Managers.TaskExecutionPreference.AddOrMoveToEnd);
 
                     if(CameraSetupCodeGenerator.ShouldGenerateCodeWhenPropertyChanged(e.PropertyName))

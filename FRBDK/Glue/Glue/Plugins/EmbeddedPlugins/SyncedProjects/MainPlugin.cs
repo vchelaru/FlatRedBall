@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
 using FlatRedBall.Glue.Controls.ProjectSync;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects.Controls;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using GlueFormsCore.Plugins.EmbeddedPlugins.SyncedProjects.ViewModels;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 {
@@ -23,11 +23,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
         public override void StartUp()
         {
-            this.AddMenuItemTo("View Projects", HandleSyncedProjectsClick, "Project", preferredIndex:0);
+            this.AddMenuItemTo(L.Texts.ProjectView, L.MenuIds.ProjectViewId, HandleSyncedProjectsClick, L.MenuIds.ProjectId, preferredIndex:0);
 
             this.ReactToLoadedGlux += HandleGluxLoad;
+            this.ReactToUnloadedGlux += HandleGluxUnload;
 
             AddToolbarUi();
+        }
+
+        private void HandleGluxUnload()
+        {
+            toolbarControlViewModel.HasProjectLoaded = false;
         }
 
         private void HandleGluxLoad()
@@ -39,6 +45,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
             var value = openAutomaticallyProperty?.Value as bool? == true;
             toolbarControlViewModel.IsOpenVisualStudioAutomaticallyChecked = value;
+            toolbarControlViewModel.HasProjectLoaded = true;
 
             if (value)
             {
@@ -76,7 +83,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                         glueProject.Properties.Add(openAutomaticallyProperty);
                     }
                     openAutomaticallyProperty.Value = toolbarControlViewModel.IsOpenVisualStudioAutomaticallyChecked;
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     break;
             }
         }

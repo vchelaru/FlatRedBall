@@ -44,24 +44,58 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         #region Static ImageSource Members
 
-        public static ImageSource CodeIcon;
-        public static ImageSource CollisionsIcon;
-        public static ImageSource CollisionIcon;
-        public static ImageSource EntityIcon;
-        public static ImageSource EntityDerivedIcon;
-        public static ImageSource EntityInstanceIcon;
-        public static ImageSource EntityInstanceListIcon;
-        public static ImageSource EventIcon;
-        public static ImageSource FileIcon;
-        public static ImageSource FileIconWildcard;
-        public static ImageSource FolderClosedIcon;
-        public static ImageSource FolderOpenIcon;
-        public static ImageSource LayersIcon;
-        public static ImageSource LayerIcon;
-        public static ImageSource ScreenIcon;
-        public static ImageSource ScreenStartupIcon;
-        public static ImageSource StateIcon;
-        public static ImageSource VariableIcon;
+        public static BitmapImage CodeIcon;
+        public static BitmapImage CollisionsIcon;
+        public static BitmapImage CollisionIcon;
+        public static BitmapImage EntityIcon;
+        public static BitmapImage EntityDerivedIcon;
+        public static BitmapImage EntityInstanceIcon;
+        public static BitmapImage EntityInstanceDerivedIcon;
+        public static BitmapImage EntityInstanceIsContainerIcon;
+        public static BitmapImage EntityInstanceListIcon;
+        public static BitmapImage EntityInstanceListDerivedIcon;
+        public static BitmapImage EventIcon;
+        public static BitmapImage FileIcon;
+        public static BitmapImage FileIconWildcard;
+        public static BitmapImage FolderClosedIcon;
+        public static BitmapImage FolderOpenIcon;
+        public static BitmapImage LayersIcon;
+        public static BitmapImage LayerIcon;
+        public static BitmapImage ScreenIcon;
+        public static BitmapImage ScreenStartupIcon;
+        public static BitmapImage StateIcon;
+        public static BitmapImage TileShapeCollectionIcon;
+        public static BitmapImage VariableIcon;
+        public static BitmapImage VariableIconDerived;
+
+        public static BitmapImage FromSource(string source)
+        {
+            if (source == CodeIcon.UriSource.OriginalString) return CodeIcon;
+            if (source == CollisionsIcon.UriSource.OriginalString) return CollisionsIcon;
+            if (source == CollisionIcon.UriSource.OriginalString) return CollisionIcon;
+            if (source == EntityIcon.UriSource.OriginalString) return EntityIcon;
+            if (source == EntityDerivedIcon.UriSource.OriginalString) return EntityDerivedIcon;
+            if (source == EntityInstanceIcon.UriSource.OriginalString) return EntityInstanceIcon;
+            if (source == EntityInstanceDerivedIcon.UriSource.OriginalString) return EntityInstanceDerivedIcon;
+            if (source == EntityInstanceIsContainerIcon.UriSource.OriginalString) return EntityInstanceIsContainerIcon;
+            if (source == EntityInstanceListIcon.UriSource.OriginalString) return EntityInstanceListIcon;
+            if (source == EntityInstanceListDerivedIcon.UriSource.OriginalString) return EntityInstanceListDerivedIcon;
+            if (source == EventIcon.UriSource.OriginalString) return EventIcon;
+            if (source == FileIcon.UriSource.OriginalString) return FileIcon;
+            if (source == FileIconWildcard.UriSource.OriginalString) return FileIconWildcard;
+            if (source == FolderClosedIcon.UriSource.OriginalString) return FolderClosedIcon;
+            if (source == FolderOpenIcon.UriSource.OriginalString) return FolderOpenIcon;
+            if (source == LayersIcon.UriSource.OriginalString) return LayersIcon;
+            if (source == LayerIcon.UriSource.OriginalString) return LayerIcon;
+            if (source == ScreenIcon.UriSource.OriginalString) return ScreenIcon;
+            if (source == ScreenStartupIcon.UriSource.OriginalString) return ScreenStartupIcon;
+            if (source == StateIcon.UriSource.OriginalString) return StateIcon;
+            if (source == TileShapeCollectionIcon.UriSource.OriginalString) return TileShapeCollectionIcon;
+            if (source == VariableIcon.UriSource.OriginalString) return VariableIcon;
+            if (source == VariableIconDerived.UriSource.OriginalString) return VariableIconDerived;
+
+            return null;
+        }
 
         #endregion
 
@@ -96,9 +130,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             set => Set(value);
         }
 
-        public ImageSource ImageSource
+        public BitmapImage ImageSource
         {
-            get => Get<ImageSource>();
+            get => Get<BitmapImage>();
             set => Set(value);
         }
 
@@ -171,11 +205,23 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             get => Get<bool>();
             set
             {
-                if (Set(value) && value)
+                if (Set(value))
                 {
-                    SelectionLogic.HandleSelected(this);
+                    if(value)
+                    {
+                        SelectionLogic.HandleSelected(this, focus:true, replaceSelection:true);
+                    }
+                    else
+                    {
+                        SelectionLogic.HandleDeselection(this);
+                    }
                 }
             }
+        }
+
+        public void SetSelectNoSelectionLogic(bool isSelected)
+        {
+            Set(isSelected, nameof(IsSelected));
         }
 
         public int Level
@@ -196,7 +242,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             EntityIcon = LoadIcon("icon_entity");
             EntityDerivedIcon = LoadIcon("icon_entity_derived");
             EntityInstanceIcon = LoadIcon("icon_entity_instance");
+            EntityInstanceDerivedIcon = LoadIcon("icon_entity_instance_derived");
+            EntityInstanceIsContainerIcon = LoadIcon("icon_entity_instance_iscontainer");
             EntityInstanceListIcon = LoadIcon("icon_entity_list");
+            EntityInstanceListDerivedIcon = LoadIcon("icon_entity_list_derived");
             EventIcon = LoadIcon("icon_event");
             FileIcon = LoadIcon("icon_file_standard");
             FileIconWildcard = LoadIcon("icon_file_wildcard");
@@ -207,9 +256,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             ScreenIcon = LoadIcon("icon_screen");
             ScreenStartupIcon = LoadIcon("icon_screen_startup");
             StateIcon = LoadIcon("icon_state");
+            TileShapeCollectionIcon = LoadIcon("icon_tile_shape_collection");
             VariableIcon = LoadIcon("icon_variable");
+            VariableIconDerived = LoadIcon("icon_variable_derived");
 
-            ImageSource LoadIcon(string iconName)
+            BitmapImage LoadIcon(string iconName)
             {
                 var location = $"/OfficialPluginsCore;component/TreeViewPlugin/Content/{iconName}.png";
                 var bitmapImage = new BitmapImage(new Uri(location, UriKind.Relative));
@@ -248,6 +299,23 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
+        internal void DeselectResursively(bool callSelectionLogic)
+        {
+            if(callSelectionLogic)
+            {
+                this.IsSelected = false;
+            }
+            else
+            {
+                SetSelectNoSelectionLogic(false);
+            }    
+
+            foreach (var child in this.Children)
+            {
+                child.DeselectResursively(callSelectionLogic);
+            }
+        }
+
         internal void CollapseToDefinitions()
         {
             if (this.Tag is GlueElement)
@@ -276,11 +344,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     container.Focus();
                     System.Windows.Input.Keyboard.Focus(container);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // not sure why but it can crash. Added breakpoint here to see if I can catch what's up. If it does fail for
                     // other users we prob don't want to do anything, just fail silently.
-                    int m = 3;
                 }
             }
         }
@@ -462,13 +529,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 else
                 {
                     // The RFS may be contained, but see if the file names match
-                    string rfsName = FileManager.Standardize(referencedFileSave.Name, null, false).ToLower();
-                    string treeNodeFile = FileManager.Standardize(treeNode.GetRelativeFilePath(), null, false).ToLower();
+                    string rfsName = FileManager.Standardize(referencedFileSave.Name, null, false);
+                    string treeNodeFile = FileManager.Standardize(treeNode.GetRelativeFilePath(), null, false);
 
                     // We first need to make sure that the file is part of GlobalContentFiles.
                     // If it is, then we may have tree node in the wrong folder, so let's get rid
                     // of it.  If it doesn't start with globalcontent/ then we shouldn't remove it here.
-                    if (rfsName.StartsWith("globalcontent/") && rfsName != treeNodeFile)
+                    if (rfsName.StartsWith("globalcontent/", StringComparison.OrdinalIgnoreCase) && !String.Equals(rfsName, treeNodeFile, StringComparison.OrdinalIgnoreCase))
                     {
                         treeNode.Parent.Remove(treeNode);
                     }

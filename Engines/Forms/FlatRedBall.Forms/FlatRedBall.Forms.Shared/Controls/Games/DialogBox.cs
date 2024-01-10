@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Forms.Controls.Games
 {
+    #region DialogPageTask
+
     public class DialogPageTask
     {
         public string Page { get; set; }
@@ -25,6 +27,8 @@ namespace FlatRedBall.Forms.Controls.Games
 
     }
 
+    #endregion
+
     public class DialogBox : FrameworkElement, IInputReceiver
     {
         #region Fields/Properties
@@ -37,6 +41,8 @@ namespace FlatRedBall.Forms.Controls.Games
 
         List<DialogPageTask> Pages = new List<DialogPageTask>();
 
+        public int PagesRemaining => Pages.Count;
+
         static global::Gum.DataTypes.Variables.StateSave NoTextShownState;
 
         string currentPageText;
@@ -47,7 +53,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public List<Keys> IgnoredKeys => throw new NotImplementedException();
 
-        public bool TakingInput => throw new NotImplementedException();
+        public bool TakingInput { get; set; } = true;
 
         public IInputReceiver NextInTabSequence { get; set; }
 
@@ -61,11 +67,26 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
+        /// <summary>
+        /// The number of letters to show per second when printing out in "typewriter style". If null, 0, or negative, then the text will be shown immediately.
+        /// </summary>
+        public int? LettersPerSecond { get; set; } = 20;
+
+        public bool TypeNextPageImmediatelyOnCancelPush { get; set; } = true;
+
         #endregion
 
         #region Events
 
+        /// <summary>
+        /// Raised when the dialog box finishes showing all pages.
+        /// </summary>
         public event EventHandler FinishedShowing;
+
+        /// <summary>
+        /// Raised whenever a page finishes typing out, either automatically or in response to input.
+        /// </summary>
+        public event EventHandler FinishedTypingPage;
 
         public event EventHandler PageAdvanced;
 
@@ -111,16 +132,21 @@ namespace FlatRedBall.Forms.Controls.Games
 
         #endregion
 
-        public void Show(string text)
+        /// <summary>
+        /// Shows the dialog box (adds it to managers and sets IsVisible to true) and begins showing the text.
+        /// </summary>
+        /// <param name="text">The text to print out, either immediately or letter-by-letter according to LettersPerSecond.</param>
+        /// <param name="frbLayer">The FlatRedBall Layer to add the DialogBox to. If null, the dialog box will not be layered. This will attempt to use a Gum layer matching the FRB layer. This will automatically work if the Layer has been added through the FlatRedBall Editor.</param>
+        public void Show(string text, FlatRedBall.Graphics.Layer frbLayer = null)
         {
-            base.Show();
+            base.Show(frbLayer);
             showNextPageOnDismissedPage = true;
-            ShowInternal(text);
+            ShowInternal(text, forceImmediatePrint:false);
         }
 
-        public void Show(IEnumerable<string> pages)
+        public void Show(IEnumerable<string> pages, FlatRedBall.Graphics.Layer frbLayer = null)
         {
-            base.Show();
+            base.Show(frbLayer);
 
             showNextPageOnDismissedPage = true;
             if (pages.Any())
@@ -134,9 +160,16 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
+        /// <summary>
+        /// Shows the dialog box (adds it to managers and sets IsVisible to true) and begins showing the text.
+        /// </summary>
+        /// <param name="text">The text to print out, either immediately or letter-by-letter according to LettersPerSecond.</param>
+        /// <returns>A task which completes when the text has been displayed and the DialogBox has been dismissed.</returns>
+        public Task ShowAsync(string text) => ShowAsync(new string[] { text });
+
         public async Task ShowAsync(IEnumerable<string> pages, FlatRedBall.Graphics.Layer frbLayer = null)
         {
-            base.Show();
+            base.Show(frbLayer);
 
             showNextPageOnDismissedPage = false;
             if (pages.Any())
@@ -145,7 +178,7 @@ namespace FlatRedBall.Forms.Controls.Games
                 {
                     this.Pages.Add(page);
                 }
-                await ShowNextPageAsync();
+                await StartShowAllPagesLoop();
             }
         }
 
@@ -157,10 +190,19 @@ namespace FlatRedBall.Forms.Controls.Games
             if (pageTasks.Any())
             {
                 this.Pages.AddRange(pageTasks);
-                await ShowNextPageAsync();
+                await StartShowAllPagesLoop();
             }
         }
 
+        // September 28, 2023
+        // Vic asks - why do we 
+        // have ShowDialog? Is it
+        // to match the ShowDialog 
+        // from the base FrameworkElement?
+        // If so, what's the poinnt because
+        // this doesn't override the base parameters.
+        // It requires pages. 
+        [Obsolete("Use ShowAsync")]
         public async Task<bool?> ShowDialog(IEnumerable<string> pageTasks, FlatRedBall.Graphics.Layer frbLayer = null)
         {
 #if DEBUG
@@ -176,6 +218,8 @@ namespace FlatRedBall.Forms.Controls.Games
             return null;
         }
 
+        // See comment above about why this is obsolete.
+        [Obsolete("Use ShowAsync")]
         public async Task<bool?> ShowDialog(IEnumerable<DialogPageTask> pageTasks, FlatRedBall.Graphics.Layer frbLayer = null)
         {
 #if DEBUG
@@ -201,22 +245,24 @@ namespace FlatRedBall.Forms.Controls.Games
             return null;
         }
 
-        private void ShowNextPage()
+        public void ShowNextPage(bool forceImmediatePrint = false)
         {
             var page = Pages.FirstOrDefault();
 
             if(page != null)
             {
-                ShowInternal(page.Page);
+                ShowInternal(page.Page, forceImmediatePrint);
                 Pages.RemoveAt(0);
             }
         }
 
-        private async Task ShowNextPageAsync()
+        bool wasLastAdvancePressPrintImmediate = false;
+        private async Task StartShowAllPagesLoop()
         {
             var page = Pages.FirstOrDefault();
+            wasLastAdvancePressPrintImmediate = false;
 
-            while(page != null)
+            while (page != null)
             {
                 // remove it before calling ShowInternal so that the dialog box hides if there are no pages
                 Pages.RemoveAt(0);
@@ -238,7 +284,10 @@ namespace FlatRedBall.Forms.Controls.Games
                 {
                     this.IsVisible = true;
                     // todo - do we want to always focus it?
-                    this.IsFocused = true;
+                    // Update August 9, 2023 - no, don't always 
+                    // focus it. The user may have intentionally 
+                    // unfocused:
+                    //this.IsFocused = true;
 
                     var semaphoreSlim = new SemaphoreSlim(1);
 
@@ -248,7 +297,7 @@ namespace FlatRedBall.Forms.Controls.Games
                     this.PageAdvanced += ReleaseSemaphor;
 
                     semaphoreSlim.Wait();
-                    ShowInternal(page.Page);
+                    ShowInternal(page.Page, forceImmediatePrint: wasLastAdvancePressPrintImmediate);
 
                     await semaphoreSlim.WaitAsync();
                     semaphoreSlim.Dispose();
@@ -259,7 +308,7 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
-        private void ShowInternal(string text)
+        private void ShowInternal(string text, bool forceImmediatePrint)
         {
             IsVisible = true;
 
@@ -272,28 +321,50 @@ namespace FlatRedBall.Forms.Controls.Games
             // go through the component instead of the core text object to force a layout refresh if necessary
             textComponent.SetProperty("Text", text);
 
-            coreTextObject.MaxLettersToShow = 0;
 
-            var allTextShownState = new global::Gum.DataTypes.Variables.StateSave();
-            allTextShownState.Variables.Add(new global::Gum.DataTypes.Variables.VariableSave
+            var shouldPrintCharacterByCharacter = LettersPerSecond > 0 && !forceImmediatePrint;
+            if(shouldPrintCharacterByCharacter)
             {
-                Name = "TextInstance.MaxLettersToShow",
-                Value = text.Length,
-                SetsValue = true
-            });
+                coreTextObject.MaxLettersToShow = 0;
+                var allTextShownState = new global::Gum.DataTypes.Variables.StateSave();
+                allTextShownState.Variables.Add(new global::Gum.DataTypes.Variables.VariableSave
+                {
+                    Name = "TextInstance.MaxLettersToShow",
+                    Value = text.Length,
+                    SetsValue = true
+                });
 
-            const float lettersPerSecond = 20;
-            var duration = text.Length / lettersPerSecond;
+                var duration = text.Length / (float)LettersPerSecond;
 
-            showLetterTweener = this.Visual.InterpolateTo(NoTextShownState, allTextShownState, duration, InterpolationType.Linear, Easing.Out);
+                showLetterTweener = this.Visual.InterpolateTo(NoTextShownState, allTextShownState, duration, InterpolationType.Linear, Easing.Out);
 
-            if (continueIndicatorInstance != null)
-            {
-                continueIndicatorInstance.Visible = false;
+                if (continueIndicatorInstance != null)
+                {
+                    continueIndicatorInstance.Visible = false;
+                }
                 showLetterTweener.Ended += () =>
                 {
-                    continueIndicatorInstance.Visible = true;
+                    if (TakingInput && continueIndicatorInstance != null)
+                    {
+                        continueIndicatorInstance.Visible = true;
+                    }
+                    FinishedTypingPage?.Invoke(this, null);
                 };
+            }
+            else
+            {
+                coreTextObject.MaxLettersToShow = text.Length;
+
+                if (TakingInput && continueIndicatorInstance != null)
+                {
+                    continueIndicatorInstance.Visible = true;
+                }
+
+                if (continueIndicatorInstance != null)
+                {
+                    continueIndicatorInstance.Visible = true;
+                }
+                FinishedTypingPage?.Invoke(this, null);
             }
         }
 
@@ -301,7 +372,10 @@ namespace FlatRedBall.Forms.Controls.Games
 
         private void HandleClick(IWindow window)
         {
-            ReactToInput();
+            if(AdvancePageInputPredicate == null)
+            {
+                ReactToConfirmInput();
+            }
         }
 
         /// <summary>
@@ -310,37 +384,61 @@ namespace FlatRedBall.Forms.Controls.Games
         /// the async call will internally loop through all pages.
         /// </summary>
         bool showNextPageOnDismissedPage = true;
-        private void ReactToInput()
+        private void ReactToConfirmInput()
         {
+            ReactToInputForAdvancing(forceImmediatePrint: false);
+        }
+
+        private void ReactToCancelInput()
+        {
+            wasLastAdvancePressPrintImmediate = TypeNextPageImmediatelyOnCancelPush;
+            ReactToInputForAdvancing(forceImmediatePrint: true);
+        }
+
+        private void ReactToInputForAdvancing(bool forceImmediatePrint)
+        {
+            ////////////////////Early Out/////////////////////
+            if (!TakingInput)
+            {
+                return;
+            }
+            //////////////////End Early Out///////////////////
             var hasMoreToType = coreTextObject.MaxLettersToShow < currentPageText?.Length;
             if (hasMoreToType)
             {
                 showLetterTweener?.Stop();
 
-                if (continueIndicatorInstance != null)
+                if (continueIndicatorInstance != null && TakingInput)
                 {
                     continueIndicatorInstance.Visible = true;
                 }
 
                 coreTextObject.MaxLettersToShow = currentPageText.Length;
+
+                FinishedTypingPage?.Invoke(this, null);
             }
-            else if(Pages.Count > 0)
+            else if (Pages.Count > 0)
             {
-                if(showNextPageOnDismissedPage)
+                if (showNextPageOnDismissedPage)
                 {
-                    ShowNextPage();
+                    ShowNextPage(forceImmediatePrint);
                 }
 
                 PageAdvanced?.Invoke(this, null);
             }
             else
             {
-                this.IsVisible = false;
-                LastTimeDismissed = TimeManager.CurrentTime;
-                PageAdvanced?.Invoke(this, null);
-                FinishedShowing?.Invoke(this, null);
-                IsFocused = false;
+                Dismiss();
             }
+        }
+
+        public void Dismiss()
+        {
+            this.IsVisible = false;
+            LastTimeDismissed = TimeManager.CurrentTime;
+            PageAdvanced?.Invoke(this, null);
+            FinishedShowing?.Invoke(this, null);
+            IsFocused = false;
         }
 
         #endregion
@@ -369,7 +467,7 @@ namespace FlatRedBall.Forms.Controls.Games
             {
                 if(AdvancePageInputPredicate())
                 {
-                    ReactToInput();
+                    ReactToConfirmInput();
                 }
             }
             else
@@ -383,7 +481,12 @@ namespace FlatRedBall.Forms.Controls.Games
 
                     if(inputDevice.DefaultConfirmInput.WasJustPressed)
                     {
-                        ReactToInput();
+                        ReactToConfirmInput();
+                    }
+
+                    if(inputDevice.DefaultCancelInput.WasJustPressed)
+                    {
+                        ReactToCancelInput();
                     }
                 }
 
@@ -396,17 +499,26 @@ namespace FlatRedBall.Forms.Controls.Games
 
                     if (inputDevice.DefaultConfirmInput.WasJustPressed)
                     {
-                        ReactToInput();
+                        ReactToConfirmInput();
                     }
+
+                    if(inputDevice.DefaultCancelInput.WasJustPressed)
+                    {
+                        ReactToCancelInput();
+                    }
+                }
+                var keyboardAsInputDevice = InputManager.Keyboard as IInputDevice;
+
+                if(keyboardAsInputDevice.DefaultPrimaryActionInput.WasJustPressed)
+                {
+                    ReactToConfirmInput();
+                }
+                if(keyboardAsInputDevice.DefaultCancelInput.WasJustPressed)
+                {
+                    ReactToCancelInput();
                 }
             }
 
-            var keyboardAsInputDevice = InputManager.Keyboard as IInputDevice;
-
-            if(keyboardAsInputDevice.DefaultPrimaryActionInput.WasJustPressed)
-            {
-                ReactToInput();
-            }
         }
 
         public void OnGainFocus()

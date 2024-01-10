@@ -16,18 +16,21 @@ namespace OfficialPlugins.PathPlugin
     {
         public override string FriendlyName => "Path Plugin";
 
-        public override Version Version => new Version(1, 0);
-
-        public override bool ShutDown(PluginShutDownReason shutDownReason)
-        {
-            return true;
-        }
-
         public override void StartUp()
         {
             AddAssetTypeInfo(AssetTypeInfoManager.PathAssetTypeInfo);
 
             ReactToVariableAdded += HandleVariableAdded;
+
+            ReactToSelectedSubIndexChanged += HandleSelectedSubIndex;
+        }
+
+        private void HandleSelectedSubIndex(int? nullable)
+        {
+            if (nullable.HasValue)
+            {
+                AssetTypeInfoManager.HighlightIndex(nullable.Value);
+            }
         }
 
         private void HandleVariableAdded(CustomVariable newVariable)

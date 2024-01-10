@@ -235,7 +235,13 @@ namespace GlueControl.Models
             get; set;
         }
 
-        public bool IncludeInIVisible
+        public bool AttachToContainer
+        {
+            get;
+            set;
+        }
+
+        public bool AttachToCamera
         {
             get;
             set;
@@ -255,10 +261,26 @@ namespace GlueControl.Models
 
         [System.Xml.Serialization.XmlIgnore]
         [JsonIgnore]
+        public bool IsList
+        {
+            get
+            {
+                return SourceType == SourceType.FlatRedBallType &&
+                    (SourceClassType == "PositionedObjectList<T>" || SourceClassType == "FlatRedBall.Math.PositionedObjectList<T>");
+            }
+        }
+
+        [System.Xml.Serialization.XmlIgnore]
+        [JsonIgnore]
         public bool IsEditingLocked
         {
             get => Properties.GetValue<bool>(nameof(IsEditingLocked));
             set => Properties.SetValue(nameof(IsEditingLocked), value);
+        }
+
+        public string LayerOn
+        {
+            get; set;
         }
 
         string mSourceName;
@@ -381,7 +403,6 @@ namespace GlueControl.Models
             //mTypedMembersReadOnly = new ReadOnlyCollection<TypedMemberBase>(mTypedMembers);
             ////Events = new List<EventSave>();
 
-            IncludeInIVisible = true;
             IncludeInIClickable = true;
             IncludeInICollidable = true;
             //CallActivity = true;

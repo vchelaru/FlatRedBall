@@ -15,10 +15,11 @@ namespace FlatRedBall.AnimationEditorForms.Controls
 
     public partial class PreviewControls : UserControl
     {
-        #region Enums
+        #region Events
 
         public event EventHandler OnionSkinVisibleChange;
         public event EventHandler SpriteAlignmentChange;
+        public event EventHandler ShowGuidesChange;
 
         #endregion
 
@@ -79,6 +80,12 @@ namespace FlatRedBall.AnimationEditorForms.Controls
             {
                 this.OnionSkinCheckBox.Checked = value;
             }
+        }
+
+        public bool IsShowGuidesChecked
+        {
+            get => this.checkBox1.Checked;
+            set => this.checkBox1.Checked = value;
         }
 
         public PreviewControls()
@@ -171,6 +178,12 @@ namespace FlatRedBall.AnimationEditorForms.Controls
 
         }
 
-
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ShowGuidesChange != null)
+            {
+                ShowGuidesChange(this, null);
+            }
+        }
     }
 }

@@ -110,6 +110,26 @@ namespace GlueControl.Editing
             }
         }
 
+        decimal gridAlpha;
+        public decimal GridAlpha
+        {
+            get => gridAlpha;
+            set
+            {
+                gridAlpha = value;
+
+                var premultValue = (byte)(value * 255);
+
+                Guides.SmallGridLineColor.R = premultValue;
+                Guides.SmallGridLineColor.G = premultValue;
+                Guides.SmallGridLineColor.B = premultValue;
+                Guides.SmallGridLineColor.A = premultValue;
+
+                Guides.RefreshColors();
+
+            }
+        }
+
         public float GuidesGridSpacing
         {
             get => Guides.GridSpacing;
@@ -196,12 +216,17 @@ namespace GlueControl.Editing
 
         public static EditingManager Self { get; private set; }
 
+        bool wasGameActive;
+
+        bool wasPushedInWindow;
+
+
         #endregion
 
         #region Delegates/Events
 
         public Action<List<PropertyChangeArgs>> PropertyChanged;
-        public Action<INameable> ObjectSelected;
+        public Action<List<INameable>> ObjectSelected;
 
         #endregion
 
@@ -238,7 +263,7 @@ namespace GlueControl.Editing
             HighlightMarker.ExtraPaddingInPixels = 4;
             // do we want to show multiple highlights? Probably?
             HighlightMarker.Owner = itemsOver.FirstOrDefault();
-            HighlightMarker.Update();
+            HighlightMarker.Update(!wasGameActive && FlatRedBallServices.Game.IsActive);
 
             UpdateSelectedMarkers();
 
@@ -259,7 +284,8 @@ namespace GlueControl.Editing
                 var marker = SelectedMarkers[i];
                 var item = itemsSelected[i];
 
-                marker.Update();
+                marker.Update(!wasGameActive && FlatRedBallServices.Game.IsActive);
+
                 if (item == itemGrabbed)
                 {
                     moveVector = marker.LastUpdateMovement;
@@ -291,10 +317,18 @@ namespace GlueControl.Editing
         {
             var desiredMarkerCount = itemsSelected.Count;
 
+#if MONOGAME_381
+
+            var itemsSelectedHash = itemsSelected.ToHashSet();
+#else
+            var itemsSelectedHash = itemsSelected;
+
+#endif
+
             for (int i = SelectedMarkers.Count - 1; i > -1; i--)
             {
                 var marker = SelectedMarkers[i];
-                var hasSelectedItem = itemsSelected.Contains(marker.Owner);
+                var hasSelectedItem = itemsSelectedHash.Contains(marker.Owner);
 
                 if (!hasSelectedItem)
                 {
@@ -303,10 +337,16 @@ namespace GlueControl.Editing
                 }
             }
 
+            HashSet<INameable> markerItems = new HashSet<INameable>();
+            for (int i = 0; i < SelectedMarkers.Count; i++)
+            {
+                markerItems.Add(SelectedMarkers[i].Owner);
+            }
+
             for (int i = 0; i < itemsSelected.Count; i++)
             {
                 var owner = itemsSelected[i];
-                var hasMarker = SelectedMarkers.Any(item => item.Owner == owner);
+                var hasMarker = markerItems.Contains(owner);
 
                 if (!hasMarker)
                 {
@@ -316,6 +356,8 @@ namespace GlueControl.Editing
                         newMarker.FadingSeed = SelectedMarkers[0].FadingSeed;
                     }
                     SelectedMarkers.Add(newMarker);
+                    markerItems.Add(owner);
+
                 }
             }
         }
@@ -392,24 +434,64 @@ namespace GlueControl.Editing
                 itemsOverLastFrame.AddRange(itemsOver);
                 var itemSelectedBefore = ItemSelected;
 
+                var mouse = FlatRedBall.Input.InputManager.Mouse;
+
+                if(!mouse.ButtonDown(Mouse.MouseButtons.LeftButton) &&
+                    !mouse.ButtonDown(Mouse.MouseButtons.RightButton) &&
+                    !mouse.ButtonDown(Mouse.MouseButtons.MiddleButton))
+                {
+                    wasPushedInWindow = false;
+                }
+                else if(mouse.AnyButtonPushed())
+                {
+                    wasPushedInWindow = mouse.IsInGameWindow();
+                }
 
                 // Vic says - not sure how much should be inside the IsActive check
-                if (FlatRedBallServices.Game.IsActive)
+                if (FlatRedBallServices.Game.IsActive && mouse.IsInGameWindow())
                 {
                     if (itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false))
                     {
-                        SelectionLogic.DoDragSelectLogic();
-                    }
-                    SelectionLogic.GetItemsOver(itemsSelected, itemsOver, SelectedMarkers, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
-                }
+                        var gameBecameActive = !wasGameActive && FlatRedBallServices.Game.IsActive;
 
+                        SelectionLogic.DoDragSelectLogic(gameBecameActive);
+                    }
+                    
+                    var isCursorUsingMouse = FlatRedBall.Gui.GuiManager.Cursor.DevicesControllingCursor.Contains(mouse);
+
+                    var isOverWindow = false;
+                    if(isCursorUsingMouse && FlatRedBall.Gui.GuiManager.Cursor.WindowOver != null)
+                    {
+                        isOverWindow = true;
+                    }
+
+                    if(!isOverWindow)
+                    {
+                        SelectionLogic.GetItemsOver(itemsSelected, itemsOver, SelectedMarkers, mouse.ButtonDoublePushed(Mouse.MouseButtons.LeftButton), ElementEditingMode);
+                    }
+                    else
+                    {
+                        itemsOver.Clear();
+                    }
+                }
+                else
+                {
+                    if(!mouse.IsInGameWindow())
+                    {
+                        itemsOver.Clear();
+                    }
+                    SelectionLogic.DoInactiveWindowLogic();
+                }
 
                 var didChangeItemOver = itemsOverLastFrame.Any(item => !itemsOver.Contains(item)) ||
                     itemsOver.Any(item => !itemsOverLastFrame.Contains(item));
 
                 if (FlatRedBallServices.Game.IsActive)
                 {
-                    DoGrabLogic();
+                    if (mouse.IsInGameWindow())
+                    {
+                        DoGrabLogic();
+                    }
 
                     DoRectangleSelectLogic();
 
@@ -417,7 +499,10 @@ namespace GlueControl.Editing
 
                     DoHotkeyLogic();
 
-                    CameraLogic.DoCursorCameraControllingLogic();
+                    if(mouse.IsInGameWindow() || wasPushedInWindow)
+                    {
+                        CameraLogic.DoCursorCameraControllingLogic(wasPushedInWindow);
+                    }
 
                     DoForwardBackActivity();
                 }
@@ -444,6 +529,9 @@ namespace GlueControl.Editing
                 itemGrabbed = null;
 
             }
+
+            wasGameActive = FlatRedBallServices.Game.IsActive;
+
 #endif
         }
 
@@ -467,7 +555,7 @@ namespace GlueControl.Editing
         bool shouldPrintCurrentNamedObjectInformation = false;
         private void DoGrabLogic()
         {
-            var cursor = GuiManager.Cursor;
+            var mouse = FlatRedBall.Input.InputManager.Mouse;
 
             if (shouldPrintCurrentNamedObjectInformation)
             {
@@ -475,7 +563,16 @@ namespace GlueControl.Editing
 
             }
 
-            if (cursor.PrimaryPush && cursor.IsInWindow())
+            var shouldTreatAsPush = false;
+
+            if (mouse.IsInGameWindow())
+            {
+                var didWindowActivate = !wasGameActive && FlatRedBallServices.Game.IsActive;
+
+                shouldTreatAsPush = mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) ||
+                    (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && didWindowActivate);
+            }
+            if (shouldTreatAsPush)
             {
                 var itemOver = itemsOver.FirstOrDefault();
                 itemGrabbed = itemOver as IStaticPositionable;
@@ -534,7 +631,21 @@ namespace GlueControl.Editing
                         marker.CanMoveItem = item == itemGrabbed;
                     }
 
-                    ObjectSelected(itemGrabbed as INameable);
+                    if (!clickedOnSelectedItem)
+                    {
+                        if (isCtrlDown)
+                        {
+                            ObjectSelected(itemsSelected);
+                        }
+                        else
+                        {
+                            ObjectSelected(new List<INameable> { itemGrabbed as INameable });
+                        }
+                    }
+                }
+                else if (!clickedOnSelectedItem)
+                {
+                    ObjectSelected(new List<INameable>());
                 }
             }
         }
@@ -543,10 +654,10 @@ namespace GlueControl.Editing
 
         private void DoReleaseLogic()
         {
-            var cursor = GuiManager.Cursor;
+            var mouse = FlatRedBall.Input.InputManager.Mouse;
 
             ///////Early Out
-            if (!cursor.PrimaryClick)
+            if (!mouse.ButtonReleased(Mouse.MouseButtons.LeftButton))
             {
                 return;
             }
@@ -570,9 +681,23 @@ namespace GlueControl.Editing
 
             if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Delete))
             {
-                InstanceLogic.Self.DeleteInstancesByGame(itemsSelected);
-                itemsSelected.Clear();
-                AddAndDestroyMarkersAccordingToItemsSelected();
+                var handledByMarkers = false;
+
+                foreach (var marker in SelectedMarkers)
+                {
+                    if (marker.HandleDelete())
+                    {
+                        handledByMarkers = true;
+                        break;
+                    }
+                }
+
+                if (!handledByMarkers)
+                {
+                    InstanceLogic.Self.DeleteInstancesByGame(itemsSelected);
+                    itemsSelected.Clear();
+                    AddAndDestroyMarkersAccordingToItemsSelected();
+                }
             }
 
             DoGoToDefinitionLogic();
@@ -583,6 +708,10 @@ namespace GlueControl.Editing
 
             CameraLogic.DoHotkeyLogic();
 
+            if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Z) && keyboard.IsCtrlDown)
+            {
+                GlueCommands.Self.Undo();
+            }
         }
 
         private void DoForwardBackActivity()
@@ -726,20 +855,52 @@ namespace GlueControl.Editing
             }
         }
 
+        public bool IsDraggingRectangle => SelectionLogic.LeftSelect != null;
+
         private void DoRectangleSelectLogic()
         {
             if (SelectionLogic.PerformedRectangleSelection)
             {
+
+                // let's make a dictionary to make this faster:
+                Dictionary<string, NamedObjectSave> namedObjectSaveDictionary = new Dictionary<string, NamedObjectSave>();
+                var all = CurrentGlueElement?.AllNamedObjects;
+                if (all != null)
+                {
+                    foreach (var item in all)
+                    {
+                        namedObjectSaveDictionary.Add(item.InstanceName, item);
+                    }
+                }
+
+                if (CurrentGlueElement != null)
+                {
+                    var derivedElements = ObjectFinder.Self.GetAllBaseElementsRecursively(CurrentGlueElement);
+                    foreach (var derivedElement in derivedElements)
+                    {
+                        foreach (var item in derivedElement.AllNamedObjects)
+                        {
+                            // let the derived have priority, check if it already exists:
+                            if (namedObjectSaveDictionary.ContainsKey(item.InstanceName) == false)
+                            {
+                                namedObjectSaveDictionary.Add(item.InstanceName, item);
+                            }
+                        }
+                    }
+                }
+
                 var isFirst = true;
+
+                var cache = SelectionLogic.GetAvailableObjects(ElementEditingMode).ToArray();
+
+
                 foreach (var itemOver in ItemsOver)
                 {
                     NamedObjectSave nos = null;
-                    if (itemOver?.Name != null)
+                    if (itemOver?.Name != null && namedObjectSaveDictionary.ContainsKey(itemOver.Name))
                     {
-                        nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
+                        nos = namedObjectSaveDictionary[itemOver.Name];
                     }
-
-                    var didSelect = false;
 
                     if (nos != null)
                     {
@@ -748,28 +909,32 @@ namespace GlueControl.Editing
                                 nos, nameof(nos.IsEditingLocked));
                         if (isEditingLocked == false)
                         {
-                            Select(nos, addToExistingSelection: isFirst == false, playBump: true);
-                            didSelect = true;
+                            Select(nos, addToExistingSelection: isFirst == false, playBump: false, updateMarkers: false, availablePositionedObjectCache: cache);
                         }
                     }
                     else
                     {
                         // this shouldn't happen, but for now we tolerate it until the current is sent
-                        Select(itemOver?.Name, addToExistingSelection: isFirst == false, playBump: true);
-                        didSelect = true;
+                        Select(itemOver?.Name, addToExistingSelection: isFirst == false, playBump: false, updateMarkers: false);
                     }
 
-                    // This pushes the selection up for the first item so that Glue can match the selection. Eventually Glue will accept a list for multi-select, but not yet...
-                    if (isFirst && didSelect)
-                    {
-                        ObjectSelected(itemOver);
-                    }
 
                     isFirst = false;
                 }
+
+                AddAndDestroyMarkersAccordingToItemsSelected();
+
+
+                foreach (var marker in SelectedMarkers)
+                {
+                    marker.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized: false);
+                }
+
+                UpdateMarkers(didChangeItemOver: true);
+
+                ObjectSelected(ItemsOver.ToList());
             }
         }
-
         #endregion
 
         public void UpdateDependencies()
@@ -910,7 +1075,29 @@ namespace GlueControl.Editing
 
         #region Selection
 
-        internal void Select(NamedObjectSave namedObject, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
+
+        internal void Select(IEnumerable<NamedObjectSave> namedObjects, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
+        {
+            var isFirst = true;
+            if (namedObjects.Count() == 0)
+            {
+                Select((NamedObjectSave)null, false, playBump, focusCameraOnObject, false);
+            }
+            else
+            {
+                foreach (var item in namedObjects)
+                {
+                    Select(item, addToExistingSelection || !isFirst, playBump, focusCameraOnObject, false);
+                    isFirst = false;
+                }
+            }
+
+            AddAndDestroyMarkersAccordingToItemsSelected();
+
+            UpdateMarkers(didChangeItemOver: true);
+        }
+
+        internal void Select(NamedObjectSave namedObject, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false, bool updateMarkers = true, PositionedObject[] availablePositionedObjectCache = null)
         {
             if (addToExistingSelection == false)
             {
@@ -920,7 +1107,7 @@ namespace GlueControl.Editing
             bool isSelectable = true;
             if (namedObject != null)
             {
-                INameable foundObject = GetObjectByName(namedObject?.InstanceName);
+                INameable foundObject = GetObjectByName(namedObject?.InstanceName, availablePositionedObjectCache);
                 isSelectable = foundObject != null &&
                     SelectionLogic.IsSelectable(foundObject);
             }
@@ -932,19 +1119,19 @@ namespace GlueControl.Editing
                     CurrentNamedObjects.Add(namedObject);
                 }
 
-                Select(namedObject?.InstanceName, addToExistingSelection, playBump, focusCameraOnObject);
+                Select(namedObject?.InstanceName, addToExistingSelection, playBump, focusCameraOnObject, updateMarkers, availablePositionedObjectCache);
             }
             else
             {
-                Select((string)null, addToExistingSelection, playBump, focusCameraOnObject);
+                Select((string)null, addToExistingSelection, playBump, focusCameraOnObject, updateMarkers);
             }
         }
 
-        internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
+        internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false, bool updateMarkers = true, PositionedObject[] availablePositionedObjectCache = null)
         {
             INameable foundObject = string.IsNullOrEmpty(objectName)
                 ? null
-                : GetObjectByName(objectName);
+                : GetObjectByName(objectName, availablePositionedObjectCache);
 
             //if (!string.IsNullOrEmpty(objectName))
             //{
@@ -974,15 +1161,21 @@ namespace GlueControl.Editing
                     itemsSelected.Add(foundObject);
                 }
 
-                AddAndDestroyMarkersAccordingToItemsSelected();
+                if (updateMarkers)
+                {
+                    AddAndDestroyMarkersAccordingToItemsSelected();
+                }
 
                 if (playBump)
                 {
                     MarkerFor(foundObject)?.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized: false);
                 }
 
-                // do this right away so the handles don't pop out of existance when changing selection
-                UpdateMarkers(didChangeItemOver: true);
+                if (updateMarkers)
+                {
+                    // do this right away so the handles don't pop out of existance when changing selection
+                    UpdateMarkers(didChangeItemOver: true);
+                }
 
             }
 
@@ -994,16 +1187,28 @@ namespace GlueControl.Editing
         }
 
 
-        public INameable GetObjectByName(string objectName)
+        public INameable GetObjectByName(string objectName, PositionedObject[] availablePositionedObjectCache = null)
         {
             INameable foundObject = null;
             object foundObjectAsObject = null;
             if (!string.IsNullOrEmpty(objectName))
             {
-                var allAvailableObjects = SelectionLogic.GetAvailableObjects(ElementEditingMode);
-                foundObject = allAvailableObjects?.FirstOrDefault(item => item.Name == objectName);
-
-
+                if(availablePositionedObjectCache != null)
+                {
+                    for(int i = 0; i < availablePositionedObjectCache.Length; i++)
+                    {
+                        if (availablePositionedObjectCache[i].Name ==  objectName)
+                        {
+                            foundObject = availablePositionedObjectCache[i];
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    var allAvailableObjects = SelectionLogic.GetAvailableObjects(ElementEditingMode);
+                    foundObject = allAvailableObjects?.FirstOrDefault(item => item.Name == objectName);
+                }
                 if (foundObject == null)
                 {
                     var screen = ScreenManager.CurrentScreen;
@@ -1085,15 +1290,21 @@ namespace GlueControl.Editing
 
         public void RaiseObjectSelected()
         {
-            if (ObjectSelected != null && ItemSelected != null)
+            if (ObjectSelected != null && ItemsSelected.Count() > 0)
             {
-                ObjectSelected(ItemSelected);
+                ObjectSelected(ItemsSelected.ToList());
             }
         }
 
         #endregion
 
         #region Variable Assignment (suppression)
+
+        static HashSet<string> VariableAssignmentsToIgnore = new HashSet<string>
+        {
+            nameof(NamedObjectSave.IsEditingLocked), // this gets copied over by the NOS
+            "PartitioningAutomaticManual" // We can't support this in realtime because it's done by codegen and would be hard to change...
+        };
 
         public bool GetIfShouldSuppressVariableAssignment(string variableName, INameable targetInstance)
         {
@@ -1115,9 +1326,9 @@ namespace GlueControl.Editing
 
             if (!shouldSuppress)
             {
-                if (variableName == nameof(NamedObjectSave.IsEditingLocked))
+                if (VariableAssignmentsToIgnore.Contains(variableName))
                 {
-                    shouldSuppress = true; // this simply gets copied over by the NOS
+                    shouldSuppress = true;
                 }
             }
 

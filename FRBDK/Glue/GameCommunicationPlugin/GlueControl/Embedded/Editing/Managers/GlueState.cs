@@ -21,6 +21,9 @@ namespace GlueControl.Managers
 
         }
 
+        public int? SelectedSubIndex { get; set; }
+
+
         public static GlueState Self { get; }
 
         static GlueState() => Self = new GlueState();

@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.CollisionPlugin.ViewModels;
 using System;
@@ -329,6 +330,12 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                     else
                     {
                         type = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(namedObject);
+
+                        // This returns the fully-qualified name, including the namespace of the project
+                        if(type?.StartsWith(GlueState.Self.ProjectNamespace + ".") == true)
+                        {
+                            type = type.Substring(GlueState.Self.ProjectNamespace.Length + 1);
+                        }
                     }
                 }
             }

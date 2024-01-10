@@ -16,11 +16,9 @@ namespace FlatRedBall.Utilities
     #endregion
     public interface INameable
     {
-        #region XML Docs
         /// <summary>
         /// The name of the object.
         /// </summary>
-        #endregion
         string Name { get; set;}
     }
 }

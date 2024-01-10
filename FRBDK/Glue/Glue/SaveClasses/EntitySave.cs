@@ -111,6 +111,8 @@ namespace FlatRedBall.Glue.SaveClasses
             return ImplementsIWindow == true;
         }
 
+        [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Inheritance and Interfaces")]
         public bool ImplementsIDrawableBatch
         {
@@ -205,6 +207,8 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
+        // JsonIgnore because it's handled by BaseEntity
+        [JsonIgnore]
         public override string BaseElement => BaseEntity; 
 
         #region ScrollableEntityList Properties
@@ -354,38 +358,27 @@ namespace FlatRedBall.Glue.SaveClasses
             Events = new List<EventResponseSave>();
         }
 
-
+        /// <summary>
+        /// Uses XML to clone, which does not support all properties. Use CloneJson
+        /// </summary>
+        /// <returns>A clone of the entity</returns>
+        [Obsolete("Use CloneJson instead")]
         public EntitySave Clone()
         {
             return FileManager.CloneObject<EntitySave>(this);
-            /*
-            EntitySave entitySaveToReturn = (EntitySave)this.MemberwiseClone();
-
-            entitySaveToReturn.CustomVariables = new List<CustomVariable>();
-            for (int i = 0; i < CustomVariables.Count; i++)
-            {
-                entitySaveToReturn.CustomVariables.Add(CustomVariables[i].Clone());
-            }
-
-            entitySaveToReturn.NamedObjects = new List<NamedObjectSave>();
-            for (int i = 0; i < NamedObjects.Count; i++)
-            {
-                entitySaveToReturn.NamedObjects.Add(NamedObjects[i].Clone());
-            }
-
-            entitySaveToReturn.ReferencedFiles = new List<ReferencedFileSave>();
-            for (int i = 0; i < ReferencedFiles.Count; i++)
-            {
-                entitySaveToReturn.ReferencedFiles.Add(ReferencedFiles[i].Clone());
-            }
-
-
-            return entitySaveToReturn;
-             */
         }
 
+        public EntitySave CloneJson()
+        {
+            var serialized = JsonConvert.SerializeObject(this, Formatting.Indented);
 
-        
+            var clone = JsonConvert.DeserializeObject<EntitySave>(serialized);
+
+            CopyVariablesAfterClone(clone);
+
+            return clone;
+        }
+
 
 
         public void SetCustomVariable(string customVariableName, object valueToSet)

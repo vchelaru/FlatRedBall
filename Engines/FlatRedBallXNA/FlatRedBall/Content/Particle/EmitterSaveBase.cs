@@ -49,6 +49,7 @@ namespace FlatRedBall.Content.Particle
         // this now should just create a fake object to
         // hold the texture value
         // public T ParticleBlueprint = new T();
+        [Obsolete]
         public ParticleBlueprintSave ParticleBlueprint;
 
         public string RemovalEvent;

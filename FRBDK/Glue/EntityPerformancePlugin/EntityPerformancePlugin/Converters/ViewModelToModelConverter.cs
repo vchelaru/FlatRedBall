@@ -12,6 +12,10 @@ namespace EntityPerformancePlugin.Converters
     {
         public static EntityManagementValues ToModel(MainViewModel viewModel)
         {
+            if(viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
             EntityManagementValues model = new EntityManagementValues();
 
             model.Name = viewModel.EntityName;

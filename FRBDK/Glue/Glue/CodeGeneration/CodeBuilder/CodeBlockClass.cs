@@ -1,4 +1,6 @@
-﻿namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
+﻿using System.Reflection;
+
+namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 {
     public class CodeBlockClass : CodeBlockBase
     {
@@ -45,29 +47,30 @@
             return new CodeBlockClass(pCodeBlock, pPre, pName, pPost);
         }
 
-        internal static ICodeBlock Class(this ICodeBlock pCodeBlock, string pName, 
-            bool Public = false, 
-            bool Private = false, 
-            bool Protected = false, 
-            bool Internal = false, 
-            bool ProtectedInternal = false, 
-            bool Static = false, 
-            bool Partial = false, 
-            bool Abstract = false, 
-            bool Sealed = false)
+        internal static ICodeBlock Class(this ICodeBlock pCodeBlock,
+            string pName,
+            bool Public            = false,
+            bool Private           = false,
+            bool Protected         = false,
+            bool Internal          = false,
+            bool ProtectedInternal = false,
+            bool Static            = false,
+            bool Partial           = false,
+            bool Abstract          = false,
+            bool Sealed            = false)
         {
             return pCodeBlock.Class(
                 StringHelper.Modifiers(
-                Public: Public, 
-                Private: Private, 
-                Protected: Protected, 
-                Internal: Internal, 
-                ProtectedInternal: ProtectedInternal, 
-                Static: Static,
-                Partial: Partial,
-                Abstract: Abstract,
-                Sealed: Sealed
-                )
+                    Public: Public, 
+                    Private: Private, 
+                    Protected: Protected, 
+                    Internal: Internal, 
+                    ProtectedInternal: ProtectedInternal, 
+                    Static: Static,
+                    Partial: Partial,
+                    Abstract: Abstract,
+                    Sealed: Sealed
+                    )
                 , pName
                 ,"");
         }

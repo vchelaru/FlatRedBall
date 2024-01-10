@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel>
@@ -11,13 +11,13 @@
         <Button Click="HandleUninstallPlugin">Uninstall Plugin</Button>
         <Button Click="HandleExportPluginClicked">Export Plugin</Button>
         <Button Click="HandleOpenPluginFolderClicked">Open Plugin Folder</Button>
-        
-        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding LoadOnStartup}">Load on startup</CheckBox>
-        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding RequiredByProject}">Required by project</CheckBox>
-        <TextBlock TextWrapping="Wrap" Text="{Binding LastUpdatedText}"></TextBlock>
+
+        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding LoadOnStartup}" Content="{x:Static localization:Texts.LoadOnStartup}" />
+        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding RequiredByProject}" Content="{x:Static localization:Texts.RequiredByProject}" />
+        <TextBlock TextWrapping="Wrap" Text="{Binding LastUpdatedText}" />
         <TextBlock TextWrapping="Wrap">
             <Hyperlink NavigateUri="{Binding GithubRepoAddress}" RequestNavigate="Hyperlink_OnRequestNavigate">
-                <TextBlock Text="{Binding GithubRepoAddress}"></TextBlock>
+                <TextBlock Text="{Binding GithubRepoAddress}" />
             </Hyperlink>
         </TextBlock>
     </StackPanel>

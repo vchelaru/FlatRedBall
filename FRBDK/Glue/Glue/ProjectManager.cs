@@ -25,7 +25,6 @@ using FlatRedBall.Glue.Errors;
 using System.Collections;
 using FlatRedBall.Glue.CodeGeneration;
 using EditorObjects.SaveClasses;
-using FlatRedBall.Glue.FacadeImplementation;
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Input;
@@ -66,8 +65,6 @@ namespace FlatRedBall.Glue
         #region Fields
 
 
-
-        static ProjectValues mProjectValues;
 
         static ProjectBase mProjectBase;
         //static VisualStudioProject mContentProject;
@@ -251,13 +248,7 @@ namespace FlatRedBall.Glue
         public static void Initialize()
         {
             CodeProjectHelper = new Projects.CodeProjectHelper();
-            mProjectValues = new ProjectValues();
-            FacadeContainer.Self.ProjectValues = mProjectValues;
-
-
-
             VerificationId = 0;
-
         }
 
         public static ProjectBase AddSyncedProject(FilePath fileName)
@@ -338,12 +329,6 @@ namespace FlatRedBall.Glue
                 return FileManager.MakeRelative(relativePath);
             }
 
-        }
-
-        [Obsolete("Use GlueCommands.Self.FileCommands.IsContent")]
-        public static bool IsContent(string file)
-        {
-            return GlueCommands.Self.FileCommands.IsContent(file);
         }
         
         public static bool CollectionContains(ICollection collection, string itemToSearchFor)
@@ -559,9 +544,10 @@ namespace FlatRedBall.Glue
                         }
 
                         if (GlueProjectSave != null &&
-                            !string.IsNullOrEmpty(GlueProjectSave.CustomGameClass) &&
-                            CodeParser.InheritsFrom(bi.UnevaluatedInclude, GlueProjectSave.CustomGameClass))
+                            !string.IsNullOrEmpty(GlueProjectSave.CustomGameClass))
                         {
+                            if ( CodeParser.InheritsFrom(bi.UnevaluatedInclude, GlueProjectSave.CustomGameClass) ||
+                                CodeParser.HasClass(bi.UnevaluatedInclude, GlueProjectSave.CustomGameClass))
                             return bi.UnevaluatedInclude;
                         }
                     }
@@ -571,15 +557,11 @@ namespace FlatRedBall.Glue
             return null;
         }
 
-        internal static bool LoadOrCreateProjectSpecificSettings(string projectFolder)
+        internal static void LoadOrCreateProjectSpecificSettings(string projectFolder)
         {
             // The Glue project hasn't been loaded yet so we need to manually get the folder:
 
-            bool wasLoaded = BuildToolAssociationManager.Self.LoadOrCreateProjectSpecificBuildTools(projectFolder);
-
             AvailableAssetTypes.Self.ReactToProjectLoad(projectFolder);
-
-            return wasLoaded;
         }
 
 

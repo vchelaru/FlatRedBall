@@ -10,12 +10,15 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using PlatformerPluginCore.ViewModels;
 using PlatformerPluginCore.SaveClasses;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.PlatformerPlugin.ViewModels
 {
     public class PlatformerEntityViewModel : ViewModel
     {
         public ObservableCollection<PlatformerValuesViewModel> PlatformerValues { get; private set; }
+
+        public EntitySave BackingData { get; set; }
 
         public bool IsPlatformer
         {

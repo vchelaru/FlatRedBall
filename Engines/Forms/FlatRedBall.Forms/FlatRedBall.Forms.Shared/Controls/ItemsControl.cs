@@ -115,6 +115,8 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        public event EventHandler<NotifyCollectionChangedEventArgs> ItemsCollectionChanged;
+
         #endregion
 
         #region Events
@@ -177,7 +179,7 @@ namespace FlatRedBall.Forms.Controls
     #if DEBUG
                 if (ItemFormsType == null)
                 {
-                    throw new Exception($"The control does not have a ItemFormsType specified. " +
+                    throw new Exception($"This {GetType().Name} named {this.Name} does not have a ItemFormsType specified. " +
                         "This property must be set before adding any items");
                 }
     #endif
@@ -217,13 +219,12 @@ namespace FlatRedBall.Forms.Controls
 
                 if (listBoxItemGumType == null && DefaultFormsComponents.ContainsKey(typeof(ListBoxItem)))
                 {
-
                     listBoxItemGumType = DefaultFormsComponents[typeof(ListBoxItem)];
                 }
     #if DEBUG
                 if (listBoxItemGumType == null)
                 {
-                    throw new Exception($"The control does not have a ItemGumType specified, nor does the DefaultFormsControl have an entry for ListBoxItem. " +
+                    throw new Exception($"This {GetType().Name} named {this.Name} does not have a ItemGumType specified, nor does the DefaultFormsComponents have an entry for ListBoxItem. " +
                         "This property must be set before adding any items");
                 }
     #endif
@@ -280,6 +281,8 @@ namespace FlatRedBall.Forms.Controls
 
                     break;
             }
+
+            ItemsCollectionChanged?.Invoke(sender, e);
         }
 
         private void ClearVisualsInternal()

@@ -1,18 +1,11 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Microsoft.Xna.Framework;
+using OfficialPlugins.PointEditingPlugin.Views;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OfficialPlugins.PointEditingPlugin
 {
@@ -119,7 +112,7 @@ namespace OfficialPlugins.PointEditingPlugin
         {
             if(ViewModel.Points?.Count > 0)
             {
-                var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Would you like to clear the points and replace them with points for a rectangle shape?");
+                var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(Localization.Texts.ClearPointsAddRectangle);
                 if(result == MessageBoxResult.Yes)
                 {
                     AddRectanglePoints();
@@ -131,17 +124,76 @@ namespace OfficialPlugins.PointEditingPlugin
             }
         }
 
+        private void HandleAddPolygonPointsClicked(object sender, RoutedEventArgs e)
+        {
+            var tiw = new CustomizableTextInputWindow();
+            tiw.Message = Localization.Texts.HintEnterNumberOfPoints;
+
+            if(ViewModel.Points?.Count > 0)
+            {
+                tiw.Message += "\n\n" + Localization.Texts.HintThisWillReplacePoints;
+            }
+
+            var trueFalseResult = tiw.ShowDialog();
+
+            if(trueFalseResult == true)
+            {
+                var value = tiw.Result;
+
+                var succeeded = int.TryParse(value, out int intResult);
+
+                if(!succeeded)
+                {
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(String.Format(Localization.Texts.OnlyIntegerValuesAllowed, value));
+                }
+                else if(intResult <= 2)
+                {
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(String.Format(Localization.Texts.AtLeastThreePointsRequired, intResult));
+                }
+                else 
+                {
+                    SetPolygonPoints(intResult);
+                }
+
+            }
+        }
+
         private void AddRectanglePoints()
         {
 
             ViewModel.Points.Clear();
 
-            ViewModel.Points.Add(new Vector2(-16, 16));
-            ViewModel.Points.Add(new Vector2( 16, 16));
-            ViewModel.Points.Add(new Vector2( 16,-16));
-            ViewModel.Points.Add(new Vector2(-16,-16));
-            ViewModel.Points.Add(new Vector2(-16, 16));
+            float radius = 8;
 
+            ViewModel.Points.Add(new Vector2(-radius, radius));
+            ViewModel.Points.Add(new Vector2( radius, radius));
+            ViewModel.Points.Add(new Vector2( radius,-radius));
+            ViewModel.Points.Add(new Vector2(-radius,-radius));
+            ViewModel.Points.Add(new Vector2(-radius, radius));
+
+
+            ListBox.SelectedIndex = ListBox.Items.Count - 1;
+        }
+
+        private void SetPolygonPoints(int numberPoints)
+        {
+
+            ViewModel.Points.Clear();
+
+            var radius = 8;
+
+
+            for(int i = 0; i < numberPoints; i++)
+            {
+                var radians = i * MathHelper.TwoPi / numberPoints;
+
+                var x = MathF.Cos(radians) * radius;
+                var y = MathF.Sin(radians) * radius;
+
+                ViewModel.Points.Add(new Vector2(x,y));
+            }
+
+            ViewModel.Points.Add(ViewModel.Points[0]);
 
             ListBox.SelectedIndex = ListBox.Items.Count - 1;
         }
@@ -160,7 +212,36 @@ namespace OfficialPlugins.PointEditingPlugin
             var newSelectedIndex = ViewModel.SelectedIndex + 1;
             ViewModel.Points.Move(oldSelectedIndex, newSelectedIndex);
             ViewModel.SelectedIndex = newSelectedIndex;
+        }
 
+        private void ResizePolygon(object sender, RoutedEventArgs e)
+        {
+            var resizePolygonWindow = new ResizePolygonWindow();
+
+            var result = resizePolygonWindow.ShowDialog();
+
+            if(result == true)
+            {
+                var resizeWidthPercentage = resizePolygonWindow.WidthPercentage;
+                var resizeHeightPercentage = resizePolygonWindow.HeightPercentage;
+
+
+                for (int i = 0; i < ViewModel.Points.Count; i++)
+                {
+                    Vector2 point = ViewModel.Points[i];
+
+                    if(resizeWidthPercentage != 100.0)
+                    {
+                        point.X *= (float)(resizeWidthPercentage / 100);
+                    }
+                    if(resizeHeightPercentage != 100.0)
+                    {
+                        point.Y *= (float)(resizeHeightPercentage / 100);
+                    }
+
+                    ViewModel.Points[i] = point;
+                }
+            }
         }
     }
 }

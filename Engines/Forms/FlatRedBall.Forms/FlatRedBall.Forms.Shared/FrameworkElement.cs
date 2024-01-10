@@ -81,6 +81,15 @@ namespace FlatRedBall.Forms.Controls
                         }
                     }
                 }
+                // this resolves possible stale states:
+                else
+                {
+                    if (isFocused && this is IInputReceiver inputReceiver)
+                    {
+                        FlatRedBall.Input.InputManager.InputReceiver = inputReceiver;
+                    }
+                }
+
             }
         }
 
@@ -299,7 +308,7 @@ namespace FlatRedBall.Forms.Controls
             return GetGraphicalUiElementForFrameworkElement(type);
         }
 
-        private static GraphicalUiElement GetGraphicalUiElementForFrameworkElement(Type type)
+        public static GraphicalUiElement GetGraphicalUiElementForFrameworkElement(Type type)
         {
             if (DefaultFormsComponents.ContainsKey(type))
             {
@@ -520,13 +529,13 @@ namespace FlatRedBall.Forms.Controls
                 throw new InvalidOperationException("This cannot be moved to keep in screen because it depends on its parent's position");
             }
 #endif
-            var cameraTop = 0;
+            //var cameraTop = 0;
             var cameraBottom = Renderer.Self.Camera.ClientHeight / Renderer.Self.Camera.Zoom;
-            var cameraLeft = 0;
+            //var cameraLeft = 0;
             var cameraRight = Renderer.Self.Camera.ClientWidth / Renderer.Self.Camera.Zoom;
 
-            var amountXToShift = 0;
-            var amountYToShift = 0;
+            //var amountXToShift = 0;
+            //var amountYToShift = 0;
 
             var thisBottom = this.Visual.AbsoluteY + this.Visual.GetAbsoluteHeight();
             if (thisBottom > cameraBottom)
@@ -641,12 +650,15 @@ namespace FlatRedBall.Forms.Controls
 
                     if (uiProperty.PropertyType == typeof(string))
                     {
-                        uiProperty.SetValue(this, vmValue?.ToString(), null);
+                        var stringToSet = vmValue?.ToString();
+                        uiProperty.SetValue(this, stringToSet, null);
                     }
                     else
                     {
                         try
                         {
+                            var convertedValue = GraphicalUiElement.ConvertValue(vmValue, uiProperty.PropertyType, null);
+
                             uiProperty.SetValue(this, vmValue, null);
                         }
                         catch (ArgumentException ae)
@@ -682,7 +694,9 @@ namespace FlatRedBall.Forms.Controls
 
                         try
                         {
-                            vmProperty.SetValue(BindingContext, uiValue, null);
+                            var convertedValue = GraphicalUiElement.ConvertValue(uiValue, vmProperty.PropertyType, null);
+
+                            vmProperty.SetValue(BindingContext, convertedValue, null);
                         }
                         catch(System.ArgumentException argumentException)
                         {
@@ -694,48 +708,57 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        protected void HandleGamepadNavigation(Xbox360GamePad gamepad, bool considerLeftAndRight = true)
+        /// <summary>
+        /// Whether to use left and right directions as navigation. If false, left and right directions are ignored for navigation.
+        /// </summary>
+        public bool IsUsingLeftAndRightGamepadDirectionsForNavigation { get; set; } = true;
+        protected void HandleGamepadNavigation(Xbox360GamePad gamepad)
         {
             if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
-                (considerLeftAndRight && gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadRight)) ||
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadRight)) ||
                 gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down) ||
-                (considerLeftAndRight && gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right)))
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right)))
             {
                 this.HandleTab(TabDirection.Down, this);
             }
             else if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
-                (considerLeftAndRight && gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadLeft)) ||
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadLeft)) ||
                 gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up) ||
-                (considerLeftAndRight && gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left)))
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left)))
             {
                 this.HandleTab(TabDirection.Up, this);
             }
         }
 
-        protected void HandleGamepadNavigation(GenericGamePad gamepad, bool considerLeftAndRight = true)
+        protected void HandleGamepadNavigation(GenericGamePad gamepad)
         {
             AnalogStick leftStick = gamepad.AnalogSticks.Length > 0
                 ? gamepad.AnalogSticks[0]
                 : null;
 
             if (gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down) ||
-                (considerLeftAndRight && gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right)) ||
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right)) ||
                 leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down) == true ||
-                (considerLeftAndRight && leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right) == true))
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right) == true))
             {
                 this.HandleTab(TabDirection.Down, this);
             }
             else if (gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up) ||
-                (considerLeftAndRight && gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left)) ||
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left)) ||
                 leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up) == true||
-                (considerLeftAndRight && leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left) == true))
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left) == true))
             {
                 this.HandleTab(TabDirection.Up, this);
             }
         }
 
-        public void HandleTab(TabDirection tabDirection, FrameworkElement requestingElement)
+        public void HandleTab(TabDirection tabDirection = TabDirection.Down, FrameworkElement requestingElement = null)
         {
+            if(requestingElement == null)
+            {
+                requestingElement = this;
+            }
+
             ////////////////////Early Out/////////////////
             if(((IVisible)requestingElement.Visual).AbsoluteVisible == false)
             {
@@ -999,5 +1022,9 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        public override string ToString()
+        {
+            return $"{this.Visual?.Name} ({this.GetType().Name})";
+        }
     }
 }

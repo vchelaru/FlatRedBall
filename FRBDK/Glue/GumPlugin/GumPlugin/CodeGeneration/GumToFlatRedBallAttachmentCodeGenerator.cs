@@ -15,7 +15,7 @@ namespace GumPlugin.CodeGeneration
     {
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
-            if(GetIfHasAttachedGumInstances(element))
+            if(GetIfHasAttachedGumInstances(element as GlueElement))
             {
                 codeBlock.Line(
                     "System.Collections.Generic.List<GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper> gumAttachmentWrappers = new System.Collections.Generic.List<GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper>();");
@@ -25,7 +25,7 @@ namespace GumPlugin.CodeGeneration
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
-            if (GetIfHasAttachedGumInstances(element))
+            if (GetIfHasAttachedGumInstances(element as GlueElement))
             {
                 codeBlock.For("int i = gumAttachmentWrappers.Count-1; i > -1; i--")
                     .Line("FlatRedBall.SpriteManager.RemovePositionedObject(gumAttachmentWrappers[i]);");
@@ -33,7 +33,7 @@ namespace GumPlugin.CodeGeneration
             return base.GenerateDestroy(codeBlock, element);
         }
 
-        bool GetIfHasAttachedGumInstances(IElement element)
+        bool GetIfHasAttachedGumInstances(GlueElement element)
         {
             if(element is EntitySave)
             {

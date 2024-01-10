@@ -34,6 +34,9 @@ namespace GlueFormsCore.Managers
         {
             currentElement = currentElement ?? GlueState.Self.CurrentElement;
 
+            // This method can be slow, so we should store off the base elements to regenerate and only do those, in tasks, one by one:
+            //HashSet<GlueElement> toRegenerate = new HashSet<GlueElement>();
+
             if (currentElement is EntitySave currentEntity)
             {
                 List<EntitySave> derivedEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(currentEntity.Name);
@@ -53,7 +56,7 @@ namespace GlueFormsCore.Managers
 
                     if (regenerateCode)
                     {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(entitySave);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
                     }
                 }
 
@@ -63,9 +66,9 @@ namespace GlueFormsCore.Managers
 
                     var element = nos.GetContainer();
 
-                    if (element != null)
+                    if (element != null && regenerateCode)
                     {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                     }
 
                 }
@@ -83,7 +86,7 @@ namespace GlueFormsCore.Managers
 
                     if (regenerateCode)
                     {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screenSave);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screenSave);
                     }
                 }
             }
@@ -155,9 +158,12 @@ namespace GlueFormsCore.Managers
 
                 GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(entitySave);
 
-                AskToPreserveVariables(entitySave, variablesBefore);
+                AskToPreserveVariablesAfterInheritanceChange(entitySave, variablesBefore);
             }
-            PropertyGridHelper.UpdateEntitySaveDisplay();
+            if(entitySave == GlueState.Self.CurrentEntitySave)
+            {
+                PropertyGridHelper.UpdateEntitySaveDisplay();
+            }
         }
 
         private static bool GetIfCurrentEntityBaseIsValid(EntitySave entitySave)
@@ -269,7 +275,7 @@ namespace GlueFormsCore.Managers
             return isValidBase;
         }
 
-        private static void AskToPreserveVariables(EntitySave entitySave, List<CustomVariable> variablesBefore)
+        private static void AskToPreserveVariablesAfterInheritanceChange(EntitySave entitySave, List<CustomVariable> variablesBefore)
         {
             foreach (CustomVariable oldVariable in variablesBefore)
             {

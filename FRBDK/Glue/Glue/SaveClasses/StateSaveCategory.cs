@@ -17,6 +17,21 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public List<string> ExcludedVariables { get; set; } = new List<string>();
 
+        public StateSaveCategory Clone()
+        {
+            var toReturn = new StateSaveCategory();
+
+            toReturn.Name = this.Name;
+
+            foreach(var state in States)
+            {
+                toReturn.States.Add(state.Clone());
+            }
+
+            toReturn.ExcludedVariables.AddRange(ExcludedVariables);
+
+            return toReturn;
+        }
 
         public StateSaveCategory()
         {

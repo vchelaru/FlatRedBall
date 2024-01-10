@@ -21,8 +21,8 @@ namespace CompilerPlugin.Views
     public partial class WhileStoppedView : UserControl
     {
         public event Action BuildClicked;
-        public event Action BuildContentClicked;
-        public event Action RunClicked;
+        public event Action PackageClicked;
+        //public event Action BuildContentClicked;
         public event Action MSBuildSettingsClicked;
 
         public WhileStoppedView()
@@ -43,6 +43,11 @@ namespace CompilerPlugin.Views
         private void MSBuildSettingsButtonClicked(object sender, RoutedEventArgs e)
         {
             MSBuildSettingsClicked?.Invoke();
+        }
+
+        private void HandlePackageClicked(object sender, RoutedEventArgs e)
+        {
+            PackageClicked?.Invoke();
         }
     }
 }

@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
 	<DefineConstants>MONOGAME;DESKTOP_GL;XNA4;FRB_XNA;WINDOWS;MONOGAME_381</DefineConstants>
+	<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 
   </PropertyGroup>
   <ItemGroup>
@@ -12,6 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCore.DesktopGlNet6\GumCore.DesktopGlNet6.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Gum\SvgPlugin\SkiaInGumShared\SkiaInGum.csproj" Condition="'$(Configuration)' == 'DebugAutoBuild' Or '$(Configuration)' == 'ReleaseAutoBuild'" />
   </ItemGroup>
   <Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
 </Project>

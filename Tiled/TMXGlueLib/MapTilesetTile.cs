@@ -58,7 +58,7 @@ namespace TMXGlueLib
 
 
         [XmlAttribute("class")]
-        public string Class 
+        public string Class
         {
             get => Type;
             set => Type = value;
@@ -74,7 +74,12 @@ namespace TMXGlueLib
         [XmlElement("objectgroup")]
         public mapObjectgroup Objects { get; set; }
 
-
+        [XmlAttribute("probability")]
+        public double Probability
+        {
+            get;
+            set;
+        } = 1;
 
         public mapTilesetTile()
             {

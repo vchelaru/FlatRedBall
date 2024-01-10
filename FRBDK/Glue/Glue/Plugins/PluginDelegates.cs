@@ -25,7 +25,8 @@ namespace FlatRedBall.Glue.Plugins
     /// Delegate raised when the user creates a brand new file.
     /// </summary>
     /// <param name="newFile">The newly-created ReferencedFileSave.</param>
-    public delegate void ReactToNewFileDelegate(ReferencedFileSave newFile);
+    /// <param name="assetTypeInfo">The AssetTypeInfo selected for this file. This may be null</param>
+    public delegate void ReactToNewFileDelegate(ReferencedFileSave newFile, AssetTypeInfo assetTypeInfo);
     public delegate void ReactToNewObjectDelegate(NamedObjectSave newNamedObject);
     public delegate bool OpenSolutionDelegate(string solution);
     

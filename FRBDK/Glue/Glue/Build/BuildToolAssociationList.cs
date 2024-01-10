@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using EditorObjects.SaveClasses;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using FlatRedBall.IO.Csv;
 
@@ -57,12 +59,21 @@ namespace EditorObjects.SaveClasses
         public void ValidateBuildTools(string projectDirectory)
         {
             string buildToolErrors = string.Empty;
+
+            var allUsedExtensions = ObjectFinder.Self.GetAllReferencedFiles().Select(item => FileManager.GetExtension(item.SourceFile))
+                .Where(item => !string.IsNullOrWhiteSpace(item))
+                .ToHashSet();
+
             foreach (BuildToolAssociation bta in BuildToolList)
             {
                 // if the build tool is null that's okay, we probably 
                 // just need to skip it because the user has removed the
                 // tool.
-                if (!string.IsNullOrEmpty(bta.BuildToolProcessed))
+                if (!string.IsNullOrEmpty(bta.BuildToolProcessed) &&  
+                    // Build tools may be added by plugins in anticipation of 
+                    // a file type being built. If a user doesn't use that file
+                    // type, then there's no need to show a warning for it:
+                        allUsedExtensions.Contains(bta.SourceFileType))
                 {
                     string fileToLookFor = bta.BuildToolProcessed;
 

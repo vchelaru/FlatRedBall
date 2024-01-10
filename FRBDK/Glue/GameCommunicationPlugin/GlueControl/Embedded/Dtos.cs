@@ -33,12 +33,12 @@ namespace GlueControl.Dtos
     #region RemoveObjectDto
     public class RemoveObjectDto : UpdateCurrentElementDto
     {
-        public string ElementNameGlue { get; set; }
+        public List<string> ElementNamesGlue { get; set; }
         public List<string> ObjectNames { get; set; } = new List<string>();
 
         public override string ToString()
         {
-            string toReturn = $"Remove {ElementNameGlue}.";
+            string toReturn = $"Remove ";
 
             foreach (var name in ObjectNames)
             {
@@ -78,7 +78,7 @@ namespace GlueControl.Dtos
     #region SelectObjectDto
     class SelectObjectDto : UpdateCurrentElementDto
     {
-        public NamedObjectSave NamedObject { get; set; }
+        public List<string> NamedObjectNames { get; set; } = new List<string>();
 
         public string ElementNameGlue { get; set; }
 
@@ -92,6 +92,15 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+    #region SelectSubIndex
+
+    public class SelectSubIndexDto
+    {
+        public int? Index { get; set; }
+    }
+
+    #endregion
+
     #region SelectPrevious/Next 
 
     class SelectPreviousDto { }
@@ -99,6 +108,19 @@ namespace GlueControl.Dtos
 
     #endregion
 
+    #region ObjectReorderedDto
+
+    // could eventually add variables and states if we care, but 
+    // this isn't important for now.
+    class NamedObjectReorderedDto : UpdateCurrentElementDto
+    {
+        public string NamedObjectName { get; set; }
+        public int OldIndex { get; set; }
+        public int NewIndex { get; set; }
+    }
+
+    #endregion
+    
     #region GoToDefinitionDto
 
     class GoToDefinitionDto { }
@@ -128,6 +150,8 @@ namespace GlueControl.Dtos
         public string VariableValue { get; set; }
         public string Type { get; set; }
         public bool IsState { get; set; }
+
+        public string AbsoluteGlueProjectFilePath { get; set; }
 
         public override string ToString() => $"{VariableName}={VariableValue}";
     }
@@ -225,7 +249,7 @@ namespace GlueControl.Dtos
     #region AddObjectDtoResponse
     public class AddObjectDtoResponse
     {
-        public bool WasObjectCreated { get; set; }
+        public OptionallyAttemptedGeneralResponse CreationResponse { get; set; }
     }
 
     public class AddObjectDtoListResponse
@@ -298,6 +322,12 @@ namespace GlueControl.Dtos
 
     #endregion
 
+    #region ForceClientSizeUpdatesDto
+
+    public class ForceClientSizeUpdatesDto { }
+
+    #endregion
+
     #region CreateNewEntityDto
     public class CreateNewEntityDto
     {
@@ -312,6 +342,16 @@ namespace GlueControl.Dtos
         public string CategoryName { get; set; }
         public string ElementNameGame { get; set; }
     }
+    #endregion
+
+    #region UpdateStateSaveCategory
+
+    public class UpdateStateSaveCategory
+    {
+        public StateSaveCategory Category { get; set; }
+        public string ElementNameGame { get; set; }
+    }
+
     #endregion
 
     #region ChangeStateVariableDto
@@ -382,11 +422,13 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+    #region ForceGameResolution
     public class ForceGameResolution
     {
         public int Width { get; set; }
         public int Height { get; set; }
     }
+    #endregion
 
     #region GlueViewSettingsDto
     public class GlueViewSettingsDto
@@ -394,6 +436,7 @@ namespace GlueControl.Dtos
         public bool ShowScreenBoundsWhenViewingEntities { get; set; }
 
         public bool ShowGrid { get; set; }
+        public decimal GridAlpha { get; set; }
         public decimal GridSize { get; set; }
 
         public bool SetBackgroundColor { get; set; }
@@ -415,16 +458,47 @@ namespace GlueControl.Dtos
     }
     #endregion
 
-    #region GetCommandsDto
-    public class GetCommandsDto
-    {
-
-    }
-
+    #region Get Commands DTOs
     public class GetCommandsDtoResponse
     {
         public List<string> Commands { get; set; } = new List<string>();
     }
+
+    /// <summary>
+    /// Used to fetch commands that the game will re-run on
+    /// a screen reload. This is used for diagnostics.
+    /// </summary>
+    public class GetGlueToGameCommandRerunList
+    {
+
+    }
+
+    #endregion
+
+    #region Profiling
+
+    public class GetProfilingDataDto
+    {
+
+    }
+
+    public class ProfilingDataDto
+    {
+        public string SummaryData { get; set; }
+        public List<CollisionRelationshipInfo> CollisionData { get; set; } = new List<CollisionRelationshipInfo>();
+    }
+
+    public class CollisionRelationshipInfo
+    {
+        public string RelationshipName { get; set; }
+        public int DeepCollisions { get; set; }
+        public bool IsPartitioned { get; set; }
+        public FlatRedBall.Math.Axis? FirstPartitionAxis { get; set; }
+        public FlatRedBall.Math.Axis? SecondPartitionAxis { get; set; }
+        public int? FirstItemListCount { get; set; }
+        public int? SecondItemListCount { get; set; }
+    }
+
     #endregion
 
     #region Glue/XXXX/CommandsDto
@@ -452,6 +526,35 @@ namespace GlueControl.Dtos
             this.Message = generalResponse.Message;
         }
 
+    }
+
+    public class OptionallyAttemptedGeneralResponse : GeneralResponse
+    {
+        public static OptionallyAttemptedGeneralResponse SuccessfulWithoutAttempt =>
+            new OptionallyAttemptedGeneralResponse { Succeeded = true, DidAttempt = false };
+
+        public static OptionallyAttemptedGeneralResponse UnsuccessfulWithoutAttempt =>
+            new OptionallyAttemptedGeneralResponse { Succeeded = false, DidAttempt = false };
+
+        public static OptionallyAttemptedGeneralResponse SuccessfulAttempt =>
+            new OptionallyAttemptedGeneralResponse { Succeeded = true, DidAttempt = true };
+
+
+        public bool DidAttempt { get; set; }
+
+        public new void SetFrom(GeneralResponse generalResponse)
+        {
+            this.Message = generalResponse.Message;
+            this.Succeeded = generalResponse.Succeeded;
+            this.DidAttempt = true; // if we have a response, let's assume there was an attempt
+        }
+
+        public void SetFrom(OptionallyAttemptedGeneralResponse generalResponse)
+        {
+            this.Message = generalResponse.Message;
+            this.Succeeded = generalResponse.Succeeded;
+            this.DidAttempt = generalResponse.DidAttempt;
+        }
     }
 
     public class GeneralResponse<T> : GeneralResponse

@@ -2,21 +2,10 @@
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using Glue;
 using GlueFormsCore.Extensions;
 using OfficialPlugins.SpritePlugin.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WpfDataUi;
 using WpfDataUi.DataTypes;
 
@@ -91,7 +80,7 @@ namespace OfficialPlugins.SpritePlugin.Views
                 {
                     window.MoveToMainWindowCenterAndSize(Glue.MainGlueWindow.Self, .7f, .85f);
                     window.Width = 100 + window.Height; //How to get width of wpf element before window shown?  100 is just some random amount
-                    window.MoveToCursor();
+                    GlueCommands.Self.DialogCommands.MoveToCursor(window);
 
                     //better way to have viewmodel update itself from window?
                     viewModel.WindowWidth = window.Width;
@@ -207,7 +196,7 @@ namespace OfficialPlugins.SpritePlugin.Views
 
             if (didAnyChange)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
             }
         }

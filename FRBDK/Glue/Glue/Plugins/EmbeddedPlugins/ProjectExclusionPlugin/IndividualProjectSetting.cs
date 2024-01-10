@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.MVVM;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
 {
@@ -32,7 +33,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
 
         public IndividualProjectSetting()
         {
-            ProjectName = "Replace ProjectName";
+            ProjectName = L.Texts.ReplaceProjectName;
 
             IsEnabled = true;
         }

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              SizeToContent="{Binding SizeToContent}"
              Height="400"  Width="450">
@@ -25,14 +25,14 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel x:Name="StandardUiStack">
-                    <Label>Select the file type:</Label>
+                    <Label Content="{x:Static localization:Texts.SelectFileType}" />
                     <Grid>
                         <TextBox x:Name="SearchTermTextBox" Height="24" 
                              Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
                              KeyDown="SearchTermTextBox_KeyDown"
                          
                              PreviewKeyDown="SearchTermTextBox_PreviewKeyDown"></TextBox>
-                        <TextBlock IsHitTestVisible="False" Text="Search..." VerticalAlignment="Center" HorizontalAlignment="Left" 
+                        <TextBlock IsHitTestVisible="False" Text="{x:Static localization:Texts.Search}" VerticalAlignment="Center" HorizontalAlignment="Left" 
                                Margin="4,0,0,0" Foreground="DarkGray">
                             <TextBlock.Style>
                                 <Style TargetType="{x:Type TextBlock}">
@@ -73,7 +73,7 @@
 
         <StackPanel 
             Grid.Row="1" >
-            <Label Margin="0,6,0,0">Enter the new file's name:</Label>
+            <Label Margin="0,6,0,0" Content="{x:Static localization:Texts.EnterFile}" />
             <TextBox x:Name="TextBox"
                     KeyDown="TextBox_KeyDown"
                     Text="{Binding FileName}" ></TextBox>
@@ -87,9 +87,9 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Margin="0,8,4,0"
-                    Click="HandleOkClicked">OK</Button>
+                    Click="HandleOkClicked" Content="{x:Static localization:Texts.Ok}" />
             <Button Grid.Column="1" Margin="4,8,0,0"
-                    Click="HandleCancelClicked">Cancel</Button>
+                    Click="HandleCancelClicked" Content="{x:Static localization:Texts.Cancel}" />
         </Grid>
     </Grid>
 </Window>

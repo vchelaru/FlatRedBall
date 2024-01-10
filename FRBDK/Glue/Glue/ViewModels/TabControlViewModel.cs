@@ -171,6 +171,8 @@ namespace GlueFormsCore.ViewModels
             }
         }
 
+        double? leftPixelWhenShrank;
+
         private void ExpandAndCollapseColumnAndRowWidths()
         {
             var shouldShrinkLeft = LeftTabItems.Count == 0 && LeftSplitterWidth.Value > 0;
@@ -184,13 +186,18 @@ namespace GlueFormsCore.ViewModels
 
             if (shouldShrinkLeft)
             {
+                if(LeftPanelWidth.Value > 1)
+                {
+                    leftPixelWhenShrank = LeftPanelWidth.Value;
+                }
                 LeftSplitterWidth = new GridLength(0);
                 LeftPanelWidth = new GridLength(0, GridUnitType.Pixel);
+
             }
             else if (shouldExpandLeft)
             {
                 LeftSplitterWidth = new GridLength(4);
-                LeftPanelWidth = new GridLength(230, GridUnitType.Pixel);
+                LeftPanelWidth = new GridLength(leftPixelWhenShrank ?? 230, GridUnitType.Pixel);
                 //LeftPanelWidth = new GridLength(1, GridUnitType.Star);
             }
 

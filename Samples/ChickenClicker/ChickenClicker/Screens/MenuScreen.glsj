@@ -1,0 +1,16 @@
+{
+  "Tags": [
+    "GLUE"
+  ],
+  "Source": "GLUE",
+  "ReferencedFiles": [
+    {
+      "Name": "GumProject/Screens/MenuScreenGum.gusx",
+      "IsSharedStatic": true,
+      "RuntimeType": "ChickenClicker.GumRuntimes.MenuScreenGumRuntime",
+      "ProjectsToExcludeFrom": []
+    }
+  ],
+  "Name": "Screens\\MenuScreen",
+  "CustomClassesForExport": []
+}

@@ -21,15 +21,14 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>LadderDemo.GumRuntimes.GameScreenGumRuntime</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <NamedObjects>
         <NamedObjectSave>
-          <CustomProperty>
-            <Member>CreateEntitiesFromTiles</Member>
-            <ValueAsBool>true</ValueAsBool>
-          </CustomProperty>
+          <InstanceName>Map</InstanceName>
+          <SourceClassType>FlatRedBall.TileGraphics.LayeredTileMap</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -40,16 +39,21 @@
               <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
             </PropertySave>
           </Properties>
+          <CustomProperty>
+            <Type>bool</Type>
+            <Member>CreateEntitiesFromTiles</Member>
+            <ValueAsBool>true</ValueAsBool>
+          </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>FlatRedBall.TileGraphics.LayeredTileMap</SourceFile>
-          <SourceClassType>FlatRedBall.TileGraphics.LayeredTileMap</SourceClassType>
-          <InstanceName>Map</InstanceName>
           <SetByDerived>true</SetByDerived>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>false</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
+          <InstanceName>SolidCollision</InstanceName>
+          <SourceClassType>FlatRedBall.TileCollisions.TileShapeCollection</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -74,14 +78,14 @@
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>FlatRedBall.TileCollisions.TileShapeCollection</SourceFile>
-          <SourceClassType>FlatRedBall.TileCollisions.TileShapeCollection</SourceClassType>
-          <InstanceName>SolidCollision</InstanceName>
           <SetByDerived>true</SetByDerived>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>false</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
+          <InstanceName>CloudCollision</InstanceName>
+          <SourceClassType>FlatRedBall.TileCollisions.TileShapeCollection</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -106,14 +110,14 @@
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>FlatRedBall.TileCollisions.TileShapeCollection</SourceFile>
-          <SourceClassType>FlatRedBall.TileCollisions.TileShapeCollection</SourceClassType>
-          <InstanceName>CloudCollision</InstanceName>
           <SetByDerived>true</SetByDerived>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>false</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
+          <InstanceName>PlayerList</InstanceName>
+          <SourceClassType>FlatRedBall.Math.PositionedObjectList&lt;T&gt;</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -138,13 +142,13 @@
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>PositionedObjectList (Generic)</SourceFile>
-          <SourceClassType>FlatRedBall.Math.PositionedObjectList&lt;T&gt;</SourceClassType>
           <SourceClassGenericType>Entities\Player</SourceClassGenericType>
-          <InstanceName>PlayerList</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <ContainedObjects>
             <NamedObjectSave>
+              <InstanceName>Player1</InstanceName>
+              <SourceClassType>Entities\Player</SourceClassType>
               <Properties>
                 <PropertySave>
                   <Name>AssociateWithFactory</Name>
@@ -157,8 +161,6 @@
               </Properties>
               <SourceType>Entity</SourceType>
               <SourceFile>Entities\Player</SourceFile>
-              <SourceClassType>Entities\Player</SourceClassType>
-              <InstanceName>Player1</InstanceName>
               <AttachToContainer>true</AttachToContainer>
               <GenerateTimedEmit>true</GenerateTimedEmit>
               <IndependentOfCamera>false</IndependentOfCamera>
@@ -167,6 +169,8 @@
           <IndependentOfCamera>false</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
+          <InstanceName>PlayerListVsSolidCollision</InstanceName>
+          <SourceClassType>FlatRedBall.Math.Collision.DelegateListVsSingleRelationship&lt;Entities.Player, FlatRedBall.TileCollisions.TileShapeCollection&gt;</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -211,13 +215,13 @@
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>Collision Relationship</SourceFile>
-          <SourceClassType>FlatRedBall.Math.Collision.DelegateListVsSingleRelationship&lt;Entities.Player, FlatRedBall.TileCollisions.TileShapeCollection&gt;</SourceClassType>
-          <InstanceName>PlayerListVsSolidCollision</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>false</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
+          <InstanceName>PlayerListVsCloudCollision</InstanceName>
+          <SourceClassType>FlatRedBall.Math.Collision.DelegateListVsSingleRelationship&lt;Entities.Player, FlatRedBall.TileCollisions.TileShapeCollection&gt;</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -262,21 +266,13 @@
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>Collision Relationship</SourceFile>
-          <SourceClassType>FlatRedBall.Math.Collision.DelegateListVsSingleRelationship&lt;Entities.Player, FlatRedBall.TileCollisions.TileShapeCollection&gt;</SourceClassType>
-          <InstanceName>PlayerListVsCloudCollision</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>false</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
-          <CustomProperty>
-            <Member>Map</Member>
-            <ValueAsString>Map</ValueAsString>
-          </CustomProperty>
-          <CustomProperty>
-            <Member>Targets</Member>
-            <ValueAsString>PlayerList</ValueAsString>
-          </CustomProperty>
+          <InstanceName>CameraControllingEntityInstance</InstanceName>
+          <SourceClassType>FlatRedBall.Entities.CameraControllingEntity</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -287,15 +283,25 @@
               <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
             </PropertySave>
           </Properties>
+          <CustomProperty>
+            <Type>string</Type>
+            <Member>Map</Member>
+            <ValueAsString>Map</ValueAsString>
+          </CustomProperty>
+          <CustomProperty>
+            <Type>string</Type>
+            <Member>Targets</Member>
+            <ValueAsString>PlayerList</ValueAsString>
+          </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>FlatRedBall.Entities.CameraControllingEntity</SourceFile>
-          <SourceClassType>FlatRedBall.Entities.CameraControllingEntity</SourceClassType>
-          <InstanceName>CameraControllingEntityInstance</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>false</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
+          <InstanceName>LadderCollision</InstanceName>
+          <SourceClassType>FlatRedBall.TileCollisions.TileShapeCollection</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -352,13 +358,13 @@
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>TileShapeCollection</SourceFile>
-          <SourceClassType>FlatRedBall.TileCollisions.TileShapeCollection</SourceClassType>
-          <InstanceName>LadderCollision</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>false</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
+          <InstanceName>PlayerListVsLadderCollision</InstanceName>
+          <SourceClassType>FlatRedBall.Math.Collision.CollidableListVsTileShapeCollectionRelationship&lt;Entities.Player&gt;</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -399,8 +405,6 @@
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>Collision Relationship</SourceFile>
-          <SourceClassType>FlatRedBall.Math.Collision.CollidableListVsTileShapeCollectionRelationship&lt;Entities.Player&gt;</SourceClassType>
-          <InstanceName>PlayerListVsLadderCollision</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>false</IndependentOfCamera>
@@ -430,21 +434,21 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>LadderDemo.GumRuntimes.Level1GumRuntime</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/Level1/Level1Map.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <NamedObjects>
         <NamedObjectSave>
-          <CustomProperty>
-            <Member>CreateEntitiesFromTiles</Member>
-            <ValueAsBool>true</ValueAsBool>
-          </CustomProperty>
+          <InstanceName>Map</InstanceName>
+          <SourceClassType>FlatRedBall.TileGraphics.LayeredTileMap</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -455,17 +459,22 @@
               <ValueAsObject xsi:type="SourceType">File</ValueAsObject>
             </PropertySave>
           </Properties>
+          <CustomProperty>
+            <Type>bool</Type>
+            <Member>CreateEntitiesFromTiles</Member>
+            <ValueAsBool>true</ValueAsBool>
+          </CustomProperty>
           <SourceType>File</SourceType>
           <SourceFile>Screens/Level1/Level1Map.tmx</SourceFile>
           <SourceName>Entire File (LayeredTileMap)</SourceName>
-          <SourceClassType>FlatRedBall.TileGraphics.LayeredTileMap</SourceClassType>
-          <InstanceName>Map</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <IndependentOfCamera>false</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
+          <InstanceName>SolidCollision</InstanceName>
+          <SourceClassType>FlatRedBall.TileCollisions.TileShapeCollection</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -490,14 +499,14 @@
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>FlatRedBall.TileCollisions.TileShapeCollection</SourceFile>
-          <SourceClassType>FlatRedBall.TileCollisions.TileShapeCollection</SourceClassType>
-          <InstanceName>SolidCollision</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
           <IndependentOfCamera>false</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
+          <InstanceName>CloudCollision</InstanceName>
+          <SourceClassType>FlatRedBall.TileCollisions.TileShapeCollection</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -522,8 +531,6 @@
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>FlatRedBall.TileCollisions.TileShapeCollection</SourceFile>
-          <SourceClassType>FlatRedBall.TileCollisions.TileShapeCollection</SourceClassType>
-          <InstanceName>CloudCollision</InstanceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
@@ -549,12 +556,14 @@
           <HasPublicProperty>true</HasPublicProperty>
           <CreatesDictionary>true</CreatesDictionary>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/Player/PlatformerAnimations.achx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Graphics.Animation.AnimationChainList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/Player/PlatformerValuesStatic.csv</Name>
@@ -562,24 +571,28 @@
           <HasPublicProperty>true</HasPublicProperty>
           <CreatesDictionary>true</CreatesDictionary>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/Player/p4animations.achx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Graphics.Animation.AnimationChainList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/Player/p2animations.achx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Graphics.Animation.AnimationChainList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/Player/p3animations.achx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Graphics.Animation.AnimationChainList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -665,6 +678,18 @@
       </Properties>
       <NamedObjects>
         <NamedObjectSave>
+          <InstanceName>SpriteInstance</InstanceName>
+          <SourceClassType>FlatRedBall.Sprite</SourceClassType>
+          <Properties>
+            <PropertySave>
+              <Name>AssociateWithFactory</Name>
+              <ValueAsBool>true</ValueAsBool>
+            </PropertySave>
+            <PropertySave>
+              <Name>SourceType</Name>
+              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
+            </PropertySave>
+          </Properties>
           <CustomProperty>
             <Type>FlatRedBall.Graphics.Animation.AnimationChainList</Type>
             <Member>AnimationChains</Member>
@@ -680,6 +705,15 @@
             <Member>TextureScale</Member>
             <ValueAsFloat>1</ValueAsFloat>
           </CustomProperty>
+          <SourceType>FlatRedBallType</SourceType>
+          <SourceFile>Sprite</SourceFile>
+          <AttachToContainer>true</AttachToContainer>
+          <GenerateTimedEmit>true</GenerateTimedEmit>
+          <IndependentOfCamera>false</IndependentOfCamera>
+        </NamedObjectSave>
+        <NamedObjectSave>
+          <InstanceName>AxisAlignedRectangleInstance</InstanceName>
+          <SourceClassType>FlatRedBall.Math.Geometry.AxisAlignedRectangle</SourceClassType>
           <Properties>
             <PropertySave>
               <Name>AssociateWithFactory</Name>
@@ -690,15 +724,6 @@
               <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
             </PropertySave>
           </Properties>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile>Sprite</SourceFile>
-          <SourceClassType>FlatRedBall.Sprite</SourceClassType>
-          <InstanceName>SpriteInstance</InstanceName>
-          <AttachToContainer>true</AttachToContainer>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>false</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
           <CustomProperty>
             <Type>float</Type>
             <Member>Height</Member>
@@ -719,20 +744,8 @@
             <Member>Y</Member>
             <ValueAsFloat>11</ValueAsFloat>
           </CustomProperty>
-          <Properties>
-            <PropertySave>
-              <Name>AssociateWithFactory</Name>
-              <ValueAsBool>true</ValueAsBool>
-            </PropertySave>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsObject xsi:type="SourceType">FlatRedBallType</ValueAsObject>
-            </PropertySave>
-          </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile>AxisAlignedRectangle</SourceFile>
-          <SourceClassType>FlatRedBall.Math.Geometry.AxisAlignedRectangle</SourceClassType>
-          <InstanceName>AxisAlignedRectangleInstance</InstanceName>
           <HasPublicProperty>true</HasPublicProperty>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
@@ -742,29 +755,31 @@
       <Name>Entities\Player</Name>
       <CustomClassesForExport>
         <CustomClassSave>
+          <Name>TopDownValues</Name>
           <CsvFilesUsingThis>
             <string>Entities/Player/TopDownValuesStatic.csv</string>
           </CsvFilesUsingThis>
           <RequiredProperties />
-          <Name>TopDownValues</Name>
           <GenerateCode>true</GenerateCode>
         </CustomClassSave>
         <CustomClassSave>
+          <Name>PlatformerValues</Name>
           <CsvFilesUsingThis>
             <string>Entities/Player/PlatformerValuesStatic.csv</string>
           </CsvFilesUsingThis>
           <RequiredProperties />
-          <Name>PlatformerValues</Name>
           <GenerateCode>true</GenerateCode>
         </CustomClassSave>
       </CustomClassesForExport>
       <ImplementsIDrawableBatch>false</ImplementsIDrawableBatch>
+      <ImplementsITiledTileMetadata>false</ImplementsITiledTileMetadata>
       <CreatedByOtherEntities>true</CreatedByOtherEntities>
       <Is2D>true</Is2D>
     </EntitySave>
   </Entities>
   <GlobalFiles>
     <ReferencedFileSave>
+      <Name>GumProject/GumProject.gumx</Name>
       <Properties>
         <PropertySave>
           <Name>FileAdditionBehavior</Name>
@@ -791,13 +806,14 @@
           <ValueAsBool>true</ValueAsBool>
         </PropertySave>
       </Properties>
-      <Name>GumProject/GumProject.gumx</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <DestroyOnUnload>false</DestroyOnUnload>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
   </GlobalFiles>
+  <GlobalFileWildcards />
   <GlobalContentSettingsSave>
     <LoadAsynchronously>false</LoadAsynchronously>
     <RecordLockContention>false</RecordLockContention>
@@ -812,6 +828,7 @@
   <IgnoredDirectories />
   <CustomClasses>
     <CustomClassSave>
+      <Name>TileMapInfo</Name>
       <CsvFilesUsingThis />
       <RequiredProperties>
         <InstructionSave>
@@ -823,29 +840,31 @@
           <Member>EmbeddedAnimation</Member>
         </InstructionSave>
       </RequiredProperties>
-      <Name>TileMapInfo</Name>
       <GenerateCode>true</GenerateCode>
     </CustomClassSave>
     <CustomClassSave>
+      <Name>TopDownValues</Name>
       <CsvFilesUsingThis>
         <string>Entities/Player/TopDownValuesStatic.csv</string>
       </CsvFilesUsingThis>
       <RequiredProperties />
-      <Name>TopDownValues</Name>
       <GenerateCode>true</GenerateCode>
     </CustomClassSave>
     <CustomClassSave>
+      <Name>PlatformerValues</Name>
       <CsvFilesUsingThis>
         <string>Entities/Player/PlatformerValuesStatic.csv</string>
       </CsvFilesUsingThis>
       <RequiredProperties />
-      <Name>PlatformerValues</Name>
       <GenerateCode>true</GenerateCode>
     </CustomClassSave>
   </CustomClasses>
   <ApplyToFixedResolutionPlatforms>true</ApplyToFixedResolutionPlatforms>
   <ExternallyBuiltFileDirectory>../../</ExternallyBuiltFileDirectory>
   <FileVersion>6</FileVersion>
+  <ScreenReferences />
+  <EntityReferences />
+  <Bookmarks />
   <PluginData>
     <RequiredPlugins>
       <PluginRequirement>
@@ -857,13 +876,15 @@
   </PluginData>
   <DisplaySettings>
     <Name>Custom</Name>
-    <Is2D>true</Is2D>
     <GenerateDisplayCode>true</GenerateDisplayCode>
+    <Is2D>true</Is2D>
     <ResolutionWidth>256</ResolutionWidth>
     <ResolutionHeight>224</ResolutionHeight>
-    <FixedAspectRatio>false</FixedAspectRatio>
+    <AspectRatioBehavior>NoAspectRatio</AspectRatioBehavior>
     <AspectRatioWidth>16</AspectRatioWidth>
     <AspectRatioHeight>9</AspectRatioHeight>
+    <AspectRatioWidth2>0</AspectRatioWidth2>
+    <AspectRatioHeight2>0</AspectRatioHeight2>
     <SupportLandscape>true</SupportLandscape>
     <SupportPortrait>false</SupportPortrait>
     <RunInFullScreen>false</RunInFullScreen>
@@ -876,4 +897,6 @@
     <TextureFilter>1</TextureFilter>
   </DisplaySettings>
   <AllDisplaySettings />
+  <UsesTranslation>false</UsesTranslation>
+  <SuppressBaseTypeGeneration>false</SuppressBaseTypeGeneration>
 </GlueProjectSave>

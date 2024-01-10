@@ -1,5 +1,4 @@
-﻿using FlatRedBall.Glue;
-using FlatRedBall.Glue.Elements;
+﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -7,20 +6,10 @@ using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.ViewModels;
 using GlueFormsCore.Managers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using FileManager = ToolsUtilities.FileManager;
-using StringFunctions = ToolsUtilities.StringFunctions;
 
 namespace OfficialPluginsCore.QuickActionPlugin.Views
 {
@@ -66,7 +55,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         private void RunWizard_Clicked(object sender, RoutedEventArgs e)
         {
-            PluginManager.CallPluginMethod("New Project Wizard", "RunWizard");
+            PluginManager.CallPluginMethod(Localization.Texts.ProjectWizardNew, "RunWizard");
         }
 
         private void CreateNewProjectButton_Clicked(object sender, RoutedEventArgs e)
@@ -77,7 +66,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         private void AddGumButton_Clicked(object sender, RoutedEventArgs args)
         {
-            PluginManager.CallPluginMethod("Gum Plugin", "AskToCreateGumProject");
+            PluginManager.CallPluginMethod(Localization.Texts.GumPlugin, "AskToCreateGumProject");
         }
 
         #region Add Object
@@ -105,13 +94,14 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         private async void AddInstanceOfEntityButton_Clicked(object sender, RoutedEventArgs e)
         {
+            var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
             var viewModel = new AddObjectViewModel();
+            viewModel.ForcedElementToAddTo = gameScreen;
             viewModel.SourceType = SourceType.Entity;
 
             viewModel.SelectedEntitySave = GlueState.Self.CurrentEntitySave;
             viewModel.ObjectName = GlueState.Self.CurrentEntitySave.GetStrippedName() + "1";
 
-            var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
 
             var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(GlueState.Self.CurrentEntitySave, gameScreen);
 
@@ -124,14 +114,15 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         private async void AddListOfEntityButton_Clicked(object sender, RoutedEventArgs e)
         {
+            var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
             var viewModel = new AddObjectViewModel();
+            viewModel.ForcedElementToAddTo = gameScreen;
             viewModel.SourceType = SourceType.FlatRedBallType;
 
             viewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
             viewModel.SourceClassGenericType = GlueState.Self.CurrentEntitySave.Name;
             viewModel.ObjectName = GlueState.Self.CurrentEntitySave.GetStrippedName() + "List";
 
-            var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
             var newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(viewModel, gameScreen, null);
 
             newNos.ExposedInDerived = true;
@@ -148,7 +139,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
                 nameof(entity.CreatedByOtherEntities), false, nameof(entity.CreatedByOtherEntities), null);
 
-            GlueCommands.Self.GluxCommands.SaveGlux();
+            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
             AnyButtonClicked();
         }

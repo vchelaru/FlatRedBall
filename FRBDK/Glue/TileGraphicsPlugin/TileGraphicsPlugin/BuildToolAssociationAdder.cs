@@ -6,6 +6,7 @@ using EditorObjects.SaveClasses;
 using FlatRedBall.Glue.Managers;
 using System.Reflection;
 using System.IO;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace TileGraphicsPlugin
 {
@@ -13,15 +14,13 @@ namespace TileGraphicsPlugin
     {
         public void AddIfNecessary(BuildToolAssociation association)
         {
-            var found = BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList.FirstOrDefault(
+            var found = GlueState.Self.GlueSettingsSave.BuildToolAssociations.FirstOrDefault(
                 possible => possible.ToString().ToLowerInvariant() == association.ToString().ToLowerInvariant());
 
             if (found == null)
             {
-                BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList.Add(association);
-
-                BuildToolAssociationManager.Self.SaveProjectSpecificBuildTools();
-
+                GlueState.Self.GlueSettingsSave.BuildToolAssociations.Add(association);
+                GlueCommands.Self.GluxCommands.SaveSettings();
             }
         }
     }

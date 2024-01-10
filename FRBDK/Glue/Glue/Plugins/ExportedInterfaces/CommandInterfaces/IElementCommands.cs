@@ -7,9 +7,16 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
 using GlueFormsCore.ViewModels;
+using static FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
+    public class OrderedNamedObjectPair
+    {
+        public NamedObjectSave First;
+        public NamedObjectSave Second;
+    }
+
     public interface IElementCommands
     {
         #region AddEntity
@@ -58,8 +65,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
 
         void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true);
-        [Obsolete("Use AddCustomVariableToElementAsync")]
-        void AddCustomVariableToElement(CustomVariable newVariable, GlueElement element, bool save = true);
+        
         Task AddCustomVariableToElementAsync(CustomVariable newVariable, GlueElement element, bool save = true);
         #endregion
 
@@ -84,7 +90,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
-        bool UpdateFromBaseType(GlueElement glueElement);
+        List<OrderedNamedObjectPair> GetGameScreenOpposingTeamIndexCollisionPairs(int? newTeamIndex, NamedObjectSave newElementList, AddEntityViewModel viewModel);
+
+        #region Inheritance
+
+        bool UpdateFromBaseType(GlueElement glueElement, bool showPopupAboutObjectErrors = true);
+
+        #endregion
 
     }
 }

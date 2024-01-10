@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
-using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
 {
@@ -19,6 +18,40 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
         {
             this.ReactToItemSelectHandler += HandleItemSelected;
             this.ReactToLoadedGlux += HandleLoadedGlux;
+            this.ReactToReferencedFileChangedValueHandler += HandleFilePropertyChange;
+            }
+
+        private void HandleFilePropertyChange(string variableName, object oldValue)
+        {
+            if(variableName == nameof(ReferencedFileSave.ProjectsToExcludeFrom))
+            {
+                var ideProjects = GlueState.Self.GetProjects();
+                var glueProject = GlueState.Self.CurrentGlueProject;
+                var wasAnythingRemoved = false;
+
+                var rfs = GlueState.Self.CurrentReferencedFileSave;
+
+                if(rfs != null)
+                {
+                    if(GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs))
+                    {
+                        wasAnythingRemoved = true;
+                    }
+                }
+
+                foreach (var ideProject in ideProjects)
+                {
+                    if(ProjectMembershipManager.Self.RemoveAllExcludedFiles(ideProject, glueProject))
+                    {
+                        wasAnythingRemoved = true;
+                    }
+                }
+
+                if (wasAnythingRemoved)
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                }
+            }
         }
 
         private void HandleLoadedGlux()
@@ -52,7 +85,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
                 if (control == null)
                 {
                     control = new ExclusionControl();
-                    pluginTab = base.CreateTab(control, "Platform Inclusions");
+                    pluginTab = base.CreateTab(control, L.Texts.PlatformInclusions);
                 }
                 pluginTab.Show();
 
@@ -80,14 +113,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
         {
             int count = file.ProjectsToExcludeFrom.Count;
 
-            if (count == 0)
-            {
-                pluginTab.Title = "Platform Inclusions";
-            }
-            else
-            {
-                pluginTab.Title = "Excluded from " + count + " platforms";
-            }
+            pluginTab.Title = count == 0 ? L.Texts.PlatformInclusions : String.Format(L.Texts.PlatformsExcluded, count);
         }
     }
 }

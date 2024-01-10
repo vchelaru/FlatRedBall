@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Elements;
 using EditorObjects.Parsing;
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -73,7 +74,7 @@ namespace FlatRedBall.Glue.FormHelpers
         public static void FillListWithAvailableObjects(string relativeFile, List<string> listOfObjectsToReturn)
         {
 
-            string referencedFile = FacadeContainer.Self.ProjectValues.ContentDirectory + relativeFile;
+            string referencedFile = GlueState.Self.ContentDirectory + relativeFile;
 
             var fileExtension = FileManager.GetExtension(relativeFile);
 

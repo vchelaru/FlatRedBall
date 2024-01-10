@@ -23,10 +23,12 @@ namespace TopDownPlugin.Logic
                 switch (args.PropertyName)
                 {
                     case nameof(AddEntityViewModel.HasInheritance):
-                        viewModel.AllUiVisibility = (commonViewModel.HasInheritance == false).ToVisibility();
+                        RefreshHasInheritance(viewModel, commonViewModel);
                         break;
                 }
             };
+
+            RefreshHasInheritance(viewModel, commonViewModel);
 
             viewModel.PropertyChanged += (sender, args) =>
             {
@@ -34,14 +36,21 @@ namespace TopDownPlugin.Logic
                 {
                     case nameof(viewModel.IsTopDownRadioChecked):
                     case nameof(viewModel.IsPlatformerRadioChecked):
-                        if(viewModel.IsPlatformerRadioChecked || viewModel.IsTopDownRadioChecked)
+                        if (viewModel.IsPlatformerRadioChecked || viewModel.IsTopDownRadioChecked)
                         {
-                            commonViewModel.IsICollidableEnabled = false;
+                            if(commonViewModel.ObjectsDisablingCollidableCheckbox.Contains(viewModel) == false)
+                            {
+                                commonViewModel.ObjectsDisablingCollidableCheckbox.Add(viewModel);
+                            }
                             commonViewModel.IsICollidableChecked = true;
                         }
                         else
                         {
-                            commonViewModel.IsICollidableEnabled = true;
+
+                            if (commonViewModel.ObjectsDisablingCollidableCheckbox.Contains(viewModel))
+                            {
+                                commonViewModel.ObjectsDisablingCollidableCheckbox.Remove(viewModel);
+                            }
                         }
                         break;
                 }
@@ -50,6 +59,11 @@ namespace TopDownPlugin.Logic
             var control = new AdditionalEntitiesControls();
             control.DataContext = viewModel;
             window.AddControl(control);
+        }
+
+        private static void RefreshHasInheritance(AdditionalEntitiesControlViewModel viewModel, AddEntityViewModel commonViewModel)
+        {
+            viewModel.AllUiVisibility = (commonViewModel.HasInheritance == false).ToVisibility();
         }
     }
 }

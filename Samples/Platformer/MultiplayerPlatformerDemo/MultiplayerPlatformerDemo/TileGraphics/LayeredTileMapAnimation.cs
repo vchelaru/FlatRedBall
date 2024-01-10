@@ -43,16 +43,18 @@ namespace FlatRedBall.TileGraphics
         {
             AnimationFrame animationFrame = animationChainContainer.CurrentFrame;
             Microsoft.Xna.Framework.Vector4 textureValues = new Microsoft.Xna.Framework.Vector4();
-            foreach (var mapLayer in layeredTileMap.MapLayers)
+            for (int i = 0; i < layeredTileMap.MapLayers.Count; i++)
             {
+                MapDrawableBatch mapLayer = layeredTileMap.MapLayers[i];
                 var nameDictionary = mapLayer.NamedTileOrderedIndexes;
 
                 if (nameDictionary.ContainsKey(spriteName))
                 {
                     var indexes = nameDictionary[spriteName];
 
-                    foreach (int value in indexes)
+                    for (int i1 = 0; i1 < indexes.Count; i1++)
                     {
+                        int value = indexes[i1];
                         textureValues.X = animationFrame.LeftCoordinate;
                         textureValues.Y = animationFrame.RightCoordinate;
                         textureValues.Z = animationFrame.TopCoordinate;

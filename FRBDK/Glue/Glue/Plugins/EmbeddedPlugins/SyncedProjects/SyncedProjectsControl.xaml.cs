@@ -1,23 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Controls.ProjectSync;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
-using FlatRedBall.Glue.VSHelpers;
-using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Projects;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 {
@@ -26,15 +14,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
     /// </summary>
     public partial class SyncedProjectsControl : UserControl
     {
-        SyncedProjectsViewModel ViewModel
-        {
-            get
-            {
-                return DataContext as SyncedProjectsViewModel;
-            }
-        }
-
-
+        SyncedProjectsViewModel ViewModel => DataContext as SyncedProjectsViewModel;
         public SyncedProjectsControl()
         {
             InitializeComponent();
@@ -48,7 +28,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
         private void AddProjectClick(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            openFileDialog.Filter = "C# Project files (*.csproj)|*.csproj|VS Project files (*.vcproj)|*.vcproj|Android Project (*.project)|*.project";
+            openFileDialog.Filter =
+                $@"{L.Texts.CSharpProjectFiles}(*.csproj)|*.csproj|{L.Texts.VisualStudioFiles} (*.vcproj)|*.vcproj|{L.Texts.ProjectAndroid} (*.project)|*.project";
 
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -62,10 +43,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 }
                 else
                 {
-                    GlueGui.ShowMessageBox("The selected project is already a synced project.");
+                    GlueGui.ShowMessageBox(L.Texts.ProjectIsAlreadySynced);
                 }
 
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
 
             }
@@ -79,7 +60,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 ProjectManager.RemoveSyncedProject(selectedItem.ProjectBase);
                 ViewModel.Refresh();
 
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }

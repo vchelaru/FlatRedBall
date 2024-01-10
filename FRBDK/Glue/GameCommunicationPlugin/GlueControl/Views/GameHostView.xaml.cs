@@ -1,31 +1,18 @@
 ﻿using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using FlatRedBall.Glue.SaveClasses;
 using Glue;
 using GlueFormsCore.Controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using GameCommunicationPlugin.GlueControl;
 using GameCommunicationPlugin.GlueControl.CommandSending;
 using GameCommunicationPlugin.GlueControl.Dtos;
-using GameCommunicationPlugin.GlueControl.Managers;
-using GameCommunicationPlugin.GlueControl.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using CompilerLibrary.ViewModels;
+using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace OfficialPlugins.GameHost.Views
 {
@@ -51,7 +38,6 @@ namespace OfficialPlugins.GameHost.Views
         [DllImport("user32.dll")]
         static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
-        private CommandSender _commandSender;
         private Func<string, string, Task<string>> _eventCallerWithResult;
         private Action<string, string> _eventCaller;
 
@@ -89,12 +75,11 @@ namespace OfficialPlugins.GameHost.Views
         public event Action<ITreeNode> TreeNodedDroppedInEditBar;
         #endregion
 
-        public GameHostView(Func<string, string, Task<string>> eventCallerWithResult, Action<string, string> eventCaller, CommandSender commandSender)
+        public GameHostView(Func<string, string, Task<string>> eventCallerWithResult, Action<string, string> eventCaller)
         {
             InitializeComponent();
 
 
-            _commandSender = commandSender;
             _eventCallerWithResult = eventCallerWithResult;
             _eventCaller = eventCaller;
             winformsPanel = new System.Windows.Forms.Panel();
@@ -129,24 +114,27 @@ namespace OfficialPlugins.GameHost.Views
             e.Effects = DragDropEffects.Move;
         }
 
-        private async void WinformsHost_Drop(object sender, DragEventArgs e)
-        {
-            // this doesn't work due to the airspace problem in wpf
-            ////https://stackoverflow.com/questions/5978917/render-wpf-control-on-top-of-windowsformshost/5979041#5979041
-            //var vm = GlueState.Self.DraggedTreeNode;
+        //private async void WinformsHost_Drop(object sender, DragEventArgs e)
+        //{
+        //    // this doesn't work due to the airspace problem in wpf
+        //    ////https://stackoverflow.com/questions/5978917/render-wpf-control-on-top-of-windowsformshost/5979041#5979041
+        //    //var vm = GlueState.Self.DraggedTreeNode;
 
-            //if (vm != null && ViewModel.IsRunning)
-            //{
-            //    await DragDropManagerGameWindow.HandleDragDropOnGameWindow(vm);
-            //}
-        }
+        //    //if (vm != null && ViewModel.IsRunning)
+        //    //{
+        //    //    await DragDropManagerGameWindow.HandleDragDropOnGameWindow(vm);
+        //    //}
+        //}
 
         public async Task EmbedHwnd(IntPtr handle)
         {
             GlueCommands.Self.DoOnUiThread(() =>
             {
+                ViewModel.IsWindowEmbedded = false;
                 SetParent(handle, winformsPanel.Handle);
+                ViewModel.IsWindowEmbedded = false;
             });
+
             gameHandle = handle;
             var succeededMakingGameBorderless = await MakeGameBorderless();
 
@@ -175,6 +163,7 @@ namespace OfficialPlugins.GameHost.Views
                         Repaint = true
                     }));
                 }
+
             }
         }
 
@@ -187,7 +176,7 @@ namespace OfficialPlugins.GameHost.Views
 
             do
             {
-                var sendResponse = await _commandSender.Send(dto);
+                var sendResponse = await CommandSender.Self.Send(dto);
                 var response = sendResponse.Succeeded ? sendResponse.Data : string.Empty;
 
                 succeeded = !string.IsNullOrWhiteSpace(response);
@@ -227,6 +216,39 @@ namespace OfficialPlugins.GameHost.Views
         {
             SetGameToEmbeddedGameWindow();
 
+            // In FNA, if the game resizes externally, the internal methods for resizing do not get called, so the
+            // camera doesn't adjust, aspect ratio isn't fixed, etc. We need to force this
+            if (GlueState.Self.CurrentMainProject is FnaDesktopProject && ViewModel.IsRunning && ViewModel.IsWindowEmbedded)
+            {
+                _ = CommandSender.Self.Send(new ForceClientSizeUpdatesDto());
+            }
+        }
+
+        static double? windowsScaleFactor = null;
+        public static double WindowsScaleFactor
+        {
+            get
+            {
+                if (windowsScaleFactor == null)
+                {
+                    // todo - fix on a computer that has scaling using:
+                    // https://stackoverflow.com/questions/68832226/get-windows-10-text-scaling-value-in-wpf/68846399#comment128365225_68846399
+
+                    // This doesn't seem to work on Windows11:
+                    //var userKey = Microsoft.Win32.Registry.CurrentUser;
+                    //var softKey = userKey.OpenSubKey("Software");
+                    //var micKey = softKey.OpenSubKey("Microsoft");
+                    //var accKey = micKey.OpenSubKey("Accessibility");
+
+                    //var factor = accKey.GetValue("TextScaleFactor");
+                    // this returns text scale, not window scale
+                    //var uiSettings = new Windows.UI.ViewManagement.UISettings();
+                    //windowsScaleFactor = uiSettings.
+                    windowsScaleFactor =
+                    System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth;
+                }
+                return windowsScaleFactor.Value;
+            }
         }
 
         public void SetGameToEmbeddedGameWindow()
@@ -238,8 +260,8 @@ namespace OfficialPlugins.GameHost.Views
                 gameHandle != IntPtr.Zero;
             if (shouldMove)
             {
-                var newWidth = (int)WinformsHost.ActualWidth;
-                var newHeight = (int)WinformsHost.ActualHeight;
+                var newWidth = (int)(WinformsHost.ActualWidth* WindowsScaleFactor);
+                var newHeight = (int)(WinformsHost.ActualHeight * WindowsScaleFactor);
 
                 _eventCaller("Runner_MoveWindow", JsonConvert.SerializeObject(new
                 {
@@ -344,14 +366,14 @@ namespace OfficialPlugins.GameHost.Views
         {
             var dto = new ChangeZoomDto();
             dto.PlusOrMinus = PlusOrMinus.Minus;
-            await _commandSender.Send(dto);
+            await CommandSender.Self.Send(dto);
         }
 
         private async void BottomStatusBar_ZoomPlusClick()
         {
             var dto = new ChangeZoomDto();
             dto.PlusOrMinus = PlusOrMinus.Plus;
-            await _commandSender.Send(dto);
+            await CommandSender.Self.Send(dto);
         }
 
         private void ToolsSidePanel_Drop(object sender, DragEventArgs e)
@@ -377,6 +399,7 @@ namespace OfficialPlugins.GameHost.Views
         public async void ReactToMainWindowResizeEnd()
         {
             await ForceRefreshGameArea();
+
         }
 
         /// <summary>
@@ -409,6 +432,7 @@ namespace OfficialPlugins.GameHost.Views
                 await Task.Delay(msDelayBetweenResizes);
                 MainPanelControl.ViewModel.LeftPanelWidth = new GridLength(leftPixel);
             }
+
         }
 
         public void HandleGluxLoaded()

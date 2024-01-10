@@ -11,6 +11,12 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
         public PropertyMethod SetMethod { get; set; }
         public string ReturnType { get; internal set; }
         public string GetSimpleBody { get; internal set; }
+        public bool IsAutomaticProperty { get; internal set; }
         public bool ReturnToPropertyType { get; internal set; }
+
+        public override string ToString()
+        {
+            return "Name";
+        }
     }
 }

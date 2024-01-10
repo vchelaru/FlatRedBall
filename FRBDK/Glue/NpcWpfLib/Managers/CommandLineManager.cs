@@ -31,25 +31,47 @@ namespace Npc.Managers
             private set;
         }
 
-        public void ProcessCommandLineArguments()
+        public bool ShowSourceCheckbox
         {
-            foreach (string arg in Environment.GetCommandLineArgs())
+            get;
+            private set;
+        }
+
+        public string? DefaultDestinationDirectory
+        {
+            get;
+            private set;
+        }
+
+        public void ProcessCommandLineArguments(string[] forcedArgs = null)
+        {
+            var args = forcedArgs ?? Environment.GetCommandLineArgs();
+            foreach (string arg in args)
             {
-                if (arg.StartsWith("directory="))
+                if (arg.StartsWith("directory=", StringComparison.OrdinalIgnoreCase))
                 {
                     HandleDirectoryEquals(arg);
                 }
-                else if (arg.StartsWith("namespace="))
+                else if (arg.StartsWith("namespace=", StringComparison.OrdinalIgnoreCase))
                 {
                     HandleNamespaceEquals(arg);
                 }
-                else if (arg.ToLower().StartsWith("openedby="))
+                else if (arg.StartsWith("openedby=", StringComparison.OrdinalIgnoreCase))
                 {
                     HandleOpenedBy(arg);
                 }
-                else if(arg.ToLower() == "emptyprojects")
+                else if (String.Equals(arg, "emptyprojects", StringComparison.OrdinalIgnoreCase))
                 {
                     EmptyProjectsOnly = true;
+                }
+                else if (string.Equals(arg, "showsourcecheckbox", StringComparison.OrdinalIgnoreCase))
+                {
+                    ShowSourceCheckbox = true;
+                }
+                else if(arg.StartsWith("defaultdestinationdirectory=", StringComparison.OrdinalIgnoreCase))
+                {
+                    DefaultDestinationDirectory = arg.Substring("defaultdestinationdirectory".Length + 1).Replace("\"", "");
+
                 }
             }
         }
@@ -61,7 +83,7 @@ namespace Npc.Managers
 
             string directory = arg.Substring(lengthOfDirectory, arg.Length - lengthOfDirectory);
 
-            if (directory.StartsWith("\"") && directory.EndsWith("\""))
+            if (directory.StartsWith("\"", StringComparison.OrdinalIgnoreCase) && directory.EndsWith("\"", StringComparison.OrdinalIgnoreCase))
             {
                 directory = directory.Substring(1, directory.Length - 2);
             }

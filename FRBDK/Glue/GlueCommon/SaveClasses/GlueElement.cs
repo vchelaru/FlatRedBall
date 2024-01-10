@@ -69,7 +69,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
         public bool ShouldSerializeCustomVariables()
         {
-            return CustomVariables != null && CustomVariables.Count != 0;
+            return CustomVariables?.Count > 0;
         }
 
         [Browsable(false)]
@@ -274,6 +274,18 @@ namespace FlatRedBall.Glue.SaveClasses
             return null;
         }
 
+
+        protected void CopyVariablesAfterClone(GlueElement clone)
+        {
+            for (int i = 0; i < this.CustomVariables.Count; i++)
+            {
+                if (CustomVariables[i].VariableDefinition != null)
+                {
+                    clone.CustomVariables[i].VariableDefinition.PreferredDisplayer =
+                        CustomVariables[i].VariableDefinition.PreferredDisplayer;
+                }
+            }
+        }
 
         public object GetPropertyValue(string propertyName)
         {

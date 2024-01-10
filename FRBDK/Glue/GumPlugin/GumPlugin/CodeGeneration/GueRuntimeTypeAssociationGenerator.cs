@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms.Design.Behavior;
 
 namespace GumPlugin.CodeGeneration
 {
@@ -94,75 +95,102 @@ namespace GumPlugin.CodeGeneration
             // Loop through all elements to see if they...
             foreach (var element in loadedElements)
             {
-                var elementAsComponent = element as ComponentSave;
-
-                if(elementAsComponent != null)
+                // ...have behaviors...
+                foreach(var behavior in element.Behaviors)
                 {
-                    // ...have behaviors...
-                    foreach(var behavior in elementAsComponent.Behaviors)
+                    // ...which implement control.
+                    var formsControlInfo = FormsControlInfo.AllControls
+                        .FirstOrDefault(item => !string.IsNullOrEmpty(item.BehaviorName) && item.BehaviorName == behavior.BehaviorName);
+
+                    if(formsControlInfo != null)
                     {
-                        // ...which implement control.
-                        var formsControlInfo = FormsControlInfo.AllControls
-                            .FirstOrDefault(item => !string.IsNullOrEmpty(item.BehaviorName) && item.BehaviorName == behavior.BehaviorName);
+                        string controlType = formsControlInfo.ControlName;
 
-                        if(formsControlInfo != null)
+                        AssociationFulfillment matchingFulfillment = null;
+
+                        if (controlType != null)
                         {
-                            string controlType = formsControlInfo.ControlName;
-
-                            AssociationFulfillment matchingFulfillment = null;
-
-                            if (controlType != null)
-                            {
-                                // Is there already a matching control? We need to know so we can compare if this element fulfills the control better
-                                matchingFulfillment = associationFulfillments.FirstOrDefault(item => item.ControlType == controlType);
-                            }
-
-                            // Here we try to get the "most fulfilled" version of an object to set it as the default.
-                            // For example, Button text is optional, and two Gum objects may have the Button behavior.
-                            // If one of them has text properties then we should favor that over the one that doens't.
-                            // Of course, the user can still change the defaults at runtime or manually create the visual
-                            // for a form if they don't want the default, but this will hopefully give the "best fit"
-                            // default.
-                            if(matchingFulfillment == null || matchingFulfillment.IsCompletelyFulfilled == false)
-                            {
-                                bool isCompleteFulfillment = GetIfIsCompleteFulfillment(element, controlType);
-
-                                if(matchingFulfillment == null)
-                                {
-                                    var newFulfillment = new AssociationFulfillment();
-                                    newFulfillment.Element = element;
-                                    newFulfillment.IsCompletelyFulfilled = isCompleteFulfillment;
-                                    newFulfillment.ControlType = controlType;
-
-                                    associationFulfillments.Add(newFulfillment);
-                                }
-                                else if(isCompleteFulfillment)
-                                {
-                                    matchingFulfillment.Element = element;
-                                    matchingFulfillment.IsCompletelyFulfilled = isCompleteFulfillment;
-                                    matchingFulfillment.ControlType = controlType;
-                                }
-                            
-                            }
+                            // Is there already a matching control? We need to know so we can compare if this element fulfills the control better
+                            matchingFulfillment = associationFulfillments.FirstOrDefault(item => item.ControlType == controlType);
                         }
 
+                        // Here we try to get the "most fulfilled" version of an object to set it as the default.
+                        // For example, Button text is optional, and two Gum objects may have the Button behavior.
+                        // If one of them has text properties then we should favor that over the one that doens't.
+                        // Of course, the user can still change the defaults at runtime or manually create the visual
+                        // for a form if they don't want the default, but this will hopefully give the "best fit"
+                        // default.
+                        if(matchingFulfillment == null || matchingFulfillment.IsCompletelyFulfilled == false)
+                        {
+                            bool isCompleteFulfillment = GetIfIsCompleteFulfillment(element, controlType);
+
+                            if(matchingFulfillment == null)
+                            {
+                                var newFulfillment = new AssociationFulfillment();
+                                newFulfillment.Element = element;
+                                newFulfillment.IsCompletelyFulfilled = isCompleteFulfillment;
+                                newFulfillment.ControlType = controlType;
+
+                                associationFulfillments.Add(newFulfillment);
+                            }
+                            else if(isCompleteFulfillment)
+                            {
+                                matchingFulfillment.Element = element;
+                                matchingFulfillment.IsCompletelyFulfilled = isCompleteFulfillment;
+                                matchingFulfillment.ControlType = controlType;
+                            }
+                            
+                        }
                     }
+
                 }
             }
 
             foreach(var component in AppState.Self.GumProjectSave.Components)
             {
                 // Is this component a forms control, but not a default forms control?
-                if(FormsClassCodeGenerator.Self.GetIfShouldGenerate(component))
+                // update October 17, 2023
+                // Why do we exclude if it's 
+                // a default forms control? Those
+                // need the association too. I really
+                // don't understand how this code was working
+                // before, but this is causing problems, so I'm
+                // going to fix it:
+                // Update November 27, 2023 Vic
+                // I now understand why this code was written this
+                // way. For standard forms objects like Button, the 
+                // fulfillments will be based on the element behaviors 
+                // above. If GetIfShouldGenerate is false, that means we
+                // aren't going to generate code for this type of forms component
+                // because it's part of the standard FlatRedBall.Forms library. If
+                // the object has Forms, but it is not a standard, then we will handle 
+                // the fulfillment here:
+                var isCustomComponent =
+                    FormsClassCodeGenerator.Self.GetIfShouldGenerate(component);
+                if (isCustomComponent)
                 {
-                    // associate them:
-                    var newFulfillment = new AssociationFulfillment();
-                    newFulfillment.Element = component;
-                    newFulfillment.IsCompletelyFulfilled = true;
-                    newFulfillment.ControlType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(component) + 
-                        "." + FormsClassCodeGenerator.Self.GetUnqualifiedRuntimeTypeFor(component);
+                    var shouldGenerate = FormsClassCodeGenerator.Self.GetIfShouldGenerate(component);
 
-                    associationFulfillments.Add(newFulfillment);
+                    if (FormsClassCodeGenerator.Self.GetIfShouldGenerate(component) || 
+                        (component.Behaviors != null && GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(component.Behaviors) != null))
+                        {
+                        // associate them:
+                        var newFulfillment = new AssociationFulfillment();
+                        newFulfillment.Element = component;
+                        newFulfillment.IsCompletelyFulfilled = true;
+
+                        string standardFormsType = null;
+                        if(component.Behaviors != null)
+                        {
+                            standardFormsType = GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(component.Behaviors);
+                        }
+
+                        newFulfillment.ControlType = standardFormsType ?? FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(component) + 
+                            "." + FormsClassCodeGenerator.Self.GetUnqualifiedRuntimeTypeFor(component);
+
+                        associationFulfillments.Add(newFulfillment);
+                    }
+
                 }
             }
 

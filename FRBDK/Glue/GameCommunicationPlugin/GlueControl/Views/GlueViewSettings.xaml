@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GameCommunicationPlugin.GlueControl.Views" xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -12,9 +13,9 @@
             <wpfdataui:DataUiGrid x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
             <StackPanel Visibility="{Binding ShowWindowDefenderUi}" Margin="6">
                 <Image MaxWidth="240" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/GameCommunicationPlugin;component/GlueControl/Icons/FirewallEnablePopup.png" ></Image>
-                <TextBlock TextWrapping="Wrap">*Running your game with edit mode enabled requires a live connection to the FlatRedBall Editor. Click Allow Access to enable the connection.</TextBlock>
+                <TextBlock TextWrapping="Wrap"  Text="{x:Static localization:Texts.HintRunGameLiveFRB}"></TextBlock>
             </StackPanel>
-        
+            <Button HorizontalAlignment="Left" Click="HandleShowGameCommandRerunList" Content="{x:Static localization:Texts.ShowGameRerun}" />
         </StackPanel>
     </ScrollViewer>
 </UserControl>

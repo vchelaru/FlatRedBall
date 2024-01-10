@@ -272,7 +272,6 @@ namespace FlatRedBall.Glue.GuiDisplay
             bool shouldIncludeSourceName = true;
             bool shouldIncludeSourceClassGenericType = true;
             bool shouldShowCurrentState = true;
-            bool shouldIncludeIncludeInIVisible = true;
             bool shouldIncludeIncludeInIClickable = true;
             bool shouldIncludeIncludeInICollidable = true;
             bool shouldIncludeIsContainer = true;
@@ -288,7 +287,6 @@ namespace FlatRedBall.Glue.GuiDisplay
 
             ExcludeMember(nameof(NamedObjectSave.InstructionSaves));
             ExcludeMember(nameof(NamedObjectSave.Properties));
-            ExcludeMember(nameof(NamedObjectSave.FulfillsRequirement));
             ExcludeMember(nameof(NamedObjectSave.IsNodeHidden));
 
             ForcedReadOnlyProperties.Add(nameof(NamedObjectSave.DefinedByBase));
@@ -313,14 +311,6 @@ namespace FlatRedBall.Glue.GuiDisplay
                 //}
 
                 var containerType = instance.GetContainerType();
-
-                // Screens can't be IVisible/IClickable so no need to show these properties
-                // in screens
-                shouldIncludeIncludeInIVisible = containerType == ContainerType.Entity;
-                if(assetTypeInfo != null && assetTypeInfo.HasVisibleProperty == false)
-                {
-                    shouldIncludeIncludeInIVisible = false;
-                }
 
                 shouldIncludeIncludeInIClickable = containerType == ContainerType.Entity;
                 if(assetTypeInfo != null && assetTypeInfo.HasCursorIsOn == false)
@@ -519,10 +509,6 @@ namespace FlatRedBall.Glue.GuiDisplay
                 if (!shouldIncludeIncludeInIClickable)
                 {
                     ExcludeMember(nameof(NamedObjectSave.IncludeInIClickable));
-                }
-                if (!shouldIncludeIncludeInIVisible)
-                {
-                    ExcludeMember(nameof(NamedObjectSave.IncludeInIVisible));
                 }
                 if(!shouldIncludeIncludeInICollidable)
                 {

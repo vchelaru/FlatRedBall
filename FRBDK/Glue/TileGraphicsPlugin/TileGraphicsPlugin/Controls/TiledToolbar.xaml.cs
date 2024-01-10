@@ -1,5 +1,4 @@
-﻿using FlatRedBall.Glue.IO;
-using FlatRedBall.Glue.MVVM;
+﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
@@ -14,13 +13,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace TiledPluginCore.Controls
 {
@@ -314,9 +307,9 @@ namespace TiledPluginCore.Controls
 
             // Ensure to not return the default OpenWith.exe associated executable in Windows 8 or higher
             if (!string.IsNullOrEmpty(executablePath) && File.Exists(executablePath) &&
-                !executablePath.ToLower().EndsWith(".dll"))
+                !executablePath.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
             {
-                if (executablePath.ToLower().EndsWith("openwith.exe"))
+                if (executablePath.EndsWith("openwith.exe", StringComparison.OrdinalIgnoreCase))
                 {
                     return null; // 'OpenWith.exe' is th windows 8 or higher default for unknown extensions. I don't want to have it as associted file
                 }

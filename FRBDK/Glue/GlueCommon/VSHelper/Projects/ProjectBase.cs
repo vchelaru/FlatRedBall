@@ -164,7 +164,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// <summary>
         /// A string which is intended to uniquely identify the project type.
         /// For example, XNA 4 projets might return "Xna4".  This is not tied to
-        /// any preprocessor defines.
+        /// any preprocessor defines, nor is it used during the update or creation process. It's only a unique ID used by FRB Editor.
         /// </summary>
         public abstract string ProjectId { get; }
         public abstract string PrecompilerDirective { get; }
@@ -177,10 +177,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             if (FileManager.IsRelative(relativePath))
             {
-                string lowerCase = relativePath.ToLower();
-
-                if (this.IsContentProject &&
-                    (lowerCase.StartsWith("content/") || lowerCase.StartsWith(@"content\")))
+                if (this.IsContentProject && (relativePath.StartsWith("content/", StringComparison.OrdinalIgnoreCase) || relativePath.StartsWith(@"content\", StringComparison.OrdinalIgnoreCase)))
                 {
                     relativePath = relativePath.Substring("content/".Length, relativePath.Length - "content/".Length);
                 }
@@ -191,8 +188,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 // Let's assume that if it has an extension it is not a directory
                 var extension = FileManager.GetExtension(returnValue);
                 if(string.IsNullOrEmpty(extension) && 
-                    !returnValue.EndsWith("/") &&
-                    !returnValue.EndsWith("\\"))
+                    !returnValue.EndsWith("/", StringComparison.OrdinalIgnoreCase) &&
+                    !returnValue.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
                 {
                     if (// do the slow call last to early out
                         System.IO.Directory.Exists(returnValue)
@@ -233,7 +230,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public string StandardizeItemName(string itemName)
         {
-            itemName = itemName.ToLower().Replace("/", "\\");
+            itemName = itemName.ToLowerInvariant().Replace("/", "\\");
 
             if (!FileManager.IsRelative(itemName))
             {
@@ -241,7 +238,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 itemName = itemName.Replace("/", "\\");
             }
 
-            if (this.IsContentProject && itemName.StartsWith("content\\"))
+            if (this.IsContentProject && itemName.StartsWith("content\\", StringComparison.OrdinalIgnoreCase))
             {
                 itemName = itemName.Substring("content\\".Length);
             }
@@ -255,7 +252,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             string fullName = FullFileName.GetDirectoryContainingThis().FullPath + relativeFileName;
 
-            if (FileManager.Standardize(fullName).ToLower() != FileManager.Standardize(sourceFileName).ToLower())
+            if (!String.Equals(FileManager.Standardize(fullName), FileManager.Standardize(sourceFileName), StringComparison.OrdinalIgnoreCase))
             {
                 try
                 {
@@ -276,10 +273,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         }
 
-        protected virtual string ContentProjectDirectory
-        {
-            get { return Directory; }
-        }
+        protected virtual string ContentProjectDirectory => Directory;
 
 
         public virtual void LoadContentProject()

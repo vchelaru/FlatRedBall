@@ -1,7 +1,9 @@
-﻿using FlatRedBall.Glue.Plugins;
+﻿using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -25,16 +27,21 @@ namespace OfficialPlugins.ErrorReportingPlugin
         {
             AddErrorReporter(new NamedObjectSaveErrorReporter());
             AddErrorReporter(new ReferencedFileSaveErrorReporter());
+            AddErrorReporter(new CustomVariableSaveErrorReporter());
+            AddErrorReporter(new ElementInheritanceErrorReporter());
 
-            this.ReactToFileChangeHandler += HandleFileChanged;
+            this.ReactToFileChange += HandleFileChanged;
             //this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
-            this.ReactToChangedNamedObjectVariableList += HandleChangedNamedObjectVariableList;
+            this.ReactToChangedNamedObjectPropertyList += HandleChangedNamedObjectPropertyList;
         }
 
-        private async void HandleChangedNamedObjectVariableList(List<PluginManager.NamedObjectSaveVariableChange> obj)
+        private async void HandleChangedNamedObjectPropertyList(List<PluginManager.NamedObjectSavePropertyChange> obj)
         {
-            await GlueCommands.Self.RefreshCommands.ClearFixedErrors();
-            this.RefreshErrors();
+            if(obj.Count > 0 && obj[0].CommitType == WpfDataUi.DataTypes.SetPropertyCommitType.Full) 
+            { 
+                await GlueCommands.Self.RefreshCommands.ClearFixedErrors();
+                this.RefreshErrors();
+            }
         }
 
         //private async void HandleNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
@@ -44,7 +51,7 @@ namespace OfficialPlugins.ErrorReportingPlugin
         //}
 
 
-        private void HandleFileChanged(string fileName)
+        private void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)
         {
             this.RefreshErrors();
         }

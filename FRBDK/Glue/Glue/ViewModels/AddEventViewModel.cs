@@ -1,12 +1,17 @@
-﻿using FlatRedBall.Glue.Controls;
-using FlatRedBall.Glue.MVVM;
+﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace GlueFormsCore.ViewModels
 {
+    public enum CustomEventType
+    {
+        Exposed,
+        Tunneled,
+        New
+    }
+
     public class AddEventViewModel : ViewModel
     {
         public CustomEventType DesiredEventType
@@ -50,5 +55,17 @@ namespace GlueFormsCore.ViewModels
             get => Get<string>();
             set => Set(value);
         }
+
+        public List<ExposableEvent> ExposableEvents 
+        {
+            get => Get<List<ExposableEvent>>();
+            set => Set(value);
+        }
+
+        public AddEventViewModel()
+        {
+            ExposableEvents = new List<ExposableEvent>();
+        }
+
     }
 }

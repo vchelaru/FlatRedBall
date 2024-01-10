@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.PathPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="24" d:DesignWidth="400">
     <Grid>
@@ -24,7 +24,7 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock VerticalAlignment="Center" Margin="0,0,3,0">X:</TextBlock>
-            <TextBox Grid.Column="1" Text="{Binding X}" KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+            <TextBox x:Name="XTextBox" Grid.Column="1" Text="{Binding X}"  GotFocus="TextBox_GotFocus" KeyUp="TextBox_KeyEnterUpdate" MouseWheel="TextBox_MouseWheel"></TextBox>
         </Grid>
         <Grid Grid.Column="2" Margin="14,0,0,0">
             <Grid.ColumnDefinitions>
@@ -32,15 +32,15 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock  VerticalAlignment="Center"  Margin="0,0,3,0">Y:</TextBlock>
-            <TextBox Grid.Column="1" Text="{Binding Y}" KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+            <TextBox x:Name="YTextBox" Grid.Column="1" Text="{Binding Y}" GotFocus="TextBox_GotFocus" KeyUp="TextBox_KeyEnterUpdate"  MouseWheel="TextBox_MouseWheel"></TextBox>
         </Grid>
         <Grid Grid.Column="3" Margin="14,0,0,0" Visibility="{Binding AngleVisibility}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock  VerticalAlignment="Center" Margin="0,0,3,0">Angle:</TextBlock>
-            <TextBox Grid.Column="1" Text="{Binding Angle}" KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+            <TextBlock  VerticalAlignment="Center" Margin="0,0,3,0" Text="{x:Static localization:Texts.Angle}" />
+            <TextBox x:Name="AngleTextBox" Grid.Column="1" Text="{Binding Angle}" GotFocus="TextBox_GotFocus" KeyUp="TextBox_KeyEnterUpdate"  MouseWheel="TextBox_MouseWheel"></TextBox>
         </Grid>
 
         <Grid Grid.Column="4" Margin="16,0,16,0">

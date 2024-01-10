@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.GameHost.Views"
              xmlns:views="clr-namespace:GameCommunicationPlugin.GlueControl.Views" xmlns:controls="clr-namespace:FlatRedBall.Glue.Controls;assembly=GlueFormsCore"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -30,8 +30,8 @@
                     <Button.ToolTip>
                         <ToolTip>
                             <StackPanel>
-                                <TextBlock FontWeight="Bold">Run In Edit Mode</TextBlock>
-                                <TextBlock>Starts the game in edit mode on the startup screen.</TextBlock>
+                                <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.RunEditMode}"></TextBlock>
+                                <TextBlock Text="{x:Static localization:Texts.StartGameInEditMode}"></TextBlock>
                             </StackPanel>
                         </ToolTip>
                     </Button.ToolTip>
@@ -61,11 +61,27 @@
             </WrapPanel>
 
             <StackPanel x:Name="AlwaysVisibleStack" HorizontalAlignment="Right" Orientation="Horizontal" Margin="2" Grid.Column="1">
+
+                <Image Height="24" 
+                       Source="/GameCommunicationPlugin;component/GlueControl/Icons/Connected.png"
+                       Visibility="{Binding ConnectedButtonVisibility}">
+                    <Image.ToolTip>
+                        <TextBlock>Connected to game</TextBlock>
+                    </Image.ToolTip>
+                </Image>
+                <Image Height="24" 
+                       Source="/GameCommunicationPlugin;component/GlueControl/Icons/Disconnected.png"
+                       Visibility="{Binding CancelButtonVisibility}">
+                    <Image.ToolTip>
+                        <TextBlock>Disconnected from game</TextBlock>
+                    </Image.ToolTip>
+                </Image>
+
                 <Grid Visibility="{Binding MessageAboutEditModeDisabledVisibility}">
-                    <Frame Background="Yellow" BorderBrush="DarkGray" BorderThickness="1"/>
-                    <TextBlock Margin="3" VerticalAlignment="Center">Enable Game Embed and Edit in Settings</TextBlock>
+                    <Frame  Margin="0,3,0,3" BorderBrush="DarkGray" BorderThickness="1"/>
+                    <TextBlock Margin="3" VerticalAlignment="Center" Text="{x:Static localization:Texts.EnableGameEmbedInSettings}"></TextBlock>
                 </Grid>
-                <Button VerticalAlignment="Top" Width="24" Click="GlueViewSettingsButtonClicked">
+                <Button VerticalAlignment="Center" Width="24"  Click="GlueViewSettingsButtonClicked" Margin="2,0,0,0">
                     <Image IsHitTestVisible="False" Source="/GameCommunicationPlugin;component/GlueControl/Icons/Settings.png"></Image>
                 </Button>
             </StackPanel>
@@ -102,8 +118,8 @@
                             <Button.ToolTip>
                                 <ToolTip>
                                     <StackPanel>
-                                        <TextBlock FontWeight="Bold">Select Startup Screen</TextBlock>
-                                        <TextBlock>Selects the startup screen in edit.</TextBlock>
+                                        <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.SelectStartupScreen}"></TextBlock>
+                                        <TextBlock Text="{x:Static localization:Texts.SelectStartupScreenInEdit}"></TextBlock>
                                     </StackPanel>
                                 </ToolTip>
                             </Button.ToolTip>
@@ -117,8 +133,8 @@
                             <Button.ToolTip>
                                 <ToolTip>
                                     <StackPanel>
-                                        <TextBlock FontWeight="Bold">Focus on Selection</TextBlock>
-                                        <TextBlock>Moves the camera to the selected item and plays the selection animation.</TextBlock>
+                                        <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.FocusOnSelection}"></TextBlock>
+                                        <TextBlock Text="{x:Static localization:Texts.MoveCameraToItemPlayAnimation}"></TextBlock>
                                     </StackPanel>
                                 </ToolTip>
                             </Button.ToolTip>
@@ -133,9 +149,17 @@
             </StackPanel>
 
 
-            <Grid x:Name="BackgroundGrid" Background="#555555" Grid.Column="1" SizeChanged="BackgroundGrid_SizeChanged"></Grid>
+            <Grid x:Name="BackgroundGrid" Background="#555555" Grid.Column="1" SizeChanged="BackgroundGrid_SizeChanged">
 
-            <Grid x:Name="MainGrid" Grid.Column="1" Visibility="{Binding WhileRunningViewVisibility}">
+                <StackPanel>
+                    <TextBlock Text="{Binding GameRunningNotInWindowDisplay, FallbackValue=GameRunningExternally}" TextWrapping="Wrap" Foreground="White"></TextBlock>
+                </StackPanel>
+                
+            </Grid>
+
+
+
+            <Grid x:Name="MainGrid" Grid.Column="1" Visibility="{Binding WhileRunningEmbeddedVisibility}">
                 <WindowsFormsHost x:Name="WinformsHost" 
                               
                                   SizeChanged="WinformsHost_SizeChanged"

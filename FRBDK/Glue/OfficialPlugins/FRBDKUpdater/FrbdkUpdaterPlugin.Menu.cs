@@ -16,19 +16,18 @@ namespace OfficialPlugins.FrbdkUpdater
     public class FrbdkUpdaterPlugin : PluginBase
     {
         public override string FriendlyName => "Updater Plugin";
-        public override Version Version => new System.Version(2,0);
-
-
-        private const string FrbdkSyncMenuItem = "Update FRB editor binaries";
-        private const string FrbFromCode = "Update FRB and game code in Git, build and relaunch FRB";
-
-        public const string PluginsMenuItem = "Update";
+        public override Version Version => new (2,0);
 
         public override void StartUp()
         {
-            this.AddMenuItemTo(FrbdkSyncMenuItem, () => MenuItemClick(), "Update");
+            // Vic says - this plugin may not need to do this anymore. Libraries are going to be updated through nuget soon, and 
+            // the FRB editor itself will be replaced through the About page
+            //this.AddMenuItemTo(Localization.Texts.FrbEditorBinaries, Localization.MenuIds.FrbEditorBinariesId, MenuItemClick, Localization.MenuIds.UpdateId);
 
-            this.AddMenuItemTo(FrbFromCode, () => UpdateFrbFromCode(), "Update");
+            //var menuItem = this.AddMenuItemTo(Localization.Texts.FrbUpdateAndGameCode, Localization.MenuIds.FrbUpdateAndGameCodeId, (Action)null, Localization.MenuIds.UpdateId);
+
+            //menuItem.DropDownItems.Add(new ToolStripMenuItem(Localization.Texts.FrbAndGum, null, (_, _) => UpdateFrbFromCode(false)));
+            //menuItem.DropDownItems.Add(new ToolStripMenuItem(Localization.Texts.FrbGumAndGame, null, (_, _) => UpdateFrbFromCode(true)));
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
@@ -36,28 +35,100 @@ namespace OfficialPlugins.FrbdkUpdater
             return true;
         }
 
-        private async void UpdateFrbFromCode()
+        private async void UpdateFrbFromCode(bool updateGame)
         {
+            if(GlueState.Self.CurrentGlueProject == null)
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox("You must open a project first before updating");
+                return;
+            }
+
             await TaskManager.Self.WaitForAllTasksFinished();
 
-            var command =
-@"timeout /T 4 /NOBREAK & " + 
-@"git fetch & " + 
-@"git pull & " + 
-@"cd.. & " + 
-@"cd Gum & " + 
-@"git fetch & " + 
-@"git pull & " + 
-@"cd.. & " + 
-@"cd FlatRedBall & " + 
-@"git fetch & " + 
-@"git pull & " + 
-@"cd FRBDK\Glue & " + 
-@"dotnet build ""Glue with All.sln"" & " + 
-@"cd Glue\bin\x86\Debug\netcoreapp3.0\ & " +
-@"GlueFormsCore.exe";
+            string gitCommand = String.Empty;
+            if(updateGame)
+            {
+                gitCommand +=
+                    $@"echo ""Pulling game {GlueState.Self.CurrentMainProject.Name}..."" & " +
+                    @"git fetch & " +
+                    @"git pull & ";
+            }
+
+            int numberOfCds = 0;
+            var slnPath = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis();
+            var currentPath = slnPath;
+
+            while(true)
+            {
+                numberOfCds++;
+                currentPath = currentPath.GetDirectoryContainingThis();
+                var directories = System.IO.Directory.GetDirectories(currentPath.FullPath);
+
+                var hasGum = directories.Any(item => item.EndsWith("Gum"));
+                var hasFrb = directories.Any(item => item.EndsWith("FlatRedBall"));
+
+                if(hasGum && hasFrb)
+                {
+                    break;
+                }
+            }
+
+            gitCommand +=
+                @"echo ""Moving to the Gum folder"" & ";
+
+            for(int i = 0; i < numberOfCds; i++)
+            {
+                gitCommand +=
+                    @"cd.. & ";
+            }
+            
+            gitCommand +=
+                @"cd Gum & " +
+
+                $@"echo ""Pulling Gum..."" & " +
+                @"git fetch & " +
+                @"git pull & " +
+
+                @"echo ""Moving to the FRB folder"" & " +
+                @"cd.. & " +
+                @"cd FlatRedBall & " +
+
+                $@"echo ""Pulling FlatRedBall..."" & " +
+                @"git fetch & " +
+                @"git pull & " +
+
+                $@"echo ""Close this window to build and re-launch FRB Editor"" & " 
+
+;
 
             var processStartInfo = new ProcessStartInfo("cmd.exe");
+            processStartInfo.WorkingDirectory = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis().FullPath;
+            processStartInfo.Arguments = "/K " + gitCommand;
+
+            var process = Process.Start(processStartInfo);
+
+            await process.WaitForExitAsync();
+
+            var command =
+                @"timeout /T 3 /NOBREAK & ";
+
+            for(int i = 0; i < numberOfCds; i++)
+            {
+                command +=
+                    @"cd.. & ";
+            }
+
+
+
+            command +=
+@"cd FlatRedBall & " + 
+@"cd FRBDK\Glue & " +
+@"rd Glue\bin /S /Q & " + 
+@"dotnet build --no-incremental ""Glue with All.sln"" & " +
+@"cd Glue\bin\Debug\ & " +
+@"start GlueFormsCore.exe";
+
+            processStartInfo = new ProcessStartInfo("cmd.exe");
             processStartInfo.WorkingDirectory = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis().FullPath;
             processStartInfo.Arguments = "/K " + command;
 
@@ -65,16 +136,5 @@ namespace OfficialPlugins.FrbdkUpdater
 
             GlueCommands.Self.CloseGlue();
         }
-
-        void MenuItemClick()
-        {
-            var _form = new FrbdkUpdaterPluginForm(this);
-
-            GlueCommands.Self.DialogCommands.SetFormOwner(_form);
-
-            _form.Show();
-        }
-
-
     }
 }

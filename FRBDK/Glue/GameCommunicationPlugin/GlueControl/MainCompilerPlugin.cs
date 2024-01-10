@@ -39,6 +39,9 @@ using FlatRedBall.Glue.ViewModels;
 using GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls;
 using Newtonsoft.Json.Linq;
 using CompilerLibrary.ViewModels;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using System.Security.Permissions;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GameCommunicationPlugin.GlueControl
 {
@@ -87,11 +90,9 @@ namespace GameCommunicationPlugin.GlueControl
 
         bool ignoreViewModelChanges = false;
 
-        Timer busyUpdateTimer;
         Timer dragDropTimer;
 
         System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1, 1);
-        DateTime lastGetCall;
 
         #endregion
 
@@ -99,13 +100,12 @@ namespace GameCommunicationPlugin.GlueControl
 
         public override void StartUp()
         {
-            _commandSender = new CommandSender();
-            _refreshManager = new RefreshManager(ReactToPluginEventWithReturn, _commandSender, ReactToPluginEvent);
+            _refreshManager = new RefreshManager(ReactToPluginEventWithReturn, ReactToPluginEvent);
             _refreshManager.InitializeEvents((value) => this.ReactToPluginEvent("Compiler_Output_Standard", value), (value) => this.ReactToPluginEvent("Compiler_Output_Error", value));
 
-            _dragDropManagerGameWindow = new DragDropManagerGameWindow(_refreshManager, _commandSender);
-            _variableSendingManager = new VariableSendingManager(_refreshManager, _commandSender);
-            _commandReceiver = new CommandReceiver(_refreshManager, _variableSendingManager, _commandSender);
+            _dragDropManagerGameWindow = new DragDropManagerGameWindow(_refreshManager);
+            _variableSendingManager = new VariableSendingManager(_refreshManager);
+            _commandReceiver = new CommandReceiver(_refreshManager, _variableSendingManager);
 
             CreateBuildControl();
 
@@ -120,62 +120,19 @@ namespace GameCommunicationPlugin.GlueControl
             this.RegisterCodeGenerator(new CompilerPluginElementCodeGenerator());
 
 
+            ToolbarEntityViewModelManager.CompilerViewModel = CompilerViewModel;
+            ToolbarEntityViewModelManager.ReactToPluginEventWithReturn = ReactToPluginEventWithReturn;
+            ToolbarEntityViewModelManager.SaveCompilerSettingsModel = SaveCompilerSettingsModel;
 
 
-            // winforms stuff is here:
-            // https://social.msdn.microsoft.com/Forums/en-US/f6e28fe1-03b2-4df5-8cfd-7107c2b6d780/hosting-external-application-in-windowsformhost?forum=wpf
-            gameHostView = new GameHostView(ReactToPluginEventWithReturn, ReactToPluginEvent, _commandSender);
-            gameHostView.DataContext = CompilerViewModel;
-            gameHostView.TreeNodedDroppedInEditBar += (treeNode) =>
-            {
-                if(treeNode.Tag is StateSave stateSave)
-                {
-                    var container = ObjectFinder.Self.GetElementContaining(stateSave);
-                    if(container is EntitySave entitySave)
-                    {
-                        HandleAddToEditToolbar(stateSave, entitySave, null);
-                    }
-                }
-                else if(treeNode.Tag is EntitySave entitySave)
-                {
-                    // todo finish here
-                    HandleAddToEditToolbar(null, entitySave, null);
-                }
-            };
+            CreateGameTab();
 
-            pluginTab = base.CreateTab(gameHostView, "Game", TabLocation.Center);
-            pluginTab.CanClose = false;
-            pluginTab.AfterHide += (_, __) => TryKillGame();
-            //pluginTab = base.CreateAndAddTab(GameHostView, "Game Contrll", TabLocation.Bottom);
+            CreateProfileTab();
 
             // do this after creating the compiler, view model, and control
             AssignEvents();
 
-            _gameHostController = new GameHostController();
-            _gameHostController.Initialize(gameHostView, (value) => ReactToPluginEvent("Compiler_Output_Standard", value),
-                CompilerViewModel, 
-                GlueViewSettingsViewModel,
-                glueViewSettingsTab,
-                ReactToPluginEventWithReturn,
-                _refreshManager,
-                _commandSender);
 
-            #region Start the timer, do it after the gameHostView is created
-
-            var busyTimerFrequency = 250; // ms
-            busyUpdateTimer = new Timer(busyTimerFrequency);
-            busyUpdateTimer.Elapsed += async (not, used) => await DoGetCommandsTimedLogic();
-            busyUpdateTimer.SynchronizingObject = MainGlueWindow.Self;
-            busyUpdateTimer.Start();
-
-            // This was 250 but it wasn't fast enough to feel responsive
-            var dragDropTimerFrequency = 100; // ms
-            dragDropTimer = new Timer(dragDropTimerFrequency);
-            dragDropTimer.Elapsed += (not, used) => _dragDropManagerGameWindow.HandleDragDropTimerElapsed(gameHostView);
-            dragDropTimer.SynchronizingObject = MainGlueWindow.Self;
-            dragDropTimer.Start();
-
-            #endregion
         }
 
         private void AssignEvents()
@@ -186,8 +143,9 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             
             this.ReactToNewFileHandler += _refreshManager.HandleNewFile;
-            this.ReactToFileChangeHandler += manager.HandleFileChanged;
+            this.ReactToFileChange += manager.HandleFileChanged;
             this.ReactToCodeFileChange += _refreshManager.HandleFileChanged;
+            this.ReactToElementRenamed += ToolbarController.Self.HandleScreenRenamed;
 
             this.ReactToChangedPropertyHandler += HandlePropertyChanged;
 
@@ -214,7 +172,7 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToNamedObjectChangedValueList += (changeList) => _refreshManager.ReactToNamedObjectChangedValueList(changeList, AssignOrRecordOnly.Assign);
             this.ReactToNamedObjectChangedValue += HandleNamedObjectVariableOrPropertyChanged;
             this.ReactToChangedStartupScreen += ToolbarController.Self.ReactToChangedStartupScreen;
-            this.ReactToItemSelectHandler += HandleItemSelected;
+            this.ReactToItemsSelected += HandleItemsSelected;
             //this.ReactToObjectContainerChanged += _refreshManager.HandleObjectContainerChanged;
             this.ReactToObjectListContainerChanged += _refreshManager.HandleObjectListContainerChanged;
             // If a variable is added, that may be used later to control initialization.
@@ -239,133 +197,103 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToLoadedGlux += () => pluginTab.Show();
             this.ReactToUnloadedGlux += () => pluginTab.Hide();
             this.ReactToTreeViewRightClickHandler += HandleTreeViewRightClick;
+
+            this.ReactToSelectedSubIndexChanged += (index) => _refreshManager.ReactToSelectedSubIndexChanged(index);
+
+            this.ReactToObjectReordered += _refreshManager.HandleObjectReordered;
         }
 
         private void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> listToAddTo)
         {
-            var tag = rightClickedTreeNode.Tag;
+            //var tag = rightClickedTreeNode.Tag;
 
-            if(tag != null)
+            //if(tag != null)
+            //{
+            //    if(tag is StateSave asStateSave)
+            //    {
+            //        listToAddTo.Add("Add State to Edit Toolbar", HandleAddStateToEditToolbar);
+            //    }
+            //}
+        }
+
+        //private async void HandleAddStateToEditToolbar(object sender, EventArgs e)
+        //{
+        //    var state = GlueState.Self.CurrentStateSave;
+        //    var entitySave = GlueState.Self.CurrentEntitySave;
+        //    var namedObject = GlueState.Self.CurrentNamedObjectSave;
+
+
+
+        //    HandleAddToEditToolbar(state, entitySave, namedObject);
+
+        //}
+
+        bool AlreadyHasMatch(NamedObjectSave newNos)
+        {
+            var namedObjectsWithMatchingEntity = CompilerViewModel.ToolbarEntitiesAndStates.Where(item =>
+                item.NamedObjectSave.SourceClassType == newNos.SourceClassType)
+                .ToArray();
+
+            var hasMatch = false;
+
+            // If we have a match, see if the matches have the same variables, excluding X,Y,Z
+            if(namedObjectsWithMatchingEntity.Length > 0)
             {
-                if(tag is StateSave asStateSave)
+                foreach(var existing in namedObjectsWithMatchingEntity)
                 {
-                    listToAddTo.Add("Add State to Edit Toolbar", HandleAddStateToEditToolbar);
+                    if(IsMatchOnVariables(existing.NamedObjectSave, newNos))
+                    {
+                        hasMatch = true;
+                    }
                 }
             }
+
+            return hasMatch;
         }
 
-        private async void HandleAddStateToEditToolbar(object sender, EventArgs e)
+        private bool IsMatchOnVariables(NamedObjectSave existing, NamedObjectSave newNos)
         {
-            var state = GlueState.Self.CurrentStateSave;
-            var entitySave = GlueState.Self.CurrentEntitySave;
-            var namedObject = GlueState.Self.CurrentNamedObjectSave;
+            var nonXYZExisting = ToolbarEntityViewModelManager.ExceptXYZ(existing.InstructionSaves);
+            var nonXYZNew = ToolbarEntityViewModelManager.ExceptXYZ(newNos.InstructionSaves);
 
+            if(nonXYZExisting.Length != nonXYZNew.Length)
+            {
+                return false;
+            }
 
+            for(int i = 0; i < nonXYZExisting.Length; i++)
+            {
+                if (nonXYZExisting[i].Member != nonXYZNew[i].Member || nonXYZExisting[i].Value != nonXYZNew[i].Value)
+                {
+                    return false;
+                }
+            }
 
-            HandleAddToEditToolbar(state, entitySave, namedObject);
-
+            return true;
         }
 
-        private async void HandleAddToEditToolbar(StateSave state, EntitySave entitySave, NamedObjectSave namedObject)
+        /// <summary>
+        /// Adds a new entity to the edit toolbar. This is the side-bar which lets users create
+        /// new NamedObjectSave instances quidckly during edit mode.
+        /// </summary>
+        /// <param name="namedObject">The NamedObject to use as a template.</param>
+        /// <param name="customPreviewLocation">The on-disk location of a custom image for the icon. If null, one will be generated automatically.</param>
+        private void HandleAddToEditToolbar(NamedObjectSave namedObject, string customPreviewLocation = null)
         {
 
             //////////////////////////Early Out////////////////////////////
-            var alreadyHasMatch = CompilerViewModel.ToolbarEntitiesAndStates.Any(item =>
-                item.StateSave == state &&
-                item.GlueElement == entitySave);
+            var alreadyHasMatch = AlreadyHasMatch(namedObject);
             if(alreadyHasMatch)
             {
                 return;
             }
             ////////////////////////End Early Out//////////////////////////
 
-            if (entitySave != null)
-            {
-                var category = ObjectFinder.Self.GetStateSaveCategory(state);
-                // As of 2022 we really don't mess with uncategorized states anymore. Add this check for old projects:
-                if (category != null)
-                {
-                    // The state category must be exposed as a variable...
-                    var variableName = "Current" + category.Name + "State";
-                    if (entitySave.GetCustomVariableRecursively(variableName) == null)
-                    {
-                        await GlueCommands.Self.GluxCommands.ElementCommands.AddStateCategoryCustomVariableToElementAsync(category, entitySave);
-                    }
-                }
+            var newViewModel = ToolbarEntityViewModelManager.CreateNewViewModel(namedObject, customPreviewLocation);
 
 
-                var newViewModel = new ToolbarEntityAndStateViewModel(ReactToPluginEventWithReturn, PluginStorage);
-                newViewModel.GlueElement = entitySave;
-                newViewModel.StateSave = state;
-                newViewModel.Clicked += async () =>
-                {
-                    var canEdit = CompilerViewModel.IsRunning && CompilerViewModel.IsEditChecked;
-                    if(!canEdit)
-                    {
-                        return;
-                    }
-
-                    var element = GlueState.Self.CurrentElement;
-
-                    NamedObjectSave newNos = null;
-
-                    if (element != null)
-                    {
-                        var addObjectViewModel = new AddObjectViewModel();
-                        addObjectViewModel.SourceType = SourceType.Entity;
-                        addObjectViewModel.SelectedEntitySave = entitySave;
-
-                        var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(entitySave.Name, element);
-
-                        newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(
-                            addObjectViewModel,
-                            element,
-                            listToAddTo);
-                    }
-
-                    if (newNos != null && state != null)
-                    {
-                        // Set the state variable on the new NOS 
-
-                        var category = ObjectFinder.Self.GetStateSaveCategory(state);
-
-                        if (category != null)
-                        {
-                            var variableName = $"Current{category.Name}State";
-                            await GlueCommands.Self.GluxCommands.SetVariableOnAsync(newNos, variableName, state.Name);
-                        }
-                    }
-                };
-                newViewModel.RemovedFromToolbar += () =>
-                {
-                    CompilerViewModel.ToolbarEntitiesAndStates.Remove(newViewModel);
-                };
-                newViewModel.ForceRefreshPreview += () => 
-                {
-                    newViewModel.SetSourceFromElementAndState(force:true);
-                };
-                newViewModel.ViewInExplorer += () =>
-                {
-                    var filePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(entitySave, state);
-                    GlueCommands.Self.FileCommands.ViewInExplorer(filePath);
-                };
-                newViewModel.DragLeave += () =>
-                {
-                    if(GlueState.Self.DraggedTreeNode == null)
-                    {
-                        // Simulate having grabbed the tree node
-                        var tag = (object)state ?? entitySave;
-                        var treeNode = GlueState.Self.Find.TreeNodeByTag(tag);
-                        GlueState.Self.DraggedTreeNode = treeNode;
-                    }
-
-                };
-
-                newViewModel.SetSourceFromElementAndState();
-
-
-                CompilerViewModel.ToolbarEntitiesAndStates.Add(newViewModel);
-            }
+            CompilerViewModel.ToolbarEntitiesAndStates.Add(newViewModel);
+            
         }
 
         private void HandlePropertyChanged(string changedMember, object oldValue, GlueElement glueElement)
@@ -387,9 +315,9 @@ namespace GameCommunicationPlugin.GlueControl
             _refreshManager.HandleNamedObjectVariableOrPropertyChanged(changedMember, oldValue, namedObject, Dtos.AssignOrRecordOnly.Assign);
         }
 
-        private void HandleItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> selectedTreeNodes)
         {
-            _refreshManager.HandleItemSelected(selectedTreeNode);
+            _refreshManager.HandleItemSelected(selectedTreeNodes);
             this.gameHostView.UpdateToItemSelected();
         }
 
@@ -402,7 +330,7 @@ namespace GameCommunicationPlugin.GlueControl
         {
             if (CompilerViewModel.IsToolbarPlayButtonEnabled)
             {
-                GlueCommands.Self.DialogCommands.FocusTab("Build");
+                GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
                 var succeeded = await _gameHostController.Compile();
 
                 if (succeeded)
@@ -436,7 +364,7 @@ namespace GameCommunicationPlugin.GlueControl
                 }
                 else
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
                 }
             }
         }
@@ -453,81 +381,12 @@ namespace GameCommunicationPlugin.GlueControl
                 IsBorderless = isBorderless
             };
 
-            var sendResponse = await _commandSender.Send(dto);
+            var sendResponse = await CommandSender.Self.Send(dto);
             return sendResponse.Succeeded ? sendResponse.Data : String.Empty;
         }
 
         #endregion
 
-        private async Task DoGetCommandsTimedLogic()
-        {
-            this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
-            var isBusy = (await getCommandsSemaphore.WaitAsync(0)) == false;
-
-            if (!isBusy)
-            {
-                try
-                {
-                    if (CompilerViewModel.IsRunning)
-                    {
-                        lastGetCall = DateTime.Now;
-
-
-                        var sendResponse =
-                            await _commandSender
-                            .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant: false);
-                        var response = sendResponse?.Data;
-
-
-                        var getTime = DateTime.Now;
-                        var getDuration = getTime - lastGetCall;
-
-                        if (response?.Commands.Count > 0)
-                        {
-                            await _commandReceiver.HandleCommandsFromGame(response.Commands,
-                                GlueViewSettingsViewModel.PortNumber);
-                        }
-                        else
-                        {
-
-                        }
-
-                        var handleTime = DateTime.Now;
-                        var handleDuration = handleTime - getTime;
-
-                        this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
-
-                        // Vic says - this causes problems when a game crashes. It continues to print this out
-                        // which makes it harder to see the callstack. I don't know if this is needed anymore now
-                        // that we have a more reliable communication system from glue<->game, so I'm going to comment
-                        // this out. If it's needed in the future, maybe we need some way to know the game has crashed.
-                        //if (this.CompilerViewModel.LastWaitTimeInSeconds > 1)
-                        //{
-
-                        //    MainControl.PrintOutput(
-                        //        $"Warning - it took {this.CompilerViewModel.LastWaitTimeInSeconds:0.00} seconds to get " +
-                        //        $"{response?.Commands.Count}" +
-                        //        $"\n\tGet: {getDuration}" +
-                        //        $"\n\tHandle: {handleDuration}");
-                        //}
-                    }
-                }
-                catch
-                {
-                    // it's okay
-                }
-                finally
-                {
-                    getCommandsSemaphore.Release();
-                }
-
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("   isBusy = true");
-
-            }
-        }
 
         private void HandleGluxUnloaded()
         {
@@ -594,26 +453,18 @@ namespace GameCommunicationPlugin.GlueControl
             GlueViewSettingsViewModel.SetFrom(model);
             glueViewSettingsView.DataUiGrid.Refresh();
 
-            CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEditMode;
+            CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableLiveEdit;
             ignoreViewModelChanges = false;
 
             CompilerViewModel.IsGluxVersionNewEnoughForGlueControlGeneration =
                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1;
             CompilerViewModel.ToolbarEntitiesAndStates.Clear();
+
             CompilerViewModel.HasLoadedGlux = true;
             //CompilerViewModel.SetFrom(model);
-            foreach (var toolbarModel in model.ToolbarEntitiesAndStates)
+            foreach (var toolbarModel in model.ToolbarObjects)
             {
-                var entitySave = ObjectFinder.Self.GetEntitySave(toolbarModel.EntityName);
-
-                if(entitySave != null)
-                {
-                    StateSaveCategory category = null;
-                    category = entitySave.GetStateCategory(toolbarModel.CategoryName);
-                    var state = category?.GetState(toolbarModel.StateName) ?? entitySave.States.FirstOrDefault(item => item.Name == toolbarModel.StateName);
-                    HandleAddToEditToolbar(state, entitySave, null);
-
-                }
+                HandleAddToEditToolbar(toolbarModel.NamedObject, toolbarModel.CustomPreviewLocation);
 
             }
 
@@ -630,16 +481,98 @@ namespace GameCommunicationPlugin.GlueControl
 
             ToolbarController.Self.HandleGluxLoaded();
 
-            if(IsFrbNewEnough())
+            if(IsFrbNewEnough() && GlueViewSettingsViewModel.EnableLiveEdit)
             {
                 TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
                 TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Generate Glue Control Code New");
             }
+            else
+            {
+                TaskManager.Self.Add(() => EmbeddedCodeManager.RemoveAll(), "Removing Glue Control Code");
+                TaskManager.Self.Add(() => GlueCallsCodeGenerator.RemoveAll(), "Removing Glue Control Code New");
 
-            GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
+            }
+
+            AddNewtonsoft();
 
             gameHostView.HandleGluxLoaded();
         }
+
+        #region Game Tab
+
+        private void CreateGameTab()
+        {
+
+            // winforms stuff is here:
+            // https://social.msdn.microsoft.com/Forums/en-US/f6e28fe1-03b2-4df5-8cfd-7107c2b6d780/hosting-external-application-in-windowsformhost?forum=wpf
+            gameHostView = new GameHostView(ReactToPluginEventWithReturn, ReactToPluginEvent);
+
+
+            gameHostView.DataContext = CompilerViewModel;
+            gameHostView.TreeNodedDroppedInEditBar += (treeNode) =>
+            {
+                // todo - handle this:
+                //if(treeNode.Tag is StateSave stateSave)
+                //{
+                //    var container = ObjectFinder.Self.GetElementContaining(stateSave);
+                //    if(container is EntitySave entitySave)
+                //    {
+                //        HandleAddToEditToolbar(stateSave, entitySave, null);
+                //    }
+                //}
+                //else 
+                if (treeNode.Tag is EntitySave entitySave)
+                {
+                    var namedObjectSave = new NamedObjectSave();
+                    namedObjectSave.SourceType = SourceType.Entity;
+                    namedObjectSave.SourceClassType = entitySave.Name;
+                    // todo finish here
+                    HandleAddToEditToolbar(namedObjectSave);
+                }
+                else if (treeNode.Tag is NamedObjectSave nos)
+                {
+                    HandleAddToEditToolbar(nos);
+                }
+            };
+
+            pluginTab = base.CreateTab(gameHostView, Localization.Texts.Game, TabLocation.Center);
+            pluginTab.CanClose = false;
+            pluginTab.AfterHide += (_, __) => TryKillGame();
+            //pluginTab = base.CreateAndAddTab(GameHostView, "Game Contrll", TabLocation.Bottom);
+
+            _gameHostController = new GameHostController();
+            _gameHostController.Initialize(gameHostView, (value) => ReactToPluginEvent("Compiler_Output_Standard", value),
+                CompilerViewModel,
+                GlueViewSettingsViewModel,
+                glueViewSettingsTab,
+                ReactToPluginEventWithReturn,
+                _refreshManager);
+
+            #region Start the timer, do it after the gameHostView is created
+
+            // 250 works but you can feel the delay a bit when working in game. Let's try 150
+            //var busyTimerFrequency = 250; // ms
+            //var busyTimerFrequency = 150; // ms
+            // even faster?
+            //var busyTimerFrequency = 100; // ms
+            //busyUpdateTimer = new Timer(busyTimerFrequency);
+            //busyUpdateTimer.Elapsed += async (not, used) => await DoGetCommandsTimedLogic();
+            //busyUpdateTimer.SynchronizingObject = MainGlueWindow.Self;
+            //busyUpdateTimer.Start();
+
+            // This was 250 but it wasn't fast enough to feel responsive
+            var dragDropTimerFrequency = 100; // ms
+            dragDropTimer = new Timer(dragDropTimerFrequency);
+            dragDropTimer.Elapsed += (not, used) => _dragDropManagerGameWindow.HandleDragDropTimerElapsed(gameHostView);
+            dragDropTimer.SynchronizingObject = MainGlueWindow.Self;
+            dragDropTimer.Start();
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Toolbar
 
         private void CreateToolbar()
         {
@@ -660,6 +593,22 @@ namespace GameCommunicationPlugin.GlueControl
             await BuildAndRun();
         }
 
+        #endregion
+
+        #region Profile Tab
+
+        void CreateProfileTab()
+        {
+            var control = new ProfilingControl();
+            var vm = new ProfilingControlViewModel();
+            control.DataContext = vm;
+
+            this.CreateAndAddTab(control, Localization.Texts.Profiling, TabLocation.Bottom);
+
+            ProfilingManager.Self.Initialize(vm, CompilerViewModel);
+        }
+
+        #endregion
 
         private void CreateBuildControl()
         {
@@ -683,19 +632,15 @@ namespace GameCommunicationPlugin.GlueControl
             _variableSendingManager.ViewModel = CompilerViewModel;
             _variableSendingManager.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
-            _commandSender.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
-            _commandSender.CompilerViewModel = CompilerViewModel;
-            _commandSender.PrintOutput = (value) => ReactToPluginEvent("Compiler_Output_Standard", value);
-            _commandSender.SendPacket = (value) => ReactToPluginEventWithReturn("GameCommunication_Send_OldDTO", value);
-
-            //buildTab = base.CreateTab(MainControl, "Build", TabLocation.Bottom);
-            //buildTab.Show();
-
-
+            CommandSender.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
+            CommandSender.Self.CompilerViewModel = CompilerViewModel;
+            CommandSender.Self.PrintOutput = (value) => ReactToPluginEvent("Compiler_Output_Standard", value);
+            CommandSender.Self.SendPacket = (value) => ReactToPluginEventWithReturn("GameCommunication_Send_OldDTO", value);
+            
             glueViewSettingsView = new Views.GlueViewSettings();
             glueViewSettingsView.ViewModel = GlueViewSettingsViewModel;
 
-            glueViewSettingsTab = base.CreateTab(glueViewSettingsView, "Editor Settings");
+            glueViewSettingsTab = base.CreateTab(glueViewSettingsView, Localization.Texts.EditorSettings);
 
             AssignControlEvents();
         }
@@ -713,11 +658,12 @@ namespace GameCommunicationPlugin.GlueControl
             switch(propertyName)
             {
                 case nameof(ViewModels.GlueViewSettingsViewModel.PortNumber):
-                case nameof(ViewModels.GlueViewSettingsViewModel.EnableGameEditMode):
-                    CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEditMode;
+                case nameof(ViewModels.GlueViewSettingsViewModel.EnableLiveEdit):
+                    CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableLiveEdit;
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
                 case nameof(ViewModels.GlueViewSettingsViewModel.ShowGrid):
+                case nameof(ViewModels.GlueViewSettingsViewModel.GridAlpha):
                 case nameof(ViewModels.GlueViewSettingsViewModel.GridSize):
                 case nameof(ViewModels.GlueViewSettingsViewModel.SetBackgroundColor):
                 case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundRed):
@@ -741,6 +687,7 @@ namespace GameCommunicationPlugin.GlueControl
             var dto = new Dtos.GlueViewSettingsDto
             {
                 ShowGrid = GlueViewSettingsViewModel.ShowGrid,
+                GridAlpha = GlueViewSettingsViewModel.GridAlpha,
                 GridSize = GlueViewSettingsViewModel.GridSize,
                 ShowScreenBoundsWhenViewingEntities = GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities,
                 SetBackgroundColor = GlueViewSettingsViewModel.SetBackgroundColor,
@@ -752,7 +699,7 @@ namespace GameCommunicationPlugin.GlueControl
                 PolygonPointSnapSize = GlueViewSettingsViewModel.PolygonPointSnapSize,
             };
 
-            await _commandSender.Send(dto);
+            await CommandSender.Self.Send(dto);
         }
 
         private async void HandleCompilerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -771,7 +718,7 @@ namespace GameCommunicationPlugin.GlueControl
 
                 case nameof(CompilerViewModel.CurrentGameSpeed):
                     var speedPercentage = int.Parse(CompilerViewModel.CurrentGameSpeed.Substring(0, CompilerViewModel.CurrentGameSpeed.Length - 1));
-                    await _commandSender.Send(new SetSpeedDto
+                    await CommandSender.Self.Send(new SetSpeedDto
                     {
                         SpeedPercentage = speedPercentage
                     });
@@ -810,24 +757,25 @@ namespace GameCommunicationPlugin.GlueControl
                 IsInEditMode = inEditMode ,
                 AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName?.FullPath
             };
-            var response = await _commandSender.Send<Dtos.GeneralCommandResponse>(dto);
+            var response = await CommandSender.Self.Send<Dtos.GeneralCommandResponse>(dto, SendImportance.RetryOnFailure);
 
             if (response?.Succeeded != true)
             {
-                var message = "Failed to change game/edit mode. ";
+                var message = string.Format(Localization.Texts.FailedToSetGameEditModeToX, CompilerViewModel.PlayOrEdit);
                 if (response == null)
                 {
-                    message += "Game sent no response back.";
+                    message += Localization.Texts.GameSendNoResponseBack;
                 }
                 else
                 {
                     message += response.Message;
                 }
                 ReactToPluginEvent("Compiler_Output_Standard", message);
+                GlueCommands.Self.PrintOutput(message);
             }
-            else if (_commandSender.IsConnected == false)
+            else if (CommandSender.Self.IsConnected == false)
             {
-
+                var message = $"Failed to set game/edit mode to {CompilerViewModel.PlayOrEdit} because the game is not connected.";
             }
             else if (inEditMode)
             {
@@ -838,7 +786,7 @@ namespace GameCommunicationPlugin.GlueControl
                 }
                 else
                 {
-                    var screenName = await _commandSender.GetScreenName();
+                    var screenName = await CommandSender.Self.GetScreenName();
 
                     if (!string.IsNullOrEmpty(screenName))
                     {
@@ -888,49 +836,21 @@ namespace GameCommunicationPlugin.GlueControl
             {
                 if(displaySettings != null &&
                     displaySettings.AspectRatioHeight > 0 &&
-                    displaySettings.FixedAspectRatio == true
-                    )
+                    // need to reearch at some time - do we want to worry about variable aspect ratio?
+                    displaySettings.AspectRatioBehavior == AspectRatioBehavior.FixedAspectRatio)
                 {
                     setCameraAspectRatioDto.AspectRatio = GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioWidth /
                         GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioHeight;
                 }
             }
                     
-            await _commandSender.Send(setCameraAspectRatioDto);
-        }
-
-        private SetCameraSetupDto ToDto(DisplaySettings displaySettings)
-        {
-            var toReturn = new SetCameraSetupDto();
-            toReturn.AllowWindowResizing = displaySettings.AllowWindowResizing;
-
-            if(displaySettings.FixedAspectRatio)
-            {
-                toReturn.AspectRatio = displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight;
-            }
-
-            toReturn.DominantInternalCoordinates = displaySettings.DominantInternalCoordinates;
-            toReturn.Is2D = displaySettings.Is2D;
-            toReturn.IsFullScreen = displaySettings.RunInFullScreen;
-            toReturn.IsGenerateCameraDisplayCodeEnabled = displaySettings.GenerateDisplayCode;
-            toReturn.ResizeBehavior = displaySettings.ResizeBehavior;
-            toReturn.ResizeBehaviorGum = displaySettings.ResizeBehaviorGum;
-            toReturn.ResolutionHeight = displaySettings.ResolutionHeight;
-            toReturn.ResolutionWidth = displaySettings.ResolutionWidth;
-            toReturn.Scale = displaySettings.Scale;
-            toReturn.ScaleGum = displaySettings.ScaleGum;
-            toReturn.TextureFilter = (Microsoft.Xna.Framework.Graphics.TextureFilter)displaySettings.TextureFilter;
-
-            return toReturn;
-
-
-
+            await CommandSender.Self.Send(setCameraAspectRatioDto);
         }
 
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
         {
             ReactToPluginEvent("Compiler_Output_Standard", "Applying changes");
-            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = GlueViewSettingsViewModel.EnableGameEditMode && IsFrbNewEnough();
+            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = GlueViewSettingsViewModel.EnableLiveEdit && IsFrbNewEnough();
             game1GlueControlGenerator.PortNumber = GlueViewSettingsViewModel.PortNumber;
             _refreshManager.PortNumber = GlueViewSettingsViewModel.PortNumber;
 
@@ -941,15 +861,21 @@ namespace GameCommunicationPlugin.GlueControl
             }));
 
             GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
-            if (IsFrbNewEnough())
+            if (IsFrbNewEnough() && GlueViewSettingsViewModel.EnableLiveEdit)
             {
-                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(GlueViewSettingsViewModel.EnableGameEditMode), "Generate Glue Control Code");
-                TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Generate Glue Control Code New");
+                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(GlueViewSettingsViewModel.EnableLiveEdit), Localization.Texts.GenerateGlueControlCode);
+                TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), Localization.Texts.GenerateNewGlueControlCode);
+            }
+            else
+            {
+                TaskManager.Self.Add(() => EmbeddedCodeManager.RemoveAll(), "Removing Glue Control Code");
+                TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Removing Glue Control Code New");
+
             }
 
             if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
             {
-                GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
+                AddNewtonsoft();
             }
 
             _refreshManager.CreateStopAndRestartTask($"{propertyName} changed");
@@ -959,6 +885,11 @@ namespace GameCommunicationPlugin.GlueControl
             ReactToPluginEvent("Compiler_Output_Standard", "Finishined adding/generating code for GlueControlManager");
         }
 
+        private static void AddNewtonsoft()
+        {
+            GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "13.0.3");
+        }
+
         private void SaveCompilerSettingsModel()
         {
             var model = new CompilerSettingsModel();
@@ -966,9 +897,9 @@ namespace GameCommunicationPlugin.GlueControl
 
             foreach(var vm in CompilerViewModel.ToolbarEntitiesAndStates)
             {
-                var toolbarModel = new ToolbarEntityAndState();
+                var toolbarModel = new ToolbarModel();
                 vm.ApplyTo(toolbarModel);
-                model.ToolbarEntitiesAndStates.Add(toolbarModel);
+                model.ToolbarObjects.Add(toolbarModel);
             }
 
             try
@@ -1102,7 +1033,7 @@ namespace GameCommunicationPlugin.GlueControl
 
         Process gameProcess;
         private GameHostController _gameHostController;
-        private CommandSender _commandSender;
+        
         private RefreshManager _refreshManager;
         private DragDropManagerGameWindow _dragDropManagerGameWindow;
         private VariableSendingManager _variableSendingManager;
@@ -1119,20 +1050,29 @@ namespace GameCommunicationPlugin.GlueControl
             {
                 await gameHostView.EmbedHwnd(handle.Value);
 
+                GlueCommands.Self.DoOnUiThread(() =>
+                {
+                    CompilerViewModel.IsWindowEmbedded = true;
+                });
+
                 // sometimes the game doesn't embed itself properly. To fix this, we can resize the window:
                 await Task.Delay(50);
 
-                await GlueCommands.Self.DoOnUiThread(() => gameHostView.ForceRefreshGameArea(force: true));
+                await GlueCommands.Self.DoOnUiThread(async () =>
+                {
+                    await gameHostView.ForceRefreshGameArea(force: true);
+                });
             }
             else
             {
+                GlueCommands.Self.DoOnUiThread(() => CompilerViewModel.IsWindowEmbedded = false);
                 if(gameProcess == null)
                 {
-                    GlueCommands.Self.PrintOutput("Failed to find game handle.");
+                    GlueCommands.Self.PrintOutput(Localization.Texts.FailedFindGameHandle);
                 }
                 else
                 {
-                    GlueCommands.Self.PrintOutput("Failed to find window handle.");
+                    GlueCommands.Self.PrintOutput(Localization.Texts.FailedFindWindowHandle);
                 }
                 
             }
@@ -1161,7 +1101,8 @@ namespace GameCommunicationPlugin.GlueControl
                 .OrderBy(item => item.ProcessName)
                 .ToArray();
 
-            var projectName = GlueState.Self.CurrentMainProject?.Name?.ToLowerInvariant();
+            var projectName = 
+                GlueState.Self.CurrentMainProject?.ExecutableName?.ToLowerInvariant();
 
             var found = processes
                 .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName &&
@@ -1194,19 +1135,25 @@ namespace GameCommunicationPlugin.GlueControl
 
                     break;
                 case "GameCommunication_Connected":
-                    _commandSender.IsConnected = true;
+                    CommandSender.Self.IsConnected = true;
 
                     break;
 
                 case "GameCommunication_Disconnected":
-                    _commandSender.IsConnected = false;
+                    CommandSender.Self.IsConnected = false;
 
                     break;
 
-                case "GlueControl_SelectObject":
+                //case "GlueControl_SelectObject":
 
-                    _commandReceiver.HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(payload));
+                //    _commandReceiver.HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(payload));
 
+                //    break;
+                
+                case "GameCommunicationPlugin_PacketReceived_OldDTO":
+                    var commands = new List<string> { payload };
+                    // do we want to await this?
+                    _=_commandReceiver.HandleCommandsFromGame(commands, GlueViewSettingsViewModel.PortNumber);
                     break;
             }
         }

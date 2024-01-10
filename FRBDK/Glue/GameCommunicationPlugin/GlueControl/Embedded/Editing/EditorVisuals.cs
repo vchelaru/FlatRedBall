@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Math.Paths;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GlueControl.Editing
 {
@@ -71,7 +72,7 @@ namespace GlueControl.Editing
             }
             TryResetEveryFrameValues();
 
-            if (nextText == Texts.Count)
+            while (nextText >= Texts.Count)
             {
                 Texts.Add(TextManager.AddText(String.Empty, DefaultLayer));
             }
@@ -112,7 +113,7 @@ namespace GlueControl.Editing
             }
             TryResetEveryFrameValues();
 
-            if (nextLine == Lines.Count)
+            while (nextLine >= Lines.Count)
             {
                 var line = new Line();
                 ShapeManager.AddToLayer(line, DefaultLayer);
@@ -127,6 +128,14 @@ namespace GlueControl.Editing
             nextLine++;
 
             return lineInstance;
+        }
+
+        public static void LinePath(List<Vector3> points, Color? color = null)
+        {
+            for (int i = 0; i < points.Count - 1; i++)
+            {
+                Line(points[i], points[i + 1], color);
+            }
         }
 
         public static Arrow Arrow(Vector3 point1, Vector3 point2, Color? color = null)
@@ -147,7 +156,7 @@ namespace GlueControl.Editing
             }
             TryResetEveryFrameValues();
 
-            if (nextArrow == Arrows.Count)
+            while (nextArrow >= Arrows.Count)
             {
                 Arrows.Add(new Visuals.Arrow(DefaultLayer));
             }
@@ -162,7 +171,25 @@ namespace GlueControl.Editing
             return arrowInstance;
         }
 
+        public static Sprite Sprite(Texture2D texture)
+        {
+            return Sprite(texture, FlatRedBall.Camera.Main.Position, 1);
+        }
+        public static Sprite Sprite(Texture2D texture, Vector3 position, float textureScale = 1)
+        {
+            var sprite = CreateSpriteInternal(position, textureScale);
+            sprite.Texture = texture;
+            return sprite;
+        }
+
         public static Sprite Sprite(AnimationChain animationChain, Vector3 position, float textureScale = 1)
+        {
+            var sprite = CreateSpriteInternal(position, textureScale);
+            sprite.SetAnimationChain(animationChain);
+            return sprite;
+        }
+
+        private static Sprite CreateSpriteInternal(Vector3 position, float textureScale)
         {
             if (position.Z == Camera.Main.Z)
             {
@@ -179,7 +206,7 @@ namespace GlueControl.Editing
 
             if (nextSprite == Sprites.Count)
             {
-                var newSprite = SpriteManager.AddSprite(animationChain);
+                var newSprite = SpriteManager.AddSprite((Texture2D)null);
                 SpriteManager.AddToLayer(newSprite, DefaultLayer);
                 Sprites.Add(newSprite);
             }
@@ -187,9 +214,10 @@ namespace GlueControl.Editing
             var sprite = Sprites[nextSprite];
             sprite.Name = $"EditorVisuals Sprite {nextSprite}";
             sprite.Visible = true;
-            sprite.SetAnimationChain(animationChain);
             sprite.Position = position;
             sprite.TextureScale = textureScale;
+            sprite.ColorOperation = ColorOperation.Texture;
+            sprite.Alpha = 1;
 
             nextSprite++;
 
@@ -198,7 +226,7 @@ namespace GlueControl.Editing
 
         public static Sprite ColoredRectangle(float width, float height, Vector3 centerPosition, Color? color = null)
         {
-            var sprite = Sprite(null, centerPosition, textureScale: -1);
+            var sprite = Sprite((Microsoft.Xna.Framework.Graphics.Texture2D)null, centerPosition, textureScale: -1);
             sprite.Width = width;
             sprite.Height = height;
             sprite.ColorOperation = ColorOperation.Color;
@@ -211,6 +239,34 @@ namespace GlueControl.Editing
             sprite.Alpha = effectiveColor.A / 255.0f;
 
             return sprite;
+        }
+
+        public static Sprite ColoredRectangle(Text textToSurround, Color? color = null)
+        {
+            if (color == null)
+            {
+                color = Color.Black;
+            }
+            var rectangle = EditorVisuals.ColoredRectangle(
+                textToSurround.Width + 4,
+                textToSurround.Height,
+                textToSurround.Position.AddZ(-.1f),
+                color);
+
+            switch (textToSurround.VerticalAlignment)
+            {
+                case VerticalAlignment.Center:
+                    // do nothing
+                    break;
+                case VerticalAlignment.Top:
+                    rectangle.Y -= textToSurround.Height / 2.0f;
+                    break;
+                case VerticalAlignment.Bottom:
+                    rectangle.Y += textToSurround.Height / 2.0f;
+                    break;
+            }
+
+            return rectangle;
         }
 
         public static AxisAlignedRectangle Rectangle(float width, float height, Vector3 centerPosition, Color? color = null)
@@ -329,6 +385,13 @@ namespace GlueControl.Editing
                 var points = GetPoints(path, flipHorizontally: false);
                 pathPolygon.Points = points;
             }
+            else
+            {
+                pathPolygon.Points = new List<FlatRedBall.Math.Geometry.Point>()
+                {
+                    new FlatRedBall.Math.Geometry.Point(0, 0)
+                };
+            }
 
             if (includeOffsetArrow && pathPolygon.Points.Count > 0 && (pathPolygon.Points[0].X != 0 || pathPolygon.Points[0].Y != 0))
             {
@@ -344,22 +407,30 @@ namespace GlueControl.Editing
         {
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Up))
             {
-                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddY(rectangle.Height / 2));
+                var endpoint = rectangle.Position;
+                endpoint.Y += rectangle.Height / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
             }
 
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Down))
             {
-                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddY(-rectangle.Height / 2));
+                var endpoint = rectangle.Position;
+                endpoint.Y += -rectangle.Height / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
             }
 
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Left))
             {
-                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddX(-rectangle.Width / 2));
+                var endpoint = rectangle.Position;
+                endpoint.X += -rectangle.Width / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
             }
 
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Right))
             {
-                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddX(rectangle.Width / 2));
+                var endpoint = rectangle.Position;
+                endpoint.X += rectangle.Width / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
             }
         }
 

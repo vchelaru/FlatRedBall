@@ -237,4 +237,5 @@
     <BaseType>Text</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
+  <Behaviors />
 </ScreenSave>

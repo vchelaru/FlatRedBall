@@ -22,6 +22,7 @@ namespace TileGraphicsPlugin
         AssetTypeInfo tmxAssetTypeInfo;
         AssetTypeInfo tileShapeCollectionAssetTypeInfo;
         AssetTypeInfo tileNodeNetworkAssetTypeInfo;
+        AssetTypeInfo mapDrawableBatchAssetTypeInfo;
 
         public AssetTypeInfo TmxAssetTypeInfo
         {
@@ -56,17 +57,22 @@ namespace TileGraphicsPlugin
             }
         }
 
+        public AssetTypeInfo MapDrawableBatchAssetTypeInfo
+        {
+            get
+            {
+                if(mapDrawableBatchAssetTypeInfo == null)
+                {
+                    mapDrawableBatchAssetTypeInfo = CreateAtiForMapDrawableBatch();
+                }
+                return mapDrawableBatchAssetTypeInfo;
+            }
+        }
+
         #endregion
 
-        public void UpdateAtiCsvPresence()
+        public void UpdateAtiPresence()
         {
-            var projectFolder = GlueState.Self.GlueProjectFileName.GetDirectoryContainingThis();
-            string settingsFolder = projectFolder.FullPath + "GlueSettings/";
-            if (!Directory.Exists(settingsFolder))
-            {
-                Directory.CreateDirectory(settingsFolder);
-            }
-
             List<AssetTypeInfo> list;
             list = new List<AssetTypeInfo>();
 
@@ -78,6 +84,7 @@ namespace TileGraphicsPlugin
             AddIfNotPresent(layeredTilemapTilb);
             AddIfNotPresent(TileShapeCollectionAssetTypeInfo);
             AddIfNotPresent(TileNodeNetworkAssetTypeInfo);
+            AddIfNotPresent(MapDrawableBatchAssetTypeInfo);
         }
 
         public void AddIfNotPresent(AssetTypeInfo ati)
@@ -201,6 +208,22 @@ namespace TileGraphicsPlugin
             toReturn.QualifiedSaveTypeName = null;
             toReturn.Extension = null;
             toReturn.AddToManagersMethod = new List<string>();
+            toReturn.AddToManagersFunc = 
+                // create anonymous delegate for AddToManagersFunc
+                (element, nos, rfs, layer) =>
+                {
+                    if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.TileShapeCollectionAddToLayerSupportsAutomaticallyUpdated)
+                    {
+                        if(nos.AddToManagers && element is EntitySave)
+                        {
+
+                            // Added June 17, 2023 to support Cthulu moving walls:
+                            return $"{nos.InstanceName}.AddToLayer({layer}, true);";
+
+                        }
+                    }
+                    return null;
+                };
             toReturn.CustomLoadMethod = null;
             toReturn.DestroyMethod = "this.Visible = false";
             toReturn.ShouldBeDisposed = false;
@@ -218,8 +241,42 @@ namespace TileGraphicsPlugin
                 new VariableDefinition() { Name = "Visible", DefaultValue = "false", Type = "bool" });
             toReturn.VariableDefinitions.Add(
                 new VariableDefinition() { Name = "AdjustRepositionDirectionsOnAddAndRemove", DefaultValue = "true", Type = "bool" });
+            var repositionStyleVariable = new VariableDefinition() { Name = "RepositionUpdateStyle", DefaultValue = "Outward", Type = "string" };
+            repositionStyleVariable.UsesCustomCodeGeneration = true;
+            repositionStyleVariable.ForcedOptions = new List<string>
+            {
+                "None", 
+                "Outward",
+                "Upward"
+            };
+            toReturn.VariableDefinitions.Add(repositionStyleVariable);
 
             toReturn.ConstructorFunc = GenerateTileShapeCollectionConstructionFunc;
+            return toReturn;
+        }
+
+        private AssetTypeInfo CreateAtiForMapDrawableBatch()
+        {
+            var toReturn = new AssetTypeInfo();
+            toReturn.FriendlyName = "MapDrawableBatch";
+            toReturn.QualifiedRuntimeTypeName = new PlatformSpecificType();
+            toReturn.QualifiedRuntimeTypeName.QualifiedType = "FlatRedBall.TileGraphics.MapDrawableBatch";
+            toReturn.QualifiedSaveTypeName = null;
+            toReturn.Extension = null;
+            toReturn.AddToManagersMethod = new List<string>();
+            toReturn.AddToManagersFunc = null; // do we need this?
+            toReturn.CustomLoadMethod = null;
+            toReturn.DestroyMethod = null;
+            toReturn.ShouldBeDisposed = false;
+            toReturn.ShouldAttach = true; 
+            toReturn.MustBeAddedToContentPipeline = false;
+            toReturn.CanBeCloned = false;
+            toReturn.HasCursorIsOn = false;
+            toReturn.CanIgnorePausing = false;
+            toReturn.CanBeObject = true;
+            toReturn.HasVisibleProperty = true;
+            toReturn.FindByNameSyntax = $"MapLayers.FindByName(\"OBJECTNAME\");";
+
             return toReturn;
         }
 

@@ -543,7 +543,8 @@ namespace EntityPerformancePlugin.CodeGenerators
                 assetTypeInfo?.RuntimeTypeName == "FlatRedBall.PositionedObject" ||
                 assetTypeInfo == AvailableAssetTypes.CommonAtis.Circle ||
                 assetTypeInfo == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
-                assetTypeInfo == AvailableAssetTypes.CommonAtis.Polygon 
+                assetTypeInfo == AvailableAssetTypes.CommonAtis.Polygon  ||
+                assetTypeInfo == AvailableAssetTypes.CommonAtis.CapsulePolygon
                 ;
 
         }

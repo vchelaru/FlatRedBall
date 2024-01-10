@@ -41,6 +41,9 @@ namespace TMXGlueLib
             }
         }
 
+        public bool ShouldSerializeproperties() => mProperties?.Count > 0;
+
+        // Vic asks - shouldn't this be a uint?
         /// <remarks/>
         [XmlAttribute()]
         public int id
@@ -52,6 +55,15 @@ namespace TMXGlueLib
         [XmlAttribute("type")]
         public string Type { get; set; }
 
+
+
+        [XmlAttribute("class")]
+        public string Class
+        {
+            get => Type;
+            set => Type = value;
+        }
+
         [XmlElement("animation")]
         public TileAnimation Animation
         {
@@ -62,7 +74,12 @@ namespace TMXGlueLib
         [XmlElement("objectgroup")]
         public mapObjectgroup Objects { get; set; }
 
-
+        [XmlAttribute("probability")]
+        public double Probability
+        {
+            get;
+            set;
+        } = 1;
 
         public mapTilesetTile()
             {
@@ -72,6 +89,11 @@ namespace TMXGlueLib
         public override string ToString()
         {
             string toReturn = id.ToString();
+
+            if(!string.IsNullOrEmpty(Type))
+            {
+                toReturn += $" {Type} ";
+            }
 
             if(PropertyDictionary.Count != 0)
             {

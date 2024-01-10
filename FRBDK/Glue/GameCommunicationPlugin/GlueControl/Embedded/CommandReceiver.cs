@@ -21,6 +21,8 @@ namespace GlueControl
 {
     static class CommandReceiver
     {
+        public const string ProjectNamespace = "{ProjectNamespace}";
+
         #region Supporting Methods/Properties
 
         /// <summary>
@@ -79,7 +81,7 @@ namespace GlueControl
                     // be a method that is only expected as a response
                     var possibleQualifiedType = $"GlueControl.Dtos.{dtoTypeName}";
 
-                    dtoType = typeof(Game1).Assembly.GetType(possibleQualifiedType);
+                    dtoType = typeof(CommandReceiver).Assembly.GetType(possibleQualifiedType);
                 }
                 var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
 
@@ -141,10 +143,7 @@ namespace GlueControl
 
         private static bool GetIfMatchesCurrentScreen(string elementNameGlue, out System.Type ownerType, out Screen currentScreen)
         {
-            var game1FullName = typeof(Game1).FullName;
-            var topNamespace = game1FullName.Substring(0, game1FullName.IndexOf('.'));
-            //var ownerTypeName = "WhateverNamespace." + elementName.Replace("\\", ".");
-            var ownerTypeName = $"{topNamespace}.{elementNameGlue.Replace("\\", ".")}";
+            var ownerTypeName = $"{ProjectNamespace}.{elementNameGlue.Replace("\\", ".")}";
 
             ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
             currentScreen = ScreenManager.CurrentScreen;
@@ -207,6 +206,11 @@ namespace GlueControl
 
             if (dto.AssignOrRecordOnly == AssignOrRecordOnly.Assign)
             {
+                if (ObjectFinder.Self.GlueProject == null)
+                {
+                    GlueCommands.Self.LoadProject(dto.AbsoluteGlueProjectFilePath);
+                }
+
                 var selectedNosNames = Editing.EditingManager.Self.CurrentNamedObjects.Select(item => item.InstanceName)
                     .ToArray();
 
@@ -234,11 +238,11 @@ namespace GlueControl
                     {
                         ObjectFinder.Self.Replace(dto.GlueElement);
                     }
-                    Editing.EditingManager.Self.SetCurrentGlueElement(dto.GlueElement);
                     if (oldName != null && newName != null)
                     {
+                        var element = ObjectFinder.Self.GetElement(dto.GlueElement?.Name);
                         var renamedNos =
-                            Editing.EditingManager.Self.CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == oldName);
+                            element?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == oldName);
 
                         if (renamedNos != null)
                         {
@@ -267,6 +271,458 @@ namespace GlueControl
             GlobalGlueToGameCommands.Add(dto);
 
             return response;
+        }
+
+        #endregion
+
+        #region SetEditMode
+
+        private static object HandleDto(SetEditMode setEditMode)
+        {
+            var value = setEditMode.IsInEditMode;
+#if SupportsEditMode
+            var response = new Dtos.GeneralCommandResponse
+            {
+                Succeeded = true,
+            };
+
+
+            if (ScreenManager.CurrentScreen == null)
+            {
+                response.Succeeded = false;
+                response.Message = "The ScreenManager.CurrentScreen is null, so the screen cannot be restarted. Is the screen you are viewing abstract (such as GameScreen)? If so, this may be why the Screen hasn't been created.";
+
+            }
+
+            if (value != FlatRedBall.Screens.ScreenManager.IsInEditMode)
+            {
+                CameraLogic.RecordCameraForCurrentScreen();
+
+                FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
+
+                if (value)
+                {
+                    FlatRedBallServices.Game.IsMouseVisible = true;
+
+                    if(ObjectFinder.Self.GlueProject == null)
+                    {
+                        GlueCommands.Self.LoadProject(setEditMode.AbsoluteGlueProjectFilePath);
+                    }
+
+                    // If in edit mode, polygons can get sent over from Glue
+                    // without points. We don't want to crash the game when this
+                    // happens.
+                    // Should we preserve the old value and reset it back? This adds
+                    // complexity, and I don't know if there's any benefit because this
+                    // property is usually false to catch coding errors, but code can't be
+                    // added without restarting the app, which would then reset this value back
+                    // to false. Let's keep it simple.
+                    Polygon.TolerateEmptyPolygons = true;
+#if SpriteHasTolerateMissingAnimations
+                    Sprite.TolerateMissingAnimations = true;
+#endif
+                    if(!CameraSetup.Data.AllowWindowResizing)
+                    {
+                        CameraSetup.Data.AllowWindowResizing = true;
+                        CameraSetup.ResetWindow();
+                    }
+                }
+
+                FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction = (entityNameGameType) => InstanceLogic.Self.CreateEntity(entityNameGameType);
+
+
+                RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: value, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
+
+
+            }
+
+            return response;
+#else
+            return null;
+#endif
+        }
+
+        #endregion
+
+        #region SelectObjectDto / State
+
+        static List<NamedObjectSave> GetSelectedNamedObjects(SelectObjectDto selectObjectDto)
+        {
+#if MONOGAME_381
+            var names = selectObjectDto.NamedObjectNames.ToHashSet();
+#else
+            var names = selectObjectDto.NamedObjectNames;
+#endif
+            List<NamedObjectSave> selected = new List<NamedObjectSave>();
+            foreach (var nos in GlueState.Self.CurrentElement.AllNamedObjects)
+            {
+                if (names.Contains(nos.InstanceName))
+                {
+                    selected.Add(nos);
+                }
+            }
+            return selected;
+        }
+
+        private static void HandleDto(SelectObjectDto selectObjectDto)
+        {
+            //////////////// if the user has something grabbed, early out, we don't want any updates! //////////////////
+            ////////////////The reason is - if selection changes while something is grabbed, then when the user
+            //////////////continues to move the object, the movements will apply to the newly-selected object, rather
+            ////////////than what the user originally grabbed. 
+            if (EditingManager.Self.ItemGrabbed != null || EditingManager.Self.IsDraggingRectangle)
+            {
+                return;
+            }
+            ///////////////////////end early out//////////////////////////
+
+            if (selectObjectDto.GlueElement != null)
+            {
+                selectObjectDto.GlueElement.FixAllTypes();
+            }
+            // if it matches, don't fall back to the backup element
+            bool matchesCurrentScreen =
+                GetIfMatchesCurrentScreen(selectObjectDto.ElementNameGlue, out System.Type ownerType, out Screen currentScreen);
+
+            string elementNameGlue = selectObjectDto.BackupElementNameGlue ?? selectObjectDto.ElementNameGlue;
+            if (matchesCurrentScreen)
+            {
+                elementNameGlue = selectObjectDto.ElementNameGlue;
+            }
+
+            string ownerTypeName = GlueToGameElementName(elementNameGlue);
+            ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
+
+            bool isOwnerScreen = false;
+            bool playBump = true;
+            bool matchesCurrentSelection = false;
+
+            // If the game does a copy/paste, the selection will echo back to the game. We don't want to play a bump
+            // if the echoed selection is already active:
+            if (matchesCurrentScreen)
+            {
+                matchesCurrentSelection = IsCurrentSelectionMatchingDto(selectObjectDto);
+            }
+
+            try
+            {
+                if (FlatRedBall.Screens.ScreenManager.IsInEditMode && selectObjectDto.GlueElement != null)
+                {
+                    ObjectFinder.Self.Replace(selectObjectDto.GlueElement);
+                }
+                if (selectObjectDto.GlueElement != null)
+                {
+                    Editing.EditingManager.Self.SetCurrentGlueElement(selectObjectDto.GlueElement);
+                }
+                else if (Editing.EditingManager.Self.CurrentGlueElement == null)
+                {
+                    var element = ObjectFinder.Self.GetElement(selectObjectDto.ElementNameGlue);
+                    if (element != null)
+                    {
+                        Editing.EditingManager.Self.SetCurrentGlueElement(element);
+                    }
+                }
+            }
+            catch (ArgumentException e)
+            {
+                var message =
+                    $"The command to select {selectObjectDto.NamedObjectNames.Count} in {selectObjectDto.GlueElement} " +
+                    $"threw an exception because the Glue object has a null object.  Inner details:{e}";
+
+                throw new ArgumentException(message);
+            }
+
+            ApplyNewNamedObjects(selectObjectDto);
+
+
+
+            if (matchesCurrentScreen)
+            {
+                if (matchesCurrentSelection == false || selectObjectDto.BringIntoFocus)
+                {
+                    Editing.EditingManager.Self.Select(GetSelectedNamedObjects(selectObjectDto), playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
+                }
+                Editing.EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
+                if (!string.IsNullOrEmpty(selectObjectDto.StateName))
+                {
+                    SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);
+                }
+                isOwnerScreen = true;
+            }
+            else
+            {
+                CameraLogic.RecordCameraForCurrentScreen();
+
+                bool selectedNewScreen = ownerType != null && typeof(Screen).IsAssignableFrom(ownerType);
+                if (selectedNewScreen)
+                {
+#if SupportsEditMode
+                    ScreenManager.IsNextScreenInEditMode = ScreenManager.IsInEditMode;
+
+                    void AfterInitializeLogic(Screen screen)
+                    {
+                        // Select this even if it's null so the EditingManager deselects 
+                        EditingManager.Self.Select(GetSelectedNamedObjects(selectObjectDto), playBump: playBump, focusCameraOnObject: true);
+
+                        if (!string.IsNullOrEmpty(selectObjectDto.StateName))
+                        {
+                            SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);
+                        }
+
+                        screen.ScreenDestroy += HandleScreenDestroy;
+                        CameraLogic.UpdateCameraValuesToScreenSavedValues(screen);
+
+                        ScreenManager.ScreenLoaded -= AfterInitializeLogic;
+                    }
+                    ScreenManager.ScreenLoaded += AfterInitializeLogic;
+
+                    ScreenManager.CurrentScreen.MoveToScreen(ownerType);
+                    EditorVisuals.DestroyContainedObjects();
+
+                    isOwnerScreen = true;
+                    EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
+#endif
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(selectObjectDto.StateName))
+                    {
+                        SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);
+                    }
+                }
+            }
+
+            if (!isOwnerScreen)
+            {
+                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
+                    InstanceLogic.Self.CustomGlueElements.ContainsKey(ownerTypeName);
+
+                if (isEntity)
+                {
+                    var entityScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen as Screens.EntityViewingScreen;
+                    var entity = (entityScreen?.CurrentEntity as PositionedObject);
+
+                    var isAlreadyViewingThisEntity =
+                        entityScreen != null &&
+                        entity != null &&
+                        DoTypesMatch(entity, ownerTypeName, ownerType);
+
+                    if (!isAlreadyViewingThisEntity)
+                    {
+#if SupportsEditMode
+                        ScreenManager.IsNextScreenInEditMode = ScreenManager.IsInEditMode;
+
+                        void AfterInitializeLogic(Screen newScreen)
+                        {
+                            newScreen.ScreenDestroy += HandleScreenDestroy;
+
+                            FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
+
+                            CameraLogic.UpdateCameraValuesToScreenSavedValues(newScreen );
+
+                            if (!string.IsNullOrEmpty(selectObjectDto.StateName))
+                            {
+                                SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);
+                            }
+                        }
+
+                        FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;
+
+                        EditorVisuals.DestroyContainedObjects();
+
+                        Screens.EntityViewingScreen.GameElementTypeToCreate = GlueToGameElementName(elementNameGlue);
+                        Screens.EntityViewingScreen.InstanceToSelect = GetSelectedNamedObjects(selectObjectDto).FirstOrDefault();
+                        ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
+#endif
+                    }
+                    else
+                    {
+                        matchesCurrentSelection = IsCurrentSelectionMatchingDto(selectObjectDto);
+                        if (!matchesCurrentSelection || selectObjectDto.BringIntoFocus)
+                        {
+                            EditingManager.Self.Select(GetSelectedNamedObjects(selectObjectDto), playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static bool IsCurrentSelectionMatchingDto(SelectObjectDto selectObjectDto)
+        {
+            bool matchesSelection;
+            var newSelectionCount = selectObjectDto.NamedObjectNames.Count;
+
+            if (Editing.EditingManager.Self.CurrentNamedObjects.Count != newSelectionCount)
+            {
+                matchesSelection = false;
+            }
+            else
+            {
+                matchesSelection = true;
+                for (int i = 0; i < Editing.EditingManager.Self.CurrentNamedObjects.Count; i++)
+                {
+                    var currentNamedObject = Editing.EditingManager.Self.CurrentNamedObjects[i];
+                    if (currentNamedObject.InstanceName != selectObjectDto.NamedObjectNames[i])
+                    {
+                        matchesSelection = false;
+                    }
+                }
+            }
+
+            return matchesSelection;
+        }
+
+        private static void SelectState(string stateName, string stateCategoryName)
+        {
+            var currentScreen = ScreenManager.CurrentScreen;
+            var entity = SpriteManager.ManagedPositionedObjects.FirstOrDefault();
+            ////////////////Early Out//////////////////////
+            if (currentScreen.GetType().Name != "EntityViewingScreen" ||
+                entity == null)
+            {
+                return;
+            }
+            /////////////End Early Out/////////////////////
+
+            var entityType = entity.GetType();
+
+            var stateTypeName = entityType.FullName + "+" + stateCategoryName ?? "VariableState";
+
+            var stateType = entityType.Assembly.GetType(stateTypeName);
+
+            if (stateType != null)
+            {
+                SelectStateByType(stateName, stateCategoryName, entity, stateType);
+            }
+            else
+            {
+                // this should be in the dynamic list of states
+                SelectStateAddedAtRuntime(stateName, stateCategoryName, entity);
+            }
+        }
+
+        private static void SelectStateAddedAtRuntime(string stateName, string stateCategoryName, PositionedObject entity)
+        {
+            var entityType = entity.GetType();
+
+            StateSaveCategory category = null;
+            if (InstanceLogic.Self.StatesAddedAtRuntime.ContainsKey(entityType.FullName))
+            {
+                var categories = InstanceLogic.Self.StatesAddedAtRuntime[entityType.FullName];
+
+                category = categories.FirstOrDefault(item => item.Name == stateCategoryName);
+            }
+
+            StateSave stateSave = null;
+
+            if (category != null)
+            {
+                stateSave = category.GetState(stateName);
+            }
+
+            if (stateSave != null)
+            {
+                foreach (var instruction in stateSave.InstructionSaves)
+                {
+                    InstanceLogic.Self.AssignVariable(entity, instruction, convertFileNamesToObjects: true);
+                }
+            }
+        }
+
+        private static void SelectStateByType(string stateName, string stateCategoryName, PositionedObject entity, Type stateType)
+        {
+            var entityType = entity.GetType();
+
+            var dictionary = stateType.GetField("AllStates").GetValue(null) as System.Collections.IDictionary;
+
+            if (dictionary.Contains(stateName))
+            {
+                // got the state, gotta apply:
+                var stateInstance = dictionary[stateName];
+
+                string propertyName = "VariableState";
+
+                if (!string.IsNullOrEmpty(stateCategoryName))
+                {
+                    propertyName = $"Current{stateCategoryName}State";
+                }
+
+                var stateProperty = entityType.GetProperty(propertyName);
+
+                stateProperty.SetValue(entity, stateInstance);
+
+                // stop all movement in case the state assigned movement
+                foreach (var item in SpriteManager.ManagedPositionedObjects)
+                {
+                    item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                    item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+                }
+            }
+        }
+
+        #endregion
+
+        #region SelectSubIndex
+
+        private static void HandleDto(SelectSubIndexDto dto)
+        {
+            GlueState.Self.SelectedSubIndex = dto.Index;
+        }
+
+        #endregion
+
+        #region ObjectReorderedDto
+
+        private static void HandleDto(NamedObjectReorderedDto dto)
+        {
+            if (FlatRedBall.Screens.ScreenManager.IsInEditMode && dto.GlueElement != null)
+            {
+                ObjectFinder.Self.Replace(dto.GlueElement);
+            }
+
+            var element = ObjectFinder.Self.GetElement(dto.GlueElement.Name);
+
+            NamedObjectSave nos = null;
+            if (element != null)
+            {
+                nos = element.GetNamedObjectRecursively(dto.NamedObjectName);
+            }
+
+            if (nos == null)
+            {
+                return;
+            }
+
+            if (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassType == "FlatRedBall.Graphics.Layer")
+            {
+                HandleLayerReordered(dto, nos, element);
+            }
+            //var namedObject = ObjectFinder.Self.GetNamedObjectRecursivelydto.ContainerName, dto.ObjectName);
+        }
+
+        private static void HandleLayerReordered(NamedObjectReorderedDto dto, NamedObjectSave layerMoved, GlueElement containerElement)
+        {
+            var layer = SpriteManager.Layers.FirstOrDefault(item => item.Name == dto.NamedObjectName);
+
+            if (layer == null)
+            {
+                return;
+            }
+
+            var allLayerNamedObjects = containerElement.AllNamedObjects
+                .Where(item => item.SourceType == SourceType.FlatRedBallType && item.SourceClassType == "FlatRedBall.Graphics.Layer")
+                .ToList();
+
+
+            var newIndex = allLayerNamedObjects.IndexOf(layerMoved);
+
+#if SpriteManagerHasInsertLayer
+            if (SpriteManager.Layers.IndexOf(layer) != newIndex)
+            {
+                SpriteManager.RemoveLayer(layer);
+                SpriteManager.InsertLayer(layer, newIndex);
+            }
+#endif
         }
 
         #endregion
@@ -342,198 +798,9 @@ namespace GlueControl
 
         #endregion
 
-        #region Select Object
+        #region ForceClientSizeUpdatesDto
 
-        private static void HandleDto(SelectObjectDto selectObjectDto)
-        {
-            if (selectObjectDto.GlueElement != null)
-            {
-                selectObjectDto.GlueElement.FixAllTypes();
-            }
-            // if it matches, don't fall back to the backup element
-            bool matchesCurrentScreen =
-                GetIfMatchesCurrentScreen(selectObjectDto.ElementNameGlue, out System.Type ownerType, out Screen currentScreen);
-
-            string elementNameGlue = selectObjectDto.BackupElementNameGlue ?? selectObjectDto.ElementNameGlue;
-            if (matchesCurrentScreen)
-            {
-                elementNameGlue = selectObjectDto.ElementNameGlue;
-            }
-
-            string ownerTypeName = GlueToGameElementName(elementNameGlue);
-            ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
-
-            bool isOwnerScreen = false;
-
-            try
-            {
-                if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
-                {
-                    ObjectFinder.Self.Replace(selectObjectDto.GlueElement);
-                }
-                Editing.EditingManager.Self.SetCurrentGlueElement(selectObjectDto.GlueElement);
-            }
-            catch (ArgumentException e)
-            {
-                var message =
-                    $"The command to select {selectObjectDto.NamedObject} in {selectObjectDto.GlueElement} " +
-                    $"threw an exception because the Glue object has a null object.  Inner details:{e}";
-
-                throw new ArgumentException(message);
-            }
-
-            ApplyNewNamedObjects(selectObjectDto);
-
-            if (matchesCurrentScreen)
-            {
-                Editing.EditingManager.Self.Select(selectObjectDto.NamedObject, playBump: true, focusCameraOnObject: selectObjectDto.BringIntoFocus);
-                Editing.EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
-                if (!string.IsNullOrEmpty(selectObjectDto.StateName))
-                {
-                    SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);
-                }
-                isOwnerScreen = true;
-            }
-            else
-            {
-                CameraLogic.RecordCameraForCurrentScreen();
-
-                bool selectedNewScreen = ownerType != null && typeof(Screen).IsAssignableFrom(ownerType);
-                if (selectedNewScreen)
-                {
-#if SupportsEditMode
-                    ScreenManager.IsNextScreenInEditMode = ScreenManager.IsInEditMode;
-
-                    void AfterInitializeLogic(Screen screen)
-                    {
-                        // Select this even if it's null so the EditingManager deselects 
-                        EditingManager.Self.Select(selectObjectDto.NamedObject, playBump: true, focusCameraOnObject: true);
-
-                        if (!string.IsNullOrEmpty(selectObjectDto.StateName))
-                        {
-                            SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);
-                        }
-
-                        screen.ScreenDestroy += HandleScreenDestroy;
-                        CameraLogic.UpdateCameraValuesToScreenSavedValues(screen);
-
-                        ScreenManager.ScreenLoaded -= AfterInitializeLogic;
-                    }
-                    ScreenManager.ScreenLoaded += AfterInitializeLogic;
-
-                    ScreenManager.CurrentScreen.MoveToScreen(ownerType);
-                    EditorVisuals.DestroyContainedObjects();
-
-                    isOwnerScreen = true;
-                    EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
-#endif
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(selectObjectDto.StateName))
-                    {
-                        SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);
-                    }
-                }
-            }
-
-            if (!isOwnerScreen)
-            {
-                var isEntity = typeof(PositionedObject).IsAssignableFrom(ownerType) ||
-                    InstanceLogic.Self.CustomGlueElements.ContainsKey(ownerTypeName);
-
-                if (isEntity)
-                {
-                    var entityScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen as Screens.EntityViewingScreen;
-                    var entity = (entityScreen?.CurrentEntity as PositionedObject);
-
-                    var isAlreadyViewingThisEntity =
-                        entityScreen != null &&
-                        entity != null &&
-                        DoTypesMatch(entity, ownerTypeName, ownerType);
-
-                    if (!isAlreadyViewingThisEntity)
-                    {
-#if SupportsEditMode
-                        ScreenManager.IsNextScreenInEditMode = ScreenManager.IsInEditMode;
-
-                        void AfterInitializeLogic(Screen newScreen)
-                        {
-                            newScreen.ScreenDestroy += HandleScreenDestroy;
-
-                            FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
-
-                            CameraLogic.UpdateCameraValuesToScreenSavedValues(newScreen );
-
-                            if (!string.IsNullOrEmpty(selectObjectDto.StateName))
-                            {
-                                SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);
-                            }
-                        }
-
-                        FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;
-
-                        EditorVisuals.DestroyContainedObjects();
-
-                        Screens.EntityViewingScreen.GameElementTypeToCreate = GlueToGameElementName(elementNameGlue);
-                        Screens.EntityViewingScreen.InstanceToSelect = selectObjectDto.NamedObject;
-                        ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
-#endif
-                    }
-                    else
-                    {
-                        EditingManager.Self.Select(selectObjectDto.NamedObject, playBump: true, focusCameraOnObject: true);
-                    }
-                }
-            }
-        }
-
-
-
-        private static void SelectState(string stateName, string stateCategoryName)
-        {
-            var currentScreen = ScreenManager.CurrentScreen;
-            var entity = SpriteManager.ManagedPositionedObjects.FirstOrDefault();
-            ////////////////Early Out//////////////////////
-            if (currentScreen.GetType().Name != "EntityViewingScreen" ||
-                entity == null)
-            {
-                return;
-            }
-            /////////////End Early Out/////////////////////
-
-            var entityType = entity.GetType();
-
-            var stateTypeName = entityType.FullName + "+" + stateCategoryName ?? "VariableState";
-
-            var stateType = entityType.Assembly.GetType(stateTypeName);
-
-            var dictionary = stateType.GetField("AllStates").GetValue(null) as System.Collections.IDictionary;
-
-            if (dictionary.Contains(stateName))
-            {
-                // got the state, gotta apply:
-                var stateInstance = dictionary[stateName];
-
-                string propertyName = "VariableState";
-
-                if (!string.IsNullOrEmpty(stateCategoryName))
-                {
-                    propertyName = $"Current{stateCategoryName}State";
-                }
-
-                var stateProperty = entityType.GetProperty(propertyName);
-
-                stateProperty.SetValue(entity, stateInstance);
-
-                // stop all movement in case the state assigned movement
-                foreach (var item in SpriteManager.ManagedPositionedObjects)
-                {
-                    item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-                    item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
-                }
-            }
-        }
+        private static void HandleDto(ForceClientSizeUpdatesDto dto) => FlatRedBallServices.ForceClientSizeUpdates();
 
         #endregion
 
@@ -555,15 +822,10 @@ namespace GlueControl
 
         #region Rename
 
-        static string topNamespace = null;
         public static string GlueToGameElementName(string elementName)
         {
-            if (topNamespace == null)
-            {
-                var game1FullName = typeof(Game1).FullName;
-                topNamespace = game1FullName.Substring(0, game1FullName.IndexOf('.'));
-            }
-            return $"{topNamespace}.{elementName.Replace("\\", ".")}";
+            
+            return $"{ProjectNamespace}.{elementName.Replace("\\", ".")}";
         }
 
         public static string GameElementTypeToGlueElement(string gameType)
@@ -599,7 +861,8 @@ namespace GlueControl
                 ObjectFinder.Self.Replace(removeObjectDto.GlueElement);
             }
 
-            Editing.EditingManager.Self.SetCurrentGlueElement(removeObjectDto.GlueElement);
+            // don't do this. When it re-runs, it can screw up state::
+            //Editing.EditingManager.Self.SetCurrentGlueElement(removeObjectDto.GlueElement);
 
             CommandReceiver.GlobalGlueToGameCommands.Add(removeObjectDto);
 
@@ -634,8 +897,12 @@ namespace GlueControl
             ApplyNewNamedObjects(dto);
 
             var createdObject =
-                GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto, GlobalGlueToGameCommands.Count, forcedItem: null);
-            valueToReturn.WasObjectCreated = createdObject != null;
+                GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto, GlobalGlueToGameCommands.Count, forcedParent: null);
+
+            var response = new OptionallyAttemptedGeneralResponse();
+            response.Succeeded = createdObject != null;
+
+            valueToReturn.CreationResponse = response;
 
             // internally this decides what to add to, so we don't have to sort the DTOs
             //CommandReceiver.EnqueueToOwner(dto, dto.ElementNameGame);
@@ -695,7 +962,8 @@ namespace GlueControl
 
             category.States.Add(newStateSave);
 
-            // Now create the runtime object and 
+            // If there is already a runtime State object, we need to update that object's properties
+            // in case those are set through code directly. Direct assignments in game code do not use the InstanceLogic.Self.StatesAddedAtRuntime
             var stateType = VariableAssignmentLogic.TryGetStateType(elementGameType + "." + (categoryName ?? "VariableState"));
             if (stateType != null)
             {
@@ -723,6 +991,18 @@ namespace GlueControl
                 {
                     InstanceLogic.Self.AssignVariable(existingState, instruction, convertFileNamesToObjects: false);
                 }
+            }
+        }
+
+        #endregion
+
+        #region Update Category
+
+        private static void HandleDto(UpdateStateSaveCategory dto)
+        {
+            foreach (var state in dto.Category.States)
+            {
+                ReplaceStateWithNewState(dto.ElementNameGame, dto.Category.Name, state);
             }
         }
 
@@ -760,73 +1040,6 @@ namespace GlueControl
         private static object HandleDto(GetCameraSave dto)
         {
             return FlatRedBall.Content.Scene.CameraSave.FromCamera(Camera.Main);
-        }
-
-        #endregion
-
-        #region EditMode vs Play
-
-        private static object HandleDto(SetEditMode setEditMode)
-        {
-            var value = setEditMode.IsInEditMode;
-#if SupportsEditMode
-            var response = new Dtos.GeneralCommandResponse
-            {
-                Succeeded = true,
-            };
-
-
-            if (ScreenManager.CurrentScreen == null)
-            {
-                response.Succeeded = false;
-                response.Message = "The ScreenManager.CurrentScreen is null, so the screen cannot be restarted. Is the screen you are viewing abstract (such as GameScreen)? If so, this may be why the Screen hasn't been created.";
-
-            }
-
-            if (value != FlatRedBall.Screens.ScreenManager.IsInEditMode)
-            {
-                CameraLogic.RecordCameraForCurrentScreen();
-
-                FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
-
-                if (value)
-                {
-                    FlatRedBallServices.Game.IsMouseVisible = true;
-
-                    if(ObjectFinder.Self.GlueProject == null)
-                    {
-                        GlueCommands.Self.LoadProject(setEditMode.AbsoluteGlueProjectFilePath);
-                    }
-
-                    // If in edit mode, polygons can get sent over from Glue
-                    // without points. We don't want to crash the game when this
-                    // happens.
-                    // Should we preserve the old value and reset it back? This adds
-                    // complexity, and I don't know if there's any benefit because this
-                    // property is usually false to catch coding errors, but code can't be
-                    // added without restarting the app, which would then reset this value back
-                    // to false. Let's keep it simple.
-                    Polygon.TolerateEmptyPolygons = true;
-#if SpriteHasTolerateMissingAnimations
-                    Sprite.TolerateMissingAnimations = true;
-#endif
-                    if(!CameraSetup.Data.AllowWindowResizing)
-                    {
-                        CameraSetup.Data.AllowWindowResizing = true;
-                        CameraSetup.ResetWindow();
-                    }
-                }
-
-                FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction = (entityNameGameType) => InstanceLogic.Self.CreateEntity(entityNameGameType);
-
-
-                RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: value, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
-            }
-
-            return response;
-#else
-            return null;
-#endif
         }
 
         #endregion
@@ -947,6 +1160,10 @@ namespace GlueControl
                 FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
 
                 EditingManager.Self.RefreshSelectionAfterScreenLoad(playBump);
+
+
+                // this forces Gum layouts to refresh:
+                FlatRedBall.FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
             }
 
             FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;
@@ -1063,18 +1280,19 @@ namespace GlueControl
 
         #endregion
 
-        #region Get Commands
+        #region GetGlueToGameCommandRerunList
 
-        private static GetCommandsDtoResponse HandleDto(GetCommandsDto dto)
+        private static GetCommandsDtoResponse HandleDto(GetGlueToGameCommandRerunList dto)
         {
             var responseDto = new GetCommandsDtoResponse();
 #if SupportsEditMode
-            if (GlueControlManager.GameToGlueCommands.Count != 0)
+
+            var arrayCopy = GlobalGlueToGameCommands.ToArray();
+
+            foreach(var item in arrayCopy)
             {
-                while (GlueControlManager.GameToGlueCommands.TryDequeue(out GlueControlManager.GameToGlueCommand gameToGlueCommand))
-                {
-                    responseDto.Commands.Add(gameToGlueCommand.Command);
-                }
+                var combined = item.GetType().Name + ":" + JsonConvert.SerializeObject(item);
+                responseDto.Commands.Add(combined);
             }
 #endif
 
@@ -1087,10 +1305,17 @@ namespace GlueControl
 
         private static void HandleDto(SetBorderlessDto dto)
         {
+#if MONOGAME
             FlatRedBallServices.Game.Window.IsBorderless = dto.IsBorderless;
+#elif FNA
+            FlatRedBallServices.Game.Window.IsBorderlessEXT = dto.IsBorderless;
+
+#endif
         }
 
         #endregion
+
+        #region ForceGameResolution
 
         private static void HandleDto(ForceGameResolution dto)
         {
@@ -1099,9 +1324,12 @@ namespace GlueControl
             CameraSetup.ResetWindow();
         }
 
+        #endregion
+
         private static void HandleDto(GlueViewSettingsDto dto)
         {
             EditingManager.Self.ShowGrid = dto.ShowGrid;
+            EditingManager.Self.GridAlpha = dto.GridAlpha;
             EditingManager.Self.GuidesGridSpacing = (float)dto.GridSize;
             Screens.EntityViewingScreen.ShowScreenBounds = dto.ShowScreenBoundsWhenViewingEntities;
 
@@ -1131,6 +1359,87 @@ namespace GlueControl
                 EditingManager.Self.ReplaceNamedObjectSave(update.NamedObjectSave, update.GlueElementName, update.ContainerName);
             }
         }
+
+        #region GetProfilingDataDto
+
+        private static ProfilingDataDto HandleDto(GetProfilingDataDto dto)
+        {
+            var response = new ProfilingDataDto();
+
+            response.SummaryData = FlatRedBall.Debugging.Debugger.GetFullPerformanceInformation();
+
+            response.CollisionData = GetCollisionDataDto();
+
+            return response;
+        }
+
+        private static List<CollisionRelationshipInfo> GetCollisionDataDto()
+        {
+            var collisionManager = FlatRedBall.Math.Collision.CollisionManager.Self;
+            int numberOfCollisions = 0;
+            int? maxCollisions = null;
+
+            List<CollisionRelationshipInfo> toReturn = new List<CollisionRelationshipInfo>();
+            foreach (var relationship in collisionManager.Relationships)
+            {
+                numberOfCollisions += relationship.DeepCollisionsThisFrame;
+
+                var dto = new CollisionRelationshipInfo();
+                dto.DeepCollisions = relationship.DeepCollisionsThisFrame;
+                dto.RelationshipName = relationship.Name;
+
+                var firstCollisionObject = relationship.FirstAsObject;
+                var secondObject = relationship.SecondAsObject;
+
+                System.Collections.IEnumerable listWithoutPartition = null;
+                if (firstCollisionObject is System.Collections.IList firstAsIEnumerable)
+                {
+                    dto.FirstItemListCount = firstAsIEnumerable.Count;
+                    var isPartitioned = false;
+                    foreach (var item in CollisionManager.Self.Partitions)
+                    {
+                        if (item.PartitionedObject == firstCollisionObject)
+                        {
+                            dto.FirstPartitionAxis = item.axis;
+                            isPartitioned = true;
+                            break;
+                        }
+                    }
+
+                    if (!isPartitioned)
+                    {
+                        listWithoutPartition = firstAsIEnumerable;
+                    }
+                }
+
+                if (secondObject is System.Collections.IList secondAsIEnumerable)
+                {
+                    dto.SecondItemListCount = secondAsIEnumerable.Count;
+                    var isPartitioned = false;
+                    foreach (var item in CollisionManager.Self.Partitions)
+                    {
+                        if (item.PartitionedObject == secondObject)
+                        {
+                            dto.SecondPartitionAxis = item.axis;
+                            isPartitioned = true;
+                            break;
+                        }
+                    }
+
+                    if (!isPartitioned)
+                    {
+                        listWithoutPartition = secondAsIEnumerable;
+                    }
+                }
+
+                dto.IsPartitioned = listWithoutPartition == null;
+
+                toReturn.Add(dto);
+            }
+            return toReturn;
+        }
+
+        #endregion
     }
 
 

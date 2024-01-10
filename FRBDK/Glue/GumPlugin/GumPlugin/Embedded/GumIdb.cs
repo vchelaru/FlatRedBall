@@ -119,7 +119,7 @@ namespace FlatRedBall.Gum
         public GraphicalUiElement CreateAndUseEmptyGraphicalUiElement()
         {
             this.element = new GraphicalUiElement();
-            this.element.AddToManagers();
+            this.element.AddToManagers(mManagers, null);
 
             return element;
         }
@@ -149,7 +149,9 @@ namespace FlatRedBall.Gum
 
                 RenderingLibrary.Graphics.Text.RenderBoundaryDefault = false;
                 // FlatRedBall uses premult alpha.
-                RenderingLibrary.Graphics.Renderer.NormalBlendState = Microsoft.Xna.Framework.Graphics.BlendState.AlphaBlend;
+                RenderingLibrary.Graphics.Renderer.NormalBlendState =
+                    global::Gum.BlendState.AlphaBlend;
+                    //Microsoft.Xna.Framework.Graphics.BlendState.AlphaBlend;
 
                 // August 31 - I don't know if we should do this:
                 UpdateDisplayToMainFrbCamera();
@@ -161,6 +163,7 @@ namespace FlatRedBall.Gum
                 // For now we'll have Glue override these values, but we may eventually change it.
 
                 var idb = new GumIdb();
+                idb.Name = "Static (global) Gum IDB";
                 // We don't want the UI to be at Z=0 because it will render 
                 // at the same Z along with FRB entities and environments so UI might 
                 // be hidden. The proper way to solve this is to use Layers, but
@@ -477,11 +480,20 @@ namespace FlatRedBall.Gum
         #endregion
 
         #region IDrawableBatch
+
+        // This is needed in case there are multiple Gum IDBs
+        static double lastTimeTimeManagerUpdateCalled = -1;
+
         public void Update()
         {
             mManagers.Activity(TimeManager.CurrentTime);
 
-            global::Gum.Wireframe.TimeManager.Self.Activity();
+            if(lastTimeTimeManagerUpdateCalled != FlatRedBall.TimeManager.CurrentTime)
+            {
+                global::Gum.Wireframe.TimeManager.Self.Activity();
+                lastTimeTimeManagerUpdateCalled = FlatRedBall.TimeManager.CurrentTime;
+            }
+
         }
 
         /// <summary>
@@ -511,7 +523,8 @@ namespace FlatRedBall.Gum
             }
             else if (mFrbToGumLayers.ContainsKey(FlatRedBall.Graphics.Renderer.CurrentLayer))
             {
-                mManagers.Draw(mFrbToGumLayers[FlatRedBall.Graphics.Renderer.CurrentLayer]);
+                var layers = mFrbToGumLayers[FlatRedBall.Graphics.Renderer.CurrentLayer];
+                mManagers.Draw(layers);
             }
 
 

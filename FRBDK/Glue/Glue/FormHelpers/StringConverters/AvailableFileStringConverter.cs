@@ -53,6 +53,12 @@ namespace FlatRedBall.Glue.GuiDisplay
             set;
         }
 
+        public bool IncludeNamedObjectsOfMatchingType
+        {
+            get;
+            set;
+        } = false;
+
         #endregion
 
         public AvailableFileStringConverter(GlueElement element)
@@ -78,11 +84,20 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            List<string> stringToReturn = GetAvailableOptions(CurrentElement, IncludeNoneOption, RemovePathAndExtension, QualifiedRuntimeTypeNameFilter, UnqualifiedRuntimeTypeNameFilter);
+            List<string> stringToReturn = GetAvailableOptions(
+                CurrentElement, 
+                IncludeNoneOption, 
+                RemovePathAndExtension, 
+                QualifiedRuntimeTypeNameFilter, 
+                UnqualifiedRuntimeTypeNameFilter, 
+                IncludeNamedObjectsOfMatchingType);
+
             return new StandardValuesCollection(stringToReturn);
         }
 
-        public static List<string> GetAvailableOptions(GlueElement glueElement, bool includeNoneOption, bool removePathAndExtension, string qualifiedRuntimeTypeNameFilter = null, string unqualifiedRuntimeTypeNameFilter = null)
+        public static List<string> GetAvailableOptions(GlueElement glueElement, bool includeNoneOption, bool removePathAndExtension,
+            string qualifiedRuntimeTypeNameFilter = null,
+            string unqualifiedRuntimeTypeNameFilter = null, bool includeNamedObjectsOfMatchingType = false)
         {
             List<string> stringToReturn = new List<string>();
 
@@ -121,6 +136,21 @@ namespace FlatRedBall.Glue.GuiDisplay
                         }
                     }
                 }
+
+                if(includeNamedObjectsOfMatchingType)
+                {
+                    foreach(var nos in glueElement.GetAllNamedObjectsRecurisvely())
+                    {
+                        bool shouldInclude = (string.IsNullOrEmpty(qualifiedRuntimeTypeNameFilter) && string.IsNullOrEmpty(unqualifiedRuntimeTypeNameFilter)) ||
+                            (!string.IsNullOrEmpty(qualifiedRuntimeTypeNameFilter) && IsNosOfQualifiedRuntimeType(nos, qualifiedRuntimeTypeNameFilter)) ||
+                            (!string.IsNullOrEmpty(unqualifiedRuntimeTypeNameFilter) && IsNosOfQualifiedRuntimeType(nos, unqualifiedRuntimeTypeNameFilter));
+
+                        if (shouldInclude)
+                        {
+                            listToSort.Add(nos.InstanceName);
+                        }
+                    }
+                }
             }
 
             listToSort.Sort(StrCmpLogicalW);
@@ -143,13 +173,43 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
         }
 
+        static bool IsNosOfQualifiedRuntimeType(NamedObjectSave nos, string qualifiedRuntimeType)
+        {
+            AssetTypeInfo ati = nos.GetAssetTypeInfo();
+
+            if (ati != null)
+            {
+                return MatchesQualifiedTypeRecursively(qualifiedRuntimeType, ati);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         static bool IsRfsOfQualifiedRuntimeType(ReferencedFileSave rfs, string qualifiedRuntimeType)
         {
             AssetTypeInfo ati = rfs.GetAssetTypeInfo();
 
             if (ati != null)
             {
-                return ati.QualifiedRuntimeTypeName.QualifiedType == qualifiedRuntimeType;
+                return MatchesQualifiedTypeRecursively(qualifiedRuntimeType, ati);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static bool MatchesQualifiedTypeRecursively(string qualifiedRuntimeType, AssetTypeInfo ati)
+        {
+            if(ati.QualifiedRuntimeTypeName.QualifiedType == qualifiedRuntimeType)
+            {
+                return true;
+            }
+            else if(ati.BaseAssetTypeInfo != null)
+            {
+                return MatchesQualifiedTypeRecursively(qualifiedRuntimeType, ati.BaseAssetTypeInfo);
             }
             else
             {

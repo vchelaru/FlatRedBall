@@ -26,9 +26,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\InstanceListMember.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\InstanceMember.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Audio\AudioManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audio\ISong.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Audio\SoundEffectPlayInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Audio\SoundGroup.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Camera.Common.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AI\Pathfinding\LinkSave.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AI\Pathfinding\NodeNetworkSave.cs" />
@@ -107,6 +107,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\BatchForwardVectorSorter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\BitmapCharacterInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\BitmapFont.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\CustomEffectManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawableBatch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\EffectCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\GenericEffect.cs" />
@@ -230,6 +231,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\AxisAlignedCube.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\AxisAlignedRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\Capsule2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\CapsulePolygon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\Circle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\FloatRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\Frustum.cs" />
@@ -296,6 +298,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ExportOrderAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\GameRandom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\INameable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\IPlayable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ITimed.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SpriteSelectionOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringBuilderExtensions.cs" />

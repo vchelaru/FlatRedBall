@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
@@ -311,7 +312,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         /// </summary>
         /// <param name="namedObject"></param>
         /// <param name="codeBlock"></param>
-        public static void GenerateVariableAssignment(NamedObjectSave namedObject, ICodeBlock codeBlock)
+        public static void GenerateVariableAssignment(NamedObjectSave namedObject, ICodeBlock codeBlock, GlueElement container)
         {
 
             List<CustomVariableInNamedObject> variables = namedObject.InstructionSaves;
@@ -342,23 +343,23 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             foreach (var instructionSave in variables)
             {
-                GlueElement element = null;
+                GlueElement nosTypeElement = null;
 
                 if (namedObject.SourceType == SourceType.Entity)
                 {
-                    element = ObjectFinder.Self.GetElement(namedObject.SourceClassType);
+                    nosTypeElement = ObjectFinder.Self.GetElement(namedObject.SourceClassType);
                 }
 
                 var shouldGenerateVariableAssignment =
                     ExposedVariableManager.IsExposedVariable(instructionSave.Member, namedObject) ||
-                    (element != null && element.GetCustomVariableRecursively(instructionSave.Member) != null) ||
+                    (nosTypeElement != null && nosTypeElement.GetCustomVariableRecursively(instructionSave.Member) != null) ||
                     // Could be something set by container:
-                    (element != null && element.GetNamedObjectRecursively(instructionSave.Member) != null) ||
+                    (nosTypeElement != null && nosTypeElement.GetNamedObjectRecursively(instructionSave.Member) != null) ||
                     variableDefinitions?.Any(item => item.Name == instructionSave.Member) == true;
 
                 if (shouldGenerateVariableAssignment)
                 {
-                    CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInInstance(namedObject, codeBlock, instructionSave);
+                    CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInInstance(namedObject, codeBlock, instructionSave, container);
                 }
             }
         }
@@ -400,7 +401,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
-
+            var doesElementHaveLayers = element.NamedObjects.Any(item => item.IsLayer);
+            
             for (int i = 0; i < element.NamedObjects.Count; i++)
             {
                 var nos = element.NamedObjects[i];
@@ -411,9 +413,28 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // layers, and if the Layer gets destroyed first, then
                 // the list will be cleared (all contained objects on the
                 // layer will have their RemoveSelfFromListsBelongingTo called).
-                // This means the Entities will never have the opportunity to call
-                // Destroy
-                if (ShouldGeneratePreDestroyMakeOneWay(nos))
+                // We need to call Destroy on all entity instances, and the way that 
+                // happens is by looping through the list. If the list gets emptied, then
+                // Destroy can't be called.
+                // Update December 10, 2023
+                // This code is getting called
+                // on all Lists, whether the list
+                // is DefinedByBase or not. This adds
+                // extra code to generated code files, and
+                // results in some extra calls on destroy. We
+                // could make this only happen on lists that are
+                // not SetByDerived, but that introduces a small problem:
+                // the list could be DefinedByBase, but the instances in a
+                // list could get added to layers that are in the derived screen.
+                // So we could do one of the following:
+                // 1. Say "who cares" and only make one-way on the base. This is the cleanest here, but 
+                //    it could result in entities not getting destroyed
+                // 2. Only do this if we have instances that have been added to lists explicitly in this screen
+                // 3. Only do this if in derived screens if we have layers in this screen.
+                // This isn't super bad in terms of performance, and in Vic's experience it's rare for
+                // derived screens to have layers that aren't defined in base.
+                // Therefore, let's do a check:
+                if (doesElementHaveLayers && ShouldGeneratePreDestroyMakeOneWay(nos))
                 {
                     codeBlock.Line(nos.InstanceName + ".MakeOneWay();");
                 }
@@ -433,15 +454,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 var nos = element.NamedObjects[i];
 
-                // Lists of Entities which inherit from FRB types
-                // should be made one-way before the destroy calls
-                // happen.  The reason is that the Entities may be on
-                // layers, and if the Layer gets destroyed first, then
-                // the list will be cleared (all contained objects on the
-                // layer will have their RemoveSelfFromListsBelongingTo called).
-                // This means the Entities will never have the opportunity to call
-                // Destroy
-                if (ShouldGeneratePreDestroyMakeOneWay(nos))
+                // Sewe the other call to ShouldGeneratePreDestroyMakeOneWay
+                // above for information on why this call is needed
+                if (doesElementHaveLayers && ShouldGeneratePreDestroyMakeOneWay(nos))
                 {
                     codeBlock.Line(nos.InstanceName + ".MakeTwoWay();");
                 }
@@ -712,7 +727,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
         private static void WriteCopyToAbsoluteInInitializeCode(NamedObjectSave namedObject, ICodeBlock codeBlock, 
-            IElement container,
+            GlueElement container,
             Dictionary<string, string> referencedFilesAlreadyUsingFullFile, AssetTypeInfo ati, string objectName, ReferencedFileSave rfs)
         {
             bool canWriteAbsoluteInitialize = GetIfCanAttach(namedObject, ati, container);
@@ -752,7 +767,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static bool GetIfCanAttach(NamedObjectSave namedObject, AssetTypeInfo ati, IElement container)
+        private static bool GetIfCanAttach(NamedObjectSave namedObject, AssetTypeInfo ati, GlueElement container)
         {
             var canWriteAbsoluteInitialize =
                 (ati != null && ati.ShouldAttach) ||
@@ -1076,7 +1091,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             #endregion
 
-            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+            AssetTypeInfo ati = namedObject.GetAssetTypeInfo();
 
             #region If object was added to manager, remove this object from managers
 
@@ -1090,11 +1105,13 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 else
                 {
-                    if (ati.DestroyMethod != null)
+                    if (ati.DestroyFunc != null)
                     {
-
+                        removalMethod = ati.DestroyFunc(element, namedObject, null);
+                    }
+                    else if (ati.DestroyMethod != null)
+                    {
                         removalMethod = ati.DestroyMethod.Replace("this", namedObject.InstanceName);
-
                     }
                 }
 
@@ -1162,14 +1179,23 @@ namespace FlatRedBall.Glue.CodeGeneration
                         AssetTypeInfo atiForListElement = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(genericClassType,
                             namedObject);
 
-                        if (atiForListElement != null && atiForListElement.DestroyMethod != null)
+                        var hasDestroy = atiForListElement.DestroyMethod != null || atiForListElement.DestroyFunc != null;
+
+                        if (atiForListElement != null && hasDestroy)
                         {
-
-                            string removalMethod = atiForListElement.DestroyMethod.Replace("this", namedObject.InstanceName + "[i]");
-
-                            if (!string.IsNullOrEmpty(removalMethod))
+                            if(atiForListElement.DestroyFunc != null)
                             {
-                                forBlock.Line(removalMethod + ";");
+                                // this must internally handle list, not sure how to do that.... We may need a new parameter for lists here:
+                                forBlock.Line(atiForListElement.DestroyFunc(element, namedObject, null));
+                            }
+                            else if(atiForListElement.DestroyMethod != null)
+                            {
+                                string removalMethod = atiForListElement.DestroyMethod.Replace("this", namedObject.InstanceName + "[i]");
+
+                                if (!string.IsNullOrEmpty(removalMethod))
+                                {
+                                    forBlock.Line(removalMethod + ";");
+                                }
                             }
                         }
                         else
@@ -1258,9 +1284,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             }
 
-            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
-
-            if (ati != null && ati.IsInstantiatedInAddToManagers)
+            AssetTypeInfo ati = null;
+            if (namedObject.SourceType != SourceType.Entity)
+            {
+                ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+            }
+            if (ati?.IsInstantiatedInAddToManagers == true)
             {
 
                 // This is an object which has to be instantiated by the engine (like Layer), so it will
@@ -1297,26 +1326,22 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static string GetQualifiedTypeName(NamedObjectSave namedObjectSave)
         {
+            AssetTypeInfo ati = null;
             if (namedObjectSave.SourceType == SaveClasses.SourceType.Entity &&
                 !string.IsNullOrEmpty(namedObjectSave.SourceClassType))
             {
 
                 return ProjectManager.ProjectNamespace + '.' + namedObjectSave.SourceClassType.Replace('\\', '.');
             }
-            else if (namedObjectSave.GetAssetTypeInfo() != null)
+            else if(namedObjectSave.IsList)
             {
-                var ati = namedObjectSave.GetAssetTypeInfo();
-
-                if(ati == AvailableAssetTypes.CommonAtis.PositionedObjectList)
-                {
-                    return GetQualifiedClassType(namedObjectSave);
-                }
-                else
-                {
-                    return
-                        ati.QualifiedRuntimeTypeName.PlatformFunc?.Invoke(namedObjectSave) ?? 
-                        ati.QualifiedRuntimeTypeName.QualifiedType;             }
-                }
+                return GetQualifiedClassType(namedObjectSave);
+            }
+            else if ((ati = namedObjectSave.GetAssetTypeInfo()) != null)
+            {
+                return
+                    ati.QualifiedRuntimeTypeName.PlatformFunc?.Invoke(namedObjectSave) ?? 
+                    ati.QualifiedRuntimeTypeName.QualifiedType;             }
             else
             {
                 return GetQualifiedClassType(namedObjectSave);
@@ -1603,10 +1628,11 @@ namespace FlatRedBall.Glue.CodeGeneration
             AddEndIfIfNecessary(codeBlock, namedObjectSave);
         }
 
-        public static void GetPostInitializeForNamedObjectList(NamedObjectSave container, List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, IElement element)
+        public static void GetPostInitializeForNamedObjectList(NamedObjectSave container, List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, GlueElement element)
         {
-            try
-            {
+            // why try/catch here? It messes up the callstack...
+            //try
+            //{
                 foreach (NamedObjectSave nos in namedObjectList)
                 {
                     if (!nos.IsDisabled && nos.IsFullyDefined && nos.Instantiate)
@@ -1667,7 +1693,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                             WriteAttachTo(nos, codeBlock, ReusableEntireFileRfses, rfsReferenced, element);
                         }
 
-                        GetPostInitializeForNamedObjectList(nos, codeBlock);
+                        GetPostInitializeForNamedObjectList(nos, codeBlock, element);
 
                         GetPostInitializeForNamedObjectList(nos, nos.ContainedObjects, codeBlock, element);
                         if (wrappInIf)
@@ -1677,14 +1703,14 @@ namespace FlatRedBall.Glue.CodeGeneration
                         AddEndIfIfNecessary(codeBlock, nos);
                     }
                 }
-            }
-            catch(Exception ex)
-            {
+            //}
+            //catch(Exception ex)
+            //{
 
 
-                System.Diagnostics.Debugger.Break();
-                throw ex;
-            }
+            //    System.Diagnostics.Debugger.Break();
+            //    throw ex;
+            //}
         }
 
         public static void WriteAddToManagersBottomUpForNamedObjectList(List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, 
@@ -1780,7 +1806,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        static void GetPostInitializeForNamedObjectList(NamedObjectSave namedObject, ICodeBlock codeBlock)
+        static void GetPostInitializeForNamedObjectList(NamedObjectSave namedObject, ICodeBlock codeBlock, GlueElement container)
         {
             if (!namedObject.IsDisabled && namedObject.Instantiate)
             {
@@ -1812,11 +1838,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
 
-                GenerateVariableAssignment(namedObject, codeBlock);
+                GenerateVariableAssignment(namedObject, codeBlock, container);
 
                 if (!namedObject.SetByDerived && !namedObject.SetByContainer)
                 {
-                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+                    AssetTypeInfo ati = namedObject.GetAssetTypeInfo();
 
                     if (ati != null && !string.IsNullOrEmpty(ati.PostInitializeCode))
                     {
@@ -1845,7 +1871,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                                     {
                                         internalPoints += ", ";
                                     }
-                                    internalPoints += "new FlatRedBall.Math.Geometry.Point(" + point.X + ", " + point.Y + ")";
+                                    internalPoints +=                                        $"new FlatRedBall.Math.Geometry.Point({point.X.ToString(CultureInfo.InvariantCulture)}, {point.Y.ToString(CultureInfo.InvariantCulture)})";
 
                                     isFirst = false;
                                 }
@@ -2234,9 +2260,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             return layerName;
         }
 
-        public static void AssignInstanceVaraiblesOn(IElement element, NamedObjectSave namedObject, ICodeBlock codeBlock)
+        public static void AssignInstanceVariablesOn(IElement element, NamedObjectSave namedObject, ICodeBlock codeBlock)
         {
-            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+            AssetTypeInfo ati = namedObject.GetAssetTypeInfo();
             // Update June 24, 2012
             // This should happen before
             // setting variables.  Therefore
@@ -2253,7 +2279,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // after the caller has added itself to managers
 
 
-            GenerateVariableAssignment(namedObject, codeBlock);
+            GenerateVariableAssignment(namedObject, codeBlock, element as GlueElement);
 
 
             #endregion
@@ -2465,7 +2491,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         private static void WriteAttachTo(NamedObjectSave namedObject, ICodeBlock codeBlock, 
-            Dictionary<string, string> referencedFilesAlreadyUsingFullFile, ReferencedFileSave rfs, IElement container)
+            Dictionary<string, string> referencedFilesAlreadyUsingFullFile, ReferencedFileSave rfs, GlueElement container)
         {
 
             string objectName = namedObject.FieldName;
@@ -2567,7 +2593,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
 
 
-                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+                AssetTypeInfo ati = null;
+                
+                if(namedObject.SourceType != SourceType.Entity)
+                {
+                    AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+                }
 
                 if (ati != null && ati.IsInstantiatedInAddToManagers)
                 {

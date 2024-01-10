@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,12 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
         {
             var derivedElements = ObjectFinder.Self.GetAllDerivedElementsRecursive(element as GlueElement);
 
+            var shouldGenerate = derivedElements.Count > 0 &&
+                GlueState.Self.CurrentGlueProject.SuppressBaseTypeGeneration == false;
+
+
             /////////////////////Early Out////////////////////////////////
-            if(derivedElements.Count == 0)
+            if (!shouldGenerate)
             {
                 return;
             }
@@ -39,35 +44,16 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             classBlock.Line($"public {element.ClassName} CreateNew(Microsoft.Xna.Framework.Vector3 position) => Factory.CreateNew(position) as {element.ClassName};");
             classBlock.Line($"public {element.ClassName} CreateNew(float x = 0, float y = 0) => Factory.CreateNew(x, y) as {element.ClassName};");
 
-            CustomVariable tempVariable = new CustomVariable();
-            foreach(var variable in element.CustomVariables.Where(item => item.SetByDerived))
-            {
-                // We want this to not be a property, and to not have any source class type so that it generates
-                // as a simple field
-                tempVariable.Name = variable.Name;
-                tempVariable.Type = variable.Type;
-                tempVariable.DefaultValue = variable.DefaultValue;
-                tempVariable.OverridingPropertyType = variable.OverridingPropertyType;
+            CreateVariableFields(element, classBlock);
 
-                CustomVariableCodeGenerator.AppendCodeForMember(element as GlueElement, classBlock, tempVariable);
-            }
-
-
-            var fromName = classBlock.Function($"public static {element.ClassName}Type", "FromName", "string name");
-            var switchBlock = fromName.Switch("name");
-            foreach (var derivedElement in derivedElements)
-            {
-                switchBlock.CaseNoBreak($"\"{derivedElement.ClassName}\"")
-                    .Line($"return {derivedElement.ClassName};");
-            }
-            fromName.Line("return null;");
+            CreateFromNameMethod(element, derivedElements, classBlock);
 
             foreach (var derivedElement in derivedElements)
             {
                 classBlock.Line($"public static {element.ClassName}Type {derivedElement.ClassName} {{ get; private set; }} = new {element.ClassName}Type");
                 var block = classBlock.Block();
                 block.Line($"Name = \"{derivedElement.ClassName}\",");
-                block.Line($"Type = typeof({derivedElement.ClassName}),");
+                block.Line($"Type = typeof({derivedElement.Name.Replace("/", ".").Replace("\\", ".")}),");
                 var hasFactory = derivedElement is EntitySave derivedEntity && derivedEntity.CreatedByOtherEntities;
                 if (hasFactory)
                 {
@@ -76,20 +62,26 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
                 block.Line($"GetFile = {QualifiedTypeName(derivedElement)}.GetFile,");
                 block.Line($"LoadStaticContent = {QualifiedTypeName(derivedElement)}.LoadStaticContent,");
 
-                foreach (var variable in element.CustomVariables.Where(item => item.SetByDerived && !item.IsShared))
+                foreach (var variable in element.CustomVariables.Where(item => item.SetByDerived 
+                    // Why don't we generate is shared? Now that we can inherit shared variables, let's do it so that the user can specify variables for the type, like a Display Name
+                    //&& !item.IsShared
+                ))
                 {
-                    var matchingVariable = derivedElement.CustomVariables.FirstOrDefault(item => item.Name == variable.Name) ?? variable;
-                    if(matchingVariable.DefaultValue != null)
+                    if (!ShouldSkip(variable))
                     {
-                        // If it's null, just use whatever is defined on the base
-                        var rightSide = CustomVariableCodeGenerator.GetRightSideOfEquals(matchingVariable, derivedElement);
-
-                        // It seems like the variable.DefaultValue can be String.Empty
-                        // If so, it bypasses the != null check, but still produces an empty
-                        // right-slide assignment, so let's just put that here
-                        if(!string.IsNullOrEmpty(rightSide))
+                        var matchingVariable = derivedElement.CustomVariables.FirstOrDefault(item => item.Name == variable.Name) ?? variable;
+                        if (matchingVariable.DefaultValue != null)
                         {
-                            block.Line($"{variable.Name} = {rightSide},");
+                            // If it's null, just use whatever is defined on the base
+                            var rightSide = CustomVariableCodeGenerator.GetRightSideOfEquals(matchingVariable, derivedElement);
+
+                            // It seems like the variable.DefaultValue can be String.Empty
+                            // If so, it bypasses the != null check, but still produces an empty
+                            // right-slide assignment, so let's just put that here
+                            if (!string.IsNullOrEmpty(rightSide))
+                            {
+                                block.Line($"{variable.Name} = {rightSide},");
+                            }
                         }
                     }
                 }
@@ -106,6 +98,57 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             classBlock.Line($"}};");
 
 
+        }
+
+        private static void CreateFromNameMethod(IElement element, List<GlueElement> derivedElements, ICodeBlock classBlock)
+        {
+            var fromName = classBlock.Function($"public static {element.ClassName}Type", "FromName", "string name");
+            var switchBlock = fromName.Switch("name");
+            foreach (var derivedElement in derivedElements)
+            {
+                switchBlock.CaseNoBreak($"\"{derivedElement.ClassName}\"")
+                    .Line($"return {derivedElement.ClassName};");
+            }
+            fromName.Line("return null;");
+        }
+
+        private void CreateVariableFields(IElement element, ICodeBlock classBlock)
+        {
+            CustomVariable tempVariable = new CustomVariable();
+            foreach (var variable in element.CustomVariables.Where(item => item.SetByDerived))
+            {
+                if (!ShouldSkip(variable))
+                {
+                    // We want this to not be a property, and to not have any source class type so that it generates
+                    // as a simple field
+                    tempVariable.Name = variable.Name;
+                    tempVariable.Type = variable.Type;
+                    tempVariable.DefaultValue = variable.DefaultValue;
+                    tempVariable.OverridingPropertyType = variable.OverridingPropertyType;
+
+                    CustomVariableCodeGenerator.AppendCodeForMember(element as GlueElement, classBlock, tempVariable, forceGenerateExposed:true);
+                }
+            }
+        }
+
+        bool ShouldSkip(CustomVariable customVariable)
+        {
+            var type = customVariable.Type;
+            switch (type)
+            {
+                // Don't want to handle variables of certain types so we don't get unintentional loads:
+                case "FlatRedBall.TileGraphics.LayeredTileMap":
+                    return true;
+
+            }
+
+            if(type.EndsWith("DataTypes.TopDownValues"))
+            {
+                // This requires the content to have been loaded as well. We'll skip this for now, and come back to it later...
+                return true;
+            }
+
+            return false;
         }
 
         string QualifiedTypeName(GlueElement element)

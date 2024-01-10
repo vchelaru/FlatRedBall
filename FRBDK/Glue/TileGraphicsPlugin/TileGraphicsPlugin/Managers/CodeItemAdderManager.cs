@@ -1,4 +1,6 @@
-﻿using FlatRedBall.Glue.VSHelpers;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.VSHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,6 +72,15 @@ namespace TileGraphicsPlugin.Managers
             mTileEntityAdder.PerformAddAndSaveTask(assembly);
         }
 
+        internal void RefreshAppendGenerated()
+        {
+            var addAsGenerated = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AllTiledFilesGenerated;
+            mTileGraphicsAdder.AddAsGenerated = addAsGenerated;
+            mTileCollisionAdder.AddAsGenerated = addAsGenerated;
+            mTileEntityAdder.AddAsGenerated = addAsGenerated;
+
+
+        }
     }
 
 

@@ -1,34 +1,5 @@
 {
   "UserEvents": {
-    "vchel": [
-      {
-        "NewName": "SettingsScreenGum.SettingsViewInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-12-26T17:44:52.933435Z"
-      },
-      {
-        "NewName": "Controls/SettingsView (Container).FullscreenCheckboxInstance",
-        "OldName": "Controls/SettingsView (Container).CheckBoxInstance",
-        "ElementType": "Components",
-        "EventType": 7,
-        "TimestampUtc": "2022-12-26T17:48:13.6283949Z"
-      },
-      {
-        "NewName": "Controls/SettingsView (Container).FullscreenCheckboxInstance",
-        "OldName": "Controls/SettingsView (Container).CheckBoxInstance",
-        "ElementType": "Components",
-        "EventType": 7,
-        "TimestampUtc": "2022-12-26T17:48:41.6574447Z"
-      },
-      {
-        "NewName": "SettingsScreenGum.ButtonStandardInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-12-26T17:56:23.8084153Z"
-      }
-    ]
+    "vchel": []
   }
 }

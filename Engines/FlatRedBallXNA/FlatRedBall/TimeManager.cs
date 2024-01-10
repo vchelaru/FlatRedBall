@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading;
 using FlatRedBall.IO;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace FlatRedBall
 {
@@ -35,6 +37,24 @@ namespace FlatRedBall
         }
     }
 
+    struct TimedTasks
+    {
+        public double Time;
+        public TaskCompletionSource<object> TaskCompletionSource;
+    }
+
+    struct PredicateTask
+    {
+        public Func<bool> Predicate;
+        public TaskCompletionSource<object> TaskCompletionSource;
+    }
+
+    struct FrameTask
+    {
+        public int FrameIndex;
+        public TaskCompletionSource<object> TaskCompletionSource;
+    }
+
     #endregion
     
     /// <summary>
@@ -49,7 +69,6 @@ namespace FlatRedBall
 
 
         #endregion
-
 
         #region Fields
 
@@ -67,6 +86,7 @@ namespace FlatRedBall
         /// This value can be used to uniquely identify a frame.
         /// </remarks>
         public static double CurrentTime;
+        public static int CurrentFrame;
 
         static double mLastCurrentTime;
 
@@ -101,6 +121,10 @@ namespace FlatRedBall
 
 		static float mMaxFrameTime = 0.5f;
 
+        static readonly List<TimedTasks> screenTimeDelayedTasks = new List<TimedTasks>();
+        static readonly List<PredicateTask> predicateTasks = new List<PredicateTask>();
+        static readonly List<FrameTask> frameTasks = new List<FrameTask>();
+
         #endregion
 
         #region Properties
@@ -113,7 +137,8 @@ namespace FlatRedBall
         /// <summary>
         /// The number of seconds (usually a fraction of a second) since
         /// the last frame.  This value can be used for time-based movement.
-        /// This value is changed once per frame, and will remain constant within each frame.
+        /// This value is changed once per frame, and will remain constant within each frame, assuming a consant TimeFactor.
+        /// Changing the TimeFactor adjusts this value.
         /// </summary>
         public static float SecondDifference
         {
@@ -138,7 +163,9 @@ namespace FlatRedBall
 
         /// <summary>
         /// A multiplier for how fast time runs.  This is 1 by default.  Setting
-        /// this value to 2 will make everything run twice as fast.
+        /// this value to 2 will make everything run twice as fast. Increasing this value
+        /// effectively increases the SecondDifference value, so custom code which is time-based
+        /// will behave properly when TimeFactor is adjusted.
         /// </summary>
         public static double TimeFactor
         {
@@ -171,13 +198,7 @@ namespace FlatRedBall
         /// This value is the same as 
         /// Screens.ScreenManager.CurrentScreen.PauseAdjustedCurrentTime
         /// </remarks>
-        public static double CurrentScreenTime
-        {
-            get
-            {
-                return Screens.ScreenManager.CurrentScreen.PauseAdjustedCurrentTime;
-            }
-        }
+        public static double CurrentScreenTime => Screens.ScreenManager.CurrentScreen.PauseAdjustedCurrentTime;
 
         public static Dictionary<string, double> SumSectionDictionary
         {
@@ -481,7 +502,6 @@ namespace FlatRedBall
             mLastSumTime = CurrentSystemTime;
         }
 
-        #region XML Docs
         /// <summary>
         /// Stores an unnamed timed section.
         /// </summary>
@@ -491,14 +511,12 @@ namespace FlatRedBall
         /// The sections can be retrieved through the GetTimedSections method.
         /// <seealso cref="FRB.TimeManager.GetTimedSection"/>
         /// </remarks>
-        #endregion
         public static void TimeSection()
         {
             TimeSection("");
         }
 
 
-        #region XML Docs
         /// <summary>
         /// Stores an named timed section.
         /// </summary>
@@ -509,14 +527,11 @@ namespace FlatRedBall
         /// <seealso cref="FRB.TimeManager.GetTimedSection"/>
         /// </remarks>
         /// <param name="label">The label for the timed section.</param>
-        #endregion
         public static void TimeSection(string label)
         {
             if (mTimeSectionsEnabled)
             {
-#if !SILVERLIGHT && !WINDOWS_PHONE
                 Monitor.Enter(sections);
-#endif
 
                 double f = (CurrentSystemTime - mCurrentTimeForTimedSections);
                 if (TimedSectionReportingUnit == TimeMeasurementUnit.Millisecond)
@@ -531,23 +546,32 @@ namespace FlatRedBall
                 sections.Add(f);
                 sectionLabels.Add(label);
 
-#if !SILVERLIGHT && !WINDOWS_PHONE
                 Monitor.Exit(sections);
-#endif
             }
         }
 
         #endregion
 
+        /// <summary>
+        /// Returns the number of seconds which have passed since the argument value in game time.
+        /// This value continues to increment when the screen is paused, and does not reset when switching screens.
+        /// Usually game logic should use CurrentScreenSecondsSince.
+        /// </summary>
+        /// <remarks>
+        /// This value will only change once per frame, so it can be called multiple times per frame and the same
+        /// value will be returned, assuming the same parameter is passed.
+        /// </remarks>
+        /// <param name="absoluteTime">The amount of time since the start of the game.</param>
+        /// <returns>The number of seconds which have passed in absolute time since the start of the game.</returns>
         public static double SecondsSince(double absoluteTime)
         {
             return CurrentTime - absoluteTime;
         }
 
         /// <summary>
-        /// Returns the number of seconds that have passed since the arugment value. The
+        /// Returns the number of seconds that have passed since the argument value. The
         /// return value will not increase when the screen is paused, so it can be used to 
-        /// determine how much game time has passed for event swhich should occur on a timer.
+        /// determine how much game time has passed for event which should occur on a timer.
         /// </summary>
         /// <param name="time">The time value, probably obtained earlier by calling CurrentScreenTime</param>
         /// <returns>The number of unpaused seconds that have passed since the argument time.</returns>
@@ -561,40 +585,64 @@ namespace FlatRedBall
             return DelaySeconds(timeSpan.TotalSeconds);
         }
 
-        public static async Task DelaySeconds(double seconds)
+        public static Task DelaySeconds(double seconds)
         {
+            if(seconds <= 0)
+            {
+                return Task.CompletedTask;
+            }
             var time = CurrentScreenTime + seconds;
-            while(CurrentScreenTime < time)
-            {
-                //await Task.Delay(1);
-                await Task.Yield();
-            }
-        }
+            var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        public static async Task DelayUntil(Func<bool> predicate)
-        {
-            while(predicate() == false)
+            var index = screenTimeDelayedTasks.Count;
+            for(int i = 0; i < screenTimeDelayedTasks.Count; i++)
             {
-                await Task.Yield();
-            }
-        }
-
-        public static async Task DelayFrames(int frameCount)
-        {
-            var currentFrame = TimeManager.CurrentTime;
-
-            while(frameCount > 0)
-            {
-                await Task.Yield();
-                if(currentFrame != TimeManager.CurrentTime)
+                if (screenTimeDelayedTasks[i].Time > time)
                 {
-                    currentFrame = TimeManager.CurrentTime;
-                    frameCount--;
+                    index = i;
+                    break;
                 }
             }
 
+            screenTimeDelayedTasks.Insert(index, new TimedTasks { Time = time, TaskCompletionSource = taskSource});
+
+            return taskSource.Task;
         }
 
+        public static Task DelayUntil(Func<bool> predicate)
+        {
+            if(predicate())
+            {
+                return Task.CompletedTask;
+            }
+            var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+            predicateTasks.Add(new PredicateTask { Predicate = predicate, TaskCompletionSource = taskSource });
+            return taskSource.Task;
+        }
+
+        public static Task DelayFrames(int frameCount)
+        {
+            if(frameCount <= 0)
+            {
+                return Task.CompletedTask;
+            }
+            var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var index = frameTasks.Count;
+            var absoluteFrame = TimeManager.CurrentFrame + frameCount;
+            for (int i = 0; i < frameTasks.Count; i++)
+            {
+                if (frameTasks[i].FrameIndex > absoluteFrame)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            frameTasks.Insert(index, new FrameTask { FrameIndex = absoluteFrame, TaskCompletionSource = taskSource });
+            return taskSource.Task;
+
+        }
+
+        static bool isFirstUpdate = false;
         /// <summary>
         /// Performs every-frame logic to update timing values such as CurrentTime and SecondDifference.  If this method is not called, CurrentTime will not advance.
         /// </summary>
@@ -605,7 +653,6 @@ namespace FlatRedBall
 
             lastSections.Clear();
             lastSectionLabels.Clear();
-
 
             for (int i = sections.Count - 1; i > -1; i--)
             {
@@ -642,7 +689,7 @@ namespace FlatRedBall
                 mCurrentTime = currentSystemTime;
                 */
 
-                if(SetNextFrameTimeTo0)
+                if (SetNextFrameTimeTo0)
                 {
                     elapsedTime = 0;
                     SetNextFrameTimeTo0 = false;
@@ -666,6 +713,83 @@ namespace FlatRedBall
 
             mSecondDifferenceSquaredDividedByTwo = (mSecondDifference * mSecondDifference) / 2.0f;
             mCurrentTimeForTimedSections = currentSystemTime;
+
+            if (isFirstUpdate)
+            {
+                isFirstUpdate = false;
+            }
+            else
+            {
+                CurrentFrame++;
+            }
+        }
+
+        internal static void DoTaskLogic()
+        {
+
+            // Check if any delayed tasks should be completed
+            while (screenTimeDelayedTasks.Count > 0)
+            {
+                var first = screenTimeDelayedTasks[0];
+                if (first.Time <= CurrentScreenTime)
+                {
+                    screenTimeDelayedTasks.RemoveAt(0);
+                    first.TaskCompletionSource.SetResult(null);
+                }
+                else
+                {
+                    // The earliest task is not ready to be completed, so we can stop checking
+                    break;
+                }
+            }
+
+            // Check if any predicate tasks should be completed
+            // do a reverse loop, run the predicate, and remove them and set their result to null if the predicate is true
+            for(int i = predicateTasks.Count - 1; i > -1; i--)
+            {
+                var predicateTask = predicateTasks[i];
+                if(predicateTask.Predicate())
+                {
+                    predicateTasks.RemoveAt(i);
+                    predicateTask.TaskCompletionSource.SetResult(null);
+                }
+            }
+
+            while(frameTasks.Count > 0)
+            {
+                var first = frameTasks[0];
+                if(first.FrameIndex <= CurrentFrame)
+                {
+                    frameTasks.RemoveAt(0);
+                    first.TaskCompletionSource.SetResult(null);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+        }
+
+        internal static void ClearTasks()
+        {
+            foreach (var timedTasks in screenTimeDelayedTasks.ToList())
+            {
+                timedTasks.TaskCompletionSource.SetCanceled();
+            }
+            screenTimeDelayedTasks.Clear();
+
+            foreach(var predicateTask in predicateTasks.ToList())
+            {
+                predicateTask.TaskCompletionSource.SetCanceled();
+            }   
+            predicateTasks.Clear();
+
+            foreach(var frameTask in frameTasks.ToList())
+            {
+                frameTask.TaskCompletionSource.SetCanceled();
+            }
+            frameTasks.Clear();
         }
 
         #endregion

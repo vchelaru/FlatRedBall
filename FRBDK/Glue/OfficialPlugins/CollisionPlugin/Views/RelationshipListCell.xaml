@@ -3,13 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.CollisionPlugin.Views"
              mc:Ignorable="d"
              d:DesignHeight="30" d:DesignWidth="300" HorizontalContentAlignment="Stretch">
     <Grid>
         <Grid Visibility="{Binding RelationshipDetailsVisibility}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock VerticalAlignment="Center"  Margin="0,4,0,4" >
@@ -17,6 +16,9 @@
                     <TextBlock                
                         Text="{Binding RelationshipDetails, FallbackValue=CollisionName}"></TextBlock>
                 </Hyperlink>
+            </TextBlock>
+            <TextBlock Grid.Column="1" Text="{Binding RelationshipPhysicsDetails}" VerticalAlignment="Center" Margin="5,0,0,0">
+                
             </TextBlock>
         </Grid>
         

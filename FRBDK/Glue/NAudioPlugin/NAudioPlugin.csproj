@@ -1,16 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-  <PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
     <Platforms>AnyCPU</Platforms>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Embedded\LoopStream.Generated.cs" />
     <Compile Remove="Embedded\NAudio_Song.Generated.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Embedded\LoopStream.Generated.cs" />
     <EmbeddedResource Include="Embedded\NAudio_Song.Generated.cs" />
   </ItemGroup>
   <ItemGroup>

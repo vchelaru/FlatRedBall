@@ -96,17 +96,6 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 		public string FriendlyName;
-        /// <summary>
-        /// Func which can be used to provide a custom AddToManagers method. The parameters are
-        /// * IElement - the containing element (screen or entity), 
-        /// * NamedObjectSave - the NamedObjectSave to add add to managers which may be null, 
-        /// * ReferencedFileSave - The associated ReferencedFileSave which may be null
-        /// * string - the name of the layer (such as "layerToAddTo")
-        /// 
-        /// The returned string is the code for adding.
-        /// </summary>
-        [XmlIgnore]
-        public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> AddToManagersFunc;
 
         /// <summary>
         /// Returns a custom function to instantiate objects. This is null by default, which means the object will be instantiated using a standard constructor call.
@@ -142,13 +131,24 @@ namespace FlatRedBall.Glue.Elements
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> CustomReloadFunc;
 
         /// <summary>
-        /// The generated code to include to add the object to managers.
+        /// The generated code to include to add the object to managers. For more customization use AddToManagersFunc
         /// </summary>
         /// <remarks>
         /// This list of properties should be used if the object does not support layers. If the object
         /// does support layers, the LayeredAddToManagersMethod should be used.
         /// </remarks>
         public List<string> AddToManagersMethod = new List<string>();
+        /// <summary>
+        /// Func which can be used to provide a custom AddToManagers method. The parameters are
+        /// * IElement - the containing element (screen or entity), 
+        /// * NamedObjectSave - the NamedObjectSave to add add to managers which may be null, 
+        /// * ReferencedFileSave - The associated ReferencedFileSave which may be null
+        /// * string - the name of the layer (such as "layerToAddTo")
+        /// 
+        /// The returned string is the code for adding.
+        /// </summary>
+        [XmlIgnore]
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> AddToManagersFunc;
 
         /// <summary>
         /// Adds an object to managers on the specified FlatRedBall layer. Glue will
@@ -171,7 +171,7 @@ namespace FlatRedBall.Glue.Elements
 
         /// <summary>
         /// The code to generate when the object associated with this AssetTypeInfo should be destroyed. 
-        /// The generated code replaces the string "this" with the name of the named object.
+        /// The generated code replaces the string "this" with the name of the named object. This is only used if DestroyFunc is null.
         /// </summary>
         /// <remarks>
         /// This code can be multiple statements. If it's a single statement, then the code does not need 
@@ -189,6 +189,18 @@ namespace FlatRedBall.Glue.Elements
         /// "MyObjectInstance.RemoveFromManagers(); MyObjectInstance.BroadcastRemoval();"
         /// </remarks>
 		public string DestroyMethod;
+
+
+        /// <summary>
+        /// Func which can be used to provide a custom destroy method. The parameters are
+        /// * IElement - the containing element (screen or entity), 
+        /// * NamedObjectSave - the NamedObjectSave to add add to managers which may be null, 
+        /// * ReferencedFileSave - The associated ReferencedFileSave which may be null
+        /// </summary>
+        [XmlIgnore]
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string> DestroyFunc;
+
+
         public string RecycledDestroyMethod;
         public string SetFromOtherCode;
 
@@ -220,6 +232,12 @@ namespace FlatRedBall.Glue.Elements
 		Type mSaveType;
 
         public bool MustBeAddedToContentPipeline;
+        // This was added December 13, 2023. Prior to this date, 
+        // all objects assumed they could be added to content pipeline.
+        // Therefore, we will set this to true for now to assume that it can
+        // be, and we can set this to false over time to exclude items that cannot
+        // be in content pipeline.
+        public bool CanBeAddedToContentPipeline = true;
         public bool ShouldBeDisposed;
 
         public bool CanBeCloned;
@@ -270,6 +288,10 @@ namespace FlatRedBall.Glue.Elements
         [XmlIgnore]
         [JsonIgnore]
         public object Tag { get; set; }
+
+        [XmlIgnore]
+        [JsonIgnore]
+        public AssetTypeInfo BaseAssetTypeInfo { get; set; }
 
         #endregion
 

@@ -31,41 +31,51 @@ namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
 
         public override bool GetIfIsFixed()
         {
-            var derivedElement = derivedNos.GetContainer();
-            if (derivedElement == null)
-            {
-                return true;
-            }
-            else if (derivedNos.InstantiatedByBase == false)
+            var hasError = GetIfHasError(derivedNos);
+            return !hasError;
+        }
+
+        public static bool GetIfHasError(NamedObjectSave derivedNos, GlueElement derivedElement = null, List<GlueElement> baseElements = null)
+        {
+            if (derivedNos.InstantiatedByBase == false)
             {
                 // it instantiates itself, so it's fixed:
-                return true;
+                return false;
             }
             else
             {
-                var foundInBase = false;
-                var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(derivedElement);
+                derivedElement = derivedElement ?? derivedNos.GetContainer();
 
-                foreach (var baseElement in baseElements)
+                if (derivedElement == null)
                 {
-                    var baseNos = baseElement.AllNamedObjects
-                        .FirstOrDefault(item => item.InstanceName == derivedNos.InstanceName);
-
-                    if (baseNos != null && baseNos.SetByDerived == false)
-                    {
-                        // found a match
-                        foundInBase = true;
-                    }
+                    return false;
                 }
-
-                if(foundInBase)
+                else if( string.IsNullOrEmpty(derivedElement.BaseElement))
                 {
-                    return true;
+                    // techincally this is still an error, but it is not this specific type of error, so we'll return no error here.
+                    return false;
+                }
+                else
+                {
+                    var foundInBase = false;
+                    baseElements = baseElements ?? ObjectFinder.Self.GetAllBaseElementsRecursively(derivedElement);
+
+                    foreach (var baseElement in baseElements)
+                    {
+                        var baseNos = baseElement.AllNamedObjects
+                            .FirstOrDefault(item => item.InstanceName == derivedNos.InstanceName);
+
+                        if (baseNos != null && baseNos.SetByDerived == false)
+                        {
+                            // found a match
+                            foundInBase = true;
+                        }
+                    }
+
+                    return !foundInBase;
                 }
             }
 
-
-            return false;
         }
     }
 }

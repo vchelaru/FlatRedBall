@@ -50,7 +50,7 @@ namespace FlatRedBall.ManagedSpriteGroups
         ReadOnlyCollection<SpriteList> mVisibleSpritesReadOnlyCollection;
 
         TextureGrid<Texture2D> mTextureGrid;
-        TextureGrid<FloatRectangle> mTextureCoordinateGrid;
+        TextureGrid<FloatRectangle?> mTextureCoordinateGrid;
         internal TextureGrid<AnimationChain> mAnimationTextureGrid;
 
         string mName;
@@ -199,7 +199,7 @@ namespace FlatRedBall.ManagedSpriteGroups
         }
 
 
-        public TextureGrid<FloatRectangle> DisplayRegionGrid
+        public TextureGrid<FloatRectangle?> DisplayRegionGrid
         {
             get { return mTextureCoordinateGrid; }
             set { mTextureCoordinateGrid = value; }
@@ -470,7 +470,7 @@ namespace FlatRedBall.ManagedSpriteGroups
             else
                 mTextureGrid = textureGrid;
 
-            mTextureCoordinateGrid = new TextureGrid<FloatRectangle>();
+            mTextureCoordinateGrid = new TextureGrid<FloatRectangle?>();
 
             mAnimationTextureGrid = new TextureGrid<AnimationChain>();
 
@@ -660,7 +660,7 @@ namespace FlatRedBall.ManagedSpriteGroups
         }
 
 
-        public FloatRectangle GetFloatRectangleAt(double x, double y, double z)
+        public FloatRectangle? GetFloatRectangleAt(double x, double y, double z)
         {
             // Vic Asks:  Shouldn't this consider Z?
             return mTextureCoordinateGrid.GetTextureAt(x, y);
@@ -1011,7 +1011,7 @@ namespace FlatRedBall.ManagedSpriteGroups
                 return displayRegion;
             else
             {
-                FloatRectangle oldDisplay = mTextureCoordinateGrid.GetTextureAt(x, y);
+                FloatRectangle oldDisplay = mTextureCoordinateGrid.GetTextureAt(x, y).Value;
                 mTextureCoordinateGrid.PaintGridAtPosition((float)x, (float)y, displayRegion);
 
                 Sprite sprite = GetSpriteAt(x, y, z);
@@ -1983,14 +1983,15 @@ namespace FlatRedBall.ManagedSpriteGroups
 
                 sprite.Texture = mTextureGrid.GetTextureAt((float)sprite.X, (float)yToUse);
 
-                FloatRectangle floatRectangle = mTextureCoordinateGrid.GetTextureAt(sprite.X, yToUse);
+                FloatRectangle? floatRectangle = mTextureCoordinateGrid.GetTextureAt(sprite.X, yToUse);
 
                 if (floatRectangle != null)
                 {
-                    sprite.TopTextureCoordinate = floatRectangle.Top;
-                    sprite.BottomTextureCoordinate = floatRectangle.Bottom;
-                    sprite.LeftTextureCoordinate = floatRectangle.Left;
-                    sprite.RightTextureCoordinate = floatRectangle.Right;
+                    var rectangle = floatRectangle.Value;
+                    sprite.TopTextureCoordinate = rectangle.Top;
+                    sprite.BottomTextureCoordinate = rectangle.Bottom;
+                    sprite.LeftTextureCoordinate = rectangle.Left;
+                    sprite.RightTextureCoordinate = rectangle.Right;
 
                     if (!mCreatesAutomaticallyUpdatedSprites)
                     {

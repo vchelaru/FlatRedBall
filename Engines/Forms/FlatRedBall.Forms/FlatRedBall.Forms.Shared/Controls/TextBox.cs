@@ -80,8 +80,11 @@ namespace FlatRedBall.Forms.Controls
                     DeleteSelection();
                 }
 
+
                 // If text is null force it to be an empty string so we can add characters
-                Text = Text ?? "";
+                string newText = Text ?? "";
+
+                var addedCharacter = false;
 
                 // Do we want to handle backspace here or should it be in the Keys handler?
                 if (character == '\b'  
@@ -100,13 +103,31 @@ namespace FlatRedBall.Forms.Controls
                 }
                 else
                 {
-                    this.Text = this.Text.Insert(caretIndex, "" + character);
+                    newText = newText.Insert(caretIndex, "" + character);
                     // could be limited by MaxLength:
-                    caretIndex = System.Math.Min(caretIndex+1, Text.Length);
+                    addedCharacter = true;
                 }
-                TruncateTextToMaxLength();
-                UpdateCaretPositionToCaretIndex();
-                OffsetTextToKeepCaretInView();
+
+
+                newText = TruncateTextToMaxLength(newText);
+
+                var wasHandledByEvent = false;
+                if(addedCharacter)
+                {
+                    var args = RaisePreviewTextInput(newText);
+                    wasHandledByEvent = args.Handled;
+                    if(!wasHandledByEvent)
+                    {
+                        Text = newText;
+                        caretIndex = System.Math.Min(caretIndex+1, Text.Length);
+                    }
+                }
+
+                if(!wasHandledByEvent)
+                {
+                    UpdateCaretPositionToCaretIndex();
+                    OffsetTextToKeepCaretInView();
+                }
             }
         }
 
@@ -219,10 +240,17 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void TruncateTextToMaxLength()
         {
-            if(Text?.Length > MaxLength)
+            Text = TruncateTextToMaxLength(Text);
+        }
+
+        private string TruncateTextToMaxLength(string text)
+        { 
+            if(text?.Length > MaxLength)
             {
-                Text = Text.Substring(0, MaxLength.Value);
+                text = text.Substring(0, MaxLength.Value);
             }
+
+            return text;
         }
     }
 }

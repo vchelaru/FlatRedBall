@@ -81,11 +81,11 @@ namespace Npc.Managers
 
         private static void ReplaceAssemblyInfoGuids(string unpackDirectory, string newGuid)
         {
-            List<string> stringList = FileManager.GetAllFilesInDirectory(unpackDirectory, "cs");
+            var stringList = FileManager.GetAllFilesInDirectory(unpackDirectory, "cs");
 
             foreach (string s in stringList)
             {
-                if (s.ToLower().Contains("assemblyinfo.cs"))
+                if (s.Contains("assemblyinfo.cs", StringComparison.OrdinalIgnoreCase))
                 {
                     string contents = FileManager.FromFileText(s);
 

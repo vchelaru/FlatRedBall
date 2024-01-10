@@ -14,7 +14,7 @@
     <XnaCrossPlatformGroupID>768eb751-e276-419c-bd4f-f5bb084e7730</XnaCrossPlatformGroupID>
     <XnaUpgrade>
     </XnaUpgrade>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -133,6 +133,9 @@
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\FRBDK\AnimationEditor\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
@@ -216,6 +219,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources Xna 4\x86\Shaders\FlatRedBallModelShader.xnb" />
     <None Include="Resources Xna 4\x86\Shaders\FlatRedBallShader.xnb" />
     <None Include="Resources Xna 4\x86\Shaders\PostProcessing\Bloom.xnb" />

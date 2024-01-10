@@ -26,11 +26,22 @@ namespace GumPlugin.CodeGeneration
             return toReturn;
         }
 
+        public static string EnumNameInCode(this StateSaveCategory category)
+        {
+            return GetStateMemberNameInCode(category.Name);
+        }
+
         public static string MemberNameInCode(this StateSave stateSave)
         {
-            var toReturn =  stateSave.Name.Replace(" ", "_").Replace("-", "_");
+            var rawName = stateSave.Name;
+            return GetStateMemberNameInCode(rawName);
+        }
 
-            if(toReturn.Length > 0 && char.IsDigit(toReturn[0]))
+        public static string GetStateMemberNameInCode(string rawName)
+        {
+            var toReturn = rawName.Replace(" ", "_").Replace("-", "_");
+
+            if (toReturn.Length > 0 && char.IsDigit(toReturn[0]))
             {
                 toReturn = "_" + toReturn;
             }
@@ -47,6 +58,10 @@ namespace GumPlugin.CodeGeneration
         {
             string propertyName = animation.Name + "Animation";
 
+            if (char.IsDigit( propertyName[0]))
+            {
+                propertyName = "_" + propertyName;
+            }
 
             var firstChar = propertyName.Substring(0, 1).ToUpperInvariant();
 

@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:PlatformerPluginCore.Views" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:views="clr-namespace:FlatRedBall.PlatformerPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
+             xmlns:views="clr-namespace:FlatRedBall.PlatformerPlugin.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -32,9 +34,9 @@
             <xctk:SplitButton Content="Add Movement Type" Click="AddEmptyPlatformerValuesClick" x:Name="AddControlButtonInstance">
                 <xctk:SplitButton.DropDownContent>
                     <StackPanel>
-                        <Button Click="AddEmptyPlatformerValuesClick">Empty Values</Button>
-                        <Button Click="AddDefaultGroundPlatformerValuesClick">Default Ground Control</Button>
-                        <Button Click="AddDefaultAirPlatformerValuesClick">Default Air Control</Button>
+                        <Button Click="AddEmptyPlatformerValuesClick" Content="{x:Static localization:Texts.EmptyValues}" />
+                        <Button Click="AddDefaultGroundPlatformerValuesClick" Content="{x:Static localization:Texts.DefaultGroundControl}" />
+                        <Button Click="AddDefaultAirPlatformerValuesClick"  Content="{x:Static localization:Texts.DefaultAirControl}" />
                     </StackPanel>
                 </xctk:SplitButton.DropDownContent>
             </xctk:SplitButton>

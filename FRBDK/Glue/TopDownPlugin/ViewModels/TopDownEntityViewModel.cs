@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +18,8 @@ namespace TopDownPlugin.ViewModels
         #region IsTopDown-related
 
         public ObservableCollection<TopDownValuesViewModel> TopDownValues { get; private set; }
+
+        public EntitySave BackingData { get; set; }
 
         public bool IsTopDown
         {

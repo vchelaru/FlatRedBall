@@ -124,13 +124,23 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
             ///////////// end early out ///////////
 
-            var entity = GlueState.Self.CurrentEntitySave;
-            var element = GlueState.Self.CurrentElement;
             var viewModel = sender as PlatformerEntityViewModel;
+            var entity = viewModel.BackingData;
             bool shouldGenerateCsv, shouldGenerateEntity, shouldAddPlatformerVariables;
 
             DetermineWhatToGenerate(e.PropertyName, viewModel, 
                 out shouldGenerateCsv, out shouldGenerateEntity, out shouldAddPlatformerVariables);
+
+            switch(e.PropertyName)
+            {
+                case nameof(PlatformerEntityViewModel.IsPlatformer):
+                    if(viewModel.IsPlatformer && entity.ImplementsICollidable == false)
+                    {
+                        entity.ImplementsICollidable = true;
+                        await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(entity, nameof(entity.ImplementsICollidable), false);
+                    }
+                    break;
+            }
 
             if (shouldGenerateCsv)
             {
@@ -170,9 +180,9 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             if(shouldAddPlatformerVariables)
             {
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-                if(element != null)
+                if(entity != null)
                 {
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entity);
                 }
             }
 
@@ -181,14 +191,14 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                 EnumFileGenerator.Self.GenerateAndSave();
                 IPlatformerCodeGenerator.Self.GenerateAndSave();
                 PlatformerAnimationControllerGenerator.Self.GenerateAndSave();
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
         }
 
         private static void DetermineWhatToGenerate(string propertyName, PlatformerEntityViewModel viewModel, 
             out bool shouldGenerateCsv, out bool shouldGenerateEntity, out bool shouldAddMovementVariables)
         {
-            var entity = GlueState.Self.CurrentEntitySave;
+            var entity = viewModel.BackingData;
             shouldGenerateCsv = false;
             shouldGenerateEntity = false;
             shouldAddMovementVariables = false;
@@ -258,7 +268,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                         if (rfs != null && rfs.CreatesDictionary == false)
                         {
                             rfs.CreatesDictionary = true;
-                            GlueCommands.Self.GluxCommands.SaveGlux();
+                            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
                         }
 
@@ -278,7 +288,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                             {
                                 Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
 
-                                GlueCommands.Self.GluxCommands.SaveGlux();
+                                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                             }
                         }
                     },
@@ -331,6 +341,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
         static void UpdateViewModelTo(EntitySave entitySave, PlatformerEntityViewModel viewModel)
         {
             viewModel.IsPlatformer = IsPlatformer(entitySave);
+            viewModel.BackingData = entitySave;
             var inheritsFromPlatformerEntity = GetIfInheritsFromPlatformer(entitySave);
             viewModel.InheritsFromPlatformer = inheritsFromPlatformerEntity;
 
@@ -431,7 +442,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                 return false;
             }
 
-            var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(element);
+            var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(element as GlueElement);
 
             return allBase.Any(GetIfIsPlatformer);
         }

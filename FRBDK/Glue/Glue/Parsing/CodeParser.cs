@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using FlatRedBall.IO;
-using FlatRedBall.Utilities;
 using FlatRedBall.Glue.SaveClasses;
 using System.Collections;
-//using FlatRedBall.Gui;
+using System.Globalization;
+using System.Linq;
+using Microsoft.Xna.Framework;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Parsing
 {
@@ -29,26 +29,16 @@ namespace FlatRedBall.Glue.Parsing
 
             // Okay, this is really cheap, but I'm in a hurry.  We should fix this for sure.
             if (File.Exists(FileManager.RelativeDirectory + generatedFile) &&
-                FileManager.MakeRelative(FileManager.GetDirectory(fileName)).StartsWith("Entities/"))
+                FileManager.MakeRelative(FileManager.GetDirectory(fileName)).StartsWith("Entities/", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
 
             // If we got here, it still might be an Entity, it just doesn't have its generated code yet
 
-            string modifiedFileName = FileManager.RemoveExtension(fileName).ToLower();
+            string modifiedFileName = FileManager.RemoveExtension(fileName);
 
-            for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
-            {
-                EntitySave es = ProjectManager.GlueProjectSave.Entities[i];
-
-                if (es.Name.ToLower() == modifiedFileName)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return ProjectManager.GlueProjectSave.Entities.Any(es => String.Equals(es.Name, modifiedFileName, StringComparison.OrdinalIgnoreCase));
         }
 
         public static bool IsScreen(string fileName)
@@ -63,24 +53,14 @@ namespace FlatRedBall.Glue.Parsing
 
             // Okay, this is really cheap, but I'm in a hurry.  We should fix this for sure.
             if (File.Exists(FileManager.RelativeDirectory + generatedFile) &&
-                FileManager.RemovePath(FileManager.GetDirectory(fileName)) == "Screens/")
+                FileManager.RemovePath(FileManager.GetDirectory(fileName)).Equals($"{L.Texts.Screens}/", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
 
-            string modifiedFileName = FileManager.RemoveExtension(fileName).ToLower();
+            string modifiedFileName = FileManager.RemoveExtension(fileName);
 
-            for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
-            {
-                ScreenSave ss = ProjectManager.GlueProjectSave.Screens[i];
-
-                if (ss.Name.ToLower() == modifiedFileName)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return ProjectManager.GlueProjectSave.Screens.Any(ss => String.Equals(ss.Name, modifiedFileName, StringComparison.OrdinalIgnoreCase));
         }
 
         public static bool InheritsFrom(string fileName, string baseClass)
@@ -126,7 +106,32 @@ namespace FlatRedBall.Glue.Parsing
             }
         }
 
-        public static string ConvertValueToCodeString<T>(T objectToParse)
+        public static bool HasClass(string fileName, string className)
+        {
+            fileName = FileManager.Standardize(fileName);
+
+            if (FileManager.FileExists(fileName))
+            {
+
+                ParsedFile parsedFile = new ParsedFile(fileName);
+
+                if (parsedFile.Namespaces.Count != 0)
+                {
+                    for (int i = 0; i < parsedFile.Namespaces[0].Classes.Count; i++)
+                    {
+                        ParsedClass parsedClass = parsedFile.Namespaces[0].Classes[i];
+
+                        if(parsedClass.Name ==  className)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static string ConvertValueToCodeString<T>(T objectToParse, Type outputType = null)
         {
 
             string value = "";
@@ -140,7 +145,7 @@ namespace FlatRedBall.Glue.Parsing
                 }
                 else
                 {
-                    value = value.ToLower();
+                    value = value.ToLowerInvariant();
                 }
             }
             else if (objectToParse is float || typeof(T) == typeof(float?))
@@ -159,7 +164,7 @@ namespace FlatRedBall.Glue.Parsing
                 }
                 else
                 {
-                    string adjusted = ((float)(object)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    string adjusted = ((float)(object)objectToParse).ToString(CultureInfo.InvariantCulture.NumberFormat);
                     value = adjusted + "f";
                 }
             }
@@ -171,7 +176,7 @@ namespace FlatRedBall.Glue.Parsing
                 }
                 else
                 {
-                    value = ((double)(object)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    value = ((double)(object)objectToParse).ToString(CultureInfo.InvariantCulture.NumberFormat);
                 }
             }
             else if(objectToParse is decimal || typeof(T) == typeof(decimal?))
@@ -182,7 +187,7 @@ namespace FlatRedBall.Glue.Parsing
                 }
                 else
                 {
-                    value = ((decimal)(object)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    value = ((decimal)(object)objectToParse).ToString(CultureInfo.InvariantCulture.NumberFormat);
                     value = value + "m";
                 }
             }
@@ -194,7 +199,7 @@ namespace FlatRedBall.Glue.Parsing
                 }
                 else
                 {
-                    value = "\"" + value?.ToString() + "\"";
+                    value = "\"" + value + "\"";
                 }
             }
             else if (objectToParse?.GetType().IsEnum == true)
@@ -203,7 +208,7 @@ namespace FlatRedBall.Glue.Parsing
                 // This may be an enumeration contained inside a class.  If so, the ToString
                 // will return a value with the '+' character separating the container class 
                 // and the name of the Enum
-                if (value.Contains("+"))
+                if (value.Contains('+'))
                 {
                     value = value.Replace("+", ".");
                 }
@@ -225,6 +230,39 @@ namespace FlatRedBall.Glue.Parsing
                         isFirst = false;
                     }
                     value = "new System.Collections.Generic.List<string> { " + innerInstantiation + "}";
+                }
+                else if(objectToParse is List<Vector2> vectorList)
+                {
+                    if (outputType == typeof(List<FlatRedBall.Math.Geometry.Point>))
+                    {
+                        string innerInstantiation = String.Empty;
+                        var isFirst = true;
+                        foreach (var item in vectorList)
+                        {
+                            if (!isFirst)
+                            {
+                                innerInstantiation += ", ";
+                            }
+                            innerInstantiation += $"new FlatRedBall.Math.Geometry.Point({item.X.ToString(CultureInfo.InvariantCulture.NumberFormat)}, {item.Y.ToString(CultureInfo.InvariantCulture.NumberFormat)})";
+                            isFirst = false;
+                        }
+                        value = "new System.Collections.Generic.List<FlatRedBall.Math.Geometry.Point> { " + innerInstantiation + "}";
+                    }
+                    else
+                    {
+                        string innerInstantiation = String.Empty;
+                        var isFirst = true;
+                        foreach (var item in vectorList)
+                        {
+                            if (!isFirst)
+                            {
+                                innerInstantiation += ", ";
+                            }
+                            innerInstantiation += $"new Microsoft.Xna.Framework.Vector2({item.X.ToString(CultureInfo.InvariantCulture.NumberFormat)}, {item.Y.ToString(CultureInfo.InvariantCulture.NumberFormat)})";
+                            isFirst = false;
+                        }
+                        value = "new System.Collections.Generic.List<Microsoft.Xna.Framework.Vector2> { " + innerInstantiation + "}";
+                    }
                 }
             }
 

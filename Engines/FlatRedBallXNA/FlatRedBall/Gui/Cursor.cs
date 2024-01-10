@@ -91,8 +91,8 @@ namespace FlatRedBall.Gui
 
         internal Sides mSidesGrabbed = Sides.None;
 
-        int mScreenX;
-        int mScreenY;
+        double mScreenX;
+        double mScreenY;
 
         float mGrabbedWindowRelativeX;
         float mGrabbedWindowRelativeY;
@@ -245,6 +245,11 @@ namespace FlatRedBall.Gui
         List<IInputDevice> devicesControllingCursor = new List<IInputDevice>();
 
         /// <summary>
+        /// The IInputDevices controlling the cursor. By default this is the Mouse.
+        /// </summary>
+        public IReadOnlyList<IInputDevice> DevicesControllingCursor => devicesControllingCursor;
+
+        /// <summary>
         /// Reference to the camera to which the cursor belongs.
         /// </summary>
 		internal protected Camera mCamera;
@@ -260,6 +265,15 @@ namespace FlatRedBall.Gui
 
         IWindow mWindowOver;
 
+        /// <summary>
+        /// Returns the Window that this cursor is over. If the cursor is not over any Window, this value will be null.
+        /// </summary>
+        /// <remarks>
+        /// This value is usually used in two situations:
+        /// 1. To test if the cursor is over a Window to prevent clicking on objects in the game world. For example, this is checked
+        /// first, then tests against entities are performed if this value is null.
+        /// 2. To diagnose UI issues. The WindowOver can be printed to the screen to detect if which window is receiving cursor input.
+        /// </remarks>
         public IWindow WindowOver
         {
             get
@@ -528,7 +542,7 @@ namespace FlatRedBall.Gui
         public int ScreenX
         {
 
-            get { return mScreenX; }
+            get { return (int)mScreenX; }
             // set made public for custom modification of cursor
             set { mScreenX = value; }
         }
@@ -542,7 +556,7 @@ namespace FlatRedBall.Gui
         /// If using an input device which sets the position in absolute coordiantes (such as a Mouse), this value will be overwritten every frame.</remarks>
         public int ScreenY
         {
-            get { return mScreenY; }
+            get { return (int)mScreenY; }
             // set made public for custom modification of cursor
             set { mScreenY = value; }
         }
@@ -593,7 +607,7 @@ namespace FlatRedBall.Gui
         {
             get
             {
-                return mScreenX;
+                return (int)mScreenX;
             }
         }
 
@@ -602,7 +616,7 @@ namespace FlatRedBall.Gui
         {
             get
             {
-                return mScreenY;
+                return (int)mScreenY;
             }
         }
 
@@ -732,7 +746,7 @@ namespace FlatRedBall.Gui
                 }
                 else
                 {
-#if !MONOGAME && !UNIT_TESTS
+#if !MONOGAME && !UNIT_TESTS && !FNA
                     var windowLocation =
                                 System.Windows.Forms.Form.FromHandle(FlatRedBallServices.WindowHandle).Location;
 
@@ -990,7 +1004,7 @@ namespace FlatRedBall.Gui
             }
 #endif
 
-            return MathFunctions.GetRay(mScreenX, mScreenY, 1, this.mCamera);
+            return MathFunctions.GetRay((int)mScreenX, (int)mScreenY, 1, this.mCamera);
         }
 
 
@@ -998,11 +1012,11 @@ namespace FlatRedBall.Gui
         {
             if (layer == null)
             {
-                return MathFunctions.GetRay(mScreenX, mScreenY, 1, this.mCamera, null);
+                return MathFunctions.GetRay((int)mScreenX, (int)mScreenY, 1, this.mCamera, null);
             }
             else
             {
-                return MathFunctions.GetRay(mScreenX, mScreenY, 1, this.mCamera, layer.LayerCameraSettings);
+                return MathFunctions.GetRay((int)mScreenX, (int)mScreenY, 1, this.mCamera, layer.LayerCameraSettings);
             }
         }
 
@@ -1130,29 +1144,6 @@ namespace FlatRedBall.Gui
         {
             return GetSpriteOver(spriteLayer.Sprites);
         }
-
-        #region XML Docs
-        /// <summary>
-        /// Returns the Sprite that the cursor is over in the argument SpriteGridArray.
-        /// </summary>
-        /// <param name="sga">Reference to the SpriteGridArray.</param>
-        /// <returns>The Sprite that the cursor is over.</returns>
-        #endregion
-        public Sprite GetSpriteOver(List<SpriteGrid> sga)
-        {
-            List<Sprite> saa = new List<Sprite>();
-
-            foreach (SpriteGrid sg in sga)
-            {
-                for (int i = 0; i < sg.VisibleSprites.Count; i++)
-                {
-                    saa.AddRange(sg.VisibleSprites[i]);
-                }
-            }
-
-            return GetSpriteOver(saa);
-        }
-
 
         #region XML Docs
         /// <summary>
@@ -1752,15 +1743,7 @@ namespace FlatRedBall.Gui
         {
             Ray ray = GetRay(layer);
             Matrix inverseRotation = circle.RotationMatrix;
-#if FRB_MDX
-            inverseRotation.Invert();
 
-            Plane plane = Plane.FromPointNormal(
-                circle.Position, circle.RotationMatrix.Backward());
-
-            Vector3 intersection = Plane.IntersectLine(plane, ray.Position,
-                ray.Position + ray.Direction);
-#else
             Matrix.Invert(ref inverseRotation, out inverseRotation);
 
             Plane plane = new Plane(circle.Position, circle.Position + circle.RotationMatrix.Up,
@@ -1775,7 +1758,6 @@ namespace FlatRedBall.Gui
 
             Vector3 intersection = ray.Position + ray.Direction * result.Value;
 
-#endif
             return circle.IsPointInside(ref intersection);
         }
 
@@ -1856,7 +1838,7 @@ namespace FlatRedBall.Gui
         }
 
 
-#if !MONODROID && !MONOGAME
+#if !MONODROID && !MONOGAME && !FNA
         public bool IsInWindow(System.Windows.Forms.Control control)
         {
             if (!mUsingWindowsCursor)
@@ -2068,7 +2050,11 @@ namespace FlatRedBall.Gui
         }
 
 
-
+        /// <summary>
+        /// Returns the change in X world coordinate of the cursor at the argument Z position since last frame
+        /// </summary>
+        /// <param name="zPosition">The Z position. For 2D games, pass 0.</param>
+        /// <returns>The change in world coordiantes since last frame.</returns>
         public float WorldXChangeAt(float zPosition)
         {
             return WorldXChangeAt(zPosition, this.Camera.Orthogonal, this.Camera.OrthogonalWidth);
@@ -2110,7 +2096,7 @@ namespace FlatRedBall.Gui
 #endif
 
 
-            float ratio = (mScreenX - mLastScreenX) /
+            float ratio = (float)(mScreenX - mLastScreenX) /
 
                 // Victor Chelaru
                 // February 1, 2014
@@ -2146,9 +2132,13 @@ namespace FlatRedBall.Gui
         }
 
 
+        /// <summary>
+        /// Returns the change in Y coordiante of the cursor at the argument Z position since last frame. Since this is in world coordiantes, positive Y points up.
+        /// </summary>
+        /// <param name="zPosition">The Z position. For 2D games, pass 0.</param>
+        /// <returns>The change in world cooriantes since last frame.</returns>
         public float WorldYChangeAt(float zPosition)
         {
-
             return WorldYChangeAt(zPosition, this.Camera.Orthogonal, this.Camera.OrthogonalHeight);
 
         }
@@ -2184,22 +2174,18 @@ namespace FlatRedBall.Gui
 
         float WorldYChangeAt(float zPosition, bool orthogonal, float orthogonalHeight)
         {
-#if WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS
+#if MONODROID || IOS
             if (PrimaryPush || InputManager.TouchScreen.NumberOfTouchesChanged)
             {
                 return 0;
             }
 #endif
 
-            float ratio = (mScreenY - mLastScreenY) /
-#if FRB_MDX
-                (float)FlatRedBallServices.ClientHeight;
-#else
+            float ratio = (float)(mScreenY - mLastScreenY) /
                 // See WorldXChangeAt comment for
                 // information about this change:
                 //(float)FlatRedBallServices.GraphicsOptions.ResolutionHeight;
                 (float)this.Camera.DestinationRectangle.Height;
-#endif
 
             if (orthogonal)
             {
@@ -2274,8 +2260,8 @@ namespace FlatRedBall.Gui
 			mLastSecondaryDown = SecondaryDown;
             mLastMiddleDown = MiddleDown;
 
-            mLastScreenX = mScreenX;
-            mLastScreenY = mScreenY;
+            mLastScreenX = (int)mScreenX;
+            mLastScreenY = (int)mScreenY;
 
             #endregion
 
@@ -2340,8 +2326,8 @@ namespace FlatRedBall.Gui
             // causes a huge change
             if (!lastFrameActive)
             {
-                mLastScreenX = mScreenX;
-                mLastScreenY = mScreenY;
+                mLastScreenX = (int)mScreenX;
+                mLastScreenY = (int)mScreenY;
             }
 
             if (PrimaryPush)
@@ -2466,8 +2452,8 @@ namespace FlatRedBall.Gui
                 }
 
                 var thisFrameMultiplier = GamepadPixelsPerSecondMovementSpeed * TimeManager.SecondDifference;
-                mScreenX += (int)(xPosition * thisFrameMultiplier);
-                mScreenY -= (int)(yPosition * thisFrameMultiplier);
+                mScreenX += xPosition * thisFrameMultiplier;
+                mScreenY -= yPosition * thisFrameMultiplier;
 
                 if(mScreenX < 0)
                 {
@@ -2550,8 +2536,8 @@ namespace FlatRedBall.Gui
 
                     if (handled)
                     {
-                        mLastXFromHardware = mScreenX;
-                        mLastYFromHardware = mScreenY;
+                        mLastXFromHardware = (int)mScreenX;
+                        mLastYFromHardware = (int)mScreenY;
                     }
                     else
                     {
@@ -2613,8 +2599,8 @@ namespace FlatRedBall.Gui
                     // is a moue involved we want to use that position
                     if (SupportedInputDevices == Gui.InputDevice.TouchScreen)
                     {
-                        mLastScreenX = mScreenX;
-                        mLastScreenY = mScreenY;
+                        mLastScreenX = (int)mScreenX;
+                        mLastScreenY = (int)mScreenY;
                     }
                 }
 

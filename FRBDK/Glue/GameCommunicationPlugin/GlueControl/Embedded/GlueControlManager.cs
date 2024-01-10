@@ -1,5 +1,5 @@
 ﻿using GlueControl.Dtos;
-
+using GlueControl.Models;
 using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Math.Geometry;
@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System;
 using GlueControl.Editing;
 using FlatRedBall.Utilities;
+using GlueCommunication;
 
 #if SupportsEditMode
 using GlueControl.Managers;
@@ -27,6 +28,8 @@ namespace GlueControl
 {
     public class GlueControlManager
     {
+        public const string ProjectNamespace = "{ProjectNamespace}";
+
         #region Classes
 
         public class GameToGlueCommand
@@ -53,6 +56,8 @@ namespace GlueControl
         ConcurrentDictionary<int, AwaitedResponse> AwaitedResponses = new ConcurrentDictionary<int, AwaitedResponse>();
 
         public static GlueControlManager Self { get; private set; }
+        
+        internal GameConnectionManager GameConnectionManager { get; set; }
 
         #endregion
 
@@ -63,7 +68,7 @@ namespace GlueControl
             EditingManager = new GlueControl.Editing.EditingManager();
             FlatRedBallServices.AddManager(EditingManager);
             EditingManager.PropertyChanged += HandlePropertyChanged;
-            EditingManager.ObjectSelected += HandleObjectSelected;
+            EditingManager.ObjectSelected += HandleObjectsSelected;
             //listener = new TcpListener(IPAddress.Any, port);
         }
 
@@ -313,8 +318,7 @@ namespace GlueControl
 
         private bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
         {
-            var game1FullName = typeof(Game1).FullName;
-            var topNamespace = game1FullName.Substring(0, game1FullName.IndexOf('.'));
+            var topNamespace = ProjectNamespace;
             //var ownerTypeName = "WhateverNamespace." + elementName.Replace("\\", ".");
             var ownerTypeName = $"{topNamespace}.{elementName.Replace("\\", ".")}";
 
@@ -336,7 +340,7 @@ namespace GlueControl
             List<NosVariableAssignment> nosVariableAssignments = new List<NosVariableAssignment>();
             foreach (var change in propertyChangeArgs)
             {
-                var nos = currentElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == change.Nameable.Name);
+                var nos = currentElement?.GetNamedObjectRecursively(change.Nameable.Name);
                 if (nos != null)
                 {
                     nosVariableAssignments.Add(new NosVariableAssignment
@@ -349,15 +353,24 @@ namespace GlueControl
                 }
             }
 
-            await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(nosVariableAssignments, currentElement, performSaveAndGenerateCode: true, updateUi: true, echoToGame: false);
+            await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(nosVariableAssignments, currentElement, performSaveAndGenerateCode: true, updateUi: true, recordUndo:true, echoToGame: false);
 #endif
         }
 
-        private void HandleObjectSelected(INameable item)
+        private void HandleObjectsSelected(List<INameable> items)
         {
-            var dto = new SelectObjectDto();
-            dto.NamedObject = new Models.NamedObjectSave();
-            dto.NamedObject.InstanceName = item.Name;
+#if SupportsEditMode
+
+            //var dto = new SelectObjectDto();
+
+            List<Models.NamedObjectSave> namedObjectSaves = new List<NamedObjectSave>();
+
+            foreach (var item in items)
+            {
+                var nos = new Models.NamedObjectSave();
+                nos.InstanceName = item.Name;
+                namedObjectSaves.Add(nos);
+            }
 
             string elementGameType = null;
 
@@ -377,16 +390,23 @@ namespace GlueControl
             }
             else
             {
-                elementGameType = ScreenManager.CurrentScreen?.GetType().Name;
+                elementGameType = ScreenManager.CurrentScreen?.GetType().FullName;
             }
 
-            if (!string.IsNullOrEmpty(elementGameType))
-            {
-                var split = elementGameType.Split('.').ToList().Skip(1);
-                dto.ElementNameGlue = string.Join("\\", split);
+            var elementGlueType = CommandReceiver.GameElementTypeToGlueElement(elementGameType);
 
-                SendToGlue(dto);
-            }
+            var element = ObjectFinder.Self.GetElement(elementGlueType);
+
+            //if (!string.IsNullOrEmpty(elementGameType))
+            //{
+            //    var split = elementGameType.Split('.').ToList().Skip(1);
+            //    dto.ElementNameGlue = string.Join("\\", split);
+
+            //    SendToGlue(dto);
+            //}
+
+            var throwaway = GlueState.Self.SetCurrentNamedObjectSaves(namedObjectSaves, element);
+#endif
         }
 
         int nextRespondableId = 1;
@@ -435,9 +455,16 @@ namespace GlueControl
 
         private void SendCommandToGlue(string command)
         {
-            GameToGlueCommands.Enqueue(new GameToGlueCommand { Command = command });
+            // Send immediately to glue
+            GameConnectionManager.SendItem(new GameConnectionManager.Packet
+            {
+                Id = Guid.NewGuid(),
+                Payload = command,
+                PacketType = "OldDTO",
+                InResponseTo = null,
+            });
         }
 
-        #endregion
+#endregion
     }
 }

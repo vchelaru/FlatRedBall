@@ -463,7 +463,7 @@ namespace FlatRedBall.Glue.SetVariable
         }
 
 
-        private void HandleChangedIsContainer(NamedObjectSave nos, IElement element)
+        private void HandleChangedIsContainer(NamedObjectSave nos, GlueElement element)
         {
             if (nos.IsContainer)
             {
@@ -529,6 +529,8 @@ namespace FlatRedBall.Glue.SetVariable
                 }
 
             }
+
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
         }
 
         private void ReactToChangedNosSourceName(NamedObjectSave namedObjectSave, string oldValue)
@@ -592,8 +594,7 @@ namespace FlatRedBall.Glue.SetVariable
                                 }
                                 namedObjectInBase.UpdateCustomProperties();
 
-                                CodeWriter.GenerateCode(baseElement);
-
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(baseElement);
                             }
                         }
                         else
@@ -714,7 +715,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
         }
 
-        public async Task ReactToNamedObjectChangedInstanceName(NamedObjectSave namedObjectSave, string oldValue)
+        public Task ReactToNamedObjectChangedInstanceName(NamedObjectSave namedObjectSave, string oldValue)
         {
             ///////////////////Early Out//////////////////////////////
             if (namedObjectSave == null)
@@ -730,7 +731,7 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 GlueGui.ShowMessageBox(whyItIsntValid);
                 namedObjectSave.InstanceName = oldValue;
-                return;
+                return Task.CompletedTask;
             }
             ///////////////End Early Out//////////////////////////////
 
@@ -805,7 +806,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
             }
 
-            await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(currentElement);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
 
             var changedDerived = false;
             if(namedObjectSave.ExposedInDerived || namedObjectSave.SetByDerived)
@@ -827,8 +828,10 @@ namespace FlatRedBall.Glue.SetVariable
             }
             if(changedDerived)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
+
+            return Task.CompletedTask;
         }
 
         private void ShowPopupsForMissingVariablesInNewType(NamedObjectSave namedObjectSave, object oldValue)

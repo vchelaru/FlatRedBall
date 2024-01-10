@@ -32,6 +32,8 @@ namespace FlatRedBall.Glue.VSHelpers
     {
         public string ResourceName { get; set; }
 
+        public Assembly Assembly { get; set; }
+
         public Func<string, string> ModifyString;
     }
 
@@ -51,7 +53,6 @@ namespace FlatRedBall.Glue.VSHelpers
 
         #endregion
 
-
         #region Properties
         public string OutputFolderInProject
         {
@@ -63,7 +64,8 @@ namespace FlatRedBall.Glue.VSHelpers
             get;
             set;
         }
-
+        // If true, then files added here will be added with a .Generated.cs suffix instead of .cs
+        public bool AddAsGenerated { get; set; }
         #endregion
 
         #region Constructor
@@ -81,13 +83,14 @@ namespace FlatRedBall.Glue.VSHelpers
         /// </summary>
         /// <param name="resourceName">The name of the resource.  This is usally in the format of
         /// ProjectNamespace.Folder.FileName.cs</param>
-        public ResourceAddInfo Add(string resourceName)
+        public ResourceAddInfo Add(string resourceName, Assembly assembly = null)
         {
             lock(mFilesToAdd)
             {
                 var item = new ResourceAddInfo
                 {
                     ResourceName = resourceName,
+                    Assembly = assembly,
                 };
                 mFilesToAdd.Add(item);
                 return item;
@@ -105,7 +108,8 @@ namespace FlatRedBall.Glue.VSHelpers
                 {
                     var item = new ResourceAddInfo
                     {
-                        ResourceName = file
+                        ResourceName = file,
+                        Assembly = assembly
                     };
 
                     mFilesToAdd.Add(item);
@@ -135,7 +139,7 @@ namespace FlatRedBall.Glue.VSHelpers
             return filesInFolder;
         }
 
-        public void PerformAddAndSaveTask(Assembly assemblyContainingResource)
+        public void PerformAddAndSaveTask(Assembly assemblyContainingResource = null)
         {
             TaskManager.Self.Add(() =>
             {
@@ -145,7 +149,7 @@ namespace FlatRedBall.Glue.VSHelpers
             "Adding and saving files...");
         }
 
-        private bool PerformAddInternal(Assembly assemblyContainingResource)
+        private bool PerformAddInternal(Assembly assemblyContainingResource = null)
         { 
             bool succeeded = true;
             bool preserveCase = FileManager.PreserveCase;
@@ -161,9 +165,14 @@ namespace FlatRedBall.Glue.VSHelpers
                 {
                     var resourceName = resourceInfo.ResourceName;
 
+                    var effectiveAssembly = resourceInfo.Assembly ?? assemblyContainingResource;
 
+                    if(effectiveAssembly == null)
+                    {
+                        throw new InvalidOperationException($"No assembly was provided to the PerformAddAndSaveTask call, and the resource name {resourceName} was added without a referenced assembly.");
+                    }
 
-                    succeeded = SaveResourceFileToProject(assemblyContainingResource, succeeded, filesToAddToProject, resourceName);
+                    succeeded = SaveResourceFileToProject(effectiveAssembly, succeeded, filesToAddToProject, resourceName);
                 }
                 else
                 {
@@ -280,7 +289,15 @@ namespace FlatRedBall.Glue.VSHelpers
                 destination = null;
                 if (resourceName.Contains("/"))
                 {
-                    destination = destinationDirectory + FileManager.RemovePath(resourceName);
+                    var stripped = FileManager.RemovePath(resourceName);
+
+                    var alreadyContainsGenerated = stripped.Contains(".Generated.cs");
+                    if (AddAsGenerated && !alreadyContainsGenerated)
+                    {
+                        stripped = FileManager.RemoveExtension(stripped) + ".Generated.cs";
+                    }
+
+                    destination = destinationDirectory + FileManager.RemovePath(stripped);
                 }
                 else
                 {
@@ -288,7 +305,15 @@ namespace FlatRedBall.Glue.VSHelpers
                     int lastDot = completelyStripped.LastIndexOf('.');
                     completelyStripped = completelyStripped.Substring(lastDot + 1);
 
-                    destination = destinationDirectory + completelyStripped + ".cs";
+                    var alreadyContainsGenerated = resourceName.Contains(".Generated.cs");
+                    if(AddAsGenerated && !alreadyContainsGenerated)
+                    {
+                        destination = destinationDirectory + completelyStripped + ".Generated.cs";
+                    }
+                    else
+                    {
+                        destination = destinationDirectory + completelyStripped + ".cs";
+                    }
                 }
             }
         }
@@ -360,7 +385,7 @@ namespace FlatRedBall.Glue.VSHelpers
             }
         }
 
-        private static string GetGlueVersionsString()
+        public static string GetGlueVersionsString()
         {
             var currentFileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
 
@@ -384,6 +409,11 @@ namespace FlatRedBall.Glue.VSHelpers
                 {
                     toReturn += $"#define {gluxNames.GetValue(i)}\n";
                 }
+            }
+
+            if(GlueState.Self.CurrentMainProject.IsFrbSourceLinked())
+            {
+                toReturn += $"#define REFERENCES_FRB_SOURCE\n";
             }
 
             return toReturn;

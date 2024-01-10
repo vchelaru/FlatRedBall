@@ -86,16 +86,39 @@ namespace GlueControl
             return returnValue;
         }
 
+        /// <summary>
+        /// Converts and sends the property assignment to the game. 
+        /// </summary>
+        /// <param name="propertyName">The property name, such as CurrentNamedObject.</param>
+        /// <param name="propertyType">The type of the property being assigned, such as typeof(NamedObjectSave)</param>
+        /// <param name="parameter">The value to assign, such a the current NamedObjectSave.</param>
+        /// <param name="callPropertyParameters">Parameters defining the behavior of the call, such as whether the response from Glue is returned back to the game.</param>
+        /// <returns></returns>
         public static async Task<object> ConvertToPropertyCallToGame(string propertyName, Type propertyType, GlueParameters parameter, CallPropertyParameters callPropertyParameters)
         {
             GlueParameters parm = parameter;
             object convertedParm;
 
+            bool ShouldHandleAsGeneric()
+            {
+                var toReturn = propertyType.IsGenericType;
+
+                if (toReturn)
+                {
+                    toReturn =
+                        propertyType.GetGenericTypeDefinition() == typeof(List<>) ||
+                        propertyType.GetGenericTypeDefinition() == typeof(IReadOnlyList<>) ||
+                        propertyType.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>) ||
+                        propertyType.GetGenericTypeDefinition() == typeof(IList<>);
+                }
+                return toReturn;
+            }
+
             if (propertyType.IsPrimitive)
             {
                 convertedParm = parm.Value;
             }
-            else if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>))
+            else if (ShouldHandleAsGeneric())
             {
                 convertedParm = ConvertList(propertyType.GetGenericArguments()[0], (IEnumerable<object>)parm.Value, parm.Dependencies);
             }

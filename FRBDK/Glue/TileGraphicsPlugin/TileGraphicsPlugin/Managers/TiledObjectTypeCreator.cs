@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -18,12 +19,22 @@ namespace TileGraphicsPlugin.Managers
     public class TiledObjectTypeCreator
     {
 
-        public void RefreshFile()
+        public async Task RefreshFile()
         {
+            List<TiledObjectTypeSave> whatToSave = null;
+
             var fileName = GetTiledObjectTypeFileName();
 
-            var entities = GetEntitiesForTiledObjectTypeFile();
-            var whatToSave = CreateTiledObjectTypeListFrom(entities);
+            // Task this for 2 reasons:
+            // 1: Just to avoid any potential threading issues
+            // 2: To make sure this is processed after the rename propagates so it uses the new name.
+            await TaskManager.Self.AddAsync(() =>
+            {
+
+                var entities = GetEntitiesForTiledObjectTypeFile();
+                whatToSave = CreateTiledObjectTypeListFrom(entities);
+
+            }, "Refreshing Tiled Object Type File");    
 
             string fileContents;
 
@@ -33,29 +44,48 @@ namespace TileGraphicsPlugin.Managers
             var oldCulture = CultureInfo.CurrentCulture;
             var newCulture = (CultureInfo)oldCulture.Clone();
             newCulture.NumberFormat.NumberDecimalSeparator = "."; //Force use . insted of ,
-            System.Threading.Thread.CurrentThread.CurrentCulture = newCulture;
 
-            FlatRedBall.IO.FileManager.XmlSerialize(whatToSave, out fileContents);
-
-            System.Threading.Thread.CurrentThread.CurrentCulture = oldCulture;
-
-
-            // Not sure how to fix this other than this hacky solution:
-            fileContents = fileContents.Replace("<TiledObjectTypeSave ", "<objecttype ");
-            fileContents = fileContents.Replace("</TiledObjectTypeSave>", "</objecttype>");
-            fileContents = fileContents.Replace("<ArrayOfTiledObjectTypeSave", "<objecttypes");
-            fileContents = fileContents.Replace("</ArrayOfTiledObjectTypeSave>", "</objecttypes>");
-
-            try
+            TaskManager.Self.OnUiThread(() =>
             {
-                GlueCommands.Self.TryMultipleTimes(() => FlatRedBall.IO.FileManager.SaveText(fileContents, fileName.FullPath));
-            }
-            catch(System.IO.IOException)
-            {
-                // It's probably in use, so just output that it wasn't saved, we'll try again later
-                GlueCommands.Self.PrintOutput("Could not save Tiled XML file because it is in use. Will try again later. Reload the Glue project" +
-                    "to force a regeneration.");
-            }
+                System.Threading.Thread.CurrentThread.CurrentCulture = newCulture;
+
+                FlatRedBall.IO.FileManager.XmlSerialize(whatToSave, out fileContents);
+
+                System.Threading.Thread.CurrentThread.CurrentCulture = oldCulture;
+
+                // Not sure how to fix this other than this hacky solution:
+                fileContents = fileContents.Replace("<TiledObjectTypeSave ", "<objecttype ");
+                fileContents = fileContents.Replace("</TiledObjectTypeSave>", "</objecttype>");
+                fileContents = fileContents.Replace("<ArrayOfTiledObjectTypeSave", "<objecttypes");
+                fileContents = fileContents.Replace("</ArrayOfTiledObjectTypeSave>", "</objecttypes>");
+
+                // manually replace floats with ',' in the name with '.'
+                var lines = fileContents.Split('\n');
+                // create a for loop that goes through each line, checks if the line contains type="float" default=", and if so, replace the comma after default with a period
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    var line = lines[i];
+                    if (line.Contains("type=\"float\" default=\""))
+                    {
+                        var index = line.IndexOf("default=\"");
+                        var replacementLine = line.Substring(0, index + "default=\"".Length) + line.Substring(index + "default=\"".Length).Replace(',', '.');
+                        lines[i] = replacementLine;
+                    }
+                }
+                fileContents = string.Join("\n", lines);
+
+                try
+                {
+                    GlueCommands.Self.TryMultipleTimes(() => FlatRedBall.IO.FileManager.SaveText(fileContents, fileName.FullPath));
+                }
+                catch(System.IO.IOException)
+                {
+                    // It's probably in use, so just output that it wasn't saved, we'll try again later
+                    GlueCommands.Self.PrintOutput("Could not save Tiled XML file because it is in use. Will try again later. Reload the Glue project" +
+                        "to force a regeneration.");
+                }
+            });
         }
 
         public static FilePath GetTiledObjectTypeFileName()
@@ -147,7 +177,7 @@ namespace TileGraphicsPlugin.Managers
         {
             if(type == "bool")
             {
-                return value?.ToLower();
+                return value?.ToLowerInvariant();
             }
             else
             {
@@ -157,7 +187,7 @@ namespace TileGraphicsPlugin.Managers
 
         private string GetTmxFriendlyType(string type)
         {
-            if(type == "double" || type == "decimal")
+            if(type is "double" or "decimal")
             {
                 return "float";
             }

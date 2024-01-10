@@ -12,6 +12,7 @@ using FlatRedBall.Utilities;
 using FlatRedBall.IO;
 using System.Linq;
 using Microsoft.Xna.Framework.Content;
+using FlatRedBall.Input;
 #if !SILVERLIGHT
 #endif
 
@@ -160,15 +161,23 @@ namespace FlatRedBall.Screens
 
         #region Methods
 
+        static ScreenManager()
+        {
+#if DEBUG
+            // These are high-traffic lists because the user may select a large number of objects:
+            PersistentAxisAlignedRectangles.AddInternalHashSet();
+            PersistentPolygons.AddInternalHashSet();
+#endif
+
+        }
+
         #region Public Methods
 
-        #region XML Docs
         /// <summary>
         /// Calls activity on the current screen and checks to see if screen
         /// activity is finished.  If activity is finished, the current Screen's
         /// NextScreen is loaded.
         /// </summary>
-        #endregion
         public static void Activity()
         {
             /////////////////Early Out///////////////////////////
@@ -210,8 +219,8 @@ namespace FlatRedBall.Screens
                         $"You can specify the next screen by calling MoveToScreen or by manually setting the NextScreen";
                 }
 #endif
-                var isFullyQualified = type.Contains(".");
-                if(!isFullyQualified)
+                var isFullyQualified = type?.Contains(".") == true;
+                if(!isFullyQualified && !string.IsNullOrEmpty(type))
                 {
                     // try to prepend the current type to make the next screen fully qualified:
                     var prepend = mCurrentScreen.GetType().Namespace;
@@ -235,6 +244,10 @@ namespace FlatRedBall.Screens
                 FlatRedBallServices.Game.IsFixedTimeStep = false;
                 TimeManager.TimeFactor = 0;
                 GuiManager.Cursor.IgnoreInputThisFrame = true;
+                for(int i = 0; i < InputManager.Xbox360GamePads.Count(); i++)
+                {
+                    InputManager.Xbox360GamePads[i].Clear();
+                }
                 if(Input.InputManager.InputReceiver != null)
                 {
                     Input.InputManager.InputReceiver = null;
@@ -245,6 +258,7 @@ namespace FlatRedBall.Screens
                 Instructions.InstructionManager.Instructions.Clear();
 
                 FlatRedBallServices.singleThreadSynchronizationContext.Clear();
+                TimeManager.ClearTasks();
 
                 //mCurrentScreen.Destroy();
 
@@ -492,7 +506,15 @@ namespace FlatRedBall.Screens
                 // created/added. If we don't
                 // then a single frame will pass
                 // without activity, and objects may
-                // not be positioned correclty.
+                // not be positioned correctly.
+                // Update Sept 2, 2023
+                // Actually this seems to cause a double
+                // Activity call. I'm not sure why it's needed
+                // but I don't have time to investigate now. I'm
+                // going to leave it in so that I don't accidentally
+                // break old games, but I did have to put a special check
+                // in the double-activity call generated code for entities
+                // to see if frame is 0 because of the double-calls.
                 if (!IsInEditMode)
                 {
                     mCurrentScreen.Activity(mCurrentScreen.ActivityCallCount == 0);

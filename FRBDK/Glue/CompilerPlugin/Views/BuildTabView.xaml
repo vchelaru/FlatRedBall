@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:views="clr-namespace:CompilerPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500">
     <Grid>
@@ -13,18 +14,23 @@
         </Grid.RowDefinitions>
 
         <WrapPanel Orientation="Horizontal" Visibility="{Binding EntireUiVisibility}">
-
+            <Button Click="Button_Click" Height="19" Width="19" Margin="3,0,0,0">
+                <Button.ToolTip>
+                    <TextBlock>Clear Output</TextBlock>
+                </Button.ToolTip>
+                <Image IsHitTestVisible="False" Width="25" Source="/CompilerPlugin;component/Icons/DeleteOutput.png" ></Image>
+            </Button>
             <views:WhileStoppedView
                 Visibility="{Binding WhileStoppedViewVisibility}"
                 BuildClicked="HandleCompileClick"
-                RunClicked="HandleRunClick"
+                PackageClicked="WhileStoppedView_PackageClicked"
                 MSBuildSettingsClicked="HandleMSBuildSettingsClicked"
                 >
             </views:WhileStoppedView>
 
             <StackPanel x:Name="WhileBuildingView" Visibility="{Binding WhileBuildingVisibility}" Orientation="Horizontal">
-                <Label>Building...</Label>
-                <Button Click="HandleCancelBuildButtonClick">Cancel Build</Button>
+                <Label Content="{x:Static localization:Texts.Building}"></Label>
+                <Button Click="HandleCancelBuildButtonClick" Content="{x:Static localization:Texts.CancelBuild}"></Button>
             </StackPanel>
 
         </WrapPanel>

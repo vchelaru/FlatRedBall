@@ -3,9 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views" xmlns:controls="clr-namespace:GlueFormsCore.Controls"
+        xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views" 
+        xmlns:controls="clr-namespace:GlueFormsCore.Controls"
+        xmlns:localization="clr-namespace:Localization;assembly=Localization"
+        xmlns:Converters="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Converters"
         mc:Ignorable="d"
         Title="Recent FlatRedBall Projects" Height="450" Width="660">
+    <Window.Resources>
+        <Converters:WidthConverter x:Key="WidthConverter" />
+    </Window.Resources>
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -19,23 +25,30 @@
                             ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked" 
                             ArrowKeyPushed="SearchBar_ArrowKeyPushed"
                             EnterPressed="SearchBar_EnterPressed"
-                            
+                            EscapePressed="SearchBar_EscapePressed"
                             ></controls:SearchBar>
 
         <ListBox x:Name="ListBox" Grid.Row="1" Margin="0,5,0,0" 
                  ItemsSource="{Binding FilteredItems}" 
                  SelectedItem="{Binding SelectedItem}"
+                 KeyDown="ListBox_KeyDown"
                  MouseDoubleClick="ListBox_MouseDoubleClick">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <local:RecentFileItem></local:RecentFileItem>
+                    
+                    
+                    
+                    
+                    
+                    <!--<local:RecentFileItem Width="{Binding ElementName=ListBox, Path=ActualWidth, Converter={StaticResource WidthConverter}}"></local:RecentFileItem>-->
+                    <local:RecentFileItem Width="{Binding ElementName=ListBox, Path=ActualWidth, Converter={StaticResource WidthConverter}}"></local:RecentFileItem>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
         
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
-            <Button Click="LoadButton_Click">Load</Button>
-            <Button Click="CancelButton_Click" Margin="5,0,0,0">Cancel</Button>
+            <Button Click="LoadButton_Click"  Content="{x:Static localization:Texts.Load}" />
+            <Button Click="CancelButton_Click" Margin="5,0,0,0" Content="{x:Static localization:Texts.Cancel}" />
         </StackPanel>
     </Grid>
 </Window>

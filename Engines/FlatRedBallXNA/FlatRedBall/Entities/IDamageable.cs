@@ -13,8 +13,14 @@ namespace FlatRedBall.Entities
         decimal CurrentHealth { get; set; }
         decimal MaxHealth { get; set; }
 
-        Func<decimal, IDamageArea, decimal> ModifyDamageDealt { get; set; }
-        Action<decimal, IDamageArea> ReactToDamageDealt { get; set; }
+        /// <summary>
+        /// Event raised before damave is dealt. This event can be used to modify the damage dealt.
+        /// </summary>
+        Func<decimal, IDamageArea, decimal> ModifyDamageReceived { get; set; }
+        /// <summary>
+        /// Event raised when damage is received. This is called after CurrentHealth has been modified.
+        /// </summary>
+        Action<decimal, IDamageArea> ReactToDamageReceived { get; set; }
         Action<decimal, IDamageArea> Died { get; set; }
 
 
@@ -68,14 +74,14 @@ namespace FlatRedBall.Entities
             }
         }
 
-        public static void TakeDamage(this IDamageable damageable, IDamageArea damageArea)
+        public static decimal TakeDamage(this IDamageable damageable, IDamageArea damageArea)
         {
             // The DamageArea provides the damage, so the order should be:
             // 1. Damageable modifies
             // 2. DamageArea modifies
             // 3. Damageable CurrentHealth -= 
-            // 4. Damageable.ReactToDamageDealt
-            // 5. Damageable.ReactToDamageDealt
+            // 4. Damageable.ReactToDamageReceived
+            // 5. DamageArea.ReactToDamageDealt
             // --if Damageable.CurrentHealth <= 0
             // 6. Damageable.Died
             // 7. DamageArea.KilledDamageable
@@ -86,14 +92,20 @@ namespace FlatRedBall.Entities
 
             var damage = damageArea.DamageToDeal;
 
-            var modifiedByDamageable = damageable.ModifyDamageDealt?.Invoke(damage, damageArea) ?? damage;
-            var modifiedByBoth = damageArea.ModifyDamageDealt?.Invoke(damage, damageable) ?? modifiedByDamageable;
+            var modifiedByDamageable = damageable.ModifyDamageReceived?.Invoke(damage, damageArea) ?? damage;
+            var modifiedByBoth = damageArea.ModifyDamageDealt?.Invoke(modifiedByDamageable, damageable) ?? modifiedByDamageable;
 
             var healthBefore = damageable.CurrentHealth;
 
-            damageable.CurrentHealth -= modifiedByBoth;
+            if (modifiedByBoth != 0)
+            {
+                damageable.CurrentHealth -= modifiedByBoth;
+            }
 
-            damageable.ReactToDamageDealt?.Invoke(modifiedByBoth, damageArea);
+            // We used to not raise events when taking 0 damage, but we may want
+            // to have some kind of logic play when taking 0 damage, likeplay a sound
+            // effect to indicate that this is not a spot that an enemy can get hit.
+            damageable.ReactToDamageReceived?.Invoke(modifiedByBoth, damageArea);
             damageArea.ReactToDamageDealt?.Invoke(modifiedByBoth, damageable);
 
             if(healthBefore > 0 && damageable.CurrentHealth <= 0)
@@ -101,6 +113,9 @@ namespace FlatRedBall.Entities
                 damageable?.Died?.Invoke(modifiedByBoth, damageArea);
                 damageArea?.KilledDamageable?.Invoke(modifiedByBoth, damageable);
             }
+            
+
+            return modifiedByBoth;
         }
 
         // There could be situations where an object takes damage from something (like a tile shape collection) which
@@ -111,20 +126,20 @@ namespace FlatRedBall.Entities
         // wrappers for common types like TileShapeCollection.
         public static void TakeDamage(this IDamageable damageable, decimal damage)
         {
-            var modifiedByDamageable = damageable.ModifyDamageDealt?.Invoke(damage, null) ?? damage;
+            var modifiedByDamageable = damageable.ModifyDamageReceived?.Invoke(damage, null) ?? damage;
             //var modifiedByBoth = damageArea.ModifyDamageDealt?.Invoke(damage, damageable) ?? modifiedByDamageable;
 
             var healthBefore = damageable.CurrentHealth;
 
             damageable.CurrentHealth -= modifiedByDamageable;
 
-            damageable.ReactToDamageDealt?.Invoke(modifiedByDamageable, null);
+            damageable.ReactToDamageReceived?.Invoke(modifiedByDamageable, null);
             //damageArea.ReactToDamageDealt?.Invoke(modifiedByBoth, damageable);
 
             if (healthBefore > 0 && damageable.CurrentHealth <= 0)
             {
-                damageable?.Died(modifiedByDamageable, null);
-                //damageArea?.KilledDamageable(modifiedByBoth, damageable);
+                damageable.Died?.Invoke(modifiedByDamageable, null);
+                //damageArea.KilledDamageable?.Invoke(modifiedByBoth, damageable);
             }
         }
 

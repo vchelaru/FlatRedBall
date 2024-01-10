@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.IO;
 using System.ComponentModel.Composition;
@@ -10,6 +8,8 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.SetVariable;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
 {
@@ -95,7 +95,34 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
                 }
             }
 
-            
+
+            AddTemporaryAtis(newFileWindow);
+        }
+
+        AssetTypeInfo localizationDatabaseAti;
+        AssetTypeInfo LocalizationDatabaseAti
+        {
+            get
+            {
+                if(localizationDatabaseAti == null)
+                {
+
+                    var csvAti = AvailableAssetTypes.Self.GetAssetTypeFromExtension("csv");
+                    localizationDatabaseAti = FileManager.CloneObject(csvAti);
+                    localizationDatabaseAti.FriendlyName = "Localization Database (.csv)";
+
+                }
+                return localizationDatabaseAti;
+            }
+        }
+
+        /// <summary>
+        /// Adds ATIs to the NewFileWindow which should only exist during the creation of the new file and should not be available to the rest of Glue.
+        /// </summary>
+        /// <param name="newFileWindow">The new file window instance</param>
+        private void AddTemporaryAtis(CustomizableNewFileWindow newFileWindow)
+        {
+            newFileWindow.AddOption(LocalizationDatabaseAti);
         }
 
         private void CreateNoCodeGenerationAtiFor(string extension)
@@ -121,40 +148,41 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
 
         private string GetNewFileTemplateForExtension(IEnumerable<string> listOfFiles, string extension, bool haveUserPick = true)
         {
-            var enumeration = listOfFiles.Where(file=>FileManager.GetExtension(file) == extension);
-            if(enumeration.Count() != 0)
+            var enumeration = listOfFiles.Where(file=>FileManager.GetExtension(file) == extension).ToList();
+            // If nothing was found, return null.
+            if (!enumeration.Any()) return null;
+
+            // if there is only 1 option, or the user isn't allowed to pick, pick the only first item.
+            if (enumeration.Count == 1 || !haveUserPick) return enumeration.First();
+            
+            // Now that we have determined there are multiple options and the user is allowed to pick,
+            // open a window with a combobox where the user can pick options.
+            var cbmb = new ComboBoxMessageBox(L.Texts.WhichTemplateUse);
+            foreach (var option in enumeration)
             {
-                if (enumeration.Count() > 1 && haveUserPick)
-                {
-                    ComboBoxMessageBox cbmb = new ComboBoxMessageBox();
-                    cbmb.Message = "Which template would you like to use?";
-                    foreach (var option in enumeration)
-                    {
-                        cbmb.Add(option, FileManager.RemovePath(option));
-                    }
-
-                    var result = cbmb.ShowDialog();
-
-                    if (result == System.Windows.Forms.DialogResult.OK)
-                    {
-                        return cbmb.SelectedItem as string;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-                else
-                {
-                    return enumeration.FirstOrDefault();
-                }
+                cbmb.Add(option, FileManager.RemovePath(option));
             }
+
+            var result = cbmb.ShowDialog();
+
+            if (result.HasValue && result.Value)
+            {
+                return cbmb.SelectedItem as string;
+            }
+
             return null;
+
         }
 
-        private void ReactToNewFile(SaveClasses.ReferencedFileSave newFile)
+        private void ReactToNewFile(SaveClasses.ReferencedFileSave newFile, AssetTypeInfo ati)
         {
+            if(ati == LocalizationDatabaseAti)
+            {
+                newFile.IsDatabaseForLocalizing = true;
 
+                EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
+                    nameof(newFile.IsDatabaseForLocalizing), false, nameof(newFile.IsDatabaseForLocalizing), null);
+            }
         }
 
 
@@ -177,7 +205,20 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
         {
             string availableFile;
 
-            if (assetTypeInfo.Extension == "csv")
+            if(assetTypeInfo == LocalizationDatabaseAti)
+            {
+                string contents =
+@"""StringId (string, required)"",English (string),Spanish (string),German (string)
+T_Hello,Hello,Hola,Hallo
+T_StartGame,Start Game,Comenzar el Juego,Spiel Starten
+T_Exit,Exit,Salida,Ausfahrt
+T_HighScore,High Score,Puntuación Alta,Hohe Punktzahl
+T_Paused,Paused,En Pausa,Pausiert
+";
+
+                FileManager.SaveText(contents, createdFile);
+            }
+            else if (assetTypeInfo.Extension == "csv")
             {
                 string contents =
 

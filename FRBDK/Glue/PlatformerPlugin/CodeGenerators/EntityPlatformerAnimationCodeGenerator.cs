@@ -84,7 +84,7 @@ namespace PlatformerPluginCore.CodeGenerators
                 {
                     codeBlock = codeBlock.Block();
                     {
-                        string animationSpeedAssignment = $"{GlueState.Self.ProjectNamespace}.Entities.AnimationSpeedAssignment.{entry.AnimationSpeedAssignment}";
+                        string animationSpeedAssignment = $"global::{GlueState.Self.ProjectNamespace}.Entities.AnimationSpeedAssignment.{entry.AnimationSpeedAssignment}";
 
 
                         codeBlock.Line("var configuration = new PlatformerAnimationConfiguration");
@@ -96,6 +96,8 @@ namespace PlatformerPluginCore.CodeGenerators
                         variableAssignmentBlock.Line($"MaxXVelocityAbsolute={CodeParser.ConvertValueToCodeString(entry.MaxXVelocityAbsolute)} ,");
                         variableAssignmentBlock.Line($"MinYVelocity={CodeParser.ConvertValueToCodeString(entry.MinYVelocity)} ,");
                         variableAssignmentBlock.Line($"MaxYVelocity={CodeParser.ConvertValueToCodeString(entry.MaxYVelocity)} ,");
+                        variableAssignmentBlock.Line($"MinHorizontalInputAbsolute={CodeParser.ConvertValueToCodeString(entry.MinHorizontalInputAbsolute)} ,");
+                        variableAssignmentBlock.Line($"MaxHorizontalInputAbsolute={CodeParser.ConvertValueToCodeString(entry.MaxHorizontalInputAbsolute)} ,");
                         variableAssignmentBlock.Line($"AbsoluteXVelocityAnimationSpeedMultiplier={CodeParser.ConvertValueToCodeString(entry.AbsoluteXVelocityAnimationSpeedMultiplier)} ,");
                         variableAssignmentBlock.Line($"AbsoluteYVelocityAnimationSpeedMultiplier={CodeParser.ConvertValueToCodeString(entry.AbsoluteYVelocityAnimationSpeedMultiplier)} ,");
                         variableAssignmentBlock.Line($"MaxSpeedXRatioMultiplier={CodeParser.ConvertValueToCodeString(entry.MaxSpeedXRatioMultiplier)} ,");

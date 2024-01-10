@@ -12,13 +12,13 @@ namespace OfficialPlugins.PreviewGenerator.Managers
 {
     public static class PreviewSaver
     {
-        public static void SavePreview(BitmapSource bitmapSource, GlueElement glueElement, StateSave stateSave)
+        public static void SavePreview(BitmapSource bitmapSource, GlueElement glueElement, StateSave stateSave, FilePath forcedLocation = null)
         {
             if(bitmapSource == null)
             {
                 throw new ArgumentNullException(nameof(bitmapSource));
             }
-            var filePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(glueElement, stateSave);
+            var filePath = forcedLocation ?? GlueCommands.Self.GluxCommands.GetPreviewLocation(glueElement, stateSave);
 
             var directoryToCreate = filePath.GetDirectoryContainingThis().FullPath;
             System.IO.Directory.CreateDirectory(directoryToCreate);

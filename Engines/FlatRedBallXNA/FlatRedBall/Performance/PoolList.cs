@@ -9,6 +9,7 @@ namespace FlatRedBall.Performance
         #region Fields
         List<T> mPoolables = new List<T>();
         int mNextAvailable = -1;
+        public int Count => mPoolables.Count;
         #endregion
 
         public bool HasAnyUnusedItems

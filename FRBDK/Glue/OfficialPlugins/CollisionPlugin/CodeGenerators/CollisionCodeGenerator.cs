@@ -3,6 +3,7 @@ using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math;
 using OfficialPlugins.CollisionPlugin.Managers;
@@ -371,6 +372,9 @@ namespace OfficialPlugins.CollisionPlugin
             var destroyFirst = Get<bool>(nameof(CollisionRelationshipViewModel.IsDestroyFirstOnDamageChecked));
             var destroySecond = Get<bool>(nameof(CollisionRelationshipViewModel.IsDestroySecondOnDamageChecked));
 
+            var firstCollisionDestroyType = Get< CollisionDestroyType>(nameof(CollisionRelationshipViewModel.FirstCollisionDestroyType));
+            var secondCollisionDestroyType = Get<CollisionDestroyType>(nameof(CollisionRelationshipViewModel.SecondCollisionDestroyType));
+
             var shouldGenerateEvent = dealDamageInGeneratedCode || 
                 (destroyFirst && isFirstDamageArea) ||
                 (destroySecond && isSecondDamageArea);
@@ -393,11 +397,25 @@ namespace OfficialPlugins.CollisionPlugin
                 if(firstTakesDamage && dealDamageInGeneratedCode)
                 {
                     var ifBlock = eventBlock.If("FlatRedBall.Entities.DamageableExtensionMethods.ShouldTakeDamage(first, second)");
-                    ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(first, second);");
                     if(destroySecond)
                     {
-                        ifBlock.Line("second.RemovedByCollision?.Invoke(first);");
-                        ifBlock.Line("second.Destroy();");
+                        if(secondCollisionDestroyType == CollisionDestroyType.Always)
+                        {
+                            ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(first, second);");
+                            ifBlock.Line("second.RemovedByCollision?.Invoke(first);");
+                            ifBlock.Line("second.Destroy();");
+                        }
+                        else if(secondCollisionDestroyType == CollisionDestroyType.OnlyIfDealtDamage)
+                        {
+                            ifBlock.Line("var damageDealt = FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(first, second);");
+                            var innerIf = ifBlock.If("damageDealt > 0");
+                            innerIf.Line("second.RemovedByCollision?.Invoke(first);");
+                            innerIf.Line("second.Destroy();");
+                        }
+                    }
+                    else
+                    {
+                        ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(first, second);");
                     }
                     // Do we want this to be conditional? Let's make it always on for now and see if users complain...
                     ifBlock.If("first.CurrentHealth <= 0").Line("first.Destroy();");
@@ -411,11 +429,25 @@ namespace OfficialPlugins.CollisionPlugin
                 if (secondTakesDamage && dealDamageInGeneratedCode)
                 {
                     var ifBlock = eventBlock.If("FlatRedBall.Entities.DamageableExtensionMethods.ShouldTakeDamage(second, first)");
-                    ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(second, first);");
                     if(destroyFirst)
                     {
-                        ifBlock.Line("first.RemovedByCollision?.Invoke(second);");
-                        ifBlock.Line("first.Destroy();");
+                        if (firstCollisionDestroyType == CollisionDestroyType.Always)
+                        {
+                            ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(second, first);");
+                            ifBlock.Line("first.RemovedByCollision?.Invoke(second);");
+                            ifBlock.Line("first.Destroy();");
+                        }
+                        else if(firstCollisionDestroyType == CollisionDestroyType.OnlyIfDealtDamage)
+                        {
+                            ifBlock.Line("var damageDealt = FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(second, first);");
+                            var innerIf = ifBlock.If("damageDealt > 0");
+                            innerIf.Line("first.RemovedByCollision?.Invoke(second);");
+                            innerIf.Line("first.Destroy();");
+                        }
+                    }
+                    else
+                    {
+                        ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(second, first);");
                     }
                     ifBlock.If("second.CurrentHealth <= 0").Line("second.Destroy();");
                 }
@@ -465,17 +497,24 @@ namespace OfficialPlugins.CollisionPlugin
             }
 
             block.Line($"var temp = new {relationshipType}({firstCollidable}, {secondCollidable});");
-            block.Line($"var isCloud = {(collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant()};");
-            block.Line($"temp.CollisionFunction = (first, second) =>");
+            // This causes a closure which allocates!
+            //block.Line($"var isCloud = {(collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant()};");
+            var collisionFunctionName = $"{firstCollidable}v{secondCollidable}PlatformFunction";
+            block.Line($"temp.CollisionFunction = {collisionFunctionName};");
+            // use firstType and secondType because the collision function is not called on the lists but on the individuals
+            // can't be static bool because this breaks old FRB projects (.Net 4.7)
+            //block.Line($"static bool {collisionFunctionName}({firstType} first, {secondType} second)");
+            block.Line($"bool {collisionFunctionName}({firstType} first, {secondType} second)");
             block = block.Block();
 
+            var isCloud = (collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant();
             string whatToCollideAgainst = "second";
 
             if (!isFirstList && isSecondList)
             {
                 if (collisionType == CollisionType.PlatformerCloudCollision || collisionType == CollisionType.PlatformerSolidCollision)
                 {
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, isCloud);");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, {isCloud});");
                 }
                 else
                 {
@@ -483,11 +522,11 @@ namespace OfficialPlugins.CollisionPlugin
                     if (firstSubCollision == null)
                     {
                         // it's an icollidable probably
-                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, isCloud);");
+                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, {isCloud});");
                     }
                     else
                     {
-                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, first.{firstSubCollision}, isCloud);");
+                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, first.{firstSubCollision}, {isCloud});");
                     }
 
                 }
@@ -497,12 +536,12 @@ namespace OfficialPlugins.CollisionPlugin
                 if (firstSubCollision == null)
                 {
                     // assume it's a shape collection
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, isCloud);");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, {isCloud});");
                 }
                 else
                 {
                     // assume it's a shape collection
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, first.{firstSubCollision}, isCloud);");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, first.{firstSubCollision}, {isCloud});");
                 }
             }
 
@@ -567,7 +606,7 @@ namespace OfficialPlugins.CollisionPlugin
 
             if (isSecondTileShapeCollection == false)
             {
-                // return stackable vs stackable
+                // return stackable vs stackable    
                 block.Line($"return FlatRedBall.Math.Geometry.IStackableExtensionMethods.CollideAgainstBounceStackable(first, second, 1, 1);");
             }
             else
@@ -585,17 +624,38 @@ namespace OfficialPlugins.CollisionPlugin
 
         public static bool CanBePartitioned(NamedObjectSave nos)
         {
-            if (nos.IsList)
+            var canBePartitioned = true;
+            if(nos.IsList == false)
+            {
+                canBePartitioned = false;
+            }
+
+            if(canBePartitioned)
             {
                 var genericType = nos.SourceClassGenericType;
 
                 var entity = ObjectFinder.Self.GetEntitySave(genericType);
 
-                // todo - what about inheritance? We may need to handle that here.
-                return entity?.ImplementsICollidable == true;
+                var isCollidable = entity?.IsICollidableRecursive() == true;
+                // If not collidable, then we don't need to partition...at least not now. Maybe in the future
+                // we could support this if people want manual partitioning?
+                canBePartitioned = isCollidable;
             }
 
-            return false;
+            if(canBePartitioned)
+            {
+                if (nos.DefinedByBase)
+                {
+                    var baseNos = ObjectFinder.Self.GetRootDefiningObject(nos);
+                    if (baseNos != null)
+                    {
+                        canBePartitioned = false;
+                    }
+                }
+            }
+            
+
+            return canBePartitioned;
         }
 
         public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
@@ -617,8 +677,8 @@ namespace OfficialPlugins.CollisionPlugin
                         float partitionWidthHeight;
                         if(automaticOrManual == PartitioningAutomaticManual.Automatic)
                         {
-                            partitionWidthHeight = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
-                                nos, sortAxis);
+                            partitionWidthHeight = Math.Abs( AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
+                                nos).HalfDimension * 2);
                         }
                         else
                         {
@@ -663,8 +723,9 @@ namespace OfficialPlugins.CollisionPlugin
             {
                 codeBlock = codeBlock.Function("void", "HandleBeforeCollisionGenerated");
                 var itemsToGenerate = element
-                    // Only use the top level - lists will handle it
-                    .NamedObjects.Where(item => item.IsCollidableOrCollidableList() && !IsTileShapeCollection(item));
+                    // Only use the top level NamedObjects. Don't go into the individual objects since those will be handled by their list
+                    .NamedObjects
+                    .Where(item => item.IsCollidableOrCollidableList() && !IsTileShapeCollection(item) && !item.DefinedByBase && !item.IsDisabled);
 
                 var hasObjectsCollidedAgainst = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ICollidableHasObjectsCollidedAgainst;
                 foreach (var item in itemsToGenerate)
@@ -685,9 +746,8 @@ namespace OfficialPlugins.CollisionPlugin
                             var innerForeach = forBlock.ForEach("var name in item.ItemsCollidedAgainst");
                             innerForeach.Line("item.LastFrameItemsCollidedAgainst.Add(name);");
                         }
-                        forBlock.Line($"item.ObjectsCollidedAgainst.Clear();");
-
-                        if(hasObjectsCollidedAgainst)
+                        forBlock.Line($"item.ItemsCollidedAgainst.Clear();");
+                        if (hasObjectsCollidedAgainst)
                         {
                             forBlock.Line($"item.LastFrameObjectsCollidedAgainst.Clear();");
                             {

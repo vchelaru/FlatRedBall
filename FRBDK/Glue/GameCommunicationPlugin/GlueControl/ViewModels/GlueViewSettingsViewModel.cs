@@ -1,17 +1,19 @@
 ﻿using CompilerLibrary.Models;
 using FlatRedBall.Glue.MVVM;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
 
 namespace GameCommunicationPlugin.GlueControl.ViewModels
 {
     public class GlueViewSettingsViewModel : ViewModel
     {
-        public bool EnableGameEditMode
+        public bool EnableLiveEdit
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool RestartOnFailedCommands
         {
             get => Get<bool>();
             set => Set(value);
@@ -65,6 +67,12 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             set => Set(value);
         }
 
+        public decimal GridAlpha
+        {
+            get => Get<decimal>();
+            set => Set(value);
+        }
+
         public decimal GridSize
         {
             get => Get<decimal>();
@@ -101,23 +109,29 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             set => Set(value);
         }
 
-        [DependsOn(nameof(EnableGameEditMode))]
-        public Visibility ShowWindowDefenderUi => EnableGameEditMode.ToVisibility();
+        [DependsOn(nameof(EnableLiveEdit))]
+        public Visibility ShowWindowDefenderUi => EnableLiveEdit.ToVisibility();
 
+        public GlueViewSettingsViewModel()
+        {
+            RestartOnFailedCommands = true;
+        }
 
 
         internal void SetFrom(CompilerSettingsModel model)
         {
             this.PortNumber = model.PortNumber;
+            this.RestartOnFailedCommands = model.RestartOnFailedCommands;
             this.ShowScreenBoundsWhenViewingEntities = model.ShowScreenBoundsWhenViewingEntities;
 
             this.ShowGrid = model.ShowGrid;
+            this.GridAlpha = model.GridAlpha;
             this.GridSize = model.GridSize;
             this.SetBackgroundColor = model.SetBackgroundColor;
             this.BackgroundRed = model.BackgroundRed;
             this.BackgroundGreen = model.BackgroundGreen;
             this.BackgroundBlue = model.BackgroundBlue;
-            this.EnableGameEditMode = model.GenerateGlueControlManagerCode;
+            this.EnableLiveEdit = model.GenerateGlueControlManagerCode;
             this.EmbedGameInGameTab = model.EmbedGameInGameTab;
             this.RestartScreenOnLevelContentChange = model.RestartScreenOnLevelContentChange;
 
@@ -129,9 +143,11 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
         internal void SetModel(CompilerSettingsModel compilerSettings)
         {
             compilerSettings.PortNumber = this.PortNumber;
+            compilerSettings.RestartOnFailedCommands = this.RestartOnFailedCommands;
             compilerSettings.ShowScreenBoundsWhenViewingEntities = this.ShowScreenBoundsWhenViewingEntities;
 
             compilerSettings.ShowGrid = this.ShowGrid;
+            compilerSettings.GridAlpha = this.GridAlpha;
             compilerSettings.GridSize = this.GridSize;
 
             compilerSettings.SetBackgroundColor = this.SetBackgroundColor;
@@ -140,7 +156,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             compilerSettings.BackgroundBlue = this.BackgroundBlue;
 
 
-            compilerSettings.GenerateGlueControlManagerCode = this.EnableGameEditMode;
+            compilerSettings.GenerateGlueControlManagerCode = this.EnableLiveEdit;
             compilerSettings.EmbedGameInGameTab = this.EmbedGameInGameTab;
             compilerSettings.RestartScreenOnLevelContentChange = this.RestartScreenOnLevelContentChange;
 
@@ -148,9 +164,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             compilerSettings.SnapSize = this.SnapSize;
             compilerSettings.PolygonPointSnapSize = this.PolygonPointSnapSize;
 
-            compilerSettings.ToolbarEntitiesAndStates.Clear();
-
-
+            compilerSettings.ToolbarObjects.Clear();
         }
     }
 }

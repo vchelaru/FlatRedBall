@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using FlatRedBall.Utilities;
 using System.Linq;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace FlatRedBall.IO.Csv
 {
@@ -794,7 +795,12 @@ namespace FlatRedBall.IO.Csv
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
             var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            foreach(var newKvp in newDictionary)
+#if !ANDROID
+            fields = fields.Where(fi => fi.GetCustomAttribute<IgnoreDataMemberAttribute>() == null).ToArray();
+            properties = properties.Where(pi => pi.GetCustomAttribute<IgnoreDataMemberAttribute>() == null).ToArray();
+#endif
+
+            foreach (var newKvp in newDictionary)
             {
                 var key = newKvp.Key;
 
@@ -1248,7 +1254,7 @@ namespace FlatRedBall.IO.Csv
             {
                 memberTypeIndexPairs[i].Index = -1;
 
-                #region See if the header at index i is a field
+#region See if the header at index i is a field
                 int j = 0;
                 foreach(FieldInfo fieldInfo in fieldInfos)
                 {
@@ -1270,7 +1276,7 @@ namespace FlatRedBall.IO.Csv
                 }
 #endregion
 
-                #region If we got this far, then it's not a field, so check if it's a property
+#region If we got this far, then it's not a field, so check if it's a property
 
                 j = 0;
                 foreach(PropertyInfo propertyInfo in propertyInfos)

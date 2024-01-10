@@ -1,11 +1,14 @@
 ﻿using FlatRedBall;
+using FlatRedBall.Math.Geometry;
 using Gum.Wireframe;
 using Microsoft.Xna.Framework;
 using RenderingLibrary;
 using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace GumCoreShared.FlatRedBall.Embedded
 {
@@ -149,6 +152,13 @@ namespace GumCoreShared.FlatRedBall.Embedded
                 GumParent.Width = frbObjectAsScalable.ScaleX * 2;
                 GumParent.Height = frbObjectAsScalable.ScaleY * 2;
             }
+            else
+            {
+                // This allows the user to position things according to the top-left of the Gum canvas and
+                // have that align with the center of the entity. Otherwise, positioning seems arbitrary.
+                GumParent.Width = 0;
+                GumParent.Height = 0;
+            }
             if(frbObjectAsIVisible != null)
             {
                 GumParent.Visible = frbObjectAsIVisible.AbsoluteVisible;
@@ -190,6 +200,187 @@ namespace GumCoreShared.FlatRedBall.Embedded
             toReturn.Z = FrbObject.Z;
 
             return toReturn;
+        }
+    }
+
+    public static class GraphicalUiElementExtensions
+    {
+        public static void SetCollision(this GraphicalUiElement graphicalUiElement, ShapeCollection shapeCollection, PositionedObject parent, bool createMissingShapes = false)
+        {
+            // this will do it only at the element level. Instances must be of shape type to be applied
+            if(graphicalUiElement.ElementSave != null)
+            {
+
+                for(int i = 0; i < graphicalUiElement.ElementSave.Instances.Count; i++)
+                {
+                    var instance = graphicalUiElement.ElementSave.Instances[i];
+
+                    if (instance.BaseType == "Circle")
+                    {
+                        Circle frbMatch = null;
+
+                        for(int j = 0; j < shapeCollection.Circles.Count; j++)
+                        {
+                            var candidate = shapeCollection.Circles[j];
+                            if(candidate.Name == instance.Name)
+                            {
+                                frbMatch = candidate;
+                                break;
+                            }
+                        }
+
+                        if(frbMatch == null && createMissingShapes)
+                        {
+                            frbMatch = new Circle();
+                            frbMatch.Name = instance.Name;
+                            frbMatch.AttachTo(parent);
+                            shapeCollection.Circles.Add(frbMatch);
+                        }
+
+                        if(frbMatch != null)
+                        {
+                            var gue = graphicalUiElement.GetGraphicalUiElementByName(instance.Name);
+
+                            if(gue != null)
+                            {
+                                frbMatch.Radius = gue.GetAbsoluteWidth() / 2.0f;
+
+                                SetFrbObjectWorldPosition(frbMatch, gue);
+                                frbMatch.SetRelativeFromAbsolute();
+                            }
+                        }
+                    }
+                    
+                    else if(instance.BaseType == "Rectangle")
+                    {
+                        AxisAlignedRectangle frbMatch = null;
+
+                        for (int j = 0; j < shapeCollection.AxisAlignedRectangles.Count; j++)
+                        {
+                            var candidate = shapeCollection.AxisAlignedRectangles[j];
+                            if (candidate.Name == instance.Name)
+                            {
+                                frbMatch = candidate;
+                                break;
+                            }
+                        }
+
+                        if(frbMatch == null && createMissingShapes)
+                        {
+                            frbMatch = new AxisAlignedRectangle();
+                            frbMatch.AttachTo(parent);
+                            frbMatch.Name = instance.Name;
+                            shapeCollection.AxisAlignedRectangles.Add(frbMatch);
+                        }
+
+                        if(frbMatch != null)
+                        {
+                            var gue = graphicalUiElement.GetGraphicalUiElementByName(instance.Name);
+                            
+                            if(gue != null)
+                            {
+                                frbMatch.Width = gue.GetAbsoluteWidth();
+                                frbMatch.Height = gue.GetAbsoluteWidth();
+
+                                SetFrbObjectWorldPosition(frbMatch, gue);
+                                frbMatch.SetRelativeFromAbsolute();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void SetSprites(this GraphicalUiElement graphicalUiElement, PositionedObject parent, bool createMissingSprites = false)
+        {
+            if(graphicalUiElement.ElementSave != null)
+            {
+                for (int i = 0; i < graphicalUiElement.ElementSave.Instances.Count; i++)
+                {
+                    var instance = graphicalUiElement.ElementSave.Instances[i];
+
+                    if(instance.BaseType == "Sprite")
+                    {
+                        global::FlatRedBall.Sprite frbMatch = null;
+
+                        for(int j = 0; j < parent.Children.Count; j++)
+                        {
+                            var candidate = parent.Children[j];
+
+                            if(candidate.Name == instance.Name && candidate is global::FlatRedBall.Sprite spriteCandidate)
+                            {
+                                frbMatch = spriteCandidate;
+                                break;
+                            }
+                        }
+
+                        if(frbMatch == null && createMissingSprites)
+                        {
+                            frbMatch = new global::FlatRedBall.Sprite();
+                            global::FlatRedBall.SpriteManager.AddSprite(frbMatch);
+                            frbMatch.Name = instance.Name;
+                            frbMatch.AttachTo(parent); // todo - need to support positioned objects inbetween 
+                        }
+
+                        if(frbMatch != null)
+                        {
+                            var gue = graphicalUiElement.GetGraphicalUiElementByName(instance.Name);
+
+                            if(gue != null)
+                            {
+                                frbMatch.Width = gue.GetAbsoluteWidth();
+                                frbMatch.Height = gue.GetAbsoluteHeight();
+
+                                SetFrbObjectWorldPosition(frbMatch, gue);
+                                frbMatch.SetRelativeFromAbsolute();
+
+                                var gumSprite = gue.RenderableComponent as RenderingLibrary.Graphics.Sprite;
+                                frbMatch.Texture = gumSprite.Texture;
+                                if (gumSprite.SourceRectangle == null)
+                                {
+                                    frbMatch.LeftTextureCoordinate = 0;
+                                    frbMatch.TopTextureCoordinate = 0;
+                                    frbMatch.RightTextureCoordinate = 1;
+                                    frbMatch.BottomTextureCoordinate = 1;
+                                }
+                                else
+                                {
+                                    var sourceRect = gumSprite.SourceRectangle.Value;
+                                    frbMatch.LeftTexturePixel = sourceRect.Left;
+                                    frbMatch.RightTexturePixel = sourceRect.Right;
+                                    frbMatch.TopTexturePixel = sourceRect.Top;
+                                    frbMatch.BottomTexturePixel = sourceRect.Bottom;
+                                }
+
+                                frbMatch.FlipHorizontal = gumSprite.GetAbsoluteFlipHorizontal();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void SetFrbObjectWorldPosition(global::FlatRedBall.PositionedObject frbMatch, GraphicalUiElement gue)
+        {
+            var centerScreenX = gue.GetAbsoluteCenterX();
+            var centerScreenY = gue.GetAbsoluteCenterY();
+
+            var camera = global::FlatRedBall.Camera.Main;
+
+            var xMultiple = camera.DestinationRectangle.Width / GraphicalUiElement.CanvasWidth;
+            var yMultiple = camera.DestinationRectangle.Height / GraphicalUiElement.CanvasHeight;
+
+            centerScreenX *= xMultiple;
+            centerScreenY *= yMultiple;
+
+            // 2 convert the screen to world
+            var worldPosition = new Vector3();
+            global::FlatRedBall.Math.MathFunctions.WindowToAbsolute(
+                (int)centerScreenX,
+                (int)centerScreenY,
+                ref worldPosition);
+
+            frbMatch.Position = worldPosition;
         }
     }
 }

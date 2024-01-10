@@ -12,9 +12,17 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CompilerLibrary.ViewModels;
+using ToolsUtilities;
 
 namespace GameCommunicationPlugin.GlueControl.CommandSending
 {
+    public enum SendImportance
+    {
+        IfNotBusy,
+        Normal,
+        RetryOnFailure
+    }
+
     public class CommandSender
     {
         #region Fields/Properties
@@ -25,24 +33,47 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
 
         public GlueViewSettingsViewModel GlueViewSettingsViewModel { get; set; }
         public CompilerViewModel CompilerViewModel { get; set; }
-        public bool IsConnected { get; internal set; }
+
+        bool isConnected;
+        public bool IsConnected 
+        { 
+            get => isConnected;
+            internal set
+            {
+                isConnected = value;
+
+                if (CompilerViewModel != null)
+                {
+                    CompilerViewModel.IsConnectedToGame = value;
+                }
+            }
+        }
+
+        public static CommandSender Self { get; private set; }
 
         #endregion
 
+        static CommandSender()
+        {
+            Self = new CommandSender();
+        }
+        private CommandSender() { }
         #region General Send
-        public async Task<ToolsUtilities.GeneralResponse<string>> Send(object dto, bool isImportant = true)
+
+
+        public async Task<ToolsUtilities.GeneralResponse<string>> Send(object dto, SendImportance importance = SendImportance.Normal)
         {
             var dtoTypeName = dto.GetType().Name;
 
             var serialized = JsonConvert.SerializeObject(dto);
 
-            return await SendCommand($"{dtoTypeName}:{serialized}", isImportant);
+            return await SendCommand($"{dtoTypeName}:{serialized}", importance);
         }
 
-        public async Task<ToolsUtilities.GeneralResponse<T>> Send<T>(object dto, bool isImportant = true)
+        public async Task<ToolsUtilities.GeneralResponse<T>> Send<T>(object dto, SendImportance importance = SendImportance.Normal)
         {
 
-            var sendResponse = await Send(dto, isImportant);
+            var sendResponse = await Send(dto, importance);
             var responseString = sendResponse.Succeeded ? sendResponse.Data : String.Empty;
 
             ToolsUtilities.GeneralResponse<T> toReturn = new ToolsUtilities.GeneralResponse<T>();
@@ -71,8 +102,9 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
         }
 
         string lastSend;
-        private async Task<ToolsUtilities.GeneralResponse<string>> SendCommand(string text, bool isImportant = true)
+        private async Task<ToolsUtilities.GeneralResponse<string>> SendCommand(string text, SendImportance importance = SendImportance.Normal)
         {
+            var isImportant = importance != SendImportance.IfNotBusy;
             var shouldPrint = isImportant && text?.StartsWith("SelectObjectDto:") == false;
 
             if(isImportant && CompilerViewModel.IsPrintEditorToGameCheckboxChecked)
@@ -109,7 +141,16 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
                 }
 
                 lastSend = text;
-                return await SendCommandNoSemaphore(text, isImportant, shouldPrint, shouldRetry:true);
+
+                int triesLeft = importance  == SendImportance.RetryOnFailure ? 5 : 1;
+                GeneralResponse<string> result = GeneralResponse<string>.UnsuccessfulResponse;
+
+                while(result.Succeeded == false && triesLeft > 0)
+                {
+                    triesLeft--;
+                    result = await SendCommandNoSemaphore(text, isImportant, shouldPrint);
+                }
+                return result;
             }
             finally
             {
@@ -118,7 +159,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
 
         }
 
-        private async Task<ToolsUtilities.GeneralResponse<string>> SendCommandNoSemaphore(string text, bool isImportant, bool shouldPrint, bool shouldRetry )
+        private async Task<ToolsUtilities.GeneralResponse<string>> SendCommandNoSemaphore(string text, bool isImportant, bool shouldPrint )
         {
             var returnValue = await SendPacket(text);
 
@@ -133,11 +174,6 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
             }
 
             var response = JsonConvert.DeserializeObject<ToolsUtilities.GeneralResponse<string>>(returnValue);
-
-            if(!response.Succeeded && shouldRetry)
-            {
-                return await SendCommandNoSemaphore(text, isImportant, shouldPrint, false);
-            }
 
             return response;
         }

@@ -222,7 +222,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             {
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newScreen);
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newScreen);
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
         }
 
@@ -234,7 +234,16 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                 if (gameScreen != null)
                 {
                     newScreen.BaseScreen = gameScreen.Name;
-                    GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(newScreen);
+
+                    //GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(newScreen);
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newScreen, nameof(newScreen.BaseScreen), null);
+
+                    if(gameScreen.UseGlobalContent)
+                    {
+                        // inherit
+                        newScreen.UseGlobalContent = true;
+                    }
+
                     shouldSave = true;
                 }
 

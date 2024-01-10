@@ -1,20 +1,11 @@
-﻿using FlatRedBall.PlatformerPlugin.Data;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.PlatformerPlugin.Data;
 using FlatRedBall.PlatformerPlugin.ViewModels;
 using FlatRedBall.Utilities;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace PlatformerPluginCore.Views
 {
@@ -77,6 +68,9 @@ namespace PlatformerPluginCore.Views
             values.Name = newItemName;
 
             ViewModel.PlatformerValues.Add(values);
+
+            // This adds new items to the dropdowns:
+            GlueCommands.Self.RefreshCommands.RefreshVariables();
         }
 
 

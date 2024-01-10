@@ -27,7 +27,10 @@ namespace TopDownPlugin.Data
                 MaxSpeed = 300,
                 AccelerationTime = .5f,
                 DecelerationTime = .25f,
-                ShouldChangeMovementDirection = TopDownValuesViewModel.VelocityChangeMode.UpdateFromInput
+                ShouldChangeMovementDirection = TopDownValuesViewModel.VelocityChangeMode.UpdateFromInput,
+                // intentionally don't set IsCustomDecelerationChecked to true. The user may not want that, but if they
+                // do, we should have CustomDecelerationValue set to a useful default
+                CustomDecelerationValue = 1000
             };
 
             topDownValues.Add(defaultValues.Name, defaultValues);

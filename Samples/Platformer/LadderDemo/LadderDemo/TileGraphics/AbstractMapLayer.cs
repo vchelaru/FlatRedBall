@@ -17,6 +17,20 @@ namespace TMXGlueLib
         [XmlAttribute("name")]
         public string Name { get; set; }
 
+        [XmlAttribute("id")]
+        public int Id { get; set; }
+
+
+        [XmlAttribute("tintcolor")]
+        public string TintColor { get; set; } = "#ffffff";
+
+
+        [XmlAttribute("opacity")]
+        public float Opacity
+        {
+            get; set;
+        } = 1.0f;
+
         private int? visibleField;
         [XmlAttribute("visible")]
         public int visible

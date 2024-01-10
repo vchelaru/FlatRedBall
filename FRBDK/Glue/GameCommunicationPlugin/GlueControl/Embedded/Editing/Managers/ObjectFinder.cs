@@ -114,7 +114,20 @@ namespace GlueControl.Managers
             return null;
         }
 
-
+        /// <summary>
+        /// Returns the element referenced by the argument NamedObjectSave's SourceClassType. If the NamedObjectSave
+        /// does not reference an element (such as if it is a Sprite), then this method returns null.
+        /// </summary>
+        /// <param name="nos">The NamedObjectSave to check the SourceClassType and return the matching Element.</param>
+        /// <returns>The matching GlueElement or null if one isn't found.</returns>
+        public GlueElement GetElement(NamedObjectSave nos)
+        {
+            if (nos?.SourceType == SourceType.Entity)
+            {
+                return GetEntitySave(nos.SourceClassType);
+            }
+            return null;
+        }
 
         public GlueElement GetElement(string elementName)
         {
@@ -165,6 +178,35 @@ namespace GlueControl.Managers
             return false;
         }
 
+        public GlueElement GetElementContaining(CustomVariable customVariable)
+        {
+            if (GlueProject != null)
+            {
+
+                foreach (EntitySave entitySave in GlueProject.Entities)
+                {
+                    if (entitySave.CustomVariables.Contains(customVariable))
+                    {
+                        return entitySave;
+                    }
+                }
+
+
+                foreach (ScreenSave screenSave in GlueProject.Screens)
+                {
+                    if (screenSave.CustomVariables.Contains(customVariable))
+                    {
+                        return screenSave;
+                    }
+                }
+
+                return null;
+            }
+            else
+            {
+                return null;
+            }
+        }
 
 
         #endregion
@@ -224,6 +266,80 @@ namespace GlueControl.Managers
             }
         }
 
+        public List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement)
+        {
+            var baseElements = new List<GlueElement>();
+
+            while (!string.IsNullOrEmpty(derivedElement.BaseElement))
+            {
+                var baseElement = GetElement(derivedElement.BaseElement);
+
+                if (baseElement == null)
+                {
+                    break;
+                }
+                else
+                {
+                    baseElements.Add(baseElement);
+                    derivedElement = baseElement;
+                }
+            }
+
+            return baseElements;
+        }
+
+        #endregion
+
+        #region Variables
+
+        public CustomVariable GetBaseCustomVariable(CustomVariable customVariable, GlueElement owner = null)
+        {
+            if (customVariable?.DefinedByBase == true)
+            {
+                owner = owner ?? GetElementContaining(customVariable);
+
+                if (owner != null)
+                {
+                    var baseOfOwner = GetBaseElement(owner);
+
+                    if (baseOfOwner != null)
+                    {
+                        var variableInBase = baseOfOwner.GetCustomVariable(customVariable.Name);
+
+                        return GetBaseCustomVariable(variableInBase, baseOfOwner);
+
+                    }
+                }
+            }
+
+            return customVariable;
+        }
+
+        public CustomVariable GetRootCustomVariable(CustomVariable customVariable)
+        {
+            var element = GetElementContaining(customVariable);
+
+            var baseVariable = GetBaseCustomVariable(customVariable, element);
+
+            if (!string.IsNullOrEmpty(baseVariable?.SourceObject))
+            {
+                var sourceObject = element.GetNamedObjectRecursively(baseVariable.SourceObject);
+                if (sourceObject != null)
+                {
+                    var sourceElement = GetElement(sourceObject);
+                    if (sourceElement != null)
+                    {
+                        var sourceVariable = sourceElement.GetCustomVariableRecursively(baseVariable.SourceObjectProperty);
+                        if (sourceVariable != null)
+                        {
+                            return GetRootCustomVariable(sourceVariable);
+                        }
+                    }
+                }
+            }
+
+            return baseVariable;
+        }
 
         #endregion
     }

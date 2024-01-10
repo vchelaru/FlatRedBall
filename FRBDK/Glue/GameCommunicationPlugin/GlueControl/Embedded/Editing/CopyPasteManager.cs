@@ -47,7 +47,22 @@ namespace GlueControl.Editing
                 }
                 if (keyboard.KeyPushed(Keys.V) && CopiedObjects != null)
                 {
-                    HandlePaste(itemGrabbed, selectedNamedObjects);
+                    if (CopiedObjectsOwner == null)
+                    {
+                        throw new InvalidOperationException("The CopiedObjectsOwner should not be null...");
+                    }
+                    HandlePaste(itemGrabbed, selectedNamedObjects, CopiedNamedObjects, CopiedObjects, CopiedObjectsOwner);
+                }
+                if (keyboard.KeyPushed(Keys.D) && selectedNamedObjects.Count > 0)
+                {
+                    var tempCopiedNamedObjects = new List<NamedObjectSave>();
+                    tempCopiedNamedObjects.AddRange(selectedNamedObjects);
+
+                    // create a temp list for the selected named objects
+                    var tempCopiedObjects = new List<INameable>();
+                    tempCopiedObjects.AddRange(selectedObjects);
+
+                    HandlePaste(itemGrabbed, selectedNamedObjects, tempCopiedNamedObjects, tempCopiedObjects, GlueState.Self.CurrentElement);
                 }
             }
         }
@@ -73,6 +88,10 @@ namespace GlueControl.Editing
                 message = $"Copied {selectedNamedObjects.Count} objects to clipboard";
             }
             FlatRedBall.Forms.Controls.Popups.ToastManager.Show(message);
+            if (GlueState.Self.CurrentElement == null && (CopiedNamedObjects.Count > 0 || CopiedObjects.Count > 0))
+            {
+                throw new InvalidOperationException();
+            }
 #endif
 
             CopiedObjectsOwner = GlueState.Self.CurrentElement;
@@ -99,7 +118,7 @@ namespace GlueControl.Editing
             return (x, y);
         }
 
-        private async void HandlePaste(IStaticPositionable itemGrabbed, List<NamedObjectSave> selectedNamedObjects)
+        private async void HandlePaste(IStaticPositionable itemGrabbed, List<NamedObjectSave> selectedNamedObjects, List<NamedObjectSave> copiedNamedObjects, List<INameable> copiedObjects, GlueElement copiedObjectsOwner)
         {
             var currentElement = GlueState.Self.CurrentElement;
 
@@ -107,7 +126,7 @@ namespace GlueControl.Editing
 
             List<Task> tasksToWait = new List<Task>();
 
-            Debug.WriteLine($"Looping through CopiedNamedObjects with count {CopiedNamedObjects.Count}");
+            Debug.WriteLine($"Looping through CopiedNamedObjects with count {copiedNamedObjects.Count}");
 
             var positionOnPaste =
                                 new Vector3(FlatRedBall.Gui.GuiManager.Cursor.WorldXAt(0), FlatRedBall.Gui.GuiManager.Cursor.WorldYAt(0), 0); // todo - make this better for 3D
@@ -123,8 +142,8 @@ namespace GlueControl.Editing
 
 
             var copyResponse = await GlueCommands.Self.GluxCommands.CopyNamedObjectListIntoElement(
-                CopiedNamedObjects,
-                CopiedObjectsOwner,
+                copiedNamedObjects,
+                copiedObjectsOwner,
                 currentElement);
 
             var newNamedObjects = copyResponse
@@ -136,7 +155,7 @@ namespace GlueControl.Editing
                 $" with offset {offsetX}, {offsetY}");
 
             List<Vector3> newPositionedOrdered = new List<Vector3>();
-            var oldPositionables = CopiedObjects
+            var oldPositionables = copiedObjects
                 .Select(item => item as IStaticPositionable)
                 .ToArray();
 
@@ -175,6 +194,13 @@ namespace GlueControl.Editing
                     var x = snappedLeft + offsetFromMinX;
                     var y = snappedBottom + offsetFromMinY;
 
+                    var newINameable = EditingManager.Self.GetObjectByName(newNos.InstanceName);
+                    if (newINameable is PositionedObject newPositionedObject && newPositionedObject.Parent != null)
+                    {
+                        x = x - newPositionedObject.Parent.X;
+                        y = y - newPositionedObject.Parent.Y;
+                    }
+
                     // place this where the cursor is - assuming the cursor is in the window
                     variableAssignments.Add(new NosVariableAssignment
                     {
@@ -189,33 +215,37 @@ namespace GlueControl.Editing
                         Value = y
                     });
 
-                    var newINameable = EditingManager.Self.GetObjectByName(newNos.InstanceName);
                     if (newINameable is IStaticPositionable positionable)
                     {
-                        positionable.X = x;
-                        positionable.Y = y;
+                        if (positionable is PositionedObject positionedObject && positionedObject.Parent != null)
+                        {
+                            positionedObject.RelativeX = x;
+                            positionedObject.RelativeY = y;
+                        }
+                        else
+                        {
+                            positionable.X = x;
+                            positionable.Y = y;
+                        }
                     }
 
-                    EditingManager.Self.Select(newNos, addToExistingSelection: true);
+                    var addToSelection = i != 0;
+
+                    EditingManager.Self.Select(newNos, addToExistingSelection: addToSelection);
                 }
 
                 await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(
                     variableAssignments,
                     currentElement,
-                    performSaveAndGenerateCode: true, updateUi: true, echoToGame: true);
+                    performSaveAndGenerateCode: true, updateUi: true, recordUndo: true, echoToGame: true);
 
             }
 
-            var newNosToSelect = newNamedObjects.FirstOrDefault();
-
-            // This currently echoes back to cause a double-select here. It's ...okay, we can deal with it later, but 
-            // we want to do this so it selects the tree node
-            if (newNosToSelect != null)
+            // It is possible for a paste to contain 0 items
+            if (newNamedObjects.Count > 0)
             {
-                // It is possible for a paste to contain 0 items
-                await GlueState.Self.SetCurrentNamedObjectSave(newNosToSelect, currentElement);
+                await GlueState.Self.SetCurrentNamedObjectSaves(newNamedObjects, currentElement);
             }
-
         }
 
         private List<NosVariableAssignment> GetAfterPasteVariableAssignments(float? offsetX, float? offsetY, Vector3 positionOnPaste, List<NamedObjectSave> newNamedObjects)
@@ -281,8 +311,5 @@ namespace GlueControl.Editing
         }
 
         #endregion
-
-
-
     }
 }

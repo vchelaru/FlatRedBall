@@ -1,18 +1,9 @@
-﻿using FlatRedBall.Glue.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TileGraphicsPlugin.Controllers;
 using TileGraphicsPlugin.ViewModels;
 
@@ -67,7 +58,7 @@ namespace TileGraphicsPlugin.Views
             //this.ViewModel.CollisionTileTypeName = newName;
             this.ViewModel.ForceSetCollisionTileTypeName(newName);
 
-            TileShapeCollectionsPropertiesController.Self.RefreshAvailableTypes();
+            TileShapeCollectionsPropertiesController.Self.RefreshAvailableTypes(GlueState.Self.CurrentElement);
         }
     }
 }

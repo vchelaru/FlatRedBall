@@ -30,7 +30,7 @@ namespace FlatRedBall.Glue.Controls
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
 
         private void DoneButton_Click(object sender, EventArgs e)

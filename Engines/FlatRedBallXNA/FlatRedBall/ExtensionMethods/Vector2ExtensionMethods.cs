@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Math;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,7 +13,7 @@ namespace Microsoft.Xna.Framework
         /// and increasing the angle moves counterclockwise. 
         /// </summary>
         /// <param name="vector">The argument vector.</param>
-        /// <returns>The angle in radians, or null if the Vector has X and Y values both equal to 0.</returns>
+        /// <returns>The angle in radians between 0 and 2 * PI, or null if the Vector has X and Y values both equal to 0.</returns>
         public static float? Angle(this Vector2 vector)
         {
             if (vector.X == 0 && vector.Y == 0)
@@ -21,7 +22,25 @@ namespace Microsoft.Xna.Framework
             }
             else
             {
-                return (float)System.Math.Atan2(vector.Y, vector.X);
+                return MathFunctions.RegulateAngle( (float) System.Math.Atan2(vector.Y, vector.X));
+            }
+        }
+
+        /// <summary>
+        /// Returns the angle in degrees of the argument vector, where 0 is to the right,
+        /// and increasing the angle moves counterclockwise.
+        /// </summary>
+        /// <param name="vector">The argument angle.</param>
+        /// <returns>The angle in degrees between 0 and 360, or null if the Vector has X and Y values both equal to 0.</returns>
+        public static float? AngleDegrees(this Vector2 vector)
+        {
+            if (vector.X == 0 && vector.Y == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return MathHelper.ToDegrees(MathFunctions.RegulateAngle((float)System.Math.Atan2(vector.Y, vector.X)));
             }
         }
 
@@ -98,10 +117,30 @@ namespace Microsoft.Xna.Framework
             }
         }
 
-        public static Vector2 FromAngle(float angle)
+        /// <summary>
+        /// Returns a unit vector pointing in the direction specified by the radians argument.
+        /// </summary>
+        /// <param name="angleRadians">The direction in radians, where 0 is to the right, and values
+        /// increase counterclockwise.</param>
+        /// <returns></returns>
+        public static Vector2 FromAngle(float angleRadians)
         {
-            return new Vector2((float)Math.Cos(angle),
-                (float)Math.Sin(angle));
+            return new Vector2((float)Math.Cos(angleRadians),
+                (float)Math.Sin(angleRadians));
+        }
+
+        /// <summary>
+        /// Returns a unit vector pointing in the direction specified by the degrees argument.
+        /// </summary>
+        /// <param name="angleDegrees">The direction in degrees, where 0 is to the right, and values
+        /// increasing counterclockwise.</param>
+        /// <returns></returns>
+        public static Vector2 FromAngleDegrees(float angleDegrees)
+        {
+            var angleRadians = MathHelper.ToRadians(angleDegrees);
+            return new Vector2(
+                (float)Math.Cos(angleRadians),
+                (float)Math.Sin(angleRadians));
         }
 
         /// <summary>
@@ -120,5 +159,9 @@ namespace Microsoft.Xna.Framework
             return Vector2ExtensionMethods.FromAngle(angleRadians) * vector2.Length();
         }
 
+        public static Vector2 AtAngleDegrees(this Vector2 vector2, float angleDegrees)
+        {
+            return Vector2ExtensionMethods.FromAngleDegrees(angleDegrees) * vector2.Length();
+        }
     }
 }

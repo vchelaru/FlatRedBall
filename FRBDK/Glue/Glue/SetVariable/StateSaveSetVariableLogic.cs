@@ -33,12 +33,12 @@ namespace FlatRedBall.Glue.SetVariable
                 }
                 else
                 {
-                    ReactToStateNameChange((string)oldValue, stateSave, category, stateOwner);
+                    ReactToStateRenamed((string)oldValue, stateSave, category, stateOwner);
                 }
             }
         }
 
-        private static void ReactToStateNameChange(string oldValue, StateSave stateSave, StateSaveCategory category, GlueElement stateOwner)
+        private static void ReactToStateRenamed(string oldValue, StateSave stateSave, StateSaveCategory category, GlueElement stateOwner)
         {
             PluginManager.ReactToStateNameChange(stateOwner, oldValue, stateSave.Name);
 
@@ -86,11 +86,72 @@ namespace FlatRedBall.Glue.SetVariable
                 }
             }
 
+            // Other elements may reference this
+            var glueProject = GlueState.Self.CurrentGlueProject;
+            var qualifiedType = stateOwner.Name.Replace("//", ".").Replace("\\", ".");
+            if(category != null)
+            {
+                qualifiedType += "." + category.Name;
+            }
+            else
+            {
+                qualifiedType += ".VariableState";
+            }
+
+            foreach (var element in glueProject.Entities)
+            {
+                if(element == stateOwner) continue; 
+
+                if(HandleRenamedState(element, qualifiedType, oldValue, stateSave))
+                {
+                    objectsToRegenerate.Add(element);
+                }
+            }
+            foreach(var element in glueProject.Screens)
+            {
+                if (element == stateOwner) continue;
+
+                if (HandleRenamedState(element, qualifiedType, oldValue, stateSave))
+                {
+                    objectsToRegenerate.Add(element);
+                }
+            }
+
             foreach(var element in objectsToRegenerate)
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             }
 
+        }
+
+        private static bool HandleRenamedState(GlueElement element, string qualifiedType, string oldName, StateSave stateSave)
+        {
+            var didChange = false;
+
+            foreach(var variable in element.CustomVariables)
+            {
+                var variableType = variable.Type;
+
+                if(variableType == qualifiedType && (variable.DefaultValue as string) == oldName)
+                {
+                    variable.DefaultValue = stateSave.Name;
+                    didChange = true;
+                }
+            }
+
+            foreach(var state in element.AllStates)
+            {
+                foreach(var variable in state.InstructionSaves)
+                {
+                    if(variable.Type == qualifiedType && (variable.Value as string) == oldName)
+                    {
+                        variable.Value = stateSave.Name;
+                        didChange = true;
+                    }
+                }
+            }
+
+            return didChange;
         }
     }
 }

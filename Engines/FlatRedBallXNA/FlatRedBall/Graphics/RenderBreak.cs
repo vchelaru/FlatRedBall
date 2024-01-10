@@ -1,5 +1,5 @@
 //#if DESKTOP_GL || WINDOWS
-#if WINDOWS
+#if WINDOWS|| MONOGAME_381
 #define USE_CUSTOM_SHADER
 #endif
 
@@ -11,6 +11,7 @@ using FlatRedBall.Utilities;
 #else
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using FlatRedBall.IO;
 #endif
 
 namespace FlatRedBall.Graphics
@@ -21,7 +22,6 @@ namespace FlatRedBall.Graphics
 
         public int ItemNumber;
 
-        Texture2D mTexture;
         public PrimitiveType PrimitiveType;
 
         public string LayerName;
@@ -75,11 +75,7 @@ namespace FlatRedBall.Graphics
 
         public TextureFilter TextureFilter;
 
-
-        public Texture2D Texture
-        {
-            get { return mTexture; }
-        }
+        public Texture2D Texture;
 
         public TextureAddressMode TextureAddressMode;
         private static TextureFilter _originalTextureFilter;
@@ -104,7 +100,7 @@ namespace FlatRedBall.Graphics
 
             if (sprite != null)
             {
-                if (sprite.Texture != null && sprite.Texture.IsDisposed)
+                if (sprite.mTexture != null && sprite.mTexture.IsDisposed)
                 {
                     var msg = "The Sprite with the name \"" + sprite.Name +
                         "\" references a disposed texture of the name " + sprite.Texture.Name +
@@ -128,13 +124,23 @@ namespace FlatRedBall.Graphics
                     throw new ObjectDisposedException(msg);
                 }
 
-                mTexture = sprite.Texture;
+                try
+                {
+                    Texture = sprite.mTexture;
+                }
+                catch(ObjectDisposedException)
+                {
+                    // no big deal if it's disposed, that probably means we are switching to a new screen and the render breaks
+                    // for this frame are being recorded. We can ignore this:
 
-                ColorOperation = sprite.ColorOperation;
-                BlendOperation = sprite.BlendOperation;
+                    Texture = null;
+                }
+
+                ColorOperation = sprite.mColorOperation;
+                BlendOperation = sprite.mBlendOperation;
                 TextureFilter = sprite.TextureFilter.HasValue ? sprite.TextureFilter.Value : FlatRedBallServices.GraphicsOptions.TextureFilter;
 
-                if (sprite.Texture == null)
+                if (sprite.mTexture == null)
                 {
 
                     // requirement for reach profile - this shouldn't impact anything
@@ -146,9 +152,9 @@ namespace FlatRedBall.Graphics
                 }
 
 
-                Red = sprite.Red;
-                Green = sprite.Green;
-                Blue = sprite.Blue;
+                Red = sprite.mRed;
+                Green = sprite.mGreen;
+                Blue = sprite.mBlue;
             }
             else
             {
@@ -156,7 +162,7 @@ namespace FlatRedBall.Graphics
                 Green = 0;
                 Blue = 0;
 
-                mTexture = null;
+                Texture = null;
 
                 ColorOperation = ColorOperation.Texture;
 
@@ -201,7 +207,7 @@ namespace FlatRedBall.Graphics
                     throw new ObjectDisposedException("Cannot create render break with disposed Texture2D");
                 }
 
-                mTexture = text.Font.Textures[textureIndex];
+                Texture = text.Font.Textures[textureIndex];
 
                 ColorOperation = text.ColorOperation;
                 BlendOperation = text.BlendOperation;
@@ -209,7 +215,7 @@ namespace FlatRedBall.Graphics
             }
             else
             {
-                mTexture = null;
+                Texture = null;
                 ColorOperation = ColorOperation.Texture;
                 BlendOperation = BlendOperation.Regular;
                 TextureAddressMode = TextureAddressMode.Clamp;
@@ -234,7 +240,7 @@ namespace FlatRedBall.Graphics
                 throw new ObjectDisposedException("Cannot create render break with disposed Texture2D");
             }
 
-            mTexture = texture;
+            Texture = texture;
             ColorOperation = colorOperation;
             BlendOperation = blendOperation;
             TextureAddressMode = textureAddressMode;
@@ -274,7 +280,7 @@ namespace FlatRedBall.Graphics
 
             return sprite.mTexture != Texture ||
                 sprite.mColorOperation != ColorOperation ||
-                sprite.BlendOperation != BlendOperation ||
+                sprite.mBlendOperation != BlendOperation ||
                 sprite.TextureAddressMode != TextureAddressMode ||
                 (sprite.TextureFilter != null &&
                 sprite.TextureFilter != TextureFilter) ||
@@ -303,7 +309,7 @@ namespace FlatRedBall.Graphics
             //if (Renderer.RendererDiagnosticSettings.RenderBreaksPerformStateChanges)
             {
 
-                if (ColorOperation != Graphics.ColorOperation.Color)
+                if (ColorOperation != ColorOperation.Color)
                 {
                     Renderer.Texture = Texture;
                 }
@@ -354,18 +360,45 @@ namespace FlatRedBall.Graphics
 
         public override string ToString()
         {
-            string textureName = "<null texture>";
+            var hasAlreadyIncludedType = false;
+            string toReturn = "<null texture>";
             if (this.Texture != null)
             {
-                textureName = this.Texture.Name;
+                if(!FlatRedBall.IO.FileManager.IsRelative(Texture.Name))
+                {
+                    toReturn = FileManager.MakeRelative(this.Texture.Name);
+
+                }
+                else
+                {
+                    toReturn = this.Texture.Name;
+                }
+            }
+#if DEBUG
+            else
+            {
+                hasAlreadyIncludedType = true;
+                toReturn = ObjectCausingBreak?.GetType().Name;
             }
 
-            return textureName;
+
+            var byPrefix = hasAlreadyIncludedType ? null : "  by";
+
+            if (ObjectCausingBreak is INameable nameable && !string.IsNullOrEmpty(nameable.Name))
+            {
+                toReturn += $"{byPrefix} {nameable.Name}";
+            }
+            else if(!hasAlreadyIncludedType)
+            {
+                toReturn += $"{byPrefix} {ObjectCausingBreak?.GetType().Name}";
+            }
+#endif
+            return toReturn;
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
         public void Cleanup()
         {

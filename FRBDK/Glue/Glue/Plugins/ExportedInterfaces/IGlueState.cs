@@ -3,6 +3,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers;
+using System.Linq;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 {
@@ -90,7 +91,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
         List<ProjectBase> GetProjects();
         IEnumerable<ReferencedFileSave> GetAllReferencedFiles();
-
+        bool IsProjectLoaded(VisualStudioProject project);
     }
 
     public class GlueStateSnapshot : IGlueState
@@ -176,6 +177,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         }
 
         public IEnumerable<ProjectBase> SyncedProjects { get; set; }
+
+        public bool IsProjectLoaded(VisualStudioProject project)
+        {
+            return CurrentMainProject == project || SyncedProjects.Contains(project);
+        }
 
         public VisualStudioProject CurrentMainContentProject
         {

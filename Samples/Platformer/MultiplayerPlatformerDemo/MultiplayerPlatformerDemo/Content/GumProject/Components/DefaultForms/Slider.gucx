@@ -222,6 +222,7 @@
   </State>
   <Category>
     <Name>SliderCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
   </Category>
   <Instance>
     <Name>LineInstance</Name>

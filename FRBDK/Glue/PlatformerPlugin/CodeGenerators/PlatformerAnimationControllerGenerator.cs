@@ -58,7 +58,9 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
         ForceTo1,
         NoAssignment,
         BasedOnVelocityMultiplier,
-        BasedOnMaxSpeedRatioMultiplier
+        BasedOnMaxSpeedRatioMultiplier,
+        BasedOnHorizontalInputMultiplier
+
     }
 
     public class PlatformerAnimationConfiguration
@@ -74,6 +76,9 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
 
         public float? AbsoluteXVelocityAnimationSpeedMultiplier { get; set; }
         public float? AbsoluteYVelocityAnimationSpeedMultiplier { get; set; }
+
+        public float? MinHorizontalInputAbsolute { get; set; }
+        public float? MaxHorizontalInputAbsolute { get; set; }
 
         public float? MaxSpeedXRatioMultiplier { get; set; }
         public float? MaxSpeedYRatioMultiplier { get; set; }
@@ -113,7 +118,8 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
 
         public void AddLayer(PlatformerAnimationConfiguration configuration)
         {
-            var layer = this.AddLayer();
+            var layer = new FlatRedBall.Graphics.Animation.AnimationLayer();
+            this.Layers.Add(layer);
 
             platformerAnimationConfigurations.Add(configuration);
 
@@ -138,6 +144,7 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
                 }
                 bool shouldSet = true;
                 var absoluteXVelocity = System.Math.Abs(PlatformerEntity.XVelocity);
+                var absoluteInput = System.Math.Abs(PlatformerEntity.HorizontalInput.Value);
                 var yVelocity = PlatformerEntity.YVelocity;
                 if(shouldSet && !string.IsNullOrEmpty( configuration.MovementName))
                 {
@@ -148,6 +155,8 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
                 shouldSet = shouldSet && (yVelocity < configuration.MinYVelocity) == false;
                 shouldSet = shouldSet && (absoluteXVelocity > configuration.MaxXVelocityAbsolute) == false;
                 shouldSet = shouldSet && (yVelocity > configuration.MaxYVelocity) == false;
+                shouldSet = shouldSet && (absoluteInput < configuration.MinHorizontalInputAbsolute) == false;
+                shouldSet = shouldSet && (absoluteInput > configuration.MaxHorizontalInputAbsolute) == false;
 
                 shouldSet = shouldSet &&
                     (configuration.OnGroundRequirement == null || PlatformerEntity.IsOnGround == configuration.OnGroundRequirement);
@@ -216,6 +225,15 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
                                             asSprite.AnimationSpeed = configuration.MaxSpeedYRatioMultiplier.Value * System.Math.Abs(yVelocity) / PlatformerEntity.MaxAbsoluteYVelocity;
                                         }
                                     }
+                                }
+                            }
+                            break;
+                        case AnimationSpeedAssignment.BasedOnHorizontalInputMultiplier:
+                            {
+                                var asSprite = this.AnimatedObject as FlatRedBall.Sprite;
+                                if (asSprite != null)
+                                {
+                                    asSprite.AnimationSpeed = PlatformerEntity.HorizontalInput.Value;
                                 }
                             }
                             break;

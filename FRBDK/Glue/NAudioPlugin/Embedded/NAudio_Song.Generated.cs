@@ -1,15 +1,50 @@
-﻿using NAudio.Vorbis;
+﻿$GLUE_VERSIONS$
+using FlatRedBall.Audio;
 using NAudio.Wave;
 using System;
 using System.IO;
+using NAudio.Utils;
 
 namespace FlatRedBall.NAudio
 {
     public class NAudio_Song : IDisposable
+#if ISongInFrb
+        , ISong
+#endif
     {
-        NAudio_LoopReader reader;
+        public bool IsDisposed { get; private set; }
+        AudioFileReader reader;
+
         WaveOutEvent waveOut;
-        WaveChannel32 waveChannel;
+        LoopStream loopStream;
+
+        public event EventHandler PlaybackStopped;
+
+        //public float LoopStartSeconds
+        //{
+        //    get
+        //    {
+        //        return BytesToSeconds(loopStream.LoopStartBytes);
+        //    }
+        //}
+
+        //public int LoopStartBytes
+        //{
+        //    get => loopStream.LoopStartBytes;
+        //    set
+        //    {
+        //        loopStream.LoopStartBytes = value;
+        //    }
+        //}
+
+        //public int LoopEndBytes
+        //{
+        //    get => loopStream.LoopEndBytes;
+        //    set
+        //    {
+        //        loopStream.LoopEndBytes = value;
+        //    }
+        //}
 
         public bool IsPlaying
         {
@@ -28,36 +63,80 @@ namespace FlatRedBall.NAudio
             set
             {
                 volume = value;
-                waveChannel.Volume = volume;
+                if (reader != null)
+                {
+                    reader.Volume = volume;
+                }
             }
         }
         public bool IsRepeating
         {
-            get => this.reader.IsRepeating;
+            get => this.loopStream.EnableLooping;
             set
             {
-                this.reader.IsRepeating = value;
+                this.loopStream.EnableLooping = value;
             }
         }
 
+        public string Name { get; set; }
+
         public NAudio_Song(string fileName)
         {
-            this.reader = new NAudio_LoopReader(fileName);
-            this.reader.IsRepeating = true;
-            this.reader.Position = 0;
-            this.waveChannel = new WaveChannel32(this.reader, volume, 0);
-            this.waveOut = new WaveOutEvent();
-            this.waveOut.Init(this.waveChannel);
+            var fullFile = fileName;
+            if (FlatRedBall.IO.FileManager.IsRelative(fullFile))
+            {
+                fullFile = FlatRedBall.IO.FileManager.RelativeDirectory + fileName;
+            }
+            var extension = FlatRedBall.IO.FileManager.GetExtension(fullFile);
+            if (extension == "mp3")
+            {
+#if DEBUG
+                if(!System.IO.File.Exists(fullFile))
+                {
+                    throw new FileNotFoundException($"Could not find NAudio song file: {fullFile}");
+                }
+#endif
+                this.reader = new AudioFileReader(fullFile);
+                loopStream = new LoopStream(reader);
+            }
+            else
+            {
+                throw new NotImplementedException($"The extension {extension} is not supported");
+            }
+            this.Name = fileName;
+
+            waveOut = new WaveOutEvent();
+            waveOut.Init(loopStream);
+            waveOut.PlaybackStopped += WaveOut_PlaybackStopped;
+        }
+
+        private void WaveOut_PlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            PlaybackStopped?.Invoke(this, null);
         }
 
         public void Play()
         {
+            CheckDisposed();
             this.waveOut.Play();
+        }
+
+        private void CheckDisposed()
+        {
+            if (IsDisposed)
+            {
+                throw new InvalidOperationException($"The NAudio_Song {Name} is disposed, so it cannot be played.");
+            }
         }
 
         public void StartOver()
         {
-            this.reader.Position = 0;
+            CheckDisposed();
+
+            if (reader != null)
+            {
+                this.reader.Position = 0;
+            }
             this.waveOut.Play();
         }
 
@@ -68,12 +147,12 @@ namespace FlatRedBall.NAudio
 
             if (needsToDispose)
             {
-                waveOut.Dispose();
-                reader.Dispose();
-                waveChannel.Dispose();
+                waveOut?.Dispose();
+                reader?.Dispose();
+                loopStream?.Dispose();
                 waveOut = null;
                 reader = null;
-                waveChannel = null;
+                loopStream = null;
             }
         }
 
@@ -88,6 +167,46 @@ namespace FlatRedBall.NAudio
         public void Dispose()
         {
             TryDisposeContainedObjects();
+
+            IsDisposed = true;
         }
+
+        public TimeSpan Position
+        {
+            get
+            {
+                //var rawPosition = (float) loopStream..GetPositionTimeSpan().TotalSeconds;
+                //loopStream.Position 
+
+                // This returns the position read in the stream, but not how far
+                // the song has played:
+                //var loopPositionBytes = loopStream.Position;
+                //return BytesToSeconds(loopPositionBytes);
+
+                var rawPosition = (float)waveOut.GetPositionTimeSpan().TotalSeconds;
+                return TimeSpan.FromSeconds(rawPosition % Duration.TotalSeconds);
+            }
+            set
+            {
+                var bytes = SecondsToBytes((float)value.TotalSeconds);
+                loopStream.Position = bytes;
+            }
+        }
+
+        private float BytesToSeconds(long bytes)
+        {
+            var timespan = TimeSpan.FromMilliseconds(
+                (double)(bytes /
+                (waveOut.OutputWaveFormat.Channels * waveOut.OutputWaveFormat.BitsPerSample / 8)) * 1000.0 / (double)waveOut.OutputWaveFormat.SampleRate);
+
+            return (float)timespan.TotalSeconds;
+        }
+
+        private long SecondsToBytes(float seconds)
+        {
+            return (long)((seconds * (float)waveOut.OutputWaveFormat.SampleRate * (waveOut.OutputWaveFormat.Channels * waveOut.OutputWaveFormat.BitsPerSample / 8)));
+        }
+
+        public TimeSpan Duration => reader.TotalTime;
     }
 }

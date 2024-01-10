@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using FlatRedBall.Instructions;
 using FlatRedBall.Content.Math.Geometry;
 using FlatRedBall.IO;
+using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.Graphics.Animation
 {
@@ -99,6 +100,7 @@ namespace FlatRedBall.Graphics.Animation
         /// </summary>
         public float RelativeY;
 
+
         /// <summary>
         /// Shapes associated with this animation. This may be null, or it may contain any number of shapes which can be used
         /// for collision.
@@ -114,6 +116,8 @@ namespace FlatRedBall.Graphics.Animation
             get;
             private set;
         }
+
+        public Vector3 RelativePosition => new Vector3(RelativeX, RelativeY, 0);
 
         #endregion
 

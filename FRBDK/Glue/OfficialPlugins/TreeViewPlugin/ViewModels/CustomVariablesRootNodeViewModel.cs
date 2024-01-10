@@ -3,6 +3,7 @@ using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Linq;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
@@ -23,8 +24,17 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 int indexToAddAt = Children.Count;
                 var text = GetDisplayTextForCustomVariable(glueElement.CustomVariables[indexToAddAt]);
                 var node = new NodeViewModel(this);
-                node.ImageSource = VariableIcon;
-                node.Tag = glueElement.CustomVariables[indexToAddAt];
+
+                var variable = glueElement.CustomVariables[indexToAddAt];
+                if(variable.DefinedByBase)
+                {
+                    node.ImageSource = VariableIconDerived;
+                }
+                else
+                {
+                    node.ImageSource = VariableIcon;
+                }
+                node.Tag = variable;
                 node.Text = text;
                 Children.Add(node);
             }
@@ -57,6 +67,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     treeNode.Text = textToSet;
                 }
+
+                var desiredIcon = customVariable.DefinedByBase ? VariableIconDerived : VariableIcon;
+
+                if(desiredIcon != treeNode.ImageSource)
+                {
+                    treeNode.ImageSource = desiredIcon;
+                }
+
 
                 // Vic says - no need to support disabled custom variables
                 //if (mSaveObject.NamedObjects[i].IsDisabled)

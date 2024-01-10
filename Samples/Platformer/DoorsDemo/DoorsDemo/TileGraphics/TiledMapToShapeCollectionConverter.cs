@@ -57,7 +57,7 @@ namespace TMXGlueLib
             AxisAlignedRectangle rectangle;
             Circle circle;
 
-            ConvertTiledObjectToFrbShape(@object, out polygon, out rectangle, out circle);
+            ConvertTiledObjectToFrbShape(@object, true, out polygon, out rectangle, out circle);
 
             if (polygon != null)
             {
@@ -73,7 +73,7 @@ namespace TMXGlueLib
             }
         }
 
-        public static void ConvertTiledObjectToFrbShape(mapObjectgroupObject @object, out Polygon polygon, out AxisAlignedRectangle rectangle, out Circle circle)
+        public static void ConvertTiledObjectToFrbShape(mapObjectgroupObject @object, bool applyVisibility, out Polygon polygon, out AxisAlignedRectangle rectangle, out Circle circle)
         {
             polygon = null;
             rectangle = null;
@@ -85,6 +85,10 @@ namespace TMXGlueLib
                     // TODO: Make this a rectangle object
                     polygon = ConvertTmxObjectToFrbPolygon(@object.Name,
                         @object.x, @object.y, @object.Rotation, tiledPolygon.points, true);
+                    if (applyVisibility)
+                    {
+                        polygon.Visible = tiledPolygon.Visible == 1;
+                    }
                 }
             }
 
@@ -94,6 +98,7 @@ namespace TMXGlueLib
                 {
                     polygon = ConvertTmxObjectToFrbPolygon(@object.Name,
                         @object.x, @object.y, @object.Rotation, polyline.points, false);
+                    polygon.Visible = polyline.Visible == 1;
                 }
             }
 
@@ -109,6 +114,10 @@ namespace TMXGlueLib
                         ScaleX = @object.width / 2,
                         ScaleY = @object.height / 2,
                     };
+                    if (applyVisibility)
+                    {
+                        rectangle.Visible = @object.Visible == 1;
+                    }
 
                 }
                 else if (@object.ellipse != null && @object.width == @object.height)
@@ -120,7 +129,10 @@ namespace TMXGlueLib
                         Y = (float)-@object.y - (@object.height / 2),
                         Radius = @object.width / 2
                     };
-
+                    if (applyVisibility)
+                    {
+                        circle.Visible = @object.Visible == 1;
+                    }
                 }
                 else
                 {

@@ -104,8 +104,9 @@ namespace FlatRedBall.Forms.Controls.Primitives
         #region Events
 
         public event EventHandler ValueChanged;
-
         public event EventHandler ValueChangeCompleted;
+
+        public event EventHandler ValueChangedByUi;
 
         #endregion
 
@@ -213,10 +214,10 @@ namespace FlatRedBall.Forms.Controls.Primitives
         }
 
         protected virtual void OnValueChanged(double oldValue, double newValue) { }
-        protected void RaiseValueChangeCompleted()
-        {
-            ValueChangeCompleted?.Invoke(this, null);
-        }
+
+        protected void RaiseValueChangeCompleted() => ValueChangeCompleted?.Invoke(this, null);
+
+        protected void RaiseValueChangedByUi() => ValueChangedByUi?.Invoke(this, null);
 
         protected abstract void UpdateThumbPositionToCursorDrag(Cursor cursor);
 

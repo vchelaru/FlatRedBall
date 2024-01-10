@@ -20,6 +20,7 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.FormHelpers;
 using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Elements;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -92,7 +93,7 @@ namespace OfficialPlugins.MonoGameContent
 
         public override void StartUp()
         {
-            this.AddMenuItemTo("Content Pipeline Settings", HandleContentPipelineSettings, "Content");
+            this.AddMenuItemTo(Localization.Texts.ContentPipelineSettings, Localization.MenuIds.ContentPipelineSettingsId, HandleContentPipelineSettings, Localization.MenuIds.ContentId);
 
             CreateController();
 
@@ -145,10 +146,10 @@ namespace OfficialPlugins.MonoGameContent
                 var forcePngsToPipeline = controller.Settings.UseContentPipelineOnAllPngs;
                 if (BuildLogic.IsBuiltByContentPipeline(rfs, forcePngsToPipeline))
                 {
-                    menuToModify.Add("Rebuild Content Pipeline File (xnb)", (not, used) =>
+                    menuToModify.Add("Rebuild Content Pipeline File (xnb)", async (not, used) =>
                     {
                         var fullFileName = GlueCommands.Self.GetAbsoluteFileName(rfs);
-                        BuildLogic.Self.TryAddXnbReferencesAndBuild(fullFileName, GlueState.CurrentMainProject, false, rebuild:true);
+                        await BuildLogic.Self.TryAddXnbReferencesAndBuild(fullFileName, GlueState.CurrentMainProject, false, rebuild:true);
                     });
                 }
 
@@ -234,22 +235,22 @@ namespace OfficialPlugins.MonoGameContent
 
             foreach (VisualStudioProject syncedProject in GlueState.SyncedProjects)
             {
-                BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(syncedProject, rfs, viewModel.UseContentPipelineOnPngs);
+                _=BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(syncedProject, rfs, viewModel.UseContentPipelineOnPngs);
             }
         }
 
-        private void HandleNewFile(ReferencedFileSave newFile)
+        private void HandleNewFile(ReferencedFileSave newFile, AssetTypeInfo assetTypeInfo)
         {
 
             if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( GlueState.CurrentMainProject ))
             {
-                BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(GlueState.CurrentMainProject, newFile, viewModel.UseContentPipelineOnPngs);
+                _=BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(GlueState.CurrentMainProject, newFile, viewModel.UseContentPipelineOnPngs);
             }
             foreach(VisualStudioProject project in GlueState.SyncedProjects)
             {
                 if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( project ))
                 {
-                    BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(project, newFile, viewModel.UseContentPipelineOnPngs);
+                    _=BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(project, newFile, viewModel.UseContentPipelineOnPngs);
                 }
             }
         }
@@ -260,12 +261,12 @@ namespace OfficialPlugins.MonoGameContent
             controller.LoadOrCreateSettings();
             viewModel.UseContentPipelineOnPngs = controller.Settings.UseContentPipelineOnAllPngs;
             aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
-            BuildLogic.Self.RefreshBuiltFilesFor(GlueState.CurrentMainProject, viewModel.UseContentPipelineOnPngs, controller);
+            _ = BuildLogic.Self.RefreshBuiltFilesFor(GlueState.CurrentMainProject, viewModel.UseContentPipelineOnPngs, controller);
         }
 
         private void HandleLoadedSyncedProject(ProjectBase project)
         {
-            BuildLogic.Self.RefreshBuiltFilesFor((VisualStudioProject)project, viewModel.UseContentPipelineOnPngs, controller);
+            _ = BuildLogic.Self.RefreshBuiltFilesFor((VisualStudioProject)project, viewModel.UseContentPipelineOnPngs, controller);
         }
 
         private void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)

@@ -55,22 +55,24 @@ namespace BuildServerUploaderConsole.Processes
             }
         }
 
+        /// <summary>
+        /// The root FlatRedBall folder (the directory of the github project)
+        /// </summary>
         public static string FlatRedBallDirectory => FileManager.MakeAbsolute("../../../../../../");
 
 
+        /// <summary>
+        /// Returns FlatRedBallDirectory + "Engines/"
+        /// </summary>
         public static string EngineDirectory => FlatRedBallDirectory + "Engines/";
 
         public static string TemplateDirectory => FlatRedBallDirectory + "Templates/";
 
         public static string AddOnsDirectory => EngineDirectory + "FlatRedBallAddOns/FlatRedBallAddOns/";
 
-        public static string ReleaseDirectory
-        {
-            get
-            {
-                return FileManager.MakeAbsolute("../../ReleaseFiles/");
-            }
-        }
+        public static string ReleaseDirectory => FileManager.MakeAbsolute("../../ReleaseFiles/");
+
+        public static string FrbdkForZipReleaseDirectory => ReleaseDirectory + @"FRBDK For Zip\";
 
         public static string FrbdkDirectory => FlatRedBallDirectory + "FRBDK/";
 

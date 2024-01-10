@@ -1,5 +1,7 @@
 ﻿using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
@@ -7,6 +9,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.Errors;
 using OfficialPlugins.AnimationChainPlugin.Managers;
+using OfficialPlugins.ContentPreview.Managers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -41,27 +44,80 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             Self = this;
             AssignEvents();
             this.AddErrorReporter(new AnimationChainErrorReporter());
+
+            AchxManager.Initialize(this);
+
         }
 
         private void AssignEvents()
         {
             this.ReactToNewFileHandler += HandleNewFile;
-            this.ReactToFileChangeHandler += HandleFileChanged;
+            this.ReactToFileChange += HandleFileChanged;
             this.ReactToNamedObjectChangedValue += NamedObjectVariableChangeLogic.HandleNamedObjectChangedValue;
+            this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
+            this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
+
         }
 
-
-
-        private void HandleFileChanged(string fileName)
+        private bool TryHandleDoubleClick(ITreeNode tree)
         {
-            var filePath = new FilePath(fileName);
-            if (filePath.Extension == "achx")
+            if (tree.Tag is ReferencedFileSave asRfs)
             {
-                this.RefreshErrors();
+                var extension = FileManager.GetExtension(asRfs.Name);
+
+                var filePath = GlueCommands.Self.GetAbsoluteFilePath(asRfs);
+
+                switch (extension)
+                {
+                    case "achx":
+                        // Nah, let's open AnimationEditor for now
+                        return false;
+                }
+            }
+
+            return false;
+        }
+
+        private void HandleTreeViewItemSelected(ITreeNode selectedTreeNode)
+        {
+            var file = GlueState.Self.CurrentReferencedFileSave;
+
+            AchxManager.HideTab();
+
+            /////////////////Early Out///////////////////
+            if (file == null)
+            {
+                return;
+            }
+            ///////////////End Early Out/////////////////
+
+            var filePath = GlueCommands.Self.GetAbsoluteFilePath(file);
+
+            var extension = filePath.Extension;
+
+            switch (extension)
+            {
+                case "achx":
+                    AchxManager.ShowTab(filePath);
+                    break;
             }
         }
 
-        private void HandleNewFile(ReferencedFileSave newFile)
+
+        private void HandleFileChanged(FilePath filePath, FileChangeType fileChange)
+        {
+            if (filePath.Extension == "achx")
+            {
+                this.RefreshErrors();
+
+                if (AchxManager.AchxFilePath == filePath)
+                {
+                    AchxManager.ForceRefreshAchx(filePath);
+                }
+            }
+        }
+
+        private void HandleNewFile(ReferencedFileSave newFile, AssetTypeInfo assetTypeInfo)
         {
             var extension = FileManager.GetExtension(newFile.Name);
             if(extension == "achx")

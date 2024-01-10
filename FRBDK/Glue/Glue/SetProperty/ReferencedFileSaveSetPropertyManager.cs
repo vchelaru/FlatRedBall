@@ -19,6 +19,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -27,6 +28,7 @@ namespace FlatRedBall.Glue.SetVariable
         internal void ReactToChangedReferencedFile(string changedMember, object oldValue, ref bool updateTreeView)
         {
             ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
+            var element = GlueState.Self.CurrentElement;
 
             #region Opens With
 
@@ -147,7 +149,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region IsDatabaseForLocalizing
 
-            else if (changedMember == "IsDatabaseForLocalizing")
+            else if (changedMember == nameof(ReferencedFileSave.IsDatabaseForLocalizing))
             {
                 updateTreeView = false;
                 bool oldValueAsBool = (bool)oldValue;
@@ -215,7 +217,7 @@ namespace FlatRedBall.Glue.SetVariable
                     if (container != null)
                     {
                         //CodeWriter.GenerateCode(container);
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(container);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
                         //CodeWriter.GenerateCode(container);
                     }
                     else
@@ -273,9 +275,9 @@ namespace FlatRedBall.Glue.SetVariable
                     // and regenerate them
                     var elements = ObjectFinder.Self.GetAllElementsReferencingFile(rfs.Name);
 
-                    foreach (var element in elements)
+                    foreach (var item in elements)
                     {
-                        CodeWriter.GenerateCode(element);
+                        CodeWriter.GenerateCode(item);
                     }
                 }
                 else
@@ -298,10 +300,19 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region CreatesDictionary
 
-            else if (changedMember == "CreatesDictionary")
+            else if (changedMember == nameof(ReferencedFileSave.CreatesDictionary))
             {
                 // This could change things like the constants added to the code file, so let's generate the code now.
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentCsvCode();
+            }
+
+            #endregion
+
+            #region ProjectsToExcludeFrom
+
+            else if(changedMember == nameof(ReferencedFileSave.ProjectsToExcludeFrom))
+            {
+                // handled by ProjectExclusionPlugin
             }
 
             #endregion
@@ -366,7 +377,7 @@ namespace FlatRedBall.Glue.SetVariable
                     File.Move(oldFilePath.FullPath, newFilePath.FullPath);
                 }
 
-                UpdateObjectsUsingFile(container, oldName, rfs);
+                UpdateObjectsUsingFile(container as GlueElement, oldName, rfs);
 
                 await RegenerateCodeAndUpdateUiAccordingToRfsRename(oldName, newName, rfs);
 
@@ -374,13 +385,13 @@ namespace FlatRedBall.Glue.SetVariable
 
                 AdjustDataFilesIfIsCsv(oldName, rfs);
 
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
 
                 GlueCommands.Self.ProjectCommands.SaveProjects();
             }, $"ForceReactToRenamedReferencedFileAsync {oldName} -> {newName}");
         }
 
-        private static void UpdateObjectsUsingFile(IElement element, string oldName, ReferencedFileSave rfs)
+        private static void UpdateObjectsUsingFile(GlueElement element, string oldName, ReferencedFileSave rfs)
         {
             string newName = rfs.Name;
             string oldNameUnqualified = FileManager.RemoveExtension(FileManager.RemovePath(oldName));
@@ -389,13 +400,13 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 AdjustAccordingToRenamedRfs(element, oldName, rfs, newName, oldNameUnqualified, newNameUnqualified);
             }
-            foreach (IElement derived in ObjectFinder.Self.GetAllElementsThatInheritFrom(element))
+            foreach (var derived in ObjectFinder.Self.GetAllElementsThatInheritFrom(element))
             {
                 AdjustAccordingToRenamedRfs(derived, oldName, rfs, newName, oldNameUnqualified, newNameUnqualified);
             }
         }
 
-        private static void AdjustAccordingToRenamedRfs(IElement element, string oldName, ReferencedFileSave rfs, string newName, string oldNameUnqualified, string newNameUnqualified)
+        private static void AdjustAccordingToRenamedRfs(GlueElement element, string oldName, ReferencedFileSave rfs, string newName, string oldNameUnqualified, string newNameUnqualified)
         {
             foreach (NamedObjectSave nos in element.GetAllNamedObjectsRecurisvely())
             {
@@ -438,15 +449,15 @@ namespace FlatRedBall.Glue.SetVariable
                 // for both in case there are any older projects.
                 string rfsType = rfs.RuntimeType;
                 string rfsTypeUnqualified = rfsType;
-                if (rfsType != null && rfsType.Contains("."))
+                if (rfsType != null && rfsType.Contains('.'))
                 {
                     rfsTypeUnqualified = FileManager.GetExtension(rfsType);
                 }
 
                 var matches =
                     customVariable.Value is string && (customVariable.Value as string) == oldNameUnqualified && 
-                        (customVariable.Type.ToLower() == rfsType.ToLower() ||
-                            customVariable.Type.ToLower() == rfsTypeUnqualified.ToLower());
+                        (string.Equals(customVariable.Type, rfsType, StringComparison.OrdinalIgnoreCase) ||
+                         string.Equals(customVariable.Type, rfsTypeUnqualified, StringComparison.OrdinalIgnoreCase));
                 if (matches)
                 {
                     customVariable.Value = newNameUnqualified;
@@ -525,12 +536,12 @@ namespace FlatRedBall.Glue.SetVariable
                 // The item could be null if this file is excluded from the project
                 if (item != null)
                 {
-                    if (newName.ToLower().Replace("/", "\\").StartsWith("content\\"))
+                    if (newName.Replace("/", "\\").StartsWith(@"content\", StringComparison.OrdinalIgnoreCase))
                     {
-                        newName = newName.Substring("content\\".Length);
+                        newName = newName.Substring(@"content\".Length);
                     }
 
-                    var newNameWithContentPrefix = "content\\" + newName.ToLower().Replace("/", "\\");
+                    var newNameWithContentPrefix = "content\\" + newName.ToLowerInvariant().Replace("/", "\\");
                     item.UnevaluatedInclude = newNameWithContentPrefix;
 
                     string nameWithoutExtensions = FileManager.RemovePath(FileManager.RemoveExtension(newName));

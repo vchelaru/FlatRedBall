@@ -2,20 +2,15 @@
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using Glue;
-using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Input;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Managers
 {
     public class HotkeyManager : Singleton<HotkeyManager>
     {
+        #region old TryHandleKeys taking the Keys parameter - not used anymore
         // Sept 4, 2022 - I don't think this is used anymore:
         //public async Task<bool> TryHandleKeys(Keys keyData)
         //{
@@ -64,7 +59,7 @@ namespace FlatRedBall.Glue.Managers
         //            return false;
         //    }
         //}
-
+        #endregion
 
         public async Task<bool> TryHandleKeys(System.Windows.Input.KeyEventArgs e, bool isTextBoxFocused)
         {
@@ -80,10 +75,10 @@ namespace FlatRedBall.Glue.Managers
                     if(ctrlDown)
                     {
                         PluginManager.ReactToCtrlF();
-
                         return true;
                     }
                     break;
+
                 case System.Windows.Input.Key.C:
                     if (ctrlDown && !isTextBoxFocused)
                     {
@@ -152,7 +147,7 @@ namespace FlatRedBall.Glue.Managers
                         "Glue Compiler",
                         "BuildAndRun");
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.FocusTab(L.Texts.Build);
                     return true;
                 case Key.F12:
                     GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
@@ -163,6 +158,24 @@ namespace FlatRedBall.Glue.Managers
                 //case Key.Delete:
                 //    HandleDeletePressed();
                     //return true;
+            }
+
+            // fi we got here, it's not handled, so let's see if it was some CTRL+something hotkey. If so, we can let the plugin handle it
+            if(ctrlDown)
+            {
+                // This is tricky. Sometimes we want hotkey combinations to pass through (like CTRL+Z) but sometimes
+                // we want them to bubble up to native text box handling (CTRL+C). Therefore, let's create a list of keys that 
+                // are not handled by the plugin manager
+                var shouldHandleByPlugin = true;
+                if(key == Key.C || key == Key.X || key == Key.V || key == Key.A)
+                {
+                    shouldHandleByPlugin = !isTextBoxFocused;
+                }
+                if(shouldHandleByPlugin)
+                {
+                    PluginManager.ReactToCtrlKey(key);
+                    return true;
+                }
             }
 
             return false;

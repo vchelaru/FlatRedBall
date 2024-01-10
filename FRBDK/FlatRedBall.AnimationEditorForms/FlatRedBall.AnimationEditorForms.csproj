@@ -80,9 +80,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FlatRedBall.PropertyGrid">
-      <HintPath>..\Glue\FlatRedBall.PropertyGrid\bin\x86\Debug\FlatRedBall.PropertyGrid.dll</HintPath>
-    </Reference>
     <Reference Include="Jillzhang.GifUtility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Jillzhang.GifUtility.dll</HintPath>
@@ -90,8 +87,8 @@
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\AnimationEditor\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\AnimationEditor\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -99,6 +96,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
@@ -112,9 +110,20 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Glue\FlatRedBall.PropertyGrid\LateBinder.cs">
+      <Link>PropertyGrids\LateBinder.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\FlatRedBall.PropertyGrid\PropertyDescriptorHelper.cs">
+      <Link>PropertyGrids\PropertyDescriptorHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\FlatRedBall.PropertyGrid\PropertyGridDisplayer.cs">
+      <Link>PropertyGrids\PropertyGridDisplayer.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\FlatRedBall.PropertyGrid\ReflectingParameterDescriptor.cs">
+      <Link>PropertyGrids\ReflectingParameterDescriptor.cs</Link>
+    </Compile>
     <Compile Include="..\Glue\Glue\Controls\MultiButtonMessageBox.cs">
       <Link>Controls\MultiButtonMessageBox.cs</Link>
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="..\Glue\Glue\Controls\MultiButtonMessageBox.designer.cs">
       <Link>Controls\MultiButtonMessageBox.designer.cs</Link>
@@ -122,7 +131,6 @@
     </Compile>
     <Compile Include="..\Glue\Glue\Controls\TextInputWindow.cs">
       <Link>Controls\TextInputWindow.cs</Link>
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="..\Glue\Glue\Controls\TextInputWindow.designer.cs">
       <Link>Controls\TextInputWindow.designer.cs</Link>
@@ -147,27 +155,19 @@
     <Compile Include="Controls\AnimationAddFramesWPF.xaml.cs">
       <DependentUpon>AnimationAddFramesWPF.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\AnimationChainTimeScaleWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Controls\AnimationChainTimeScaleWindow.cs" />
     <Compile Include="Controls\AnimationChainTimeScaleWindow.Designer.cs">
       <DependentUpon>AnimationChainTimeScaleWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\AnimationsListToolBar.xaml.cs">
       <DependentUpon>AnimationsListToolBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\CustomNodeColorTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\PreviewControls.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Controls\CustomNodeColorTreeView.cs" />
+    <Compile Include="Controls\PreviewControls.cs" />
     <Compile Include="Controls\PreviewControls.Designer.cs">
       <DependentUpon>PreviewControls.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\WireframeEditControls.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Controls\WireframeEditControls.cs" />
     <Compile Include="Controls\WireframeEditControls.Designer.cs">
       <DependentUpon>WireframeEditControls.cs</DependentUpon>
     </Compile>
@@ -199,18 +199,14 @@
     <Compile Include="Preview\ShapePreviewManager.cs" />
     <Compile Include="PropertyGrids\AnimationChainDisplayer.cs" />
     <Compile Include="PropertyGrids\AnimationFrameDisplayer.cs" />
-    <Compile Include="Controls\TileMapInfoWindow.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Controls\TileMapInfoWindow.cs" />
     <Compile Include="Controls\TileMapInfoWindow.Designer.cs">
       <DependentUpon>TileMapInfoWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Converters\SpriteSheetCellWidthConverter.cs" />
     <Compile Include="Data\TileMapInformation.cs" />
     <Compile Include="Data\TileMapInformationList.cs" />
-    <Compile Include="MainControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="MainControl.cs" />
     <Compile Include="MainControl.Designer.cs">
       <DependentUpon>MainControl.cs</DependentUpon>
     </Compile>
@@ -222,9 +218,7 @@
     <Compile Include="SelectedState.cs" />
     <Compile Include="Singleton.cs" />
     <Compile Include="StatusBarManager.cs" />
-    <Compile Include="TextureCoordinateSelectionWindow.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="TextureCoordinateSelectionWindow.cs" />
     <Compile Include="TextureCoordinateSelectionWindow.Designer.cs">
       <DependentUpon>TextureCoordinateSelectionWindow.cs</DependentUpon>
     </Compile>
@@ -298,9 +292,9 @@
       <Project>{8C80BA7B-1CBA-4579-9382-D9DC6C365070}</Project>
       <Name>FlatRedBall.SpecializedXnaControls</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Glue\GlueCommon\GlueCommon.csproj">
-      <Project>{bddab7de-db12-4bfe-ad4c-f607f3b7af43}</Project>
-      <Name>GlueCommon</Name>
+    <ProjectReference Include="..\Glue\GlueCommon\NetStandard\GlueCommonStandard.csproj">
+      <Project>{27fb07ec-2ac5-4df6-b7c8-88a3dbc2751f}</Project>
+      <Name>GlueCommonStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

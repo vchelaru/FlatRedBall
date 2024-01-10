@@ -108,7 +108,7 @@ namespace FlatRedBall.Content.Polygon
                     (byte)(Blue * 255),
                     (byte)(Alpha * 255));
 
-            polygon.FillVertexArray();
+            polygon.FillVertexArray(false);
         }
 
         #endregion

@@ -11,7 +11,6 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using System.Windows.Forms;
 using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
@@ -27,6 +26,8 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Reflection;
 using GlueSaveClasses;
 using GlueFormsCore.Controls;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
+using Localization;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -187,11 +188,11 @@ namespace FlatRedBall.Glue.IO
 
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(true);
 
-                TaskManager.Self.OnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall - " + projectFileName);
+                TaskManager.Self.OnUiThread(() => MainGlueWindow.Self.Text = Texts.FrbEditor + " - " + projectFileName);
 
                 if (shouldSaveGlux)
                 {
-                    GluxCommands.Self.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                    GluxCommands.Self.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
                 }
 
                 GlueCommands.Self.ProjectCommands.SaveProjects();
@@ -292,7 +293,7 @@ namespace FlatRedBall.Glue.IO
         public void GetCsprojToLoad(out string csprojToLoad)
         {
             csprojToLoad = CommandLineManager.Self.ProjectToLoad;
-            var settingsSave = ProjectManager.GlueSettingsSave;
+            var settingsSave = GlueState.Self.GlueSettingsSave;
 
             bool shouldTryLoadingFromSettings = string.IsNullOrEmpty(csprojToLoad) &&
                 (Control.ModifierKeys & Keys.Shift) == 0;
@@ -362,7 +363,8 @@ namespace FlatRedBall.Glue.IO
                 PluginManager.ReactToLoadedGluxEarly(ProjectManager.GlueProjectSave);
 
                 // and after that's done we can validate that the build tools are there
-                BuildToolAssociationManager.Self.ProjectSpecificBuildTools.ValidateBuildTools(FileManager.GetDirectory(projectFileName));
+                // todo - maybe do this on the GlueSettingsSave?
+                //BuildToolAssociationManager.Self.ProjectSpecificBuildTools.ValidateBuildTools(FileManager.GetDirectory(projectFileName));
 
                 ProjectManager.GlueProjectSave.UpdateIfTranslationIsUsed();
 
@@ -395,9 +397,18 @@ namespace FlatRedBall.Glue.IO
                 var allReferencedFileSaves = ObjectFinder.Self.GetAllReferencedFiles();
                 Managers.TaskManager.Self.Add(() =>
                 {
+                    var wasAnythingModified = false;
                     foreach (var rfs in allReferencedFileSaves)
                     {
-                        GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
+                        if(GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs))
+                        {
+                            wasAnythingModified = true;
+                        }
+                    }
+
+                    if(wasAnythingModified)
+                    {
+                        GlueCommands.Self.ProjectCommands.SaveProjects();
                     }
                 },
                 $"Calling UpdateFileMembershipInProject on {allReferencedFileSaves.Count} file(s)",
@@ -462,7 +473,7 @@ namespace FlatRedBall.Glue.IO
                 Section.GetAndStartContextAndTime("Performance code");
 
 
-                FactoryCodeGenerator.AddGeneratedPerformanceTypes();
+                FactoryElementCodeGenerator.AddGeneratedPerformanceTypes();
                 Section.EndContextAndTime();
 
 
@@ -475,7 +486,7 @@ namespace FlatRedBall.Glue.IO
                 SetInitWindowText("Generating all code", initializationWindow);
 
                 // Fix before doing any generation
-                GlueState.Self.CurrentGlueProject.FixAllTypes();
+                GlueState.Self.CurrentGlueProject.FixAllTypesPostLoad();
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 Section.EndContextAndTime();
 
@@ -572,7 +583,7 @@ namespace FlatRedBall.Glue.IO
             }
             catch (Exception e)
             {
-                MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                var mbmb = new MultiButtonMessageBox();
                 mbmb.MessageText = "There was an error loading the .glux file.  What would you like to do?";
 
                 mbmb.AddButton("Nothing - Glue will abort loading the project.", DialogResult.None);
@@ -827,31 +838,25 @@ namespace FlatRedBall.Glue.IO
             return hasMadeChanges;
         }
 
-        private void CheckForMissingCustomFile(IElement element)
+        private void CheckForMissingCustomFile(GlueElement element)
         {
             string fileToSearchFor = FileManager.RelativeDirectory + element.Name + ".cs";
 
             if (!System.IO.File.Exists(fileToSearchFor))
             {
-                MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                var mbmb = new MultiButtonMessageBoxWpf();
                 mbmb.MessageText = "The following file is missing\n\n" + fileToSearchFor + 
                     "\n\nwhich is used by\n\n" + element.ToString() + "\n\nWhat would you like to do?";
                 mbmb.AddButton("Re-create an empty custom code file", DialogResult.OK);
                 mbmb.AddButton("Ignore this problem", DialogResult.Cancel);
 
-                DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
+                var result = mbmb.ShowDialog();
 
-                switch (result)
+                var dialogResult = mbmb.ClickedResult;
+
+                if(dialogResult?.Equals(DialogResult.OK) == true)
                 {
-                    case DialogResult.OK:
-
-                        CodeWriter.GenerateAndAddElementCustomCode(element);
-
-                        break;
-                    case DialogResult.Cancel:
-                        // Ignore, do nothing
-                        break;
-
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCustomCode(element);
                 }
             }
         }
@@ -944,7 +949,9 @@ namespace FlatRedBall.Glue.IO
                         vsp.SaveAsAbsoluteSyncedProject = false;
                     }
 
-                    if (FileManager.GetDirectory(absoluteFileName).ToLower() == FileManager.GetDirectory(ProjectManager.ProjectBase.FullFileName.FullPath).ToLower())
+                    if (String.Equals(FileManager.GetDirectory(absoluteFileName),
+                            FileManager.GetDirectory(ProjectManager.ProjectBase.FullFileName.FullPath),
+                            StringComparison.OrdinalIgnoreCase))
                     {
                         vsp.SaveAsRelativeSyncedProject = false;
                         vsp.SaveAsAbsoluteSyncedProject = false;

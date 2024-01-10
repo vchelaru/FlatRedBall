@@ -101,6 +101,18 @@ namespace GlueControl.Models
             set;
         } = new List<PropertySave>();
 
+        public CustomVariable GetCustomVariable(string customVariableName)
+        {
+            foreach (var customVariable in CustomVariables)
+            {
+                if (customVariable.Name == customVariableName)
+                {
+                    return customVariable;
+                }
+            }
+            return null;
+        }
+
         public override string ToString()
         {
             return Name;

@@ -11,8 +11,6 @@ namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
 {
     internal class SameNamedReferencedFilesViewModel : ErrorViewModel
     {
-        string uniqueId;
-
         ReferencedFileSave firstRfs;
         string firstRfsPropertyName;
         ReferencedFileSave secondRfs;
@@ -36,7 +34,21 @@ namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
             var details = $"The files {first} and {second} generate to the same property name which will cause compile errors.";
             if(firstRfs.IncludeDirectoryRelativeToContainer == false && secondRfs.IncludeDirectoryRelativeToContainer == false)
             {
-                if(first.IsCreatedByWildcard || second.IsCreatedByWildcard)
+                // If they're the same name, we should tell them that the best way to fix it is remove one of the files and create a new one with a new name
+                if(first.Name == second.Name)
+                {
+                    if ((first.IsCreatedByWildcard && second.IsCreatedByWildcard == false) ||
+                        (second.IsCreatedByWildcard && first.IsCreatedByWildcard == false))
+                    {
+                        details += "\nOne of the files is added through wildcard, the other is explicitly added which results in the file being added twice. Consider removing the explicitly-added file.";
+                    }
+                    else
+                    {
+                        details += "\nConsider creating a new file with a different name, or removing one of the files from the FRB Editor";
+                    }
+
+                }
+                else if(first.IsCreatedByWildcard || second.IsCreatedByWildcard)
                 {
                     details += "\nConsider changing the wildcard file to have IncludeDirectoryRelativeToContainer set to true";
                 }

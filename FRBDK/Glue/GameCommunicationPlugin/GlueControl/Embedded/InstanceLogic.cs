@@ -19,6 +19,8 @@ using GlueControl.Dtos;
 using GlueControl.Editing;
 using GlueControl.Runtime;
 using GlueControl.Models;
+using GlueControl.Managers;
+using {ProjectNamespace}.Performance;
 
 namespace GlueControl
 {
@@ -34,8 +36,9 @@ namespace GlueControl
 
         public List<IDestroyable> DestroyablesAddedAtRuntime = new List<IDestroyable>();
 
-        // Do we want to support entire categories at runtime? For now just states, but we'll have to review this at some point
-        // if we want to allow entire categories added at runtime. The key is the game type (GameNamespace.Entities.EntityName)
+        /// <summary>
+        /// Dictionary of state categories added at runtime, where the key is the ElementGameType name.
+        /// </summary>
         public Dictionary<string, List<StateSaveCategory>> StatesAddedAtRuntime = new Dictionary<string, List<StateSaveCategory>>();
 
         public Dictionary<string, List<CustomVariable>> CustomVariablesAddedAtRuntime = new Dictionary<string, List<CustomVariable>>();
@@ -81,8 +84,9 @@ namespace GlueControl
 
         #region Create Instance from Glue
 
-        public object HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto, int currentAddObjectIndex, PositionedObject forcedItem = null)
+        public OptionallyAttemptedGeneralResponse HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto, int currentAddObjectIndex, PositionedObject forcedParent = null)
         {
+            var toReturn = new OptionallyAttemptedGeneralResponse();
             //var glueName = dto.ElementName;
             // this comes in as the game name not glue name
             var elementGameType = dto.ElementNameGame; // CommandReceiver.GlueToGameElementName(glueName);
@@ -101,11 +105,12 @@ namespace GlueControl
 
             if (addedToEntity)
             {
-                if (forcedItem != null)
+                toReturn.DidAttempt = true;
+                if (forcedParent != null)
                 {
-                    if (CommandReceiver.DoTypesMatch(forcedItem, elementGameType))
+                    if (CommandReceiver.DoTypesMatch(forcedParent, elementGameType))
                     {
-                        newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, forcedItem);
+                        newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, forcedParent);
                     }
                 }
                 else
@@ -121,14 +126,26 @@ namespace GlueControl
                     }
                 }
             }
-            else if (forcedItem == null &&
+            else if (forcedParent == null &&
                 (ScreenManager.CurrentScreen.GetType().FullName == elementGameType || ownerType?.IsAssignableFrom(ScreenManager.CurrentScreen.GetType()) == true))
             {
+                toReturn.DidAttempt = true;
+
                 // it's added to the base screen, so just add it to null
                 newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, null);
             }
+            // did not attempt
 
-            return newRuntimeObject;
+            if (toReturn.DidAttempt)
+            {
+                toReturn.Succeeded = newRuntimeObject != null;
+            }
+            else
+            {
+                // assume it will succeed since we can't really know...
+                toReturn.Succeeded = true;
+            }
+            return toReturn;
         }
 
         private object HandleCreateInstanceCommandFromGlueInner(Models.NamedObjectSave deserialized, int currentAddObjectIndex, PositionedObject owner)
@@ -192,20 +209,15 @@ namespace GlueControl
                             newPositionedObject = circle;
                         }
                         break;
-                    case "FlatRedBall.Math.Geometry.Polygon":
-                    case "Polygon":
+                    case "FlatRedBall.Graphics.Layer":
+                    case "Layer":
                         {
-                            var polygon = new FlatRedBall.Math.Geometry.Polygon();
+                            var layer = new Layer();
                             if (deserialized.AddToManagers)
                             {
-                                ShapeManager.AddPolygon(polygon);
-                                ShapesAddedAtRuntime.Add(polygon);
+                                SpriteManager.AddLayer(layer);
                             }
-                            if (owner is ICollidable asCollidable && deserialized.IncludeInICollidable)
-                            {
-                                asCollidable.Collision.Add(polygon);
-                            }
-                            newPositionedObject = polygon;
+                            newObject = layer;
                         }
                         break;
                     case "FlatRedBall.Math.Geometry.Line":
@@ -223,6 +235,22 @@ namespace GlueControl
                             //    asCollidable.Collision.Add(polygon);
                             //}
                             newPositionedObject = line;
+                        }
+                        break;
+                    case "FlatRedBall.Math.Geometry.Polygon":
+                    case "Polygon":
+                        {
+                            var polygon = new FlatRedBall.Math.Geometry.Polygon();
+                            if (deserialized.AddToManagers)
+                            {
+                                ShapeManager.AddPolygon(polygon);
+                                ShapesAddedAtRuntime.Add(polygon);
+                            }
+                            if (owner is ICollidable asCollidable && deserialized.IncludeInICollidable)
+                            {
+                                asCollidable.Collision.Add(polygon);
+                            }
+                            newPositionedObject = polygon;
                         }
                         break;
                     case "FlatRedBall.Sprite":
@@ -474,9 +502,35 @@ namespace GlueControl
                 else
                 {
                     // just instantiate it using reflection?
-                    newPositionedObject = this.GetType().Assembly.CreateInstance(entityNameGameType)
+                    var typeName = entityNameGameType;
+                    bool ignoreCase = false;
+                    var bindingFlags = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance;
+                    System.Reflection.Binder binder = null;
+
+                    string contentManagerName = FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName;
+
+                    if (ScreenManager.IsInEditMode)
+                    {
+                        var entityType = this.GetType().Assembly.GetType(entityNameGameType);
+                        var hasBeenLoadedProperty = entityType?.GetProperty("HasBeenLoadedWithGlobalContentManager");
+                        if (hasBeenLoadedProperty != null)
+                        {
+                            var hasBeenLoaded = (bool)hasBeenLoadedProperty.GetValue(null);
+                            if (hasBeenLoaded)
+                            {
+                                contentManagerName = FlatRedBall.FlatRedBallServices.GlobalContentManager;
+                            }
+                        }
+                    }
+
+                    object[] args = new object[]
+                    {
+                        contentManagerName, // content manager
+                        true // add to managers
+                    };
+
+                    newPositionedObject = this.GetType().Assembly.CreateInstance(entityNameGameType, ignoreCase, bindingFlags, binder, args, culture: null, activationAttributes: null)
                          as PositionedObject;
-                    //newPositionedObject = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]);
                 }
                 if (newPositionedObject != null && newPositionedObject is IDestroyable asDestroyable)
                 {
@@ -512,7 +566,7 @@ namespace GlueControl
 
             foreach (var instruction in deserialized.InstructionSaves)
             {
-                AssignVariable(newObject, instruction, convertFileNamesToObjects: true);
+                AssignVariable(newObject, instruction, convertFileNamesToObjects: true, deserialized);
             }
         }
 
@@ -522,16 +576,17 @@ namespace GlueControl
 
         public RemoveObjectDtoResponse HandleDeleteInstanceCommandFromGlue(RemoveObjectDto removeObjectDto, PositionedObject forcedItem = null)
         {
-            var elementNameGlue = removeObjectDto.ElementNameGlue;
-
             RemoveObjectDtoResponse response = new RemoveObjectDtoResponse();
             response.DidScreenMatch = false;
             response.WasObjectRemoved = false;
 
-            foreach (var objectName in removeObjectDto.ObjectNames)
+            for (int i = 0; i < removeObjectDto.ObjectNames.Count; i++)
             {
+                var objectName = removeObjectDto.ObjectNames[i];
+                var elementNameGlue = removeObjectDto.ElementNamesGlue[i];
                 HandleDeleteObject(forcedItem, elementNameGlue, objectName, response);
             }
+
 
 
             return response;
@@ -602,9 +657,44 @@ namespace GlueControl
                         ? GlueControl.Editing.ElementEditingMode.EditingEntity
                         : GlueControl.Editing.ElementEditingMode.EditingScreen;
 
-                    var foundObject = GlueControl.Editing.SelectionLogic.GetAvailableObjects(editingMode)
+                    var foundPositionedObject = GlueControl.Editing.SelectionLogic.GetAvailableObjects(editingMode)
                             .FirstOrDefault(item => item.Name == objectName);
-                    TryDeleteObject(response, foundObject);
+                    if (foundPositionedObject != null)
+                    {
+                        TryDeleteObject(response, foundPositionedObject);
+                    }
+                    if (!response.WasObjectRemoved)
+                    {
+                        var element = ObjectFinder.Self.GetElement(elementNameGlue);
+                        var nos = element?.NamedObjects.FirstOrDefault(item => item.InstanceName == objectName);
+
+                        if (nos?.IsList == true)
+                        {
+                            if (nos.DefinedByBase)
+                            {
+                                // If this is defined by base, there's really nothing to do here. The removal of the base would
+                                // result in the object actually getting removed..
+                                // Treat this as true so we don't restart the game through FRB, or run any additional logic...
+                                response.WasObjectRemoved = true;
+                            }
+                            else
+                            {
+                                var list = VariableAssignmentLogic.GetRuntimeInstanceRecursively(ScreenManager.CurrentScreen, objectName) as
+                                    System.Collections.IList;
+
+                                if (list != null)
+                                {
+                                    response.WasObjectRemoved = true;
+                                    // this list is gone, so let's remove it from the factories 
+                                    var factories = FactoryManager.GetAllFactories();
+                                    foreach (var factory in factories)
+                                    {
+                                        factory.ListsToAddTo.Remove(list);
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     if (!response.WasObjectRemoved)
                     {
@@ -708,7 +798,7 @@ namespace GlueControl
 
         #endregion
 
-        public void AssignVariable(object instance, FlatRedBall.Content.Instructions.InstructionSave instruction, bool convertFileNamesToObjects)
+        public void AssignVariable(object newRuntimeInstance, FlatRedBall.Content.Instructions.InstructionSave instruction, bool convertFileNamesToObjects, NamedObjectSave nos = null)
         {
             string variableName = instruction.Member;
             object variableValue = instruction.Value;
@@ -817,11 +907,58 @@ namespace GlueControl
                     variableValue = (FlatRedBall.Graphics.ColorOperation)asLong;
                 }
             }
+            else if (instruction.Type == "List<Vector2>")
+            {
+                if (variableValue is Newtonsoft.Json.Linq.JArray jArray)
+                {
+                    var vectorList = new List<Microsoft.Xna.Framework.Vector2>();
+                    foreach (var item in jArray)
+                    {
+                        // does this need to be localized?
+                        var noQuotes = item.ToString().Replace("\"", "");
+                        var floatBeforeComma = float.Parse(noQuotes.Substring(0, noQuotes.IndexOf(',')));
+                        var floatAfterComma = float.Parse(noQuotes.Substring(noQuotes.IndexOf(',') + 1));
+                        var vector2 = new Microsoft.Xna.Framework.Vector2();
+                        vector2.X = floatBeforeComma;
+                        vector2.Y = floatAfterComma;
+                        vectorList.Add(vector2);
+                    }
+
+                    variableValue = vectorList;
+
+                    var isSettingPointsOnPolygon = nos.SourceClassType == "Polygon" || nos.SourceClassType == "FlatRedBall.Math.Geometry.Polygon";
+
+                    if (!isSettingPointsOnPolygon && nos.SourceType == SourceType.Entity)
+                    {
+                        var nosEntityType = ObjectFinder.Self.GetEntitySave(nos.SourceClassType);
+
+                        var member = nosEntityType.CustomVariables.Find(item => item.Name == variableName);
+
+                        var foundMember = ObjectFinder.Self.GetRootCustomVariable(member);
+
+                        if (foundMember.Name == "Points")
+                        {
+                            isSettingPointsOnPolygon = true;
+                        }
+                    }
+
+                    if (isSettingPointsOnPolygon)
+                    {
+                        // value is actually a List of FlatRedBall Points, so convert vectorList to a list of Points
+                        var pointList = new List<FlatRedBall.Math.Geometry.Point>();
+                        foreach (var vector in vectorList)
+                        {
+                            pointList.Add(new FlatRedBall.Math.Geometry.Point(vector.X, vector.Y));
+                        }
+                        variableValue = pointList;
+                    }
+                }
+            }
 
             try
             {
                 // special case X and Y if attached
-                if ((variableName == "X" || variableName == "Y" || variableName == "RotationZ") && instance is PositionedObject asPositionedObject && asPositionedObject.Parent != null)
+                if ((variableName == "X" || variableName == "Y" || variableName == "RotationZ") && newRuntimeInstance is PositionedObject asPositionedObject && asPositionedObject.Parent != null)
                 {
                     if (variableName == "X")
                     {
@@ -839,7 +976,7 @@ namespace GlueControl
                 }
                 else
                 {
-                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
+                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(newRuntimeInstance, variableName, variableValue);
                 }
             }
             catch (MemberAccessException)

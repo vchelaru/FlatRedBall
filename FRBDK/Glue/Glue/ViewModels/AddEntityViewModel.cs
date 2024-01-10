@@ -10,12 +10,14 @@ using System.Windows;
 
 namespace GlueFormsCore.ViewModels
 {
+    #region TeamIndexOption enum
     public enum TeamIndexOption
     {
         Team0,
         Team1,
         Custom
     }
+    #endregion
 
     public class AddEntityViewModel : ViewModel
     {
@@ -113,10 +115,18 @@ namespace GlueFormsCore.ViewModels
         public Visibility CollisionsVisibility =>
             (HasInheritance == false).ToVisibility();
 
+        public ObservableCollection<object> ObjectsDisablingCollidableCheckbox
+        {
+            get => Get<ObservableCollection<object>>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(ObjectsDisablingCollidableCheckbox))]
+        [DependsOn(nameof(IsIDamageableChecked))]
+        [DependsOn(nameof(IsIDamageAreaChecked))]
         public bool IsICollidableEnabled
         {
-            get => Get<bool>();
-            set => Set(value);
+            get => ObjectsDisablingCollidableCheckbox.Count == 0 && !IsIDamageableChecked && !IsIDamageAreaChecked;
         }
 
         #endregion
@@ -196,13 +206,25 @@ namespace GlueFormsCore.ViewModels
         public bool IsIDamageableChecked
         {
             get => Get<bool>();
-            set => Set(value);
+            set
+            {
+                if(Set(value) && value)
+                {
+                    IsICollidableChecked = true;
+                }
+            }
         }
 
         public bool IsIDamageAreaChecked
         {
             get => Get<bool>();
-            set => Set(value);
+            set
+            {
+                if (Set(value) && value)
+                {
+                    IsICollidableChecked = true;
+                }
+            }
         }
 
         [DependsOn(nameof(IsIDamageableChecked))]
@@ -267,6 +289,8 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        [DependsOn(nameof(CustomTeamIndex))]
+        [DependsOn(nameof(TeamIndexOption))]
         public int EffectiveTeamIndex =>
             TeamIndexOption == TeamIndexOption.Team0 ? 0
             : TeamIndexOption == TeamIndexOption.Team1 ? 1
@@ -277,11 +301,44 @@ namespace GlueFormsCore.ViewModels
         public Visibility OpposingTeamIndexCheckboxVisibility =>
                     (IsDamageableV2 && (IsIDamageableChecked || IsIDamageAreaChecked)).ToVisibility();
 
-
         public bool IsOpposingTeamIndexDamageCollisionChecked
         {
             get => Get<bool>();
             set => Set(value);
+        }
+
+        [DependsOn(nameof(IsOpposingTeamIndexDamageCollisionChecked))]
+        [DependsOn(nameof(OpposingTeamIndexCheckboxVisibility))]
+        public Visibility OpposingTeamCollisionListVisibility =>
+            (OpposingTeamIndexCheckboxVisibility == Visibility.Visible &&
+            IsOpposingTeamIndexDamageCollisionChecked).ToVisibility();
+
+        
+        [DependsOn(nameof(EffectiveTeamIndex))]
+        [DependsOn(nameof(Name))]
+        [DependsOn(nameof(IsICollidableChecked))]
+        public List<string> OpposingTeamCollisionListItems
+        {
+            get
+            {
+                List<string> toReturn = new List<string>();
+
+                if(IsICollidableChecked)
+                {
+                    var fakeNos = new NamedObjectSave();
+                    fakeNos.InstanceName = $"{Name}List";
+                    var pairs = GlueCommands.Self.GluxCommands.ElementCommands.GetGameScreenOpposingTeamIndexCollisionPairs(
+                        EffectiveTeamIndex, fakeNos, this);
+
+                    foreach(var pair in pairs)
+                    {
+                        toReturn.Add($"{pair.First.InstanceName} vs {pair.Second.InstanceName}");
+                    }
+
+                }
+
+                return toReturn;
+            }
         }
 
         #endregion
@@ -304,11 +361,14 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        [DependsOn(nameof(HasInheritance))]
+        public Visibility IncludeListsInScreensVisibility => (HasInheritance == false).ToVisibility();
+
         #endregion
 
         public AddEntityViewModel()
         {
-            IsICollidableEnabled = true;
+            ObjectsDisablingCollidableCheckbox = new ObservableCollection<object>();
             IsCreateFactoryChecked = true;
 
             CustomTeamIndex = 2; // If the user picks "other" it shouldn't default to 0

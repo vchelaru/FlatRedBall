@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using EditorObjects.Parsing;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Content;
-using FlatRedBall.Glue.Facades;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Managers;
 using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
@@ -20,12 +19,6 @@ namespace FlatRedBall.Glue.SaveClasses
 {
     public static class ReferencedFileSaveExtensionMethodsGlue
     {
-        public static IProjectValues ProjectValues
-        {
-            get;
-            set;
-        }
-
 
         public static string GetRelativePath(this ReferencedFileSave referencedFileSave)
         {
@@ -35,12 +28,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static bool GetIsBuiltFileOutOfDate(this ReferencedFileSave instance)
         {
-            if (ProjectValues == null)
-            {
-                throw new Exception("ProjectValues must be set before using ReferencedFileSaveExtensionMethods");
-            }
-
-            string contentDirectory = ProjectValues.ContentDirectory;
+            string contentDirectory = GlueState.Self.ContentDirectory;
             bool returnValue = false;
             if (!string.IsNullOrEmpty(instance.SourceFile))
             {
@@ -211,9 +199,9 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     error = "Could not find the build tool for the source file\n" + absoluteSourceName + "\nwith destination extension\n" + destinationExtension;
 
-                    error += "\nThere are " + BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList.Count + " build tools registered with Glue";
+                    error += "\nThere are " + GlueState.Self.GlueSettingsSave.BuildToolAssociations.Count + " build tools registered with Glue";
 
-                    foreach (BuildToolAssociation bta in BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList)
+                    foreach (BuildToolAssociation bta in GlueState.Self.GlueSettingsSave.BuildToolAssociations)
                     {
                         error += "\n\"" + bta.SourceFileType + "\" -> " +  bta.BuildToolProcessed + " -> \"" + bta.DestinationFileType + "\"";
                     }

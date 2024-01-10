@@ -88,6 +88,10 @@ namespace GumPlugin.CodeGeneration
 
             var firstCharacterLower = propertyName.Substring(0, 1).ToLowerInvariant();
             var fieldName = firstCharacterLower + propertyName.Substring(1);
+            if(firstCharacterLower == "_")
+            {
+                fieldName = "m" + fieldName;
+            }
             
 
             currentBlock.Line($"private FlatRedBall.Gum.Animation.GumAnimation {fieldName};");
@@ -393,7 +397,7 @@ namespace GumPlugin.CodeGeneration
                     currentBlock.Line("Gum.DataTypes.Variables.StateSaveExtensionMethods.SubtractFromThis(relativeEnd, relativeStart);");
                     currentBlock.Line("var difference = relativeEnd;");
 
-                    string categoryName = "VariableState";
+                    string categoryType = "VariableState";
                     var category = context.Element.Categories.FirstOrDefault(item => item.States.Any(stateCandidate => stateCandidate.Name == currentState.StateName));
 
                     string enumValue = currentState.StateName;
@@ -406,11 +410,13 @@ namespace GumPlugin.CodeGeneration
                         enumValue = split[1];
                     }
 
+                    enumValue = SaveObjectExtensionMethods.GetStateMemberNameInCode(enumValue);
+
                     if(category != null)
                     {
-                        categoryName = category.Name;
+                        categoryType = category.EnumNameInCode();
                     }
-                    currentBlock.Line("Gum.DataTypes.Variables.StateSave first = GetCurrentValuesOnState(" + categoryName + "." + enumValue + ");");
+                    currentBlock.Line("Gum.DataTypes.Variables.StateSave first = GetCurrentValuesOnState(" + categoryType + "." + enumValue + ");");
 
                     currentBlock.Line("Gum.DataTypes.Variables.StateSave second = first.Clone();");
                     currentBlock.Line("Gum.DataTypes.Variables.StateSaveExtensionMethods.AddIntoThis(second, difference);");
@@ -480,6 +486,12 @@ namespace GumPlugin.CodeGeneration
                     animationType = split[0];
                 }
 
+                var animationEnum = animationType;
+                if(char.IsDigit(animationEnum[0]))
+                {
+                    animationEnum = "_" + animationEnum;
+                }
+
                 if (animationType != "VariableState")
                 {
                     variableStateName = "Current" + animationType + "State";
@@ -494,8 +506,10 @@ namespace GumPlugin.CodeGeneration
                     enumValue = enumValue.Split('/')[1];
                 }
 
+                enumValue = SaveObjectExtensionMethods.GetStateMemberNameInCode(enumValue);
+
                 currentBlock.Line("var toReturn = new FlatRedBall.Instructions.DelegateInstruction( ()=> this." + variableStateName + " = " +
-                    animationType + "." + enumValue + ");");
+                    animationEnum + "." + enumValue + ");");
                 currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime;");
                 currentBlock.Line("toReturn.Target = target;");
 
@@ -558,6 +572,8 @@ namespace GumPlugin.CodeGeneration
                 //{
                 //fromState = animationType + "." + previousState.StateName;
 
+                enumValue = SaveObjectExtensionMethods.GetStateMemberNameInCode(enumValue);
+                previousEnumValue = SaveObjectExtensionMethods.GetStateMemberNameInCode(previousEnumValue);
 
                 if (currentCategory == null)
                 {
@@ -570,10 +586,10 @@ namespace GumPlugin.CodeGeneration
                 }
                 else
                 {
-                    toState = currentCategory.Name + "." + enumValue;
+                    toState = currentCategory.EnumNameInCode() + "." + enumValue;
                     if (previousCategory == currentCategory)
                     {
-                        fromState = currentCategory.Name + "." + previousEnumValue;
+                        fromState = currentCategory.EnumNameInCode() + "." + previousEnumValue;
                     }
                 }
                 //}
@@ -658,7 +674,7 @@ namespace GumPlugin.CodeGeneration
             {
                 foreach (var animation in animations.Animations)
                 {
-                    currentBlock.Line($"{animation.Name}Animation.Stop();");
+                    currentBlock.Line($"{SaveObjectExtensionMethods.GetStateMemberNameInCode(animation.Name)}Animation.Stop();");
                 }
             }
         }
@@ -682,7 +698,7 @@ namespace GumPlugin.CodeGeneration
                 foreach (var animation in animations.Animations)
                 {
                     var caseBlock = switchBlock.CaseNoBreak($"\"{animation.Name}Animation\"");
-                    caseBlock.Line($"return {animation.Name}Animation;");
+                    caseBlock.Line($"return {SaveObjectExtensionMethods.GetStateMemberNameInCode(animation.Name)}Animation;");
                 }
             }
             currentBlock.Line("return base.GetAnimation(animationName);");

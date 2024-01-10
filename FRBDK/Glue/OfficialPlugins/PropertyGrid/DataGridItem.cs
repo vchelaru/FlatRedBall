@@ -1,15 +1,34 @@
-﻿using System;
+﻿using EditorObjects.IoC;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.FormHelpers.PropertyGrids;
+using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Graphics.Animation;
+using FlatRedBall.Utilities;
+using Glue;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
+using WpfDataUi.Controls;
 using WpfDataUi.DataTypes;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 using static System.ComponentModel.TypeConverter;
 
 namespace OfficialPlugins.VariableDisplay
 {
     class DataGridItem : InstanceMember
     {
+        #region Fields/Properties
+
         bool isDefault;
 
         TypeConverter typeConverter;
@@ -59,7 +78,10 @@ namespace OfficialPlugins.VariableDisplay
             set;
         }
 
+
         public event EventHandler IsDefaultSet;
+
+        #endregion
 
         public void RefreshOptions()
         {
@@ -137,5 +159,6 @@ namespace OfficialPlugins.VariableDisplay
         {
             isExplicitlyReadOnly = true;
         }
+
     }
 }

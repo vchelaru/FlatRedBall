@@ -161,7 +161,7 @@ namespace OfficialPlugins.CollisionPlugin
                 
                 string GetUnqualified(string type, string fallback)
                 {
-                    if(type.Contains("."))
+                    if(type?.Contains(".") == true)
                     {
                         type = type.Substring(type.LastIndexOf('.') + 1);
                         type = Char.ToLowerInvariant(type[0]) + type.Substring(1);

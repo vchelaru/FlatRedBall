@@ -6,11 +6,12 @@
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <DefineConstants>MONOGAME;DESKTOP_GL;XNA4;FRB_XNA;</DefineConstants>
+    <DefineConstants>MONOGAME;DESKTOP_GL;XNA4;FRB_XNA;MONOGAME_381</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <RootNamespace>FlatRedBallDesktopGlNet6Template</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Icon.ico" />
@@ -28,21 +29,23 @@
     <EmbeddedResource Include="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FlatRedBallDesktopGLNet6" Version="2023.9.18.460" />
+    
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
-    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+    <PackageReference Include="SkiaSharp" Version="2.88.6" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FlatRedBall.Forms">
-      <HintPath>Libraries\DesktopGl\Debug\FlatRedBall.Forms.dll</HintPath>
+    <Reference Include="FlatRedBall.Forms.DesktopGlNet6">
+      <HintPath>Libraries\DesktopGl\Debug\FlatRedBall.Forms.DesktopGlNet6.dll</HintPath>
     </Reference>
-    <Reference Include="FlatRedBallDesktopGL">
-      <HintPath>Libraries\DesktopGl\Debug\FlatRedBallDesktopGL.dll</HintPath>
+    <Reference Include="GumCore.DesktopGlNet6">
+      <HintPath>Libraries\DesktopGl\Debug\GumCore.DesktopGlNet6.dll</HintPath>
     </Reference>
-    <Reference Include="GumCoreXnaPc">
-      <HintPath>Libraries\DesktopGl\Debug\GumCoreXnaPc.dll</HintPath>
+    <Reference Include="SkiaInGum">
+      <HintPath>Libraries\DesktopGl\Debug\SkiaInGum.dll</HintPath>
     </Reference>
-    <Reference Include="StateInterpolation">
-      <HintPath>Libraries\DesktopGl\Debug\StateInterpolation.dll</HintPath>
+    <Reference Include="StateInterpolation.DesktopNet6">
+      <HintPath>Libraries\DesktopGl\Debug\StateInterpolation.DesktopNet6.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

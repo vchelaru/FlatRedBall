@@ -196,33 +196,32 @@ namespace FlatRedBall.Instructions
         /// <param name="currentTime">The time to compare to instructions in the instructable instance.</param>
         public static void ExecuteInstructionsOnConsideringTime(IInstructable instructable, double currentTime)
         {
-            Instructions.Instruction instruction;
-
+            var instructions = instructable.Instructions;
 #if DEBUG
-            if(instructable.Instructions == null)
+            if (instructions == null)
             {
                 throw new InvalidOperationException(
                     $"The instructable of type {instructable.GetType()} has null instructions. These should be instantiated before attempting to execute instructions");
             }
 #endif
+            Instruction instruction;
 
-            while (instructable.Instructions.Count > 0 &&
-                instructable.Instructions[0].TimeToExecute <= currentTime)
+            while (instructions.Count > 0 &&
+                instructions[0].TimeToExecute <= currentTime)
             {
-                instruction = instructable.Instructions[0];
-
+                instruction = instructions[0];
                 instruction.Execute();
 
                 // The instruction may have cleared the InstructionList, so we need to test if it did.
-                if (instructable.Instructions.Count < 1)
+                if (instructions.Count < 1)
                     continue;
 
                 if (instruction.CycleTime == 0)
-                    instructable.Instructions.Remove(instruction);
+                    instructions.Remove(instruction);
                 else
                 {
                     instruction.TimeToExecute += instruction.CycleTime;
-                    instructable.Instructions.InsertionSortAscendingTimeToExecute();
+                    instructions.InsertionSortAscendingTimeToExecute();
                 }
             }
         }

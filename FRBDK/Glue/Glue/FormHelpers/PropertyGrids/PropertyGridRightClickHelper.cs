@@ -190,7 +190,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
 
             MainGlueWindow.Self.PropertyGrid.Refresh();
         }
@@ -270,7 +270,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             GlueState.Self.CurrentNamedObjectSave.DestinationRectangle = rectangle;
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
             MainGlueWindow.Self.PropertyGrid.Refresh();
         }
 
@@ -279,7 +279,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             GlueState.Self.CurrentNamedObjectSave.DestinationRectangle = null;
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
             MainGlueWindow.Self.PropertyGrid.Refresh();
         }
 

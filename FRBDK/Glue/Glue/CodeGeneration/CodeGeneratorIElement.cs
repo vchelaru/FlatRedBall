@@ -9,7 +9,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     public class CodeGeneratorIElement
     {
-        private static async Task GenerateElement(GlueElement element)
+        public static async Task GenerateSpecificElement(GlueElement element)
         {
 #if DEBUG
             if(element == null)
@@ -23,13 +23,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static async Task GenerateElementAndDerivedCode(GlueElement baseElement)
         {
-            await GenerateElement(baseElement);
+            await GenerateSpecificElement(baseElement);
 
             var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(baseElement);
 
             foreach (var element in derivedElements)
             {
-                await GenerateElement(element);
+                await GenerateSpecificElement(element);
             }
         }
 

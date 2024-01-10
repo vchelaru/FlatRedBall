@@ -142,9 +142,8 @@ namespace TileGraphicsPlugin.Managers
 
                     listToFill.AddRange(referencedFiles.Select(item =>new FilePath(item)));
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
-                    int m = 3;
                 }
             }
 

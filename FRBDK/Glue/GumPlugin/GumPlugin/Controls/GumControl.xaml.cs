@@ -70,9 +70,17 @@ namespace GumPlugin.Controls
             var project = GlueState.Self.CurrentMainProject;
             var response = GetWhyAddingFormsIsNotSupported(project);
 
-            if(!string.IsNullOrEmpty(response.Message))
+            if (!string.IsNullOrEmpty(response.Message))
             {
                 GlueCommands.Self.DialogCommands.ShowMessageBox(response.Message);
+            }
+
+            var assembly = typeof(FormsControlAdder).Assembly;
+
+            var shouldSave = FormsControlAdder.AskToSaveIfOverwriting(assembly);
+            if(!shouldSave)
+            {
+                response.Succeeded = false;
             }
 
             if(response.Succeeded)
@@ -81,8 +89,8 @@ namespace GumPlugin.Controls
 
                 viewModel.IncludeFormsInComponents = true;
                 viewModel.IncludeComponentToFormsAssociation = true;
-                await FormsControlAdder.SaveElements(typeof(FormsControlAdder).Assembly);
-                await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
+                await FormsControlAdder.SaveElements(assembly);
+                await FormsControlAdder.SaveBehaviors(assembly);
             }
         }
 
@@ -115,7 +123,13 @@ namespace GumPlugin.Controls
 
         private void HandleAddFormsComponentsClick(object sender, RoutedEventArgs e)
         {
-            FormsControlAdder.SaveElements(typeof(FormsControlAdder).Assembly);
+            var assembly = typeof(FormsControlAdder).Assembly;
+
+            var shouldSave = FormsControlAdder.AskToSaveIfOverwriting(assembly);
+            if(shouldSave)
+            {
+                _ = FormsControlAdder.SaveElements(assembly);
+            }
         }
 
 

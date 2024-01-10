@@ -12,6 +12,8 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.IO;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
+using FlatRedBall.Glue.Parsing;
 
 namespace GumPlugin.Managers
 {
@@ -24,7 +26,7 @@ namespace GumPlugin.Managers
         AssetTypeInfo screenAti;
         AssetTypeInfo mGraphicalUiElementAti;
         AssetTypeInfo mGumxAti;
-
+        AssetTypeInfo mSkiaSpriteCanvas;
 
         public List<AssetTypeInfo> AssetTypesForThisProject { get; private set; } = new List<FlatRedBall.Glue.Elements.AssetTypeInfo>();
 
@@ -139,14 +141,54 @@ namespace GumPlugin.Managers
 
                     screenAti.QualifiedSaveTypeName = "Gum.Data.ScreenSave";
                     screenAti.Extension = "gusx";
-                    screenAti.AddToManagersMethod.Add("this.AddToManagers();" +
-                        "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += RefreshLayoutInternal");
 
-                    screenAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos);
+                    screenAti.AddToManagersFunc = (element, nos, rfs, layer) =>
+                    {
+                        var name = nos?.InstanceName ?? rfs?.GetInstanceName();
+
+                        var addToManagersStatement = $"{name}.AddToManagers();";
+
+                        var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                            GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+                        if (hasCommon)
+                        {
+                            addToManagersStatement = $"{name}.AddToManagers(global::RenderingLibrary.SystemManagers.Default, null);";
+                        }
+
+                        if (nos?.SourceType == SourceType.File && nos.IsEntireFile)
+                        {
+                            // don't generate anything, it's handled by the file
+                            return null;
+                        }
+                        else if(string.IsNullOrEmpty(element.BaseElement))
+                        {
+
+                            return $"{addToManagersStatement} FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += RefreshLayoutInternal;";
+                        }
+                        else
+                        {
+                            return addToManagersStatement;
+                        }
+                    };
+
                     
 
-                    screenAti.DestroyMethod = "this.RemoveFromManagers();" +
-                        "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= RefreshLayoutInternal";
+                    screenAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos);
+
+                    screenAti.DestroyFunc = (element, nos, rfs) =>
+                    {
+                        var name = nos?.InstanceName ?? rfs?.GetInstanceName();
+                        if (string.IsNullOrEmpty(element.BaseElement))
+                        {
+                            return $"{name}.RemoveFromManagers(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= RefreshLayoutInternal;";
+
+                        }
+                        else
+                        {
+                            return $"{name}.RemoveFromManagers();";
+                        }
+                    };
+
                     screenAti.SupportsMakeOneWay = false;
                     screenAti.ShouldAttach = false;
                     screenAti.MustBeAddedToContentPipeline = false;
@@ -156,11 +198,72 @@ namespace GumPlugin.Managers
 
                     screenAti.CanIgnorePausing = false;
                     screenAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\")";
-                    screenAti.ShouldAttach = false;
                     screenAti.HideFromNewFileWindow = true;
                 }
 
                 return screenAti;
+            }
+        }
+
+        AssetTypeInfo SkiaSpriteCanvas
+        {
+            get
+            {
+                if(mSkiaSpriteCanvas == null)
+                {
+                    mSkiaSpriteCanvas = new AssetTypeInfo();
+                    mSkiaSpriteCanvas.FriendlyName = "SkiaSpriteCanvas";
+                    mSkiaSpriteCanvas.QualifiedRuntimeTypeName = new PlatformSpecificType()
+                    {
+                        QualifiedType = "SkiaGum.SkiaSpriteCanvas"
+                    };
+
+                    mSkiaSpriteCanvas.AddToManagersMethod.Add("this.AddToManagers();");
+                    mSkiaSpriteCanvas.DestroyMethod = "this.RemoveFromManagers();";
+                    mSkiaSpriteCanvas.ShouldAttach = true;
+                    mSkiaSpriteCanvas.HasVisibleProperty = true;
+                    mSkiaSpriteCanvas.CanIgnorePausing = true;
+                    mSkiaSpriteCanvas.CanBeObject = true;
+
+                    // copy over values:
+                    CopyToSkiaSprite("X");
+                    CopyToSkiaSprite("Y");
+                    CopyToSkiaSprite("Z");
+
+                    CopyToSkiaSprite("FlipHorizontal");
+                    CopyToSkiaSprite("FlipVertical");
+
+                    CopyToSkiaSprite("Width", "100");
+                    CopyToSkiaSprite("Height", "100");
+
+                    CopyToSkiaSprite("Visible");
+
+                    CopyToSkiaSprite("ColorOperation");
+                    CopyToSkiaSprite("Red");
+                    CopyToSkiaSprite("Green");
+                    CopyToSkiaSprite("Blue");
+                    CopyToSkiaSprite("BlendOperation");
+
+                    CopyToSkiaSprite("RotationZ");
+
+                    CopyToSkiaSprite("IgnoreParentPosition");
+                    CopyToSkiaSprite("IgnoresParentVisibility");
+
+                    void CopyToSkiaSprite(string name, string defaultValue = null)
+                    {
+                        var property = AvailableAssetTypes.CommonAtis.Sprite.VariableDefinitions.First(item => item.Name == name);
+
+                        var clone = FileManager.CloneObject(property);
+
+                        if(defaultValue != null)
+                        {
+                            clone.DefaultValue = defaultValue;
+                        }
+                        mSkiaSpriteCanvas.VariableDefinitions.Add(clone);
+                    }
+
+                }
+                return mSkiaSpriteCanvas;
             }
         }
 
@@ -389,14 +492,15 @@ namespace GumPlugin.Managers
 
             if(displaySettings != null)
             {
-                if(displaySettings.FixedAspectRatio == false || displaySettings.AspectRatioHeight == 0)
+                if(displaySettings.AspectRatioBehavior != AspectRatioBehavior.FixedAspectRatio || displaySettings.AspectRatioHeight == 0)
                 {
                     toReturn += "FlatRedBall.Gum.GumIdb.FixedCanvasAspectRatio = null;";
                 }
                 else
                 {
                     var aspectRatio = displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight;
-                    toReturn += $"FlatRedBall.Gum.GumIdb.FixedCanvasAspectRatio = {displaySettings.AspectRatioWidth}m/{displaySettings.AspectRatioHeight}m;";
+                    toReturn += $"FlatRedBall.Gum.GumIdb.FixedCanvasAspectRatio = " +
+                        $"{CodeParser.ConvertValueToCodeString(displaySettings.AspectRatioWidth)}/{CodeParser.ConvertValueToCodeString(displaySettings.AspectRatioHeight)};";
                 }
             }
 
@@ -492,7 +596,8 @@ namespace GumPlugin.Managers
                 AvailableAssetTypes.Self.AddAssetType(ati);
             }
         }
-
+        bool hasSkia => GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasGumSkiaElements &&
+            AppState.Self.HasAddedGumSkiaElements;
         public void RefreshProjectSpecificAtis()
         {
             var list = GetAtisForDerivedGues();
@@ -504,6 +609,11 @@ namespace GumPlugin.Managers
                 {
                     AvailableAssetTypes.Self.RemoveAssetType(matching);
                 }
+            }
+
+            if(hasSkia)
+            {
+                list.Add(SkiaSpriteCanvas);
             }
 
             AssetTypesForThisProject.Clear();
@@ -548,7 +658,6 @@ namespace GumPlugin.Managers
             }
 
             var newAti = FlatRedBall.IO.FileManager.CloneObject<AssetTypeInfo>(GraphicalUiElementAti);
-
             UpdateAtiForElement(newAti, element);
 
             return newAti;
@@ -590,16 +699,26 @@ namespace GumPlugin.Managers
 
                 newAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos, qualifiedName);
 
-                if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GumSupportsAchxAnimation)
+                var version =
+                    GlueState.Self.CurrentGlueProject?.FileVersion;
+
+                var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                    GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+                if (hasCommon)
+                {
+                    newAti.ActivityMethod = "this?.AnimateSelf(FlatRedBall.TimeManager.SecondDifference)";
+                }
+                else if (version >= (int)GlueProjectSave.GluxVersions.GumSupportsAchxAnimation)
                 {
                     newAti.ActivityMethod = "this?.AnimateSelf()";
                 }
 
 
-                newAti.AddToManagersFunc = null;
                 newAti.AddToManagersMethod.Clear();
                 newAti.AddToManagersMethod.AddRange(screenAti.AddToManagersMethod);
 
+                newAti.AddToManagersFunc = screenAti.AddToManagersFunc;
+                newAti.DestroyFunc = screenAti.DestroyFunc;
                 newAti.DestroyMethod = screenAti.DestroyMethod;
             }
             string unqualifiedName = element.Name + "Runtime";
@@ -705,6 +824,10 @@ namespace GumPlugin.Managers
                         return variable.Type;
                     case "HorizontalAlignment":
                         return "RenderingLibrary.Graphics.HorizontalAlignment";
+                    case "TextOverflowHorizontalMode":
+                        return "RenderingLibrary.Graphics.TextOverflowHorizontalMode";
+                    case "TextOverflowVerticalMode":
+                        return "RenderingLibrary.Graphics.TextOverflowVerticalMode";
                     case "VerticalAlignment":
                         return "RenderingLibrary.Graphics.VerticalAlignment";
                     case "PositionUnitType":
@@ -719,6 +842,7 @@ namespace GumPlugin.Managers
                         return "Gum.Managers.TextureAddress";
                     case "GeneralUnitType":
                         return "Gum.Converters.GeneralUnitType";
+
                 }
 
                 return variable.Type;
@@ -771,9 +895,18 @@ namespace GumPlugin.Managers
         {
             if (ati != null)
             {
-                return ati == AssetTypeInfoManager.Self.GraphicalUiElementAti ||
-                    AssetTypeInfoManager.Self.AssetTypesForThisProject
-                        .Any(item => item.QualifiedRuntimeTypeName.QualifiedType == ati.QualifiedRuntimeTypeName.QualifiedType);
+                if(ati == SkiaSpriteCanvas)
+                {
+                    // This is technically a FRB type, not a Gum type, but it's handled here because the Gum plugin handles skia
+                    return false;
+                }
+                else
+                {
+                    return ati == AssetTypeInfoManager.Self.GraphicalUiElementAti ||
+                        AssetTypeInfoManager.Self.AssetTypesForThisProject
+                            .Any(item => item.QualifiedRuntimeTypeName.QualifiedType == ati.QualifiedRuntimeTypeName.QualifiedType);
+
+                }
             }
             return false;
         }

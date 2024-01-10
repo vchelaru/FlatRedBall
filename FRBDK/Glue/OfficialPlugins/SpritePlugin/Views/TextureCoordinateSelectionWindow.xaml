@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OfficialPlugins.SpritePlugin.Views"
+        xmlns:localization="clr-namespace:Localization;assembly=Localization"
         mc:Ignorable="d"
         Title="Texture Coordinate Selection" 
         WindowStartupLocation="Manual"
@@ -20,8 +21,8 @@
         </Grid.RowDefinitions>
         <local:TextureCoordinateSelectionView x:Name="InnerView"/>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,2,0,2">
-            <Button Width="50" Click="OkButtonClick">OK</Button>
-            <Button Width="50" Click="CancelButtonClick"  Margin="5,0,2,0">Cancel</Button>
+            <Button Width="50" Click="OkButtonClick" Content="{x:Static localization:Texts.Ok}" />
+            <Button Width="50" Click="CancelButtonClick"  Margin="5,0,2,0" Content="{x:Static localization:Texts.Cancel}" />
         </StackPanel>
     </Grid>
 </Window>

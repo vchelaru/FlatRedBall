@@ -38,6 +38,10 @@ namespace FlatRedBall.Forms.Controls.Primitives
         public event EventHandler Push;
         public event FocusUpdateDelegate FocusUpdate;
 
+        /// <summary>
+        /// Event raised when any button is pressed on an Xbox360GamePad which is being used by the 
+        /// GuiManager.GamePadsForUiControl.
+        /// </summary>
         public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
         public event Action<int> GenericGamepadButtonPushed;
 
@@ -144,6 +148,19 @@ namespace FlatRedBall.Forms.Controls.Primitives
                 RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Y);
                 RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Start);
                 RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Back);
+
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.DPadLeft);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.DPadRight);
+
+                if(IsEnabled && gamepad.LeftStick.AsDPadPushed(Xbox360GamePad.DPadDirection.Left))
+                {
+                    ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.DPadLeft);
+                }
+                if (IsEnabled && gamepad.LeftStick.AsDPadPushed(Xbox360GamePad.DPadDirection.Right))
+                {
+                    ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.DPadRight);
+                }
+
 
                 if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
                 {

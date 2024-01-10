@@ -6,6 +6,7 @@ using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
@@ -35,6 +36,9 @@ namespace OfficialPlugins.PreviewGenerator.Managers
                 }).ToList();
             }
 
+            // give preferential treatment to Sprite
+            visibleNamedObjects = visibleNamedObjects.OrderBy(item => item.GetAssetTypeInfo() != AvailableAssetTypes.CommonAtis.Sprite).ToList();
+
             ImageSource imageSource = null;
             foreach (var nos in visibleNamedObjects)
             {
@@ -43,6 +47,11 @@ namespace OfficialPlugins.PreviewGenerator.Managers
                 {
                     break;
                 }
+            }
+            if(imageSource == null)
+            {
+                // this doesn't have any visible objects, so let's return a blank image:
+                imageSource = new RenderTargetBitmap(32, 32, 96, 96, PixelFormats.Pbgra32);
             }
 
             return imageSource;

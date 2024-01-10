@@ -205,13 +205,21 @@ namespace FlatRedBall.Forms.Controls
 
             float range = MaxThumbPosition - MinThumbPosition;
 
+            var valueBefore = Value;
             if(range != 0)
             {
                 var ratio = (thumb.Y) / range;
                 var ratioBefore = ratio;
                 ratio = System.Math.Max(0, ratio);
                 ratio = System.Math.Min(1, ratio);
+
+
                 Value = Minimum + (Maximum - Minimum) * ratio;
+
+                if(valueBefore != Value)
+                {
+                    RaiseValueChangedByUi();
+                }
 
                 if(ratioBefore != ratio)
                 {
@@ -228,7 +236,12 @@ namespace FlatRedBall.Forms.Controls
                 
                 Value = Minimum;
 
-                if(shouldForceUpdateThumb)
+                if (valueBefore != Value)
+                {
+                    RaiseValueChangedByUi();
+                }
+
+                if (shouldForceUpdateThumb)
                 {
                     UpdateThumbPositionAccordingToValue();
                 }

@@ -16,6 +16,9 @@ using FlatRedBall.Glue.Managers;
 using Microsoft.Build.Evaluation;
 using Container = EditorObjects.IoC.Container;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using System.Reflection;
+using System.IO;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -107,9 +110,17 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public abstract string NeededVisualStudioVersion { get; }
 
-        public string DotNetVersion { get; private set; }
+        public string DotNetVersionString { get; private set; }
+
+        public Version DotNetVersion { get; private set; }
+        public Version XamarinVersion { get; private set; }
+
+
 
         public decimal? DotNetVersionNumber { get; private set; }
+
+        public string ExecutableName { get; private set; }
+
         #endregion
 
         #region Methods
@@ -135,15 +146,37 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         private void GetDotNetVersion()
         {
             var property = mProject.AllEvaluatedProperties.FirstOrDefault(item => item.Name == "TargetFrameworkVersion");
-            DotNetVersion = property?.EvaluatedValue ?? "Unknown";
+            DotNetVersionString = property?.EvaluatedValue ?? "Unknown";
 
-            if(DotNetVersion?.StartsWith("v") == true)
+
+            if(DotNetVersionString?.StartsWith("v") == true)
             {
-                var afterV = DotNetVersion.Substring(1);
+                var afterV = DotNetVersionString.Substring(1);
 
                 try
                 {
-                    DotNetVersionNumber = Decimal.Parse(afterV);
+                    if(this is AndroidProject or IosMonogameProject)
+                    {
+                        // this doesn't have a dotnet version, so gotta use xamarin:
+                        XamarinVersion = new Version(afterV);
+                    }
+                    else
+                    {
+                        DotNetVersionNumber = Decimal.Parse(afterV);
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    if (this is AndroidProject or IosMonogameProject)
+                    {
+                        DotNetVersion = new Version(0,0);
+                    }
+                    else
+                    {
+                        DotNetVersion = new Version(afterV);
+                    }
                 }
                 catch { }
             }
@@ -158,11 +191,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// </summary>
         /// <param name="absoluteFile">The absolute file name to add.</param>
         /// <returns>The ProjectItem which was created and added to the project.</returns>
-        public ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained, bool forceToContentPipeline = false)
+        public ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained, bool forceToContentPipeline = false, ReferencedFileSave rfs = null)
         {
             /////////////////////////Early Out////////////////////////////
             string extension = FileManager.GetExtension(absoluteFile);
-            var rfs = Container.Get<IGlueCommands>().FileCommands.GetReferencedFile(absoluteFile);
+            rfs = rfs ?? Container.Get<IGlueCommands>().FileCommands.GetReferencedFile(absoluteFile);
 
             bool handledByContentPipelinePlugin = Plugins.EmbeddedPlugins.SyncedProjects.SyncedProjectLogic.Self
                 .GetIfHandledByContentPipelinePlugin(this, extension, rfs);
@@ -178,7 +211,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 ProjectItem buildItem = null;
 
                 bool addToContentPipeline = false;
-                AssetTypeInfo assetTypeInfo = AvailableAssetTypes.Self.GetAssetTypeFromExtension(extension);
+                AssetTypeInfo assetTypeInfo = rfs?.GetAssetTypeInfo() ?? AvailableAssetTypes.Self.GetAssetTypeFromExtension(extension);
 
                 if (assetTypeInfo != null)
                 {
@@ -254,7 +287,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 {
                     // The items in the dictionary must be to-lower on some
                     // platforms, and ProcessPath takes care of this.
-                    mBuildItemDictionaries.Add(itemInclude.ToLower(), buildItem);
+                    mBuildItemDictionaries.Add(itemInclude.ToLowerInvariant(), buildItem);
                 }
                 catch
                 {
@@ -504,12 +537,19 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override bool IsFrbSourceLinked()
         {
-            var item = mProject.AllEvaluatedItems.FirstOrDefault(item =>
+            foreach(var item in mProject.AllEvaluatedItems)
             {
-                return item.ItemType == "ProjectReference" &&
-                    item.EvaluatedInclude.EndsWith("\\FlatRedBallDesktopGL.csproj");
-            });
-            return item != null;
+                if(item.ItemType == "ProjectReference")
+                {
+                    var filename = Path.GetFileName(item.EvaluatedInclude);
+                    if((filename == "FlatRedBallDesktopGL.csproj") || (filename == "FlatRedBallDesktopGLNet6.csproj"))
+                    {
+                        return true;
+                    }
+                }
+
+            }
+            return false;
         }
 
         // nope! This reads the .csproj for the file version # which is old, it doesn't get updated by the build. We'd have to load the .dll to see
@@ -544,7 +584,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 ProjectItem buildItem = mProject.AllEvaluatedItems.ElementAt(i);
 
-                string includeToLower = buildItem.EvaluatedInclude.ToLower();
+                string includeToLower = buildItem.EvaluatedInclude.ToLowerInvariant();
 
                 if (buildItem.IsImported)
                 {
@@ -558,12 +598,21 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
                 else if (mBuildItemDictionaries.ContainsKey(includeToLower))
                 {
-                    wasChanged = ResolveDuplicateProjectEntry(wasChanged, buildItem);
+                    // do the two have the same 
+                    var areSameItemType = buildItem.ItemType == mBuildItemDictionaries[includeToLower].ItemType;
+
+                    if(areSameItemType)
+                    {
+                        ResolveDuplicateProjectEntry(buildItem);
+                        wasChanged = true;
+                    }
+                    // else no worries, don't touch it...
+
                 }
                 else
                 {
                     mBuildItemDictionaries.Add(
-                        buildItem.UnevaluatedInclude.ToLower(),
+                        buildItem.UnevaluatedInclude.ToLowerInvariant(),
                         buildItem);
                 }
             }
@@ -571,7 +620,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             FindRootNamespace();
 
-            // December 20, 2010
+
+            ExecutableName = mProject.GetProperty("AssemblyName")?.EvaluatedValue ??
+                FileManager.RemoveExtension(FileManager.RemovePath(fileName));
+
 
             if (wasChanged)
             {
@@ -597,7 +649,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-        private bool ResolveDuplicateProjectEntry(bool wasChanged, ProjectItem buildItem)
+        private void ResolveDuplicateProjectEntry(ProjectItem buildItem)
         {
             var mbmb = new MultiButtonMessageBoxWpf();
 
@@ -644,8 +696,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 mProject.RemoveItem(buildItem);
                 mProject.ReevaluateIfNecessary();
             }
-            wasChanged = true;
-            return wasChanged;
         }
 
         public ProjectItem GetItem(string itemName)
@@ -666,7 +716,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
             else
             {
-                itemName = itemName.Replace("/", "\\").ToLower();
+                itemName = itemName.Replace("/", "\\").ToLowerInvariant();
             }
             if (!mBuildItemDictionaries.ContainsKey(itemName))
             {
@@ -679,7 +729,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 foreach (var item in values)
                 {
                     // This may be a link
-                    var foundLink = (string)item.Metadata.FirstOrDefault(metadata => metadata.ItemType == "Link")?.EvaluatedValue;
+                    var foundLink = item.Metadata.FirstOrDefault(metadata => String.Equals(metadata.ItemType, "Link", StringComparison.OrdinalIgnoreCase))?.EvaluatedValue;
 
                     if (!string.IsNullOrEmpty(foundLink) && foundLink.Equals(itemName, System.StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -707,7 +757,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             item.UnevaluatedInclude = unmodifiedNewName.Replace("/", "\\");
 
-            mBuildItemDictionaries.Add(newName, item);
+            // This could already exist (like in duplicate entries), so use the assignment rather than add:
+            //mBuildItemDictionaries.Add(newName, item);
+            mBuildItemDictionaries[newName] = item;
 
             if (newName.Contains(".generated.cs"))
             {
@@ -916,7 +968,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     fileName = FileManager.MakeRelative(fileName, this.Directory);
                 }
 
-                string fileNameToLower = fileName.Replace('/', '\\').ToLower();
+                string fileNameToLower = fileName.Replace('/', '\\').ToLowerInvariant();
 
 
 
@@ -1033,7 +1085,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public bool RemoveItem(ProjectItem buildItem)
         {
-            string itemName = buildItem.EvaluatedInclude.Replace("/", "\\").ToLower();
+            string itemName = buildItem.EvaluatedInclude.Replace("/", "\\").ToLowerInvariant();
 
             return RemoveItem(itemName);
         }
@@ -1058,11 +1110,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             ProjectItem itemToRemove = null;
 
-            itemName = itemName.Replace("/", "\\").ToLower();
+            itemName = itemName.Replace("/", "\\").ToLowerInvariant();
             bool removed = false;
-            if (mBuildItemDictionaries.ContainsKey(itemName))
+            if (mBuildItemDictionaries.TryGetValue(itemName, out var buildItem))
             {
-                itemToRemove = mBuildItemDictionaries[itemName];
+                itemToRemove = buildItem;
                 removed = true;
             }
 
@@ -1072,11 +1124,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public void RenameInDictionary(string oldName, string newName, ProjectItem item)
         {
-            mBuildItemDictionaries.Remove(oldName.Replace("/", "\\").ToLower());
+            mBuildItemDictionaries.Remove(oldName.Replace("/", "\\").ToLowerInvariant());
 
-            if (!mBuildItemDictionaries.ContainsKey(newName.Replace("/", "\\").ToLower()))
+            if (!mBuildItemDictionaries.ContainsKey(newName.Replace("/", "\\").ToLowerInvariant()))
             {
-                mBuildItemDictionaries.Add(newName.Replace("/", "\\").ToLower(), item);
+                mBuildItemDictionaries.Add(newName.Replace("/", "\\").ToLowerInvariant(), item);
             }
         }
 

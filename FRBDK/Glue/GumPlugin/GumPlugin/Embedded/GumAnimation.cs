@@ -1,5 +1,6 @@
 ﻿using FlatRedBall;
 using FlatRedBall.Instructions;
+using FlatRedBall.Utilities;
 using StateInterpolationPlugin;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Gum.Animation
 {
-    public class GumAnimation
+    public class GumAnimation : IPlayable
     {
         #region Internal Classes
 
@@ -223,6 +224,9 @@ namespace FlatRedBall.Gum.Animation
                 }
             }
         }
+
+        void IPlayable.Play() => Play(null);
+        Task IPlayable.PlayAsync() => PlayAsync(null);
 
         public void Play(object whatStartedPlayingThis = null)
         {

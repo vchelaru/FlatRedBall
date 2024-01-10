@@ -5,6 +5,7 @@ using Gum.DataTypes;
 using Gum.DataTypes.Behaviors;
 using Gum.DataTypes.Variables;
 using Gum.Managers;
+using GumPluginCore.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,14 +86,11 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForStates.Add("IsOverrideInCodeGen");
             //mVariableNamesToSkipForStates.Add("IsBold");
 
-
-
             // Eventually we'll support this but first Gum needs to support 
             // setting categorized states on instances
             // September 17 2014
             // no longer needed:
             //mVariableNamesToSkipForStates.Add("State");
-
 
 
         }
@@ -103,16 +101,64 @@ namespace GumPlugin.CodeGeneration
 
             if (version >= (int)GluxVersions.GumSupportsStackSpacing)
             {
-                if (mVariableNamesToSkipForStates.Contains("StackSpacing"))
-                {
-                    mVariableNamesToSkipForStates.Remove("StackSpacing");
-                }
+                Include("StackSpacing");
             }
             else
             {
-                if (!mVariableNamesToSkipForStates.Contains("StackSpacing"))
+                Skip("StackSpacing");
+            }
+
+            if(version >= (int)GluxVersions.GumUsesSystemTypes)
+            {
+                Include("CustomFrameTextureCoordinateWidth");
+                Include("AutoGridHorizontalCells");
+                Include("AutoGridVerticalCells");
+                Include("LineHeightMultiplier");
+            }
+            else
+            {
+                Skip("CustomFrameTextureCoordinateWidth");
+                Skip("AutoGridHorizontalCells");
+                Skip("AutoGridVerticalCells");
+                Skip("LineHeightMultiplier");
+            }
+
+            if ( version >= (int) GluxVersions.GumHasIgnoredByParentSize)
+            {
+                Include("IgnoredByParentSize");
+            }
+            else
+            {
+                Skip("IgnoredByParentSize");
+            }
+
+            if( version >= (int) GluxVersions.GumTextHasIsBold)
+            {
+                // We can include this one, it's handled by 
+                Include("IsBold");
+            }
+            else
+            {
+                Skip("IsBold");
+            }
+
+            TextCodeGenerator.Self.AddVariableNamesToSkipForStates(mVariableNamesToSkipForStates);
+
+
+            return;
+
+            void Include(string variable)
+            {
+                if (mVariableNamesToSkipForStates.Contains(variable))
                 {
-                    mVariableNamesToSkipForStates.Add("StackSpacing");
+                    mVariableNamesToSkipForStates.Remove(variable);
+                }
+            }
+            void Skip(string variable)
+            {
+                if (!mVariableNamesToSkipForStates.Contains(variable))
+                {
+                    mVariableNamesToSkipForStates.Add(variable);
                 }
             }
         }
@@ -165,7 +211,7 @@ namespace GumPlugin.CodeGeneration
                         {
                             foreach(var state in category.States)
                             {
-                                elseIf.Line($"if(state.Name == \"{state.Name}\") this.mCurrent{category.Name}State = {category.Name}.{state.MemberNameInCode()};");
+                                elseIf.Line($"if(state.Name == \"{state.Name}\") this.mCurrent{category.Name}State = {category.EnumNameInCode()}.{state.MemberNameInCode()};");
                             }
                         }
                     }
@@ -177,28 +223,43 @@ namespace GumPlugin.CodeGeneration
 
         #region Generate Enums
 
+        public bool SupportsEnumsInInterfaces => GlueState.Self.CurrentMainProject?.DotNetVersion?.Major >= 5;
+
         public void GenerateStateEnums(IStateContainer stateContainer, ICodeBlock currentBlock, string enumNamePrefix = null)
         {
             bool hasUncategorized = (stateContainer is BehaviorSave) == false;
 
-            currentBlock.Line("#region State Enums");
+            var canGenerate = true;
 
-            if (hasUncategorized)
+            if(stateContainer is BehaviorSave)
             {
-                string categoryName = "VariableState";
-                var states = stateContainer.UncategorizedStates;
-                GenerateEnumsForCategory(currentBlock, categoryName, states);
-            }
-            // loop through categories:
-            foreach (var category in stateContainer.Categories)
-            {
-                string categoryName = enumNamePrefix + category.Name;
-                var states = category.States;
-                GenerateEnumsForCategory(currentBlock, categoryName, states);
-
+                // If it's a behavior, we need to make sure we are on a version of C# that supports enums in interfaces
+                canGenerate = SupportsEnumsInInterfaces;
             }
 
-            currentBlock.Line("#endregion");
+
+            if(canGenerate)
+            {
+                currentBlock.Line("#region State Enums");
+
+                if (hasUncategorized)
+                {
+                    string categoryName = "VariableState";
+                    var states = stateContainer.UncategorizedStates;
+                    GenerateEnumsForCategory(currentBlock, categoryName, states);
+                }
+                // loop through categories:
+                foreach (var category in stateContainer.Categories)
+                {
+                    string categoryName = enumNamePrefix + category.EnumNameInCode();
+                    var states = category.States;
+                    GenerateEnumsForCategory(currentBlock, categoryName, states);
+
+                }
+
+                currentBlock.Line("#endregion");
+            }
+
         }
 
         public void GenerateEnumsForCategory(ICodeBlock codeBlock, string categoryName, IEnumerable<StateSave> states)
@@ -232,7 +293,7 @@ namespace GumPlugin.CodeGeneration
             foreach (var category in elementSave.Categories)
             {
                 propertyName = "Current" + category.Name + "State";
-                propertyType = category.Name;
+                propertyType = category.EnumNameInCode();
 
                 // Make these nullable because categorized states may not be set at all
                 currentBlock.Line($"{propertyType}? m{propertyName};");
@@ -339,7 +400,7 @@ namespace GumPlugin.CodeGeneration
             foreach (var category in elementSave.Categories)
             {
                 propertyName = "Current" + category.Name + "State";
-                propertyType = category.Name;
+                propertyType = category.EnumNameInCode();
                 states = category.States;
 
                 GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable:true);
@@ -508,16 +569,16 @@ namespace GumPlugin.CodeGeneration
 
             foreach (var category in elementSave.Categories)
             {
-                categoryName = category.Name;
+                var categoryType = category.EnumNameInCode();
                 states = category.States;
-                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryName, states, addValues:false);
-                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryName, states, addValues:true);
+                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryType, states, addValues:false);
+                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryType, states, addValues:true);
             }
 
             currentBlock.Line("#endregion");
         }
 
-        private void GenerateGetCurrentValuesOnStateForCategory(ICodeBlock currentBlock, ElementSave container, string categoryName, List<Gum.DataTypes.Variables.StateSave> states, bool addValues = false)
+        private void GenerateGetCurrentValuesOnStateForCategory(ICodeBlock currentBlock, ElementSave container, string categoryType, List<Gum.DataTypes.Variables.StateSave> states, bool addValues = false)
         {
             string methodName = "GetCurrentValuesOnState";
 
@@ -526,7 +587,7 @@ namespace GumPlugin.CodeGeneration
                 methodName = "AddToCurrentValuesWithState";
             }
 
-            currentBlock = currentBlock.Function("private Gum.DataTypes.Variables.StateSave", methodName, categoryName + " state");
+            currentBlock = currentBlock.Function("private Gum.DataTypes.Variables.StateSave", methodName, categoryType + " state");
 
             currentBlock.Line("Gum.DataTypes.Variables.StateSave newState = new Gum.DataTypes.Variables.StateSave();");
 
@@ -534,7 +595,7 @@ namespace GumPlugin.CodeGeneration
             {
                 foreach (var state in states)
                 {
-                    var caseBlock = switchBlock.Case(categoryName + "." + state.MemberNameInCode());
+                    var caseBlock = switchBlock.Case(categoryType + "." + state.MemberNameInCode());
                     {
                         var instanceNames = container.Instances.Select(item => item.Name).ToList();
                         var orderedVariables = state.Variables

@@ -144,7 +144,13 @@ namespace GlueControl.Editing
             }
             var sourceTmxObject = namedObjectSave.Properties.FirstOrDefault(item => item.Name == "SourceTmxName")?.Value as string;
 
-            if (collisionCreationOptions == 4 && !string.IsNullOrEmpty(sourceTmxObject))
+            var isUsingFromTypeCollisionOptions =
+                // FromType = 4,
+                collisionCreationOptions == 4 ||
+                // FromMapCollision = 6
+                collisionCreationOptions == 6;
+
+            if (isUsingFromTypeCollisionOptions && !string.IsNullOrEmpty(sourceTmxObject))
             {
                 map = EditingManager.Self.GetObjectByName(sourceTmxObject) as FlatRedBall.TileGraphics.LayeredTileMap;
             }
@@ -152,7 +158,7 @@ namespace GlueControl.Editing
 
         #endregion
 
-        public void Update()
+        public void Update(bool didGameBecomeActive)
         {
             ////////////////early out//////////////////////////////
             if (map == null)
@@ -853,6 +859,8 @@ namespace GlueControl.Editing
             owner = shapeCollection;
         }
 
+        public bool HandleDelete() => false;
+
         #region General ISelectionMarker implementations
 
         public void Destroy()
@@ -881,7 +889,7 @@ namespace GlueControl.Editing
             ScreenManager.PersistentAxisAlignedRectangles.Add(boundsRectangle);
         }
 
-        public bool IsCursorOverThis()
+        public bool IsMouseOverThis()
         {
             // always say "true" because the user can paint when selecting a TileShapeCollection.
             // Let them select something else in Glue

@@ -29,8 +29,6 @@ namespace GumPlugin.ViewModels
         GumProjectSave backingGumProject;
         ReferencedFileSave backingRfs;
             
-        bool shouldRaiseEvents = true;
-
         [SyncedProperty]
         public bool UseAtlases
         {

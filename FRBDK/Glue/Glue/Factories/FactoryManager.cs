@@ -137,7 +137,7 @@ namespace FlatRedBall.Glue.Factories
                     }
                 }
 
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             }
@@ -194,7 +194,7 @@ namespace FlatRedBall.Glue.Factories
                     "action is recommended.";
 
                 DialogResult result = MessageBox.Show(message,
-                    "Reset Entites inheriting from this?", MessageBoxButtons.YesNo);
+                    "Reset Entities inheriting from this?", MessageBoxButtons.YesNo);
 
                 if (result == DialogResult.Yes)
                 {
@@ -212,14 +212,14 @@ namespace FlatRedBall.Glue.Factories
                 StringFunctions.RemoveDuplicates(nos.VariablesToReset);
             }
 
-            await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(entitySave);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
 
             foreach(var element in entitySave.GetAllBaseEntities())
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             }
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
 
         internal void RemoveResetVariablesForEntitySave(EntitySave entitySave)
@@ -236,7 +236,7 @@ namespace FlatRedBall.Glue.Factories
                 CodeWriter.GenerateCode(element);
             }
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
 
         public static bool AddResetVariablesFor(NamedObjectSave nos)

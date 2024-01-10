@@ -27,7 +27,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
     class ProjectCommands : IProjectCommands
     {
         /// <summary>
-        /// Saves the projects immediately if run from a task, or adds the save projects command to a task if not
+        /// Saves the main project and synced projects immediately if run from an existing task. Adds a task if not.
         /// </summary>
         public void SaveProjects()
         {
@@ -121,7 +121,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var fullFileName = ProjectManager.ProjectBase.Directory + fileName;
 
             var save = false; // we'll be doing manual saving after it's created
-            ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fileName, save);
+            ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fileName, save);
 
             // Now we can save it:
             FileManager.SaveText(code, fullFileName);
@@ -137,8 +137,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
         /// <summary>
-        /// Updates the presence of the RFS in the main project.  If the RFS has project specific files, then those
-        /// files are updated in the appropriate synced project.  
+        /// Updates the presence of the RFS in the main project. If the RFS has project specific files, then those
+        /// files are updated in the appropriate synced project. If the file  
         /// </summary>
         /// <remarks>
         /// This method does not update synced projects if the synced projects use the same file.  The reason is because
@@ -157,14 +157,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (!shouldSkip)
             {
 
+
                 bool useContentPipeline = referencedFileSave.UseContentPipeline || (assetTypeInfo != null && assetTypeInfo.MustBeAddedToContentPipeline);
 
-                wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave), useContentPipeline, false, fileRfs: referencedFileSave);
+                var projectName = GlueState.Self.CurrentMainProject.Name;
+                var isExcludedFromProject = referencedFileSave.ProjectsToExcludeFrom.Contains(projectName);
+                if(!isExcludedFromProject)
+                {
+                    wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave), useContentPipeline, false, fileRfs: referencedFileSave);
+                }
 
                 foreach (ProjectSpecificFile projectSpecificFile in referencedFileSave.ProjectSpecificFiles)
                 {
-                    VisualStudioProject foundProject = (VisualStudioProject)ProjectManager.GetProjectByName(projectSpecificFile.ProjectName);
-                    wasAnythingAdded |= UpdateFileMembershipInProject(foundProject, projectSpecificFile.File, useContentPipeline, true, fileRfs: referencedFileSave);
+                    isExcludedFromProject = referencedFileSave.ProjectsToExcludeFrom.Contains(projectSpecificFile.ProjectName);
+                    if(!isExcludedFromProject)
+                    {
+                        VisualStudioProject foundProject = (VisualStudioProject)ProjectManager.GetProjectByName(projectSpecificFile.ProjectName);
+                        wasAnythingAdded |= UpdateFileMembershipInProject(foundProject, projectSpecificFile.File, useContentPipeline, true, fileRfs: referencedFileSave);
+                    }
                 }
             }
             return wasAnythingAdded;
@@ -272,7 +282,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (needsToBeInContentProject)
                 {
-                    AddFileToContentProject(project, useContentPipeline, shouldLink, fileToAddAbsolute);
+                    AddFileToContentProject(project, useContentPipeline, shouldLink, fileToAddAbsolute, fileRfs);
                 }
                 else
                 {
@@ -379,7 +389,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return toReturn;
         }
 
-        private static void AddFileToContentProject(ProjectBase project, bool useContentPipeline, bool shouldLink, string fileToAddAbsolute)
+        private static void AddFileToContentProject(ProjectBase project, bool useContentPipeline, bool shouldLink, string fileToAddAbsolute, ReferencedFileSave rfs)
         {
             string relativeFileName = FileManager.MakeRelative(
                 fileToAddAbsolute,
@@ -392,8 +402,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (!useContentPipeline && project.ContentProject.IsFilePartOfProject(fileToAddAbsolute, BuildItemMembershipType.CompileOrContentPipeline))
             {
-                ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(fileToAddAbsolute);
-
                 if (rfs != null)
                 {
                     rfs.UseContentPipeline = false;
@@ -403,8 +411,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else if (useContentPipeline && project.ContentProject.IsFilePartOfProject(fileToAddAbsolute, BuildItemMembershipType.CopyIfNewer))
             {
-                ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(fileToAddAbsolute);
-
                 if (rfs != null)
                 {
                     rfs.UseContentPipeline = true;
@@ -413,10 +419,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else
             {
-                ((VisualStudioProject)project.ContentProject).AddContentBuildItem(
+                var contentProject = (VisualStudioProject)project.ContentProject;
+                contentProject.AddContentBuildItem(
                     fileToAddAbsolute,
                     shouldLink ? SyncedProjectRelativeType.Linked : SyncedProjectRelativeType.Contained,
-                    useContentPipeline);
+                    useContentPipeline, rfs);
 
             }
 
@@ -505,7 +512,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 // This is the location when running from Glue
                 // Maybe eventually I'll fix glue build to build to the same location as the project...
-                string debugPath = "bin/x86/debug/";
+                string debugPath = "bin/debug/";
                 CopyToBuildFolder(absoluteSource.FullPath, debugPath);
 
                 if (GlueState.Self.CurrentMainProject is VisualStudioProject)
@@ -558,9 +565,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }, $"{nameof(CopyToBuildFolder)} {absoluteSource}");
         }
 
-        private static void CopyToBuildFolder(FilePath absoluteSource, string debugPath)
+        private static void CopyToBuildFolder(FilePath absoluteSource, string outputPathRelativeToCsProj)
         {
-            string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentCodeProjectFileName.FullPath) + debugPath + "Content/";
+            string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentCodeProjectFileName.FullPath) + outputPathRelativeToCsProj + "Content/";
             string destination = buildFolder + FileManager.MakeRelative(absoluteSource.FullPath, GlueState.Self.ContentDirectory);
 
             string destinationFolder = FileManager.GetDirectory(destination);
@@ -718,6 +725,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void MakeGeneratedCodeItemsNested()
         {
+            TaskManager.Self.AddOrRunIfTasked(MakeGeneratedCodeItemsNestedImmediately,
+                nameof(MakeGeneratedCodeItemsNested));
+        }
+
+        public void MakeGeneratedCodeItemsNestedImmediately()
+        { 
             foreach (var bi in ProjectManager.ProjectBase.EvaluatedItems)
             {
 

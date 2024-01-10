@@ -28,7 +28,7 @@ namespace OfficialPlugins.BuiltFileSizeInspector
 
         public override void StartUp()
         {
-            base.AddMenuItemTo("View Built Project Sizes", HandleViewBuiltProjectSizes, "Plugins");
+            base.AddMenuItemTo(Localization.Texts.ViewBuiltProjectSizes, Localization.MenuIds.ViewBuiltProjectSizesId, HandleViewBuiltProjectSizes, Localization.MenuIds.PluginId);
         }
 
         private void HandleViewBuiltProjectSizes(object sender, EventArgs e)

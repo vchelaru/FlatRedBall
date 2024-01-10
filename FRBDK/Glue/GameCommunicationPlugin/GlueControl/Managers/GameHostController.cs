@@ -24,15 +24,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         CompilerViewModel compilerViewModel;
         GlueViewSettingsViewModel glueViewSettingsViewModel;
         GameHostView gameHostView;
-        private CommandSender _commandSender;
+        
         private Func<string, string, Task<string>> _eventCallerWithAction;
         private RefreshManager _refreshManager;
 
         public void Initialize(GameHostView gameHostView, Action<string> output,
             CompilerViewModel compilerViewModel, GlueViewSettingsViewModel glueViewSettingsViewModel,
-            PluginTab glueViewSettingsTab, Func<string, string, Task<string>> eventCallerWithAction, RefreshManager refreshManager, CommandSender commandSender)
+            PluginTab glueViewSettingsTab, Func<string, string, Task<string>> eventCallerWithAction, RefreshManager refreshManager)
         {
-            _commandSender = commandSender;
             _eventCallerWithAction = eventCallerWithAction;
             _refreshManager = refreshManager;
             this.gameHostView = gameHostView;
@@ -59,7 +58,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
                 else
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
                 }
             };
 
@@ -69,7 +68,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 var wasEditChecked = compilerViewModel.IsEditChecked;
                 // This is the screen that the game is currently on...
-                var screenName = await _commandSender.GetScreenName();
+                var screenName = await CommandSender.Self.GetScreenName();
                 // ...but we may not want to restart on this screen if it's the edit entity screen:
                 var isEntityViewingScreen = screenName == "GlueControl.Screens.EntityViewingScreen";
                 string commandLineArgs = await GetCommandLineArgs(isRunning:true);
@@ -95,7 +94,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
                 else
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
                 }
                 if (wasEditChecked && compileSucceeded && runSucceeded)
                 {
@@ -116,25 +115,25 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             gameHostView.RestartScreenClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = false;
-                await _commandSender.Send(new RestartScreenDto());
+                await CommandSender.Self.Send(new RestartScreenDto());
             };
 
             gameHostView.AdvanceOneFrameClicked += async (not, used) =>
             {
-                await _commandSender.Send(new AdvanceOneFrameDto());
+                await CommandSender.Self.Send(new AdvanceOneFrameDto());
             };
 
 
             gameHostView.PauseClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = true;
-                await _commandSender.Send(new TogglePauseDto());
+                await CommandSender.Self.Send(new TogglePauseDto());
             };
 
             gameHostView.UnpauseClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = false;
-                await _commandSender.Send(new TogglePauseDto());
+                await CommandSender.Self.Send(new TogglePauseDto());
             };
 
             gameHostView.SettingsClicked += (not, used) =>
@@ -177,7 +176,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             if (isRunning)
             {
 
-                var screenName = await _commandSender.GetScreenName();
+                var screenName = await CommandSender.Self.GetScreenName();
                 // ...but we may not want to restart on this screen if it's the edit entity screen:
                 var isEntityViewingScreen = screenName == "GlueControl.Screens.EntityViewingScreen";
                 args = isEntityViewingScreen ? null : screenName;
@@ -204,7 +203,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
 
             // This prevents the game from stretching to the game tab in .NET 6, so don't do this in .net 6:
-            if(GlueState.Self.CurrentMainProject.DotNetVersion != "v6.0")
+            var is6OrGreater = GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6;
+            if (!is6OrGreater)
             {
                 var project = GlueState.Self.CurrentGlueProject;
                 if(project?.DisplaySettings?.AllowWindowResizing == true && glueViewSettingsViewModel.EmbedGameInGameTab)
@@ -258,7 +258,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     }
                     succeeded = runResponse.Value<bool>("Succeeded");
 
-                    if(glueViewSettingsViewModel.EmbedGameInGameTab && glueViewSettingsViewModel.EnableGameEditMode)
+                    if(glueViewSettingsViewModel.EmbedGameInGameTab && glueViewSettingsViewModel.EnableLiveEdit)
                     {
                         // Sometimes the game can update the window before the window becomes borderless. If that happens, this
                         // fails to update the position. Need to delay.
@@ -269,7 +269,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
                 else
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
                 }
 
             }, "Starting in edit mode", TaskExecutionPreference.AddOrMoveToEnd);

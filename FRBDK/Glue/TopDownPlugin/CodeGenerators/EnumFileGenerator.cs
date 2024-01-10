@@ -64,6 +64,23 @@ namespace {GlueState.Self.ProjectNamespace}.Entities
             return FromDirection(direction.X, direction.Y, possibleDirections);
         }}
 
+        public static float ToAngleRadians(this TopDownDirection direction)
+        {{
+            switch (direction)
+            {{
+                case TopDownDirection.Right: return 0;
+                case TopDownDirection.UpRight: return MathHelper.PiOver4;
+                case TopDownDirection.Up: return MathHelper.PiOver2;
+                case TopDownDirection.UpLeft: return MathHelper.PiOver2 + MathHelper.PiOver4;
+                case TopDownDirection.Left: return MathHelper.Pi;
+                case TopDownDirection.DownLeft: return MathHelper.Pi + MathHelper.PiOver4;
+                case TopDownDirection.Down: return MathHelper.Pi + MathHelper.PiOver2;
+                case TopDownDirection.DownRight: return MathHelper.Pi + MathHelper.PiOver2 + MathHelper.PiOver4;
+            }}
+            return 0;
+        }}
+
+
         public static Microsoft.Xna.Framework.Vector3 ToVector(this TopDownDirection direction)
         {{
             float diagonalLength = (float)System.Math.Cos( MathHelper.PiOver4 );

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -11,11 +12,14 @@ namespace FlatRedBall.Input
     #region Enums
     public enum DeadzoneType
     {
-        Radial= 0,
+        Radial = 0,
         //BoundingBox = 1, // Not currently supported
         Cross
-        
     }
+
+    /// <summary>
+    /// The button layout of the face and shoulder buttons. Xbox and Nintendo controllers swap the X/Y and A/B buttons.
+    /// </summary>
     public enum ButtonLayout
     {
         Unknown,
@@ -37,8 +41,22 @@ namespace FlatRedBall.Input
         Genesis,
         Xbox360,
         PlayStationDualShock,
-
     }
+
+    /// <summary>
+    /// A list of button positions on the face of a controller which can be used to generalize
+    /// a button regardless of the button letter. This addresses the inconsistent button names between
+    /// Nintendo and Xbox controllers.
+    /// </summary>
+    public enum ButtonPosition
+    {
+        FaceDown,
+        FaceLeft,
+        FaceUp,
+        FaceRight,
+    }
+
+
 
     #endregion
 
@@ -129,6 +147,8 @@ namespace FlatRedBall.Input
         GamePadCapabilities mCapabilities;
 
         bool[] mButtonsIgnoredForThisFrame = new bool[NumberOfButtons];
+        public bool[] ignoredNextPushes = new bool[NumberOfButtons];
+
 
         Dictionary<Button, Xbox360ButtonReference> cachedButtons = new Dictionary<Button, Xbox360ButtonReference>();
 
@@ -162,8 +182,8 @@ namespace FlatRedBall.Input
         /// <summary>
         /// The value determining how deadzones are calculated. Setting this value applies the value to all AnalogSticks.
         /// </summary>
-        public DeadzoneType DeadzoneType 
-        { 
+        public DeadzoneType DeadzoneType
+        {
             get
             {
                 // prefer to use analog stick values if they exist:
@@ -177,23 +197,43 @@ namespace FlatRedBall.Input
                 if (LeftStick != null) LeftStick.DeadzoneType = value;
                 if (RightStick != null) RightStick.DeadzoneType = value;
             }
-        } 
-            
+        }
+
+        DeadzoneInterpolationType deadzoneInterpolation;
+        /// <summary>
+        /// Sets the deadzone interpolation type for 
+        /// both the LeftStick and RightStick.
+        /// </summary>
+        public DeadzoneInterpolationType DeadzoneInterpolation
+        {
+            get
+            {
+                return LeftStick?.DeadzoneInterpolation ??
+                    RightStick?.DeadzoneInterpolation ??
+                    deadzoneInterpolation;
+            }
+            set
+            {
+                deadzoneInterpolation = value;
+                if (LeftStick != null) LeftStick.DeadzoneInterpolation = value;
+                if (RightStick != null) RightStick.DeadzoneInterpolation = value;
+            }
+        }
 
         public I1DInput DPadHorizontal
         {
             get
             {
-                if(dPadHorizontal == null)
+                if (dPadHorizontal == null)
                 {
                     dPadHorizontal = new DelegateBased1DInput(
                         () =>
                         {
-                            if(this.ButtonDown(Button.DPadLeft))
+                            if (this.ButtonDown(Button.DPadLeft))
                             {
                                 return -1;
                             }
-                            else if(this.ButtonDown(Button.DPadRight))
+                            else if (this.ButtonDown(Button.DPadRight))
                             {
                                 return 1;
                             }
@@ -221,7 +261,7 @@ namespace FlatRedBall.Input
 
                             }
                         );
-                
+
                 }
 
                 return dPadHorizontal;
@@ -280,7 +320,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-                if(this.dPad == null)
+                if (this.dPad == null)
                 {
                     Func<float> getX = () =>
                         {
@@ -400,7 +440,7 @@ namespace FlatRedBall.Input
         /// </summary>
         public AnalogStick RightStick => mRightStick;
 
-        bool AreShoulderAndTriggersFlipped => 
+        bool AreShoulderAndTriggersFlipped =>
             // January 3, 2023
             // Not sure why but
             // all of a sudden these
@@ -435,7 +475,7 @@ namespace FlatRedBall.Input
         /// </remarks>
         public AnalogButton LeftTrigger => AreShoulderAndTriggersFlipped
             ? mFlippedLeftTrigger
-            : mLeftTrigger ;
+            : mLeftTrigger;
 
         /// <summary>
         /// The right trigger values as reported directly by the gamepad, not flipped for Gamecube
@@ -451,7 +491,7 @@ namespace FlatRedBall.Input
         /// this value is always in the trigger position regardless of gamepad.
         /// </remarks>
         public AnalogButton RightTrigger => AreShoulderAndTriggersFlipped
-            ? mFlippedRightTrigger : mRightTrigger ;
+            ? mFlippedRightTrigger : mRightTrigger;
 
         /// <summary>
         /// Returns whether this game pad was disconnected last frame but is connected this frame.
@@ -460,14 +500,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-                if (mLastGamePadState == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return !mLastGamePadState.IsConnected && mGamePadState.IsConnected;
-                }
+                return !mLastGamePadState.IsConnected && mGamePadState.IsConnected;
             }
         }
 
@@ -479,15 +512,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-                if (mLastGamePadState == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return mLastGamePadState.IsConnected && !mGamePadState.IsConnected;
-                }
-
+                return mLastGamePadState.IsConnected && !mGamePadState.IsConnected;
             }
         }
 
@@ -513,7 +538,7 @@ namespace FlatRedBall.Input
             // https://community.monogame.net/t/support-for-modern-atari-vcs-controllers/15177
             GamepadNameTypeMap[GamepadLayout.NES] = new HashSet<string>
             {
-                
+
             };
             GamepadIdTypeMap[GamepadLayout.NES] = new HashSet<string>
             {
@@ -566,7 +591,7 @@ namespace FlatRedBall.Input
             };
 
 
-            GamepadNameTypeMap[GamepadLayout.Xbox360]  = new HashSet<string>
+            GamepadNameTypeMap[GamepadLayout.Xbox360] = new HashSet<string>
             {
                 "Controller (Xbox One For Windows)"
             };
@@ -616,7 +641,7 @@ namespace FlatRedBall.Input
         /// and analog inputs as buttons as these are often not intended to register
         /// as buttons. The defaults ensure back compat.
         /// </summary>
-        /// <param name="ignoreDirectionals">Whether to consider directions, such as the D-Pad, as buttons</param>
+        /// <param name="ignoreDirectionals">Whether to ignore directions, such as the D-Pad</param>
         /// <param name="ignoreAnalogs">Whether to consider analogs, such as triggers and sticks, as buttons</param>
         /// <returns>Whether any button was pushed.</returns>
         public bool AnyButtonPushed(bool ignoreDirectionals = false, bool ignoreAnalogs = false)
@@ -635,7 +660,7 @@ namespace FlatRedBall.Input
                         button == Button.LeftStickAsDPadRight ||
                         button == Button.LeftStickAsDPadDown))
                 {
-                        continue;
+                    continue;
                 }
 
                 if (ignoreAnalogs &&
@@ -725,8 +750,8 @@ namespace FlatRedBall.Input
                     case Button.RightTrigger:
                         returnValue |= mButtonMap.RightTrigger != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.RightTrigger);
                         break;
-                    //default:
-                    //    return false;
+                        //default:
+                        //    return false;
                 }
             }
 
@@ -753,7 +778,7 @@ namespace FlatRedBall.Input
                     returnValue |= mGamePadState.Buttons.Y == ButtonState.Pressed;
                     break;
                 case Button.LeftShoulder:
-                    if(areShouldersAndTriggersFlipped)
+                    if (areShouldersAndTriggersFlipped)
                     {
                         returnValue |= mLeftTrigger.Position >= AnalogOnThreshold;
                     }
@@ -763,7 +788,7 @@ namespace FlatRedBall.Input
                     }
                     break;
                 case Button.RightShoulder:
-                    if(areShouldersAndTriggersFlipped)
+                    if (areShouldersAndTriggersFlipped)
                     {
                         returnValue |= mRightTrigger.Position >= AnalogOnThreshold;
                     }
@@ -797,7 +822,7 @@ namespace FlatRedBall.Input
                     returnValue |= mGamePadState.DPad.Right == ButtonState.Pressed;
                     break;
                 case Button.LeftTrigger:
-                    if(areShouldersAndTriggersFlipped)
+                    if (areShouldersAndTriggersFlipped)
                     {
                         returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
                     }
@@ -823,6 +848,7 @@ namespace FlatRedBall.Input
             return returnValue;
 
         }
+        public bool ButtonDown(ButtonPosition buttonPosition) => ButtonDown(GetButtonFromPosition(buttonPosition));
 
         /// <summary>
         /// Returns whether the argument button type is pushed. For analog buttons, such as LeftTrigger 
@@ -832,12 +858,12 @@ namespace FlatRedBall.Input
         /// <returns>true if the button is pressed, otherwise false</returns>
         public bool ButtonPushed(Button button)
         {
-            if (InputManager.mIgnorePushesThisFrame || mButtonsIgnoredForThisFrame[(int)button] || InputManager.CurrentFrameInputSuspended)
+            if (InputManager.mIgnorePushesThisFrame || mButtonsIgnoredForThisFrame[(int)button] || InputManager.CurrentFrameInputSuspended || ignoredNextPushes[(int)button])
                 return false;
 
             bool returnValue = false;
 
-
+            #region If it has a buttom map (keyboard simulating gamepad)
             if (this.mButtonMap != null)
             {
                 switch (button)
@@ -892,6 +918,7 @@ namespace FlatRedBall.Input
                         break;
                 }
             }
+            #endregion
 
             bool areShouldersAndTriggersFlipped = AreShoulderAndTriggersFlipped;
 
@@ -910,7 +937,7 @@ namespace FlatRedBall.Input
                     returnValue |= mGamePadState.Buttons.Y == ButtonState.Pressed && mLastGamePadState.Buttons.Y == ButtonState.Released;
                     break;
                 case Button.LeftShoulder:
-                    if(areShouldersAndTriggersFlipped)
+                    if (areShouldersAndTriggersFlipped)
                     {
                         returnValue |= mLeftTrigger.Position >= AnalogOnThreshold && mLeftTrigger.LastPosition < AnalogOnThreshold;
                     }
@@ -989,7 +1016,7 @@ namespace FlatRedBall.Input
 
             return returnValue;
         }
-
+        public bool ButtonPushed(ButtonPosition buttonPosition) => ButtonPushed(GetButtonFromPosition(buttonPosition));
 
         public bool ButtonReleased(Button button)
         {
@@ -1070,7 +1097,7 @@ namespace FlatRedBall.Input
                     returnValue |= mGamePadState.Buttons.Y == ButtonState.Released && mLastGamePadState.Buttons.Y == ButtonState.Pressed;
                     break;
                 case Button.LeftShoulder:
-                    if(areShouldersAndTriggersFlipped)
+                    if (areShouldersAndTriggersFlipped)
                     {
                         returnValue |= mLeftTrigger.Position < AnalogOnThreshold && mLeftTrigger.LastPosition >= AnalogOnThreshold;
                     }
@@ -1138,7 +1165,8 @@ namespace FlatRedBall.Input
             return returnValue;
 
         }
-        
+        public bool ButtonReleased(ButtonPosition buttonPosition) => ButtonReleased(GetButtonFromPosition(buttonPosition));
+
         /// <summary>
         /// Returns whether the argument was pushed this frame, or whether it is continually being held down and a "repeat" press
         /// has occurred.
@@ -1158,7 +1186,9 @@ namespace FlatRedBall.Input
             // If this method is called multiple times per frame this line
             // of code guarantees that the user will get true every time until
             // the next TimeManager.Update (next frame).
-            bool repeatedThisFrame = mLastButtonPush[(int)button] == TimeManager.CurrentTime;
+            // The very first frame of FRB would have CurrentTime == 0. 
+            // The repeat cannot happen on the first frame, so we check for that:
+            bool repeatedThisFrame = TimeManager.CurrentTime > 0 && mLastRepeatRate[(int)button] == TimeManager.CurrentTime;
 
             if (repeatedThisFrame ||
                 (
@@ -1174,6 +1204,8 @@ namespace FlatRedBall.Input
             return false;
 
         }
+        public bool ButtonRepeatRate(ButtonPosition buttonPosition, double timeAfterPush = .35, double timeBetweenRepeating = .12) => 
+            ButtonRepeatRate(GetButtonFromPosition(buttonPosition), timeAfterPush, timeBetweenRepeating);
 
         /// <summary>
         /// Returns an Xbox360ButtonReference for the argument Button.
@@ -1182,7 +1214,7 @@ namespace FlatRedBall.Input
         /// <returns>The reference, which can then be used to check for input.</returns>
         public Xbox360ButtonReference GetButton(Button button)
         {
-            if(cachedButtons.ContainsKey(button) == false)
+            if (cachedButtons.ContainsKey(button) == false)
             {
                 var newReference = new Xbox360ButtonReference();
                 newReference.Button = button;
@@ -1191,29 +1223,144 @@ namespace FlatRedBall.Input
             }
             return cachedButtons[button];
         }
+
+        public Xbox360ButtonReference GetButton(ButtonPosition buttonPosition) =>
+            GetButton(GetButtonFromPosition(buttonPosition));
+        
+
+        public Button GetButtonFromPosition(ButtonPosition buttonPosition)
+        {
+            Button button = Button.A;
+
+            if (this.ButtonLayout == ButtonLayout.NintendoPro)
+            {
+                switch (buttonPosition)
+                {
+                    case ButtonPosition.FaceRight:
+                        button = Button.A;
+                        break;
+                    case ButtonPosition.FaceDown:
+                        button = Button.B;
+                        break;
+                    case ButtonPosition.FaceLeft:
+                        button = Button.Y;
+                        break;
+                    case ButtonPosition.FaceUp:
+                        button = Button.X;
+                        break;
+                }
+            }
+            else if (this.ButtonLayout == ButtonLayout.GameCube)
+            {
+                switch (buttonPosition)
+                {
+                    case ButtonPosition.FaceRight:
+                        button = Button.X;
+                        break;
+                    case ButtonPosition.FaceDown:
+                        button = Button.A;
+                        break;
+                    case ButtonPosition.FaceLeft:
+                        button = Button.B;
+                        break;
+                    case ButtonPosition.FaceUp:
+                        button = Button.Y;
+                        break;
+                }
+            }
+            else //if(this.ButtonLayout == ButtonLayout.Xbox)
+            {
+                switch (buttonPosition)
+                {
+                    case ButtonPosition.FaceRight:
+                        button = Button.B;
+                        break;
+                    case ButtonPosition.FaceDown:
+                        button = Button.A;
+                        break;
+                    case ButtonPosition.FaceLeft:
+                        button = Button.X;
+                        break;
+                    case ButtonPosition.FaceUp:
+                        button = Button.Y;
+                        break;
+                }
+            }
+
+            return button;
+        }
+
         #endregion
 
         /// <summary>
         /// Clears the input on this controller for this frame. This includes
-        /// analog stick values, button values, and trigger values.
+        /// analog stick values, button values, trigger values, and vibration motor values (resets to 0).
         /// </summary>
         public void Clear()
         {
-#if MONOGAME
-            mGamePadState = GamePadState.Default;
-            mLastGamePadState = GamePadState.Default;
-#else
-            // XNA doesn't have .Default
-            mGamePadState = new GamePadState();
-            mLastGamePadState = new GamePadState() ;
-#endif
+            this.SetVibration(0, 0);
+
+            // do these before setting the states:
             for (int i = 0; i < NumberOfButtons; i++)
             {
-                if (ButtonPushed((Button)i))
+                var button = (Button)i;
+                if (ButtonDown(button))
                 {
-                    IgnoreButtonForOneFrame((Button)i);
+                    ignoredNextPushes[i] = true;
                 }
             }
+            for (int i = 0; i < NumberOfButtons; i++)
+            {
+                var button = (Button)i;
+                if (ButtonPushed(button))
+                {
+                    IgnoreButtonForOneFrame(button);
+                }
+            }
+
+            // clearing should clear all input, but not connection status, so store that off
+            var isConnected = mGamePadState.IsConnected;
+            var wasConnected = mGamePadState.IsConnected;
+
+#if MONOGAME || FNA
+            // In MonoGame, calling the GamePadState constructor makes it connected.
+            if(isConnected)
+            {
+                mGamePadState = new GamePadState(new GamePadThumbSticks(), new GamePadTriggers(), new GamePadButtons(), new GamePadDPad());
+            }
+            else
+            {
+#if FNA
+                mGamePadState = new GamePadState();
+#endif
+
+#if MONOGAME
+                mGamePadState = GamePadState.Default;
+#endif
+            }
+            if (wasConnected)
+            {
+                mLastGamePadState = new GamePadState(new GamePadThumbSticks(), new GamePadTriggers(), new GamePadButtons(), new GamePadDPad());
+            }
+            else
+            {
+#if FNA
+                mLastGamePadState = new GamePadState();
+#endif
+
+#if MONOGAME
+                mLastGamePadState = GamePadState.Default;
+#endif
+            }
+#else
+                // XNA doesn't have .Default
+                mGamePadState = new GamePadState();
+            mLastGamePadState = new GamePadState() ;
+#endif
+
+
+
+
 
             mLeftStick.Clear();
             mRightStick.Clear();
@@ -1240,10 +1387,10 @@ namespace FlatRedBall.Input
             positionedObject.XVelocity = this.LeftStick.Position.X * velocity;
             positionedObject.YVelocity = this.LeftStick.Position.Y * velocity;
 
-            if(ButtonDown(Button.DPadLeft)) positionedObject.XVelocity = -velocity;
-            if(ButtonDown(Button.DPadRight)) positionedObject.XVelocity = velocity;
-            if(ButtonDown(Button.DPadUp)) positionedObject.YVelocity = velocity;
-            if(ButtonDown(Button.DPadDown)) positionedObject.YVelocity = -velocity;
+            if (ButtonDown(Button.DPadLeft)) positionedObject.XVelocity = -velocity;
+            if (ButtonDown(Button.DPadRight)) positionedObject.XVelocity = velocity;
+            if (ButtonDown(Button.DPadUp)) positionedObject.YVelocity = velocity;
+            if (ButtonDown(Button.DPadDown)) positionedObject.YVelocity = -velocity;
 
             if (ButtonDown(Button.LeftShoulder))
                 positionedObject.ZVelocity = velocity;
@@ -1344,8 +1491,10 @@ namespace FlatRedBall.Input
         public void IgnoreButtonForOneFrame(Button buttonToIgnore)
         {
             mButtonsIgnoredForThisFrame[(int)buttonToIgnore] = true;
-
         }
+
+        public void IgnoreButtonForOneFrame(ButtonPosition buttonPosition) => 
+            IgnoreButtonForOneFrame(GetButtonFromPosition(buttonPosition));
 
 
         /// <summary>
@@ -1364,17 +1513,31 @@ namespace FlatRedBall.Input
             UpdateInputManagerBack();
 
             mLastGamePadState = mGamePadState;
-
             mGamePadState = gamepadState;
 
-            if(WasConnectedThisFrame)
+            if (WasConnectedThisFrame)
             {
                 UpdateToGamepadType();
             }
 
-            UpdateAnalogStickAndTriggerValues();
+            // Only update the gamepad logic if the gamepad is actually connected.
+            // If we don't do this we would have 4 controllers constantly processing
+            // input even when none of them are actually in use. Still update if
+            // disconnected this frame so states get properly reset.
+            if (IsConnected || WasDisconnectedThisFrame)
+            {
+                UpdateAnalogStickAndTriggerValues();
+                UpdateLastButtonPushedValues();
+            }
 
-            UpdateLastButtonPushedValues();
+            // Check all buttons to see if they are not down. If they are not, set the IgnoreNextPush to false for that button
+            for (int i = 0; i < mButtonsIgnoredForThisFrame.Length; i++)
+            {
+                if (ignoredNextPushes[i] && !ButtonDown((Button)i) && !mButtonsIgnoredForThisFrame[i])
+                {
+                    ignoredNextPushes[i] = false;
+                }
+            }
         }
 
         private void UpdateToGamepadType()
@@ -1397,7 +1560,7 @@ namespace FlatRedBall.Input
 
             foreach (var kvp in GamepadIdTypeMap)
             {
-                if(kvp.Value.Contains(id))
+                if (kvp.Value.Contains(id))
                 {
                     GamepadLayout = kvp.Key;
                     found = true;
@@ -1405,11 +1568,11 @@ namespace FlatRedBall.Input
                 }
             }
 
-            if(!found)
+            if (!found)
             {
-                foreach(var kvp in GamepadNameTypeMap) 
+                foreach (var kvp in GamepadNameTypeMap)
                 {
-                    if(kvp.Value.Contains(name))
+                    if (kvp.Value.Contains(name))
                     {
                         GamepadLayout = kvp.Key;
                         found = true;
@@ -1418,23 +1581,23 @@ namespace FlatRedBall.Input
                 }
             }
 
-            if(!found)
+            if (!found && name != null)
             {
-                if(name.Contains("Xbox"))
+                if (name.Contains("Xbox") == true)
                 {
                     GamepadLayout = GamepadLayout.Xbox360;
                 }
-                else if(name.Contains("Nintendo"))
+                else if (name.Contains("Nintendo") == true)
                 {
                     GamepadLayout = GamepadLayout.SwitchPro;
                 }
-                else if(name.Contains("PS3") || name.Contains("PS4") || name.Contains("PS5"))
+                else if (name.Contains("PS3") || name.Contains("PS4") || name.Contains("PS5"))
                 {
                     GamepadLayout = GamepadLayout.PlayStationDualShock;
                 }
             }
 
-            switch(GamepadLayout)
+            switch (GamepadLayout)
             {
                 case GamepadLayout.NES:
                     ButtonLayout = ButtonLayout.Xbox; //?
@@ -1504,7 +1667,7 @@ namespace FlatRedBall.Input
                 mLeftStick.Update(leftStick);
                 mRightStick.Update(rightStick);
 
-                if(AreShoulderAndTriggersFlipped)
+                if (AreShoulderAndTriggersFlipped)
                 {
                     mFlippedLeftTrigger.Update((int)mGamePadState.Buttons.LeftShoulder);
                     mFlippedRightTrigger.Update((int)mGamePadState.Buttons.RightShoulder);
@@ -1624,7 +1787,7 @@ namespace FlatRedBall.Input
 
         private void UpdateInputManagerBack()
         {
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME
             if (mGamePadState.IsButtonDown(Buttons.Back) && !mLastGamePadState.IsButtonDown(Buttons.Back))
             {
                 InputManager.BackPressed = true;
@@ -1636,6 +1799,10 @@ namespace FlatRedBall.Input
         /// <summary>
         /// Sets the vibration of the game pad.
         /// </summary>
+        /// <remarks>
+        /// Note that on MonoGame 3.8.1 for Xbox360 and Xbox One controllers, this method will not vibrate the controller
+        /// until a button is pressed.
+        /// </remarks>
         /// <param name="leftMotor">The low-frequency motor.  Set between 0.0f and 1.0f</param>
         /// <param name="rightMotor">The high-frequency  motor.  Set between 0.0f and 1.0f</param>
         /// <returns>True if the vibration motors were successfully set; false if the controller
@@ -1653,14 +1820,23 @@ namespace FlatRedBall.Input
 #endif
         }
 
+        /// <summary>
+        /// Returns diagnostic information about the game pad, including connectivity, analog stick position, and button state.
+        /// </summary>
+        /// <returns>The diagnostic string.</returns>
         public override string ToString()
         {
-            var toReturn= $"{mPlayerIndex} Connected:{IsConnected} LeftStick:{mLeftStick}";
 
-            for(int i = 0; i < NumberOfButtons; i++)
+#if MONOGAME_381
+            var toReturn = $"{mPlayerIndex} {Capabilities.Identifier} Connected:{IsConnected} LeftStick:{mLeftStick}";
+#else
+            var toReturn = $"{mPlayerIndex} Connected:{IsConnected} LeftStick:{mLeftStick}";
+#endif
+
+            for (int i = 0; i < NumberOfButtons; i++)
             {
                 var button = (Button)i;
-                if(ButtonDown(button))
+                if (ButtonDown(button))
                 {
                     toReturn += " " + button;
                 }
@@ -1683,7 +1859,22 @@ namespace FlatRedBall.Input
             //gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
             gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState((int)mPlayerIndex, GamePadDeadZone.None);
 
-            mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities((int)mPlayerIndex);
+            if (mCapabilities.DisplayName == null || WasConnectedThisFrame)
+            {
+                // This can crash internally:
+                // System.NullReferenceException: Object reference not set to an instance of an object.
+                // at Microsoft.Xna.Framework.Input.GamePad.PlatformGetCapabilities(Int32 index)
+                // at Microsoft.Xna.Framework.Input.GamePad.GetCapabilities(Int32 index)
+                // We can survive without capabilities so let's tolerate this crash.
+                // February 19, 2023
+                // Potentially we want to check if this has crashed multiple times? Is this a one-time thing at the beginning
+                // or will it repeat? Not sure...
+                try
+                {
+                    mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities((int)mPlayerIndex);
+                }
+                catch (NullReferenceException) { }
+            }
 #else
             gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
 
@@ -1691,8 +1882,6 @@ namespace FlatRedBall.Input
 #endif
 
             Update(gamepadState);
-
-
         }
 
 
@@ -1710,56 +1899,56 @@ namespace FlatRedBall.Input
             }
         }
 
-        IPressableInput defaultUpPressable;
-        IPressableInput IInputDevice.DefaultUpPressable
-        { 
-            get 
-            { 
-                if(defaultUpPressable == null)
+        IRepeatPressableInput defaultUpPressable;
+        IRepeatPressableInput IInputDevice.DefaultUpPressable
+        {
+            get
+            {
+                if (defaultUpPressable == null)
                 {
-                    defaultUpPressable = GetButton(Button.DPadUp).Or(LeftStick.UpAsButton); 
+                    defaultUpPressable = GetButton(Button.DPadUp).Or(LeftStick.UpAsButton);
                 }
                 return defaultUpPressable;
-            } 
+            }
         }
 
-        IPressableInput defaultDownPressable;
-        IPressableInput IInputDevice.DefaultDownPressable
-        { 
-            get 
+        IRepeatPressableInput defaultDownPressable;
+        IRepeatPressableInput IInputDevice.DefaultDownPressable
+        {
+            get
             {
-                if(defaultDownPressable == null)
+                if (defaultDownPressable == null)
                 {
-                    defaultDownPressable = GetButton(Button.DPadDown).Or(LeftStick.DownAsButton); ;
+                    defaultDownPressable = GetButton(Button.DPadDown).Or(LeftStick.DownAsButton);
                 }
                 return defaultDownPressable;
-            } 
+            }
         }
 
-        IPressableInput defaultLeftPressable;
-        IPressableInput IInputDevice.DefaultLeftPressable
-        { 
-            get 
-            { 
-                if(defaultLeftPressable == null)
+        IRepeatPressableInput defaultLeftPressable;
+        IRepeatPressableInput IInputDevice.DefaultLeftPressable
+        {
+            get
+            {
+                if (defaultLeftPressable == null)
                 {
-                    defaultLeftPressable = GetButton(Button.DPadLeft).Or(LeftStick.LeftAsButton); 
+                    defaultLeftPressable = GetButton(Button.DPadLeft).Or(LeftStick.LeftAsButton);
                 }
                 return defaultLeftPressable;
-            } 
+            }
         }
 
-        IPressableInput defaultRightPressable;
-        IPressableInput IInputDevice.DefaultRightPressable
-        { 
-            get 
-            { 
-                if(defaultRightPressable == null)
+        IRepeatPressableInput defaultRightPressable;
+        IRepeatPressableInput IInputDevice.DefaultRightPressable
+        {
+            get
+            {
+                if (defaultRightPressable == null)
                 {
-                    defaultRightPressable = GetButton(Button.DPadRight).Or(LeftStick.RightAsButton); 
+                    defaultRightPressable = GetButton(Button.DPadRight).Or(LeftStick.RightAsButton);
                 }
                 return defaultRightPressable;
-            } 
+            }
         }
 
         I1DInput defaultHorizontalInput;
@@ -1767,7 +1956,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-                if(defaultHorizontalInput == null)
+                if (defaultHorizontalInput == null)
                 {
                     defaultHorizontalInput = this.LeftStick.Horizontal.Or
                         (this.DPad.CreateHorizontal());
@@ -1781,7 +1970,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-                if(defaultVerticalInput == null)
+                if (defaultVerticalInput == null)
                 {
                     defaultVerticalInput = this.LeftStick.Vertical.Or
                         (this.DPad.CreateVertical());
@@ -1791,18 +1980,18 @@ namespace FlatRedBall.Input
         }
 
         public IPressableInput DefaultPrimaryActionInput =>
-            ButtonLayout == ButtonLayout.NintendoPro 
+            ButtonLayout == ButtonLayout.NintendoPro
             ? GetButton(Button.B)
             : GetButton(Button.A);
 
-        public IPressableInput DefaultSecondaryActionInput => 
+        public IPressableInput DefaultSecondaryActionInput =>
             ButtonLayout == ButtonLayout.NintendoPro ? GetButton(Button.Y)
             : ButtonLayout == ButtonLayout.GameCube ? GetButton(Button.B)
             : GetButton(Button.X);
 
         IPressableInput IInputDevice.DefaultConfirmInput => GetButton(Button.A);
 
-        IPressableInput IInputDevice.DefaultCancelInput => GetButton(Button.B);
+        public IPressableInput DefaultCancelInput => GetButton(Button.B);
 
         IPressableInput IInputDevice.DefaultJoinInput => GetButton(Button.Start);
 
@@ -1811,7 +2000,7 @@ namespace FlatRedBall.Input
         IPressableInput IInputDevice.DefaultBackInput => GetButton(Button.Back);
 
 
-#endregion
+        #endregion
 
     }
 }

@@ -483,10 +483,10 @@ namespace FlatRedBall.Math
             for (int i = count - 1; i > -1; i--)
             {
                 T objectAtI = this[i];
-                this.RemoveAtOneWay(i);
+                mInternalList.RemoveAt(i);
                 // count - 1 because we removed an object.
                 index = FlatRedBallServices.Random.Next(count - 1);
-                this.InsertOneWay(index, objectAtI);
+                mInternalList.Insert(index, objectAtI);
             }
 
             // We do this twice because this will essentially start at the last index
@@ -494,10 +494,10 @@ namespace FlatRedBall.Math
             for (int i = count - 1; i > -1; i--)
             {
                 T objectAtI = this[i];
-                this.RemoveAtOneWay(i);
+                mInternalList.RemoveAt(i);
                 // count - 1 because we removed an object.
                 index = FlatRedBallServices.Random.Next(count - 1);
-                this.InsertOneWay(index, objectAtI);
+                mInternalList.Insert(index, objectAtI);
             }
 
         }
@@ -551,8 +551,8 @@ namespace FlatRedBall.Math
                 {
                     if (i == 1)
                     {
-                        base.Insert(0, this[i]);
-                        base.RemoveAtOneWay(i + 1);
+                        mInternalList.Insert(0, this[i]);
+                        mInternalList.RemoveAt(i + 1);
                         continue;
                     }
 
@@ -564,14 +564,14 @@ namespace FlatRedBall.Math
                         if (cameraDistanceSquared <= ((this[whereCameraBelongs]).Position - camera.Position).LengthSquared())
 #endif
                         {
-                            base.Insert(whereCameraBelongs + 1, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(whereCameraBelongs + 1, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                         else if (whereCameraBelongs == 0 && cameraDistanceSquared > ((this[0]).Position - camera.Position).LengthSquared())
                         {
-                            base.Insert(0, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(0, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                     }
@@ -593,8 +593,8 @@ namespace FlatRedBall.Math
                 {
                     if (i == firstObject + 1)
                     {
-                        Insert(firstObject, this[i]);
-                        base.RemoveAtOneWay(i + 1);
+                        mInternalList.Insert(firstObject, this[i]);
+                        mInternalList.RemoveAt(i + 1);
                         continue;
                     }
 
@@ -602,14 +602,14 @@ namespace FlatRedBall.Math
                     {
                         if ((this[i]).Position.X >= (this[whereObjectBelongs]).Position.X)
                         {
-                            Insert(whereObjectBelongs + 1, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(whereObjectBelongs + 1, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                         else if (whereObjectBelongs == firstObject && (this[i]).Position.X < (this[firstObject]).Position.X)
                         {
-                            Insert(firstObject, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(firstObject, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                     }
@@ -631,8 +631,8 @@ namespace FlatRedBall.Math
                 {
                     if (i == firstObject + 1)
                     {
-                        Insert(firstObject, this[i]);
-                        base.RemoveAtOneWay(i + 1);
+                        mInternalList.Insert(firstObject, this[i]);
+                        mInternalList.RemoveAt(i + 1);
                         continue;
                     }
 
@@ -640,14 +640,14 @@ namespace FlatRedBall.Math
                     {
                         if ((this[i]).Position.X <= (this[whereObjectBelongs]).Position.X)
                         {
-                            Insert(whereObjectBelongs + 1, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(whereObjectBelongs + 1, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                         else if (whereObjectBelongs == firstObject && (this[i]).Position.X > (this[firstObject]).Position.X)
                         {
-                            Insert(firstObject, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(firstObject, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                     }
@@ -669,8 +669,8 @@ namespace FlatRedBall.Math
                 {
                     if (i == firstObject + 1)
                     {
-                        Insert(firstObject, this[i]);
-                        base.RemoveAtOneWay(i + 1);
+                        mInternalList.Insert(firstObject, this[i]);
+                        mInternalList.RemoveAt(i + 1);
                         continue;
                     }
 
@@ -678,14 +678,14 @@ namespace FlatRedBall.Math
                     {
                         if ((this[i]).Position.Y >= (this[whereObjectBelongs]).Position.Y)
                         {
-                            Insert(whereObjectBelongs + 1, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(whereObjectBelongs + 1, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                         else if (whereObjectBelongs == firstObject && (this[i]).Position.Y < (this[firstObject]).Position.Y)
                         {
-                            Insert(firstObject, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(firstObject, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                     }
@@ -707,8 +707,8 @@ namespace FlatRedBall.Math
                 {
                     if (i == firstObject + 1)
                     {
-                        Insert(firstObject, this[i]);
-                        base.RemoveAtOneWay(i + 1);
+                        mInternalList.Insert(firstObject, this[i]);
+                        mInternalList.RemoveAt(i + 1);
                         continue;
                     }
 
@@ -716,14 +716,14 @@ namespace FlatRedBall.Math
                     {
                         if ((this[i]).Position.Y <= (this[whereObjectBelongs]).Position.Y)
                         {
-                            Insert(whereObjectBelongs + 1, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(whereObjectBelongs + 1, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                         else if (whereObjectBelongs == firstObject && (this[i]).Position.Y > (this[firstObject]).Position.Y)
                         {
-                            Insert(firstObject, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(firstObject, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                     }
@@ -747,8 +747,8 @@ namespace FlatRedBall.Math
                 {
                     if (i == firstObject + 1)
                     {
-                        Insert(firstObject, this[i]);
-                        base.RemoveAtOneWay(i + 1);
+                        mInternalList.Insert(firstObject, this[i]);
+                        mInternalList.RemoveAt(i + 1);
                         continue;
                     }
 
@@ -756,14 +756,14 @@ namespace FlatRedBall.Math
                     {
                         if (yAtI <= (this[whereObjectBelongs]).TopParent.Position.Y)
                         {
-                            Insert(whereObjectBelongs + 1, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(whereObjectBelongs + 1, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                         else if (whereObjectBelongs == firstObject && yAtI > (this[firstObject]).TopParent.Position.Y)
                         {
-                            Insert(firstObject, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(firstObject, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                     }
@@ -824,8 +824,8 @@ namespace FlatRedBall.Math
                     {
                         if (i == 1)
                         {
-                            Insert(0, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(0, this[i]);
+                        mInternalList.RemoveAt(i + 1);
                             continue;
                         }
 
@@ -833,14 +833,14 @@ namespace FlatRedBall.Math
                         {
                             if ((this[i]).Position.Z >= (this[whereObjectBelongs]).Position.Z)
                             {
-                                Insert(whereObjectBelongs + 1, this[i]);
-                                base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(whereObjectBelongs + 1, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                                 break;
                             }
                             else if (whereObjectBelongs == 0 && (this[i]).Position.Z < (this[0]).Position.Z)
                             {
-                                Insert(0, this[i]);
-                                base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(0, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                                 break;
                             }
                         }
@@ -861,8 +861,8 @@ namespace FlatRedBall.Math
                 {
                     if (i == 1)
                     {
-                        Insert(0, this[i]);
-                        base.RemoveAtOneWay(i + 1);
+                        mInternalList.Insert(0, this[i]);
+                        mInternalList.RemoveAt(i + 1);
                         continue;
                     }
 
@@ -870,14 +870,14 @@ namespace FlatRedBall.Math
                     {
                         if ((this[i]).Position.Z <= (this[whereObjectBelongs]).Position.Z)
                         {
-                            Insert(whereObjectBelongs + 1, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(whereObjectBelongs + 1, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                         else if (whereObjectBelongs == 0 && (this[i]).Position.Z > (this[0]).Position.Z)
                         {
-                            Insert(0, this[i]);
-                            base.RemoveAtOneWay(i + 1);
+                            mInternalList.Insert(0, this[i]);
+                            mInternalList.RemoveAt(i + 1);
                             break;
                         }
                     }

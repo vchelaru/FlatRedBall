@@ -24,6 +24,7 @@ namespace OfficialPlugins.ErrorPlugin.Logic
             foreach(var kvp in FileReferenceManager.Self.FilesWithFailedGetReferenceCalls)
             {
                 FileParseErrorViewModel newError = new FileParseErrorViewModel(kvp.Key, kvp.Value);
+                errorList.Add(newError);
 
             }
         }
@@ -136,12 +137,16 @@ namespace OfficialPlugins.ErrorPlugin.Logic
                 AddNewDirectMissingFileErrors(fileName, errors, rfs);
             }
 
-            AddNewIndirectMissingFileErrors(errors);
-
-            AddNewOutOfProjectFileErrors(errors);
-
-
             AddFileParseErrors(fileName, errors);
+
+            // These do not depend on any particular file. If a large number of files have changed, this runs
+            // over and over, and it can take 0.5 to 1 second to run. Therefore, let's only run it once:
+            TaskManager.Self.Add(() =>
+            {
+                AddNewIndirectMissingFileErrors(errors);
+
+                AddNewOutOfProjectFileErrors(errors);
+            }, "Check for missing and out of project errors", TaskExecutionPreference.AddOrMoveToEnd);
         }
 
         private static void AddNewDirectMissingFileErrors(FilePath fileName, ErrorListViewModel errors, ReferencedFileSave rfs)

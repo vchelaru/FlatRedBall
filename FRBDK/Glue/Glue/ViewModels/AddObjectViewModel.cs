@@ -14,6 +14,8 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Utilities;
+using Localization;
+using Microsoft.Build.Framework;
 
 namespace FlatRedBall.Glue.ViewModels
 {
@@ -81,6 +83,7 @@ namespace FlatRedBall.Glue.ViewModels
                 if (base.SetWithoutNotifying(value))
                 {
                     ForceRefreshToSourceType();
+                    RefreshDefaultIsCallActivityChecked();
                 }
             }
         }
@@ -188,6 +191,7 @@ namespace FlatRedBall.Glue.ViewModels
                 if (Set(value))
                 {
                     SetDefaultObjectName();
+                    RefreshDefaultIsCallActivityChecked();
                 }
             }
         }
@@ -262,8 +266,31 @@ namespace FlatRedBall.Glue.ViewModels
                         nameToAssign = GetDefaultObjectInFileName();
                     }
                 }
+                else if( IsSourceClassTypeList)
+                {
+                    var genericType = SourceClassGenericType;
+
+                    if(string.IsNullOrEmpty(genericType))
+                    {
+                        nameToAssign = "PositionedObjectList";
+                    }
+                    else
+                    {
+                        var strippedGeneric = genericType;
+                        if(genericType.Contains("\\"))
+                        {
+                            strippedGeneric = genericType.Substring(genericType.LastIndexOf("\\") + 1);
+                        }
+                        if(strippedGeneric.Contains("."))
+                        {
+                            strippedGeneric = genericType.Substring(genericType.LastIndexOf(".") + 1);
+                        }
+                        nameToAssign = strippedGeneric + "List";
+                    }
+                }
                 else
                 {
+
                     var classType = SourceClassType;
 
                     if(classType?.Contains("(") == true)
@@ -314,6 +341,50 @@ namespace FlatRedBall.Glue.ViewModels
 
         #endregion
 
+        #region Call Activity
+
+        public bool IsCallActivityChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string ActivityRecommendationText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool EffectiveCallActivity => IsGenericType == false || IsCallActivityChecked;
+
+        [DependsOn(nameof(IsGenericType))]
+        [DependsOn(nameof(SourceClassGenericType))]
+        public Visibility CallActivityCheckBoxVisibility
+        {
+            get
+            {
+                var shouldShow = IsGenericType;
+
+                if(IsGenericType == false)
+                {
+                    shouldShow = false;
+                }
+
+                if(shouldShow)
+                {
+                    var genericType = this.SourceClassGenericType;
+
+                    // only call activity on generic types if they are entities
+                    var entityType = ObjectFinder.Self.GetEntitySave(genericType);
+                    shouldShow = entityType != null;
+                }
+
+                return shouldShow.ToVisibility();
+            }
+        }
+
+        #endregion
+
         // Properties to copy over to the NamedObjectSave when it is created.
         public List<PropertySave> Properties
         {
@@ -325,13 +396,15 @@ namespace FlatRedBall.Glue.ViewModels
         /// The element to add to. If not set, the current element is used. This must be set first, as
         /// otherh properties (like setting the name or the SourceClassType) may adjust the name of the element.
         /// </summary>
-        public IElement ForcedElementToAddTo
+        public GlueElement ForcedElementToAddTo
         {
-            get => Get<IElement>();
+            get => Get<GlueElement>();
             set => Set(value);
         }
 
-        public IElement EffectiveElement => ForcedElementToAddTo ?? GlueState.Self.CurrentElement;
+        public GlueElement EffectiveElement => ForcedElementToAddTo ?? GlueState.Self.CurrentElement;
+
+        #region Name in File
 
         public string SourceNameInFile
         {
@@ -344,14 +417,6 @@ namespace FlatRedBall.Glue.ViewModels
                 }
             }
         }
-        public string SourceClassGenericType 
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public List<string> AvailableListTypes { get; private set; } =
-            new List<string>();
 
         [DependsOn(nameof(SelectedItem))]
         public List<string> AvailableFileSourceNames
@@ -369,6 +434,24 @@ namespace FlatRedBall.Glue.ViewModels
                 return new List<string>();
             }
         }
+
+        #endregion
+
+        public string SourceClassGenericType 
+        {
+            get => Get<string>();
+            set
+            {
+                if(Set(value))
+                {
+                    RefreshDefaultIsCallActivityChecked();
+                    SetDefaultObjectName();
+                }
+            }
+        }
+
+        public List<string> AvailableListTypes { get; private set; } =
+            new List<string>();
 
         public List<AssetTypeInfo> FlatRedBallAndCustomTypes
         { 
@@ -438,9 +521,79 @@ namespace FlatRedBall.Glue.ViewModels
         {
             get
             {
-                bool usesGenericTypes = this.SourceType == SaveClasses.SourceType.FlatRedBallType &&
-                    (SourceClassType == "PositionedObjectList (Generic)" || SourceClassType == "PositionedObjectList<T>" || SourceClassType == "FlatRedBall.Math.PositionedObjectList<T>");
-                return usesGenericTypes;
+                return IsSourceClassTypeList; // eventually there could be other types of generics, so let's keep this property here
+            }
+        }
+
+        private bool IsSourceClassTypeList =>
+            this.SourceType == SaveClasses.SourceType.FlatRedBallType && (SourceClassType == "PositionedObjectList (Generic)" || SourceClassType == "PositionedObjectList<T>" || SourceClassType == "FlatRedBall.Math.PositionedObjectList<T>");
+
+
+        public class ActivityRecommendation
+        {
+            public bool ShouldCallActivity;
+            public string Reason;
+        }
+
+        /// <summary>
+        /// Returns whether the new object being added is a list of entity type which is a derived entity, and if the
+        /// target element already has a list of the base type added, and if that base type has activity already called
+        /// </summary>
+        private ActivityRecommendation GetActivityRecommendation()
+        {
+            var toReturn = new ActivityRecommendation();
+            toReturn.ShouldCallActivity = true;
+            toReturn.Reason = Texts.AddObject_ActivityListRecommended;
+            var isList = IsSourceClassTypeList;
+            var listEntityType = ObjectFinder.Self.GetEntitySave(SourceClassGenericType);
+            var isDerived = listEntityType?.BaseEntity != null;
+
+            if(!isList || listEntityType == null)
+            {
+                toReturn.ShouldCallActivity = true;
+            }
+            else
+            {
+                var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(listEntityType);
+
+                var baseElementNames = baseElements.Select(item => item.Name).ToHashSet(); 
+
+                // Don't use "AllNamedObjects" because we only care about top-level objects
+                //var baseListTypes = EffectiveElement.AllNamedObjects
+                var baseListTypes = EffectiveElement.NamedObjects
+                    .Where(item => item.IsList && baseElementNames.Contains(item.SourceClassGenericType) && item.CallActivity)
+                    .ToList();
+
+                var thisType = EffectiveElement.NamedObjects
+                    .FirstOrDefault(item => item.IsList && item.SourceClassGenericType == this.SourceClassGenericType && item.CallActivity);
+
+                if (baseListTypes.Count > 0)
+                {
+                    toReturn.ShouldCallActivity = false;
+
+                    var firstBaseType = baseListTypes.First(item => item.CallActivity);
+
+                    toReturn.Reason = String.Format(Texts.AddObject_ActivityCalledByBaseList, firstBaseType.FieldName);
+                }
+                else if(thisType != null)
+                {
+                    toReturn.ShouldCallActivity = false;
+                    toReturn.Reason = String.Format(Texts.AddObject_ActivityCalledBySameList, thisType.FieldName);
+                }
+
+            }
+
+
+            return toReturn;
+        }
+
+        void RefreshDefaultIsCallActivityChecked()
+        {
+            if(CallActivityCheckBoxVisibility == Visibility.Visible)
+            {
+                var recommendation = GetActivityRecommendation();
+                IsCallActivityChecked = recommendation.ShouldCallActivity;
+                ActivityRecommendationText = recommendation.Reason;
             }
         }
 
@@ -526,6 +679,7 @@ namespace FlatRedBall.Glue.ViewModels
 
         public AddObjectViewModel()
         {
+            IsCallActivityChecked = true;
             FlatRedBallAndCustomTypes = new List<AssetTypeInfo>();
             GumTypes = new List<AssetTypeInfo>();
             AvailableEntities = new List<EntitySave>();

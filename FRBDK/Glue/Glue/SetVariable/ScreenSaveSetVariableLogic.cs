@@ -35,9 +35,16 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region BaseScreen
 
-            else if (propertyName == "BaseScreen")
+            else if (propertyName == nameof(ScreenSave.BaseScreen))
             {
                 InheritanceManager.ReactToChangedBaseScreen(oldValue, screenSave);
+
+                // update all base elements through codegen because those could have updated their Type
+                var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(screenSave);
+                foreach (var baseElement in allBase)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(baseElement, generateDerivedElements:false);
+                }
             }
 
             #endregion

@@ -33,6 +33,7 @@ namespace FlatRedBall.Glue.Elements
         public AssetTypeInfo Camera { get; set; }
         public AssetTypeInfo Circle { get; set; }
         public AssetTypeInfo Polygon { get; set; }
+        public AssetTypeInfo CapsulePolygon { get; set; }
         public AssetTypeInfo Line { get; set; }
         
         public AssetTypeInfo Text { get; set; }
@@ -40,6 +41,7 @@ namespace FlatRedBall.Glue.Elements
         public AssetTypeInfo Layer { get; set; }
 
         public AssetTypeInfo ShapeCollection { get; set; }
+        public AssetTypeInfo RenderTarget { get; set; }
     }
 
     public class AvailableAssetTypes
@@ -56,6 +58,9 @@ namespace FlatRedBall.Glue.Elements
 
         List<AssetTypeInfo> mProjectSpecificAssetTypes = new List<AssetTypeInfo>();
 
+        Dictionary<string, AssetTypeInfo> QualifiedAssetTypesDictionary = new Dictionary<string, AssetTypeInfo>();
+        Dictionary<string, AssetTypeInfo> RuntimeTypeAssetTypesDictionary = new Dictionary<string, AssetTypeInfo>();
+        Dictionary<string, AssetTypeInfo> ExtensionAssetTypeDictionary = new Dictionary<string, AssetTypeInfo>();
         #endregion
 
         #region Properties
@@ -90,16 +95,9 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 
-        public List<AssetTypeInfo> CoreTypes
-        {
-            get
-            {
-                return mCoreAssetTypes;
-            }
-        }
 
         /// <summary>
-        /// A list of extensiosn to treat as content. This is reset every time a project is loaded
+        /// A list of extensions to treat as content. This is reset every time a project is loaded
         /// so plugins should add to this in their Glux load event handlers.
         /// </summary>
         public List<string> AdditionalExtensionsToTreatAsAssets
@@ -151,16 +149,13 @@ namespace FlatRedBall.Glue.Elements
             }
             try
             {
-                // We create a temporary
-                // list to deserialize to
-                // so that we can take the contents
-                // and insert them at the front of the
-                // list.  This makes the default implementations
-                // show up first in the list so they can be found
-                // first if searching by runtime type name.
-                //List<AssetTypeInfo> tempList = new List<AssetTypeInfo>();
-                // Update:  We now have a core asset types list
                 CsvFileManager.CsvDeserializeList(typeof(AssetTypeInfo), contentTypesFileLocation, mCoreAssetTypes);
+
+                foreach(var item in mCoreAssetTypes)
+                {
+                    AddToDictionary(item);
+                }
+                
             }
             catch (Exception e)
             {
@@ -197,6 +192,7 @@ namespace FlatRedBall.Glue.Elements
                 AllAssetTypes.First(item => item.FriendlyName == name);
 
             CommonAtis.AxisAlignedRectangle = GetAti(nameof(AxisAlignedRectangle));
+            CommonAtis.CapsulePolygon = GetAti(nameof(CapsulePolygon));
             CommonAtis.Circle = GetAti(nameof(Circle));
             CommonAtis.Camera = GetAti(nameof(Camera));
             CommonAtis.Polygon = GetAti(nameof(Polygon));
@@ -215,8 +211,7 @@ namespace FlatRedBall.Glue.Elements
         {
             foreach (AssetTypeInfo ati in mProjectSpecificAssetTypes)
             {
-
-                mCustomAssetTypes.Remove(ati);
+                RemoveAssetType(ati);
                 PluginManager.ReceiveOutput("Removing known content type: " + ati);
             }
 
@@ -243,7 +238,10 @@ namespace FlatRedBall.Glue.Elements
                 if (mProjectSpecificAssetTypes.Count != 0)
                 {
                     PluginManager.ReceiveOutput("Adding " + mProjectSpecificAssetTypes.Count + " content types");
-                    this.mCustomAssetTypes.AddRange(mProjectSpecificAssetTypes);
+                    foreach(var ati in mProjectSpecificAssetTypes)
+                    {
+                        AddAssetType(ati);
+                    }
                 }
             }
         }
@@ -251,11 +249,48 @@ namespace FlatRedBall.Glue.Elements
         public void AddAssetType(AssetTypeInfo assetTypeInfo)
         {
             mCustomAssetTypes.Add(assetTypeInfo);
+
+            AddToDictionary(assetTypeInfo);
         }
 
+        private void AddToDictionary(AssetTypeInfo assetTypeInfo)
+        {
+            var qualified = assetTypeInfo.QualifiedRuntimeTypeName.QualifiedType;
+
+            // This is going to check presence of a value so that first gets priority. 
+            if(!string.IsNullOrEmpty(qualified) && !QualifiedAssetTypesDictionary.ContainsKey(qualified))
+            {
+                QualifiedAssetTypesDictionary[qualified] = assetTypeInfo;
+            }
+
+            var runtimeType = assetTypeInfo.RuntimeTypeName;
+            if(!string.IsNullOrEmpty(runtimeType) && !RuntimeTypeAssetTypesDictionary.ContainsKey(runtimeType))
+            {
+                RuntimeTypeAssetTypesDictionary[runtimeType] = assetTypeInfo;
+            }
+
+            if(!string.IsNullOrEmpty(assetTypeInfo.Extension) && !ExtensionAssetTypeDictionary.ContainsKey(assetTypeInfo.Extension))
+            {
+                ExtensionAssetTypeDictionary[assetTypeInfo.Extension] = assetTypeInfo;
+            }
+        }
+
+        /// <summary>
+        /// Adds asset types from the argument CSV
+        /// </summary>
+        /// <param name="fullFileName">The full name of the CSV</param>
         public void AddAssetTypes(string fullFileName)
         {
-            AddAssetTypes(fullFileName, mCustomAssetTypes);
+            var tempList = new List<AssetTypeInfo>();
+            if(AddAssetTypes(fullFileName, tempList))
+            {
+                mCustomAssetTypes.AddRange(tempList);
+                foreach(var item in tempList)
+                {
+                    AddToDictionary(item);
+                }
+            }
+
         }
 
         public bool AddAssetTypes(string fullFileName, List<AssetTypeInfo> listToFill, bool tolerateFailure = false)
@@ -279,7 +314,7 @@ namespace FlatRedBall.Glue.Elements
                 }
                 else
                 {
-                    throw e;
+                    throw;
                 }
             }
             if (succeeded)
@@ -293,55 +328,99 @@ namespace FlatRedBall.Glue.Elements
         public void RemoveAssetType(AssetTypeInfo assetTypeInfo)
         {
             mCustomAssetTypes.Remove(assetTypeInfo);
+
+            RemoveFromDictionary(this.QualifiedAssetTypesDictionary);
+            RemoveFromDictionary(this.RuntimeTypeAssetTypesDictionary);
+            RemoveFromDictionary(this.ExtensionAssetTypeDictionary);
+
+            return;
+
+            void RemoveFromDictionary(Dictionary<string, AssetTypeInfo> dictionary)
+            {
+                List<string> toRemove = new List<string>();
+                foreach (var kvp in dictionary)
+                {
+                    if (kvp.Value == assetTypeInfo)
+                    {
+                        toRemove.Add(kvp.Key);
+                    }
+                }
+
+                foreach (var key in toRemove)
+                {
+                    dictionary.Remove(key);
+                }
+
+            }
         }
 
 		public AssetTypeInfo GetAssetTypeFromExtension(string extension)
 		{
-            return AllAssetTypes.FirstOrDefault(item => item.Extension == extension);
-		}
-
-        public AssetTypeInfo GetAssetTypeFromRuntimeType(string runtimeType,
-            object callingObject, bool? isObject = null)
-        {
-            bool isQualified = runtimeType?.Contains('.') == true ||
-                runtimeType?.Contains("\\") == true;
-
-            var assetsToLoopThrough = AllAssetTypes;
-
-            if(isObject.HasValue)
+            if(this.ExtensionAssetTypeDictionary.ContainsKey(extension))
             {
-                if (isObject == true)
-                {
-                    assetsToLoopThrough = assetsToLoopThrough.Where(item => item.CanBeObject);
-                }
-                else
-                {
-                    assetsToLoopThrough = assetsToLoopThrough.Where(item => !string.IsNullOrEmpty(item.Extension));
-                }
-            }
-
-            if (isQualified)
-            {
-                foreach (var ati in assetsToLoopThrough)
-                {
-                    var effectiveQualified =
-                        ati.QualifiedRuntimeTypeName.PlatformFunc?.Invoke(callingObject)
-                        ?? ati.QualifiedRuntimeTypeName.QualifiedType;
-
-                    if (effectiveQualified == runtimeType)
-                    {
-                        return ati;
-                    }
-                }
+                return this.ExtensionAssetTypeDictionary[extension];
             }
             else
             {
+                return AllAssetTypes.FirstOrDefault(item => item.Extension == extension);
+            }
+		}
 
-                foreach (var ati in assetsToLoopThrough)
+        public AssetTypeInfo GetAssetTypeFromRuntimeType(string runtimeType, object callingObject, bool? isObject = null)
+        {
+            if (string.IsNullOrEmpty(runtimeType) || runtimeType.StartsWith("Entities\\")) return null;
+
+            ////////////////(fast) Early Out/////////////////////
+
+            if(this.QualifiedAssetTypesDictionary.ContainsKey(runtimeType))
+            {
+                return this.QualifiedAssetTypesDictionary[runtimeType];
+            }
+            else if(this.RuntimeTypeAssetTypesDictionary.ContainsKey(runtimeType))
+            {
+                return this.RuntimeTypeAssetTypesDictionary[runtimeType];
+            }
+            ////////////////End Early Out///////////////////////
+            else
+            {
+                var assetsToLoopThrough = AllAssetTypes;
+
+                if(isObject.HasValue)
                 {
-                    if (ati.RuntimeTypeName == runtimeType)
+                    if (isObject == true)
                     {
-                        return ati;
+                        assetsToLoopThrough = assetsToLoopThrough.Where(item => item.CanBeObject);
+                    }
+                    else
+                    {
+                        assetsToLoopThrough = assetsToLoopThrough.Where(item => !string.IsNullOrEmpty(item.Extension));
+                    }
+                }
+
+                bool isQualified = runtimeType.Contains('.') || runtimeType.Contains("\\");
+                if (isQualified)
+                {
+                    foreach (var ati in assetsToLoopThrough)
+                    {
+                        var effectiveQualified =
+                            ati.QualifiedRuntimeTypeName.PlatformFunc?.Invoke(callingObject)
+                            ?? ati.QualifiedRuntimeTypeName.QualifiedType;
+
+                        if (effectiveQualified == runtimeType)
+                        {
+                            return ati;
+                        }
+                    }
+                }
+                else
+                {
+
+                    foreach (var ati in assetsToLoopThrough)
+                    {
+                        if (ati.RuntimeTypeName == runtimeType)
+                        {
+                            return ati;
+                        }
                     }
                 }
             }

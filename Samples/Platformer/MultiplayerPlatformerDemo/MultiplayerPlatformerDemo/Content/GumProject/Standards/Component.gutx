@@ -16,4 +16,5 @@
       <SetsValue>true</SetsValue>
     </Variable>
   </State>
+  <Behaviors />
 </StandardElementSave>

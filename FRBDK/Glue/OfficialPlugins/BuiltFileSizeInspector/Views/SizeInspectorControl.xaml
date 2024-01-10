@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
@@ -10,10 +11,10 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        
-        <Button Click="HandleLoadFileButtonClick">Load File...</Button>
 
-        <TreeView Grid.Row="1" ItemsSource="{Binding Categories}">
+        <Button Click="HandleLoadFileButtonClick" Content="{x:Static localization:Texts.LoadFile}" />
+
+            <TreeView Grid.Row="1" ItemsSource="{Binding Categories}">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Files}">
                     <HierarchicalDataTemplate.ItemTemplate>

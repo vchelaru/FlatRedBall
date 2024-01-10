@@ -89,7 +89,9 @@ namespace OfficialPlugins.SpritePlugin.Managers
         {
             var newPosition = args.GetPosition(View);
 
-            if(args.MiddleButton == MouseButtonState.Pressed && newPosition != LastMiddleMouseButtonPoint)
+            if(args.MiddleButton == MouseButtonState.Pressed
+               && LastMiddleMouseButtonPoint != null
+               && newPosition != LastMiddleMouseButtonPoint)
             {
                 var camera = Camera;
 

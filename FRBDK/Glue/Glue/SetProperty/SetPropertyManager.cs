@@ -26,19 +26,9 @@ namespace FlatRedBall.Glue.SetVariable
     public class SetPropertyManager
     {
 
-        public void PropertyValueChanged(PropertyValueChangedEventArgs e, System.Windows.Forms.PropertyGrid mPropertyGrid)
+        public void PropertyValueChanged(PropertyValueChangedEventArgs e)
         {
             UnreferencedFilesManager.Self.ProcessRefreshOfUnreferencedFiles();
-
-            #region Check for Errors
-
-            if (mPropertyGrid == null)
-            {
-                System.Windows.Forms.MessageBox.Show("There has been an internal error in Glue related to updating the PropertyGrid.  This likely happens if there has been an earlier error in Glue.  You should probably restart Glue.");
-                MainGlueWindow.Self.HasErrorOccurred = true;
-            }
-
-            #endregion
 
             string changedMember = e.ChangedItem.PropertyDescriptor.Name;
             object oldValue = e.OldValue;
@@ -62,9 +52,11 @@ namespace FlatRedBall.Glue.SetVariable
         /// <param name="variableName">The variable name as defined in Glue (no spaces)</param>
         /// <param name="parentGridItemName">The parent PropertyGridItem, usually null unless the value being changed is a component of a larger property grid.</param>
         public async void ReactToPropertyChanged(string variableNameAsDisplayed, object oldValue, 
-            string variableName, string parentGridItemName)
+            string variableName, string parentGridItemName = null)
         {
             var mPropertyGrid = MainGlueWindow.Self.PropertyGrid;
+
+            var element = GlueState.Self.CurrentElement;
 
             bool pushReactToChangedProperty = true;
             bool updateTreeView = true;
@@ -147,7 +139,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region Global content container node
 
-            else if (GlueState.Self.CurrentTreeNode.Root.IsGlobalContentContainerNode())
+            else if (GlueState.Self.CurrentTreeNode?.Root.IsGlobalContentContainerNode() == true)
             {
                 Container.Get<GlobalContentSetVariableLogic>().ReactToGlobalContentChangedValue(
                     variableNameAsDisplayed, oldValue, ref updateTreeView);
@@ -202,7 +194,14 @@ namespace FlatRedBall.Glue.SetVariable
 
             mPropertyGrid.Refresh();
 
-            GluxCommands.Self.SaveGlux();
+            if(element != null)
+            {
+                _ = GluxCommands.Self.SaveElementAsync(element);
+            }
+            else
+            {
+                GluxCommands.Self.SaveProjectAndElements();
+            }
 
             // Vic says:  This was intented to refresh the variables at one point
             // but this is a messy feature.  I think we should just refresh the entire

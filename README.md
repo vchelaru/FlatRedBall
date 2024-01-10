@@ -5,9 +5,20 @@
 [![Join the chat](https://img.shields.io/discord/586997072373481494)](https://discord.gg/tG5RBgw)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fflatredball.com)](https://flatredball.com)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2FFlatRedBall)](https://twitter.com/FlatRedBall)
+![Activity](https://img.shields.io/github/last-commit/vchelaru/FlatRedBall/NetStandard)
 
+The FlatRedBall Game Engine is designed to boost your productivity as a game developer, with a particular focus on building 2D games of any genre. It provides a powerful editor to help you organize your projects. At runtime, the FlatRedBall engine provides efficiency, stability, and features which have been refined for over two decades.
 
-The FlatRedBall Game Engine focuses on boosting your productivity as a game developer above all else. It is mainly used to build 2D games of any genre. It provides a powerful editor to help you organize your projects. At runtime, the FlatRedBall engine provides efficiency, stability, and features which have been built and refined for over two decades.
+![image](https://github.com/vchelaru/FlatRedBall/assets/729631/8fc4fbcb-93d7-4d26-9cbb-9b48329d6c36)
+
+The FlatRedBall Engine utilizes the C# programming language, operating on the full version of .NET for uncompromised access to modern C# features and all NuGet packages. Games can be launched effortlessly via the FlatRedBall Editor or directly from Visual Studio, streamlining the development process.
+
+FlatRedBall is mature and continually improving. Reported issues are resolved or commented soon after they are created. We actively watch PRs and keep them from piling up. Commits are being made almost daily - [check the commit history to see the activity for yourself.](https://github.com/vchelaru/FlatRedBall/commits/NetStandard)
+
+![Alt](https://repobeats.axiom.co/api/embed/7ae6b028681112a205f4f998d47149e5e6db7920.svg "Repobeats analytics image")
+
+### Star Velocity
+[![Sparkline](https://stars.medv.io/vchelaru/FlatRedBall.svg)](https://stars.medv.io/vchelaru/FlatRedBall)
 
 ## Downloading FlatRedBall
 
@@ -20,7 +31,7 @@ The fastest way to get help is to ask in our discord chat: https://discord.gg/tG
 
 If you prefer, you can also file issues on Github: https://github.com/vchelaru/FlatRedBall/issues
 
-Of course, FlatRedBall has the best documentation: https://flatredball.com/documentation/
+Of course, FlatRedBall has the best documentation: https://docs.flatredball.com/
 
 ## FlatRedBall Games
 
@@ -42,11 +53,9 @@ https://store.steampowered.com/app/1586330/WeeRPG/
 ![](https://cdn.akamai.steamstatic.com/steam/apps/1586330/ss_ee09e0985bf865a6933b67307ce2920db5265dbe.1920x1080.jpg?t=1651849095)
 
 ### Deadvivors
-
 https://enxebregames.com/
-
-![](https://enxebregames.com/assets/images/gallery01/c89b93c3_original.jpg)
-![](https://enxebregames.com/assets/images/gallery01/baf95fba_original.jpg)
+![](https://enxebregames.com/assets/images/gallery01/c9710fba_original.jpg)
+![](https://enxebregames.com/assets/images/gallery01/a52f3d0f_original.jpg)
 
 ### Super Refresh Men (iOS and Android)
 https://www.youtube.com/watch?v=Irn64qHmakA&t=338s&ab_channel=Techzamazing

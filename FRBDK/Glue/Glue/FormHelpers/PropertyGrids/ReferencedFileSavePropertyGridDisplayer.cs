@@ -442,7 +442,8 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             if (string.IsNullOrEmpty(instance.SourceFile))
             {
-                ExcludeMember(nameof(ReferencedFileSave.SourceFile));
+                // If we always exclude the source file, then this can never be changed...
+                //ExcludeMember(nameof(ReferencedFileSave.SourceFile));
                 ExcludeMember(nameof(ReferencedFileSave.BuildTool));
                 ExcludeMember(nameof(ReferencedFileSave.AdditionalArguments));
                 ExcludeMember(nameof(ReferencedFileSave.ConditionalCompilationSymbols));

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 {
@@ -14,7 +12,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 
         public override void StartUp()
         {
-            this.AddMenuItemTo("Copy project file links", HandleCopyProjectLinks, "Project");
+            this.AddMenuItemTo(L.Texts.ProjectCopyFileLinks, L.MenuIds.ProjectCopyFileLinksId, HandleCopyProjectLinks, L.MenuIds.ProjectId);
         }
 
         private void HandleCopyProjectLinks(object sender, EventArgs e)
@@ -22,7 +20,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
             if (control == null)
             {
                 control = new ReferenceCopierControl();
-                tab = CreateAndAddTab(control, "Reference Sharing", TabLocation.Left);
+                tab = CreateAndAddTab(control, L.Texts.ReferenceSharing, TabLocation.Left);
 
                 var viewModel = new ReferenceCopierViewModel();
                 control.DataContext = viewModel;

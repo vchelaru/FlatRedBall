@@ -26,7 +26,7 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>ColorCategoryState</Type>
+      <Type>ColorCategory</Type>
       <Name>ColorCategoryState</Name>
       <SetsValue>false</SetsValue>
     </Variable>
@@ -213,6 +213,7 @@
   </State>
   <Category>
     <Name>ColorCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Gray</Name>
       <Variable>

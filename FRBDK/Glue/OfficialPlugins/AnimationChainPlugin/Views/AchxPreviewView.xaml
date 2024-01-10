@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="OfficialPlugins.ContentPreview.Views.AchxPreviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:pt="http://propertytools.org/wpf" 
+             xmlns:wpf1="clr-namespace:SkiaGum.Wpf;assembly=SkiaGum.Wpf.Net6" 
+             xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="170"></ColumnDefinition>
+            <ColumnDefinition Width="5"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="5"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <pt:TreeListBox
+                HierarchySource="{Binding VisibleRoot}"
+                ChildrenPath="VisibleChildren"
+                SelectedItem="{Binding SelectedItem}"
+                MouseDoubleClick="TreeListBox_MouseDoubleClick"
+                >
+
+                <pt:TreeListBox.ItemTemplate>
+
+                    <DataTemplate>
+                        <Grid x:Name="ItemGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="1" Text="{Binding Text}" />
+                        </Grid>
+                    </DataTemplate>
+                </pt:TreeListBox.ItemTemplate>
+
+            </pt:TreeListBox>
+            <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"></GridSplitter>
+            <ScrollViewer Grid.Row="2">
+                <wpfdataui:DataUiGrid x:Name="PropertyGrid"  Instance="{Binding SelectedAnimationChain}"></wpfdataui:DataUiGrid>
+            </ScrollViewer>
+        </Grid>
+
+        <GridSplitter Width="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"></GridSplitter>
+
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="5"></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <wpf1:GumSKElement x:Name="GumCanvas" Grid.Row="0"
+                    MouseDown="GumCanvas_MouseDown"
+                    MouseMove="GumCanvas_MouseMove"
+                    MouseWheel="GumCanvas_MouseWheel"
+                               ></wpf1:GumSKElement>
+            <GridSplitter Grid.Row="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center"
+                          Background="Black"
+                          ShowsPreview="True"
+                          Height="2"
+                          />
+            <wpf1:GumSKElement x:Name="GumCanvasAnimation" Grid.Row="2"
+                    MouseDown="GumAnimationCanvas_MouseDown"
+                    MouseMove="GumAnimationCanvas_MouseMove"
+                    MouseWheel="GumAnimationCanvas_MouseWheel"
+                           ></wpf1:GumSKElement>
+            <StackPanel Grid.Row="3" Orientation="Horizontal">
+                <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

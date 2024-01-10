@@ -16,12 +16,24 @@ namespace OfficialPlugins.Git
     {
         public override string FriendlyName => "Git Plugin";
 
+        //FilePath UpdateAllAndRunLocation =>
+        //    new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis() + "UpdateAllAndRunFrb.bat";
         public override Version Version => new Version(1, 0);
 
         public override void StartUp()
         {
-            this.AddMenuItemTo("Add/Update .gitignore", (not, used) => AddGitIgnore(), "Update");
-            this.AddMenuItemTo("Add UpdateAllAndRun.bat", (not, used) => AddUpdateAllAndRun(), "Update");
+            this.ReactToLoadedGlux += HandleGluxLoaded;
+            this.ReactToUnloadedGlux += HandleUnloadedGlux;
+        }
+
+        void HandleGluxLoaded()
+        {
+            this.AddMenuItemTo(Localization.Texts.AddUpdateGitignore, Localization.MenuIds.AddUpdateGitignoreId, AddGitIgnore, Localization.MenuIds.UpdateId);
+        }
+
+        private void HandleUnloadedGlux()
+        {
+            this.RemoveAllMenuItems();
         }
 
         public void AddGitIgnore()
@@ -66,47 +78,10 @@ namespace OfficialPlugins.Git
             }
         }
 
-        public void AddUpdateAllAndRun()
-        {
-            if(GlueState.Self.CurrentGlueProject != null)
-            {
-                var contents =
-@":: Get the latest code for your project
-git fetch
-git pull
-:: Get the latest Gum
-cd ..\Gum
-git fetch
-git pull
-:: Get the latest FlatRedBall
-cd ..\FlatRedBall
-git fetch
-git pull
-:: Build Glue with All solution
-cd FRBDK\Glue
-dotnet build ""Glue with All.sln""
-:: Run the newly built Glue
-cd Glue\bin\x86\Debug\netcoreapp3.0\
-start GlueFormsCore.exe";
-                var locationToSave = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis();
-
-                var destinationFileName = locationToSave.FullPath + "UpdateAllAndRunFrb.bat";
-
-                try
-                {
-                    System.IO.File.WriteAllText(destinationFileName, contents);
-                    GlueCommands.Self.PrintOutput($"Added batch file to:\n{destinationFileName}");
-                }
-                catch (Exception ex)
-                {
-                    GlueCommands.Self.PrintOutput(ex.ToString());
-                }
-            }
-        }
 
         private IEnumerable<string> GetNecessaryLines()
         {
-            // accoding to this:
+            // according to this:
             // https://stackoverflow.com/questions/8783093/gitignore-syntax-bin-vs-bin-vs-bin-vs-bin#:~:text=Since%20the%20earlier%20ignores%20the%20directory%20as%20a,%28ahem%29%20ignoresit%20if%20you%20ignored%20the%20parent%20directory%21
             // we will not append * at the end of ignores like "bin/"
 
@@ -114,6 +89,7 @@ start GlueFormsCore.exe";
                 FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentCodeProjectFileName.FullPath));
 
             yield return "*.user";
+            yield return "*.user.*";
 
             yield return "*.aeproperties";
 
@@ -124,6 +100,8 @@ start GlueFormsCore.exe";
             yield return "*.Generated.cs";
             yield return "*.Generated.Event.cs";
             yield return "*.generatedpreview.png";
+            
+            yield return "*.ods#";
 
             yield return "TiledObjects.Generated.xml";
 
@@ -154,5 +132,11 @@ start GlueFormsCore.exe";
             RemoveAllMenuItems();
             return true;
         }
+
+        //public void HandleShutdownAndUpdate(object sender, EventArgs e) 
+        //{
+        //    //GlueCommands.Self.FileCommands.Open(UpdateAllAndRunLocation.GetDirectoryContainingThis());
+        //    //GlueCommands.Self.CloseGlue();    
+        //}
     }
 }

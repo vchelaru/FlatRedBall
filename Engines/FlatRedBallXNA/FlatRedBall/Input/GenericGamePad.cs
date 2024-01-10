@@ -26,7 +26,7 @@ namespace FlatRedBall.Input
 
     }
 
-    public class DelegateBasedIndexedButton : IPressableInput
+    public class DelegateBasedIndexedButton : IRepeatPressableInput
     {
         public int Index;
         private GenericGamePad gamepad;
@@ -42,6 +42,7 @@ namespace FlatRedBall.Input
         public bool WasJustPressed => gamepad.ButtonPushed(Index);
         public bool WasJustReleased => gamepad.ButtonReleased(Index);
 
+        public bool WasJustPressedOrRepeated => gamepad.ButtonRepeatRate(Index);
     }
     #endregion
 
@@ -57,17 +58,17 @@ namespace FlatRedBall.Input
         public I2DInput Default2DInput { get; private set; }
 
         DelegateBasedIndexedButton defaultUpPressable;
-        public IPressableInput DefaultUpPressable => defaultUpPressable;
+        public IRepeatPressableInput DefaultUpPressable => defaultUpPressable;
 
 
         DelegateBasedIndexedButton defaultDownPressable;
-        public IPressableInput DefaultDownPressable => defaultDownPressable;
+        public IRepeatPressableInput DefaultDownPressable => defaultDownPressable;
 
         DelegateBasedIndexedButton defaultLeftPressable;
-        public IPressableInput DefaultLeftPressable => defaultLeftPressable;
+        public IRepeatPressableInput DefaultLeftPressable => defaultLeftPressable;
 
         DelegateBasedIndexedButton defaultRightPressable;
-        public IPressableInput DefaultRightPressable => defaultRightPressable;
+        public IRepeatPressableInput DefaultRightPressable => defaultRightPressable;
 
         public I1DInput DefaultHorizontalInput { get; private set; }
 
@@ -111,6 +112,12 @@ namespace FlatRedBall.Input
         double[] lastDPadPush = new double[4];
         double[] lastDPadRepeatRate = new double[4];
 
+        // Feb 12, 2023 - is this a valid assumption? Can there be more?
+        const int MaxNumberOfButtons = 512;
+        double[] lastButtonPush = new double[MaxNumberOfButtons];
+        double[] lastButtonRepeatRate = new double[MaxNumberOfButtons];
+
+
         public int NumberOfButtons { get; private set; }
 
         public float Deadzone { get; set; } = .1f;
@@ -121,6 +128,15 @@ namespace FlatRedBall.Input
 
         JoystickCapabilities JoystickCapabilities;
 
+        bool WasConnectedThisFrame
+        {
+            get
+            { 
+
+                return !lastJoystickState.IsConnected && joystickState.IsConnected;
+            }
+        }
+
         #endregion
 
         public GenericGamePad(int gamepadIndex)
@@ -130,6 +146,11 @@ namespace FlatRedBall.Input
             for (int i = 0; i < lastDPadPush.Length; i++)
             {
                 lastDPadPush[i] = -1;
+            }
+
+            for(int i = 0; i < MaxNumberOfButtons; i++)
+            {
+                lastButtonPush[i] = -1;
             }
 
             defaultUpPressable = new DelegateBasedIndexedButton(this);
@@ -240,24 +261,28 @@ namespace FlatRedBall.Input
 
             for(int i = 0; i < AnalogSticks.Length; i++)
             {
-                var stickPosition = new Vector2(
-                    joystickState.Axes[i*2] / analogStickMaxValue,
-                    -1 * joystickState.Axes[i*2 + 1] / analogStickMaxValue);
+                var stickPosition = new Vector2(0,0);
 
-                if (Deadzone > 0)
+                if (IsConnected)
                 {
-                    switch (DeadzoneType)
+                    stickPosition = new Vector2(
+                        joystickState.Axes[i*2] / analogStickMaxValue,
+                        -1 * joystickState.Axes[i*2 + 1] / analogStickMaxValue);
+
+                    if (Deadzone > 0)
                     {
-                        case DeadzoneType.Radial:
-                            stickPosition = GetRadialDeadzoneValue(stickPosition);
-                            break;
-                        case DeadzoneType.Cross:
-                            stickPosition = GetCrossDeadzoneValue(stickPosition);
-                            break;
+                        switch (DeadzoneType)
+                        {
+                            case DeadzoneType.Radial:
+                                stickPosition = GetRadialDeadzoneValue(stickPosition);
+                                break;
+                            case DeadzoneType.Cross:
+                                stickPosition = GetCrossDeadzoneValue(stickPosition);
+                                break;
+                        }
+
                     }
-
                 }
-
 
                 AnalogSticks[i].Update(new Microsoft.Xna.Framework.Vector2(stickPosition.X, stickPosition.Y));
 
@@ -334,11 +359,45 @@ namespace FlatRedBall.Input
             return joystickState.Buttons[buttonIndex] == ButtonState.Pressed;
         }
 
+        public bool ButtonRepeatRate(int buttonIndex, double timeAfterPush = .35, double timeBetweenRepeating = .12)
+        {
+            if (ButtonPushed(buttonIndex))
+            {
+                return true;
+            }
+            // The very first frame of FRB would have CurrentTime == 0. 
+            // The repeat cannot happen on the first frame, so we check for that:
+            bool repeatedThisFrame = TimeManager.CurrentTime > 0 && lastButtonRepeatRate[buttonIndex] == TimeManager.CurrentTime;
+            if (repeatedThisFrame ||
+                (
+                    ButtonDown(buttonIndex) &&
+                    TimeManager.CurrentTime - lastButtonPush[buttonIndex] > timeAfterPush &&
+                    TimeManager.CurrentTime - lastButtonRepeatRate[buttonIndex] > timeBetweenRepeating)
+                )
+            {
+                lastButtonRepeatRate[buttonIndex] = TimeManager.CurrentTime;
+                return true;
+            }
+            return false;
+        }
+
         internal void Update()
         {
 #if MONOGAME
             var state = Joystick.GetState(GamepadIndex);
-            JoystickCapabilities = Joystick.GetCapabilities(GamepadIndex);
+
+#if MONOGAME_381
+
+
+            if(JoystickCapabilities.DisplayName == null || WasConnectedThisFrame)
+#else
+            // we won't worry about this on older FRBs. Maybe it would be worth it, but it may also introduce bugs if
+            // the first frame is connected but doesn't have caps
+            if (true)
+#endif
+            {
+                JoystickCapabilities = Joystick.GetCapabilities(GamepadIndex);
+            }
 
             // each analog stick has an up/down
             var currentAnalogStickCount = JoystickCapabilities.AxisCount / 2;
@@ -352,6 +411,21 @@ namespace FlatRedBall.Input
 
             Update(state);
 #endif
+        }
+
+        private void UpdateLastButtonPushedValues()
+        {
+            // Set the last pushed and clear the ignored input
+
+            for (int i = 0; i < NumberOfButtons; i++)
+            {
+                //mButtonsIgnoredForThisFrame[i] = false;
+
+                if (ButtonPushed(i))
+                {
+                    lastButtonPush[i] = TimeManager.CurrentTime;
+                }
+            }
         }
 
         public string GetJoystickStateInfo()
@@ -444,7 +518,9 @@ namespace FlatRedBall.Input
             // If this method is called multiple times per frame this line
             // of code guarantees that the user will get true every time until
             // the next TimeManager.Update (next frame).
-            bool repeatedThisFrame = lastDPadRepeatRate[(int)dPadDirection] == TimeManager.CurrentTime;
+            // The very first frame of FRB would have CurrentTime == 0. 
+            // The repeat cannot happen on the first frame, so we check for that:
+            bool repeatedThisFrame = TimeManager.CurrentTime > 0 && lastDPadRepeatRate[(int)dPadDirection] == TimeManager.CurrentTime;
 
             if (repeatedThisFrame ||
                 (

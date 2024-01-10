@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Media.Imaging;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
@@ -16,9 +17,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         NodeViewModel LayersTreeNode;
         NodeViewModel CollisionRelationshipTreeNode;
 
+        public bool IsGameScreen { get; private set; }
+
         public NamedObjectsRootNodeViewModel(NodeViewModel parent, GlueElement glueElement) : base(parent)
         {
             this.glueElement = glueElement;
+
+            IsGameScreen = glueElement is ScreenSave screenSave && 
+                (screenSave.Name.EndsWith ("\\GameScreen") || screenSave.Name.EndsWith("/GameScreen"));
         }
 
         public override void RefreshTreeNodes(TreeNodeRefreshType treeNodeRefreshType)
@@ -99,7 +105,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                             .Where(item => item.IsLayer)
                             .ToArray();
 
-            if (layers.Length > 0)
+            var showLayers = layers.Length > 0 || IsGameScreen;
+
+            if (showLayers)
             {
                 if (LayersTreeNode == null)
                 {
@@ -160,7 +168,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 .Where(item => item.IsCollisionRelationship())
                 .ToArray();
 
-            if (collisionRelationships.Length > 0)
+            var shouldShowCollisionRelationshipNode = collisionRelationships.Length > 0 || IsGameScreen;
+
+            if (shouldShowCollisionRelationshipNode)
             {
                 if (CollisionRelationshipTreeNode == null)
                 {
@@ -258,22 +268,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             treeNode.Text = namedObject.InstanceName;
 
-            if(namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Layer)
-            {
-                treeNode.ImageSource = LayerIcon;
-            }
-            else if(namedObject.IsCollisionRelationship())
-            {
-                treeNode.ImageSource = CollisionIcon;
-            }
-            else if (namedObject.IsList)
-            {
-                treeNode.ImageSource = NodeViewModel.EntityInstanceListIcon;
-            }
-            else
-            {
-                treeNode.ImageSource = EntityInstanceIcon;
-            }
+            BitmapImage imageSource = GetIcon(namedObject);
+
+            treeNode.ImageSource = imageSource;
             //treeNode.SelectedImageKey = "object.png";
             //treeNode.ImageKey = "object.png";
 
@@ -281,6 +278,46 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             parentNode.Children.Insert(i, treeNode);
             return treeNode;
+        }
+
+        public static BitmapImage GetIcon(NamedObjectSave namedObject)
+        {
+            var imageSource = EntityInstanceIcon;
+
+            if(namedObject.IsContainer)
+            {
+                imageSource = EntityInstanceIsContainerIcon;
+            }
+            else if (namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Layer)
+            {
+                imageSource = LayerIcon;
+            }
+            else if (namedObject.IsCollisionRelationship())
+            {
+                imageSource = CollisionIcon;
+            }
+            else if (namedObject.IsList)
+            {
+                if(namedObject.DefinedByBase)
+                {
+                    imageSource = NodeViewModel.EntityInstanceListDerivedIcon;
+                }
+                else
+                {
+                    imageSource = NodeViewModel.EntityInstanceListIcon;
+                }
+            }
+            else if(namedObject.SourceClassType == "TileShapeCollection" || 
+                namedObject.SourceClassType == "FlatRedBall.TileCollisions.TileShapeCollection")
+            {
+                imageSource = TileShapeCollectionIcon;
+            }
+            else if(namedObject.DefinedByBase)
+            {
+                imageSource = EntityInstanceDerivedIcon;
+            }
+
+            return imageSource;
         }
 
         private static void UpdateTreeNodeForNamedObjectAtIndex(NodeViewModel currentNode, int i, NamedObjectSave namedObject, NodeViewModel treeNode)
@@ -302,13 +339,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             if (indexOfTreeNode != i)
             {
                 treeNode.Parent.Remove(treeNode);
-                if(i >= currentNode.Children.Count)
-                {
-                    int m = 3;
-                }
                 currentNode.Children.Insert(i, treeNode);
                 treeNode.Parent = currentNode;
             }
+
+            treeNode.ImageSource = GetIcon(namedObject);
         }
 
     }

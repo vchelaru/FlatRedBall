@@ -30,8 +30,6 @@ namespace TMXGlueLib
 
         private mapLayerData[] dataField;
 
-        private string nameField;
-
         private int widthField;
 
         private int heightField;

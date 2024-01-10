@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -126,6 +128,10 @@ namespace FlatRedBall.Glue.SaveClasses
             settings.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
             var serialized = JsonConvert.SerializeObject(clone, Formatting.Indented, settings);
             PluginManager.ReactToGlueJsonSaveAsync(serialized);
+
+            FileWatchManager.IgnoreNextChangeOnFile(filePath);
+
+
             FileManager.SaveText(serialized, filePath.FullPath);
         }
 
@@ -138,8 +144,13 @@ namespace FlatRedBall.Glue.SaveClasses
             if(clone.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
             {
                 PrepareWildcardsForSaving(filePath, clone);
+
+                if(clone.FileVersion >= (int)GlueProjectSave.GluxVersions.RemoveRedundantDerivedData)
+                {
+                    RemoveRedundantDerivedData(clone);
+                }
                 
-                SaveAndRemoveElements(filePath, clone);
+                RemoveAndSaveElements(filePath, clone);
             }
 
             var fileName = filePath.FullPath;
@@ -179,7 +190,220 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        private static void SaveAndRemoveElements(FilePath filePath, GlueProjectSave clone)
+        private static void RemoveRedundantDerivedData(GlueProjectSave clone)
+        {
+            foreach(var entity in clone.Entities)
+            {
+                if(!string.IsNullOrEmpty(entity.BaseEntity ))
+                {
+                    var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(entity);
+                    if(baseElements.Count > 0)
+                    {
+                        RemoveRedundantDerivedData(entity, baseElements);
+                    }
+
+                }
+            }
+            foreach(var screen in clone.Screens)
+            {
+                if(!string.IsNullOrEmpty( screen.BaseScreen ))
+                {
+                    var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(screen);
+                    if(baseElements.Count > 0)
+                    {
+                        RemoveRedundantDerivedData(screen, baseElements);
+                    }
+
+                }
+            }
+        }
+
+        public static void RemoveRedundantDerivedData(GlueElement element, List<GlueElement> baseElements)
+        {
+            var nosList = element.NamedObjects;
+
+            for (int i = nosList.Count-1; i > -1; i--)
+            {
+                var nos = nosList[i];
+                bool shouldStrip = DetermineIfShouldStripNos(baseElements, nos);
+
+                if (shouldStrip)
+                {
+                    nosList.RemoveAt(i);
+                }
+            }
+
+            for(int i = element.CustomVariables.Count-1; i > -1; i--)
+            {
+                var variable = element.CustomVariables[i];
+                var shouldStrip = DetermineIfShouldStripCustomVariable(baseElements, variable);
+
+                if(shouldStrip)
+                {
+                    element.CustomVariables.RemoveAt(i);
+                }
+            }
+        }
+
+        private static bool DetermineIfShouldStripNos(List<GlueElement> baseElements, NamedObjectSave nos)
+        {
+            var shouldStrip = true;
+            if (!nos.DefinedByBase)
+            {
+                shouldStrip = false;
+            }
+
+            if (shouldStrip)
+            {
+                if (nos.InstructionSaves.Count > 0)
+                {
+                    shouldStrip = false;
+                }
+            }
+
+            if (shouldStrip)
+            {
+                if (nos.ContainedObjects.Count > 0)
+                {
+                    shouldStrip = false;
+                }
+            }
+
+            if(shouldStrip)
+            { 
+                // see if any properties differ from the base
+                var allBaseNamedObjects = baseElements
+                    .SelectMany(item => item.NamedObjects)
+                    .Where(item => (item.ExposedInDerived || item.SetByDerived) && item.InstanceName == nos.InstanceName);
+
+                foreach (var baseNos in allBaseNamedObjects)
+                {
+                    if (DoPropertiesDiffer(nos.Properties, baseNos.Properties))
+                    {
+                        shouldStrip = false;
+                        break;
+                    }
+
+                    if (DoNativePropertiesDiffer(nos, baseNos))
+                    {
+                        shouldStrip = false;
+                        break;
+                    }
+
+                }
+            }
+
+            return shouldStrip;
+        }
+
+        private static bool DetermineIfShouldStripCustomVariable(List<GlueElement> baseElements, CustomVariable customVariable)
+        {
+            var shouldStrip = true;
+
+            if(!customVariable.DefinedByBase || customVariable.DefaultValue != null)
+            {
+                shouldStrip = false;
+            }
+
+            if(shouldStrip)
+            {
+                var allBaseCustomVariables = baseElements
+                    .SelectMany(item => item.CustomVariables)
+                    .Where(item => item.SetByDerived && item.Name == customVariable.Name);
+
+                foreach(var baseVariable in allBaseCustomVariables)
+                {
+                    if(DoPropertiesDiffer(customVariable.Properties, baseVariable.Properties))
+                    {
+                        shouldStrip = false;
+                        break;
+                    }
+
+                    if(DoNativePropertiesDiffer(customVariable, baseVariable))
+                    {
+                        shouldStrip = false;
+                        break;
+                    }
+                }
+            }
+
+            return shouldStrip;
+        }
+
+        private static bool DoNativePropertiesDiffer(NamedObjectSave nos1, NamedObjectSave nos2)
+        {
+            var differ = nos1.SourceClassType != nos2.SourceClassType ||
+                nos1.SourceType != nos2.SourceType ||
+                nos1.SourceFile != nos2.SourceFile ||
+                nos1.SourceClassGenericType != nos2.SourceClassGenericType ||
+                nos1.AddToManagers != nos2.AddToManagers ||
+                nos1.IncludeInICollidable != nos2.IncludeInICollidable ||
+                nos1.IncludeInIClickable != nos2.IncludeInIClickable ||
+                nos1.SourceName != nos2.SourceName;
+
+            return differ;
+        }
+
+        private static bool DoNativePropertiesDiffer(CustomVariable derivedVar, CustomVariable baseVar)
+        {
+            var differ =
+                derivedVar.Summary != baseVar.Summary && derivedVar != null;
+
+            if(!differ)
+            {
+                differ = Differ(derivedVar.SourceFile, baseVar.SourceFile) ||
+                    derivedVar.FulfillsRequirement != baseVar.FulfillsRequirement ||
+                    derivedVar.SetByDerived != baseVar.SetByDerived ||
+                    derivedVar.IsShared != baseVar.IsShared ||
+                    derivedVar.SourceObject != baseVar.SourceObject ||
+                    derivedVar.SourceObjectProperty != baseVar.SourceObjectProperty ||
+                    derivedVar.CreatesEvent != baseVar.CreatesEvent ||
+                    derivedVar.PreferredDisplayerTypeName != baseVar.PreferredDisplayerTypeName;
+            }
+
+
+            return differ;
+        }
+
+        private static bool Differ(ReferencedFileReference sourceFile1, ReferencedFileReference sourceFile2)
+        {
+            if(sourceFile1 == null && sourceFile2 == null)
+            {
+                return false;
+            }
+            else if(sourceFile1 == null || sourceFile2 == null)
+            {
+                return true;
+            }
+            else
+            {
+                return sourceFile1.RfsName != sourceFile2.RfsName ||
+                    sourceFile1.ContainerName != sourceFile2.ContainerName;
+            }
+        }
+
+        private static bool DoPropertiesDiffer(List<PropertySave> properties1, List<PropertySave> properties2)
+        {
+            if(properties1.Count != properties2.Count)
+            {
+                return true;
+            }
+
+            for(int i = 0; i < properties1.Count; i++)
+            {
+                var first = properties1[i];
+                var second = properties2[i];
+
+                if(first.Name != second.Name || first.Type != second.Type || !object.Equals( first.Value, second.Value))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static void RemoveAndSaveElements(FilePath filePath, GlueProjectSave clone)
         {
             clone.EntityReferences = clone.Entities.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
             clone.ScreenReferences = clone.Screens.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
@@ -209,7 +433,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 var locationToSave = glueDirectory + screen.Name + "." + GlueProjectSave.ScreenExtension;
 
                 PluginManager.ReactToScreenJsonSaveAsync(screen.Name, serialized);
-                FileManager.SaveText(serialized, locationToSave);
+                GlueCommands.Self.TryMultipleTimes(() => FileManager.SaveText(serialized, locationToSave));
             }
 
             clone.Entities.Clear();
@@ -296,7 +520,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
 
-            foreach (var file in files.Where(item=>item.ToLower().EndsWith(".generated.glux") || item.ToLower().EndsWith(".generated.gluj")))
+            foreach (var file in files.Where(item=>item.EndsWith(".generated.glux", StringComparison.OrdinalIgnoreCase) || item.EndsWith(".generated.gluj", StringComparison.OrdinalIgnoreCase)))
             {
                 string withoutExtension = FileManager.RemoveExtension(file);
                 string withoutGenerated = FileManager.RemoveExtension(withoutExtension);

@@ -14,6 +14,7 @@ namespace FlatRedBall.AnimationEditorForms.Plugins.FrameShapePlugin
         public override void StartUp()
         {
             AddMenuItemTo("Add Rectangle", "Add", HandleAddRectangle);
+            AddMenuItemTo("Add Circle", "Add", HandleAddCircle);
         }
 
         private void HandleAddRectangle()
@@ -24,5 +25,13 @@ namespace FlatRedBall.AnimationEditorForms.Plugins.FrameShapePlugin
             }
         }
 
+
+        private void HandleAddCircle()
+        {
+            if (AppState.Self.CurrentFrame != null)
+            {
+                AppCommands.Self.AddCircle(AppState.Self.CurrentFrame);
+            }
+        }
     }
 }

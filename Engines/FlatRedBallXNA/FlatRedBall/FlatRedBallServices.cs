@@ -125,7 +125,7 @@ namespace FlatRedBall
 
         static int mPrimaryThreadId;
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
         static System.Windows.Forms.Control mOwner;
 #endif
 
@@ -201,7 +201,7 @@ namespace FlatRedBall
             }
         }
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
         public static System.Windows.Forms.Control Owner
         {
             get { return mOwner; }
@@ -292,14 +292,15 @@ namespace FlatRedBall
                     // If we're setting the mClientWith and mClientHeight, we need
                     // to adjust the cameras:
                     // Update cameras
-                    foreach (Camera camera in SpriteManager.Cameras)
+                    for (int i = 0; i < SpriteManager.Cameras.Count; i++)
                     {
+                        Camera camera = SpriteManager.Cameras[i];
                         camera.UpdateOnResize();
                     }
                 }
                 else
                 {
-#if MONOGAME
+#if MONOGAME || FNA
                     throw new NotSupportedException("Game required on the this platform");
 #else
                     System.Windows.Forms.Control window = System.Windows.Forms.Form.FromHandle(mWindowHandle);
@@ -325,7 +326,7 @@ namespace FlatRedBall
                     // above
                     mGraphicsOptions.ResumeDeviceReset();
 
-#if WINDOWS 
+#if WINDOWS || FNA
                     FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
 #endif
 
@@ -350,7 +351,7 @@ namespace FlatRedBall
 
             mGraphicsOptions.ResumeDeviceReset();
 
-    #if WINDOWS
+    #if WINDOWS || FNA
             FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
     #endif
             //mGraphicsOptions.ResumeDeviceReset();
@@ -400,7 +401,7 @@ namespace FlatRedBall
                 mTypesThatCanBeLoaded.Add(typeof(Texture2D));
                 mTypesThatCanBeLoaded.Add(typeof(Scene));
                 mTypesThatCanBeLoaded.Add(typeof(EmitterList));
-#if !MONOGAME
+#if !MONOGAME && !FNA
                 mTypesThatCanBeLoaded.Add(typeof(System.Drawing.Image));
                 //mTypesThatCanBeLoaded.Add(typeof(BitmapList));
 #endif
@@ -482,7 +483,6 @@ namespace FlatRedBall
         {
 
             PreInitialization(game, graphics);
-
             GraphicsOptions graphicsOptions = new GraphicsOptions(game, graphics);
 
 
@@ -550,7 +550,6 @@ namespace FlatRedBall
             // am wondering why we have both, and why can't we just
             // use one of them.
 
-
 #if WINDOWS && !STANDARD
             mOwner =
                 System.Windows.Forms.Form.FromHandle(mWindowHandle);
@@ -566,7 +565,7 @@ namespace FlatRedBall
 
             mOwner.Resize += new EventHandler(Window_ClientSizeChanged);
 #else
-            game.Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
+            game.Window.ClientSizeChanged += Window_ClientSizeChanged;
 #endif
             // call this *after assignign the events
             mGraphicsOptions.Initialize();
@@ -655,7 +654,7 @@ namespace FlatRedBall
 
             graphics.DeviceReset += new EventHandler<EventArgs>(graphics_DeviceReset);
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
             System.Windows.Forms.Form.FromHandle(mWindowHandle).Resize += new EventHandler(Window_ClientSizeChanged);
 
 #endif
@@ -678,7 +677,7 @@ namespace FlatRedBall
         {
             // All InitializeFlatRedBall methods call this one
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
             //PngLoader.Initialize();
 #endif
 
@@ -755,7 +754,7 @@ namespace FlatRedBall
             Renderer.Effect = mResourceContentManager.Load<Effect>("FlatRedBallShader");
 #endif
 
-#if DESKTOP_GL
+#if MONOGAME_381
 
             // We'll make a content manager that is never disposed. At this
             // point the FRB engine is not initialized so we can't use the global
@@ -767,8 +766,13 @@ namespace FlatRedBall
             // MonoGame 3.7 (pre-release) has at least one bug related to shaders
             // which impact rendering. That is, point filtering isn't working.
             // So I'm going to revert monogame back to the old way for now
-            //var preInitGlobalContent = new ContentManager(mServices);
-            //Renderer.Effect = preInitGlobalContent.Load<Effect>("Content/shader");
+            var preInitGlobalContent = new Microsoft.Xna.Framework.Content.ContentManager(mServices);
+            Renderer.Effect = preInitGlobalContent.Load<Effect>("Content/shader");
+
+            // We need two separate instances of the custom effect so we need another 
+            // pre initialization content manager.
+            var anotherPreInitGlobalContent = new Microsoft.Xna.Framework.Content.ContentManager(mServices);
+            Renderer.ExternalEffect = anotherPreInitGlobalContent.Load<Effect>("Content/shader");
 #endif
         }
 
@@ -776,9 +780,18 @@ namespace FlatRedBall
 
         static void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
         {
+            // Nov 14, 2023
+            // For some reason 
+            // keeping this in causes
+            // resolutions to reset when
+            // resizing. Commenting this out
+            // for now, may return to this in 
+            // the future.
+#if !FNA
             PresentationParameters presentationParameters = e.GraphicsDeviceInformation.PresentationParameters;
             mGraphicsOptions.SetPresentationParameters(ref presentationParameters);
             e.GraphicsDeviceInformation.PresentationParameters = presentationParameters;
+#endif
         }
 
         static bool mHandlingReset = false;
@@ -786,7 +799,6 @@ namespace FlatRedBall
 
         internal static void graphics_DeviceReset(object sender, EventArgs e)
         {
-
             if (mGraphicsOptions == null) return;
 
             HandleResize();
@@ -813,8 +825,9 @@ namespace FlatRedBall
                 //Window_ClientSizeChanged(sender, e);
 
                 // Update cameras
-                foreach (Camera camera in SpriteManager.Cameras)
+                for (int i = 0; i < SpriteManager.Cameras.Count; i++)
                 {
+                    Camera camera = SpriteManager.Cameras[i];
                     camera.UpdateOnResize();
                 }
 
@@ -822,9 +835,9 @@ namespace FlatRedBall
             }
         }
 
-            #endregion
+#endregion
             
-            #endregion
+#endregion
 
         #region Public Methods
 
@@ -861,7 +874,7 @@ namespace FlatRedBall
 
         private static string TryFindAnyCased(string search, string[] arr, params string[] extensions)
         {
-            return arr.FirstOrDefault(s => extensions.Any(ext => s.ToLower() == (search.ToLower() + ext)));
+            return arr.FirstOrDefault(s => extensions.Any(ext => s.Equals(search + ext, StringComparison.OrdinalIgnoreCase)));
         }
 
 #if ASK_VIC //MDS_TODO ASK VIC
@@ -1255,6 +1268,12 @@ namespace FlatRedBall
                 // InstructionManager Update should happen *after* InputManager.Update 
                 // in case any instructions want to override input code.
                 InstructionManager.Update();
+                // Whether instructions come before or after Task.Delay calls is somewhat arbitrary, but we'll do it after
+                // Actually, Task'ed functions should happen at the same frame time (or nearly so) as the Update call. 
+                // I'm not sure why InstructionManager.Update is so early. Perhaps because internal methods use instructions?
+                // Anyway, if we delay a frame time, and then the frames adjust after, that can cause a Sprite to show its cycled
+                // state for 1 frame which is bad. Therefore, moving this to happen after all internal managers:
+                //TimeManager.DoScreenTimeDelayTaskLogic();
 
                 if (section != null)
                 {
@@ -1315,6 +1334,7 @@ namespace FlatRedBall
                     Section.EndContextAndTime();
                 }
 
+                TimeManager.DoTaskLogic();
                 // Vic says = I think this needs to happen either at the very
                 // beginning of the frame or the very end of the frame. It will 
                 // contain custom user code, so we don't want this to fall in the
@@ -1439,9 +1459,9 @@ namespace FlatRedBall
             {
                 Renderer.Draw(section);
             }
-        #if PROFILE
+#if PROFILE
             TimeManager.TimeSection("Renderer.Draw();");
-        #endif
+#endif
 
 
             // Just in case code is going to modify any of the textures that were used in rendering:
@@ -1537,7 +1557,6 @@ namespace FlatRedBall
             }
         }
 
-#if !FRB_MDX && !XNA3
         public static void SuspendEngine(string textureToDraw, Rectangle sourceRect)
         {
             Unload("SuspendEngine");
@@ -1571,11 +1590,10 @@ namespace FlatRedBall
                 }
             }
         }
-#endif
 
         #endregion
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
         public static Texture2D BitmapToTexture2D(System.Drawing.Bitmap bitmapToConvert,
             string newTextureName, string contentManagerName)
         {
@@ -1816,6 +1834,6 @@ namespace FlatRedBall
 
         #endregion
 
-        #endregion
+#endregion
     }
 }

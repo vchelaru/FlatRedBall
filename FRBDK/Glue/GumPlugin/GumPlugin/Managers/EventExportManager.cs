@@ -157,8 +157,14 @@ namespace GumPlugin.Managers
                         }
                         catch(Exception e)
                         {
-                            // it's okay, I think?
-                            GlueCommands.Self.PrintError($"Could not save Gum last change file {file}:\n{e}");
+                            // it's okay, I think? 
+                            // Update November 17, 2023 
+                            // Ya, this is a warning, but
+                            // we should not print an error
+                            // here. We'll just output a warning:
+                            GlueCommands.Self.PrintOutput($"Warning: Could not save Gum last change file {file}." +
+                                $"You can continue to work normally, but you may want to see if something is " +
+                                $"blocking access to this file if your team relies on this being part of the repository:\n{e}");
                         }
                     }
                 }
@@ -207,34 +213,37 @@ namespace GumPlugin.Managers
                 if(element != null)
                 {
                     // make sure it's updated:
-                    CodeGeneratorManager.Self.GenerateDueToFileChangeTask(element);
+                    CodeGeneratorManager.Self.GenerateDueToFileChangeTask(element, saveProjects:true);
 
-                    TaskManager.Self.AddAsync(async () =>
+                    await TaskManager.Self.AddAsync(async () =>
                     {
                         try
                         {
                             if(oldCodeFileName.Exists())
                             {
-                                System.IO.File.Copy(oldCodeFileName.FullPath, newCodeFileName.FullPath, overwrite: true);
-
-                                var contents = System.IO.File.ReadAllText(newCodeFileName.FullPath);
-                                RefactorManager.Self.RenameClassInCode(
-                                    oldCodeFileName.NoPathNoExtension,
-                                    newCodeFileName.NoPathNoExtension,
-                                    ref contents);
-
-                                var oldNamespace = GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(false, exportedEvent.OldName);
-                                var newNamespace = GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(false, exportedEvent.NewName);
-
-                                if(oldNamespace != newNamespace)
+                                GlueCommands.Self.TryMultipleTimes(() =>
                                 {
-                                    RefactorManager.Self.RenameNamespaceInCode(
-                                        oldNamespace,
-                                        newNamespace,
-                                        ref contents);
-                                }
+                                    System.IO.File.Copy(oldCodeFileName.FullPath, newCodeFileName.FullPath, overwrite: true);
 
-                                System.IO.File.WriteAllText(newCodeFileName.FullPath, contents);
+                                    var contents = System.IO.File.ReadAllText(newCodeFileName.FullPath);
+                                    RefactorManager.Self.RenameClassInCode(
+                                        oldCodeFileName.NoPathNoExtension,
+                                        newCodeFileName.NoPathNoExtension,
+                                        ref contents);
+
+                                    var oldNamespace = GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(false, exportedEvent.OldName);
+                                    var newNamespace = GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(false, exportedEvent.NewName);
+
+                                    if (oldNamespace != newNamespace)
+                                    {
+                                        RefactorManager.Self.RenameNamespaceInCode(
+                                            oldNamespace,
+                                            newNamespace,
+                                            ref contents);
+                                    }
+
+                                    System.IO.File.WriteAllText(newCodeFileName.FullPath, contents);
+                                });
 
                                 await GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(newCodeFileName, saveOnAdd:true);
                             }
@@ -265,7 +274,7 @@ namespace GumPlugin.Managers
 
                             if(elementsToRegen.Count > 0)
                             {
-                                GlueCommands.Self.GluxCommands.SaveGlux();
+                                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                             }
                         }
                         catch (Exception e)

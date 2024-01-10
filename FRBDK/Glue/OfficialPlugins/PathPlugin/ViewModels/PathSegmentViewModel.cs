@@ -18,7 +18,8 @@ namespace OfficialPlugins.PathPlugin.ViewModels
         {
             SegmentType.Line,
             SegmentType.Arc,
-            SegmentType.Move
+            SegmentType.Move,
+            SegmentType.Spline
         };
 
         public IEnumerable<SegmentType> AvailableSegmentTypes => availableValuesStatic;
@@ -54,5 +55,13 @@ namespace OfficialPlugins.PathPlugin.ViewModels
         public void HandleMoveUpClicked() => MoveUpClicked(this);
         public void HandleMoveDownClicked() => MoveDownClicked(this);
         public void HandleCopyClicked() => CopyClicked(this);
+
+        public event EventHandler TextBoxFocus;
+
+        public event Action<int> TextBoxFocusRequested;
+
+        public void RequestFocusTextBox(int index) => TextBoxFocusRequested?.Invoke(index);
+
+        public void HandleTextBoxFocus() => TextBoxFocus?.Invoke(this, null);
     }
 }

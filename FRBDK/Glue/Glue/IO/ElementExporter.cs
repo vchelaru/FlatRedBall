@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using EditorObjects.Parsing;
@@ -9,12 +8,12 @@ using Ionic.Zip;
 using System.Diagnostics;
 using System.Windows.Forms;
 using FlatRedBall.Utilities;
-using FlatRedBall.Glue.Controls;
 using System.IO;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using L = Localization;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -40,7 +39,7 @@ namespace FlatRedBall.Glue.IO
                 }
                 catch(Exception e)
                 {
-                    GlueGui.ShowMessageBox("Failed to delete the target export directory: \n" + e.ToString());
+                    GlueGui.ShowMessageBox(String.Format(L.Texts.ErrorDeleteDirectoryFailed, e));
                     succeeded = false;
                 }
             }
@@ -52,22 +51,14 @@ namespace FlatRedBall.Glue.IO
             // directory.  If a group of Entities are exported they may share files.
             // Therefore, we will populate the filesReferencedByElements List to suppress
             // warnings about files not referenced when they are part of the group.
-            List<string> filesReferencedByElements = new List<string>();
-            foreach (IElement element in elementGroup)
-            {
-                // We don't want to do this recursively - only the elements that
-                // have been selected for export.
-                foreach (ReferencedFileSave rfs in element.ReferencedFiles)
-                {
-                    string absoluteFile = GlueCommands.Self.GetAbsoluteFileName(rfs);
+            var filesReferencedByElements = (
+                from IElement element in elementGroup 
+                from rfs in element.ReferencedFiles 
+                select GlueCommands.Self.GetAbsoluteFileName(rfs) 
+                into absoluteFile 
+                select FileManager.Standardize(absoluteFile, null, false)).ToList();
 
-                    absoluteFile = FileManager.Standardize(absoluteFile, null, false).ToLower();
-
-                    filesReferencedByElements.Add(absoluteFile);
-                }
-            }
-
-            List<string> filesToEmbed = new List<string>();
+            var filesToEmbed = new List<string>();
 
             foreach (var element in elementGroup)
             {
@@ -91,7 +82,7 @@ namespace FlatRedBall.Glue.IO
             {
                 // Create a zip that contains all the .entz and .scrz files
                 SaveFileDialog fileDialog = new SaveFileDialog();
-                fileDialog.Filter = "Glue Group (*.ggpz)|*.ggpz";
+                fileDialog.Filter = $"{L.Texts.GlueGroup} (*.ggpz)|*.ggpz";
                 DialogResult result = fileDialog.ShowDialog();
 
                 if (result != DialogResult.Cancel)
@@ -134,13 +125,10 @@ namespace FlatRedBall.Glue.IO
                     screenOrEntity = "entity";
                 }
 
-                string message = string.Format(
-                    "This {0} contains files outside of its content folder. Glue will export this {0}, but " +
-                    "all files will be referenced in the same content folder. This may break some file " + 
-                    "references.\n\nDo you want to export?", screenOrEntity);
+                string message = string.Format(L.Texts.QuestionFilesOutsideContent, screenOrEntity);
 
 
-                var result = MessageBox.Show(message, "Export?", MessageBoxButtons.YesNo);
+                var result = MessageBox.Show(message, L.Texts.QuestionExport, MessageBoxButtons.YesNo);
 
                 shouldContinue = result == DialogResult.Yes;
 
@@ -149,9 +137,8 @@ namespace FlatRedBall.Glue.IO
 
             if (shouldContinue)
             {
-
-                System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-                folderBrowserDialog.Description = "Select folder to save exported file:";
+                var folderBrowserDialog = new FolderBrowserDialog();
+                folderBrowserDialog.Description = L.Texts.FolderSelectExportedFile;
                 folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
                 DialogResult result = folderBrowserDialog.ShowDialog();
 
@@ -173,6 +160,7 @@ namespace FlatRedBall.Glue.IO
         /// <param name="openDirectory"></param>
         /// <param name="filesAlreadyAccountedFor"></param>
         /// <param name="automaticOverwrite"></param>
+        /// <param name="copyExternalFiles"></param>
         /// <returns>The exported file name.</returns>
         private static string ExportElementToDirectory(GlueElement element, GlueProjectSave glueProjectSave, string directory, bool openDirectory, List<string> filesAlreadyAccountedFor, 
             bool automaticOverwrite = false, bool copyExternalFiles = false)
@@ -186,9 +174,7 @@ namespace FlatRedBall.Glue.IO
 
             string exportedFile = null;
 
-            string extension;
-            string zipExtension;
-            GetExtensionsForExport(element, out extension, out zipExtension);
+            GetExtensionsForExport(element, out var extension, out var zipExtension);
 
             string absoluteXml = directory + FileManager.RemovePath(element.Name) + "." + extension;
             string absoluteZip = directory + FileManager.RemovePath(element.Name) + "." + zipExtension;
@@ -196,17 +182,18 @@ namespace FlatRedBall.Glue.IO
 
             if (automaticOverwrite == false && FileManager.FileExists(absoluteZip))
             {
-                dialogResult = MessageBox.Show("The file already exist\n\n" + absoluteXml + "\n\nOverwrite?",
-                    "Overwrite?", MessageBoxButtons.YesNo);
+                dialogResult = MessageBox.Show(
+                    String.Format(L.Texts.FileXExistsOverwrite, absoluteXml),
+                    L.Texts.QuestionOverwrite, MessageBoxButtons.YesNo);
 
             }
 
-            string reasonWhyElementCantBeExported = GetReasonWhyElementCantBeExported(element, filesAlreadyAccountedFor, copyExternalFiles: copyExternalFiles);
+            string reasonWhyElementCantBeExported = GetReasonWhyElementCantBeExported(element, filesAlreadyAccountedFor, copyExternalFiles);
 
 
             if (!string.IsNullOrEmpty(reasonWhyElementCantBeExported))
             {
-                MessageBox.Show("Can't export:\n\n" + reasonWhyElementCantBeExported);
+                MessageBox.Show($"{L.Texts.ExportCant}\n\n{reasonWhyElementCantBeExported}");
             }
             else if (dialogResult == DialogResult.Yes)
             {
@@ -247,10 +234,10 @@ namespace FlatRedBall.Glue.IO
                 }
             }
 
-            List<string> allFiles = new List<string>();
+            var allFiles = new List<string>();
 
-            string contentDirectory = GlueCommands.Self.GetAbsoluteFileName(element.Name, true);
-            foreach (ReferencedFileSave rfs in element.ReferencedFiles)
+            var contentDirectory = GlueCommands.Self.GetAbsoluteFileName(element.Name, true);
+            foreach (var rfs in element.ReferencedFiles)
             {
                 string absoluteRfsName = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
@@ -265,7 +252,7 @@ namespace FlatRedBall.Glue.IO
             // want all entries to be lower-case.
             bool wasPreservingCase = FileManager.PreserveCase;
             FileManager.PreserveCase = false;
-            for (int i = 0; i < allFiles.Count; i++)
+            for (var i = 0; i < allFiles.Count; i++)
             {
                 allFiles[i] = FileManager.Standardize(allFiles[i]);
             }
@@ -278,48 +265,47 @@ namespace FlatRedBall.Glue.IO
             // twice.
             StringFunctions.RemoveDuplicates(allFiles);
 
-            using (ZipFile zip = new ZipFile())
+            using var zip = new ZipFile();
+            
+            foreach (var codeFile in codeFiles)
             {
-                foreach (var codeFile in codeFiles)
-                {
-                    zip.AddFile(codeFile.FullPath, "");
-                }
-                zip.AddFile(absoluteXml, "");
-
-                foreach (string fileToAdd in allFiles)
-                {
-                    string relativeDirectory = null;
-
-                    relativeDirectory = FileManager.MakeRelative(FileManager.GetDirectory(fileToAdd), contentDirectory);
-
-                    if (relativeDirectory.EndsWith("/"))
-                    {
-                        relativeDirectory = relativeDirectory.Substring(0, relativeDirectory.Length - 1);
-                    }
-
-                    bool isExternal = relativeDirectory.StartsWith("../");
-
-                    if (isExternal)
-                    {
-                        string externalDirectory = "__external/";
-
-                        string directoryToAddTo = externalDirectory +
-                            FileManager.MakeRelative(fileToAdd, GlueState.Self.CurrentMainContentProject.Directory);
-
-                        directoryToAddTo = FileManager.GetDirectory(directoryToAddTo, RelativeType.Relative);
-
-                        zip.AddFile(fileToAdd, directoryToAddTo);
-
-                    }
-                    else
-                    {
-                        zip.AddFile(fileToAdd, relativeDirectory);
-
-                    }
-                }
-
-                zip.Save(absoluteZip);
+                zip.AddFile(codeFile.FullPath, "");
             }
+            zip.AddFile(absoluteXml, "");
+
+            foreach (string fileToAdd in allFiles)
+            {
+                string relativeDirectory = null;
+
+                relativeDirectory = FileManager.MakeRelative(FileManager.GetDirectory(fileToAdd), contentDirectory);
+
+                if (relativeDirectory.EndsWith("/"))
+                {
+                    relativeDirectory = relativeDirectory.Substring(0, relativeDirectory.Length - 1);
+                }
+
+                var isExternal = relativeDirectory.StartsWith("../");
+
+                if (isExternal)
+                {
+                    string externalDirectory = "__external/";
+
+                    string directoryToAddTo = externalDirectory +
+                                              FileManager.MakeRelative(fileToAdd, GlueState.Self.CurrentMainContentProject.Directory);
+
+                    directoryToAddTo = FileManager.GetDirectory(directoryToAddTo, RelativeType.Relative);
+
+                    zip.AddFile(fileToAdd, directoryToAddTo);
+
+                }
+                else
+                {
+                    zip.AddFile(fileToAdd, relativeDirectory);
+
+                }
+            }
+
+            zip.Save(absoluteZip);
 
             System.IO.File.Delete(absoluteXml);
 
@@ -338,16 +324,7 @@ namespace FlatRedBall.Glue.IO
             // See if there are any custom classes that are used by this:
             foreach (var customClass in glueProjectSave.CustomClasses)
             {
-                var isCustomClassUsed = false;
-                foreach (var csv in customClass.CsvFilesUsingThis)
-                {
-                    var foundCsvRfs = element.GetReferencedFileSave(csv);
-                    if (foundCsvRfs != null)
-                    {
-                        isCustomClassUsed = true;
-                        break;
-                    }
-                }
+                var isCustomClassUsed = customClass.CsvFilesUsingThis.Select(element.GetReferencedFileSave).Any(foundCsvRfs => foundCsvRfs != null);
 
                 if (isCustomClassUsed)
                 {
@@ -361,16 +338,16 @@ namespace FlatRedBall.Glue.IO
             extension = "";
             zipExtension = "";
 
-
-            if (element is EntitySave)
+            switch (element)
             {
-                extension = "entx";
-                zipExtension = "entz";
-            }
-            else if (element is ScreenSave)
-            {
-                extension = "scrx";
-                zipExtension = "scrz";
+                case EntitySave:
+                    extension = "entx";
+                    zipExtension = "entz";
+                    break;
+                case ScreenSave:
+                    extension = "scrx";
+                    zipExtension = "scrz";
+                    break;
             }
         }
 
@@ -383,21 +360,16 @@ namespace FlatRedBall.Glue.IO
 
             mOldElementName = element.Name;
 
-            string oldContentRelativeDirectory = "Content\\" + element.Name + "\\";
             string oldContentRelativeDirectoryAbsolute = GlueCommands.Self.GetAbsoluteFileName(element.Name, true);
-            
-            if (element is EntitySave)
+
+            element.Name = element switch
             {
-                element.Name = "Entities\\" + FileManager.RemovePath(element.Name);
+                EntitySave => "Entities\\" + FileManager.RemovePath(element.Name),
+                ScreenSave => "Screens\\" + FileManager.RemovePath(element.Name),
+                _ => element.Name
+            };
 
-            }
-            else if (element is ScreenSave)
-            {
-
-                element.Name = "Screens\\" + FileManager.RemovePath(element.Name);
-            }
-
-            string newContentRelativeDirectory = element.Name + "\\";
+            var newContentRelativeDirectory = element.Name + "\\";
 
             foreach (ReferencedFileSave rfs in element.ReferencedFiles)
             {
@@ -411,14 +383,12 @@ namespace FlatRedBall.Glue.IO
                 }
             }
 
-            List<NamedObjectSave> nosList = element.NamedObjects;
-
-            AdjustNosSourceFiles(oldContentRelativeDirectoryAbsolute, newContentRelativeDirectory, nosList);
+            AdjustNosSourceFiles(oldContentRelativeDirectoryAbsolute, newContentRelativeDirectory, element.NamedObjects);
         }
 
         private static void AdjustNosSourceFiles(string oldContentRelativeDirectoryAbsolute, string newContentRelativeDirectory, List<NamedObjectSave> nosList)
         {
-            foreach (NamedObjectSave nos in nosList)
+            foreach (var nos in nosList)
             {
                 if (!string.IsNullOrEmpty(nos.SourceFile) && FileManager.IsRelativeTo(GlueCommands.Self.GetAbsoluteFileName(nos.SourceFile, true), oldContentRelativeDirectoryAbsolute))
                 {
@@ -445,109 +415,18 @@ namespace FlatRedBall.Glue.IO
                 kvp.Key.SourceFile = kvp.Value;
             }
         }
-
-        //public static void ShowExportMultipleElementsListBox()
-        //{
-        //    ListBoxWindow listBoxWindow = new ListBoxWindow();
-        //    listBoxWindow.AddButton("Cancel", DialogResult.Cancel);
-
-        //    if (ProjectManager.GlueProjectSave != null)
-        //    {
-        //        foreach (EntitySave entitySave in ProjectManager.GlueProjectSave.Entities)
-        //        {
-        //            listBoxWindow.AddItem(entitySave);
-        //        }
-
-        //        foreach (ScreenSave screenSave in ProjectManager.GlueProjectSave.Screens)
-        //        {
-        //            listBoxWindow.AddItem(screenSave);
-        //        }
-        //        listBoxWindow.ShowCheckBoxes = true;
-        //        listBoxWindow.Message = "Select which Screens and Entities you would like to export:";
-        //        DialogResult result = listBoxWindow.ShowDialog();
-
-        //        if (result == DialogResult.OK)
-        //        {
-        //            bool areAnySelected = false;
-        //            foreach (TreeNode treeNode in listBoxWindow.CheckedTreeNodes)
-        //            {
-        //                areAnySelected = true;
-        //                break;
-        //            }
-        //            if (areAnySelected)
-        //            {
-
-
-        //                System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-        //                folderBrowserDialog.Description = "Select folder to export selected Screens/Entities:";
-        //                folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
-        //                DialogResult folderSelectionResults = folderBrowserDialog.ShowDialog();
-
-        //                if (folderSelectionResults != DialogResult.Cancel)
-        //                {
-
-        //                    string directory = folderBrowserDialog.SelectedPath + "\\";
-
-
-
-
-        //                    int numberOfElementsExported = 0;
-
-        //                    // If a single Entity is exported it must be self-contained
-        //                    // to be exported (it can't reference files outside of its relative
-        //                    // directory.  If a group of Entities are exported they may share files.
-        //                    // Therefore, we will populate the filesReferencedByElements List to suppress
-        //                    // warnings about files not referenced when they are part of the group.
-        //                    List<string> filesReferencedByElements = new List<string>();
-        //                    foreach (TreeNode treeNode in listBoxWindow.CheckedTreeNodes)
-        //                    {
-        //                        IElement element = treeNode.Tag as IElement;
-
-        //                        // We don't want to do this recursively - only the elements that
-        //                        // have been selected for export.
-        //                        foreach (ReferencedFileSave rfs in element.ReferencedFiles)
-        //                        {
-        //                            string absoluteFile = ProjectManager.MakeAbsolute(rfs.Name, true);
-
-        //                            absoluteFile = FileManager.Standardize(absoluteFile, null, false);
-
-        //                            filesReferencedByElements.Add(absoluteFile);
-        //                        }
-        //                    }
-
-        //                    foreach (TreeNode treeNode in listBoxWindow.CheckedTreeNodes)
-        //                    {
-        //                        if (ExportElementToDirectory((IElement)treeNode.Tag, directory, false, filesReferencedByElements))
-        //                        {
-        //                            numberOfElementsExported++;
-        //                        }
-        //                    }
-
-        //                    Process.Start(directory);
-
-        //                    MessageBox.Show(string.Format("Exported {0} Entity(s)/Screen(s)", numberOfElementsExported));
-        //                }
-        //            }
-        //            else
-        //            {
-        //                MessageBox.Show("No Screens/Entities selected");
-        //            }
-        //        }
-        //    }
-        //}
-
         static string GetReasonWhyElementCantBeExported(IElement element, List<string> filesAlreadyIncluded, bool copyExternalFiles = false)
         {
             string toReturn = null;
 
             if (!copyExternalFiles)
             {
-                List<string> filesNotIncluded = GetExternalFiles(element, filesAlreadyIncluded);
+                var filesNotIncluded = GetExternalFiles(element, filesAlreadyIncluded);
 
                 if (filesNotIncluded.Count > 0)
                 {
-                    string contentDirectory = GlueCommands.Self.GetAbsoluteFileName(element.Name, true);
-                    toReturn = "The file\n\n" + filesNotIncluded[0] + "\n\nis not relative to the content folder for the element which is\n\n" + contentDirectory;
+                    var contentDirectory = GlueCommands.Self.GetAbsoluteFileName(element.Name, true);
+                    toReturn = string.Format(L.Texts.FileXNotRelativeToContentFolder, filesNotIncluded[0], contentDirectory);
                 }
             }
 
@@ -557,8 +436,7 @@ namespace FlatRedBall.Glue.IO
         private static List<string> GetExternalFiles(IElement element, List<string> filesAlreadyIncluded)
         {
             string contentDirectory = GlueCommands.Self.GetAbsoluteFileName(element.Name, true);
-
-            List<string> filesNotIncluded = new List<string>();
+            var filesNotIncluded = new List<string>();
 
             foreach (ReferencedFileSave rfs in element.ReferencedFiles)
             {
@@ -570,7 +448,7 @@ namespace FlatRedBall.Glue.IO
 
                 if (!FileManager.IsRelativeTo(absolutePath, contentDirectory))
                 {
-                    if (filesAlreadyIncluded != null && filesAlreadyIncluded.Contains(absolutePath.ToLower()))
+                    if (filesAlreadyIncluded != null && filesAlreadyIncluded.Contains(absolutePath, StringComparer.OrdinalIgnoreCase))
                     {
                         referencedOutside = false;
                     }
@@ -586,16 +464,10 @@ namespace FlatRedBall.Glue.IO
 
                     foreach (var fileName in files)
                     {
-                        if (!FileManager.IsRelativeTo(fileName.FullPath, contentDirectory))
+                        if (!FileManager.IsRelativeTo(fileName.FullPath, contentDirectory) && (filesAlreadyIncluded == null 
+                                || !filesAlreadyIncluded.Contains(absolutePath, StringComparer.OrdinalIgnoreCase)))
                         {
-                            if (filesAlreadyIncluded != null && filesAlreadyIncluded.Contains(absolutePath.ToLower()))
-                            {
-                                referencedOutside = false;
-                            }
-                            else
-                            {
-                                filesNotIncluded.Add(absolutePath);
-                            }
+                            filesNotIncluded.Add(absolutePath);
                         }
                     }
                 }

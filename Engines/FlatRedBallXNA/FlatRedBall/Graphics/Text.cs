@@ -937,11 +937,19 @@ namespace FlatRedBall.Graphics
 
         }
 
+        public void SetColor(Microsoft.Xna.Framework.Color color)
+        {
+            SetColor(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
+        }
+
+        public void SetPixelPerfectScale(float multiple = 1) => SetPixelPerfectScale(Camera.Main, multiple);
+
+
         /// <summary>
         /// Sets the Scale and Spacing such that the Text is drawn pixel-perfect at its given Z position.
         /// </summary>
         /// <param name="camera">Reference to the camera to use when calculating the Scale and Spacing.</param>
-        public void SetPixelPerfectScale(Camera camera)
+        public void SetPixelPerfectScale(Camera camera, float multiple = 1)
         {
             int lineHeight = 0;
 
@@ -994,6 +1002,10 @@ namespace FlatRedBall.Graphics
             {
                 NewLineDistance = Scale * 1.5f;
             }
+
+            Scale *= multiple;
+            Spacing *= multiple;
+            NewLineDistance *= multiple;
 
             UpdateDisplayedText();
             UpdateDimensions();
@@ -1853,8 +1865,14 @@ namespace FlatRedBall.Graphics
         {
             get
             {
-                IVisible iVisibleParent = ((IVisible)this).Parent;
-                return Visible && (iVisibleParent == null || IgnoresParentVisibility || iVisibleParent.AbsoluteVisible);
+                if (!mVisible)
+                {
+                    return false; // Early out
+                }
+
+                // The sprite is visible but we have to check the parent
+                IVisible iVisibleParent = mParent as IVisible; // Avoid the property here
+                return iVisibleParent == null || IgnoresParentVisibility || iVisibleParent.AbsoluteVisible;
             }
         }
 

@@ -110,7 +110,15 @@ namespace PreviewProject
         {
             var settingsFile = SettingsFilePath;
             var contents = JsonConvert.SerializeObject(appSettings);
-            System.IO.File.WriteAllText(settingsFile.FullPath, contents);
+            try
+            {
+                System.IO.File.WriteAllText(settingsFile.FullPath, contents);
+            }
+            catch(System.IO.IOException)
+            {
+                // no biggie, the file is in use, just throw away the error
+                // if we had output, we could print it here...
+            }
         }
 
         private void ProcessCommandLines(out bool wasAnimationLoaded)

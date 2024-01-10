@@ -84,7 +84,7 @@ namespace GlueControl.Managers
         }
 
         public async Task SetVariableOn(NamedObjectSave nos, GlueElement nosOwner, string memberName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true, bool echoToGame = false)
+            bool updateUi = true, bool recordUndo = true, bool echoToGame = false)
         {
             var nosReference = NamedObjectSaveReference.From(nos, nosOwner);
 
@@ -92,17 +92,18 @@ namespace GlueControl.Managers
 
             if (echoToGame)
             {
-                await SendMethodCallToGameWithEcho(nameof(SetVariableOn), nosReference, memberName, typedValue, performSaveAndGenerateCode, updateUi);
+                await SendMethodCallToGameWithEcho(nameof(SetVariableOn), nosReference, memberName, typedValue, performSaveAndGenerateCode, updateUi, recordUndo);
             }
             else
             {
-                await SendMethodCallToGame(nameof(SetVariableOn), nosReference, memberName, typedValue, performSaveAndGenerateCode, updateUi);
+                await SendMethodCallToGame(nameof(SetVariableOn), nosReference, memberName, typedValue, performSaveAndGenerateCode, updateUi, recordUndo);
             }
         }
 
         public async Task SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments, GlueElement nosOwner,
             bool performSaveAndGenerateCode = true,
             bool updateUi = true,
+            bool recordUndo = true,
             bool echoToGame = false)
         {
             List<NosReferenceVariableAssignment> nosReferenceVariableAssignments = new List<NosReferenceVariableAssignment>();
@@ -120,11 +121,11 @@ namespace GlueControl.Managers
 
             if (echoToGame)
             {
-                await SendMethodCallToGameWithEcho(nameof(SetVariableOnList), nosReferenceVariableAssignments, performSaveAndGenerateCode, updateUi);
+                await SendMethodCallToGameWithEcho(nameof(SetVariableOnList), nosReferenceVariableAssignments, performSaveAndGenerateCode, updateUi, recordUndo);
             }
             else
             {
-                await SendMethodCallToGame(nameof(SetVariableOnList), nosReferenceVariableAssignments, performSaveAndGenerateCode, updateUi);
+                await SendMethodCallToGame(nameof(SetVariableOnList), nosReferenceVariableAssignments, performSaveAndGenerateCode, updateUi, recordUndo);
             }
         }
 

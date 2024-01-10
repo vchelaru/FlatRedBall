@@ -51,15 +51,13 @@ namespace FlatRedBall.Math
         #endregion
         float RotationY { get; set;}
 
-        #region XML Docs
         /// <summary>
-        /// Gets and sets the rotation on the Z Axis.
+        /// Gets and sets the rotation on the Z Axis in radians.
         /// </summary>
         /// <remarks>
         /// Implementors should mirror changes to invididual rotation values in the
         /// RotationMatrix property.
         /// </remarks>
-        #endregion
         float RotationZ { get; set;}
 
 

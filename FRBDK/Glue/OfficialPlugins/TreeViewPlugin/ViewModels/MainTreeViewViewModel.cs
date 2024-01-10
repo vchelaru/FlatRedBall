@@ -17,9 +17,22 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Media;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
+    #region BookmarkViewModel
+
+    class BookmarkViewModel
+    {
+        public string Text { get; set; }
+        public ImageSource ImageSource { get; set; }
+
+        public override string ToString() => Text;
+    }
+
+    #endregion
+
     class MainTreeViewViewModel : ViewModel, ISearchBarViewModel
     {
         #region Search-related
@@ -149,12 +162,12 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         [DependsOn(nameof(SearchBoxText))]
         public string FilterResultsInfo =>
-            SearchBoxText?.StartsWith("f ") == true ? "Filtered to Files..." :
-            SearchBoxText?.StartsWith("e ") == true ? "Filtered to Entities..." :
-            SearchBoxText?.StartsWith("s ") == true ? "Filtered to Screens..." :
-            SearchBoxText?.StartsWith("o ") == true ? "Filtered to Objects..." :
-            SearchBoxText?.StartsWith("v ") == true ? "Filtered to Variables..." :
-            "Begin a search with \"f \", \"e \", \"s \", \"o \", or \"v \" (letter then space) to filter results.";
+            SearchBoxText?.StartsWith("f ") == true ? Localization.Texts.FilteredToFiles :
+            SearchBoxText?.StartsWith("e ") == true ? Localization.Texts.FilteredToEntities :
+            SearchBoxText?.StartsWith("s ") == true ? Localization.Texts.FilteredToScreens :
+            SearchBoxText?.StartsWith("o ") == true ? Localization.Texts.FilteredToObjects :
+            SearchBoxText?.StartsWith("v ") == true ? Localization.Texts.FilteredToVariables :
+            Localization.Texts.FilterResultsDescription;
 
         public bool IsForwardButtonEnabled
         {
@@ -165,6 +178,59 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public bool IsBackButtonEnabled
         {
             get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string SelectedItemInfoDisplay
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(SelectedItemInfoDisplay))]
+        public Visibility SelectedItemInfoVisibility => 
+            string.IsNullOrEmpty(SelectedItemInfoDisplay) ? Visibility.Collapsed : Visibility.Visible;
+
+        #endregion
+
+        #region Bookmark
+
+        public bool IsBookmarkListVisible
+        {
+            get => Get<bool>();
+            set
+            {
+                if (Set(value))
+                {
+                    if(value== false)
+                    {
+                        OldBookmarkRowHeight = BookmarkRowHeight;
+                        BookmarkRowHeight = new GridLength(0, GridUnitType.Pixel);
+                    }
+                    else
+                    {
+                        BookmarkRowHeight = OldBookmarkRowHeight;
+                    }
+                }
+            }
+        }
+
+        [DependsOn(nameof(IsBookmarkListVisible))]
+        public Visibility BookmarkListVisibility => IsBookmarkListVisible.ToVisibility();
+
+        public ObservableCollection<BookmarkViewModel> Bookmarks { get; private set; } = new ObservableCollection<BookmarkViewModel>();
+
+        public BookmarkViewModel SelectedBookmark
+        {
+            get => Get<BookmarkViewModel>();
+            set => Set(value);
+        }
+
+        public GridLength OldBookmarkRowHeight { get; set; }
+
+        public GridLength BookmarkRowHeight
+        {
+            get=> Get<GridLength>();
             set => Set(value);
         }
 
@@ -187,6 +253,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 ScreenRootNode,
                 GlobalContentRootNode,
             };
+
+            BookmarkRowHeight = GridLength.Auto;
 
             PushSearchToContainedObject();
 
@@ -287,11 +355,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             var start = StartOfRelative(relativePath, out string remainder);
 
             NodeViewModel treeNode;
-            if (start == "Screens")
+            if (start ==  Localization.Texts.Screens)
             {
                 treeNode = ScreenRootNode;
             }
-            else if (start == "Entities")
+            else if (start == Localization.Texts.Entities)
             {
                 treeNode = EntityRootNode;
             }
@@ -426,6 +494,124 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             AddDirectoryNodes(contentDirectory + "GlobalContent/", GlobalContentRootNode);
         }
 
+        public void RefreshBookmarks()
+        {
+            Bookmarks.Clear();
+            var project = GlueState.Self.CurrentGlueProject;
+
+            if(project?.Bookmarks == null)
+            {
+                return;
+            }
+
+            foreach(var bookmark in project.Bookmarks)
+            {
+                var vm = new BookmarkViewModel();
+                vm.Text = bookmark.Name;
+                vm.ImageSource = NodeViewModel.FromSource(bookmark.ImageSource);
+                this.Bookmarks.Add(vm);
+            }
+        }
+
+        internal void AddDirectoryNodes(string parentDirectory, NodeViewModel parentTreeNode)
+        {
+            if (parentTreeNode == null)
+            {
+                throw new ArgumentNullException(nameof(parentTreeNode));
+            }
+
+            if (Directory.Exists(parentDirectory))
+            {
+                string[] directories = Directory.GetDirectories(parentDirectory);
+
+                foreach (string directory in directories)
+                {
+                    string relativePath = FileManager.MakeRelative(directory, parentDirectory);
+
+                    string nameOfNewNode = relativePath;
+
+                    if (relativePath.Contains('/'))
+                    {
+                        nameOfNewNode = relativePath.Substring(0, relativePath.IndexOf('/'));
+                    }
+
+                    if (!ReferencedFilesRootNodeViewModel.DirectoriesToIgnore.Contains(nameOfNewNode))
+                    {
+
+                        var treeNode = TreeNodeForDirectoryOrEntityNode(relativePath, parentTreeNode);
+
+                        if (treeNode == null)
+                        {
+                            treeNode = new NodeViewModel(parentTreeNode);
+
+                            treeNode.IsEditable = true;
+
+                            treeNode.Text = FileManager.RemovePath(directory);
+                            parentTreeNode.Children.Add(treeNode);
+                        }
+
+                        //treeNode.ImageKey = "folder.png";
+                        //treeNode.SelectedImageKey = "folder.png";
+
+                        //treeNode.ForeColor = ElementViewWindow.FolderColor;
+
+                        AddDirectoryNodes(parentDirectory + relativePath + "/", treeNode);
+                    }
+                }
+
+                // Now see if there are any directory tree nodes that don't have a matching directory
+
+                // Let's make the directories lower case
+                for (int i = 0; i < directories.Length; i++)
+                {
+                    directories[i] = FileManager.Standardize(directories[i]);
+
+                    if (!directories[i].EndsWith("/", StringComparison.OrdinalIgnoreCase) && !directories[i].EndsWith("\\", StringComparison.OrdinalIgnoreCase))
+                    {
+                        directories[i] += "/";
+                    }
+                }
+
+                ITreeNode root = parentTreeNode.Root();
+                bool isGlobalContent = root.IsGlobalContentContainerNode();
+
+
+                for (int i = parentTreeNode.Children.Count - 1; i > -1; i--)
+                {
+                    ITreeNode treeNode = parentTreeNode.Children[i];
+
+                    if (((ITreeNode)treeNode).IsDirectoryNode())
+                    {
+
+                        string directory = GlueCommands.Self.GetAbsoluteFileName(treeNode.GetRelativeFilePath(), isGlobalContent);
+
+                        directory = FileManager.Standardize(directory);
+
+                        if (!directories.Contains(directory, StringComparer.OrdinalIgnoreCase))
+                        {
+                            parentTreeNode.Children.RemoveAt(i);
+                        }
+                    }
+                }
+            }
+        }
+
+        internal void RefreshSelectedItemInfoDisplay(List<ITreeNode> selectedTreeNodes)
+        {
+            if(selectedTreeNodes.Count == 0)
+            {
+                SelectedItemInfoDisplay = string.Empty;
+            }
+            else if(selectedTreeNodes.Count == 1)
+            {
+                SelectedItemInfoDisplay = selectedTreeNodes[0].Tag?.ToString();
+            }
+            else
+            {
+                SelectedItemInfoDisplay = $"{selectedTreeNodes.Count} items selected";
+            }
+        }
+
         #endregion
 
         private NodeViewModel AddEntityTreeNode(EntitySave entitySave)
@@ -437,7 +623,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             string containingDirectory = FileManager.MakeRelative(FileManager.GetDirectory(entitySave.Name));
 
             NodeViewModel treeNodeToAddTo;
-            if (containingDirectory == "Entities/")
+            if (containingDirectory == $"Entities/")
             {
                 treeNodeToAddTo = EntityRootNode;
             }
@@ -500,97 +686,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             GlobalContentRootNode.Children.Clear();
         }
 
-        public void Select(int count)
+        internal void DeselectResursively(bool callSelectionLogic)
         {
-            var children = this.RootModel.Children as IList<NodeViewModel>;
-            for (int i = 0; i < count; i++)
-            {
-                children[i].IsSelected = true;
-            }
+            ScreenRootNode.DeselectResursively(callSelectionLogic);
+            EntityRootNode.DeselectResursively(callSelectionLogic);
+            GlobalContentRootNode.DeselectResursively(callSelectionLogic);
         }
 
-        internal void AddDirectoryNodes(string parentDirectory, NodeViewModel parentTreeNode)
-        {
-            if (parentTreeNode == null)
-            {
-                throw new ArgumentNullException(nameof(parentTreeNode));
-            }
-
-            if (Directory.Exists(parentDirectory))
-            {
-                string[] directories = Directory.GetDirectories(parentDirectory);
-
-                foreach (string directory in directories)
-                {
-                    string relativePath = FileManager.MakeRelative(directory, parentDirectory);
-
-                    string nameOfNewNode = relativePath;
-
-                    if (relativePath.Contains('/'))
-                    {
-                        nameOfNewNode = relativePath.Substring(0, relativePath.IndexOf('/'));
-                    }
-
-                    if (!ReferencedFilesRootNodeViewModel.DirectoriesToIgnore.Contains(nameOfNewNode))
-                    {
-
-                        var treeNode = TreeNodeForDirectoryOrEntityNode(relativePath, parentTreeNode);
-
-                        if (treeNode == null)
-                        {
-                            treeNode = new NodeViewModel(parentTreeNode);
-
-                            treeNode.IsEditable = true;
-
-                            treeNode.Text = FileManager.RemovePath(directory);
-                            parentTreeNode.Children.Add(treeNode);
-                        }
-
-                        //treeNode.ImageKey = "folder.png";
-                        //treeNode.SelectedImageKey = "folder.png";
-
-                        //treeNode.ForeColor = ElementViewWindow.FolderColor;
-
-                        AddDirectoryNodes(parentDirectory + relativePath + "/", treeNode);
-                    }
-                }
-
-                // Now see if there are any directory tree nodes that don't have a matching directory
-
-                // Let's make the directories lower case
-                for (int i = 0; i < directories.Length; i++)
-                {
-                    directories[i] = FileManager.Standardize(directories[i]).ToLower();
-
-                    if (!directories[i].EndsWith("/") && !directories[i].EndsWith("\\"))
-                    {
-                        directories[i] = directories[i] + "/";
-                    }
-                }
-
-                ITreeNode root = parentTreeNode.Root();
-                bool isGlobalContent = root.IsGlobalContentContainerNode();
-
-
-                for (int i = parentTreeNode.Children.Count - 1; i > -1; i--)
-                {
-                    ITreeNode treeNode = parentTreeNode.Children[i];
-
-                    if (((ITreeNode)treeNode).IsDirectoryNode())
-                    {
-
-                        string directory = GlueCommands.Self.GetAbsoluteFileName(treeNode.GetRelativeFilePath(), isGlobalContent);
-
-                        directory = FileManager.Standardize(directory.ToLower());
-
-                        if (!directories.Contains(directory))
-                        {
-                            parentTreeNode.Children.RemoveAt(i);
-                        }
-                    }
-                }
-            }
-        }
+        #region Collapse
 
         internal void CollapseAll()
         {
@@ -598,6 +701,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 node.CollapseRecursively();
             }
+
         }
 
         internal void CollapseToDefinitions()
@@ -612,6 +716,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             EntityRootNode.IsExpanded = true;
             GlobalContentRootNode.IsExpanded = true;
         }
+
+        #endregion
 
         #region Search for Nodes
 
@@ -699,26 +805,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var nos in namedObjects)
             {
-                var matchWeight = GetMatchWeight(nos.InstanceName);
+                var matchWeight = GetMatchWeight(nos.InstanceName, nos.DefinedByBase);
                 if (matchWeight > 0)
                 {
                     var node = new NodeViewModel();
-                    if (nos.IsLayer)
-                    {
-                        node.ImageSource = NodeViewModel.LayerIcon;
-                    }
-                    else if (nos.IsCollisionRelationship())
-                    {
-                        node.ImageSource = NodeViewModel.CollisionIcon;
-                    }
-                    else if (nos.IsList)
-                    {
-                        node.ImageSource = NodeViewModel.EntityInstanceListIcon;
-                    }
-                    else
-                    {
-                        node.ImageSource = NodeViewModel.EntityInstanceIcon;
-                    }
+
+                    node.ImageSource = NamedObjectsRootNodeViewModel.GetIcon(nos);
+
                     // ToString leads with the type not the name, so let's lead with the name instead
                     //node.Text = nos.ToString();
                     // don't use field name, that has the 'm' prefix in some cases
@@ -763,11 +856,18 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var variable in variables)
             {
-                var matchWeight = GetMatchWeight(variable.Name);
+                var matchWeight = GetMatchWeight(variable.Name, variable.DefinedByBase);
                 if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(null);
-                    treeNode.ImageSource = NodeViewModel.VariableIcon;
+                    if(variable.DefinedByBase)
+                    {
+                        treeNode.ImageSource = NodeViewModel.VariableIconDerived;
+                    }
+                    else
+                    {
+                        treeNode.ImageSource = NodeViewModel.VariableIcon;
+                    }
                     treeNode.Text = variable.ToString();
                     treeNode.Tag = variable;
                     treeNode.SearchTermMatchWeight = matchWeight;
@@ -890,54 +990,62 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
             }
 
-            double GetMatchWeight(string itemName)
+            double GetMatchWeight(string itemName, bool isDefinedByBase = false)
             {
                 var itemNameToLower = itemName.ToLowerInvariant();
+
+                var weight = 0.0;
+
                 if (itemName == searchTermCaseSensitive)
                 {
                     // Search: Sprite 
                     // Actual: Sprite
-                    return 1;
+                    weight = 1;
                 }
                 else if (itemName.StartsWith(searchTermCaseSensitive))
                 {
                     // Search: Spri
                     // Actual: Sprite
-                    return 0.8;
+                    weight = 0.8;
                 }
                 else if (itemNameToLower == searchToLower)
                 {
                     // Search: sprite
                     // Actual: Sprite
-                    return 0.7;
+                    weight = 0.7;
                 }
                 else if (CamelCaseMatchUpper(itemName, searchTermCaseSensitive))
                 {
                     // Search MGE
                     // Actual: MachineGunEnemy
-                    return 0.65;
+                    weight = 0.65;
                 }
                 else if (itemNameToLower.StartsWith(searchToLower))
                 {
                     // Search: spri
                     // Actual: Sprite
-                    return 0.6;
+                    weight = 0.6;
                 }
                 else if (itemName.Contains(searchTermCaseSensitive))
                 {
                     // Search: rit
                     // Actual: Sprite
-                    return 0.5;
+                    weight = 0.5;
                 }
                 else if (itemNameToLower.Contains(searchToLower))
                 {
                     // Search: magetod
                     // Actual: DamageToDeal
-                    return 0.4;
+                    weight = 0.4;
                 }
 
+                // if defined by base, then we make this weigh slightly less so that it shows up after the original definitions
+                if(isDefinedByBase)
+                {
+                    weight -= .001f;
+                }
 
-                return 0;
+                return weight;
             }
             bool CamelCaseMatchUpper(string itemName, string searchTermCaseSensitive)
             {
@@ -986,7 +1094,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             else
             {
-                int indexOfSlash = containingDirection.IndexOf("/");
+                int indexOfSlash = containingDirection.IndexOf("/", StringComparison.OrdinalIgnoreCase);
 
                 string rootDirectory = containingDirection;
 
@@ -999,7 +1107,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     var subNode = containingNode.Children[i];
 
-                    if (((ITreeNode)subNode).IsDirectoryNode() && subNode.Text.ToLower() == rootDirectory.ToLower())
+                    if (((ITreeNode)subNode).IsDirectoryNode() && String.Equals(subNode.Text, rootDirectory, StringComparison.OrdinalIgnoreCase))
                     {
                         // use the containingDirectory here
                         if (indexOfSlash == -1 || indexOfSlash == containingDirection.Length - 1)
@@ -1021,7 +1129,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         {
             NodeViewModel containerTreeNode = nodeToStartAt;
 
-            if (rfs.Name.ToLower().StartsWith("globalcontent/") && nodeToStartAt == GlobalContentRootNode)
+            if (rfs.Name.StartsWith("globalcontent/", StringComparison.OrdinalIgnoreCase) && nodeToStartAt == GlobalContentRootNode)
             {
                 string directory = FileManager.GetDirectoryKeepRelative(rfs.Name);
 
@@ -1037,7 +1145,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
 
 
-            if (rfs.Name.ToLower().StartsWith("content/globalcontent/") && nodeToStartAt == GlobalContentRootNode)
+            if (rfs.Name.StartsWith("content/globalcontent/", StringComparison.OrdinalIgnoreCase) && nodeToStartAt == GlobalContentRootNode)
             {
                 string directory = FileManager.GetDirectoryKeepRelative(rfs.Name);
 
@@ -1083,8 +1191,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             // Let's see if this thing is really an Entity
 
-
-            string relativeToProject = FileManager.Standardize(containingDirectory.FullPath).ToLower();
+            string relativeToProject = FileManager.Standardize(containingDirectory.FullPath).ToLowerInvariant();
 
             if (FileManager.IsRelativeTo(relativeToProject, FileManager.RelativeDirectory))
             {
@@ -1095,8 +1202,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 relativeToProject = FileManager.MakeRelative(relativeToProject, ProjectManager.ContentProject.GetAbsoluteContentFolder());
             }
 
-            if (relativeToProject.StartsWith("content/globalcontent") || relativeToProject.StartsWith("globalcontent")
-                )
+            if (relativeToProject.StartsWith("content/globalcontent", StringComparison.OrdinalIgnoreCase) 
+                || relativeToProject.StartsWith("globalcontent", StringComparison.OrdinalIgnoreCase))
             {
                 isEntity = false;
             }
@@ -1182,6 +1289,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
 
         }
+
 
     }
 }

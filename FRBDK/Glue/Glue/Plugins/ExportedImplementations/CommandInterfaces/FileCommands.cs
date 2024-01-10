@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
@@ -89,12 +90,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         ReferencedFileSave[] GetAllRfses()
         {
             var allRfses =
-                GlueProject.Entities.SelectMany(item => item.ReferencedFiles)
+                GlueProject?.Entities.SelectMany(item => item.ReferencedFiles)
                 .Concat(GlueProject.Screens.SelectMany(item2 => item2.ReferencedFiles))
                 .Concat(GlueProject.GlobalFiles)
                 .ToArray();
 
-            return allRfses;
+            return allRfses ?? new ReferencedFileSave[0];
         }
 
         public List<FilePath> GetAllReferencedFileNames()
@@ -312,6 +313,44 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return filePath.GetDirectoryContainingThis();
         }
 
+        public async Task PasteFolder(FilePath sourceFolder, FilePath destinationFolder)
+        {
+            if(sourceFolder.Exists() == false)
+            {
+                GlueCommands.Self.PrintError($"Cannot copy {sourceFolder} because it doesn't exist");
+            }
+
+            var rfsesRelativeToSource = GlueState.Self.GetAllReferencedFiles()
+                .Where(item => sourceFolder.IsRootOf(GlueCommands.Self.GetAbsoluteFilePath(item)))
+                .ToArray();
+
+            FilePath destinationWithSourceAppended = destinationFolder + sourceFolder.NoPath;
+            if(!destinationWithSourceAppended.FullPath.EndsWith("/") && !destinationWithSourceAppended.FullPath.EndsWith("\\"))
+            {
+                destinationWithSourceAppended += "/";
+            }
+            var currentElement = GlueState.Self.CurrentElement;
+
+            foreach(var rfs in rfsesRelativeToSource)
+            {
+                var absolutePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                var relativeToSource = absolutePath.RelativeTo(sourceFolder);
+
+                FilePath desiredDestination = destinationWithSourceAppended + relativeToSource;
+                desiredDestination = desiredDestination.GetDirectoryContainingThis();
+
+                // make sure this directory exists
+                if(!desiredDestination.Exists())
+                {
+                    System.IO.Directory.CreateDirectory(desiredDestination.FullPath);
+                }
+
+                await GlueCommands.Self.GluxCommands.DuplicateAsync(rfs, currentElement, desiredDestination);
+
+            }
+        }
+
+
         public bool RenameReferencedFileSave(ReferencedFileSave rfs, string newName)
         {
             var oldName = rfs.Name;
@@ -363,17 +402,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             string extension = filePath.Extension;
 
-            if (extension == "")
+            if (String.IsNullOrWhiteSpace(extension))
             {
                 return false;
             }
 
-            foreach (var ati in AvailableAssetTypes.Self.AllAssetTypes)
+            if (AvailableAssetTypes.Self.AllAssetTypes
+                .Any(ati => String.Equals(ati.Extension, extension, StringComparison.OrdinalIgnoreCase)))
             {
-                if (ati.Extension == extension)
-                {
-                    return true;
-                }
+                return true;
             }
 
             if (AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets.Contains(extension))
@@ -388,8 +425,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
 
-            if (extension == "csv" ||
-                extension == "xml")
+            if (String.Equals(extension, "csv", StringComparison.OrdinalIgnoreCase) ||
+                String.Equals(extension, "xml", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
@@ -480,19 +517,27 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     if (string.IsNullOrEmpty(executable) && !WindowsFileAssociation.NativelyHandledExtensions.Contains(effectiveExtension))
                     {
                         //Attempt to get relative projects
-                        var relativeExe = "";
+                        var absoluteExe = "";
                         if (GumFileExtensions.Contains(textExtension.ToLower()))
-                            relativeExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
-                        if (textExtension == "achx")
-                            relativeExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
-                        if ((relativeExe != "") && (System.IO.File.Exists(relativeExe)))
+                            absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                        if (String.Equals(textExtension, "achx", StringComparison.OrdinalIgnoreCase))
                         {
-                            Process.Start(new ProcessStartInfo(relativeExe, fileName));
+                            absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
+                            var foundAnimationEditor = (System.IO.File.Exists(absoluteExe));
+                            if(!foundAnimationEditor)
+                            {
+                                // check if it's in the default built location if the user is running from prebuilt:
+                                absoluteExe = GlueState.Self.GlueExeDirectory + "AnimationEditor/AnimationEditor.exe";
+                            }
+                        }
+                        if ((absoluteExe != "") && (System.IO.File.Exists(absoluteExe)))
+                        {
+                            Process.Start(new ProcessStartInfo(absoluteExe, fileName));
                             return;
                         }
 
                         var message = $"Windows does not have an association for the extension {effectiveExtension}. You must set the " +
-                            $"program to associate with this extension to open the file. Set the assocaition now?";
+                            $"program to associate with this extension to open the file. Set the association now?";
 
                         var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message);
                         if (result == System.Windows.MessageBoxResult.Yes)

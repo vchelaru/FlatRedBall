@@ -3,14 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPluginsCore.PropertyGrid.Views" xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="400">
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
         <StackPanel>
         
             <wpfdataui:DataUiGrid x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
-            <Button Visibility="{Binding AddVariableVisibility}" Click="AddVariableButtonClick">Add New Variable</Button>
+            <Button Visibility="{Binding AddVariableVisibility}" Click="AddVariableButtonClick" Content="{x:Static localization:Texts.VariableCreate}" />
         </StackPanel>
     </ScrollViewer>
 </UserControl>

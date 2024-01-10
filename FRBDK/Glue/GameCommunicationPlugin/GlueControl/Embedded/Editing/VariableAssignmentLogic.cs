@@ -23,6 +23,8 @@ namespace GlueControl.Editing
 {
     public static class VariableAssignmentLogic
     {
+        const string ProjectNamespace = "{ProjectNamespace}";
+
         public static GlueVariableSetDataResponse SetVariable(GlueVariableSetData data, PositionedObject forcedItem = null)
         {
             object variableValue = ConvertVariableValue(data);
@@ -75,7 +77,7 @@ namespace GlueControl.Editing
 
                 if (isStatic)
                 {
-                    var reflectedElementGameType = typeof(Game1).Assembly.GetType(elementGameType);
+                    var reflectedElementGameType = typeof(VariableAssignmentLogic).Assembly.GetType(elementGameType);
                     if (reflectedElementGameType != null)
                     {
                         var property = reflectedElementGameType.GetProperty(strippedVariableName);
@@ -169,11 +171,18 @@ namespace GlueControl.Editing
             }
             catch (Exception e)
             {
-                response.Exception = e.ToString();
+                response.Exception = ExceptionWithJson(e, data);
+
                 response.WasVariableAssigned = false;
             }
             return response;
         }
+
+        static string ExceptionWithJson(Exception e, object data)
+        {
+            return $"{e.ToString()}\n{data?.GetType().Name}:\n{JsonConvert.SerializeObject(data, Formatting.Indented)}";
+        }
+
 
         private static object SetValueOnObjectInScreen(GlueVariableSetData data, object variableValue, GlueVariableSetDataResponse response, FlatRedBall.Screens.Screen screen)
         {
@@ -195,7 +204,7 @@ namespace GlueControl.Editing
             catch (Exception e)
             {
                 response.WasVariableAssigned = false;
-                response.Exception = e.ToString();
+                response.Exception = ExceptionWithJson(e, data);
             }
 
 
@@ -375,6 +384,35 @@ namespace GlueControl.Editing
 
             #endregion
 
+            #region NOS Properties 
+
+            if (!didAttemptToAssign)
+            {
+                switch (variableName)
+                {
+                    case (nameof(NamedObjectSave.LayerOn)):
+                        targetInstance = targetInstance ?? screen.GetInstanceRecursive(variableName) as INameable;
+                        if (targetInstance != null)
+                        {
+                            didAttemptToAssign = TryMoveInstanceToLayer(targetInstance, variableValue as string, screen);
+                        }
+
+                        break;
+                    case (nameof(NamedObjectSave.AttachToContainer)):
+                        var targetAsPositionedObject = (targetInstance ?? screen.GetInstanceRecursive(variableName)) as PositionedObject;
+                        var variableAsBool = variableValue as bool?;
+                        if (targetAsPositionedObject != null && variableAsBool != null)
+                        {
+                            didAttemptToAssign = TrySetAttachToContainer(targetAsPositionedObject, variableAsBool.Value, screen);
+                        }
+
+                        break;
+
+                }
+            }
+
+            #endregion
+
             if (!didAttemptToAssign)
             {
                 targetInstance = targetInstance ?? screen.GetInstanceRecursive(variableName) as INameable;
@@ -403,6 +441,43 @@ namespace GlueControl.Editing
                 }
 
                 didAttemptToAssign = true;
+            }
+        }
+
+        private static bool TrySetAttachToContainer(PositionedObject targetInstance, bool? v, FlatRedBall.Screens.Screen screen)
+        {
+            // This is complicated - we need to get the instance (named object save), find its container type, and get the instance for that in case this re-runs at the screen
+            // level. That's a huuuuge lift, and this happens so rarely, we may just explicitly return false and log why this is happening for now...
+            return false;
+        }
+
+        private static bool TryMoveInstanceToLayer(INameable targetInstance, string layerName, FlatRedBall.Screens.Screen screen)
+        {
+            var layer = SpriteManager.Layers.FirstOrDefault(item => item.Name == layerName);
+
+            if (targetInstance is FlatRedBall.Sprite targetSprite)
+            {
+                if (layer == null)
+                {
+                    // remove this sprite from all layers
+                    foreach (var existingLayer in SpriteManager.Layers)
+                    {
+                        if (existingLayer.Sprites.Contains(targetSprite))
+                        {
+                            existingLayer.Remove(targetSprite);
+                        }
+                    }
+                }
+                else
+                {
+                    SpriteManager.AddToLayer(targetSprite, layer);
+                }
+                return true;
+            }
+            else
+            {
+                // todo - need to do more work here to support other types
+                return false;
             }
         }
 
@@ -436,10 +511,20 @@ namespace GlueControl.Editing
             // If it's "this.InstanceName.SomeInstanceVariable" then it's > 2 and there is an instance
             if (splitVariable[0] == "this" && splitVariable.Length > 2)
             {
-                targetInstance = GetRuntimeInstance(screen, splitVariable[1]);
+                // If it's "this.InstanceName.SomeVariable" then we just grab the middle "InstanceName"
+                // However, it's possible that Glue sends thigns like "this.InstanceName.SubInstance.VariableName", so 
+                // we need to pass in "InstanceName.SubInstance"
+                var middleVars = splitVariable.Skip(1).Take(splitVariable.Length - 2).ToArray();
+                var middleVarsAsString = string.Join(".", middleVars);
+                targetInstance = GetRuntimeInstanceRecursively(screen, middleVarsAsString);
             }
 
-            if (targetInstance != null && splitVariable[2] == "Points" && variableValue is List<Microsoft.Xna.Framework.Vector2> vectorList)
+            if (splitVariable[0] == "this" && splitVariable.Length == 2)
+            {
+                targetInstance = screen as FlatRedBall.Utilities.INameable;
+            }
+
+            if (targetInstance != null && splitVariable.Length > 2 && splitVariable[2] == "Points" && variableValue is List<Microsoft.Xna.Framework.Vector2> vectorList)
             {
                 variableValue = vectorList.Select(item => new FlatRedBall.Math.Geometry.Point(item.X, item.Y)).ToList();
             }
@@ -447,9 +532,32 @@ namespace GlueControl.Editing
             return targetInstance;
         }
 
-        private static FlatRedBall.Utilities.INameable GetRuntimeInstance(FlatRedBall.Screens.Screen screen, string objectName)
+        public static FlatRedBall.Utilities.INameable GetRuntimeInstanceRecursively(FlatRedBall.Screens.Screen screen, string objectAndSubObjects, object owner = null)
+        {
+            if (objectAndSubObjects.Contains(".") == false)
+            {
+                // no recurisve search necessary:
+                return GetRuntimeInstance(screen, objectAndSubObjects, owner);
+            }
+            else
+            {
+                var directInstanceName = objectAndSubObjects.Substring(0, objectAndSubObjects.IndexOf("."));
+                var remainder = objectAndSubObjects.Substring(directInstanceName.Length + 1);
+
+                var foundInstance = GetRuntimeInstance(screen, directInstanceName, owner);
+
+                return GetRuntimeInstanceRecursively(screen, remainder, foundInstance);
+            }
+        }
+
+        private static FlatRedBall.Utilities.INameable GetRuntimeInstance(FlatRedBall.Screens.Screen screen, string objectName, object owner = null)
         {
             FlatRedBall.Utilities.INameable targetInstance = null;
+
+            if (owner is PositionedObject ownerAsPositionedObject)
+            {
+                targetInstance = ownerAsPositionedObject.Children.FindByName(objectName);
+            }
 
             // This is the most likely to find (and end all other checks) so let's do that first.
             if (targetInstance == null)
@@ -1025,6 +1133,16 @@ namespace GlueControl.Editing
             {
                 convertedValue = TryGetStateValue(type, variableValue);
             }
+            else if (GlueControl.Managers.ObjectFinder.Self.GetEntitySave(variableValue) != null)
+            {
+                // This is an entity type, so we need to convert the string to a type:
+                var entity = GlueControl.Managers.ObjectFinder.Self.GetEntitySave(variableValue);
+
+                var entityName = FlatRedBall.IO.FileManager.RemovePath(entity.Name);
+
+                var entityTypeClass = typeof(VariableAssignmentLogic).Assembly.GetTypes().FirstOrDefault(item => item.FullName.EndsWith("." + type));
+                convertedValue = entityTypeClass?.GetMethod("FromName")?.Invoke(null, new object[] { entityName });
+            }
             else if (type == typeof(List<Microsoft.Xna.Framework.Vector2>).ToString() || type == "List<Vector2>")
             {
                 convertedValue = JsonConvert.DeserializeObject<List<Microsoft.Xna.Framework.Vector2>>(variableValue);
@@ -1139,6 +1257,17 @@ namespace GlueControl.Editing
                         }
 
                         break;
+                    case "byte":
+                    case "System.Byte":
+                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = byte.Parse(variableValue);
+                        }
+                        else
+                        {
+                            convertedValue = 0;
+                        }
+                        break;
 
                     case "bool":
                     case nameof(Boolean):
@@ -1153,6 +1282,17 @@ namespace GlueControl.Editing
                             convertedValue = false;
                         }
                         break;
+                    case "bool?":
+                    case "Nullable<Boolean>":
+                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = bool.Parse(variableValue.ToLowerInvariant());
+                        }
+                        else
+                        {
+                            convertedValue = (bool?)null;
+                        }
+                        break;
                     case "double":
                     case nameof(Double):
                     case "System.Double":
@@ -1164,6 +1304,18 @@ namespace GlueControl.Editing
                         else
                         {
                             convertedValue = 0.0;
+                        }
+                        break;
+                    case "decimal":
+                    case nameof(Decimal):
+                    case "System.Decimal":
+                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = decimal.Parse(variableValue);
+                        }
+                        else
+                        {
+                            convertedValue = 0m;
                         }
                         break;
                     case "Microsoft.Xna.Framework.Color":
@@ -1184,8 +1336,19 @@ namespace GlueControl.Editing
                         {
                             if (!string.IsNullOrWhiteSpace(variableValue))
                             {
-                                convertedValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
-                                    variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                                convertedValue = GetFileFromUnqualifiedName(variableValue);
+
+                                if(convertedValue == null && variableValue.Contains(".") == false)
+                                {
+                                    // This is an unqualified name, without any suffix. We need to try to find an RFS and qualify it:
+                                    variableValue = TryQualifyFromRfs(variableValue);
+                                }
+
+                                if (convertedValue == null)
+                                {
+                                    convertedValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
+                                        variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                                }
                             }
                             else
                             {
@@ -1201,6 +1364,13 @@ namespace GlueControl.Editing
                             {
                                 // try unqualified first:
                                 convertedValue = GetFileFromUnqualifiedName(variableValue);
+
+                                if (convertedValue == null && variableValue.Contains(".") == false)
+                                {
+                                    // This is an unqualified name, without any suffix. We need to try to find an RFS and qualify it:
+                                    variableValue = TryQualifyFromRfs(variableValue);
+                                }
+
                                 if (convertedValue == null)
                                 {
                                     convertedValue = FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(
@@ -1243,13 +1413,37 @@ namespace GlueControl.Editing
                     {
                         return (T)(object)parsedInt;
                     }
-                    return default(T);
+#if MONOGAME_381 || FNA
+                    else if (Enum.TryParse(typeof(T), asString, out object parsedAsObject))
+                    {
+                        return (T)parsedAsObject;
+                    }
+#endif
+                    else
+                    {
+                        return default(T);
+                    }
                 }
             }
 
             return convertedValue;
         }
 
+        private static string TryQualifyFromRfs(string variableValue)
+        {
+            var currentScreen = GlueControl.Managers.GlueState.Self.CurrentElement as GlueControl.Models.ScreenSave;
+
+            var rfs = currentScreen.GetReferencedFileSaveRecursively(variableValue);
+
+            if (rfs != null)
+            {
+                // todo - do we care about content pipeline? Technically yes, this could be used, but
+                // content pipeline tends to be avoided in general, and FNA will completely remove its use,
+                // so Vic believes this is low priority.
+                variableValue = "content/" + rfs.Name;
+            }
+            return variableValue;
+        }
 
         private static object TryGetStateValue(string type, string variableValue)
         {
@@ -1294,8 +1488,7 @@ namespace GlueControl.Editing
             qualifiedTypeName = string.Join(".", splitType.Take(splitType.Length - 1).ToArray()) + "+" +
                 splitType.Last();
 
-            var gameType = typeof(Game1).FullName.Split('.');
-            if (splitType[0] != gameType[0])
+            if (splitType[0] != ProjectNamespace)
             {
                 // The qualifiedTypeName could be in one of two formats.
                 // One is the Type.FullName which would appear as follows:
@@ -1307,7 +1500,7 @@ namespace GlueControl.Editing
                 // should tolerate that too. Infact, I question whether we even
                 // need the root namespace prefix. By supporting both we can incrementally
                 // refactor if that becomes the preferred way to do it.
-                qualifiedTypeName = gameType[0] + '.' + qualifiedTypeName;
+                qualifiedTypeName = ProjectNamespace + '.' + qualifiedTypeName;
             }
 
             var stateType = typeof(VariableAssignmentLogic).Assembly.GetType(qualifiedTypeName);

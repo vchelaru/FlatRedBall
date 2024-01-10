@@ -76,6 +76,13 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls.Generatio
                                 Name = "updateUi",
                                 DefaultValue = "true",
                                 IsParameterUsedByGlue = true
+                            },
+                            new Parameter
+                            {
+                                Type = "bool",
+                                Name = "recordUndo",
+                                DefaultValue = "true",
+                                IsParameterUsedByGlue = true
                             }
                         },
                 AddEchoToGame = true
@@ -126,6 +133,13 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls.Generatio
                             {
                                 Type = "bool",
                                 Name = "updateUi",
+                                DefaultValue = "true",
+                                IsParameterUsedByGlue = true
+                            },
+                            new Parameter
+                            {
+                                Type = "bool",
+                                Name = "recordUndo",
                                 DefaultValue = "true",
                                 IsParameterUsedByGlue = true
                             }

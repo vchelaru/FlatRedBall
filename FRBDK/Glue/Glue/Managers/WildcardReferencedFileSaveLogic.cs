@@ -72,7 +72,7 @@ namespace FlatRedBall.Glue.Managers
         }
 
 
-        private static List<FilePath> GetFilesForWildcard(FilePath filePath)
+        public static List<FilePath> GetFilesForWildcard(FilePath filePath)
         {
             FilePath directoryWithNoWildcard = filePath;
             while (directoryWithNoWildcard.FullPath.Contains("*"))

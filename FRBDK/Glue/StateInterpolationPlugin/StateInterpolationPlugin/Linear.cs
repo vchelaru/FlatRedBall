@@ -6,24 +6,24 @@ namespace FlatRedBall.Glue.StateInterpolation
 {
     public static class Linear
     {
-        public static float EaseNone(float t, float b, float c, float d)
+        public static float EaseNone(float timeElapsed, float startingValue, float amountToAdd, float durationInSeconds)
         {
-            return c * t / d + b;
+            return amountToAdd * timeElapsed / durationInSeconds + startingValue;
         }
 
-        public static float EaseIn(float t, float b, float c, float d)
+        public static float EaseIn(float timeElapsed, float startingValue, float amountToAdd, float durationInSeconds)
         {
-            return c * t / d + b;
+            return amountToAdd * timeElapsed / durationInSeconds + startingValue;
         }
 
-        public static float EaseOut(float t, float b, float c, float d)
+        public static float EaseOut(float timeElapsed, float startingValue, float amountToAdd, float durationInSeconds)
         {
-            return c * t / d + b;
+            return amountToAdd * timeElapsed / durationInSeconds + startingValue;
         }
 
-        public static float EaseInOut(float t, float b, float c, float d)
+        public static float EaseInOut(float timeElapsed, float startingValue, float amountToAdd, float durationInSeconds)
         {
-            return c * t / d + b;
+            return amountToAdd * timeElapsed / durationInSeconds + startingValue;
 	    }
     }
 }

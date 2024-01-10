@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.UnreferencedFiles;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.UnreferencedFiles
 {
@@ -16,7 +13,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.UnreferencedFiles
 
         public override void StartUp()
         {
-            AddMenuItemTo("View Unreferenced Files", HandleScanForUnreferencedFiles, "Content");
+            AddMenuItemTo(L.Texts.ViewUnreferencedFiles, L.MenuIds.ViewUnreferencedFilesId, HandleScanForUnreferencedFiles, L.MenuIds.ContentId);
         }
 
         private void HandleScanForUnreferencedFiles(object sender, EventArgs args)
@@ -25,11 +22,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.UnreferencedFiles
             {
                 view = new UnreferencedFilesView();
 
-                UnreferencedFilesViewModel viewModel = new UnreferencedFilesViewModel();
+                var viewModel = new UnreferencedFilesViewModel();
 
                 view.DataContext = viewModel;
 
-                tab = CreateTab(view, "Unreferenced Files");
+                tab = CreateTab(view, L.Texts.UnreferencedFiles);
 
                 // It refreshes itself when the radio button is set when the view is created,
                 // so we don't need to:

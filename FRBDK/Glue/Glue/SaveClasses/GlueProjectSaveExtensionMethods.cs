@@ -99,7 +99,7 @@ namespace FlatRedBall.Glue.SaveClasses
             
         }
 
-        public static ReferencedFileSave AddReferencedFileSave(IElement element, string directoryPath, 
+        public static ReferencedFileSave AddReferencedFileSave(GlueElement element, string directoryPath, 
             string fileName, 
             AssetTypeInfo resultAssetTypeInfo, object option, out string errorMessage)
         {
@@ -180,7 +180,12 @@ namespace FlatRedBall.Glue.SaveClasses
                 // to the code that adds existing
                 // files now that we have a file and
                 // that's exactly what we're doing.
-                rfs = AddExistingFileManager.Self.AddSingleFile(createdFile, ref userCancelled, option, elementToAddTo:element);
+                rfs = AddExistingFileManager.Self.AddSingleFile(createdFile, ref userCancelled, option, elementToAddTo:element, forcedAti:resultAssetTypeInfo);
+
+                if(resultAssetTypeInfo?.QualifiedRuntimeTypeName.QualifiedType != null && rfs.RuntimeType != resultAssetTypeInfo.QualifiedRuntimeTypeName.QualifiedType)
+                {
+                    rfs.RuntimeType = resultAssetTypeInfo.QualifiedRuntimeTypeName.QualifiedType;
+                }
 
                 if (rfs == null && !userCancelled)
                 {
@@ -341,7 +346,7 @@ namespace FlatRedBall.Glue.SaveClasses
             });
         }
 
-        public static void FixAllTypes(this GlueProjectSave instance)
+        public static void FixAllTypesPostLoad(this GlueProjectSave instance)
         {
             foreach (EntitySave entitySave in instance.Entities)
             {
@@ -411,7 +416,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     GlueProjectSave savedOld = ObjectFinder.Self.GlueProject;
                     ObjectFinder.Self.GlueProject = otherGlueProjectSave;
-                    otherGlueProjectSave.FixAllTypes();
+                    otherGlueProjectSave.FixAllTypesPostLoad();
+                    otherGlueProjectSave.FixNamedObjects();
+
 
                     ObjectFinder.Self.GlueProject = savedOld;
 
@@ -527,6 +534,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+
         public static void FixNamedObjects(this GlueProjectSave glueProjectSave)
         {
             glueProjectSave.SearchForDuplicateNamedObjects();
@@ -535,7 +543,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             glueProjectSave.FixAttachmentProperties();
 
-            glueProjectSave.FixMissingDerivedNamedObjects();
+            glueProjectSave.FixMissingDerivedNamedObjectsAndVariables();
         }
 
 
@@ -586,15 +594,15 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static void FixMissingDerivedNamedObjects(this GlueProjectSave instance)
+        public static void FixMissingDerivedNamedObjectsAndVariables(this GlueProjectSave instance)
         {
             foreach (var screen in instance.Screens)
             {
-                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(screen);
+                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(screen, showPopupAboutObjectErrors:false);
             }
             foreach (var entity in instance.Entities)
             {
-                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(entity);
+                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(entity, showPopupAboutObjectErrors:false);
             }
         }
     }

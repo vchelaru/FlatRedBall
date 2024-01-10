@@ -17,6 +17,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Managers;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue
 {
@@ -61,6 +62,11 @@ namespace FlatRedBall.Glue
                     }
                 }
             }
+        }
+
+        public static async Task GenerateAndSaveDataClassAsync(ReferencedFileSave rfs, AvailableDelimiters delimiter)
+        {
+            await TaskManager.Self.AddAsync(() => GenerateAndSaveDataClass(rfs, delimiter), "GenerateAndSaveDataClassAsync " + rfs);
         }
 
         public static void GenerateAndSaveDataClass(ReferencedFileSave rfs, AvailableDelimiters delimiter)
@@ -139,7 +145,7 @@ namespace FlatRedBall.Glue
         {
             valueType = referencedFileSave.GetTypeForCsvFile();
 
-            // To know the value type, we gotta pop this bad boy open and find the first requied type
+            // To know the value type, we got to pop this file open and find the first required type
             keyType = null;
 
             char oldDelimiter = CsvFileManager.Delimiter;
@@ -244,8 +250,7 @@ namespace FlatRedBall.Glue
             if (succeeded)
             {
 
-                ICodeBlock codeContent = CodeWriter.CreateClass(ProjectManager.ProjectNamespace + ".DataTypes", className, true, members,
-                    false, new List<string>(), untypedMembers, codeBlock);
+                ICodeBlock codeContent = CodeWriter.CreateClass(ProjectManager.ProjectNamespace + ".DataTypes", className, true, members, false, new List<string>(), untypedMembers, codeBlock);
 
 
                 if (rfs != null)
@@ -424,7 +429,7 @@ namespace FlatRedBall.Glue
 
                     if (foundRfs == null)
                     {
-                        int m = 3;
+                        // do we want to have an error here?
                     }
                     else
                     {

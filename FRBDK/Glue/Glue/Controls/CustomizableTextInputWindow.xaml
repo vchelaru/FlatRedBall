@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              Width="300" SizeToContent="Height">
     <Grid Margin="3" Height="Auto">
@@ -15,9 +15,9 @@
         </Grid.RowDefinitions>
         <StackPanel x:Name="AboveTextBoxStackPanel"></StackPanel>
         <StackPanel Grid.Row="1" x:Name="TextBoxStackPanel">
-            <Label x:Name="Label">Label1</Label>
+            <TextBlock x:Name="Label" TextWrapping="Wrap" Text="{x:Static localization:Texts.Label}" />
             <TextBox x:Name="TextBox" KeyDown="TextBox_KeyDown" TextChanged="TextBox_TextChanged" ></TextBox>
-            <TextBlock x:Name="ValidationLabel" Foreground="DarkRed" FontSize="10" Margin="3,0,0,0" TextWrapping="Wrap">This is validation text which is really long so that it line wraps okay? Yes, it should...</TextBlock>
+            <TextBlock x:Name="ValidationLabel" Foreground="DarkRed" FontSize="10" Margin="3,0,0,0" TextWrapping="Wrap" Text="{x:Static localization:Texts.ValidationTextForWrapping}" />
         </StackPanel>
         <StackPanel x:Name="BelowTextBoxStackPanel"
                     Grid.Row="2"></StackPanel>
@@ -25,8 +25,8 @@
                     Grid.Row="3"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right">
-            <Button Width="70" Margin="0,0,6,0" Click="OkButton_Click">OK</Button>
-            <Button Width="70" Click="CancelButton_Click">Cancel</Button>
+            <Button Width="70" Margin="0,0,6,0" Click="OkButton_Click" Content="{x:Static localization:Texts.Ok}" />
+            <Button Width="70" Click="CancelButton_Click" Content="{x:Static localization:Texts.Cancel}" />
         </StackPanel>
     </Grid>
 </Window>

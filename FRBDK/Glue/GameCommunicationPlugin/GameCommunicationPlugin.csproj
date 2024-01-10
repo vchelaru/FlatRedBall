@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU</Platforms>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -67,6 +66,8 @@
   <ItemGroup>
     <None Remove="GlueControl\Icons\AdvanceOneFrame.png" />
     <None Remove="GlueControl\Icons\build.png" />
+    <None Remove="GlueControl\Icons\Connected.png" />
+    <None Remove="GlueControl\Icons\Disconnected.png" />
     <None Remove="GlueControl\Icons\Edit.png" />
     <None Remove="GlueControl\Icons\EditDeselected.png" />
     <None Remove="GlueControl\Icons\FirewallEnablePopup.png" />
@@ -151,6 +152,8 @@
   <ItemGroup>
     <Resource Include="GlueControl\Icons\AdvanceOneFrame.png" />
     <Resource Include="GlueControl\Icons\build.png" />
+    <Resource Include="GlueControl\Icons\Connected.png" />
+    <Resource Include="GlueControl\Icons\Disconnected.png" />
     <Resource Include="GlueControl\Icons\Edit.png" />
     <Resource Include="GlueControl\Icons\EditDeselected.png" />
     <Resource Include="GlueControl\Icons\FirewallEnablePopup.png" />
@@ -188,10 +191,11 @@
 
   <ItemGroup>
     <Folder Include="GlueControl\Models\" />
+    <Folder Include="GlueControl\Profiling\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo Creating $(SolutionDir)Glue\bin\x86\Debug\Plugins\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\Debug\Plugins\&quot; md &quot;$(SolutionDir)Glue\bin\Debug\Plugins\&quot;&#xD;&#xA;&#xD;&#xA;echo $(TargetDir)&#xD;&#xA;&#xD;&#xA;echo creating $(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\&quot; md &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\&quot;&#xD;&#xA;echo copy $(TargetDir)GameCommunicationPlugin.dll to $(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\GameCommunicationPlugin.dll&#xD;&#xA;copy &quot;$(TargetDir)GameCommunicationPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\GameCommunicationPlugin.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)GameCommunicationPlugin.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\GameCommunicationPlugin.pdb&quot;&#xD;&#xA;copy &quot;$(TargetDir)CompilerLibrary.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\CompilerLibrary.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)CompilerLibrary.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\CompilerLibrary.pdb&quot;" />
+    <Exec Command="echo Creating $(SolutionDir)Glue\bin\x86\Debug\Plugins\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\Debug\Plugins\&quot; md &quot;$(SolutionDir)Glue\bin\Debug\Plugins\&quot;&#xD;&#xA;&#xD;&#xA;echo $(TargetDir)&#xD;&#xA;&#xD;&#xA;echo creating $(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\&quot; md &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\&quot;&#xD;&#xA;echo copy $(TargetDir)GameCommunicationPlugin.dll to $(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\GameCommunicationPlugin.dll&#xD;&#xA;copy &quot;$(TargetDir)GameCommunicationPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\GameCommunicationPlugin.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)GameCommunicationPlugin.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\GameCommunicationPlugin.pdb&quot;&#xD;&#xA;&#xD;&#xA;rem This is handled by the compiler plugin, so don't do this since it results in a duplicte load:&#xD;&#xA;rem copy &quot;$(TargetDir)CompilerLibrary.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\CompilerLibrary.dll&quot;&#xD;&#xA;rem copy &quot;$(TargetDir)CompilerLibrary.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GameCommunicationPlugin\CompilerLibrary.pdb&quot;" />
   </Target>
 
 </Project>

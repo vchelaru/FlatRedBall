@@ -361,7 +361,7 @@ namespace FlatRedBall.PropertyGrid
 
 #if DEBUG
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (fieldInfo == null)
                 {

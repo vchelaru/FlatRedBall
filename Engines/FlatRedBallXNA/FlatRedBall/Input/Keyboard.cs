@@ -44,7 +44,7 @@ namespace FlatRedBall.Input
 
         public bool AutomaticallyPushEventsToInputReceiver { get; set; } = true;
 
-        public bool IsShiftDown => KeyDown(Keys.LeftShift) || KeyDown(Keys.LeftShift);
+        public bool IsShiftDown => KeyDown(Keys.LeftShift) || KeyDown(Keys.RightShift);
         public bool IsCtrlDown => KeyDown(Keys.LeftControl) || KeyDown(Keys.RightControl);
         public bool IsControlDown => IsCtrlDown;
         public bool IsAltDown => KeyDown(Keys.LeftAlt) || KeyDown(Keys.RightAlt);
@@ -292,7 +292,7 @@ namespace FlatRedBall.Input
                 )
             {
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
                 bool isSTAThreadUsed =
                     System.Threading.Thread.CurrentThread.GetApartmentState() == System.Threading.ApartmentState.STA;
 
@@ -326,13 +326,7 @@ namespace FlatRedBall.Input
 
         public bool IsKeyLetter(Keys key)
         {
-#if FRB_MDX
-            return (key >= Keys.Q && key <= Keys.P) ||
-                (key >= Keys.A && key <= Keys.L) ||
-                (key >= Keys.Z && key <= Keys.M);
-#else
             return key >= Keys.A && key <= Keys.Z;
-#endif
         }
         
 
@@ -632,7 +626,7 @@ namespace FlatRedBall.Input
         {
             bool isShiftDown = KeyDown(Keys.LeftShift) || KeyDown(Keys.RightShift);
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
             if (System.Windows.Forms.Control.IsKeyLocked(System.Windows.Forms.Keys.CapsLock))
             {
                 isShiftDown = !isShiftDown;
@@ -705,10 +699,10 @@ namespace FlatRedBall.Input
             }
         }
 
-        IPressableInput IInputDevice.DefaultUpPressable => GetKey(Keys.W); 
-        IPressableInput IInputDevice.DefaultDownPressable => GetKey(Keys.S); 
-        IPressableInput IInputDevice.DefaultLeftPressable => GetKey(Keys.A); 
-        IPressableInput IInputDevice.DefaultRightPressable => GetKey(Keys.D); 
+        IRepeatPressableInput IInputDevice.DefaultUpPressable => GetKey(Keys.W);
+        IRepeatPressableInput IInputDevice.DefaultDownPressable => GetKey(Keys.S);
+        IRepeatPressableInput IInputDevice.DefaultLeftPressable => GetKey(Keys.A);
+        IRepeatPressableInput IInputDevice.DefaultRightPressable => GetKey(Keys.D); 
 
         I1DInput IInputDevice.DefaultHorizontalInput => Get1DInput(Keys.A, Keys.D);
 

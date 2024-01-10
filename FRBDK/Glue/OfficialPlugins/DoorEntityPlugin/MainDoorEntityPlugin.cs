@@ -71,9 +71,9 @@ namespace OfficialPlugins.DoorEntityPlugin
         {
             var canAdd =
                 !HasDoorEntity &&
-                !rightClickedTreeNode.IsChildOfGlobalContent() &&
-                !rightClickedTreeNode.Root.IsRootScreenNode()
-                ;
+                rightClickedTreeNode.IsRootEntityNode();
+
+
             if (canAdd)
             {
                 listToAddTo.Add("Add DoorEntity", (not, used) => AddDoorEntity());
@@ -222,7 +222,8 @@ namespace OfficialPlugins.DoorEntityPlugin
 
             var newEntity = await CreateEntitySave();
 
-            await CreateEntityListInGameScreen(newEntity);
+            // now this is automatic:
+            //await CreateEntityListInGameScreen(newEntity);
 
             await CreateWidthHeightVariables(newEntity);
 
@@ -240,6 +241,7 @@ namespace OfficialPlugins.DoorEntityPlugin
             if (gameScreen != null)
             {
                 var addObjectVm = new AddObjectViewModel();
+                addObjectVm.ForcedElementToAddTo = gameScreen;
                 addObjectVm.SourceType = FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType;
                 addObjectVm.SourceClassType = AvailableAssetTypes.CommonAtis.PositionedObjectList.RuntimeTypeName;
                 addObjectVm.SourceClassGenericType = newEntity.Name;
@@ -257,6 +259,7 @@ namespace OfficialPlugins.DoorEntityPlugin
             vm.IsAxisAlignedRectangleChecked = true;
             vm.IsICollidableChecked = true;
             vm.IsCreateFactoryChecked = true;
+            vm.IncludeListsInScreens = true;
 
             var newEntity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(vm);
             return newEntity;
@@ -340,7 +343,7 @@ namespace OfficialPlugins.DoorEntityPlugin
         {
             var viewModel = new AddEventViewModel();
             viewModel.BeforeOrAfter = BeforeOrAfter.Before;
-            viewModel.DesiredEventType = FlatRedBall.Glue.Controls.CustomEventType.Exposed;
+            viewModel.DesiredEventType = CustomEventType.Exposed;
             viewModel.EventName = "PlayerListVsDoorEntityListCollisionOccurred";
             viewModel.TunnelingEvent = "CollisionOccurred";
             viewModel.TunnelingObject = "PlayerListVsDoorEntityList";

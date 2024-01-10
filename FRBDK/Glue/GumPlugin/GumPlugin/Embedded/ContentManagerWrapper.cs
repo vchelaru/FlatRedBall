@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RenderingLibrary.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,30 +13,6 @@ namespace FlatRedBall.Gum
             get;
             set;
         }
-        public T TryGetCachedDisposable<T>(string contentName)
-        {
-            var contentManager = FlatRedBall.FlatRedBallServices.GetContentManagerByName(ContentManagerName);
-
-            if (contentManager.IsAssetLoadedByName<T>(contentName))
-            {
-                return contentManager.Load<T>(contentName);
-            }
-            else
-            {
-                return default(T);
-            }
-        }
-
-        public void AddDisposable(string contentName, IDisposable disposable)
-        {
-            var contentManager = FlatRedBall.FlatRedBallServices.GetContentManagerByName(ContentManagerName);
-
-            contentManager.AddDisposable(contentName, disposable);
-        }
-
-
-
-
 
         public T TryLoadContent<T>(string contentName)
         {
@@ -48,9 +25,9 @@ namespace FlatRedBall.Gum
                     RenderingLibrary.Graphics.AtlasedTexture toReturn = new RenderingLibrary.Graphics.AtlasedTexture(
                         frbAtlasedTexture.Name,
                         frbAtlasedTexture.Texture,
-                        frbAtlasedTexture.SourceRectangle,
-                        frbAtlasedTexture.Size,
-                        frbAtlasedTexture.Origin,
+                        frbAtlasedTexture.SourceRectangle.ToSystemDrawing(),
+                        frbAtlasedTexture.Size.ToSystemNumerics(),
+                        frbAtlasedTexture.Origin.ToSystemNumerics(),
                         frbAtlasedTexture.IsRotated
                         );
 

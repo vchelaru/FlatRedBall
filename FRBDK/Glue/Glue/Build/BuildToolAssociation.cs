@@ -91,6 +91,16 @@ namespace EditorObjects.SaveClasses
             set;
         }
 
+        public string ExampleCommandLine
+        {
+            get
+            {
+                var executable = GetExecutable();
+                var arguments = GetArguments($"c:\\Input.{SourceFileType}", $"c:\\Output.{DestinationFileType}", null);
+                return $"{GetExecutable()} {arguments}";
+            }
+        }
+
         #endregion
 
         public BuildToolAssociation()
@@ -104,14 +114,8 @@ namespace EditorObjects.SaveClasses
         }
 
 
-        public string PerformBuildOn(string sourceFile, string destinationFile, string additionalArguments,
-            Action<string> printOutput, Action<string> printError)
-        {
-            return PerformBuildOn(sourceFile, destinationFile, additionalArguments, printOutput, printError, false);
-        }
-
         public string PerformBuildOn(string absoluteSourceFile, string absoluteDestinationFile, string additionalArguments, 
-            Action<string> printOutput, Action<string> printError, bool runAsync)
+            Action<string> printOutput, Action<string> printError, bool runAsync = false)
         {
             if (FileManager.IsRelative(absoluteSourceFile))
             {
@@ -126,40 +130,33 @@ namespace EditorObjects.SaveClasses
 
             string errorString = "";
 
-            string executable = BuildToolProcessed;
-
-            if (FileManager.IsRelative(executable))
-            {
-                executable = FileManager.RelativeDirectory + executable;
-            }
-
+            string executable = GetExecutable();
+            string arguments = GetArguments(absoluteSourceFile, absoluteDestinationFile, additionalArguments);
             if (!File.Exists(executable))
             {
-                errorString = "Could not find the tool " + executable;
+                var removed = FileManager.RemoveDotDotSlash(executable);
+
+                if(removed != executable)
+                {
+                    errorString = $"Error trying to build\n{absoluteSourceFile}\nCould not find the tool:\n{removed}\noriginal:\n{executable}";
+                }
+                else
+                {
+                    errorString = "Could not find the tool " + executable;
+                }
             }
             else
             {
-
-                absoluteSourceFile = FileManager.Standardize(absoluteSourceFile).Replace("/", "\\");
-                absoluteDestinationFile = FileManager.Standardize(absoluteDestinationFile).Replace("/", "\\");
-
-                string destinationDirectory = FileManager.GetDirectory(absoluteDestinationFile);
-
-                if (!System.IO.Directory.Exists(destinationDirectory))
-                {
-                    System.IO.Directory.CreateDirectory(destinationDirectory);
-                }
-
-
-                string arguments = GetArgumentsForProcess(absoluteSourceFile, absoluteDestinationFile, additionalArguments);
-
-
-                Process process = CreateProcess("\"" + executable + "\"", arguments);
+                Process process = CreateProcess("\"" + executable + "\"", arguments, FileManager.GetDirectory(absoluteSourceFile));
 
                 if (printOutput != null)
                 {
                     printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
                 }
+
+                absoluteSourceFile = FileManager.Standardize(absoluteSourceFile).Replace("/", "\\");
+                absoluteDestinationFile = FileManager.Standardize(absoluteDestinationFile).Replace("/", "\\");
+
 
                 if (runAsync)
                 {
@@ -171,12 +168,41 @@ namespace EditorObjects.SaveClasses
                     errorString = RunProcess(absoluteSourceFile, absoluteDestinationFile, printOutput, printError, errorString, executable, process);
                 }
             }
-            
+
 
             return errorString;
         }
 
-        private static Process CreateProcess(string executable, string arguments)
+        private string GetArguments(string absoluteSourceFile, string absoluteDestinationFile, string additionalArguments)
+        {
+            absoluteSourceFile = FileManager.Standardize(absoluteSourceFile).Replace("/", "\\");
+            absoluteDestinationFile = FileManager.Standardize(absoluteDestinationFile).Replace("/", "\\");
+
+            string destinationDirectory = FileManager.GetDirectory(absoluteDestinationFile);
+
+            if (!System.IO.Directory.Exists(destinationDirectory))
+            {
+                System.IO.Directory.CreateDirectory(destinationDirectory);
+            }
+
+
+            string arguments = GetArgumentsForProcess(absoluteSourceFile, absoluteDestinationFile, additionalArguments);
+            return arguments;
+        }
+
+        private string GetExecutable()
+        {
+            string executable = BuildToolProcessed;
+
+            if (!string.IsNullOrEmpty(executable) && FileManager.IsRelative(executable))
+            {
+                executable = FileManager.RelativeDirectory + executable;
+            }
+
+            return executable;
+        }
+
+        private static Process CreateProcess(string executable, string arguments, string workingDirectory)
         {
             Process process = new Process();
 
@@ -188,6 +214,7 @@ namespace EditorObjects.SaveClasses
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.CreateNoWindow = true;
 
+            process.StartInfo.WorkingDirectory = workingDirectory;
 
             return process;
         }

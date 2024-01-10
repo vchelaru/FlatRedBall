@@ -11,11 +11,9 @@ namespace FlatRedBall.Utilities
     #endregion
     public interface ITimed
     {
-        #region XML Docs
         /// <summary>
         /// The time associated with the object.
         /// </summary>
-        #endregion
         double Time { get; set;}
     }
 }

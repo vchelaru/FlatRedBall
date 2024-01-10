@@ -1,19 +1,11 @@
 ﻿
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using GlueFormsCore.Extensions;
 using GlueFormsCore.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -23,7 +15,6 @@ namespace FlatRedBall.Glue.Controls
     public partial class AddVariableWindowWpf : Window
     {
         AddCustomVariableViewModel ViewModel => DataContext as AddCustomVariableViewModel;
-        GlueElement element;
 
         public AddVariableWindowWpf()
         {
@@ -35,8 +26,7 @@ namespace FlatRedBall.Glue.Controls
                 {
                     NewVariableTextBox.Focus();
                 }
-
-                this.MoveToCursor();
+                GlueCommands.Self.DialogCommands.MoveToCursor(this);
 
             };
         }
@@ -44,7 +34,19 @@ namespace FlatRedBall.Glue.Controls
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
+            HandleOkClicked();
+        }
+
+        private void HandleOkClicked()
+        {
+            if(!string.IsNullOrEmpty(ViewModel.FailureText))
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(ViewModel.FailureText);
+            }
+            else
+            {
+                this.DialogResult = true;
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -62,7 +64,7 @@ namespace FlatRedBall.Glue.Controls
             if (e.Key == Key.Enter)
             {
                 e.Handled = true;
-                this.DialogResult = true;
+                HandleOkClicked();
             }
             else if (e.Key == Key.Escape)
             {

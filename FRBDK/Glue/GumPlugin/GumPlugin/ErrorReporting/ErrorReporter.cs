@@ -1,4 +1,6 @@
 ﻿using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
 using Gum.DataTypes;
 using GumPlugin.Managers;
 using GumPluginCore.Managers;
@@ -6,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FrbObjectFinder = FlatRedBall.Glue.Elements.ObjectFinder;
 
 namespace GumPluginCore.ErrorReporting
 {
@@ -17,7 +20,37 @@ namespace GumPluginCore.ErrorReporting
 
             FillWithSameNamedAnimationsAndCategories(errors);
 
+            FillWithReferencedFilesNotInGumx(errors);
+
             return errors.ToArray();
+        }
+
+        private void FillWithReferencedFilesNotInGumx(List<ErrorViewModel> errors)
+        {
+            var allReferencedFiles = FrbObjectFinder.Self.GetAllReferencedFiles();
+            var gumProject = AppState.Self.GumProjectSave;
+            var gumProjectFolder = AppState.Self.GumProjectFolder;
+
+            foreach (var rfs in allReferencedFiles)
+            {
+                var extension = FileManager.GetExtension(rfs.Name);
+                if(extension == "gusx")
+                {
+                    // is it referenced?
+                    var absoluteFile = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+
+                    var relativeToGumFolder = absoluteFile.RemoveExtension().RelativeTo(gumProjectFolder).Substring("Screens/".Length);
+
+                    var references = gumProject.ScreenReferences.Any(item => item.Name.ToLowerInvariant() == relativeToGumFolder.ToLowerInvariant());
+
+                    if(!references)
+                    {
+                        // we have a problem!
+                        var vm = new ReferencedFileNotInGumxViewModel(absoluteFile);
+                        errors.Add(vm);
+                    }
+                }
+            }
         }
 
         private void FillWithSameNamedAnimationsAndCategories(List<ErrorViewModel> errors)

@@ -76,7 +76,7 @@ namespace EntityInputMovementPlugin
 
             if (didChangeGlux)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
 
             var firstPlatformerEntity = GlueState.Self.CurrentGlueProject.Entities.FirstOrDefault(item =>
@@ -233,11 +233,25 @@ namespace EntityInputMovementPlugin
 
         public void MakeCurrentEntityPlatformer()
         {
+            mainViewModel.PlatformerViewModel.BackingData = GlueState.Self.CurrentEntitySave;
+            mainViewModel.PlatformerViewModel.IsPlatformer = true;
+        }
+
+        public void MakeEntityPlatformer(EntitySave entity)
+        {
+            mainViewModel.PlatformerViewModel.BackingData = entity;
             mainViewModel.PlatformerViewModel.IsPlatformer = true;
         }
 
         public void MakeCurrentEntityTopDown()
         {
+            mainViewModel.TopDownViewModel.BackingData = GlueState.Self.CurrentEntitySave;
+            mainViewModel.TopDownViewModel.IsTopDown = true;
+        }
+
+        public void MakeEntityTopDown(EntitySave entity)
+        {
+            mainViewModel.TopDownViewModel.BackingData = entity;
             mainViewModel.TopDownViewModel.IsTopDown = true;
         }
     }

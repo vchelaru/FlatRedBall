@@ -18,7 +18,7 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
             topBlock.Line("using System.Linq;");
 
             var namespaceBlock = topBlock.Namespace( GlueState.Self.ProjectNamespace);
-            var classBlock = namespaceBlock.Class("public partial", "Game1");
+            var classBlock = namespaceBlock.Class("public partial", GlueState.Self.CurrentGlueProject.CustomGameClass ?? "Game1");
 
             GenerateClassScope(classBlock);
 
@@ -76,7 +76,7 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
             var gluxVersion = GlueState.Self.CurrentGlueProject.FileVersion;
             if(gluxVersion>= (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly)
             {
-                method.Line("GlobalContent.Initialize();");
+                method.Line($"{GlueState.Self.ProjectNamespace}.GlobalContent.Initialize();");
             }
 
             foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.StandardGenerated))

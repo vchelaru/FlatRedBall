@@ -105,6 +105,7 @@
       <HintPath>Libraries\iOS\Debug\StateInterpolation.iOS.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />

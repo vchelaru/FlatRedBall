@@ -213,16 +213,24 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void GenerateSetGumResolutionValues(ICodeBlock codeblock)
         {
+            codeblock.Line("/// <summary>");
+            codeblock.Line("/// Sets the Gum GraphicalUiElement's CanvasWidth and CanvasHeight as well as all Layer Zoom values.");
+            codeblock.Line("/// </summary>");
             var functionBlock = codeblock.Function("public static void", "ResetGumResolutionValues", "");
-            var gumIfBlock = functionBlock.If("Data.ResizeBehaviorGum == ResizeBehavior.IncreaseVisibleArea");
+            var gumIfIncreaseAreaBlock = functionBlock.If("Data.ResizeBehaviorGum == ResizeBehavior.IncreaseVisibleArea");
 
             //gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / (Data.Scale / 100.0f);");
             //gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.DestinationRectangle.Width / (Data.Scale / 100.0f);");
-            gumIfBlock.Line("global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = Data.Scale/100.0f;");
-            gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = Gum.Managers.ObjectFinder.Self.GumProjectSave.DefaultCanvasWidth;");
-            gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = Gum.Managers.ObjectFinder.Self.GumProjectSave.DefaultCanvasHeight; ");
+            gumIfIncreaseAreaBlock.Line("global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = Data.Scale/100.0f;");
 
-            var gumElseBlock = gumIfBlock.End().Else();
+            // Don't use DefaultCanvasWidth and DefaultCanvasHeight, that wouldn't be responding to size:
+            //gumIfIncreaseAreaBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = Gum.Managers.ObjectFinder.Self.GumProjectSave.DefaultCanvasWidth;");
+            //gumIfIncreaseAreaBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = Gum.Managers.ObjectFinder.Self.GumProjectSave.DefaultCanvasHeight; ");
+            gumIfIncreaseAreaBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.DestinationRectangle.Width;");
+            gumIfIncreaseAreaBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height; ");
+
+
+            var gumElseBlock = gumIfIncreaseAreaBlock.End().Else();
 
             gumElseBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = Data.ResolutionHeight / (Data.ScaleGum/100.0f);");
             var gumAspectRatio = gumElseBlock.If("Data.EffectiveAspectRatio != null")
@@ -231,12 +239,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                     if(Data.DominantInternalCoordinates == WidthOrHeight.Height)
                     {
                         Gum.Wireframe.GraphicalUiElement.CanvasHeight = Data.ResolutionHeight / (Data.ScaleGum / 100.0f);
-                        Gum.Wireframe.GraphicalUiElement.CanvasWidth = FlatRedBall.Math.MathFunctions.RoundToInt((decimal)Gum.Wireframe.GraphicalUiElement.CanvasHeight * Data.EffectiveAspectRatio.Value);
+                        Gum.Wireframe.GraphicalUiElement.CanvasWidth = FlatRedBall.Math.MathFunctions.RoundToInt(Gum.Wireframe.GraphicalUiElement.CanvasHeight * (double)Data.EffectiveAspectRatio.Value);
                     }
                     else
                     {
                         Gum.Wireframe.GraphicalUiElement.CanvasWidth = Data.ResolutionWidth / (Data.ScaleGum/100.0f);
-                        Gum.Wireframe.GraphicalUiElement.CanvasHeight = FlatRedBall.Math.MathFunctions.RoundToInt((decimal)Gum.Wireframe.GraphicalUiElement.CanvasHeight / Data.EffectiveAspectRatio.Value);
+                        Gum.Wireframe.GraphicalUiElement.CanvasHeight = FlatRedBall.Math.MathFunctions.RoundToInt(Gum.Wireframe.GraphicalUiElement.CanvasHeight / (double)Data.EffectiveAspectRatio.Value);
                     }                    
 
                     var resolutionAspectRatio = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth / (decimal)FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;
@@ -296,6 +304,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                         }
                     }
                     ");
+
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasIGumScreenOwner)
+            {
+                functionBlock.Line("var gumScreenOwner = FlatRedBall.Screens.ScreenManager.CurrentScreen as FlatRedBall.Gum.IGumScreenOwner;");
+                functionBlock.Line("gumScreenOwner?.RefreshLayout();");
+
+            }
+
+
+
 
 
         }
@@ -594,9 +612,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                     elseBlock.Line("x = (FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth - destinationRectangleWidth) / 2;");
                 }
 
-                var foreachBlock = functionBlock.ForEach("var camera in FlatRedBall.SpriteManager.Cameras");
+                var foreachBlock = functionBlock.For("int i = 0; i < FlatRedBall.SpriteManager.Cameras.Count; i++");
                 {
-
+                    foreachBlock.Line("var camera = FlatRedBall.SpriteManager.Cameras[i];");
                     foreachBlock.Line("int currentX = x;");
                     foreachBlock.Line("int currentY = y;");
                     foreachBlock.Line("int currentWidth = destinationRectangleWidth;");
@@ -740,6 +758,15 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                     else
                     {
+
+                        ifBlock.Line("#if DEBUG");
+
+                        ifBlock.If("GraphicsDeviceManager == null")
+                            .Line("throw new System.InvalidOperationException(\"ResetWindow cannot be called until SetupCamera is called first\");"); 
+
+                        ifBlock.Line("#endif");
+
+
                         // from here:
                         // http://community.monogame.net/t/how-to-implement-borderless-fullscreen-on-desktopgl-project/8359
                         ifBlock.Line("GraphicsDeviceManager.HardwareModeSwitch = false;");
@@ -758,6 +785,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     }
 
+                    ifBlock.Line("#elif FNA");
+                    // If in fullscreen we want the widow to take up just the resolution of the screen:
+                    ifBlock.Line(
+                        "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(" +
+                        "Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, " +
+                        "Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, " +
+                        "FlatRedBall.Graphics.WindowedFullscreenMode.FullscreenBorderless);");
 
                     ifBlock.Line("#elif WINDOWS");
                     ifBlock.Line("System.IntPtr hWnd = FlatRedBall.FlatRedBallServices.Game.Window.Handle;");
@@ -787,8 +821,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                     elseBlock.Line("width = System.Math.Min(width, maxWidth);");
                     elseBlock.Line("height = System.Math.Min(height, maxHeight);");
 
+                    elseBlock.Line("#if MONOGAME");
                     var innerIf = elseBlock.If("FlatRedBall.FlatRedBallServices.Game.Window.Position.Y < 25");
                     innerIf.Line("FlatRedBall.FlatRedBallServices.Game.Window.Position = new Microsoft.Xna.Framework.Point(FlatRedBall.FlatRedBallServices.Game.Window.Position.X, 25);");
+                    elseBlock.Line("#endif");
 
                     elseBlock.Line("FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(width, height);");
 
@@ -827,9 +863,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void GenerateResetMethodNew(bool generateDisplayCode, ICodeBlock classContents)
         {
+            classContents.Line("/// <summary>");
             classContents.Line("/// Applies resolution and aspect ratio values to the FlatRedBall camera. If Gum is part of the project,");
             classContents.Line("/// then the Gum resolution will be applied. Note that this does not call Layout on the contained Gum objects,");
             classContents.Line("/// so this may need to be called explicitly if ResetCamera is called in custom code.");
+            classContents.Line("/// </summary>");
             var resetMethod = classContents.Function(
                 "internal static void", "ResetCamera", "Camera cameraToReset = null");
             {

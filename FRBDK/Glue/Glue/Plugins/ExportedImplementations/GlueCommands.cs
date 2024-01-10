@@ -15,16 +15,17 @@ using GlueFormsCore.ViewModels;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using System.Runtime.InteropServices;
+using GlueFormsCore.Controls;
+using FlatRedBall.Glue.Data;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
     public class GlueCommands : IGlueCommands
     {
-        #region Fields
+        #region Fields/Properties
 
         public static GlueCommands Self { get; private set; } = new GlueCommands();
-
-        #endregion
 
         public IGenerateCodeCommands GenerateCodeCommands{ get; private set; }
 
@@ -45,6 +46,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public IFileCommands FileCommands { get; private set; }
 
         public ISelectCommands SelectCommands { get; private set; }
+
+        #endregion
 
         public void PrintOutput(string output)
         {
@@ -109,7 +112,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                     System.Threading.Thread.Sleep(msSleepBetweenAttempts);
                     if (failureCount >= numberOfTimesToTry)
                     {
-                        throw e;
+                        throw;
                     }
                 }
             }
@@ -216,7 +219,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public void UpdateGlueSettingsFromCurrentGlueStateImmediately(bool saveToDisk = true)
         {
-            var save = ProjectManager.GlueSettingsSave;
+            var save = GlueState.Self.GlueSettingsSave;
 
             string lastFileName = null;
 
@@ -292,6 +295,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             SetTabs(save.RightTabs, PluginManager.TabControlViewModel.RightTabItems);
             SetTabs(save.BottomTabs, PluginManager.TabControlViewModel.BottomTabItems);
 
+            var panel = MainPanelControl.Self;
+
+            if(MainPanelControl.ViewModel.LeftPanelWidth.GridUnitType == System.Windows.GridUnitType.Pixel)
+            {
+                save.LeftTabWidthPixels = MainPanelControl.ViewModel.LeftPanelWidth.Value;
+            }
+            else
+            {
+                save.LeftTabWidthPixels = null;
+            }
+            // do we care about the other panels?
+
+
             if (saveToDisk)
             {
                 GlueCommands.Self.GluxCommands.SaveSettings();
@@ -301,5 +317,99 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
         private static extern int StrCmpLogicalW(string x, string y);
         public int CompareFileSort(string first, string second) => StrCmpLogicalW(first, second);
+
+        public void Undo()
+        {
+            PluginManager.CallPluginMethod(pluginFriendlyName: "Undo Plugin", methodName: "Undo");
+        }
+
+        public void LoadGlueSettings()
+        {
+            FilePath settingsFileLocation = null;
+            // Need to fix up saving/loading of this in json since there's some converter causing problems
+            //if(FileManager.FileExists(GlueSettingsSave.SettingsFileNameJson))
+            //{
+            //    settingsFileLocation = GlueSettingsSave.SettingsFileNameJson;
+            //}
+            //else 
+            if (FileManager.FileExists(GlueSettingsSave.SettingsFileName))
+            {
+                settingsFileLocation = GlueSettingsSave.SettingsFileName;
+            }
+            if (settingsFileLocation != null)
+            {
+                GlueSettingsSave settingsSave = null;
+
+                var didErrorOccur = false;
+
+                try
+                {
+                    if (settingsFileLocation.Extension == "json")
+                    {
+                        var text = System.IO.File.ReadAllText(settingsFileLocation.FullPath);
+                        settingsSave = JsonConvert.DeserializeObject<GlueSettingsSave>(text);
+                    }
+                    else
+                    {
+                        settingsSave = FileManager.XmlDeserialize<GlueSettingsSave>(settingsFileLocation.FullPath);
+                    }
+                    settingsSave.FixAllTypes();
+                }
+                catch (Exception e)
+                {
+                    var errorLoadingSettings = global::Localization.Texts.ErrorLoadingSettings;
+                    var errorDetails = global::Localization.Texts.ErrorDetails;
+                    System.Windows.MessageBox.Show($"{errorLoadingSettings}\n\n{settingsFileLocation}\n\n{errorDetails}\n\n{e}");
+                    didErrorOccur = true;
+                }
+
+                // But what do we do if something bad did happen?
+                if (didErrorOccur) return;
+
+                GlueState.Self.GlueSettingsSave = settingsSave;
+
+                string csprojToLoad;
+                ProjectLoader.Self.GetCsprojToLoad(out csprojToLoad);
+
+                while(!string.IsNullOrEmpty(csprojToLoad) && !System.IO.File.Exists(csprojToLoad))
+                {
+                    RemoveFromSettings(csprojToLoad);
+                    ProjectLoader.Self.GetCsprojToLoad(out csprojToLoad);
+                }
+
+                // Load the plugins settings if it exists
+                if (String.IsNullOrEmpty(csprojToLoad))
+                {
+                    ProjectManager.PluginSettings = new PluginSettings();
+                }
+                else
+                {
+                    var gluxDirectory = FileManager.GetDirectory(csprojToLoad);
+
+                    ProjectManager.PluginSettings = PluginSettings.FileExists(gluxDirectory)
+                        ? PluginSettings.Load(gluxDirectory)
+                        : new PluginSettings();
+                }
+
+                MainPanelControl.Self.ApplyGlueSettings(GlueState.Self.GlueSettingsSave);
+            }
+            else
+            {
+                GlueState.Self.GlueSettingsSave.Save();
+            }
+        }
+
+        void RemoveFromSettings(FilePath filePath)
+        {
+            var settingsSave = GlueState.Self.GlueSettingsSave;
+            settingsSave.GlueLocationSpecificLastProjectFiles.RemoveAll(item => new FilePath( item.GameProjectFileName) == filePath);
+            if(new FilePath( settingsSave.LastProjectFile) == filePath)
+            {
+                settingsSave.LastProjectFile = null;
+            }
+
+            settingsSave.RecentFileList.RemoveAll(item => new FilePath( item.FileName ) == filePath);
+
+        }
     }
 }

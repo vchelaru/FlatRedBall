@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
@@ -9,6 +10,8 @@ using System.IO;
 using EditorObjects.Collections;
 using FlatRedBall.IO.Csv;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views;
+using System.Windows;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -29,16 +32,27 @@ namespace FlatRedBall.Glue.SaveClasses
     {
         public string GlueFileName { get; set; }
         public string GameProjectFileName { get; set; }
+
+        public override string ToString()
+        {
+            return $"{GameProjectFileName} ({GlueFileName})";
+        }
     }
 
     #endregion
+
+    #region RecentFileSave
 
     public class RecentFileSave
     {
         public string FileName { get; set; }
         public bool IsFavorite { get; set; }
         public DateTime LastTimeAccessed { get; set; }
+
+        public override string ToString() => $"{FileName} {LastTimeAccessed}";
     }
+
+    #endregion
 
     /// <summary>
     /// Global glue settings for the current user, not tied to any particular project.
@@ -57,19 +71,7 @@ namespace FlatRedBall.Glue.SaveClasses
         [XmlElementAttribute("Association")]
         public ExternalSeparatingList<FileProgramAssociations> Associations = new ExternalSeparatingList<FileProgramAssociations>();
 
-        // November 22, 2022
-        // DO NOT mark this as obsolete yet.
-        // Doing so will make the XmlSerializer
-        // ignore this property which will make old paths get lost.
-        // Annoying. Can mark this as obsolete when enough time has
-        // passed. Perhaps 1 year? Doing so will at worst wipe some recent
-        // files for users, but the 1 year period gives enough time to migrate.
-        //[Obsolete("Use RecentFileList")]
-        public List<string> RecentFiles = new List<string>();
-
         public List<RecentFileSave> RecentFileList { get; set; } = new List<RecentFileSave>();
-
-        public List<string> BuildTools = new List<string>();
 
         #endregion
 
@@ -86,6 +88,9 @@ namespace FlatRedBall.Glue.SaveClasses
                        "settings.xml";
             }
         }
+
+        public static string SettingsFileNameJson => FileManager.UserApplicationDataForThisApplication +
+                       "settings.json";
 
 		public string LastProjectFile
 		{
@@ -112,14 +117,35 @@ namespace FlatRedBall.Glue.SaveClasses
         public List<string> RightTabs { get; set; } = new List<string>();
         public List<string> BottomTabs { get; set; } = new List<string>();
 
+        public double? LeftTabWidthPixels { get; set; }
 
         public ExternalSeparatingList<BuildToolAssociation> BuildToolAssociations = new ExternalSeparatingList<BuildToolAssociation>();
 
-        [XmlIgnore]
-        public static bool StopSavesAndLoads { get; set; }
+        [XmlIgnore] public static bool StopSavesAndLoads { get; set; }
 
         public List<PropertySave> Properties = new List<PropertySave>();
 
+        public bool IsBookmarksListVisible { get; set; }
+        public double BookmarkRowHeight { get; set; }
+
+        /// <summary>
+        /// XML cannot serialize CultureInfo because it doesn't have a parameterless constructor;
+        /// hence, this property is used as a workaround.
+        /// </summary>
+        public string Culture
+        {
+            get => CurrentCulture?.TwoLetterISOLanguageName ?? "en";
+            set
+            {
+                if (!String.IsNullOrWhiteSpace(value))
+                {
+                    CurrentCulture = new CultureInfo(value);
+                }
+            }
+        }
+        [XmlIgnore] public CultureInfo CurrentCulture { get; set; }
+
+        public string DefaultNewProjectDirectory { get; set; }
 
         #endregion
 
@@ -139,26 +165,30 @@ namespace FlatRedBall.Glue.SaveClasses
 
             FileManager.XmlSerialize(this, SettingsFileName);
 
+            // for some reason the build tool associations die here, maybe because of the type converters? 
+            //var asJson = JsonConvert.SerializeObject(this, Formatting.Indented);
+            //FileManager.SaveText(asJson, SettingsFileNameJson);
+
             Associations.ReAddExternals();
             BuildToolAssociations.ReAddExternals();
         }
 
+        #region Loading-related Methods
+
         public void FixAllTypes()
         {
+            CurrentCulture ??= CultureInfo.InstalledUICulture.TwoLetterISOLanguageName switch
+            {
+                "fr" => new CultureInfo("fr-FR"),
+                "nl" => new CultureInfo("nl-NL"),
+                "de" => new CultureInfo("de-DE"),
+                _ => new CultureInfo("en-US")
+            };
+
             foreach (var property in Properties)
             {
                 FixAllTypes(property);
             }
-
-            foreach(var recentFileName in RecentFiles)
-            {
-                RecentFileList.Add(new RecentFileSave
-                {
-                    FileName = recentFileName,
-                });
-            }
-
-            RecentFiles.Clear();
         }
 
         private static void FixAllTypes(PropertySave property)
@@ -176,11 +206,13 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public void LoadExternalBuildToolsFromCsv(string csvFileName)
         {
-            List<BuildToolAssociation> externals = new List<BuildToolAssociation>();
+            var externals = new List<BuildToolAssociation>();
 
             CsvFileManager.CsvDeserializeList(typeof(BuildToolAssociation), csvFileName, externals);
 
             BuildToolAssociations.AddExternalRange(externals);
         }
-	}
+
+        #endregion
+    }
 }

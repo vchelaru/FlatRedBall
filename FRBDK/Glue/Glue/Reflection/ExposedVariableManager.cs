@@ -36,9 +36,11 @@ namespace FlatRedBall.Glue.Reflection
             "decimal?",
             "string",
             "bool",
+            "bool?",
 
             "int",
             "int?",
+
             "double",
 
 
@@ -792,12 +794,13 @@ namespace FlatRedBall.Glue.Reflection
                     TypeManager.GetTypeFromString(assetTypeInfo.QualifiedRuntimeTypeName.QualifiedType);
 
                 // We'll fall back to reflection, but eventually I'd like to see this go away
-                if (type != null)
-                {
-                    FillListWithAvailableVariablesInType(type, returnValue);
-
-                    AddSpecialCasePropertiesFor(type, returnValue);
-                }
+                // October 3, 2023 - in an attempt to move the usage of reflection, I'm getting
+                // rid of this. Not sure if it will cause problems yet, but let's give it a shot.
+                // I believe everything that is exposable should come from VariableDefinitions anyway:
+                //if (type != null)
+                //{
+                //    FillListWithAvailableVariablesInType(type, returnValue);
+                //}
 
                 FillFromVariableDefinitions(returnValue, assetTypeInfo);
 
@@ -814,17 +817,6 @@ namespace FlatRedBall.Glue.Reflection
                     returnValue.Add(new MemberWithType { Member = "Visible", Type = "bool" });
                 }
             }
-
-            // June 23, 2013
-            // I don't think we
-            // want to sort here 
-            // because the properties
-            // will already be sorted in
-            // a particular way from the function
-            // FillListWithAvailableVariablesInType.
-            // I'm going to comment this out to see if
-            // it causes any problems.
-            //returnValue.Sort();
         }
 
         private static void FillFromVariableDefinitions(List<MemberWithType> returnValue, AssetTypeInfo assetTypeInfo)
@@ -869,11 +861,6 @@ namespace FlatRedBall.Glue.Reflection
             }
 
             return false;
-        }
-
-        private static void AddSpecialCasePropertiesFor(Type type, List<MemberWithType> returnValue)
-        {
-
         }
 
         public static bool IsMemberDefinedByEntity(string memberName, EntitySave entitySave)
@@ -1079,9 +1066,27 @@ namespace FlatRedBall.Glue.Reflection
             // if screens are needed...if so
             // add them later.
 
+            if(!GlueState.Self.CurrentGlueProject.SuppressBaseTypeGeneration)
+            {
+                foreach(var entity in ObjectFinder.Self.GlueProject.Entities)
+                {
+                    var isBaseEntity = string.IsNullOrEmpty(entity.BaseElement);
+
+                    if(isBaseEntity)
+                    {
+                        var hasDerived = ObjectFinder.Self.GlueProject.Entities.Any(item => item.BaseElement == entity.Name);
+                        if(hasDerived)
+                        {
+                            var typeName = entity.Name.Replace("\\", ".") + "Type";
+                            toReturn.Add(typeName);
+                        }
+                    }
+                }
+            }
+
             if (includeStateCategories)
             {
-                foreach (IElement entity in ObjectFinder.Self.GlueProject.Entities)
+                foreach (var entity in ObjectFinder.Self.GlueProject.Entities)
                 {
                     if (entity != null)
                     {

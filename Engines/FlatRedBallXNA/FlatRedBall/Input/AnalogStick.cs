@@ -12,26 +12,45 @@ using FlatRedBall.Math;
 
 namespace FlatRedBall.Input
 {
-    #region XML Docs
+    public enum DeadzoneInterpolationType
+    {
+        /// <summary>
+        /// No interpolation is performed. Values less than the deadzone are set to 0.
+        /// </summary>
+        Instant,
+        /// <summary>
+        /// Linear interpolation is performed for values greater than the deadzone. 
+        /// </summary>
+        Linear,
+        /// <summary>
+        /// Quadratic (in) interpolation is performed for values greater than the deadzone. This increases
+        /// accuracy at lower values (values closer to the deadzone) so that small movements are easier to perform.
+        /// </summary>
+        Quadratic
+    }
+
     /// <summary>
     /// A two-axis input device which can return a range of values on both axes.
     /// </summary>
-    #endregion
     public class AnalogStick : I2DInput
     {
         #region Fields
+
+        Vector2 mRawPosition;
 
         Vector2 mPosition;
         Vector2 mVelocity;
         double mMagnitude;
         double mAngle;
 
+        double mTimeAfterPush = DefaultTimeAfterPush;
+        double mTimeBetweenRepeating = DefaultTimeBetweenRepeating;
+
         AnalogButton leftAsButton;
         AnalogButton rightAsButton;
         AnalogButton upAsButton;
         AnalogButton downAsButton;
 
-        #region XML Docs
         /// <summary>
         /// The DPadOnValue and DPadOffValue
         /// values are used to simulate D-Pad control
@@ -42,9 +61,18 @@ namespace FlatRedBall.Input
         /// one value then the user could hold the stick near the threshold
         /// and get rapid on/off values due to the inaccuracy of the analog stick. 
         /// </summary>
-        #endregion
         internal const float DPadOnValue = .550f;
         internal const float DPadOffValue = .450f;
+
+        /// <summary>
+        /// Number of seconds to wait after a push before repeating.
+        /// </summary>
+        public const double DefaultTimeAfterPush = .35;
+
+        /// <summary>
+        /// Number of seconds between repeating.
+        /// </summary>
+        public const double DefaultTimeBetweenRepeating = .12;
 
         bool[] mLastDPadDown = new bool[4];
         bool[] mCurrentDPadDown = new bool[4];
@@ -56,7 +84,7 @@ namespace FlatRedBall.Input
 
         // Start this at -1 instead of 0, otherwise the first frame will return "true" because
         // the last push on time 0 will match the TimeManager.CurrentTime
-        double[] mLastDPadPush = new double[4]{ -1, -1, -1, -1};
+        double[] mLastDPadPush = new double[4] { -1, -1, -1, -1 };
         double[] mLastDPadRepeatRate = new double[4] { -1, -1, -1, -1 };
 
         #endregion
@@ -130,27 +158,54 @@ namespace FlatRedBall.Input
         /// Gets the distance from the center position of the analog stick. 
         /// Value is between 0 and 1, where 0 is the neutral position.
         /// </summary>
-        public double Magnitude => mMagnitude; 
-        
+        public double Magnitude => mMagnitude;
 
-        #region XML Docs
         /// <summary>
-        /// The position of the analog stick.  The range for each component is -1 to 1.
+        /// The time between a button is first pressed and the button starts repeating its input.
         /// </summary>
-        #endregion
-        public Vector2 Position
-        {
-            get { return mPosition; }
-        }
+        public double TimeAfterPush { get => mTimeAfterPush; set => mTimeAfterPush = value; }
 
+        /// <summary>
+        /// The time between repeat presses once a button has been held down.
+        /// </summary>
+        public double TimeBetweenRepeating { get => mTimeBetweenRepeating; set => mTimeBetweenRepeating = value; }
 
+        /// <summary>
+        /// The position of the analog stick after applying deadzone.  The range for each component is -1 to 1. 
+        /// </summary>
+        public Vector2 Position => mPosition;
+
+        /// <summary>
+        /// Whether Position values should be limited so that Position.Length is less than or equal to 1.
+        /// This is recommended for top-down games.
+        /// </summary>
+        public bool IsMaxPositionNormalized { get; set; } = false;
+
+        /// <summary>
+        /// The position of the analog stick before deadzone, deadzone interpolation, and normalization are applied.
+        /// </summary>
+        public Vector2 RawPosition => mRawPosition;
+
+        /// <summary>
+        /// The change in units per second of the analog stick, where 1 unit is the distance from the center to the edge of the analog stick.
+        /// </summary>
+        /// <remarks>
+        /// This measures the physical movement (rather than position) of the analog stick, which can be used to detect
+        /// taps for dashing, or "smash attacks" like in Super Smash Bros.
+        /// </remarks>
         public Vector2 Velocity
         {
             get { return mVelocity; }
         }
 
         public DeadzoneType DeadzoneType { get; set; } = DeadzoneType.Radial;// matches the behavior prior to May 22, 2022 when this property was introduced
+
         public float Deadzone { get; set; } = .1f;
+
+        /// <summary>
+        /// The type of interpolation to perform up to the max value when outside of the deadzone value.
+        /// </summary>
+        public DeadzoneInterpolationType DeadzoneInterpolation { get; set; }
 
         #endregion
 
@@ -179,7 +234,7 @@ namespace FlatRedBall.Input
                         return mPosition.X < -DPadOnValue;
                     }
 
-                    //break;
+                //break;
 
                 case Xbox360GamePad.DPadDirection.Right:
 
@@ -192,7 +247,7 @@ namespace FlatRedBall.Input
                         return mPosition.X > DPadOnValue;
                     }
 
-                    //break;
+                //break;
 
                 case Xbox360GamePad.DPadDirection.Up:
 
@@ -205,7 +260,7 @@ namespace FlatRedBall.Input
                         return mPosition.Y > DPadOnValue;
                     }
 
-                    //break;
+                //break;
 
                 case Xbox360GamePad.DPadDirection.Down:
 
@@ -218,9 +273,9 @@ namespace FlatRedBall.Input
                         return mPosition.Y < -DPadOnValue;
                     }
 
-                    //break;
+                //break;
                 default:
-                    
+
                     return false;
                     //break;
             }
@@ -235,7 +290,7 @@ namespace FlatRedBall.Input
         public bool AsDPadPushedRepeatRate(Xbox360GamePad.DPadDirection direction)
         {
             // Ignoring is performed inside this call.
-            return AsDPadPushedRepeatRate(direction, .35, .12);
+            return AsDPadPushedRepeatRate(direction, mTimeAfterPush, mTimeBetweenRepeating);
         }
 
 
@@ -247,7 +302,9 @@ namespace FlatRedBall.Input
             // If this method is called multiple times per frame this line
             // of code guarantees that the user will get true every time until
             // the next TimeManager.Update (next frame).
-            bool repeatedThisFrame = mLastDPadPush[(int)direction] == TimeManager.CurrentTime;
+            // The very first frame of FRB would have CurrentTime == 0. 
+            // The repeat cannot happen on the first frame, so we check for that:
+            bool repeatedThisFrame = TimeManager.CurrentTime > 0 && mLastDPadPush[(int)direction] == TimeManager.CurrentTime;
 
             if (repeatedThisFrame ||
                 (
@@ -282,6 +339,7 @@ namespace FlatRedBall.Input
         /// <param name="newPosition">The normalized (-1 to +1) position of the analog stick.</param>
         public void Update(Vector2 newPosition)
         {
+            mRawPosition = newPosition;
             if (Deadzone > 0)
             {
                 switch (DeadzoneType)
@@ -296,12 +354,17 @@ namespace FlatRedBall.Input
 
             }
 
+            if (IsMaxPositionNormalized && newPosition.LengthSquared() > 1)
+            {
+                newPosition.Normalize();
+            }
+
             mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Up] = AsDPadDown(Xbox360GamePad.DPadDirection.Up);
             mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Down] = AsDPadDown(Xbox360GamePad.DPadDirection.Down);
             mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Left] = AsDPadDown(Xbox360GamePad.DPadDirection.Left);
             mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Right] = AsDPadDown(Xbox360GamePad.DPadDirection.Right);
 
-            mVelocity = Vector2.Multiply((newPosition - mPosition), 1/TimeManager.SecondDifference);
+            mVelocity = Vector2.Multiply((newPosition - mPosition), 1 / TimeManager.SecondDifference);
             mPosition = newPosition;
 
             UpdateAccordingToPosition();
@@ -354,7 +417,7 @@ namespace FlatRedBall.Input
         }
 
 
-        float I2DInput.Magnitude => (float) this.mMagnitude;
+        float I2DInput.Magnitude => (float)this.mMagnitude;
 
         #endregion
 
@@ -399,7 +462,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-                if(vertical == null)
+                if (vertical == null)
                 {
                     vertical = new AnalogStickVertical(this);
                 }
@@ -436,8 +499,34 @@ namespace FlatRedBall.Input
             }
             else
             {
+                switch (DeadzoneInterpolation)
+                {
+                    case DeadzoneInterpolationType.Instant:
+                        return originalValue;
+                    case DeadzoneInterpolationType.Linear:
+                        {
+                            var range = (1 - Deadzone);
+                            var distanceBeyondDeadzone = originalValue.Length() - Deadzone;
+                            return originalValue.NormalizedOrRight() * (distanceBeyondDeadzone / range);
+                        }
+                    case DeadzoneInterpolationType.Quadratic:
+                        {
+                            var range = (1 - Deadzone);
+                            var distanceBeyondDeadzone = originalValue.Length() - Deadzone;
+                            var ratio = (distanceBeyondDeadzone / range);
+
+                            var modifiedRatio = EaseIn(ratio, 0, 1, 1);
+                            return originalValue.NormalizedOrRight() * modifiedRatio;
+                        }
+
+                }
                 return originalValue;
             }
+        }
+
+        static float EaseIn(float timeElapsed, float startingValue, float amountToAdd, float durationInSeconds)
+        {
+            return amountToAdd * (timeElapsed /= durationInSeconds) * timeElapsed + startingValue;
         }
 
         Vector2 GetCrossDeadzoneValue(Vector2 originalValue)
@@ -446,9 +535,61 @@ namespace FlatRedBall.Input
             {
                 originalValue.X = 0;
             }
+            else
+            {
+                switch (DeadzoneInterpolation)
+                {
+                    case DeadzoneInterpolationType.Instant:
+                        // return originalValue;
+                        // do nothing
+                        break;
+                    case DeadzoneInterpolationType.Linear:
+                        {
+                            var range = (1 - Deadzone);
+                            var distanceBeyondDeadzone = System.Math.Abs(originalValue.X) - Deadzone;
+                            originalValue.X = System.Math.Sign(originalValue.X) * (float)(distanceBeyondDeadzone / range);
+                            break;
+                        }
+                    case DeadzoneInterpolationType.Quadratic:
+                        {
+                            var range = (1 - Deadzone);
+                            var distanceBeyondDeadzone = System.Math.Abs(originalValue.X) - Deadzone;
+                            var ratio = distanceBeyondDeadzone / range;
+                            var modifiedRatio = EaseIn(ratio, 0, 1, 1);
+                            originalValue.X = System.Math.Sign(originalValue.X) * (float)modifiedRatio;
+                            break;
+                        }
+                }
+            }
+
+
             if (originalValue.Y < Deadzone && originalValue.Y > -Deadzone)
             {
                 originalValue.Y = 0;
+            }
+            else
+            {
+                switch (DeadzoneInterpolation)
+                {
+                    case DeadzoneInterpolationType.Instant:
+                        break;
+                    case DeadzoneInterpolationType.Linear:
+                        {
+                            var range = (1 - Deadzone);
+                            var distanceBeyondDeadzone = System.Math.Abs(originalValue.Y) - Deadzone;
+                            originalValue.Y = System.Math.Sign(originalValue.Y) * (float)(distanceBeyondDeadzone / range);
+                            break;
+                        }
+                    case DeadzoneInterpolationType.Quadratic:
+                        {
+                            var range = 1 - Deadzone;
+                            var distanceBeyondDeadzone = System.Math.Abs(originalValue.Y) - Deadzone;
+                            var ratio = distanceBeyondDeadzone / range;
+                            var modifiedRatio = EaseIn(ratio, 0, 1, 1);
+                            originalValue.Y = System.Math.Sign(originalValue.Y) * (float)modifiedRatio;
+                            break;
+                        }
+                }
             }
             return originalValue;
         }

@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Math;
+using Localization;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -30,14 +31,36 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(CanBePartitioned))]
         public Visibility PartitioningControlUiVisibility => CanBePartitioned.ToVisibility();
 
+        public bool DefinedByBase
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(CanBePartitioned))]
         public Visibility AlreadyOrCantBePartitionedVisibility => (!CanBePartitioned).ToVisibility();
+
+        [DependsOn(nameof(NoPartitioningText))]
+        public string NoPartitioningText =>
+            DefinedByBase ? "Partitioning properties are not available on derived objects"
+            : "Partitioning not available for this object";
 
         [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
         public bool PerformCollisionPartitioning
         {
             get => Get<bool>();
-            set => SetAndPersist(value);
+            set
+            {
+                if(SetAndPersist(value) && value)
+                {
+                    var shouldInitialize = PartitionWidthHeight == 0;
+                    if (shouldInitialize)
+                    {
+                        PartitionWidthHeight = 32;
+                        IsSortListEveryFrameChecked = true;
+                    }
+                }
+            }
         }
 
         [DependsOn(nameof(PerformCollisionPartitioning))]
@@ -49,6 +72,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
         [DefaultValue((int)Axis.X)]
+        [RemoveIfDefault]
         public Axis SortAxis
         {
             get => (Axis)Get<int>();
@@ -85,6 +109,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         [SyncedPropertyAttribute]
         [DefaultValue(PartitioningAutomaticManual.Manual)]
+        [RemoveIfDefault]
         public PartitioningAutomaticManual PartitioningAutomaticManual 
         { 
             get => Get<PartitioningAutomaticManual>();
@@ -112,12 +137,23 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             get => $"Automatic ({CalculatedParitioningWidthHeight:0.0})";  
         }
 
+
+
         [DependsOn(nameof(IsAutomaticPartitionSizeChecked))]
         public Visibility AutomaticInfoVisibility => IsAutomaticPartitionSizeChecked.ToVisibility();
+
+        [DependsOn(nameof(IsManualPartitionSizeChecked))]
+        public Visibility ManualInfoVisibility => IsManualPartitionSizeChecked.ToVisibility();
 
         public float CalculatedParitioningWidthHeight
         {
             get => Get<float>();
+            set => Set(value);
+        }
+
+        public string CalculatedPartitionWidthHeightSource
+        {
+            get => Get<string>();
             set => Set(value);
         }
 
@@ -138,7 +174,10 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         public bool IsManualTextBoxEnabled => IsManualPartitionSizeChecked;
 
         [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
-        [DefaultValue(32f)]
+        // By putting a DefaultValue on this, it gets generated all the time
+        // even if partitioning is turned off. Instead, let's check if partitioning
+        // is set to true. If so, then PartitionWidthHeight gets set in the setter
+        //[DefaultValue(32f)]
         public float PartitionWidthHeight
         {
             get => Get<float>();
@@ -146,7 +185,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         }
 
         [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
-        [DefaultValue(true)]
+        // See the comment in PartitionWidthHeight
+        //[DefaultValue(true)]
         public bool IsSortListEveryFrameChecked
         {
             get => Get<bool>();
@@ -175,6 +215,6 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         public CollidableNamedObjectRelationshipViewModel()
         {
             NamedObjectPairs = new ObservableCollection<NamedObjectPairRelationshipViewModel>();
-}
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿{CompilerDirectives}
 
 using FlatRedBall;
+using FlatRedBall.Input;
 using FlatRedBall.Instructions;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
@@ -58,12 +59,13 @@ namespace GlueControl.Editing
 
         INameable Owner { get; }
 
+        bool HandleDelete();
         void MakePersistent();
         void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized);
-        void Update();
+        void Update(bool didGameBecomeActive);
         bool ShouldSuppress(string memberName);
 
-        bool IsCursorOverThis();
+        bool IsMouseOverThis();
         void Destroy();
     }
 
@@ -135,23 +137,23 @@ namespace GlueControl.Editing
 
         #region Update
 
-        public void EveryFrameUpdate(PositionedObject item, SelectionMarker selectionMarker)
+        public void EveryFrameUpdate(PositionedObject item, SelectionMarker selectionMarker, bool didGameBecomeActive)
         {
             Visible = selectionMarker.Visible;
 
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            var mouse = FlatRedBall.Input.InputManager.Mouse;
 
 
             UpdateVisibilityConsideringResizeMode();
 
             if (Visible)
             {
-                // Update the "should resize" values if the cursor isn't down so that
+                // Update the "should resize" values if the mouse isn't down so that
                 // highlights reflect whether opposite sides will be resized. 
-                // Do not do this if the cursor is down because we want to take a snapshot
-                // of these values when the cursor is pressed and continue to use those values
+                // Do not do this if the mouse is down because we want to take a snapshot
+                // of these values when the mouse is pressed and continue to use those values
                 // during the duration of the drag.
-                if (!FlatRedBall.Gui.GuiManager.Cursor.PrimaryDown)
+                if (!mouse.ButtonDown(FlatRedBall.Input.Mouse.MouseButtons.LeftButton))
                 {
                     bool shouldAttemptResizeFromCenter = GetIfShouldResizeFromCenter(item);
                     // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
@@ -208,14 +210,17 @@ namespace GlueControl.Editing
                     }
                 }
 
-                if (cursor.PrimaryPush && FlatRedBallServices.Game.IsActive)
+                var shouldHandlePush =
+                    (mouse.ButtonPushed(FlatRedBall.Input.Mouse.MouseButtons.LeftButton) && FlatRedBallServices.Game.IsActive) ||
+                    (mouse.ButtonDown(FlatRedBall.Input.Mouse.MouseButtons.LeftButton) && didGameBecomeActive);
+                if (shouldHandlePush)
                 {
-                    HandleCursorPushed(item);
+                    HandleMousePushed(item);
                 }
 
-                if (cursor.PrimaryClick)
+                if (mouse.ButtonReleased(FlatRedBall.Input.Mouse.MouseButtons.LeftButton))
                 {
-                    HandleCursorRelease();
+                    HandleMouseRelease();
                 }
 
             }
@@ -366,10 +371,8 @@ namespace GlueControl.Editing
             }
         }
 
-        private void HandleCursorPushed(PositionedObject ownerAsPositionedObject)
+        private void HandleMousePushed(PositionedObject ownerAsPositionedObject)
         {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-
             ShouldResizeXFromCenter = false;
             ShouldResizeYFromCenter = false;
 
@@ -458,7 +461,7 @@ namespace GlueControl.Editing
             }
         }
 
-        private void HandleCursorRelease()
+        private void HandleMouseRelease()
         {
             SideGrabbed = ResizeSide.None;
         }
@@ -467,11 +470,11 @@ namespace GlueControl.Editing
 
         public ResizeSide GetSideOver()
         {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            var mouse = InputManager.Mouse;
 
             for (int i = 0; i < this.rectangles.Length; i++)
             {
-                if (rectangles[i].Visible && cursor.IsOn3D(rectangles[i]))
+                if (rectangles[i].Visible && IsOn3D(rectangles[i]))
                 {
                     return (ResizeSide)i;
                 }
@@ -479,6 +482,27 @@ namespace GlueControl.Editing
 
             return ResizeSide.None;
         }
+
+        public bool IsOn3D<T>(T objectToTest) where T : IPositionable, IRotatable, IReadOnlyScalable
+        {
+            return IsOn3D(objectToTest, false, null, out Microsoft.Xna.Framework.Vector3 vector3);
+        }
+
+        public bool IsOn3D<T>(T spriteToTest, bool relativeToCamera, FlatRedBall.Graphics.Layer layer, out Vector3 intersectionPoint) where T : IPositionable, IRotatable, IReadOnlyScalable
+        {
+            intersectionPoint = Vector3.Zero;
+            if (spriteToTest == null)
+                return false;
+#if SupportsEditMode
+
+            return MathFunctions.IsOn3D<T>(
+                spriteToTest, relativeToCamera, InputManager.Mouse.GetMouseRay(FlatRedBall.Camera.Main),
+                FlatRedBall.Camera.Main, out intersectionPoint);
+#else
+            return false;
+#endif
+        }
+
 
         public bool GetIfSetsTextureScale(PositionedObject item)
         {
@@ -579,8 +603,8 @@ namespace GlueControl.Editing
         public bool CanMoveItem { get; set; }
 
         Microsoft.Xna.Framework.Point ScreenPointPushed;
-        Vector3 unsnappedItemPosition;
-        Vector2 unsnappedItemSize;
+        Vector3? unsnappedItemPosition;
+        Vector2? unsnappedItemSize;
 
 
         public float PositionSnappingSize = 8;
@@ -718,7 +742,7 @@ namespace GlueControl.Editing
             };
         }
 
-        public void Update()
+        public void Update(bool didGameBecomeActive)
         {
             LastUpdateMovement = Vector3.Zero;
 
@@ -734,7 +758,7 @@ namespace GlueControl.Editing
 
             if (ownerAsPositionedObject != null)
             {
-                ResizeHandles.EveryFrameUpdate(ownerAsPositionedObject, this);
+                ResizeHandles.EveryFrameUpdate(ownerAsPositionedObject, this, didGameBecomeActive);
             }
             PolygonPointHandles.EveryFrameUpdate(ownerAsPositionedObject, this);
 
@@ -748,8 +772,7 @@ namespace GlueControl.Editing
 
         private void DoUpdateReleasedLogic()
         {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-            if (!cursor.PrimaryClick || ownerAsPositionedObject == null)
+            if (!InputManager.Mouse.ButtonReleased(Mouse.MouseButtons.LeftButton) || ownerAsPositionedObject == null)
             {
                 return;
             }
@@ -802,15 +825,16 @@ namespace GlueControl.Editing
             }
 
             IsGrabbed = false;
-
+            unsnappedItemPosition = null;
+            unsnappedItemSize = null;
         }
 
         private void DoUpdatePushedLogic()
         {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            var mouse = InputManager.Mouse;
 
             ///////////Early Out////////////////
-            if (!cursor.PrimaryPush)
+            if (!InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) || mouse.IsInGameWindow() == false)
             {
                 return;
             }
@@ -819,22 +843,11 @@ namespace GlueControl.Editing
 
             IsGrabbed = ownerAsPositionable != null;
 
-            ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
+            ScreenPointPushed = new Microsoft.Xna.Framework.Point(mouse.X, mouse.Y);
             if (ownerAsPositionable != null)
             {
-                if (ownerAsPositionedObject?.Parent == null)
-                {
-                    unsnappedItemPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
-                }
-                else
-                {
-                    unsnappedItemPosition = ownerAsPositionedObject.RelativePosition;
-                }
-
-                if (ownerAsPositionable is IScalable scalable)
-                {
-                    unsnappedItemSize = new Vector2(scalable.ScaleX * 2, scalable.ScaleY * 2);
-                }
+                SetUnsnappedPosition();
+                SetUnsnappedSizeToOwner();
 
                 GrabbedPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
 
@@ -852,6 +865,26 @@ namespace GlueControl.Editing
                 }
             }
 
+        }
+
+        private void SetUnsnappedSizeToOwner()
+        {
+            if (ownerAsPositionable is IScalable scalable)
+            {
+                unsnappedItemSize = new Vector2(scalable.ScaleX * 2, scalable.ScaleY * 2);
+            }
+        }
+
+        private void SetUnsnappedPosition()
+        {
+            if (ownerAsPositionedObject?.Parent == null)
+            {
+                unsnappedItemPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
+            }
+            else
+            {
+                unsnappedItemPosition = ownerAsPositionedObject.RelativePosition;
+            }
         }
 
         private void UpdateColor()
@@ -916,32 +949,34 @@ namespace GlueControl.Editing
 
         #region Drag to move/resize
 
-        float lastWorldX = 0;
-        float lastWorldY = 0;
+
+        float? lastWorldX = null;
+        float? lastWorldY = null;
 
         private void ApplyPrimaryDownDragEditing(IStaticPositionable item)
         {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            var mouse = InputManager.Mouse;
 
             var itemZ = item?.Z ?? 0;
 
-            if (cursor.PrimaryPush)
+            if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) ||
+                (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && lastWorldX == null))
             {
-                lastWorldX = cursor.WorldXAt(itemZ);
-                lastWorldY = cursor.WorldYAt(itemZ);
+                lastWorldX = mouse.WorldXAt(itemZ);
+                lastWorldY = mouse.WorldYAt(itemZ);
             }
 
-            var xChangeScreenSpace = cursor.WorldXAt(itemZ) - lastWorldX;
-            var yChangeScreenSpace = cursor.WorldYAt(itemZ) - lastWorldY;
+            var xChangeScreenSpace = mouse.WorldXAt(itemZ) - lastWorldX;
+            var yChangeScreenSpace = mouse.WorldYAt(itemZ) - lastWorldY;
 
-            var didCursorMove = xChangeScreenSpace != 0 || yChangeScreenSpace != 0;
+            var didMouseMove = xChangeScreenSpace != 0 || yChangeScreenSpace != 0;
 
             var handledByPolygonHandles = PolygonPointHandles.PointIndexHighlighted != null;
 
-            var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 ||
-                Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
+            var hasMovedEnough = Math.Abs(ScreenPointPushed.X - mouse.X) > 4 ||
+                Math.Abs(ScreenPointPushed.Y - mouse.Y) > 4;
 
-            if (CanMoveItem && cursor.PrimaryDown && didCursorMove && hasMovedEnough &&
+            if (CanMoveItem && mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && didMouseMove && hasMovedEnough &&
                 !handledByPolygonHandles &&
                 FlatRedBallServices.Game.IsActive &&
                 // Currently only PositionedObjects can be moved. If an object is
@@ -958,16 +993,16 @@ namespace GlueControl.Editing
                 {
                     ChangeSizeBy(item as PositionedObject, sideGrabbed);
                 }
-                else
+                else if (IsGrabbed)
                 {
                     var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
-                    LastUpdateMovement = ChangePositionBy(item, xChangeScreenSpace, yChangeScreenSpace, keyboard.IsShiftDown);
+                    LastUpdateMovement = ChangePositionBy(item, xChangeScreenSpace.Value, yChangeScreenSpace.Value, keyboard.IsShiftDown);
                 }
             }
 
-            lastWorldX = cursor.WorldXAt(itemZ);
-            lastWorldY = cursor.WorldYAt(itemZ);
+            lastWorldX = mouse.WorldXAt(itemZ);
+            lastWorldY = mouse.WorldYAt(itemZ);
         }
 
 
@@ -985,17 +1020,22 @@ namespace GlueControl.Editing
                 ? MathFunctions.RoundFloat(value, PositionSnappingSize)
                 : value;
 
+            if (unsnappedItemPosition == null)
+            {
+                SetUnsnappedPosition();
+            }
 
+            var positionCopy = unsnappedItemPosition.Value;
+            positionCopy.X += xChange;
+            positionCopy.Y += yChange;
+            unsnappedItemPosition = positionCopy;
 
-            unsnappedItemPosition.X += xChange;
-            unsnappedItemPosition.Y += yChange;
-
-            var positionConsideringShift = unsnappedItemPosition;
+            var positionConsideringShift = unsnappedItemPosition.Value;
 
             if (isShiftDown)
             {
-                var xDifference = Math.Abs(unsnappedItemPosition.X - GrabbedPosition.X);
-                var yDifference = Math.Abs(unsnappedItemPosition.Y - GrabbedPosition.Y);
+                var xDifference = Math.Abs(unsnappedItemPosition.Value.X - GrabbedPosition.X);
+                var yDifference = Math.Abs(unsnappedItemPosition.Value.Y - GrabbedPosition.Y);
 
                 if (xDifference > yDifference)
                 {
@@ -1121,13 +1161,13 @@ namespace GlueControl.Editing
                 heightMultiple *= 2;
             }
 
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            var mouse = InputManager.Mouse;
             var scalable = item as IScalable;
-            var cursorChange = new Vector3(cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(item.Z), 0);
-            cursorChange = cursorChange.RotatedBy(-item.RotationZ);
+            var mouseChange = new Vector3(mouse.WorldXChangeAt(item.Z), mouse.WorldYChangeAt(item.Z), 0);
+            mouseChange = mouseChange.RotatedBy(-item.RotationZ);
 
-            float xChangeForPosition = rotatedPositionMultiple.X * cursorChange.X;
-            float yChangeForPosition = rotatedPositionMultiple.Y * cursorChange.Y;
+            float xChangeForPosition = rotatedPositionMultiple.X * mouseChange.X;
+            float yChangeForPosition = rotatedPositionMultiple.Y * mouseChange.Y;
 
             bool setsTextureScale = ResizeHandles.GetIfSetsTextureScale(item);
 
@@ -1137,15 +1177,15 @@ namespace GlueControl.Editing
                 var currentScaleX = asSprite.ScaleX;
                 var currentScaleY = asSprite.ScaleY;
 
-                if (cursorChange.X != 0 && asSprite.ScaleX != 0 && widthMultiple != 0)
+                if (mouseChange.X != 0 && asSprite.ScaleX != 0 && widthMultiple != 0)
                 {
-                    var newRatio = (currentScaleX + 0.5f * cursorChange.X * widthMultiple) / currentScaleX;
+                    var newRatio = (currentScaleX + 0.5f * mouseChange.X * widthMultiple) / currentScaleX;
 
                     asSprite.TextureScale *= newRatio;
                 }
-                else if (cursorChange.Y != 0 && asSprite.ScaleY != 0 && heightMultiple != 0)
+                else if (mouseChange.Y != 0 && asSprite.ScaleY != 0 && heightMultiple != 0)
                 {
-                    var newRatio = (currentScaleY + 0.5f * cursorChange.Y * heightMultiple) / currentScaleY;
+                    var newRatio = (currentScaleY + 0.5f * mouseChange.Y * heightMultiple) / currentScaleY;
 
                     asSprite.TextureScale *= newRatio;
                 }
@@ -1153,13 +1193,13 @@ namespace GlueControl.Editing
             else if (item is Circle asCircle)
             {
                 float? newRadius = null;
-                if (cursorChange.X != 0 && widthMultiple != 0)
+                if (mouseChange.X != 0 && widthMultiple != 0)
                 {
-                    newRadius = asCircle.Radius + cursorChange.X * widthMultiple / 2.0f;
+                    newRadius = asCircle.Radius + mouseChange.X * widthMultiple / 2.0f;
                 }
-                else if (cursorChange.Y != 0 && heightMultiple != 0)
+                else if (mouseChange.Y != 0 && heightMultiple != 0)
                 {
-                    newRadius = asCircle.Radius + cursorChange.Y * heightMultiple / 2.0f;
+                    newRadius = asCircle.Radius + mouseChange.Y * heightMultiple / 2.0f;
                 }
                 if (newRadius != null)
                 {
@@ -1179,16 +1219,24 @@ namespace GlueControl.Editing
 
                 float scaleXChange = 0;
                 float scaleYChange = 0;
-                if (cursorChange.X != 0 && widthMultiple != 0)
+                if (mouseChange.X != 0 && widthMultiple != 0)
                 {
+                    if (unsnappedItemSize == null)
+                    {
+                        SetUnsnappedSizeToOwner();
+                    }
                     //var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;
                     //newScaleX = Math.Max(0, newScaleX);
                     //scalable.ScaleX = newScaleX;
                     // Vic says - this needs more work. Didn't work like this and I don't want to dive in yet
-                    unsnappedItemSize.X = unsnappedItemSize.X + cursorChange.X * widthMultiple;
-                    unsnappedItemSize.X = Math.Max(0, unsnappedItemSize.X);
+                    var sizeX = unsnappedItemSize.Value.X;
+                    sizeX = sizeX + mouseChange.X * widthMultiple;
+                    sizeX = Math.Max(0, sizeX);
+
+                    unsnappedItemSize = new Vector2(sizeX, unsnappedItemSize.Value.Y);
+
                     //unsnappedItemSize.X = MathFunctions.RoundFloat(unsnappedItemSize.X, sizeSnappingSize);
-                    var newScaleX = SnapSize(unsnappedItemSize.X) / 2.0f;
+                    var newScaleX = SnapSize(unsnappedItemSize.Value.X) / 2.0f;
                     scaleXChange = newScaleX - scalable.ScaleX;
 
                     if (scaleXChange != 0)
@@ -1202,15 +1250,22 @@ namespace GlueControl.Editing
                 }
 
 
-                if (cursorChange.Y != 0 && heightMultiple != 0)
+                if (mouseChange.Y != 0 && heightMultiple != 0)
                 {
+                    if (unsnappedItemSize == null)
+                    {
+                        SetUnsnappedSizeToOwner();
+                    }
                     //var newScaleY = scalable.ScaleY + cursorYChange * heightMultiple / 2.0f;
                     //newScaleY = Math.Max(0, newScaleY);
                     //scalable.ScaleY = newScaleY;
-                    unsnappedItemSize.Y = unsnappedItemSize.Y + cursorChange.Y * heightMultiple;
-                    unsnappedItemSize.Y = Math.Max(0, unsnappedItemSize.Y);
+                    var sizeY = unsnappedItemSize.Value.Y;
+                    sizeY = sizeY + mouseChange.Y * heightMultiple;
+                    sizeY = Math.Max(0, sizeY);
 
-                    var newScaleY = SnapSize(unsnappedItemSize.Y) / 2.0f;
+                    unsnappedItemSize = new Vector2(unsnappedItemSize.Value.X, sizeY);
+
+                    var newScaleY = SnapSize(unsnappedItemSize.Value.Y) / 2.0f;
                     scaleYChange = newScaleY - scalable.ScaleY;
 
                     if (scaleYChange != 0)
@@ -1238,10 +1293,10 @@ namespace GlueControl.Editing
 
         #endregion
 
-        public bool IsCursorOverThis()
+        public bool IsMouseOverThis()
         {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-            if (cursor.IsOn3D(mainPolygon))
+            var mouse = InputManager.Mouse;
+            if (IsOn3D(mainPolygon))
             {
                 return true;
             }
@@ -1254,7 +1309,35 @@ namespace GlueControl.Editing
             {
                 return true;
             }
+            // This may have snapping, which means if grabbed the mouse isn't physically over it, but it should still count
+            if (IsGrabbed)
+            {
+                return true;
+            }
             return false;
+        }
+
+        public bool IsOn3D(Polygon polygon)
+        {
+            Ray ray = InputManager.Mouse.GetMouseRay(FlatRedBall.Camera.Main);
+            Matrix inverseRotation = polygon.RotationMatrix;
+
+            Matrix.Invert(ref inverseRotation, out inverseRotation);
+
+            Plane plane = new Plane(polygon.Position, polygon.Position + polygon.RotationMatrix.Up,
+                polygon.Position + polygon.RotationMatrix.Right);
+
+            float? result = ray.Intersects(plane);
+
+            if (!result.HasValue)
+            {
+                return false;
+            }
+
+            Vector3 intersection = ray.Position + ray.Direction * result.Value;
+
+
+            return polygon.IsPointInside(ref intersection);
         }
 
         public bool ShouldSuppress(string variableName) =>
@@ -1270,6 +1353,18 @@ namespace GlueControl.Editing
 
             variableName == "Radius"
             ;
+
+        public bool HandleDelete()
+        {
+            if (ownerAsPositionable is Polygon asPolygon)
+            {
+                return PolygonPointHandles.HandleDelete(asPolygon);
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         public void Destroy()
         {

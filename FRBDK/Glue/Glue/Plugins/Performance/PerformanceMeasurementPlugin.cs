@@ -116,8 +116,13 @@ namespace PluginTestbed.PerformanceMeasurement
         ToolStripMenuItem mMenuItem;
         MenuStrip mMenuStrip;
 
+#pragma warning disable CS0067 // Needed for interface
         public event Action<IPlugin, string, string> ReactToPluginEventAction;
+#pragma warning restore CS0067 // The event 'PerformanceMeasurementPlugin.ReactToPluginEventAction' is never used
+
+#pragma warning disable CS0067 // Needed for interface
         public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
+#pragma warning restore CS0067 
 
         public void InitializeMenu(System.Windows.Forms.MenuStrip menuStrip)
         {

@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Instructions.Reflection;
+using FlatRedBall.Math.Splines;
 using FlatRedBall.Utilities;
 using Microsoft.Xna.Framework;
 using System;
@@ -19,7 +20,8 @@ namespace FlatRedBall.Math.Paths
         Line,
         Arc,
         // Even though this isn't technically a path, we need to store this for serialization
-        Move
+        Move,
+        Spline
     }
 
     public enum AngleUnit
@@ -44,6 +46,9 @@ namespace FlatRedBall.Math.Paths
         public float EndX;
         public float EndY;
 
+        public Vector2 StartVelocity;
+        public Vector2 EndVelocity;
+
         Vector2 End => new Vector2(EndX, EndY);
 
         /// <summary>
@@ -66,6 +71,14 @@ namespace FlatRedBall.Math.Paths
             {
                 return Start; // do we return start or end? Seems arbitrary unless there's some use case that benefits from one or the other...
             }
+            else if(SegmentType == SegmentType.Spline)
+            {
+                // for now we create a spline, worry about the performance later
+                var spline = Path.GetSplineForSegment(this);
+                var time = spline.GetTimeAtLengthAlongSpline(lengthFromStart);
+                var position = spline.GetPositionAtTime(time);
+                return new Vector2(position.X, position.Y);
+            }
             else
             {
                 var centerToStart = Start - CircleCenter;
@@ -80,6 +93,10 @@ namespace FlatRedBall.Math.Paths
             }
         }
 
+        public override string ToString()
+        {
+            return $"{SegmentType}:({StartX},{StartY})=>({EndX},{EndY})";
+        }
     }
 
     #endregion
@@ -93,7 +110,7 @@ namespace FlatRedBall.Math.Paths
     {
         #region Fields/Properties
 
-        List<PathSegment> Segments { get; set; } = new List<PathSegment>();
+        public List<PathSegment> Segments { get; private set; } = new List<PathSegment>();
 
         float currentX;
         float currentY;
@@ -112,8 +129,7 @@ namespace FlatRedBall.Math.Paths
         }
         public void MoveToRelative(float x, float y)
         {
-            var segment = GetSegmentToAbsolutePoint(currentX + x, currentY + y, SegmentType.Move);
-            segment.CalculatedLength = 0;
+            MoveTo(currentX + x, currentY + y);
         }
 
         public void LineTo(float x, float y)
@@ -128,15 +144,75 @@ namespace FlatRedBall.Math.Paths
         }
         public void LineToRelative(float x, float y)
         {
-            var pathSegment = GetSegmentToAbsolutePoint(currentX + x, currentY + y, SegmentType.Line);
+            LineTo(currentX + x, currentY + y);
+        }
+
+        public void SplineTo(float x, float y, bool modifyPreviousSplinePoint = true)
+        {
+            Vector2? forcedStartVelocity = null;
+            if(modifyPreviousSplinePoint && Segments.Count > 1 && Segments[Segments.Count-1].SegmentType == SegmentType.Spline)
+            {
+                var lastSegment = Segments[Segments.Count - 1];
+                var segmentBeforeLast = Segments[Segments.Count - 2];
+
+                lastSegment.EndVelocity = new Vector2(x - segmentBeforeLast.EndX, y - segmentBeforeLast.EndY);
+                // update the length:
+
+                TotalLength -= lastSegment.CalculatedLength;
+                lastSegment.CalculatedLength = (float) GetSplineForSegment(lastSegment).Length;
+                forcedStartVelocity = lastSegment.EndVelocity;
+                TotalLength += lastSegment.CalculatedLength;
+            }
+
+
+            var currentXBefore = currentX;
+            var currentYBefore = currentY;
+
+            // previous velocity:
+
+            var newSegmentStartVelocity = forcedStartVelocity ?? TangentAtLength(TotalLength - .1f);
+
+            var pathSegment = GetSegmentToAbsolutePoint(x, y, SegmentType.Spline);
             var xDifference = pathSegment.EndX - pathSegment.StartX;
             var yDifference = pathSegment.EndY - pathSegment.StartY;
+            // todo, need to figure this out:
 
-            pathSegment.CalculatedLength = (float)System.Math.Sqrt(xDifference * xDifference + yDifference * yDifference);
+            if (TotalLength > .1f)
+            {
+                pathSegment.EndVelocity = new Vector2(x - currentXBefore, y - currentYBefore);
+
+                pathSegment.StartVelocity = newSegmentStartVelocity.AtLength(pathSegment.EndVelocity.Length());
+            }
+
+            Spline spline = GetSplineForSegment(pathSegment);
+            var length = spline.Length;
+
+            pathSegment.CalculatedLength = (float)length;
             Segments.Add(pathSegment);
             TotalLength += pathSegment.CalculatedLength;
-
         }
+        public void SplineToRelative(float x, float y, bool modifyPreviousSplinePoint = true)
+        {
+            SplineTo(currentX + x, currentY + y, modifyPreviousSplinePoint);
+        }
+
+        internal static Spline GetSplineForSegment(PathSegment pathSegment)
+        {
+            var spline = new Spline();
+            var endTime = 1;
+
+            spline.Add(new SplinePoint(pathSegment.StartX, pathSegment.StartY, 0, 0));
+            spline.Add(new SplinePoint(pathSegment.EndX, pathSegment.EndY, 0, endTime));
+
+            spline[0].Velocity = pathSegment.StartVelocity.ToVector3();
+            spline[1].Velocity = pathSegment.EndVelocity.ToVector3();
+
+            spline.CalculateAccelerations();
+            // break this up into 32 segments: That should be good enough, I think
+            spline.CalculateDistanceTimeRelationships(endTime/32f);
+            return spline;
+        }
+
         PathSegment GetSegmentToAbsolutePoint(float absoluteX, float absoluteY, SegmentType segmentType)
         {
             var pathSegment = new PathSegment();
@@ -205,13 +281,7 @@ namespace FlatRedBall.Math.Paths
         }
         public void ArcToRelativeDegrees(float endX, float endY, float signedAngleDegrees)
         {
-            var pathSegment = GetSegmentToAbsolutePoint(currentX + endX, currentY + endY, SegmentType.Arc);
-            pathSegment.AngleUnit = AngleUnit.Degrees;
-            pathSegment.ArcAngle = signedAngleDegrees;
-
-            AssignArcLength(pathSegment);
-            Segments.Add(pathSegment);
-            TotalLength += pathSegment.CalculatedLength;
+            ArcToDegrees(currentX + endX, currentY + endY, signedAngleDegrees);
         }
 
         void AssignArcLength(PathSegment segment)
@@ -421,6 +491,9 @@ namespace FlatRedBall.Math.Paths
 
                 var startXOffset = segment.StartX - xToFlipAbout;
                 segment.StartX = xToFlipAbout - startXOffset;
+
+                segment.StartVelocity.X *= -1;
+                segment.EndVelocity.X *= -1;
             }
         }
 
@@ -472,6 +545,20 @@ namespace FlatRedBall.Math.Paths
             return new Vector2(segment.StartX, segment.StartY);
         }
 
+        public Vector2 PointAtSegmentIndexEnd(int index)
+        {
+            if(index < Segments.Count - 1)
+            {
+                var segment = Segments[index + 1];
+                return new Vector2(segment.EndX, segment.EndY);
+            }
+            else
+            {
+                return PointAtLength(this.TotalLength);
+            }
+
+        }
+
         public float LengthAtSegmentIndex(int index)
         {
             var lengthSoFar = 0f;
@@ -503,7 +590,9 @@ namespace FlatRedBall.Math.Paths
             if (startValue < 0) startValue = 0;
             if (endValue > TotalLength) endValue = TotalLength;
 
-            var tangent = PointAtLength(endValue) - PointAtLength(startValue);
+            var endPoint = PointAtLength(endValue);
+            var startPoint = PointAtLength(startValue);
+            var tangent = endPoint - startPoint;
 
             return tangent.NormalizedOrRight();
         }
@@ -536,6 +625,10 @@ namespace FlatRedBall.Math.Paths
                     else if(item.SegmentType == SegmentType.Move)
                     {
                         MoveToRelative(item.EndX, item.EndY);
+                    }
+                    else if(item.SegmentType == SegmentType.Spline)
+                    {
+                        SplineToRelative(item.EndX, item.EndY);
                     }
                     else
                     {

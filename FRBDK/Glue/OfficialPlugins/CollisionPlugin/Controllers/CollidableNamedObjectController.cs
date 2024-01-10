@@ -32,8 +32,10 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 var nos = GlueState.Self.CurrentNamedObjectSave;
                 if (nos != null && ViewModel.CanBePartitioned)
                 {
-                    ViewModel.CalculatedParitioningWidthHeight = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
-                        nos, ViewModel.SortAxis);
+                    var partitionInfo = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
+                        nos);
+                    ViewModel.CalculatedParitioningWidthHeight = Math.Abs(partitionInfo.HalfDimension * 2);
+                    ViewModel.CalculatedPartitionWidthHeightSource = partitionInfo.Source;
                 }
             }
         }
@@ -58,11 +60,14 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             // Set this before updating from Glue object so that we don't persist values which 
             // don't apply
             viewModel.CanBePartitioned = CollisionCodeGenerator.CanBePartitioned(thisNamedObject);
+            viewModel.DefinedByBase = thisNamedObject.DefinedByBase;
             viewModel.UpdateFromGlueObject();
             if(viewModel.CanBePartitioned)
             {
-                viewModel.CalculatedParitioningWidthHeight = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
-                    thisNamedObject, viewModel.SortAxis);
+                var partitionInfo = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
+                    thisNamedObject);
+                viewModel.CalculatedParitioningWidthHeight = Math.Abs( partitionInfo.HalfDimension * 2);
+                ViewModel.CalculatedPartitionWidthHeightSource = partitionInfo.Source;
             }
 
             viewModel.CollisionRelationshipsTitle =
@@ -77,7 +82,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             if(isTileShapeCollection)
             {
                 // only against collidables:
-                collidables = container.AllNamedObjects
+                // See update below on why we don't use AllNamedObjects
+                //collidables = container.AllNamedObjects
+                collidables = container.NamedObjects
                     .Where(item =>
                     {
                         var entity = CollisionRelationshipViewModelController.GetEntitySaveReferencedBy(item);
@@ -87,7 +94,17 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
             else
             {
-                collidables = container.AllNamedObjects
+                // Update April 23, 23
+                // We used to use AllNamedObjects
+                // but now that instances are directly
+                // added to Glue (such as coins in a Mario
+                // game), lists can get HUGE and this view becomes
+                // pointless and slow. Typically relationships are created
+                // between lists and other lists. Soemtimes individual objects
+                // can be collided too, but rarely are these inside of lists. Therefore
+                // let's speed things up and only use the top-level objects and not All:
+                //collidables = container.AllNamedObjects
+                collidables = container.NamedObjects
                     .Where(item =>
                     {
                         return CollisionRelationshipViewModelController.GetIfCanBeReferencedByRelationship(item);
@@ -104,6 +121,11 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 }
             }
 
+            // Why do we use "all" here? CollisionRelationships cannot be
+            // added to lists, so they are always at the top level. Using all 
+            // means we look through all of the items inside of lists which can be 
+            // slower for large entities.
+            //var relationships = container.AllNamedObjects
             var relationships = container.AllNamedObjects
                 .Where(item =>
                 {
@@ -139,7 +161,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             var name2 = collidable?.InstanceName;
 
             var pairViewModel = new NamedObjectPairRelationshipViewModel();
-            pairViewModel.AddObjectClicked += (not, used) => HandleAddCollisionRelationshipAddClicked(pairViewModel);
+            pairViewModel.AddObjectClicked += (_, _) => _=HandleAddCollisionRelationshipAddClicked(pairViewModel);
             pairViewModel.OtherObjectName = name2;
             pairViewModel.SelectedNamedObjectName = thisNamedObject.InstanceName;
 
@@ -189,7 +211,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             await TaskManager.Self.AddAsync(async () =>
             {
                 var addObjectModel = new AddObjectViewModel();
-
+                addObjectModel.ForcedElementToAddTo = container;
 
                 var firstNos = container.GetNamedObjectRecursively(firstNosName);
                 var secondNos = container.GetNamedObjectRecursively(secondNosName);
@@ -306,6 +328,14 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectModel,
                     container, listToAddTo: null);
 
+                var indexToInsertAfter = GetIndexToInsertAfter(newNos, container);
+
+                if(indexToInsertAfter != null)
+                {
+                    container.NamedObjects.Remove(newNos);
+                    container.NamedObjects.Insert(indexToInsertAfter.Value + 1, newNos);
+                }
+
                 // if this is an always-colliding relationship, the user will typically want this
                 // to be at the beginning before all other relationships. Therefore, let's remove
                 // and re-add it:
@@ -361,6 +391,27 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }, $"Creating collision relationships between {firstNosName} and {secondNosName}", doOnUiThread:true);
 
             return newNos;
+        }
+
+        private static int? GetIndexToInsertAfter(NamedObjectSave newNos, GlueElement container)
+        {
+            var newNosFirst = newNos.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstCollisionName));
+
+            for(int i = container.NamedObjects.Count - 1; i >= 0; i--)
+            {
+                var candidate = container.NamedObjects[i];
+
+                if (candidate == newNos) continue;
+
+                var candidateFirst = candidate.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstCollisionName));
+
+                if(candidateFirst == newNosFirst)
+                {
+                    return i;
+                }
+            }
+
+            return null;
         }
     }
 }

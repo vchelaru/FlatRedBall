@@ -155,6 +155,7 @@
     <Compile Include="Data\AllData.cs" />
     <Compile Include="Data\EngineData.cs" />
     <Compile Include="Data\EngineFileData.cs" />
+    <Compile Include="Processes\AddRunFlatRedBallBatch.cs" />
     <Compile Include="Processes\BuildGlue.cs" />
     <Compile Include="Processes\PublishGlue.cs" />
     <Compile Include="Processes\TraceResults.cs" />
@@ -169,7 +170,6 @@
     <Compile Include="Processes\CopyBuiltEnginesToReleaseFolder.cs" />
     <Compile Include="Processes\CopyFrbdkAndPluginsToReleaseFolder.cs" />
     <Compile Include="Processes\DirectoryHelper.cs" />
-    <Compile Include="Processes\EmailResults.cs" />
     <Compile Include="Processes\IResults.cs" />
     <Compile Include="Processes\ProcessStep.cs" />
     <Compile Include="Processes\ZipFrbdk.cs" />

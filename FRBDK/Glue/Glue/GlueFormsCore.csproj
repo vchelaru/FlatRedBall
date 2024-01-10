@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net6.0-windows</TargetFramework>
@@ -8,7 +7,7 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<Platforms>AnyCPU</Platforms>
 		<Version>2022.06.27.675</Version>
-		<ApplicationIcon>Glue.ico</ApplicationIcon>
+		<ApplicationIcon>Frb.ico</ApplicationIcon>
 		<RootNamespace>FlatRedBall.Glue</RootNamespace>
 		<!--<DisableMSBuildAssemblyCopyCheck>true</DisableMSBuildAssemblyCopyCheck>-->
 	</PropertyGroup>
@@ -87,6 +86,11 @@
 		<None Remove="Content\Icons\file.png" />
 		<None Remove="Content\Icons\folder.png" />
 		<None Remove="Content\Icons\GlueIcon.png" />
+		<None Remove="Content\Icons\icon_collisions.png" />
+		<None Remove="Content\Icons\icon_entity.png" />
+		<None Remove="Content\Icons\icon_entity_derived.png" />
+		<None Remove="Content\Icons\icon_folder.png" />
+		<None Remove="Content\Icons\icon_screen.png" />
 		<None Remove="Content\Icons\IncreaseArea.Agif" />
 		<None Remove="Content\Icons\IncreaseArea.gif" />
 		<None Remove="Content\Icons\IncreaseAreaGum.gif" />
@@ -116,6 +120,7 @@
 		<None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\3DIcon.png" />
 		<None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\LinearFilter.png" />
 		<None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\PointFilter.png" />
+		<None Remove="Plugins\EmbeddedPlugins\OutputPlugin\DeleteOutput.png" />
 		<None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\Error.png" />
 		<None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
 		<None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
@@ -130,8 +135,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\..\Gum\GumDataTypes\GumDataTypesStandard.csproj" />
-		<ProjectReference Include="..\..\..\..\Gum\GumRuntimeStandard\GumRuntimeStandard\GumRuntimeStandard.csproj" />
+	  <Resource Include="..\..\..\Content\Icon.png" Link="Content\Icons\Icon.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\Gum\GumCommon\GumCommon.csproj" />
+		<ProjectReference Include="..\..\..\..\Gum\GumDataTypes\GumDataTypesNet6.csproj" />
 		<ProjectReference Include="..\..\..\..\Gum\SkiaGum.Wpf.NetCore3_0\SkiaGum.Wpf.Net6.csproj" />
 		<ProjectReference Include="..\..\..\..\Gum\SkiaGumMonogame\SkiaGumMonogame.csproj" />
 		<ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
@@ -139,10 +148,12 @@
 		<ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
 		<ProjectReference Include="..\..\..\Tiled\TMXGlueLib\TMXGlueLibCore.csproj" />
 		<ProjectReference Include="..\..\FRBDKUpdater\UpdaterWpf\UpdaterWpf\UpdaterWpf.csproj" />
+		<ProjectReference Include="..\..\Localization\Localization.csproj" />
 		<ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.PluginCore.csproj" />
 		<ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
 		<ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
 		<ProjectReference Include="..\NpcWpfLib\NpcWpfLib.csproj" />
+		<ProjectReference Include="..\StateInterpolationPlugin\StateInterpolationNet6\StateInterpolationNet6.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -174,6 +185,7 @@
 		
 		<!--<PackageReference Include="Microsoft.Build.Locator" Version="1.5.5" />-->
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+		<PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
 		<PackageReference Include="ParallelExtensionsExtras.CrossPlatform" Version="1.0.0" />
 		<PackageReference Include="PropertyTools.Wpf" Version="3.1.0" />
 		<PackageReference Include="SharpSerializer" Version="3.0.1" />
@@ -196,6 +208,11 @@
 		<Resource Include="Content\Icons\file.png" />
 		<Resource Include="Content\Icons\folder.png" />
 		<Resource Include="Content\Icons\GlueIcon.png" />
+		<Resource Include="Content\Icons\icon_collisions.png" />
+		<Resource Include="Content\Icons\icon_entity.png" />
+		<Resource Include="Content\Icons\icon_entity_derived.png" />
+		<Resource Include="Content\Icons\icon_folder.png" />
+		<Resource Include="Content\Icons\icon_screen.png" />
 		<Resource Include="Content\Icons\SaveIcon.png" />
 		<EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseArea.Agif">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -237,6 +254,7 @@
 		<Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\Icons\3DIcon.png" />
 		<Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\Icons\LinearFilter.png" />
 		<Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\Icons\PointFilter.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\OutputPlugin\DeleteOutput.png" />
 		<Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\Error.png" />
 		<Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
 		<Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
@@ -291,6 +309,9 @@
 		</None>
 		<None Update="Content\FilesForAddNewFile\IGB3Song.mp3">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Content\FilesForAddNewFile\OpenOfficeSpreadsheet.ods">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Content\FilesForAddNewFile\ResistanceRises.ogg">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

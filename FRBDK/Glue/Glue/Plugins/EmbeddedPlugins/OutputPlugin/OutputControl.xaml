@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -13,7 +12,10 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
             <Button Click="Button_Click">
-                <Image IsHitTestVisible="False" Source="/Content/Icons/Delete.png" Width="25" ></Image>
+                <Button.ToolTip>
+                    <TextBlock>Clear Output</TextBlock>
+                </Button.ToolTip>
+                <Image IsHitTestVisible="False" Source="/Plugins/EmbeddedPlugins/OutputPlugin/DeleteOutput.png" Width="25" ></Image>
             </Button>
         </StackPanel>
         <RichTextBox x:Name="TextBox" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Row="1">

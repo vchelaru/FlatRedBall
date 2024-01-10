@@ -1,25 +1,12 @@
 ﻿using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Utilities;
-using GlueFormsCore.Extensions;
 using GlueFormsCore.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -146,7 +133,7 @@ namespace FlatRedBall.Glue.Controls
                     fileType = fileType.Substring(0, fileType.IndexOf('('));
                 }
 
-                fileType = fileType?.Replace(" ", "");
+                fileType = fileType?.Replace(" ", "")?.Replace("/", "");
                 return fileType;
             }
         }

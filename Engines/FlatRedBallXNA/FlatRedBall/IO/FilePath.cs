@@ -108,11 +108,18 @@ namespace FlatRedBall.IO
             {
                 if(standardizedCaseSensitive == null)
                 {
-                    standardizedCaseSensitive = FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
+                    var beforeDotDotSlashRemoved = StandardizeInternal(Original);
+                    if(beforeDotDotSlashRemoved != null)
+                    {
+                        standardizedCaseSensitive = FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
+                    }
                 }
                 return standardizedCaseSensitive;
             }
         }
+
+        // assume that if no extension, it's a directory? 
+        public bool IsDirectory => string.IsNullOrEmpty(Extension);
 
         #endregion
 
@@ -176,7 +183,7 @@ namespace FlatRedBall.IO
 
         public bool IsRootOf(FilePath otherFilePath)
         {
-            return otherFilePath.Standardized.StartsWith(this.Standardized);
+            return otherFilePath.Standardized.StartsWith(this.Standardized) && otherFilePath != this;
         }
 
         public FilePath RemoveExtension()
@@ -256,9 +263,13 @@ namespace FlatRedBall.IO
             }
         }
 
+        public bool IsRelativeTo(FilePath otherFilePath) => FileManager.IsRelativeTo(this.FullPath, otherFilePath.FullPath);
+
+
         public string RelativeTo(FilePath otherFilePath)
         {
             return FileManager.MakeRelative(this.FullPath, otherFilePath.FullPath);
         }
+
     }
 }

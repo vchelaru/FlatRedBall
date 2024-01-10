@@ -5,7 +5,7 @@ namespace FlatRedBall.Input
 {
     /// <summary>
     /// Interface defining an input device which can return a single value. Typically this value will range between
-    /// 0 to +1 for analog buttons and -1 to +1 for direcitonal input devices such as analog sticks.
+    /// 0 to +1 for analog buttons and -1 to +1 for directional input devices such as analog sticks.
     /// </summary>
 	public interface I1DInput
 	{
@@ -64,9 +64,9 @@ namespace FlatRedBall.Input
         public static Multiple1DInputs Or(this I1DInput thisInput, I1DInput input)
         {
             Multiple1DInputs toReturn;
-            if (thisInput is MultiplePressableInputs)
+            if (thisInput is Multiple1DInputs inputs)
             {
-                toReturn = (Multiple1DInputs)thisInput;
+                toReturn = inputs;
             }
             else
             {

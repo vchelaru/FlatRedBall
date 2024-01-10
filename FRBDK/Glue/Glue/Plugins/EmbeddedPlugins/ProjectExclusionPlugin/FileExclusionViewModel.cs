@@ -6,6 +6,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
 {
@@ -84,10 +85,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
                                 GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
                             }
 
-                            GlueCommands.Self.GluxCommands.SaveGlux();
+                            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                             GlueCommands.Self.ProjectCommands.SaveProjects();
                         },
-                        "Generating element and saving projects"
+                        L.Texts.ProjectsSaveGenerateElements
                         );
                     }
                     break;

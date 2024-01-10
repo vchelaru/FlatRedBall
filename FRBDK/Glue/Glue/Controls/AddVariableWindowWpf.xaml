@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
+        xmlns:localization="clr-namespace:Localization;assembly=Localization"
         mc:Ignorable="d"
-        Title="New Variable" Height="450" Width="400">
+        Title="New Variable" Height="600" Width="400">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -14,14 +14,14 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Margin="10">
-            <RadioButton IsChecked="{Binding IsExposedVariableChecked}">Expose an existing variable</RadioButton>
-            <RadioButton IsChecked="{Binding IsTunneledVariableChecked}">Tunnel a variable in a contained object</RadioButton>
-            <RadioButton IsChecked="{Binding IsNewVariableChecked}">Create a new variable</RadioButton>
+            <RadioButton IsChecked="{Binding IsExposedVariableChecked}" Content="{x:Static localization:Texts.ExposeVariable}" />
+            <RadioButton IsChecked="{Binding IsTunneledVariableChecked}" Content="{x:Static localization:Texts.VariableTunnelIntoContainer}" />
+            <RadioButton IsChecked="{Binding IsNewVariableChecked}" Content="{x:Static localization:Texts.VariableCreate}" />
         </StackPanel>
         <Separator Grid.Row="1"></Separator>
         
         <StackPanel x:Name="ExposeExistingUi" Grid.Row="2" Margin="10" Visibility="{Binding ExposeUiVisibility, FallbackValue=Collapsed}">
-            <Label>Select an existing variable:</Label>
+            <Label Content="{x:Static localization:Texts.SelectExistingVariable}" />
             <ComboBox x:Name="ExistingVariableComboBox" 
                       ItemsSource="{Binding AvailableExposedVariables}" 
                       SelectedItem="{Binding SelectedExposedVariable}"></ComboBox>
@@ -37,8 +37,8 @@
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Label VerticalAlignment="Center">Object:</Label>
-                <Label Margin="0,5,0,0" Grid.Row="1" >Variable:</Label>
+                <Label VerticalAlignment="Center" Content="{x:Static localization:Texts.Object}" />
+                <Label Margin="0,5,0,0" Grid.Row="1" Content="{x:Static localization:Texts.Variable}" />
                 <ComboBox SelectedItem="{Binding SelectedTunneledObject}" 
                           ItemsSource="{Binding AvailableTunneledObjects}"
                           Margin="0,5,0,0" Grid.Column="1"></ComboBox>
@@ -46,7 +46,7 @@
                           ItemsSource="{Binding AvailableTunneledVariableNames}"
                           Margin="0,5,0,0" Grid.Row="1" Grid.Column="1"></ComboBox>
             </Grid>
-            <Label Margin="0,15,0,0">Advanced Options</Label>
+            <Label Margin="0,15,0,0" Content="{x:Static localization:Texts.AdvancedOptions}" />
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
@@ -57,9 +57,9 @@
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Label Margin="0,0,20,0">Alternative Name:</Label>
-                <Label Margin="0,10,0,0" Grid.Row="1">Converted Type:</Label>
-                <Label Margin="0,10,0,0" Grid.Row="2">Type Converter:</Label>
+                <Label Margin="0,0,20,0" Content="{x:Static localization:Texts.AlternativeName}" />
+                <Label Margin="0,10,0,0" Grid.Row="1" Content="{x:Static localization:Texts.ConvertedType}" />
+                <Label Margin="0,10,0,0" Grid.Row="2" Content="{x:Static localization:Texts.TypeConverter}" />
 
                 <TextBox Text="{Binding AlternativeName}" Grid.Column="1" KeyDown="TunneledVariableTextBox_KeyDown"></TextBox>
                 <ComboBox 
@@ -83,33 +83,45 @@
             <StackPanel HorizontalAlignment="Right">
                 <CheckBox 
                     IsChecked="{Binding IsShowStateCategoriesChecked}"
-                    VerticalAlignment="Bottom" >Show State Categories</CheckBox>
+                    VerticalAlignment="Bottom" Content="{x:Static localization:Texts.ShowStateCategories}" />
 
             </StackPanel>
-            <Label VerticalAlignment="Bottom">Type:</Label>
+            <Label VerticalAlignment="Bottom" HorizontalAlignment="Left"  Content="{x:Static localization:Texts.Type}" />
             <ListBox 
                 ItemsSource="{Binding AvailableNewVariableTypes}"
                 SelectedItem="{Binding SelectedNewType}"
                 Grid.Row="1">
             </ListBox>
             <StackPanel Grid.Row="2" Margin="0,4,0,0">
-                <Label Margin="0,0,0,-4">Name:</Label>
-                <TextBox x:Name="NewVariableTextBox" Text="{Binding NewVariableName}" KeyDown="TextBox_KeyDown" Margin="0,0,0,6"></TextBox>
+                <Label Margin="0,0,0,-4" Content="{x:Static localization:Texts.Name}" />
+                <TextBox x:Name="NewVariableTextBox" 
+                         Text="{Binding NewVariableName, UpdateSourceTrigger=PropertyChanged}" 
+                         KeyDown="TextBox_KeyDown" Margin="0,0,0,0"></TextBox>
+                <TextBlock x:Name="FailureTextBlock" Margin="3,0,3,3" Foreground="DarkRed" 
+                   Visibility="{Binding FailureTextVisibility}" Text="{Binding FailureText}" TextWrapping="Wrap"></TextBlock>
+
+                <Label Margin="0,0,0,-4" Content="{x:Static localization:Texts.Category}" />
+                    <ComboBox Text="{Binding NewVariableCategory}" ItemsSource="{Binding AvailableCategories}" IsEditable="True" KeyDown="TextBox_KeyDown" Margin="0,0,0,6"></ComboBox>
+
+                <Label Margin="0,0,0,-4"  Content="{x:Static localization:Texts.Summary}" />
+                <TextBox Text="{Binding NewVariableSummary}" KeyDown="TextBox_KeyDown" Margin="0,0,0,6"></TextBox>
+
                 <CheckBox 
                     IsChecked="{Binding IsList}"
                     Visibility="{Binding ListCheckBoxVisibility}"
-                    VerticalAlignment="Bottom" >List</CheckBox>
+                    VerticalAlignment="Bottom" Content="{x:Static localization:Texts.List}" />
                 <CheckBox 
                     IsChecked="{Binding IsStatic}"
-                    >Static (all objects share one copy of the same variable)</CheckBox>
+                    Content="{x:Static localization:Texts.StaticAllObjectsShareVariable}" />
                 <CheckBox
                     IsChecked="{Binding SetByDerived}"
-                    >Can Be Set By Derived</CheckBox>
+                    Visibility="{Binding SetByDerivedVisibility}" 
+                    Content="{x:Static localization:Texts.CanBeSetByDerived}" />
             </StackPanel>
         </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="4" HorizontalAlignment="Right">
-            <Button Margin="10" Width="70" Click="OkButton_Click">OK</Button>
-            <Button Margin="0,10,10,10" Width="70" Click="CancelButton_Click">Cancel</Button>
+            <Button Margin="10" Width="70" Click="OkButton_Click" Content="{x:Static localization:Texts.Ok}" />
+            <Button Margin="0,10,10,10" Width="70" Click="CancelButton_Click" Content="{x:Static localization:Texts.Cancel}" />
         </StackPanel>
     </Grid>
 </Window>

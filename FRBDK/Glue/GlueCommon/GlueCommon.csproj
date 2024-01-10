@@ -1,13 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="NetStandard\**" />
     <Compile Remove="Plugins\**" />
+    <EmbeddedResource Remove="NetStandard\**" />
     <EmbeddedResource Remove="Plugins\**" />
+    <None Remove="NetStandard\**" />
     <None Remove="Plugins\**" />
   </ItemGroup>
 

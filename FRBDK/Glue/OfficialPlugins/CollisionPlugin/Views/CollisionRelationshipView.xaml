@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.CollisionPlugin.Views"
-             xmlns:VM="clr-namespace:OfficialPlugins.CollisionPlugin.ViewModels" xmlns:views="clr-namespace:OfficialPluginsCore.CollisionPlugin.Views"
+             xmlns:views="clr-namespace:OfficialPluginsCore.CollisionPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignWidth="600">
     <ScrollViewer>
@@ -30,8 +30,8 @@
                     <ComboBox  FontSize="26"
                               SelectedItem="{Binding FirstCollisionName}"
                               ItemsSource="{Binding FirstCollisionItemSource}"></ComboBox>
-                    <Image ToolTip="This object is automatically partitioned, or it does not need partitioning" Grid.Column="1" Visibility="{Binding FirstPartitionEnabledVisibility}" Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/PartitionEnabled.png"/>
-                    <Button ToolTip="This object is not partitioned, so the collision relationship may run slowly" Grid.Column="1" Visibility="{Binding FirstNoPartitioningVisibility}" 
+                    <Image ToolTip="{x:Static localization:Texts.HintObjectAutoPartition}" Grid.Column="1" Visibility="{Binding FirstPartitionEnabledVisibility}" Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/PartitionEnabled.png"/>
+                    <Button ToolTip="{x:Static localization:Texts.HintObjectNotPartitioned}" Grid.Column="1" Visibility="{Binding FirstNoPartitioningVisibility}" 
                             Click="FirstObjectCollisionPartitioningButtonClicked">
                         <Image Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/NoPartitioning.png"></Image>
                     </Button>
@@ -45,14 +45,14 @@
                     <ComboBox FontSize="26"
                               SelectedItem="{Binding SecondCollisionName}"
                               ItemsSource="{Binding SecondCollisionItemSource}"></ComboBox>
-                    <Image ToolTip="This object is automatically partitioned, or it does not need partitioning" Grid.Column="1" Visibility="{Binding SecondPartitionEnabledVisibility}" Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/PartitionEnabled.png"></Image>
-                    <Button ToolTip="This object is not partitioned, so the collision relationship may run slowly" Grid.Column="1" Visibility="{Binding SecondNoPartitioningVisibility}"
+                    <Image ToolTip="{x:Static localization:Texts.HintObjectAutoPartition}" Grid.Column="1" Visibility="{Binding SecondPartitionEnabledVisibility}" Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/PartitionEnabled.png"></Image>
+                    <Button ToolTip="{x:Static localization:Texts.HintObjectNotPartitioned}" Grid.Column="1" Visibility="{Binding SecondNoPartitioningVisibility}"
                             Click="SecondObjectCollisionPartitioningButtonClicked">
                         <Image Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/NoPartitioning.png"></Image>
                     </Button>
                 </Grid>
 
-                <TextBlock Margin="0,5,0,0" Grid.Row="1" Grid.ColumnSpan="3">Subcollision:</TextBlock>
+                <TextBlock Margin="0,5,0,0" Grid.Row="1" Grid.ColumnSpan="3" Text="{x:Static localization:Texts.Subcollision}" />
 
                 <ComboBox Grid.Row="2"
                           IsEnabled="{Binding FirstSubCollisionEnabled}"
@@ -69,9 +69,7 @@
 
                 <TextBlock Grid.Row="3" Grid.ColumnSpan="3" TextWrapping="Wrap" 
                            Margin="10,0,0,0" FontSize="10"
-                           Visibility="{Binding NoSubcollisionMessageVisibility}">
-                    Subcollision cannot be set on Delegate Collision - the delegate can internally select which objects to collide.</TextBlock>
-
+                           Visibility="{Binding NoSubcollisionMessageVisibility}" Text="{x:Static localization:Texts.HintSubcollisionCannotDelegate}" />
 
             </Grid>
             <TextBlock Background="DarkRed" Foreground="Yellow" FontSize="15"
@@ -83,51 +81,41 @@
             </TextBlock>
             <CheckBox VerticalContentAlignment="Center"
                       IsChecked="{Binding IsAutoNameEnabled}"
-                      Margin="0,8,0,0"
-                      >Auto-name Relationship</CheckBox>
+                      Margin="0,8,0,0" Content="{x:Static localization:Texts.AutoNameRelationship}"/>
 
             <CheckBox VerticalContentAlignment="Center"
                       IsChecked="{Binding IsCollisionActive}"
-                      Margin="0,8,0,0">Is Collision Active</CheckBox>
+                      Margin="0,8,0,0" Content="{x:Static localization:Texts.IsCollisionActive}" />
 
             <TextBlock TextWrapping="WrapWithOverflow"
                        Visibility="{Binding InactiveMessageVisibility}"
                        Padding="4"
                        Margin="15,0,0,0"
-                       Text="Inactive collisions will not automatically raise events and perform physics, but can be called manually in code"
-                       />
+                       Text="{x:Static localization:Texts.HintCollisionsInactiveMayCalled}" />
 
-            
-            <GroupBox Header="Collision Limit" Visibility="{Binding CollisionLimitUiVisibility}">
+
+            <GroupBox Header="{x:Static localization:Texts.CollisionLimit}" Visibility="{Binding CollisionLimitUiVisibility}">
                 <StackPanel>
-                    <RadioButton
-                        IsChecked="{Binding IsAllCollisionLimitChecked}">All</RadioButton>
-                    <RadioButton
-                        IsChecked="{Binding IsFirstCollisionLimitChecked}">Stop After First</RadioButton>
-                    <RadioButton
-                        IsChecked="{Binding IsClosestCollisionLimitChecked}">Closest</RadioButton>
-                    <TextBlock Text="{Binding CollisionLimitExplanationText}"></TextBlock>
+                    <RadioButton IsChecked="{Binding IsAllCollisionLimitChecked}" Content="{x:Static localization:Texts.All}" />
+                    <RadioButton IsChecked="{Binding IsFirstCollisionLimitChecked}"  Content="{x:Static localization:Texts.StopAfterFirst}" />
+                    <RadioButton IsChecked="{Binding IsClosestCollisionLimitChecked}" Content="{x:Static localization:Texts.Closest}" />
+                    <TextBlock Text="{Binding CollisionLimitExplanationText}" />
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Header="List vs List Duplicate Collision Options" Visibility="{Binding ListVsListDuplicateVisibility}"  Margin="0,8,0,0">
+            <GroupBox Header="{x:Static localization:Texts.CollisionListVsList}" Visibility="{Binding ListVsListDuplicateVisibility}"  Margin="0,8,0,0">
                 <StackPanel>
-                    <RadioButton
-                        IsChecked="{Binding IsPreventDoubleChecksChecked}">Prevent Double Checks per Frame</RadioButton>
-                    <RadioButton
-                        IsChecked="{Binding IsAllowDoubleChecksChecked}">Allow Double Checks per Frame</RadioButton>
-                    <TextBlock TextWrapping="Wrap">Double checks should be performed if doing self-collision on an entity list with each item using a different subcollision</TextBlock>
+                    <RadioButton IsChecked="{Binding IsPreventDoubleChecksChecked}" Content="{x:Static localization:Texts.PreventDoubleChecksFrame}" />
+                    <RadioButton IsChecked="{Binding IsAllowDoubleChecksChecked}" Content="{x:Static localization:Texts.AllowDoubleChecksFrame}" />
+                    <TextBlock TextWrapping="Wrap"  Text="{x:Static localization:Texts.HintDoubleCollisionChecks}" />
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Header="Collision Physics" Margin="0,8,0,0" Visibility="{Binding CollisionPhysicsUiVisibility}">
+            <GroupBox Header="{x:Static localization:Texts.CollisionPhysics}" Margin="0,8,0,0" Visibility="{Binding CollisionPhysicsUiVisibility}">
                 <StackPanel>
-                    <RadioButton
-                        IsChecked="{Binding IsNoPhysicsChecked}">No Physics</RadioButton>
-                    <RadioButton
-                        IsChecked="{Binding IsMoveCollisionChecked}">Move Collision (separate overlapping objects)</RadioButton>
-                    <Grid Margin="10,0,0,0" 
-                                Visibility="{Binding MoveCollisionVisibility}">
+                    <RadioButton IsChecked="{Binding IsNoPhysicsChecked}" Content="{x:Static localization:Texts.NoPhysics}" />
+                    <RadioButton IsChecked="{Binding IsMoveCollisionChecked}" Content="{x:Static localization:Texts.MoveCollision}" />
+                    <Grid Margin="10,0,0,0" Visibility="{Binding MoveCollisionVisibility}">
                         <Grid.RowDefinitions>
                             <RowDefinition></RowDefinition>
                             <RowDefinition></RowDefinition>
@@ -136,17 +124,13 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Width="80" HorizontalAlignment="Left" 
-                                   Text="{Binding FirstMassText, FallbackValue=First Mass}"></TextBlock>
-                        <TextBox Grid.Row="1" Margin="10,0,10,0"
-                                     Text="{Binding FirstCollisionMass}"></TextBox>
-                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" 
-                                   Text="{Binding SecondMassText, FallbackValue=Second Mass}"></TextBlock>
-                        <TextBox  Grid.Row="1" Grid.Column="1" Margin="10,0,10,0"
-                                     Text="{Binding SecondCollisionMass}"></TextBox>
+                        <TextBlock HorizontalAlignment="Left" Text="{Binding FirstMassText, FallbackValue=First Mass}"></TextBlock>
+                        <TextBox Grid.Row="1" Margin="10,0,10,0" Text="{Binding FirstCollisionMass}"></TextBox>
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding SecondMassText, FallbackValue=Second Mass}"></TextBlock>
+                        <TextBox  Grid.Row="1" Grid.Column="1" Margin="10,0,10,0" Text="{Binding SecondCollisionMass}"></TextBox>
                     </Grid>
                     <RadioButton
-                        IsChecked="{Binding IsMoveSoftCollisionChecked}">Move Soft Collision (separate overlapping objects over time)</RadioButton>
+                        IsChecked="{Binding IsMoveSoftCollisionChecked}" Content="{x:Static localization:Texts.MoveCollisionSoft}" />
                     <Grid Margin="10,0,0,0"
                                 Visibility="{Binding MoveSoftCollisionVisibility}">
                         <Grid.RowDefinitions>
@@ -158,25 +142,20 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock HorizontalAlignment="Left" Grid.Column="0"
-                                   Text="{Binding FirstMassText, FallbackValue=First Mass}"></TextBlock>
-                        <TextBox Margin="10,0,10,0" Grid.Row="1"
-                                    Text="{Binding FirstCollisionMass}"></TextBox>
+                        <TextBlock HorizontalAlignment="Left" Grid.Column="0" Text="{Binding FirstMassText, FallbackValue=First Mass}"></TextBlock>
+                        <TextBox Margin="10,0,10,0" Grid.Row="1" Text="{Binding FirstCollisionMass}"></TextBox>
 
-                        <TextBlock Grid.Column="1"
-                                   Text="{Binding SecondMassText, FallbackValue=Second Mass}"></TextBlock>
-                        <TextBox Grid.Column="1" Grid.Row="1" Margin="10,0,10,0"
-                                    Text="{Binding SecondCollisionMass}"></TextBox>
+                        <TextBlock Grid.Column="1" Text="{Binding SecondMassText, FallbackValue=Second Mass}"></TextBlock>
+                        <TextBox Grid.Column="1" Grid.Row="1" Margin="10,0,10,0" Text="{Binding SecondCollisionMass}"></TextBox>
                         <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="2">
-                            <TextBlock>Separation Coefficient</TextBlock>
+                            <TextBlock Text="{x:Static localization:Texts.SeparationCoefficient}" />
                             <TextBox  Width="80" Margin="5,0,0,0"
                                      Text="{Binding SoftCollisionCoefficient}"></TextBox>
                         </StackPanel>
                     </Grid>
 
 
-                    <RadioButton
-                        IsChecked="{Binding IsBounceCollisionChecked}">Bounce Collision</RadioButton>
+                    <RadioButton IsChecked="{Binding IsBounceCollisionChecked}" Content="{x:Static localization:Texts.CollisionBounce}" />
                     <Grid Margin="10,0,0,0"
                                 Visibility="{Binding BounceCollisionVisibility}">
                         <Grid.RowDefinitions>
@@ -191,42 +170,52 @@
                         <TextBlock HorizontalAlignment="Left" Grid.Column="0"
                                    Text="{Binding FirstMassText, FallbackValue=First Mass}"></TextBlock>
                         <TextBox Margin="10,0,10,0" Grid.Row="1"
-                                    Text="{Binding FirstCollisionMass}"></TextBox>
+                                    Text="{Binding FirstCollisionMass}" />
 
                         <TextBlock Grid.Column="1"
                                    Text="{Binding SecondMassText, FallbackValue=Second Mass}"></TextBlock>
                         <TextBox Grid.Column="1" Grid.Row="1" Margin="10,0,10,0"
-                                    Text="{Binding SecondCollisionMass}"></TextBox>
+                                    Text="{Binding SecondCollisionMass}" />
                         <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="2">
-                            <TextBlock Width="80">Elasticity</TextBlock>
-                            <TextBox  Width="80"
-                                     Text="{Binding CollisionElasticity}"></TextBox>
+                            <TextBlock Width="80" Text="{x:Static localization:Texts.Elasticity}" />
+                            <TextBox  Width="80" Text="{Binding CollisionElasticity}" />
                         </StackPanel>
                     </Grid>
                     <RadioButton
                         IsChecked="{Binding IsPlatformerSolidCollisionChecked}"
-                        Visibility="{Binding PlatformerOptionsVisibility}">Platformer Solid Collision</RadioButton>
+                        Visibility="{Binding PlatformerOptionsVisibility}" Content="{x:Static localization:Texts.PlatformerSolidCollision}" />
                     <RadioButton
                         IsChecked="{Binding IsPlatformerCloudCollisionChecked}"
-                        Visibility="{Binding PlatformerOptionsVisibility}">Platformer Cloud Collision</RadioButton>
+                        Visibility="{Binding PlatformerOptionsVisibility}" Content="{x:Static localization:Texts.PlatformerCloudCollision}" />
                     <RadioButton
                         IsChecked="{Binding IsStackingCollisionChecked}"
-                        Visibility="{Binding StackingCollisionVisibility}">Stacking Collision</RadioButton>
+                        Visibility="{Binding StackingCollisionVisibility}" Content="{x:Static localization:Texts.CollisionStacking}" />
                         
-                    <RadioButton
-                        IsChecked="{Binding IsDelegateCollisionChecked}">Delegate Collision (delegate assigned in code)</RadioButton>
-                    
-                    <CheckBox Margin="0,5,0,0" Visibility="{Binding AutomaticallyApplyPhysicsVisibility}" IsChecked="{Binding IsAutomaticallyApplyPhysicsChecked}">Automatically Apply Physics On Collision</CheckBox>
+                    <RadioButton IsChecked="{Binding IsDelegateCollisionChecked}" Content="{x:Static localization:Texts.DelegateCollision}" />
+
+                    <CheckBox Margin="0,5,0,0" Visibility="{Binding AutomaticallyApplyPhysicsVisibility}" IsChecked="{Binding IsAutomaticallyApplyPhysicsChecked}" Content="{x:Static localization:Texts.CollisionApplyPhysics}" />
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Header="Damage" Visibility="{Binding DamageValuesVisibility}" Margin="0,8,0,0">
+            <GroupBox Header="{x:Static localization:Texts.Damage}" Visibility="{Binding DamageValuesVisibility}" Margin="0,8,0,0">
                 <StackPanel>
-                    <CheckBox Visibility="{Binding DealDamageCheckBoxVisibility}" IsChecked="{Binding IsDealDamageChecked}">Deal Damage in Generated Code</CheckBox>
-                    <CheckBox Visibility="{Binding DestroyFirstOnDamageVisibility}" 
+                    <CheckBox Visibility="{Binding DealDamageCheckBoxVisibility}" IsChecked="{Binding IsDealDamageChecked}" Content="{x:Static localization:Texts.DamageInGeneratedCode}" />
+                    <CheckBox Visibility="{Binding DestroyFirstOnDamageVisibility}" Margin="0,5,0,0"
                               IsChecked="{Binding IsDestroyFirstOnDamageChecked}" Content="{Binding DestroyFirstOnDamageText, FallbackValue=Destroy First on Damage}"></CheckBox>
-                    <CheckBox Visibility="{Binding DestroySecondOnDamageVisibility}" 
+                    <GroupBox Header="{x:Static localization:Texts.Destruction}" Visibility="{Binding FirstDestructionOptionsVisibility}">
+                        <StackPanel>
+                            <RadioButton IsChecked="{Binding IsFirstAlwaysDestroyChecked}"  Content="{x:Static localization:Texts.Always}" />
+                            <RadioButton IsChecked="{Binding IsFirstOnlyIfDamageDestroyChecked}"  Content="{x:Static localization:Texts.DamageDealtIf}" />
+                        </StackPanel>
+                    </GroupBox>
+                    <CheckBox Visibility="{Binding DestroySecondOnDamageVisibility}" Margin="0,5,0,0"
                               IsChecked="{Binding IsDestroySecondOnDamageChecked}" Content="{Binding DestroySecondOnDamageText, FallbackValue=Destroy Second on Damage}"></CheckBox>
+                    <GroupBox Header="{x:Static localization:Texts.Destruction}" Visibility="{Binding SecondDestructionOptionsVisibility}">
+                        <StackPanel>
+                            <RadioButton IsChecked="{Binding IsSecondAlwaysDestroyChecked}" Content="{x:Static localization:Texts.Always}" />
+                            <RadioButton IsChecked="{Binding IsSecondOnlyIfDamageDestroyChecked}" Content="{x:Static localization:Texts.DamageDealtIf}" />
+                        </StackPanel>
+                    </GroupBox>
                 </StackPanel>
             </GroupBox>
             
@@ -242,17 +231,17 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock VerticalAlignment="Center">Ground Movement:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" Text="{x:Static localization:Texts.GroundMovement}" />
                     <ComboBox IsEditable="True" Grid.Column="1" Margin="2" 
                               ItemsSource="{Binding AvailablePlatformerVariableNames}"
                               SelectedItem="{Binding GroundPlatformerVariableName}"></ComboBox>
 
-                    <TextBlock VerticalAlignment="Center" Grid.Row="1">Air Movement:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" Grid.Row="1" Text="{x:Static localization:Texts.AirMovement}" />
                     <ComboBox IsEditable="True" Grid.Row="1" Grid.Column="1" Margin="2"  
                               ItemsSource="{Binding AvailablePlatformerVariableNames}"
                               SelectedItem="{Binding AirPlatformerVariableName}"></ComboBox>
 
-                    <TextBlock VerticalAlignment="Center" Grid.Row="2">After Double Jump:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" Grid.Row="2" Text="{x:Static localization:Texts.AfterDoubleJump}" />
                     <ComboBox IsEditable="True" Grid.Row="2" Grid.Column="1" Margin="2"  
                               ItemsSource="{Binding AvailablePlatformerVariableNames}"
                               SelectedItem="{Binding AfterDoubleJumpPlatformerVariableName}"></ComboBox>
@@ -260,7 +249,7 @@
 
             </GroupBox>
 
-            <GroupBox Header="Events" Margin="0,8,0,0">
+            <GroupBox Header="{x:Static localization:Texts.Events}" Margin="0,8,0,0">
 
                 <StackPanel>
                     <ItemsControl Margin="14,0,0,0" Grid.Row="1" ItemsSource="{Binding Events}" HorizontalContentAlignment="Stretch" >

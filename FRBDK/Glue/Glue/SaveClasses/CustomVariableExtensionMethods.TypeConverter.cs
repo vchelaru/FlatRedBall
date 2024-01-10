@@ -68,13 +68,14 @@ namespace FlatRedBall.Glue.SaveClasses
                         typeConverter = converter;
                     }
                 }
+                else if(customVariable.GetIsBaseElementType(out GlueElement element))
+                {
+                    var derived= ObjectFinder.Self.GetAllDerivedElementsRecursive(element);
+
+                    typeConverter = new AvailableDerivedElementsConverter(element);
+                }
                 else if (customVariable.GetIsCsv())
                 {
-                    if (FacadeContainer.Self.ProjectValues == null)
-                    {
-                        throw new NullReferenceException("The ProjectValues property in FAcadeContainer.Self.ProjectValues must be set before trying to get the CSV type converter for the variable " + customVariable.ToString());
-                    }
-
                     var elements = ObjectFinder.Self.GetAllBaseElementsRecursively(containingElement).ToList();
                     elements.Add(containingElement);
                     
@@ -115,13 +116,13 @@ namespace FlatRedBall.Glue.SaveClasses
                     AvailableSpreadsheetValueTypeConverter converter = null;
                     if (rfsesUsingType.Length > 0)
                     {
-                        var filePaths = rfsesUsingType.Select(item => new FilePath( FacadeContainer.Self.ProjectValues.ContentDirectory + item.Name)).ToArray();
+                        var filePaths = rfsesUsingType.Select(item => new FilePath( GlueState.ContentDirectory + item.Name)).ToArray();
                         converter = new AvailableSpreadsheetValueTypeConverter(filePaths);
                     }
                     else
                     {
                         converter = new AvailableSpreadsheetValueTypeConverter(
-                            FacadeContainer.Self.ProjectValues.ContentDirectory + customVariable.Type);
+                            GlueState.ContentDirectory + customVariable.Type);
                     }
                     converter.ShouldAppendFileName = true;
 

@@ -25,8 +25,6 @@ namespace FlatRedBall.Glue.Controls.PropertyGridControls
         const string CantInterpolateFile = @"Content\Icons\CantInterpolate.bmp";
         const string NeedsInterpolationVariable = @"Content\Icons\NeedsInterpolateVariable.bmp";
 
-        Image mImage;
-
         Image mCanInterpolate;
         Image mCantInterpolate;
         Image mNeedsVelocityVariable;

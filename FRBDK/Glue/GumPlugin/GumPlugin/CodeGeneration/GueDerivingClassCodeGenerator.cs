@@ -15,6 +15,7 @@ using Gum.DataTypes.Behaviors;
 using FlatRedBall.Glue.SaveClasses;
 using GumPlugin.ViewModels;
 using GumPluginCore.CodeGeneration;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace GumPlugin.CodeGeneration
 {
@@ -48,12 +49,16 @@ namespace GumPlugin.CodeGeneration
             mTypeToQualifiedTypes.Add("DimensionUnitType", "Gum.DataTypes.DimensionUnitType");
             mTypeToQualifiedTypes.Add("ChildrenLayout", "Gum.Managers.ChildrenLayout");
             mTypeToQualifiedTypes.Add("GradientType", "global::RenderingLibrary.Graphics.GradientType");
+            mTypeToQualifiedTypes.Add("TextOverflowHorizontalMode", "global::RenderingLibrary.Graphics.TextOverflowHorizontalMode");
+            mTypeToQualifiedTypes.Add("TextOverflowVerticalMode", "global::RenderingLibrary.Graphics.TextOverflowVerticalMode");
 
             AddGetterReplacements();
 
             AddSetterReplacements();
         }
-        
+
+        #region Element/Screen Top Level Generation
+
         public string GenerateCodeFor(ElementSave elementSave)
         {
             if(elementSave == null)
@@ -110,35 +115,54 @@ namespace GumPlugin.CodeGeneration
                 throw new ArgumentNullException(nameof(elementSave));
             }
 
-            ICodeBlock currentBlock = GenerateClassHeader(codeBlock, elementSave);
+            ICodeBlock classBlock = GenerateClassHeader(codeBlock, elementSave);
 
-            StateCodeGenerator.Self.GenerateEverythingFor(elementSave, currentBlock);
+            StateCodeGenerator.Self.GenerateEverythingFor(elementSave, classBlock);
 
-            GenerateFields(elementSave, currentBlock);
+            BehaviorCodeGenerator.Self.GenerateBehaviorImplementingProperties(classBlock, elementSave);
+
+            GenerateFields(elementSave, classBlock);
             
-            GenerateProperties(elementSave, currentBlock);
+            GenerateProperties(elementSave, classBlock);
 
-            EventCodeGenerator.Self.GenerateEvents(elementSave, currentBlock);
+            EventCodeGenerator.Self.GenerateEvents(elementSave, classBlock);
 
             string runtimeClassName = GetUnqualifiedRuntimeTypeFor(elementSave);
-            GenerateConstructor(elementSave, currentBlock, runtimeClassName);
+            GenerateConstructor(elementSave, classBlock, runtimeClassName);
 
-            GenerateAssignDefaultState(elementSave, currentBlock);
+            GenerateAssignDefaultState(elementSave, classBlock);
 
-            GenerateCreateChildrenRecursively(elementSave, currentBlock);
+            GenerateCreateChildrenRecursively(elementSave, classBlock);
 
-            GenerateAssignInternalReferencesMethod(elementSave, currentBlock);
+            GenerateAssignInternalReferencesMethod(elementSave, classBlock);
 
-            GenerateAddToManagersMethod(elementSave, currentBlock);
+            // See below for comments on this method:
+            //GenerateAddToManagersMethod(elementSave, classBlock);
 
-            GenerateCallCustomInitialize(elementSave, currentBlock);
+            GenerateCallCustomInitialize(elementSave, classBlock);
 
-            GeneratePartialMethods(elementSave, currentBlock);
+            GeneratePartialMethods(elementSave, classBlock);
 
-            GenerateRaiseExposedEvents(elementSave, currentBlock);
+            GenerateRaiseExposedEvents(elementSave, classBlock);
 
-            GenerateFormsCode(elementSave, currentBlock);
+            GenerateFormsCode(elementSave, classBlock);
         }
+
+
+        public bool ShouldGenerateRuntimeFor(ElementSave elementSave)
+        {
+            if (elementSave is StandardElementSave)
+            {
+                if (elementSave.Name == "Component")
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        #endregion
 
         #region Class Header/Name
         private ICodeBlock GenerateClassHeader(ICodeBlock codeBlock, ElementSave elementSave)
@@ -165,10 +189,21 @@ namespace GumPlugin.CodeGeneration
                         inheritance += $"<{genericType}>";
                     }
                 }
-
             }
 
-            var asComponentSave = elementSave as ComponentSave;
+            foreach(var behaviorReference in elementSave.Behaviors)
+            {
+                var behavior = ObjectFinder.Self.GetBehavior(behaviorReference);
+
+                if(behavior != null)
+                {
+                    // This could be a bad reference, so tolerate it
+                    var fullName = CodeGeneratorManager.Self.BehaviorCodeGenerator
+                        .GetFullyQualifiedBehaviorName(behavior);
+
+                    inheritance += $", {fullName}";
+                }
+            }
 
             // If it's not public then exposing an instance in a public class makes the project not compile
             //ICodeBlock currentBlock = codeBlock.Class("partial", runtimeClassName, " : " + inheritance);
@@ -451,13 +486,13 @@ namespace GumPlugin.CodeGeneration
             if(state?.GetVariableSave("HasEvents") != null)
             {
                 bool hasEvents = state.GetValueOrDefault<bool>("HasEvents");
-                constructor.Line($"this.HasEvents = {hasEvents.ToString().ToLower()};");
+                constructor.Line($"this.HasEvents = {hasEvents.ToString().ToLowerInvariant()};");
             }
 
             if (state?.GetVariableSave("ExposeChildrenEvents") != null)
             {
                 bool exposeChildrenEvents = state.GetValueOrDefault<bool>("ExposeChildrenEvents");
-                constructor.Line($"this.ExposeChildrenEvents = {exposeChildrenEvents.ToString().ToLower()};");
+                constructor.Line($"this.ExposeChildrenEvents = {exposeChildrenEvents.ToString().ToLowerInvariant()};");
             }
 
             var ifStatement = constructor.If("fullInstantiation");
@@ -524,7 +559,17 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateCreateChildrenRecursively(ElementSave elementSave, ICodeBlock currentBlock)
         {
-            currentBlock = currentBlock.Function("public override void", "CreateChildrenRecursively", "Gum.DataTypes.ElementSave elementSave, RenderingLibrary.SystemManagers systemManagers");
+            var parameters = "Gum.DataTypes.ElementSave elementSave, RenderingLibrary.SystemManagers systemManagers";
+            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)FlatRedBall.Glue.SaveClasses.GlueProjectSave.GluxVersions.GumCommonCodeReferencing ||
+                // A little risky, but if the user is linking source, then the user is likely both running FRB Editor from source and their game from the same source:
+                GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+
+
+            if (hasCommon)
+            {
+                parameters = "Gum.DataTypes.ElementSave elementSave, RenderingLibrary.ISystemManagers systemManagers";
+            }
+            currentBlock = currentBlock.Function("public override void", "CreateChildrenRecursively", parameters);
             {
 
                 currentBlock.Line("base.CreateChildrenRecursively(elementSave, systemManagers);");
@@ -566,6 +611,63 @@ namespace GumPlugin.CodeGeneration
                     currentBlock.Line($"{exposedChildEvent.Name} += (unused) => {exposedChildEvent.ExposedAsName}?.Invoke(this);");
                 }
 
+                if (GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GraphicalUiElementINotifyPropertyChanged)
+                {
+                    var qualifiedElementName = elementSave.Name;
+                    if (elementSave is ComponentSave)
+                    {
+                        qualifiedElementName = "Components/" + elementSave.Name;
+                    }
+                    else if (elementSave is Gum.DataTypes.ScreenSave)
+                    {
+                        qualifiedElementName = "Screens/" + elementSave.Name;
+                    }
+                    else if (elementSave is StandardElementSave)
+                    {
+                        qualifiedElementName = "StandardElements/" + elementSave.Name;
+                    }
+
+                    // for now we'll just support variable references in default state
+                    foreach(var variableList in elementSave.DefaultState.VariableLists)
+                    {
+                        if(variableList.GetRootName() == "VariableReferences" && variableList.ValueAsIList?.Count > 0)
+                        {
+                            string receiverOfReference = variableList.SourceObject ?? "this";
+                            foreach(string value in variableList.ValueAsIList)
+                            {
+                            
+                                if(value?.Contains(".") == true)
+                                {
+                                    var valueLeftOfEquals = value.Substring(0, value.IndexOf("=")).Trim();
+                                    var valueRightOfEquals = value.Substring(value.IndexOf("=") + 1).Trim(); ;
+
+                                    // for now we only care about internal references...
+                                    if(valueRightOfEquals.Contains("/") && valueRightOfEquals.StartsWith(qualifiedElementName))
+                                    {
+                                        // it's qualified, so let's see if it starts with the name of this element
+                                        valueRightOfEquals = valueRightOfEquals.Substring(qualifiedElementName.Length + 1);
+                                    }
+
+                                    // make sure it is no longer qualified
+                                    if(!valueRightOfEquals.Contains("/"))
+                                    {
+                                        var instanceOwningReferencedVariable = valueRightOfEquals.Substring(0, valueRightOfEquals.IndexOf("."));
+                                        var valueWithoutVariable = valueRightOfEquals.Substring(valueRightOfEquals.IndexOf(".") + 1);
+
+                                        // for now a new event += per reference. Later we can combine these.
+                                        var eventBlock = currentBlock.Line($"{instanceOwningReferencedVariable}.PropertyChanged += (sender, args) =>");
+                                        eventBlock = eventBlock.Block();
+                                        eventBlock.If("args.PropertyName == nameof(" + valueWithoutVariable + ")")
+                                            .Line($"{receiverOfReference}.{valueLeftOfEquals} = {instanceOwningReferencedVariable}.{valueWithoutVariable};");
+                                        currentBlock.Line(";");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                    
+
                 string controlType;
                 var shouldGenerate = GetIfShouldGenerateFormsCode(elementSave, out controlType);
 
@@ -590,13 +692,22 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
-        private void GenerateAddToManagersMethod(ElementSave elementSave, ICodeBlock currentBlock)
-        {
-            currentBlock = currentBlock.Function("public override void", "AddToManagers", "RenderingLibrary.SystemManagers managers, RenderingLibrary.Graphics.Layer layer");
-            {
-                currentBlock.Line("base.AddToManagers(managers, layer);");
-            }
-        }
+        // Vic asks - why do we generate this? Seems pointless...
+        //private void GenerateAddToManagersMethod(ElementSave elementSave, ICodeBlock currentBlock)
+        //{
+        //    string parameters =
+        //        "RenderingLibrary.SystemManagers managers, RenderingLibrary.Graphics.Layer layer";
+
+        //    if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GumCommonCodeReferencing)
+        //    {
+        //        parameters = "RenderingLibrary.ISystemManagers managers, RenderingLibrary.Graphics.Layer layer";
+        //    }
+
+        //    currentBlock = currentBlock.Function("public override void", "AddToManagers", parameters);
+        //    {
+        //        currentBlock.Line("base.AddToManagers(managers, layer);");
+        //    }
+        //}
 
         private void GenerateCallCustomInitialize(ElementSave elementSave, ICodeBlock currentBlock)
         {
@@ -670,21 +781,6 @@ namespace GumPlugin.CodeGeneration
             return shouldGenerateFormsCode;
         }
 
-        #endregion
-
-        public bool ShouldGenerateRuntimeFor(ElementSave elementSave)
-        {
-            if (elementSave is StandardElementSave)
-            {
-                if (elementSave.Name == "Component")
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         public static string GetFormsControlTypeFrom(List<ElementBehaviorReference> behaviors)
         {
             string controlName = null;
@@ -717,6 +813,9 @@ namespace GumPlugin.CodeGeneration
                 return null;
             }
         }
+
+        #endregion
+
 
 
         private void GeneratePartialMethods(ElementSave elementSave, ICodeBlock currentBlock)
@@ -937,7 +1036,7 @@ namespace GumPlugin.CodeGeneration
             }
             else if (variableSave.Type == "bool")
             {
-                variableValue = variableValue.ToLower();
+                variableValue = variableValue.ToLowerInvariant();
             }
 
 

@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TopDownPlugin.Views"
              mc:Ignorable="d" 
              Width="230">
     <Grid>
@@ -55,14 +54,10 @@
             </Polygon.RenderTransform>
          </Polygon>
 
-        <TextBox Text="{Binding UpAnimation}" Grid.Row="1" Width="70" 
-                 HorizontalAlignment="Center" VerticalAlignment="Top"></TextBox>
-        <TextBox Text="{Binding DownAnimation}" Grid.Row="1" Width="70" 
-                 HorizontalAlignment="Center" VerticalAlignment="Bottom"></TextBox>
-        <TextBox Text="{Binding LeftAnimation}" Grid.Row="1" Width="70" 
-                 HorizontalAlignment="Left" VerticalAlignment="Center"></TextBox>
-        <TextBox Text="{Binding RightAnimation}" Grid.Row="1" Width="70" 
-                 HorizontalAlignment="Right" VerticalAlignment="Center"></TextBox>
+        <TextBox Text="{Binding UpAnimation}" Grid.Row="1" Width="70" HorizontalAlignment="Center" VerticalAlignment="Top"></TextBox>
+        <TextBox Text="{Binding DownAnimation}" Grid.Row="1" Width="70" HorizontalAlignment="Center" VerticalAlignment="Bottom"></TextBox>
+        <TextBox Text="{Binding LeftAnimation}" Grid.Row="1" Width="70" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBox>
+        <TextBox Text="{Binding RightAnimation}" Grid.Row="1" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center"></TextBox>
 
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
@@ -75,14 +70,10 @@
                 <ColumnDefinition Width="8*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBox Text="{Binding UpLeftAnimation}" Grid.Row="1" Grid.Column="1" Width="70" 
-                     HorizontalAlignment="Left" VerticalAlignment="Top"></TextBox>
-            <TextBox Text="{Binding UpRightAnimation}" Grid.Row="1" Grid.Column="1" Width="70" 
-                     HorizontalAlignment="Right" VerticalAlignment="Top"></TextBox>
-            <TextBox Text="{Binding DownLeftAnimation}" Grid.Row="1" Grid.Column="1" Width="70" 
-                     HorizontalAlignment="Left" VerticalAlignment="Bottom"></TextBox>
-            <TextBox Text="{Binding DownRightAnimation}" Grid.Row="1" Grid.Column="1" Width="70" 
-                     HorizontalAlignment="Right" VerticalAlignment="Bottom"></TextBox>
+            <TextBox Text="{Binding UpLeftAnimation}" Grid.Row="1" Grid.Column="1" Width="70" HorizontalAlignment="Left" VerticalAlignment="Top"></TextBox>
+            <TextBox Text="{Binding UpRightAnimation}" Grid.Row="1" Grid.Column="1" Width="70" HorizontalAlignment="Right" VerticalAlignment="Top"></TextBox>
+            <TextBox Text="{Binding DownLeftAnimation}" Grid.Row="1" Grid.Column="1" Width="70" HorizontalAlignment="Left" VerticalAlignment="Bottom"></TextBox>
+            <TextBox Text="{Binding DownRightAnimation}" Grid.Row="1" Grid.Column="1" Width="70" HorizontalAlignment="Right" VerticalAlignment="Bottom"></TextBox>
 
         </Grid>
         <Polygon Grid.Row="1"

@@ -110,13 +110,17 @@ namespace OfficialPlugins.SongPlugin
                     }
 
                     var fileName = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs, ati); // FlatRedBall.IO.FileManager.RemoveExtension(rfs.Name).ToLowerInvariant().Replace("\\", "/");
+                    string suffix = null;
                     if (rfs.DestroyOnUnload == false)
                     {
                         contentManager = "FlatRedBall.FlatRedBallServices.GlobalContentManager";
+                        suffix = "/*Since this song is used on multiple screens, forcing it to use global content*/";
 
                     }
+
+
                     //return $"{propertyName} = FlatRedBall.FlatRedBallServices.Load<Microsoft.Xna.Framework.Media.Song>(@"content/screens/gamescreen/baronsong", contentManagerName);";
-                    return $"{variableName} = FlatRedBall.FlatRedBallServices.Load<Microsoft.Xna.Framework.Media.Song>(@\"{fileName}\", {contentManager});";
+                    return $"{variableName} = FlatRedBall.FlatRedBallServices.Load<Microsoft.Xna.Framework.Media.Song>(@\"{fileName}\", {contentManager}); {suffix}";
                 };
 
             }
@@ -138,32 +142,31 @@ namespace OfficialPlugins.SongPlugin
 
             foreach (var ati in atis)
             {
-                // The default add to managers method is:
-                // FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == "Global")
-                // but it should only be the case *if* we are in edit mode. Otherwise, we should always play the song (don't have the if check)
-                var supportsEditMode = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
-                string addToManagersMethod = null;
-                if (supportsEditMode)
-                {
-                    addToManagersMethod =
-                        "FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); " +
-                        "if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
-                        "FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == \"Global\")";
-                }
-                else
-                {
-                    addToManagersMethod =
+                ati.AddToManagersFunc = HandleSongAddToManagers;
 
-                        "FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); " +
-                        //"if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
-                        "FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == \"Global\")";
-                }
-                if (ati.AddToManagersMethod.Count == 1)
-                {
-                    // fall back to the old load call:
-                    ati.AddToManagersMethod[0] = addToManagersMethod;
-                }
             }
+        }
+
+        private string HandleSongAddToManagers(IElement element, NamedObjectSave namedObjectSave, ReferencedFileSave rfs, string layer)
+        {
+            var supportsEditMode = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
+            string addToManagersMethod = $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(\"{rfs.GetInstanceName()}\"); ";
+            if (supportsEditMode)
+            {
+                addToManagersMethod +=
+
+                    "if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) ";
+            }
+
+            var forceGlobal = !rfs.DestroyOnUnload;
+
+            string isGlobal = 
+                forceGlobal ? "true" : "ContentManagerName == \"Global\"";
+
+            addToManagersMethod += 
+                    $"FlatRedBall.Audio.AudioManager.PlaySong({rfs.GetInstanceName()}, false, {isGlobal});";
+
+            return addToManagersMethod;
         }
 
         private void HandleItemSelected(ITreeNode selectedTreeNode)
@@ -208,8 +211,17 @@ namespace OfficialPlugins.SongPlugin
             }
         }
 
-        bool IsSong(ReferencedFileSave rfs) =>
+        bool IsSong(ReferencedFileSave rfs)
+        {
+            var ati = rfs?.GetAssetTypeInfo();
+
             // Use the qualified type because there are multiple ATIs this could be, so don't do an == comparison
-            rfs?.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Media.Song";
+            return ati?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Media.Song" 
+            // Update June 29, 2023
+            // NAudio songs are now handled by this plugin
+                || ati?.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.NAudio.NAudio_Song"
+            ;
+        }
+
     }
 }

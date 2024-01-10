@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using FlatRedBall.Glue.Elements;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -58,12 +59,6 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
-        // 5/31/2011
-        // We need to eventually make this XmlIgnore
-        // but we can't because there's a lot of old
-        // projects that still use this instead of the old
-        // I think this will be around for a while - maybe a year?
-        // Okay we waited long enough (12/12/2020)
         [XmlIgnore]
         [JsonIgnore]
         [ReadOnlyAttribute(true)]
@@ -287,6 +282,12 @@ namespace FlatRedBall.Glue.SaveClasses
             set => Properties.SetValue(nameof(Scope), value);
         }
 
+        // Don't XML ignore this!
+        // doing so seems to strip all
+        // categories out of objects. I
+        // didn't expect that, I thought that
+        // the Properties would handle it but it 
+        // seems like they don't. Maybe because it's a field?
         public string Category
         {
             get => Properties.GetValue<string>(nameof(Category));
@@ -303,6 +304,10 @@ namespace FlatRedBall.Glue.SaveClasses
         [XmlIgnore]
         [JsonIgnore]
         public Func<GlueElement, List<string>> CustomGetForcedOptionsFunc;
+
+        public VariableDefinition VariableDefinition { get; set; }
+        public bool ShouldSerializeVariableDefinitions() => VariableDefinition != null;
+
 
         #endregion
 

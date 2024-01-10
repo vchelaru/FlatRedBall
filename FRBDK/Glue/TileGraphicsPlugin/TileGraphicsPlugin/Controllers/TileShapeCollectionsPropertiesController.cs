@@ -36,8 +36,9 @@ namespace TileGraphicsPlugin.Controllers
             switch(e.PropertyName)
             {
                 case nameof(viewModel.SourceTmxName):
-                    RefreshAvailableTypes();
-                    RefreshAvailableCollisionObjectNames();
+                    var element = GlueState.Self.CurrentElement;
+                    RefreshAvailableTypes(element);
+                    RefreshAvailableCollisionObjectNames(element);
                     break;
             }
 
@@ -59,40 +60,43 @@ namespace TileGraphicsPlugin.Controllers
                             existingNos.SetProperty(e.PropertyName, currentNos.Properties.GetValue(e.PropertyName));
                         }
                     }
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
             }
         }
 
-        public void RefreshAvailableTypes()
+        public void RefreshAvailableTypes(GlueElement element)
         {
             var oldCurrentType = viewModel.CollisionTileTypeName;
             
             viewModel.AvailableTypes.Clear();
             var tmxName = viewModel.SourceTmxName;
 
-            var types = GetAvailableTypes(tmxName).ToList();
-            types.Sort();
-
-            // todo - apply hashset to the view model
-            foreach (var item in types)
+            if(!string.IsNullOrEmpty(tmxName))
             {
-                viewModel.AvailableTypes.Add(item);
+                var types = GetAvailableTypes(tmxName, element).ToList();
+                types.Sort();
+
+                // todo - apply hashset to the view model
+                foreach (var item in types)
+                {
+                    viewModel.AvailableTypes.Add(item);
+                }
             }
             viewModel.CollisionTileTypeName = oldCurrentType;
 
         }
 
 
-        public void RefreshAvailableCollisionObjectNames()
+        public void RefreshAvailableCollisionObjectNames(GlueElement element)
         {
             var oldCollisionName = viewModel.TmxCollisionName;
             viewModel.AvailableTmxCollisions.Clear();
             var tmxName = viewModel.SourceTmxName;
 
-            var types = GetAvailableTypes(tmxName).ToList();
+            var types = GetAvailableTypes(tmxName, element).ToList();
 
-            types.AddRange(GetAvailableLayers(tmxName).ToList());
+            types.AddRange(GetAvailableLayers(tmxName, element).ToList());
 
             types.Sort();
 
@@ -106,9 +110,9 @@ namespace TileGraphicsPlugin.Controllers
 
         }
 
-        public static HashSet<string> GetAvailableLayers(string tmxName)
+        public static HashSet<string> GetAvailableLayers(string tmxName, GlueElement element)
         {
-            List<ReferencedFileSave> rfses = GetRfses(tmxName);
+            List<ReferencedFileSave> rfses = GetRfses(tmxName, element);
 
             HashSet<string> layerNames = new HashSet<string>();
 
@@ -120,63 +124,70 @@ namespace TileGraphicsPlugin.Controllers
             return layerNames;
         }
 
-        public static HashSet<string> GetAvailableTypes(string tmxName)
+        public static HashSet<string> GetAvailableTypes(string tmxName, GlueElement element)
         {
-            List<ReferencedFileSave> rfses = GetRfses(tmxName);
-
-            HashSet<string> types = new HashSet<string>();
-            foreach (var file in rfses)
+            if(string.IsNullOrEmpty(tmxName))
             {
-                AddTypesFromFile(types, file);
+                return new HashSet<string>();
             }
+            else
+            {
+                List<ReferencedFileSave> rfses = GetRfses(tmxName, element);
 
-            return types;
+                HashSet<string> types = new HashSet<string>();
+                foreach (var file in rfses)
+                {
+                    AddTypesFromFile(types, file);
+                }
+
+                return types;
+            }
         }
 
-        private static List<ReferencedFileSave> GetRfses(string tmxName)
+        private static List<ReferencedFileSave> GetRfses(string tmxName, GlueElement element)
         {
             List<ReferencedFileSave> rfses = new List<ReferencedFileSave>();
 
-            var element = GlueState.Self.CurrentElement;
-
-
-            void AddTypesFromNos(NamedObjectSave nos)
+            if(element != null)
             {
-                if (nos.SourceType == SourceType.File && !string.IsNullOrWhiteSpace(nos.SourceFile))
+                void AddTypesFromNos(NamedObjectSave nos)
                 {
-                    var element = nos.GetContainer();
-
-                    var file = element?.GetReferencedFileSave(nos.SourceFile);
-
-                    if (file != null)
+                    if (nos.SourceType == SourceType.File && !string.IsNullOrWhiteSpace(nos.SourceFile))
                     {
-                        rfses.Add(file);
+                        var element = nos.GetContainer();
+
+                        var file = element?.GetReferencedFileSave(nos.SourceFile);
+
+                        if (file != null)
+                        {
+                            rfses.Add(file);
+                        }
                     }
                 }
-            }
 
-            var baseNos = element.GetNamedObjectRecursively(tmxName);
+                var baseNos = element.GetNamedObjectRecursively(tmxName);
 
-            if (baseNos != null)
-            {
-                if (baseNos.SetByDerived)
+                if (baseNos != null)
                 {
-                    var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(element);
-                    var noses = derivedElements.Select(item => item.GetNamedObjectRecursively(tmxName))
-                        .ToArray();
-
-                    foreach (var nos in noses)
+                    if (baseNos.SetByDerived)
                     {
-                        AddTypesFromNos(nos);
+                        var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(element);
+                        var noses = derivedElements.Select(item => item.GetNamedObjectRecursively(tmxName))
+                            .ToArray();
+
+                        foreach (var nos in noses)
+                        {
+                            AddTypesFromNos(nos);
+                        }
                     }
                 }
-            }
 
-            var foundRfs = element.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith(tmxName + ".tmx"));
+                var foundRfs = element.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith(tmxName + ".tmx"));
 
-            if (foundRfs != null)
-            {
-                rfses.Add(foundRfs);
+                if (foundRfs != null)
+                {
+                    rfses.Add(foundRfs);
+                }
             }
 
             return rfses;
@@ -221,7 +232,7 @@ namespace TileGraphicsPlugin.Controllers
         }
 
 
-        public bool IsTileShapeCollection(NamedObjectSave namedObject)
+        public static bool IsTileShapeCollection(NamedObjectSave namedObject)
         {
             var isTileShapeCollection = false;
 
@@ -235,7 +246,7 @@ namespace TileGraphicsPlugin.Controllers
             return isTileShapeCollection;
         }
 
-        public void RefreshViewModelTo(NamedObjectSave namedObject, IElement element)
+        public void RefreshViewModelTo(NamedObjectSave namedObject, GlueElement element)
         {
             // Disconnect the view from the view model so that 
             // changes that happen here dont' have side effects
@@ -252,9 +263,9 @@ namespace TileGraphicsPlugin.Controllers
 
             viewModel.DefinedByBase = namedObject.DefinedByBase;
 
-            RefreshAvailableTypes();
+            RefreshAvailableTypes(element);
 
-            RefreshAvailableCollisionObjectNames();
+            RefreshAvailableCollisionObjectNames(element);
 
             view.DataContext = viewModel;
         }

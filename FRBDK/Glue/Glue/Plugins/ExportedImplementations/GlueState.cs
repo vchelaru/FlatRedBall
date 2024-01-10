@@ -25,16 +25,52 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
     public class GlueStateSnapshot
     {
-        public ITreeNode CurrentTreeNode;
+        public ITreeNode CurrentTreeNode
+        {
+            get => CurrentTreeNodes.FirstOrDefault();
+            set
+            {
+                if(value == null)
+                {
+                    CurrentTreeNodes.Clear();
+                }
+                else if(CurrentTreeNodes.Count != 1 || CurrentTreeNodes[0] != value)
+                {
+                    CurrentTreeNodes.Clear();
+
+                    CurrentTreeNodes.Add(value);
+                }
+            }
+        }
+        public List<ITreeNode> CurrentTreeNodes = new List<ITreeNode>();
+
         public GlueElement CurrentElement;
         public EntitySave CurrentEntitySave;
         public ScreenSave CurrentScreenSave;
         public ReferencedFileSave CurrentReferencedFileSave;
-        public NamedObjectSave CurrentNamedObjectSave;
+        public NamedObjectSave CurrentNamedObjectSave
+        {
+            get => CurrentNamedObjectSaves.FirstOrDefault();
+            set
+            {
+                if(value == null)
+                {
+                    CurrentNamedObjectSaves.Clear();
+                }
+                else if(CurrentNamedObjectSaves.Count != 1 || CurrentNamedObjectSaves[0] != value)
+                {
+                    CurrentNamedObjectSaves.Clear();
+
+                    CurrentNamedObjectSaves.Add(value);
+                }
+            }
+        }
+        public List<NamedObjectSave> CurrentNamedObjectSaves = new List<NamedObjectSave>();
         public StateSave CurrentStateSave;
         public StateSaveCategory CurrentStateSaveCategory;
         public CustomVariable CurrentCustomVariable;
         public EventResponseSave CurrentEventResponseSave;
+        public int? SelectedSubIndex;
 
     }
 
@@ -50,6 +86,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             set
             {
                 UpdateToSetTreeNode(value, recordState:true);
+            }
+        }
+
+        public IReadOnlyList<ITreeNode> CurrentTreeNodes
+        {
+            get => snapshot.CurrentTreeNodes;
+            set
+            {
+                UpdateToSetTreeNode(value, recordState: true);
             }
         }
 
@@ -101,6 +146,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 else
                 {
                     CurrentTreeNode =  GlueState.Self.Find.TreeNodeByTag(value);
+                }
+            }
+        }
+
+        public IReadOnlyList<NamedObjectSave> CurrentNamedObjectSaves
+        {
+            get => snapshot.CurrentNamedObjectSaves;
+            set
+            {
+                if( value == null)
+                {
+                    CurrentTreeNode = null;
+                }
+                else
+                {
+                    List<ITreeNode> treeNodes = value.Select(item =>GlueState.Self.Find.TreeNodeByTag(item)).ToList();
+                    CurrentTreeNodes = treeNodes;
                 }
             }
         }
@@ -192,6 +254,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        public int? SelectedSubIndex
+        {
+            get => snapshot.SelectedSubIndex;
+            set
+            {
+                if(snapshot.SelectedSubIndex != value)
+                {
+                    snapshot.SelectedSubIndex = value;
+                    PluginManager.ReactToSelectedSubIndexChanged(snapshot.SelectedSubIndex);
+                }
+            }
+        }
+
         #endregion
 
         #region Project Properties
@@ -203,6 +278,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 return CurrentMainProject?.GetAbsoluteContentFolder();
             }
         }
+
+        public FilePath ContentDirectoryPath => ContentDirectory != null
+            ? new FilePath(ContentDirectory) : null;
 
         /// <summary>
         /// Returns the current Glue code project file name
@@ -295,19 +373,21 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public GlueProjectSave CurrentGlueProject => ObjectFinder.Self.GlueProject; 
 
-        public PluginSettings CurrentPluginSettings
-        {
-            get
-            {
-                return ProjectManager.PluginSettings;
-            }
-        }
+        public PluginSettings CurrentPluginSettings => ProjectManager.PluginSettings;
 
+        public bool IsProjectLoaded(VisualStudioProject project)
+        {
+            return CurrentMainProject == project || SyncedProjects.Contains(project);
+        }
 
         /// <summary>
         /// The global glue settings for the current user, not tied to a particular project.
         /// </summary>
-        public GlueSettingsSave GlueSettingsSave => ProjectManager.GlueSettingsSave; 
+        public GlueSettingsSave GlueSettingsSave
+        {
+            get => ProjectManager.GlueSettingsSave;
+            set => ProjectManager.GlueSettingsSave = value;
+        }
 
         #endregion
 
@@ -391,7 +471,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                     {
                         // todo - handle different types of projects
                         string projectReferenceName;
-                        if(CurrentMainProject.DotNetVersionNumber >= 6)
+                        if(CurrentMainProject.DotNetVersion.Major >= 6)
                         {
                             projectReferenceName = "FlatRedBallDesktopGLNet6";
                         }
@@ -433,16 +513,39 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return list;
         }
 
-        public void SetCurrentTreeNode(ITreeNode treeNode, bool recordState) =>
-            UpdateToSetTreeNode(treeNode, recordState);
+        public void SetCurrentTreeNode(ITreeNode treeNode, bool recordState) => UpdateToSetTreeNode(treeNode, recordState);
 
         private void UpdateToSetTreeNode(ITreeNode value, bool recordState)
         {
-            var isSame = value == snapshot?.CurrentTreeNode;
+            if(value != null)
+            {
+                UpdateToSetTreeNode(new List<ITreeNode> { value }, recordState);
+            }
+            else
+            {
+                UpdateToSetTreeNode(new List<ITreeNode> (), recordState);
+            }
+        }
 
-            // push before taking a snapshot, so that the "old" one is pushed
+        private void UpdateToSetTreeNode(IReadOnlyList<ITreeNode> value, bool recordState)
+        {
+            var isSame = snapshot?.CurrentTreeNodes.Count == value.Count;
+            if(isSame)
+            {
+                for(int i = 0; i < value.Count; i++)
+                {
+                    if (value[i] != snapshot.CurrentTreeNodes[i])
+                    {
+                        isSame = false;
+                        break;
+                    }
+                }
+            }
+
+            // Push to the stack for history before taking a snapshot, so that the "old" one is pushed
             if (!isSame && snapshot?.CurrentTreeNode != null && recordState)
             {
+                // todo - need to support multi select
                 TreeNodeStackManager.Self.Push(snapshot.CurrentTreeNode);
             }
 
@@ -452,7 +555,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             // If we don't check for isSame, then selecting the same tree node will result in double-selects in the game.
             if(!isSame)
             {
-                PluginManager.ReactToItemSelect(value);
+                PluginManager.ReactToItemsSelected(value.ToList());
             }
         }
 
@@ -462,19 +565,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return ObjectFinder.Self.GetAllReferencedFiles();
         }
 
-        void TakeSnapshot(ITreeNode selectedTreeNode)
+        void TakeSnapshot(IReadOnlyList<ITreeNode> selectedTreeNodes)
         {
-            snapshot.CurrentTreeNode = selectedTreeNode;
+            snapshot.CurrentTreeNodes = selectedTreeNodes.ToList();
             snapshot.CurrentElement = GetCurrentElementFromSelection();
             snapshot.CurrentEntitySave = GetCurrentEntitySaveFromSelection();
             snapshot.CurrentScreenSave = GetCurrentScreenSaveFromSelection();
             snapshot.CurrentReferencedFileSave = GetCurrentReferencedFileSaveFromSelection();
-            snapshot.CurrentNamedObjectSave = GetCurrentNamedObjectSaveFromSelection();
+            snapshot.CurrentNamedObjectSaves = GetCurrentNamedObjectSavesFromSelection();
             snapshot.CurrentStateSave = GetCurrentStateSaveFromSelection();
             snapshot.CurrentStateSaveCategory = GetCurrentStateSaveCategoryFromSelection();
             snapshot.CurrentCustomVariable = GetCurrentCustomVariableFromSelection();
             snapshot.CurrentEventResponseSave = GetCurrentEventResponseSaveFromSelection();
-
+            snapshot.SelectedSubIndex = null;
 
             GlueElement GetCurrentElementFromSelection()
             {
@@ -482,7 +585,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             EntitySave GetCurrentEntitySaveFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 while (treeNode != null)
                 {
@@ -501,7 +604,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             ScreenSave GetCurrentScreenSaveFromSelection()
             {
 
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 while (treeNode != null)
                 {
@@ -519,7 +622,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             ReferencedFileSave GetCurrentReferencedFileSaveFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 if (treeNode != null && treeNode.Tag != null && treeNode.Tag is ReferencedFileSave rfs)
                 {
@@ -530,26 +633,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                     return null;
                 }
             }
-            NamedObjectSave GetCurrentNamedObjectSaveFromSelection()
+            List<NamedObjectSave> GetCurrentNamedObjectSavesFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNodes = selectedTreeNodes;
 
-                if (treeNode == null)
-                {
-                    return null;
-                }
-                else if (treeNode.Tag != null && treeNode.Tag is NamedObjectSave nos)
-                {
-                    return nos;
-                }
-                else
-                {
-                    return null;
-                }
+                var noses = treeNodes.Select(item => item.Tag).Where(item => item is NamedObjectSave).Cast<NamedObjectSave>().ToList();
+
+                return noses;
             }
             StateSave GetCurrentStateSaveFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 if (treeNode != null && treeNode.IsStateNode())
                 {
@@ -560,7 +654,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             StateSaveCategory GetCurrentStateSaveCategoryFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 if (treeNode != null)
                 {
@@ -579,7 +673,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             CustomVariable GetCurrentCustomVariableFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 if (treeNode == null)
                 {
@@ -596,7 +690,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             EventResponseSave GetCurrentEventResponseSaveFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 if (treeNode == null)
                 {

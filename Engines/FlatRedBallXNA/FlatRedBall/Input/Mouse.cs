@@ -164,7 +164,7 @@ namespace FlatRedBall.Input
         }
 
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
         public bool IsOwnerFocused
         {
             get
@@ -294,10 +294,10 @@ namespace FlatRedBall.Input
         }
 
         I2DInput IInputDevice.Default2DInput => Zero2DInput.Instance;
-        IPressableInput IInputDevice.DefaultUpPressable => FalsePressableInput.Instance;
-        IPressableInput IInputDevice.DefaultDownPressable => FalsePressableInput.Instance;
-        IPressableInput IInputDevice.DefaultLeftPressable => FalsePressableInput.Instance;
-        IPressableInput IInputDevice.DefaultRightPressable => FalsePressableInput.Instance;
+        IRepeatPressableInput IInputDevice.DefaultUpPressable => FalsePressableInput.Instance;
+        IRepeatPressableInput IInputDevice.DefaultDownPressable => FalsePressableInput.Instance;
+        IRepeatPressableInput IInputDevice.DefaultLeftPressable => FalsePressableInput.Instance;
+        IRepeatPressableInput IInputDevice.DefaultRightPressable => FalsePressableInput.Instance;
         I1DInput IInputDevice.DefaultHorizontalInput => Zero1DInput.Instance;
         I1DInput IInputDevice.DefaultVerticalInput => Zero1DInput.Instance;
         IPressableInput IInputDevice.DefaultPrimaryActionInput => FalsePressableInput.Instance;
@@ -407,6 +407,11 @@ namespace FlatRedBall.Input
 
         #region Public Methods
 
+        /// <summary>
+        /// Returns a reference to the argument button as an IPressableInput.
+        /// </summary>
+        /// <param name="button">The button to return.</param>
+        /// <returns>A reference to the button as an IPressableInput.</returns>
         public IPressableInput GetButton(MouseButtons button)
         {
             if(mButtons.ContainsKey(button) == false)
@@ -545,6 +550,9 @@ namespace FlatRedBall.Input
 #endif
         #endregion
 
+        /// <summary>
+        /// Clears all input and marks the mouse as having been just cleared so that pushes do not fire next frame.
+        /// </summary>
         public void Clear()
         {
             mWasJustCleared = true;
@@ -998,7 +1006,6 @@ namespace FlatRedBall.Input
 
         }
 
-#if !XBOX360
         public float WorldXChangeAt(float zPosition)
         {
             int change = mMouseState.X - mLastFrameMouseState.X + mLastFrameRepositionX;
@@ -1020,9 +1027,8 @@ namespace FlatRedBall.Input
 
             MathFunctions.ScreenToAbsoluteDistance(0, change, out dummy, out resultY, zPosition, SpriteManager.Camera);
 
-            return resultY;
+            return -resultY;
         }
-#endif
 
         #endregion
 

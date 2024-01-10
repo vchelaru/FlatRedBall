@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CompilerPlugin.ViewModels;
 using CompilerLibrary.ViewModels;
+using CompilerLibrary.Error;
 
 namespace CompilerPlugin.Managers
 {
@@ -144,9 +145,11 @@ namespace CompilerPlugin.Managers
             }
         }
 
-        internal async Task<bool> Compile(Action<string> printOutput, Action<string> printError,
+        internal async Task<CompileGeneralResponse> Compile(Action<string> printOutput, Action<string> printError,
             string configuration = "Debug", bool printMsBuildCommand = false)
         {
+            var toReturn = new CompileGeneralResponse();
+
             try
             {
                 while (_compilerViewModel.IsCompiling)
@@ -176,6 +179,8 @@ namespace CompilerPlugin.Managers
 
                 //do we actually want to do this ?
                 var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName;
+
+
                 if (shouldCompile && projectFileName != null)
                 {
 
@@ -184,7 +189,8 @@ namespace CompilerPlugin.Managers
                     string msBuildPath;
                     string additionalArgumentPrefix = "";
 
-                    if (MsBuildLocation != null && GlueState.Self.CurrentMainProject.DotNetVersion != "v6.0")
+                    var is6OrGreater = GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6;
+                    if (MsBuildLocation != null && !is6OrGreater)
                     {
                         msBuildPath = MsBuildLocation.FullPath;
                     }
@@ -224,7 +230,15 @@ namespace CompilerPlugin.Managers
 
                             if (printMsBuildCommand)
                             {
-                                printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
+                                if(msBuildPath == "dotnet")
+                                {
+                                    // no need to put quotes around "dotnet"
+                                    printOutput?.Invoke($"{msBuildPath} {arguments}");
+                                }
+                                else
+                                {
+                                    printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
+                                }
                             }
 
                             succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
@@ -239,7 +253,7 @@ namespace CompilerPlugin.Managers
                             string startOutput = "Build started at " + DateTime.Now.ToLongTimeString();
                             string endOutput = "Build succeeded";
 
-                            string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
+                            string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + $"bin/{configuration}/";
                             // For info on parameters:
                             // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
                             // \m uses multiple cores
@@ -270,10 +284,12 @@ namespace CompilerPlugin.Managers
                     {
                         Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", environmentBefore);
                     }
+                    toReturn.Succeeded = succeeded;
                     if (!succeeded)
                     {
                         if(didUserKillProcess)
                         {
+                            toReturn.WasCancelled = true;
                             printOutput("Build cancelled by user");
                         }
                         else
@@ -294,19 +310,20 @@ namespace CompilerPlugin.Managers
 
                         }
                     }
-                    return succeeded;
+                    toReturn.Succeeded = succeeded;
                 }
-                return false;
             }
             finally
             {
                 _compilerViewModel.IsCompiling = false;
             }
+            return toReturn;
         }
 
         private async Task<bool> StartMsBuildWithParameters(Action<string> printOutput, Action<string> printError, string startOutput, string endOutput, string arguments, string msbuildLocation)
         {
-            Process process = CreateProcess("\"" + msbuildLocation + "\"", arguments);
+            var effectiveMsBuildLocation = msBuildLocation == "dotnet" ? "dotnet" : $"\"{msbuildLocation}\"";
+            Process process = CreateProcess(effectiveMsBuildLocation, arguments);
             printOutput(startOutput);
             // This is noisy and technical. Reducing output window verbosity
             //printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);

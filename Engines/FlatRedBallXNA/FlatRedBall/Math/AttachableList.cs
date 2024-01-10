@@ -22,7 +22,7 @@ namespace FlatRedBall.Math
         // A user asked me
         // why the AttachableList
         // class doesn't inherit from
-        // IList.  The reason is because
+        // List.  The reason is because
         // if we want the AttachableList to
         // have two-way functionality then we
         // need custom code in Add and Remove (and
@@ -95,38 +95,25 @@ namespace FlatRedBall.Math
         {
             InternalHashSet = new HashSet<T>();
 
-            CollectionChanged += HandleCollectionChangedForHashSet;
+            ListChanged += HandleCollectionChangedForHashSet;
         }
 
-        private void HandleCollectionChangedForHashSet(object sender, NotifyCollectionChangedEventArgs e)
+        private void HandleCollectionChangedForHashSet(IAttachable item, NotifyCollectionChangedAction action)
         {
-            switch(e.Action)
+            switch(action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    foreach(T newItem in e.NewItems)
-                    {
-                        InternalHashSet.Add(newItem);
-                    }
+                    InternalHashSet.Add((T)item);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    foreach(T removed in e.OldItems)
-                    {
-                        InternalHashSet.Remove(removed);
-                    }
+                    InternalHashSet.Remove((T)item);
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     InternalHashSet.Clear();
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                    foreach (T removed in e.OldItems)
-                    {
-                        InternalHashSet.Remove(removed);
-                    }
-                    foreach (T newItem in e.NewItems)
-                    {
-                        InternalHashSet.Add(newItem);
-                    }
-                    break;
+                    throw new NotImplementedException();
+                    
                 case NotifyCollectionChangedAction.Move:
                     break;
             }
@@ -207,6 +194,7 @@ namespace FlatRedBall.Math
                 // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, attachable, countBefore));
             }
+            ListChanged?.Invoke(attachable, NotifyCollectionChangedAction.Add);
         }
 
         public void AddRange(IEnumerable<T> collection)
@@ -244,6 +232,8 @@ namespace FlatRedBall.Math
                 // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, attachable, 0));
             }
+
+            ListChanged?.Invoke(attachable, NotifyCollectionChangedAction.Add);
         }
 
         /// <summary>
@@ -259,9 +249,9 @@ namespace FlatRedBall.Math
 
                 if (this.CollectionChanged != null)
                 {
-                    // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                     this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, listToAdd[i], i));
                 }
+                ListChanged?.Invoke(listToAdd[i], NotifyCollectionChangedAction.Add);
             }
         }
 
@@ -350,6 +340,11 @@ namespace FlatRedBall.Math
                 // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removed, 0));
             }
+
+            if(ListChanged != null)
+            {
+                ListChanged.Invoke(null, NotifyCollectionChangedAction.Reset);
+            }
         }
 
         /// <summary>
@@ -416,12 +411,10 @@ namespace FlatRedBall.Math
         /// <returns>The IAttachable with a name containing the argument string or null if none are found.</returns>
         public T FindWithNameContainingCaseInsensitive(string stringToSearchFor)
         {
-            string name;
             for (int i = 0; i < this.Count; i++)
             {
                 T t = this[i];
-                name = t.Name.ToLower();
-                if (name.Contains(stringToSearchFor.ToLower()))
+                if (t.Name.IndexOf(stringToSearchFor, StringComparison.OrdinalIgnoreCase) >= 0)
                     return t;
             }
 
@@ -445,7 +438,8 @@ namespace FlatRedBall.Math
             return listToReturn;
         }
 
-
+        // Faster than LINQ:
+        public T FirstOrDefault() => Count == 0 ? default(T) : this[0];
 
         /// <summary>
         /// Inserts the argument IAttachable at the argument index and creates a 
@@ -467,7 +461,7 @@ namespace FlatRedBall.Math
             mInternalList.Insert(index, attachable);
 
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, attachable, 0));
-
+            ListChanged?.Invoke(attachable, NotifyCollectionChangedAction.Add);
         }
 
         /// <summary>
@@ -485,7 +479,7 @@ namespace FlatRedBall.Math
                 // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, attachable, 0));
             }
-
+            ListChanged?.Invoke(attachable, NotifyCollectionChangedAction.Add);
         }
 
         /// <summary>
@@ -577,6 +571,7 @@ namespace FlatRedBall.Math
                 // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, attachable, 0));
             }
+            ListChanged?.Invoke(attachable, NotifyCollectionChangedAction.Remove);
         }
 
         /// <summary>
@@ -609,6 +604,7 @@ namespace FlatRedBall.Math
                 // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removed, 0));
             }
+            ListChanged?.Invoke(removed, NotifyCollectionChangedAction.Remove);
         }
 
         /// <summary>
@@ -627,6 +623,7 @@ namespace FlatRedBall.Math
                 // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removed, 0));
             }
+            ListChanged?.Invoke(removed, NotifyCollectionChangedAction.Remove);
         }
 
         public void Sort(Comparison<T> comparison)
@@ -887,6 +884,7 @@ namespace FlatRedBall.Math
             mInternalListAsIList.Remove(attachable);
 
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, attachable, 0));
+            ListChanged?.Invoke(attachable, NotifyCollectionChangedAction.Remove);
         }
 
         #endregion
@@ -908,6 +906,12 @@ namespace FlatRedBall.Math
 
         #endregion
 
+        /// <summary>
+        /// Event raised when this collection changes (eg item is added or removed). Note that this
+        /// allocates internally resulting potentially expensive garbage collection. Consider using ListChanged.
+        /// </summary>
         public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        public event Action<IAttachable, NotifyCollectionChangedAction> ListChanged;
     }
 }

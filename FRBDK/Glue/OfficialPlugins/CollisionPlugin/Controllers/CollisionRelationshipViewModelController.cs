@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Math.Geometry;
@@ -122,7 +123,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 shouldConsider = nos != null &&
                     nos.IsList &&
                     !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
-                    ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.ImplementsICollidable == true;
+                    ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.IsICollidableRecursive() == true;
             }
 
             if (!shouldConsider)
@@ -142,10 +143,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
         static bool CanHaveSubCollisions(NamedObjectSave nos)
         {
-            EntitySave entity = null;
             if (nos != null)
             {
-                return GetEntitySaveReferencedBy(nos)?.ImplementsICollidable == true;
+                return GetEntitySaveReferencedBy(nos)?.IsICollidableRecursive() == true;
             }
             return false;
         }
@@ -178,6 +178,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 var ati = nos.GetAssetTypeInfo();
 
                 return ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
+                    ati == AvailableAssetTypes.CommonAtis.CapsulePolygon ||
                     ati == AvailableAssetTypes.CommonAtis.Circle ||
                     ati == AvailableAssetTypes.CommonAtis.Line ||
                     ati == AvailableAssetTypes.CommonAtis.Polygon;
@@ -188,7 +189,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
         public static void RefreshViewModel(NamedObjectSave collisionRelationship)
         {
 
-            var currentElement = GlueState.Self.CurrentElement;
+            var currentElement = ObjectFinder.Self.GetElementContaining(collisionRelationship);
+                //GlueState.Self.CurrentElement;
 
             ViewModel.GlueObject = collisionRelationship;
 
@@ -388,7 +390,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             foreach (var nos in firstEntity.AllNamedObjects)
             {
-                var canBeSubCollision = IsShape(nos) || nos.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection;
+                var canBeSubCollision = IsShape(nos) || nos.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection ||
+                     IsTileShapeCollection(nos);
 
                 if (canBeSubCollision)
                 {
@@ -396,6 +399,11 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 }
             }
             return availableValues;
+        }
+
+        public static bool IsTileShapeCollection(NamedObjectSave namedObject)
+        {
+            return namedObject?.GetAssetTypeInfo()?.FriendlyName == "TileShapeCollection";
         }
 
         public static void HandleGlueObjectPropertyChanged(string changedMember, object oldValue, GlueElement element)
@@ -495,7 +503,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        private static void UpdateCollisionRelationshipsInThisElement(IElement element, object oldValue)
+        private static void UpdateCollisionRelationshipsInThisElement(GlueElement element, object oldValue)
         {
             var namedObject = GlueState.Self.CurrentNamedObjectSave;
 
@@ -552,7 +560,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             if (changedAny)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             }
         }
@@ -713,7 +721,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        public static void TryApplyAutoName(IElement element, NamedObjectSave namedObject)
+        public static void TryApplyAutoName(GlueElement element, NamedObjectSave namedObject)
         {
             var isAutoNameEnabled = namedObject.Properties.GetValue<bool>(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled));
             if(isAutoNameEnabled)
@@ -781,7 +789,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
 
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element as GlueElement);
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element as GlueElement);
                 }
             }
@@ -823,7 +831,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             if(didMakeChange)
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
 
             return didMakeChange;

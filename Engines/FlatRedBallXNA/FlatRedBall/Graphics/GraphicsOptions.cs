@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 using FlatRedBall.IO;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-    #if !MONOGAME
+    #if !MONOGAME && !FNA
     using System.Windows.Forms;
     #endif
 
@@ -56,7 +56,7 @@ namespace FlatRedBall.Graphics
 
         private WindowedFullscreenMode windowedFullscreenMode = WindowedFullscreenMode.Windowed;
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
         // For some reason setting to fullscreen can crash things but setting the border style to none helps.
         System.Windows.Forms.FormBorderStyle mWindowedBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D; 
 #endif
@@ -85,7 +85,7 @@ namespace FlatRedBall.Graphics
             get { return mTextureFilter; }
             set
             {
-                if (true)//mTextureFilter != value)
+                if (mTextureFilter != value)
                 {
                     mTextureFilter = value;
 
@@ -98,7 +98,7 @@ namespace FlatRedBall.Graphics
 #endif
                         #endregion
 
-                        ForceRefreshSamplerState();
+                        ForceRefreshSamplerState(0);
                     }
                 }
             }
@@ -109,12 +109,10 @@ namespace FlatRedBall.Graphics
             // For now do nothing, but we may want to perform some checks here against whether we're using REACH or HIDEF
         }
 
-        #region XML Docs
         /// <summary>
         /// Sets the width of the backbuffer and resets the device
         /// Use SetResolution() to set both width and height simultaneously
         /// </summary>
-        #endregion
         public int ResolutionWidth
         {
             get { return mResolutionWidth; }
@@ -125,12 +123,10 @@ namespace FlatRedBall.Graphics
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Sets the height of the backbuffer and resets the device
         /// Use SetResolution() to set both width and height simultaneously
         /// </summary>
-        #endregion
         public int ResolutionHeight
         {
             get { return mResolutionHeight; }
@@ -141,11 +137,9 @@ namespace FlatRedBall.Graphics
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets or sets the background color of all cameras
         /// </summary>
-        #endregion
         [XmlIgnoreAttribute()]
         public Color BackgroundColor
         {
@@ -180,7 +174,7 @@ namespace FlatRedBall.Graphics
                         return;
                     }
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
                     if (IsFullScreen)
                     {
                         mWindowedBorderStyle = ((Form)FlatRedBallServices.Owner).FormBorderStyle;
@@ -189,7 +183,7 @@ namespace FlatRedBall.Graphics
 #endif
 
                     ResetDevice();
-#if !MONOGAME
+#if !MONOGAME && !FNA
                     if (!IsFullScreen)
                     {
                         ((Form)FlatRedBallServices.Owner).FormBorderStyle = mWindowedBorderStyle;
@@ -239,7 +233,7 @@ namespace FlatRedBall.Graphics
 						return;
                     }
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
                     if (IsFullScreen)
                     {
                         mWindowedBorderStyle = ((Form)FlatRedBallServices.Owner).FormBorderStyle;
@@ -248,7 +242,7 @@ namespace FlatRedBall.Graphics
 #endif
 
                     ResetDevice();
-#if !MONOGAME
+#if !MONOGAME && !FNA
                     if (!IsFullScreen)
                     {
                         ((Form)FlatRedBallServices.Owner).FormBorderStyle = mWindowedBorderStyle;
@@ -263,11 +257,9 @@ namespace FlatRedBall.Graphics
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Enables or disables multisampling
         /// </summary>
-        #endregion
         public bool UseMultiSampling
         {
             get { return mUseMultiSampling; }
@@ -369,7 +361,7 @@ namespace FlatRedBall.Graphics
 
         void HandleClientSizeOrOrientationChange(object sender, EventArgs e)
         {
-#if !WINDOWS
+#if !WINDOWS && !FNA
             SizeOrOrientationChanged?.Invoke(this, null);
 #endif
         }
@@ -498,7 +490,7 @@ namespace FlatRedBall.Graphics
 
             // Not sure why but the GameWindow's resolution change doesn't fire
             // That's okay, we now have a custom event for it.  Glue will generate against this:
-#if !WINDOWS
+#if !WINDOWS && !FNA
 
             SizeOrOrientationChanged?.Invoke(this, null);
 #endif
@@ -526,7 +518,7 @@ namespace FlatRedBall.Graphics
             mResolutionWidth = width;
             mResolutionHeight = height;
             ResetDevice();
-#if !WINDOWS
+#if !WINDOWS && !FNA
 
             SizeOrOrientationChanged?.Invoke(this, null);
 #endif
@@ -757,7 +749,7 @@ namespace FlatRedBall.Graphics
             presentationParameters.IsFullScreen = windowedFullscreenMode == WindowedFullscreenMode.Fullscreen ;
         }
 
-            #endregion
+        #endregion
 
             #region File Operations
 
@@ -803,4 +795,4 @@ namespace FlatRedBall.Graphics
         #endregion
     }
 
-    }
+}

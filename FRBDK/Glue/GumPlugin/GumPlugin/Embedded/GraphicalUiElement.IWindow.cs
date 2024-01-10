@@ -1,6 +1,9 @@
 ﻿using FlatRedBall.Gui;
+using Gum.DataTypes;
 using Gum.Wireframe;
 using GumCoreShared.FlatRedBall.Embedded;
+using GumRuntime;
+using RenderingLibrary;
 using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
@@ -19,6 +22,23 @@ namespace Gum.Wireframe
     }
     public partial class GraphicalUiElement : FlatRedBall.Gui.Controls.IControl, FlatRedBall.Graphics.Animation.IAnimatable
     {
+        struct VmToUiProperty
+        {
+            public string VmProperty;
+            public string UiProperty;
+
+            public Delegate Delegate;
+
+            public string ToStringFormat;
+
+            public override string ToString()
+            {
+                return $"VM:{VmProperty} UI{UiProperty}";
+            }
+
+            public static VmToUiProperty Unassigned => new VmToUiProperty();
+        }
+
         class HandledActions
         {
             public bool HandledMouseWheel;
@@ -578,7 +598,7 @@ namespace Gum.Wireframe
                 float worldX;
                 float worldY;
 
-                var managers = this.EffectiveManagers;
+                var managers = this.EffectiveManagers as SystemManagers;
 
 
                 // If there are no managers, we an still fall back to the default:
@@ -764,8 +784,8 @@ namespace Gum.Wireframe
         // to put it here for now. I may eventually
         // migrate this to the common Gum code but we'll
         // see
-
-        Dictionary<string, string> vmPropsToUiProps = new Dictionary<string, string>();
+        Dictionary<string, VmToUiProperty> vmPropsToUiProps = new Dictionary<string, VmToUiProperty>();
+        Dictionary<string, VmToUiProperty> vmEventsToUiMethods = new Dictionary<string, VmToUiProperty>();
 
         object mInheritedBindingContext;
         internal object InheritedBindingContext
@@ -801,9 +821,17 @@ namespace Gum.Wireframe
 
         private void HandleBindingContextChangedInternal(object oldBindingContext)
         {
+            // early out - this isn't technically necessary as 
+            // the subscription code below can be called multiple
+            // times, but it does make debgging easier.
+            if(oldBindingContext == EffectiveBindingContext)
+            {
+                return;
+            }
+
             if (oldBindingContext is INotifyPropertyChanged oldViewModel)
             {
-                oldViewModel.PropertyChanged -= HandleViewModelPropertyChanged;
+                UnsubscribeEventsOnOldViewModel(oldViewModel);
             }
             if (EffectiveBindingContext is INotifyPropertyChanged viewModel)
             {
@@ -860,6 +888,20 @@ namespace Gum.Wireframe
             BindingContextChanged?.Invoke(this, args);
         }
 
+        private void UnsubscribeEventsOnOldViewModel(INotifyPropertyChanged oldViewModel)
+        {
+            oldViewModel.PropertyChanged -= HandleViewModelPropertyChanged;
+
+            foreach(var eventItem in vmEventsToUiMethods.Values)
+            {
+                var delegateToRemove = eventItem.Delegate;
+
+                var foundEvent = oldViewModel.GetType().GetEvent(eventItem.VmProperty);
+
+                foundEvent?.RemoveEventHandler(oldViewModel, delegateToRemove);
+            }
+        }
+
         public object BindingContextBindingPropertyOwner { get; private set; }
         public string BindingContextBinding { get; private set; }
 
@@ -901,7 +943,7 @@ namespace Gum.Wireframe
             //}
         }
 
-        public void SetBinding(string uiProperty, string vmProperty)
+        public void SetBinding(string uiProperty, string vmProperty, string toStringFormat = null)
         {
             if(uiProperty == nameof(BindingContext))
             {
@@ -914,9 +956,9 @@ namespace Gum.Wireframe
                     vmPropsToUiProps.Remove(vmProperty);
                 }
                 // This prevents single UI properties from being bound to multiple VM properties
-                if (vmPropsToUiProps.Any(item => item.Value == uiProperty))
+                if (vmPropsToUiProps.Any(item => item.Value.UiProperty == uiProperty))
                 {
-                    var toRemove = vmPropsToUiProps.Where(item => item.Value == uiProperty).ToArray();
+                    var toRemove = vmPropsToUiProps.Where(item => item.Value.UiProperty == uiProperty).ToArray();
 
                     foreach (var kvp in toRemove)
                     {
@@ -924,8 +966,12 @@ namespace Gum.Wireframe
                     }
                 }
 
+                var newBinding = new VmToUiProperty();
+                newBinding.UiProperty = uiProperty;
+                newBinding.VmProperty = vmProperty;
+                newBinding.ToStringFormat = toStringFormat;
 
-                vmPropsToUiProps.Add(vmProperty, uiProperty);
+                vmPropsToUiProps.Add(vmProperty, newBinding);
 
                 if(EffectiveBindingContext != null)
                 {
@@ -947,22 +993,29 @@ namespace Gum.Wireframe
                 var bindingContextObjectToUse = BindingContextBinding == vmPropertyName ?
                     BindingContextBindingPropertyOwner : EffectiveBindingContext;
 
+                var bindingContextObjectType = bindingContextObjectToUse?.GetType();
+
 #if UWP
-                var vmProperty = bindingContextObjectToUse?.GetType().GetTypeInfo().GetDeclaredProperty(vmPropertyName);
+                var vmProperty = bindingContextObjectType?.GetTypeInfo().GetDeclaredProperty(vmPropertyName);
 #else
-                var vmProperty = bindingContextObjectToUse?.GetType().GetProperty(vmPropertyName);
+                var vmProperty = bindingContextObjectType?.GetProperty(vmPropertyName);
 #endif
                 FieldInfo vmField = null;
                 
                 if (vmProperty == null)
                 {
-                    vmField = bindingContextObjectToUse?.GetType().GetField(vmPropertyName);
+                    vmField = bindingContextObjectType?.GetField(vmPropertyName);
                 }
 
+                var foundEvent = bindingContextObjectType?.GetEvent(vmPropertyName);
 
-                if (vmProperty == null && vmField == null)
+                if (vmProperty == null && vmField == null && foundEvent == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Could not find field or property {vmPropertyName} in {bindingContextObjectToUse?.GetType()}");
+                    System.Diagnostics.Debug.WriteLine($"Could not find field, property, or event {vmPropertyName} in {bindingContextObjectToUse?.GetType()}");
+                }
+                else if(foundEvent != null)
+                {
+                    BindEvent(vmPropertyName, bindingContextObjectToUse, foundEvent);
                 }
                 else
                 {
@@ -976,22 +1029,17 @@ namespace Gum.Wireframe
                     }
                     else
                     {
-                        var uiPropertyName = vmPropsToUiProps[vmPropertyName];
-                        PropertyInfo uiProperty = this.GetType().GetProperty(uiPropertyName);
+                        var binding = vmPropsToUiProps[vmPropertyName];
+                        PropertyInfo uiProperty = this.GetType().GetProperty(binding.UiProperty);
 
                         if (uiProperty == null)
                         {
                             throw new Exception($"The type {this.GetType()} does not have a property {vmPropsToUiProps[vmPropertyName]}");
                         }
 
-                        if (uiProperty.PropertyType == typeof(string))
-                        {
-                            uiProperty.SetValue(this, vmValue?.ToString(), null);
-                        }
-                        else
-                        {
-                            uiProperty.SetValue(this, vmValue, null);
-                        }
+                        var convertedValue = ConvertValue(vmValue, uiProperty.PropertyType, binding.ToStringFormat);
+
+                        uiProperty.SetValue(this, convertedValue, null);
                     }
                     updated = true;
                 }
@@ -1002,13 +1050,117 @@ namespace Gum.Wireframe
             return updated;
         }
 
+        private void BindEvent(string vmPropertyName, object bindingContextObjectToUse, EventInfo foundEvent)
+        {
+            var binding = vmPropsToUiProps[vmPropertyName];
+
+            var isAlreadyBound = vmEventsToUiMethods.ContainsKey(vmPropertyName);
+
+            if(!isAlreadyBound)
+            {
+                var delegateInstance = Delegate.CreateDelegate(foundEvent.EventHandlerType, this, binding.UiProperty);
+
+                vmEventsToUiMethods.Add(vmPropertyName, new VmToUiProperty { UiProperty = binding.UiProperty, VmProperty = vmPropertyName, Delegate = delegateInstance });
+
+                foundEvent.AddEventHandler(bindingContextObjectToUse, delegateInstance);
+            }
+
+        }
+
+        public static object ConvertValue(object value, Type desiredType, string format)
+        {
+            object convertedValue = value;
+            if (desiredType == typeof(string))
+            {
+                if (!string.IsNullOrEmpty(format))
+                {
+                    if (value is int asInt) convertedValue = asInt.ToString(format);
+                    else if (value is double asDouble) convertedValue = asDouble.ToString(format);
+                    else if (value is decimal asDecimal) convertedValue = asDecimal.ToString(format);
+                    else if (value is float asFloat) convertedValue = asFloat.ToString(format);
+                    else if (value is long asLong) convertedValue = asLong.ToString(format);
+                }
+                else
+                {
+                    convertedValue = value?.ToString();
+                }
+            }
+            else if (desiredType == typeof(int))
+            {
+                if (value is decimal asDecimal)
+                {
+                    // do we round? 
+                    convertedValue = (int)asDecimal;
+                }
+                else if(value is string asString)
+                {
+                    if (int.TryParse(asString, out int asInt))
+                    {
+                        convertedValue = asInt;
+                    }
+                }
+            }
+            else if (desiredType == typeof(double))
+            {
+                if (value is int asInt)
+                {
+                    convertedValue = (double)asInt;
+                }
+                else if (value is decimal asDecimal)
+                {
+                    convertedValue = (double)asDecimal;
+                }
+                else if (value is float asFloat)
+                {
+                    convertedValue = (double)asFloat;
+                }
+            }
+            else if (desiredType == typeof(decimal))
+            {
+                if (value is int asInt)
+                {
+                    convertedValue = (decimal)asInt;
+                }
+                else if (value is double asDouble)
+                {
+                    convertedValue = (decimal)asDouble;
+                }
+                else if (value is float asFloat)
+                {
+                    convertedValue = (decimal)asFloat;
+                }
+            }
+            else if (desiredType == typeof(float))
+            {
+                if (value is int asInt)
+                {
+                    convertedValue = (float)asInt;
+                }
+                else if (value is double asDouble)
+                {
+                    convertedValue = (float)asDouble;
+                }
+                else if (value is decimal asDecimal)
+                {
+                    convertedValue = (float)asDecimal;
+                }
+                else if(value is string asString)
+                {
+                    convertedValue = float.TryParse(asString, out float result) ? result : 0;
+                }
+            }
+            return convertedValue;
+        }
+
+
         private void TryPushBindingContextChangeToChildren(string vmPropertyName)
         {
             if (this.Children != null)
             {
-                foreach(var child in Children)
+                for (int i = 0; i < Children.Count; i++)
                 {
-                    if(child is GraphicalUiElement gue)
+                    IRenderableIpso child = Children[i];
+                    if (child is GraphicalUiElement gue)
                     {
                         if (gue.BindingContextBinding == vmPropertyName && gue.BindingContextBindingPropertyOwner == EffectiveBindingContext)
                         {
@@ -1020,8 +1172,9 @@ namespace Gum.Wireframe
             }
             else
             {
-                foreach(var gue in ContainedElements)
+                for (int i = 0; i < mWhatThisContains.Count; i++)
                 {
+                    GraphicalUiElement gue = mWhatThisContains[i];
                     if (gue.BindingContextBinding == vmPropertyName && gue.BindingContextBindingPropertyOwner == EffectiveBindingContext)
                     {
                         gue.UpdateToVmProperty(vmPropertyName);
@@ -1034,9 +1187,9 @@ namespace Gum.Wireframe
         protected void PushValueToViewModel([CallerMemberName]string uiPropertyName = null)
         {
 
-            var kvp = vmPropsToUiProps.FirstOrDefault(item => item.Value == uiPropertyName);
+            var kvp = vmPropsToUiProps.FirstOrDefault(item => item.Value.UiProperty == uiPropertyName);
 
-            if (kvp.Value == uiPropertyName)
+            if (kvp.Value.UiProperty == uiPropertyName)
             {
                 var vmPropName = kvp.Key;
 
@@ -1055,8 +1208,9 @@ namespace Gum.Wireframe
             }
         }
 
-#endregion
+        #endregion
 
-
+        // This is added for compatability for projects created before GumCommon:
+        public void AddToManagers() => this.AddToManagers(SystemManagers.Default, layer: null);
     }
 }

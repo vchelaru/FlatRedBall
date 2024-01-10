@@ -270,7 +270,7 @@ namespace FlatRedBall.Instructions.Reflection
                     }
 
                     // value could be upper case like "TRUE" or "True".  Make it lower
-                    value = value.ToLower();
+                    value = value.ToLowerInvariant();
 
                     toReturn = bool.Parse(value);
                     handled = true;
@@ -285,7 +285,7 @@ namespace FlatRedBall.Instructions.Reflection
                     }
                     else
                     {
-                        value = value.ToLower();
+                        value = value.ToLowerInvariant();
 
                         toReturn = bool.Parse(value);
                         handled = true;

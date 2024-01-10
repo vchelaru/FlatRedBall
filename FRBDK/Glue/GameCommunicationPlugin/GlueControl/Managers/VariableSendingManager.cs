@@ -32,18 +32,16 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
     class VariableSendingManager
     {
-        public VariableSendingManager(RefreshManager refreshManager, CommandSender commandSender)
+        public VariableSendingManager(RefreshManager refreshManager)
         {
             _refreshManager = refreshManager;
             _refreshManager.VariableSendingManager = this;
-            _commandSender = commandSender;
         }
 
         #region Fields/Properties
 
         List<VariableIgnoreData> Ignores = new List<VariableIgnoreData>();
         private RefreshManager _refreshManager;
-        private CommandSender _commandSender;
 
         public CompilerViewModel ViewModel
         {
@@ -79,7 +77,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal async Task HandleNamedObjectVariableListChanged(List<VariableChangeArguments> variableList, AssignOrRecordOnly assignOrRecordOnly)
         {
-            var gameScreenName = await _commandSender.GetScreenName();
+            var gameScreenName = await CommandSender.Self.GetScreenName();
             List<GlueVariableSetData> listOfVariables = new List<GlueVariableSetData>();
             List<NamedObjectSave> nosList = new List<NamedObjectSave>();
             foreach (var variable in variableList)
@@ -89,39 +87,49 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 listOfVariables.AddRange(inner);
             }
 
-            await PushVariableChangesToGame(listOfVariables, nosList);
+            PushVariableChangesToGame(listOfVariables, nosList);
         }
 
         public async Task HandleNamedObjectVariableChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, object forcedCurrentValue = null)
         {
-            var gameScreenName = await _commandSender.GetScreenName();
+            var gameScreenName = await CommandSender.Self.GetScreenName();
             var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
 
-            await PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos });
+            PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos });
         }
 
-        public async Task PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate)
+        public void PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate)
         {
-            await TaskManager.Self.AddAsync(async () =>
+            var dto = new GlueVariableSetDataList();
+            dto.Data.AddRange(listOfVariables);
+
+            foreach(var nos in namedObjectsToUpdate)
+            {
+                var container = ObjectFinder.Self.GetElementContaining(nos);
+                var namedObjectWithElement = new NamedObjectWithElementName();
+                namedObjectWithElement.NamedObjectSave = nos;
+                namedObjectWithElement.GlueElementName = container?.Name;
+                var listNos = container?.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(nos));
+                namedObjectWithElement.ContainerName = listNos?.InstanceName;
+
+                dto.NamedObjectsToUpdate.Add(namedObjectWithElement);
+            }
+
+            var serializedForHash = JsonConvert.SerializeObject(dto, Formatting.None);
+
+            var hash = serializedForHash.GetHashCode();
+
+            var customId = hash;
+
+            // The round trip takes some time. This can slow down Glue because it's sitting and waiting for a response
+            // from the game. I don't think we care about the response, so let's just fire and forget this.
+            //await TaskManager.Self.AddAsync(async () =>
+            TaskManager.Self.Add(async () =>
             {
                 try
                 {
-                    var dto = new GlueVariableSetDataList();
-                    dto.Data.AddRange(listOfVariables);
 
-                    foreach(var nos in namedObjectsToUpdate)
-                    {
-                        var container = ObjectFinder.Self.GetElementContaining(nos);
-                        var namedObjectWithElement = new NamedObjectWithElementName();
-                        namedObjectWithElement.NamedObjectSave = nos;
-                        namedObjectWithElement.GlueElementName = container?.Name;
-                        var listNos = container?.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(nos));
-                        namedObjectWithElement.ContainerName = listNos?.InstanceName;
-
-                        dto.NamedObjectsToUpdate.Add(namedObjectWithElement);
-                    }
-
-                    var sendGeneralResponse = await _commandSender.Send(dto);
+                    var sendGeneralResponse = await CommandSender.Self.Send(dto);
 
                     GlueVariableSetDataResponseList response = null;
                     if (sendGeneralResponse.Succeeded)
@@ -141,14 +149,20 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                             Output.Print(exception);
                         }
 
-                        _refreshManager.CreateStopAndRestartTask($"Unhandled variable changed");
+                        if(GlueViewSettingsViewModel.RestartOnFailedCommands)
+                        {
+                            _refreshManager.CreateStopAndRestartTask($"Unhandled variable changed");
+                        }
                     }
                 }
                 catch
                 {
                     // no biggie...
                 }
-            }, $"Pushing {listOfVariables.Count} variables to game", TaskExecutionPreference.Asap);
+            // We want this to be asap so the game feels responsive, but with things like the rotation control, values can be spammed really fast.
+            // We'll use AddOrMoveToEnd to make sure that if the user is spamming values, we'll only send the last one.
+            //}, $"Pushing {listOfVariables.Count} variables to game", TaskExecutionPreference.Asap, customId:$"Pushing variables with hash {hash}");
+            }, $"Pushing {listOfVariables.Count} variables to game", TaskExecutionPreference.AddOrMoveToEnd, customId:$"Pushing variables with hash {hash}");
         }
 
         public List<GlueVariableSetData> GetNamedObjectValueChangedDtos(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, string gameScreenName, object forcedCurrentValue = null)
@@ -179,6 +193,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             var variableDefinition = nosAti?.VariableDefinitions.FirstOrDefault(item => item.Name == changedMember);
             var instruction = nos?.GetCustomVariable(changedMember);
             var property = nos.Properties.FirstOrDefault(item => item.Name == changedMember);
+            var nosElement = ObjectFinder.Self.GetElement(nos);
 
             #region Identify the typeName
             if (variableDefinition != null)
@@ -205,21 +220,33 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
             if (typeName == null && nos.SourceType == SourceType.Entity)
             {
-                var nosEntity = ObjectFinder.Self.GetElement(nos);
-                var variableInEntity = nosEntity.GetCustomVariable(changedMember);
+                var variableInEntity = nosElement.GetCustomVariable(changedMember);
                 typeName = variableInEntity?.Type;
 
                 if(variableInEntity != null)
                 {
-                    var getStateResult = ObjectFinder.Self.GetStateSaveCategory(variableInEntity, nosEntity);
+                    var getStateResult = ObjectFinder.Self.GetStateSaveCategory(variableInEntity, nosElement);
                     isState = getStateResult.IsState;
                     category = getStateResult.Category;
                     if(isState && category != null)
                     {
-                        typeName = nosEntity.Name.Replace("/", ".").Replace("\\", ".") + "." + category.Name;
+                        typeName = nosElement.Name.Replace("/", ".").Replace("\\", ".") + "." + category.Name;
+                    }
+                }
+                else if(changedMember?.Contains(".") == true)
+                {
+                    var beforeDot = changedMember.Substring(0, changedMember.IndexOf("."));
+                    var nosInNosElement = nosElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == beforeDot);
+                    if(nosInNosElement != null)
+                    {
+                        var afterDot = changedMember.Substring(changedMember.IndexOf(".") + 1);
+                        var innerAti = nosInNosElement.GetAssetTypeInfo();
+
+                        typeName = innerAti.VariableDefinitions.FirstOrDefault(item => item.Name == afterDot)?.Type;
                     }
                 }
             }
+
 
 
             if (forcedCurrentValue != null)
@@ -234,14 +261,78 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 currentValue = property.Value;
             }
-            else if(changedMember == "IncludeInICollidable")
+
+            #region NOS Properties
+
+            else if(changedMember == nameof(NamedObjectSave.AttachToContainer))
+            {
+                currentValue = nos.AttachToContainer;
+            }
+            else if (changedMember == nameof(NamedObjectSave.AttachToCamera))
+            {
+                currentValue = nos.AttachToCamera;
+            }
+            else if(changedMember == nameof(NamedObjectSave.Instantiate))
+            {
+                currentValue = nos.InstanceName;
+            }
+            else if(changedMember == nameof(NamedObjectSave.AddToManagers))
+            {
+                currentValue = nos.AddToManagers;
+            }
+            else if(changedMember == nameof(NamedObjectSave.RemoveFromManagersWhenInvisible))
+            {
+                currentValue = nos.RemoveFromManagersWhenInvisible;
+            }
+            else if (changedMember == nameof(NamedObjectSave.IncludeInICollidable))
             {
                 currentValue = nos.IncludeInICollidable;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IncludeInIClickable))
+            {
+                currentValue = nos.IncludeInIClickable;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IsDisabled))
+            {
+                currentValue = nos.IsDisabled;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IgnoresPausing))
+            {
+                currentValue = nos.IgnoresPausing;
+            }
+            else if(changedMember == nameof(NamedObjectSave.CallActivity))
+            {
+                currentValue = nos.CallActivity;
+            }
+            else if(changedMember == nameof(NamedObjectSave.LayerOn))
+            {
+                currentValue = nos.LayerOn;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IsZBuffered))
+            {
+                currentValue = nos.IsZBuffered;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IndependentOfCamera))
+            {
+                currentValue = nos.IndependentOfCamera;
+            }
+            else if(changedMember == nameof(NamedObjectSave.LayerCoordinateUnit))
+            {
+                currentValue = nos.LayerCoordinateUnit;
+            }
+
+
+
+            #endregion
+
+            if (isState && currentValue?.ToString() == "<NONE>")
+            {
+                currentValue = null;
             }
             #endregion
 
 
-            var currentElement = GlueState.Self.CurrentElement;
+            var currentElement = GlueState.Self.CurrentElement ?? ObjectFinder.Self.GetElementContaining(nos);
             var nosName = nos.InstanceName;
             var ati = nos.GetAssetTypeInfo();
             string value;
@@ -253,7 +344,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             }
 
-            ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, ref nosName, ati, ref typeName, out value);
+            ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, isState, ref nosName, ati, ref typeName, out value);
 
             GlueVariableSetData data = GetGlueVariableSetDataDto(nosName, changedMember, typeName, value, currentElement, assignOrRecordOnly, isState);
 
@@ -262,18 +353,30 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             if(category != null && ( value == null || value == "<NONE>"))
             {
                 // we need to un-assign the state. We can do this by looping through all variables controlled by the
-                // category and setting them to null values:
+                // category and setting them to their default values:
                 var ownerOfCategory = ObjectFinder.Self.GetElementContaining(category);
-
-                var variablesToAssign = ownerOfCategory?.CustomVariables
-                    .Where(item => !category.ExcludedVariables.Contains(item.Name)).ToArray();
-                if(variablesToAssign != null)
+                // Only unassign if the state is defined by the same element as the nos's element. Otherwise the variables
+                // won't apply:
+                if(ownerOfCategory == nosElement)
                 {
-                    foreach(var variableToAssign in variablesToAssign)
+                    var variablesToAssign = ownerOfCategory?.CustomVariables
+                        .Where(item => !category.ExcludedVariables.Contains(item.Name)).ToArray();
+                    if(variablesToAssign != null)
                     {
-                        var defaultValue = ObjectFinder.Self.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
-                        toReturn.AddRange(GetNamedObjectValueChangedDtos(variableToAssign.Name, null, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue:defaultValue));
+                        foreach(var variableToAssign in variablesToAssign)
+                        {
+                            var defaultValue = ObjectFinder.Self.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
+
+                            var name = variableToAssign.Name;
+                            if(!string.IsNullOrEmpty(variableToAssign.SourceObject))
+                            {
+                                name = variableToAssign.SourceObject + "." + variableToAssign.SourceObjectProperty;
+                            }
+
+                            toReturn.AddRange(GetNamedObjectValueChangedDtos(name, null, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue:defaultValue));
+                        }
                     }
+
                 }
             }
 
@@ -332,6 +435,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         private void ConvertValue(ref string changedMember, object oldValue, 
             object currentValue, NamedObjectSave nos, GlueElement currentElement, string glueScreenName,
+            bool isState,
             ref string nosName, FlatRedBall.Glue.Elements.AssetTypeInfo ati, 
             ref string type, out string value)
         {
@@ -509,7 +613,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
 
 
-            if (value == null)
+            if (value == null && !isState && type != null)
             {
                 value = TypeManager.GetDefaultForType(type);
             }
@@ -548,8 +652,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             return clone;
         }
 
-        private string ToGameType(GlueElement element) =>
-            GlueState.Self.ProjectNamespace + "." + element.Name.Replace("\\", ".");
+        private string ToGameType(GlueElement element)
+        {
+
+            var projectNamespace = GlueState.Self.ProjectNamespace;
+            
+            return projectNamespace + "." + element.Name.Replace("\\", ".");
+
+        }
 
         private async Task<GlueVariableSetDataResponse> TryPushVariable(GlueVariableSetData data)
         {
@@ -558,7 +668,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 // why do we care if the GlueElement is null or not?
                 // && data.GlueElement != null)
             {
-                var sendGeneralResponse = await _commandSender.Send(data);
+                var sendGeneralResponse = await CommandSender.Self.Send(data);
                 var responseAsString = sendGeneralResponse.Succeeded ? sendGeneralResponse.Data : string.Empty;
 
                 if (!string.IsNullOrEmpty(responseAsString))
@@ -571,6 +681,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         private GlueVariableSetData GetGlueVariableSetDataDto(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement, AssignOrRecordOnly assignOrRecordOnly, bool isState)
         {
+            if(currentElement == null)
+            {
+                throw new ArgumentNullException(nameof(currentElement));
+            }
             var data = new GlueVariableSetData();
             data.InstanceOwnerGameType = ToGameType(currentElement);
             data.Type = type;
@@ -578,6 +692,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             data.VariableName = rawMemberName;
             data.AssignOrRecordOnly = assignOrRecordOnly;
             data.IsState = isState;
+
+            data.AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName?.FullPath;
+
 
             // March 15, 2022
             // Why do we set this
@@ -588,7 +705,19 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             //data.ScreenSave = currentElement as ScreenSave;
             //data.EntitySave = currentElement as EntitySave;
 
-            if (!string.IsNullOrEmpty(variableOwningNosName))
+            var strippedVaraibleName = rawMemberName;
+            if(rawMemberName.Contains("."))
+            {
+                strippedVaraibleName = rawMemberName.Substring(rawMemberName.LastIndexOf('.') + 1);
+            }
+
+            var customVariable = currentElement?.GetCustomVariableRecursively(strippedVaraibleName);
+
+            if(customVariable?.IsShared == true)
+            {
+                // don't prefix anything, leave it as-is
+            }
+            else if (!string.IsNullOrEmpty(variableOwningNosName))
             {
                 data.VariableName = "this." + variableOwningNosName + "." + data.VariableName;
             }

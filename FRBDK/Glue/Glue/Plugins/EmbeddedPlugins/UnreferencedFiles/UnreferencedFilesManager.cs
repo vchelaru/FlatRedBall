@@ -148,7 +148,7 @@ namespace FlatRedBall.Glue.Managers
                         // Added this here to make it easier to debug. This isn't necessary for function, as
                         // internally it does a IsContent check
                         var contentItems = ((VisualStudioProject)project.ContentProject).EvaluatedItems
-                            .Where(item => ProjectManager.IsContent(item.UnevaluatedInclude.ToLower().Replace(@"\", @"/")))
+                            .Where(item => GlueCommands.Self.FileCommands.IsContent(item.UnevaluatedInclude.Replace(@"\", @"/")))
                             .ToList();
 
                         foreach (var evaluatedItem in contentItems)
@@ -189,25 +189,20 @@ namespace FlatRedBall.Glue.Managers
         {
             bool isUnreferenced = false;
 
-            var link = item.GetLink();
-
-            string itemName;
-
-            itemName =  item.UnevaluatedInclude.ToLower().Replace(@"\", @"/");
+            string itemName =  item.UnevaluatedInclude.Replace(@"\", @"/");
             nameToInclude = item.UnevaluatedInclude;
 
             // no extensions are unsupported.  What do we do with the content pipeline?
-            if (!string.IsNullOrEmpty(FileManager.GetExtension(itemName)) && ProjectManager.IsContent(itemName) &&
+            if (!String.IsNullOrEmpty(FileManager.GetExtension(itemName)) && GlueCommands.Self.FileCommands.IsContent(itemName) &&
                 // If the project includes a reference to something like System.XML, then that reference
                 // will have an UnevaluatedInclude of "System.XML" which will be treated as an XML file.
                 // Therefore, ignore items with a Reference item type:
-                item.ItemType != "Reference")
+                !String.Equals(item.ItemType, "Reference", StringComparison.OrdinalIgnoreCase))
             {
                 FilePath filePath =
                     FileManager.RemoveDotDotSlash(FileManager.GetDirectory(project.ContentProject.FullFileName.FullPath) + nameToInclude);
 
-                isUnreferenced = 
-                    !referencedFiles.Contains(itemName);
+                isUnreferenced = !referencedFiles.Contains(itemName);
 
             }
             return isUnreferenced;

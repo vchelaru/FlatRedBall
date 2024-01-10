@@ -57,7 +57,7 @@ namespace TileGraphicsPlugin.Managers
                             currentRfs.SetProperty(CreateEntitiesInGeneratedCodePropertyName, true);
 
                             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                            GlueCommands.Self.GluxCommands.SaveGlux();
+                            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                         }
 
                         break;

@@ -4,19 +4,9 @@ using OfficialPlugins.SpritePlugin.Managers;
 using SkiaGum.GueDeriving;
 using SkiaSharp;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OfficialPlugins.ContentPreview.Views
 {
@@ -27,25 +17,25 @@ namespace OfficialPlugins.ContentPreview.Views
     {
         PngViewModel ViewModel => DataContext as PngViewModel;
 
-        FilePath textureFilePath;
+        private FilePath _textureFilePath;
         public FilePath TextureFilePath
         {
-            get => textureFilePath;
+            get => _textureFilePath;
             set
             {
-                if (value != textureFilePath)
+                if (value != _textureFilePath)
                 {
                     ForceRefreshMainSpriteTexture(value);
                 }
             }
         }
 
-        public SKBitmap Texture => MainSprite?.Texture;
+        public SKBitmap Texture => _mainSprite?.Texture;
 
-        SpriteRuntime MainSprite;
-        SolidRectangleRuntime GumBackground { get; set; }
+        private SpriteRuntime _mainSprite;
+        private SolidRectangleRuntime GumBackground { get; set; }
 
-        CameraLogic CameraLogic;
+        private CameraLogic _cameraLogic;
 
         public PngPreviewView()
         {
@@ -58,7 +48,7 @@ namespace OfficialPlugins.ContentPreview.Views
         {
             if (value == null || value.Exists() == false)
             {
-                MainSprite.Texture = null;
+                _mainSprite.Texture = null;
                 GumCanvas.InvalidateVisual();
             }
             else
@@ -68,7 +58,7 @@ namespace OfficialPlugins.ContentPreview.Views
                     using (var stream = System.IO.File.OpenRead(value.FullPath))
                     {
                         // cache?
-                        MainSprite.Texture = SKBitmap.Decode(stream);
+                        _mainSprite.Texture = SKBitmap.Decode(stream);
                         GumCanvas.InvalidateVisual();
 
                     }
@@ -79,7 +69,7 @@ namespace OfficialPlugins.ContentPreview.Views
                 }
             }
 
-            textureFilePath = value;
+            _textureFilePath = value;
         }
 
         private void HandleLoaded(object sender, RoutedEventArgs e)
@@ -89,30 +79,30 @@ namespace OfficialPlugins.ContentPreview.Views
 
         public void Initialize(CameraLogic cameraLogic)
         {
-            this.CameraLogic = cameraLogic;
+            this._cameraLogic = cameraLogic;
 
             CreateBackground();
             CreateMainSprite();
 
             // do this after creating the background so that it can be passed here:
-            CameraLogic.Initialize(this, this.GumCanvas, this.GumBackground);
+            _cameraLogic.Initialize(this, this.GumCanvas, this.GumBackground);
 
         }
 
 
         private void CreateMainSprite()
         {
-            MainSprite = new SpriteRuntime();
-            MainSprite.Width = 100;
-            MainSprite.Height = 100;
-            MainSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-            MainSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-            this.GumCanvas.Children.Add(MainSprite);
+            _mainSprite = new SpriteRuntime();
+            _mainSprite.Width = 100;
+            _mainSprite.Height = 100;
+            _mainSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            _mainSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            this.GumCanvas.Children.Add(_mainSprite);
         }
 
         private void GumCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            CameraLogic.HandleMousePush(e);
+            _cameraLogic.HandleMousePush(e);
             //MouseEditingLogic.HandleMousePush(e);
 
             // This allows the canvas to receive focus:
@@ -123,13 +113,13 @@ namespace OfficialPlugins.ContentPreview.Views
 
         private void GumCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            CameraLogic.HandleMouseMove(e);
+            _cameraLogic.HandleMouseMove(e);
             //MouseEditingLogic.HandleMouseMove(e);
         }
 
         private void GumCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            CameraLogic.HandleMouseWheel(e);
+            _cameraLogic.HandleMouseWheel(e);
         }
 
         private void CreateBackground()
@@ -156,14 +146,14 @@ namespace OfficialPlugins.ContentPreview.Views
 
         private void FillSpriteToView()
         {
-            if (MainSprite.Texture == null || GumCanvas.ActualWidth == 0 || GumCanvas.ActualHeight == 0)
+            if (_mainSprite.Texture == null || GumCanvas.ActualWidth == 0 || GumCanvas.ActualHeight == 0)
             {
                 ViewModel.CurrentZoomPercent = 100;
             }
             else
             {
-                var zoomToFitWidth = GumCanvas.ActualWidth / MainSprite.Texture.Width;
-                var zoomToFitHeight = GumCanvas.ActualHeight / MainSprite.Texture.Height;
+                var zoomToFitWidth = GumCanvas.ActualWidth / _mainSprite.Texture.Width;
+                var zoomToFitHeight = GumCanvas.ActualHeight / _mainSprite.Texture.Height;
 
                 var minZoom = Math.Min(zoomToFitWidth, zoomToFitHeight);
 
@@ -172,7 +162,20 @@ namespace OfficialPlugins.ContentPreview.Views
 
 
 
-            CameraLogic.RefreshCameraZoomToViewModel();
+            _cameraLogic.RefreshCameraZoomToViewModel();
+        }
+
+        private void GumCanvas_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Do we want to have CTRL required? Theres no nudging or other behavior so
+            // might as well just handle it without CTRL. If we decide to have a keyboard
+            // in the future.
+            //if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            //{
+            //    // CTRL key is pressed
+            //}
+            _cameraLogic.HandleKey(e);
+
         }
     }
 }

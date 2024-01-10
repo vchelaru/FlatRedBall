@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using CompilerLibrary.ViewModels;
 using System.Threading;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
+using System.ComponentModel;
 
 namespace CompilerPlugin.Managers
 {
@@ -62,7 +63,7 @@ namespace CompilerPlugin.Managers
         Process runningGameProcess;
 
         bool suppressNextExitCodeAnnouncement = false;
-        bool foundAlreadyRunningProcess = false;
+        bool foundExternallyRunningProcess = false;
         private Action<string, string> _eventCaller;
         private CompilerViewModel _compilerViewModel;
         System.Windows.Forms.Timer timer;
@@ -134,9 +135,9 @@ namespace CompilerPlugin.Managers
             }));
         }
 
-        public bool GetDidRunnerStartProcess()
+        public bool GetDidFrbEditorStartProcess()
         {
-            return runningGameProcess != null && foundAlreadyRunningProcess == false;
+            return runningGameProcess != null && foundExternallyRunningProcess == false;
         }
 
         //public CompilerViewModel ViewModel
@@ -178,18 +179,39 @@ namespace CompilerPlugin.Managers
             }
             ////////////End Early Out///////////////////
 
+            var hasExited = false;
+
+            try
+            {
+                hasExited = runningGameProcess?.HasExited == true;
+            }
+            catch(Win32Exception)
+            {
+                // According to this:
+                // https://stackoverflow.com/questions/52605704/access-is-denied-when-trying-to-close-an-exe-through-c-sharp-in-winforms#:~:text=After%20calling%20the%20Kill%20method%2C%20call%20the%20WaitForExit,terminating%2C%20a%20Win32Exception%20is%20thrown%20for%20Access%20Denied.
+                // If the process is exiting, then an access denied will be thrown. Therefore, treat this as if it
+                // is exiting
+                hasExited = true;
+            }
+
+            if (hasExited)
+            {
+                runningGameProcess = null;
+                IsRunning = false;
+            }
+
             var process = runningGameProcess;
+
+
 
             if (process == null)
             {
-                ProjectBase projectBase = null;
-
                 // don't require a game window - the user should be able to shut it down:
                 var foundProcess = TryFindGameProcess(mustHaveWindow:false);
 
                 if (foundProcess != null)
                 {
-                    foundAlreadyRunningProcess = true;
+                    foundExternallyRunningProcess = true;
                     runningGameProcess = foundProcess;
 
                     try
@@ -198,20 +220,39 @@ namespace CompilerPlugin.Managers
                         runningGameProcess.Exited += HandleProcessExit;
 
                         IsRunning = runningGameProcess != null;
-                        DidRunnerStartProcess = GetDidRunnerStartProcess();
+                        DidRunnerStartProcess = GetDidFrbEditorStartProcess();
+                        if(!DidRunnerStartProcess)
+                        {
+                            _compilerViewModel.PlayOrEdit = PlayOrEdit.Play;
+                        }
+                        _compilerViewModel.HasWindowPointer = foundProcess.MainWindowHandle != IntPtr.Zero;
+
 
                     }
                     catch (InvalidOperationException)
                     {
                         // do nothing, the game just stopped running
                     }
+                    catch(Win32Exception)
+                    {
+                        // There's an exception happening, possibly because the game just stopped.
+                    }
+                }
+                else
+                {
+                    _compilerViewModel.HasWindowPointer = false;
                 }
             }
             else if (IsRunning == false)
             {
                 // we ahve a process, so let's mark the view model as running:
                 IsRunning = runningGameProcess != null;
-                DidRunnerStartProcess = GetDidRunnerStartProcess();
+                DidRunnerStartProcess = GetDidFrbEditorStartProcess();
+            }
+            else if(_compilerViewModel.HasWindowPointer == false)
+            {
+                var pointer = process?.MainWindowHandle;
+                _compilerViewModel.HasWindowPointer = pointer != null && pointer != IntPtr.Zero;
             }
         }
 
@@ -222,7 +263,7 @@ namespace CompilerPlugin.Managers
                 .OrderBy(item => item.ProcessName)
                 .ToArray();
 
-            var projectName = GlueState.Self.CurrentMainProject?.Name?.ToLowerInvariant();
+            var projectName = GlueState.Self.CurrentMainProject?.ExecutableName?.ToLowerInvariant();
 
             var found = processes
                 .Where(item => item.ProcessName.ToLowerInvariant() == projectName &&
@@ -253,8 +294,8 @@ namespace CompilerPlugin.Managers
 
             IsWaitingForGameToStart = true;
 
-            foundAlreadyRunningProcess = false;
-            string exeLocation = GetGameExeLocation();
+            foundExternallyRunningProcess = false;
+            string exeLocation = GetGameExeLocation(this._compilerViewModel.Configuration);
 
             ToolsUtilities.GeneralResponse<Process> startResponse = ToolsUtilities.GeneralResponse<Process>.UnsuccessfulResponse;
 
@@ -329,7 +370,7 @@ namespace CompilerPlugin.Managers
                             TaskManager.Self.OnUiThread(() =>
                             {
                                 IsRunning = runningGameProcess != null;
-                                DidRunnerStartProcess = GetDidRunnerStartProcess();
+                                DidRunnerStartProcess = GetDidFrbEditorStartProcess();
 
                                 AfterSuccessfulRun();
                             });
@@ -412,19 +453,20 @@ namespace CompilerPlugin.Managers
             }
         }
 
-        private static string GetGameExeLocation()
+        private static string GetGameExeLocation(string configuration)
         {
-            var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName.FullPath;
-            if (string.IsNullOrEmpty(projectFileName))
+            var project = GlueState.Self.CurrentMainProject;
+            if (project == null)
             {
                 return null;
             }
             else
             {
+                var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName.FullPath;
                 var projectDirectory = FileManager.GetDirectory(projectFileName);
-                var executableName = FileManager.RemoveExtension(FileManager.RemovePath(projectFileName));
+                var executableName = project.ExecutableName;
                 // todo - make the plugin smarter so it knows where the .exe is really located
-                var exeLocation = projectDirectory + "bin/x86/debug/" + executableName + ".exe";
+                var exeLocation = projectDirectory + $"bin/{configuration}/" + executableName + ".exe";
                 return exeLocation;
             }
         }
@@ -495,9 +537,9 @@ namespace CompilerPlugin.Managers
             //Runner.MoveWindow(process.MainWindowHandle, 0, 0, 500, 500, true);
             //Runner.GetWindowRect(id, out RECT windowRect);
 
-            if (foundAlreadyRunningProcess)
+            if (foundExternallyRunningProcess)
             {
-                foundAlreadyRunningProcess = false;
+                foundExternallyRunningProcess = false;
             }
             else if (suppressNextExitCodeAnnouncement)
             {
@@ -527,7 +569,7 @@ namespace CompilerPlugin.Managers
                     global::Glue.MainGlueWindow.Self.Invoke(() =>
                     {
                         IsRunning = runningGameProcess != null;
-                        DidRunnerStartProcess = GetDidRunnerStartProcess();
+                        DidRunnerStartProcess = GetDidFrbEditorStartProcess();
 
                     });
                 }
@@ -540,7 +582,7 @@ namespace CompilerPlugin.Managers
 
         private async Task<string> GetCrashMessage()
         {
-            string exeLocation = GetGameExeLocation();
+            string exeLocation = GetGameExeLocation(this._compilerViewModel.Configuration);
 
             string message = string.Empty;
             if (!string.IsNullOrEmpty(exeLocation))
@@ -556,7 +598,7 @@ namespace CompilerPlugin.Managers
                     message = $"The game has crashed. See the Build tab for a callstack";
                     var contents = System.IO.File.ReadAllText(logFile);
 
-                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
 
                     ErrorReceived?.Invoke(contents);
                     
@@ -593,7 +635,7 @@ namespace CompilerPlugin.Managers
                         runningGameProcess = null;
                     }
                     IsRunning = false;
-                    DidRunnerStartProcess = GetDidRunnerStartProcess();
+                    DidRunnerStartProcess = GetDidFrbEditorStartProcess();
                 }
 
                 return "";

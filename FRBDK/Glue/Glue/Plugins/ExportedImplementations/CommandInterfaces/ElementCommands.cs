@@ -32,279 +32,302 @@ using FlatRedBall.Glue.Events;
 using EditorObjects.IoC;
 using System.Windows.Data;
 
-namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
+namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+
+public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 {
-    class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
+    #region Fields/Properties
+
+    static ElementCommands mSelf;
+    public static ElementCommands Self
     {
-        #region Fields/Properties
-
-        static ElementCommands mSelf;
-        public static ElementCommands Self
+        get
         {
-            get
+            if (mSelf == null)
             {
-                if (mSelf == null)
-                {
-                    mSelf = new ElementCommands();
-                }
-                return mSelf;
+                mSelf = new ElementCommands();
             }
+            return mSelf;
         }
+    }
 
-        #endregion
+    #endregion
 
-        #region GlueElement (both screens and entities)
+    #region GlueElement (both screens and entities)
 
-        /// <summary>
-        /// Performs all logic related to renaming an element. The name should not have the "Screens\\" or "Entities\\" prefix, nor any prefixes
-        /// for the entity's folder. In other words, GameScreen would be "GameScreen" rather than "Screens\\GameScreen".
-        /// </summary>
-        /// <param name="elementToRename">The element to rename.</param>
-        /// <param name="value">The new name without any prefixes. For example, even an entity in a folder should pass "NewName" rather than 
-        /// "Entities\\Subfolder\\NewName".</param>
-        /// <returns>A task which completes when all logic and UI are finished.</returns>
-        public async Task RenameElement(GlueElement elementToRename, string value)
+    /// <summary>
+    /// Performs all logic related to renaming an element. The name should not have the "Screens\\" or "Entities\\" prefix, nor any prefixes
+    /// for the entity's folder. In other words, GameScreen would be "GameScreen" rather than "Screens\\GameScreen".
+    /// </summary>
+    /// <param name="elementToRename">The element to rename.</param>
+    /// <param name="value">The new name without any prefixes. For example, even an entity in a folder should pass "NewName" rather than 
+    /// "Entities\\Subfolder\\NewName".</param>
+    /// <returns>A task which completes when all logic and UI are finished.</returns>
+    public async Task RenameElement(GlueElement elementToRename, string value)
+    {
+        await TaskManager.Self.AddAsync(() =>
         {
-            await TaskManager.Self.AddAsync(() =>
+            bool isValid = true;
+            string whyItIsntValid;
+            if (elementToRename is ScreenSave)
             {
-                bool isValid = true;
-                string whyItIsntValid;
-                if (elementToRename is ScreenSave)
+                isValid = NameVerifier.IsScreenNameValid(value, elementToRename as ScreenSave, out whyItIsntValid);
+            }
+            else
+            {
+                isValid = NameVerifier.IsEntityNameValid(value, elementToRename as EntitySave, out whyItIsntValid);
+
+            }
+
+            if (!isValid)
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(whyItIsntValid);
+            }
+            else
+            {
+
+                string oldNameFull = elementToRename.Name;
+                string newNameFull = oldNameFull.Substring(0, oldNameFull.Length - elementToRename.ClassName.Length) + value;
+
+                var result = ChangeClassNamesInCodeAndFileName(elementToRename, oldNameFull, newNameFull);
+
+                if (result == DialogResult.Yes)
                 {
-                    isValid = NameVerifier.IsScreenNameValid(value, elementToRename as ScreenSave, out whyItIsntValid);
-                }
-                else
-                {
-                    isValid = NameVerifier.IsEntityNameValid(value, elementToRename as EntitySave, out whyItIsntValid);
+                    // Set the name first because that's going
+                    // to be used by code that follows to modify
+                    // inheritance.
+                    elementToRename.Name = newNameFull;
 
-                }
+                    var elementsToRegenerate = new HashSet<GlueElement>();
 
-                if (!isValid)
-                {
-                    GlueCommands.Self.DialogCommands.ShowMessageBox(whyItIsntValid);
-                }
-                else
-                {
+                    // The Types object is in the root object, so we need to generate the root-most object
+                    elementsToRegenerate.Add(ObjectFinder.Self.GetRootBaseElement(elementToRename));
 
-                    string oldNameFull = elementToRename.Name;
-                    string newNameFull = oldNameFull.Substring(0, oldNameFull.Length - elementToRename.ClassName.Length) + value;
-
-                    var result = ChangeClassNamesInCodeAndFileName(elementToRename, oldNameFull, newNameFull);
-
-                    if (result == DialogResult.Yes)
+                    if (elementToRename is EntitySave entityToRename)
                     {
-                        // Set the name first because that's going
-                        // to be used by code that follows to modify
-                        // inheritance.
-                        elementToRename.Name = newNameFull;
-
-                        var elementsToRegenerate = new HashSet<GlueElement>();
-
-                        // regenerate *this*:
-                        elementsToRegenerate.Add(elementToRename);
-
-                        if (elementToRename is EntitySave entityToRename)
+                        // Change any Entities that depend on this
+                        for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
                         {
-                            // Change any Entities that depend on this
-                            for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
+                            var entitySave = ProjectManager.GlueProjectSave.Entities[i];
+                            if (entitySave.BaseElement == oldNameFull)
                             {
-                                var entitySave = ProjectManager.GlueProjectSave.Entities[i];
-                                if (entitySave.BaseElement == oldNameFull)
-                                {
-                                    entitySave.BaseEntity = newNameFull;
-                                }
+                                entitySave.BaseEntity = newNameFull;
                             }
+                        }
 
-                            // Change any NamedObjects that use this as their type (whether in Entity, or as a generic class)
-                            List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldNameFull);
+                        // Change any NamedObjects that use this as their type (whether in Entity, or as a generic class)
+                        List<NamedObjectSave> namedObjectsWithElementSourceClassType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldNameFull);
 
-                            foreach (NamedObjectSave nos in namedObjects)
+                        foreach (NamedObjectSave nos in namedObjectsWithElementSourceClassType)
+                        {
+                            elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
+                            if (nos.SourceType == SourceType.Entity && nos.SourceClassType == oldNameFull)
                             {
-                                elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
-                                if (nos.SourceType == SourceType.Entity && nos.SourceClassType == oldNameFull)
-                                {
-                                    nos.SourceClassType = newNameFull;
-                                    nos.UpdateCustomProperties();
-                                }
-                                else if (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassGenericType == oldNameFull)
-                                {
-                                    nos.SourceClassGenericType = newNameFull;
-                                }
-                                else if (nos.IsCollisionRelationship())
-                                {
-                                    PluginManager.CallPluginMethod(
-                                        "Collision Plugin",
-                                        "FixNamedObjectCollisionType",
-                                        new object[] { nos });
-                                }
+                                nos.SourceClassType = newNameFull;
+                                nos.UpdateCustomProperties();
                             }
-
-                            // If this has a base entity, then the most base entity might be used in a list associated with factories.
-                            if(!string.IsNullOrEmpty( elementToRename.BaseElement) && entityToRename.CreatedByOtherEntities)
+                            else if (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassGenericType == oldNameFull)
                             {
-                                var rootBase = ObjectFinder.Self.GetBaseElementRecursively(elementToRename);
+                                nos.SourceClassGenericType = newNameFull;
+                            }
+                            else if (nos.IsCollisionRelationship())
+                            {
+                                PluginManager.CallPluginMethod(
+                                    "Collision Plugin",
+                                    "FixNamedObjectCollisionType",
+                                    new object[] { nos });
+                            }
+                        }
 
-                                if(rootBase != elementToRename)
+                        List<NamedObjectSave> namedObjectsWithElementAsVariableType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntityAsVariableType(oldNameFull);
+                        foreach(var nos in namedObjectsWithElementAsVariableType)
+                        {
+                            elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
+
+                            foreach (var variable in nos.InstructionSaves)
+                            {
+                                if((variable.Value as string) == oldNameFull)
                                 {
-                                    foreach(var nosUsingRoot in ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(rootBase as EntitySave))
-                                    {
-                                        elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nosUsingRoot));
-                                    }
+                                    variable.Value = newNameFull;
                                 }
                             }
                         }
-                        else
+
+                        // If this has a base entity, then the most base entity might be used in a list associated with factories.
+                        if(!string.IsNullOrEmpty( elementToRename.BaseElement) && entityToRename.CreatedByOtherEntities)
                         {
-                            // Change any Screens that depend on this
-                            for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
+                            var rootBase = ObjectFinder.Self.GetBaseElementRecursively(elementToRename);
+
+                            if(rootBase != elementToRename)
                             {
-                                var screenSave = ProjectManager.GlueProjectSave.Screens[i];
-                                if (screenSave.BaseScreen == oldNameFull)
+                                foreach(var nosUsingRoot in ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(rootBase as EntitySave))
                                 {
-                                    screenSave.BaseScreen = newNameFull;
+                                    elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nosUsingRoot));
                                 }
                             }
-
-                            if (GlueCommands.Self.GluxCommands.StartUpScreenName == oldNameFull)
+                        }
+                    }
+                    else
+                    {
+                        // Change any Screens that depend on this
+                        for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
+                        {
+                            var screenSave = ProjectManager.GlueProjectSave.Screens[i];
+                            if (screenSave.BaseScreen == oldNameFull)
                             {
-                                GlueCommands.Self.GluxCommands.StartUpScreenName = newNameFull;
-
+                                screenSave.BaseScreen = newNameFull;
                             }
-
-
-                            // Don't do anything with NamedObjects and Screens since they can't (currently) be named objects
-
                         }
 
-                        foreach (var element in elementsToRegenerate)
+                        if (GlueCommands.Self.GluxCommands.StartUpScreenName == oldNameFull)
                         {
-                            var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+                            GlueCommands.Self.GluxCommands.StartUpScreenName = newNameFull;
+
                         }
-
-                        GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
-
-                        GlueCommands.Self.ProjectCommands.SaveProjects();
-
-                        GlueState.Self.CurrentGlueProject.Entities.SortByName();
-                        GlueState.Self.CurrentGlueProject.Screens.SortByName();
-
-                        GlueCommands.Self.GluxCommands.SaveGlux();
-
-
-                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToRename);
-
-                        PluginManager.ReactToElementRenamed(elementToRename, oldNameFull);
+                        // Don't do anything with NamedObjects and Screens since they can't (currently) be named objects
                     }
-                }
-            }, $"Renaming {elementToRename} to {value}");
-        }
 
-        private DialogResult ChangeClassNamesInCodeAndFileName(GlueElement elementToRename, string oldName, string newName)
+                    var variablesReferencingElement = ObjectFinder.Self.GetVariablesReferencingElementType(oldNameFull);
+
+
+                    foreach(var variable in variablesReferencingElement)
+                    {
+                        variable.DefaultValue = newNameFull;
+
+                        elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(variable));
+                    }
+
+                    foreach (var element in elementsToRegenerate)
+                    {
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                    }
+
+                    GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
+
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+
+                    GlueState.Self.CurrentGlueProject.Entities.SortByName();
+                    GlueState.Self.CurrentGlueProject.Screens.SortByName();
+
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+
+
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToRename);
+
+                    PluginManager.ReactToElementRenamed(elementToRename, oldNameFull);
+                }
+            }
+        }, $"Renaming {elementToRename} to {value}");
+    }
+
+    private DialogResult ChangeClassNamesInCodeAndFileName(GlueElement elementToRename, string oldName, string newName)
+    {
+        var validFiles = CodeWriter.GetAllCodeFilesFor(elementToRename);
+
+        string oldStrippedName = FileManager.RemovePath(oldName);
+        string newStrippedName = FileManager.RemovePath(newName);
+
+
+        bool wasAnythingFound = false;
+        List<Tuple<string, string>> oldNewAbsoluteFiles = new List<Tuple<string, string>>();
+
+        foreach (var file in validFiles)
         {
-            var validFiles = CodeWriter.GetAllCodeFilesFor(elementToRename);
+            string newFile = file.FullPath.Replace(oldName.Replace("\\", "/"), newName.Replace("\\", "/"));
 
-            string oldStrippedName = FileManager.RemovePath(oldName);
-            string newStrippedName = FileManager.RemovePath(newName);
-
-
-            bool wasAnythingFound = false;
-            List<Tuple<string, string>> oldNewAbsoluteFiles = new List<Tuple<string, string>>();
-
-            foreach (var file in validFiles)
+            // replace it if it's a factory:
+            if (newFile.Contains("/Factories/"))
             {
-                string newFile = file.FullPath.Replace(oldName.Replace("\\", "/"), newName.Replace("\\", "/"));
-
-                // replace it if it's a factory:
-                if (newFile.Contains("/Factories/"))
-                {
-                    newFile = newFile.Replace($"/Factories/{oldStrippedName}Factory.Generated.cs", $"/Factories/{newStrippedName}Factory.Generated.cs");
-                }
-
-                oldNewAbsoluteFiles.Add(new Tuple<string, string>(file.FullPath, newFile));
-
-                if (File.Exists(newFile))
-                {
-                    wasAnythingFound = true;
-                }
-
-            }
-            DialogResult result = DialogResult.Yes;
-
-            if (wasAnythingFound)
-            {
-                result = MessageBox.Show("This rename would result in existing files being overwritten. \n\nOverwrite?", "Overwrite",
-                    MessageBoxButtons.YesNo);
+                newFile = newFile.Replace($"/Factories/{oldStrippedName}Factory.Generated.cs", $"/Factories/{newStrippedName}Factory.Generated.cs");
             }
 
-            if (result == DialogResult.Yes)
+            oldNewAbsoluteFiles.Add(new Tuple<string, string>(file.FullPath, newFile));
+
+            if (File.Exists(newFile))
             {
-                foreach (var pair in oldNewAbsoluteFiles)
-                {
-                    string absoluteOldFile = pair.Item1;
-                    string absoluteNewFile = pair.Item2;
-
-                    bool isCapitalizationOnlyChange = absoluteOldFile.Equals(absoluteNewFile, StringComparison.InvariantCultureIgnoreCase);
-
-                    if (isCapitalizationOnlyChange == false && File.Exists(absoluteNewFile))
-                    {
-                        FileHelper.MoveToRecycleBin(absoluteNewFile);
-                    }
-
-                    // The old files may not exist
-                    // for a variety of reasons (Glue
-                    // error, user manually removed the file,
-                    // etc).
-                    if (File.Exists(absoluteOldFile))
-                    {
-                        File.Move(absoluteOldFile, absoluteNewFile);
-                    }
-
-                    if (File.Exists(absoluteNewFile))
-                    {
-                        // Change the class name in the non-generated .cs
-                        string fileContents = FileManager.FromFileText(absoluteNewFile);
-                        // We call RemovePath because the name is going to be "Namespace/ClassName" and we want
-                        // to find just "ClassName".
-                        RefactorManager.Self.RenameClassInCode(
-                            FileManager.RemovePath(oldName),
-                            newStrippedName,
-                            ref fileContents);
-
-                        FileManager.SaveText(fileContents, absoluteNewFile);
-
-                        string relativeOld = FileManager.MakeRelative(absoluteOldFile);
-                        string relativeNew = FileManager.MakeRelative(absoluteNewFile);
-
-                        ProjectManager.ProjectBase.RenameItem(relativeOld, relativeNew);
-
-                        foreach (VisualStudioProject syncedProject in GlueState.Self.SyncedProjects)
-                        {
-                            string syncedRelativeOld = FileManager.MakeRelative(absoluteOldFile, syncedProject.Directory);
-                            string syncedRelativeNew = FileManager.MakeRelative(absoluteNewFile, syncedProject.Directory);
-                            syncedProject.RenameItem(syncedRelativeOld, syncedRelativeNew);
-                        }
-                    }
-                }
+                wasAnythingFound = true;
             }
-            return result;
+
         }
+        DialogResult result = DialogResult.Yes;
 
-
-        #endregion
-
-        #region Add Screen
-
-        public async Task<SaveClasses.ScreenSave> AddScreen(string screenName)
+        if (wasAnythingFound)
         {
-            ScreenSave screenSave = new ScreenSave();
-            screenSave.Name = @"Screens\" + screenName;
-
-            await AddScreen(screenSave, suppressAlreadyExistingFileMessage:false);
-
-            return screenSave;
+            result = MessageBox.Show("This rename would result in existing files being overwritten. \n\nOverwrite?", "Overwrite",
+                MessageBoxButtons.YesNo);
         }
 
-        public async Task AddScreen(ScreenSave screenSave, bool suppressAlreadyExistingFileMessage = false)
+        if (result == DialogResult.Yes)
+        {
+            foreach (var pair in oldNewAbsoluteFiles)
+            {
+                string absoluteOldFile = pair.Item1;
+                string absoluteNewFile = pair.Item2;
+
+                bool isCapitalizationOnlyChange = absoluteOldFile.Equals(absoluteNewFile, StringComparison.InvariantCultureIgnoreCase);
+
+                if (isCapitalizationOnlyChange == false && File.Exists(absoluteNewFile))
+                {
+                    FileHelper.MoveToRecycleBin(absoluteNewFile);
+                }
+
+                // The old files may not exist
+                // for a variety of reasons (Glue
+                // error, user manually removed the file,
+                // etc).
+                if (File.Exists(absoluteOldFile))
+                {
+                    File.Move(absoluteOldFile, absoluteNewFile);
+                }
+
+                if (File.Exists(absoluteNewFile))
+                {
+                    // Change the class name in the non-generated .cs
+                    string fileContents = FileManager.FromFileText(absoluteNewFile);
+                    // We call RemovePath because the name is going to be "Namespace/ClassName" and we want
+                    // to find just "ClassName".
+                    RefactorManager.Self.RenameClassInCode(
+                        FileManager.RemovePath(oldName),
+                        newStrippedName,
+                        ref fileContents);
+
+                    FileManager.SaveText(fileContents, absoluteNewFile);
+
+                    string relativeOld = FileManager.MakeRelative(absoluteOldFile);
+                    string relativeNew = FileManager.MakeRelative(absoluteNewFile);
+
+                    ProjectManager.ProjectBase.RenameItem(relativeOld, relativeNew);
+
+                    foreach (VisualStudioProject syncedProject in GlueState.Self.SyncedProjects)
+                    {
+                        string syncedRelativeOld = FileManager.MakeRelative(absoluteOldFile, syncedProject.Directory);
+                        string syncedRelativeNew = FileManager.MakeRelative(absoluteNewFile, syncedProject.Directory);
+                        syncedProject.RenameItem(syncedRelativeOld, syncedRelativeNew);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+
+    #endregion
+
+    #region Add Screen
+
+    public async Task<SaveClasses.ScreenSave> AddScreen(string screenName)
+    {
+        ScreenSave screenSave = new ScreenSave();
+        screenSave.Name = @"Screens\" + screenName;
+
+        await AddScreen(screenSave, suppressAlreadyExistingFileMessage:false);
+
+        return screenSave;
+    }
+
+    public async Task AddScreen(ScreenSave screenSave, bool suppressAlreadyExistingFileMessage = false)
+    {
+        await TaskManager.Self.AddAsync(async () =>
         {
             var glueProject = GlueState.Self.CurrentGlueProject;
 
@@ -322,21 +345,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             var fullNonGeneratedFileName = FileManager.RelativeDirectory + fileName;
-            var addedScreen = 
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fullNonGeneratedFileName, save:false);
+            var addedScreen =
+                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fullNonGeneratedFileName, save: false);
 
 
-            string projectNamespace = ProjectManager.ProjectNamespace;
-
-            StringBuilder stringBuilder = new StringBuilder(CodeWriter.ScreenTemplateCode);
-
-            CodeWriter.SetClassNameAndNamespace(
-                projectNamespace + ".Screens",
-                screenName,
-                stringBuilder);
-
-            string modifiedTemplate = stringBuilder.ToString();
-
+            var shouldGenerateCustomCode = addedScreen != null;
 
             if (addedScreen == null)
             {
@@ -345,13 +358,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     MessageBox.Show("There is already a file named\n\n" + fullNonGeneratedFileName + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
                 }
             }
-            else
+            
+            if(shouldGenerateCustomCode)
             {
-
-                FileManager.SaveText(
-                    modifiedTemplate,
-                    fullNonGeneratedFileName
-                    );
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCustomCode(screenSave);
             }
 
 
@@ -360,7 +370,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             #region Create <ScreenName>.Generated.cs
 
             string generatedFileName = @"Screens\" + screenName + ".Generated.cs";
-            ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(generatedFileName, true);
+            ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(generatedFileName, true);
 
 
             #endregion
@@ -386,272 +396,361 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // Refresh tree node after plugin manager has a chance to make changes according to the screen
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenSave);
 
-            await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screenSave);
+            GlueCommands.Self.RefreshCommands.RefreshErrors();
+
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screenSave, false);
+
+            var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(screenSave);
+            foreach(var baseItem in allBase)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(baseItem, false);
+            }
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
 
-            GluxCommands.Self.SaveGlux();
+            _ = GluxCommands.Self.SaveElementAsync(screenSave);
+
+            GluxCommands.Self.SaveGlujFile();
+        }, nameof(AddScreen));
+        
+    }
+
+    #endregion
+
+    #region Add Entity
+
+    public SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false)
+    {
+
+        string fileName = entityName + ".cs";
+
+        if (!entityName.ToLower().StartsWith("entities\\") && !entityName.ToLower().StartsWith("entities/"))
+        {
+            fileName = @"Entities\" + fileName;
         }
 
-        #endregion
 
-        #region Add Entity
 
-        public SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false)
+        EntitySave entitySave = new EntitySave();
+        entitySave.Is2D = is2D;
+        entitySave.Name = FileManager.RemoveExtension(fileName);
+
+        const bool AddXYZ = true;
+
+        if (AddXYZ)
         {
-
-            string fileName = entityName + ".cs";
-
-            if (!entityName.ToLower().StartsWith("entities\\") && !entityName.ToLower().StartsWith("entities/"))
-            {
-                fileName = @"Entities\" + fileName;
-            }
-
-
-
-            EntitySave entitySave = new EntitySave();
-            entitySave.Is2D = is2D;
-            entitySave.Name = FileManager.RemoveExtension(fileName);
-
-            const bool AddXYZ = true;
-
-            if (AddXYZ)
-            {
-                entitySave.CustomVariables.Add(new CustomVariable() { Name = "X", Type = "float" });
-                entitySave.CustomVariables.Add(new CustomVariable() { Name = "Y", Type = "float" });
-                entitySave.CustomVariables.Add(new CustomVariable() { Name = "Z", Type = "float" });
-            }
-
-            AddEntity(entitySave);
-
-            return entitySave;
-
+            entitySave.CustomVariables.Add(new CustomVariable() { Name = "X", Type = "float", SetByDerived = true });
+            entitySave.CustomVariables.Add(new CustomVariable() { Name = "Y", Type = "float", SetByDerived = true });
+            entitySave.CustomVariables.Add(new CustomVariable() { Name = "Z", Type = "float", SetByDerived = true });
         }
 
-        public async Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel, string directory = null)
+        AddEntity(entitySave);
+
+        return entitySave;
+
+    }
+
+    public async Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel, string directory = null)
+    {
+        var gluxCommands = GlueCommands.Self.GluxCommands;
+
+        var newElement = gluxCommands.EntityCommands.AddEntity(
+            directory + viewModel.Name, is2D: true);
+
+        // Why select it here? This causes the tree view to not yet show the inherited variables.
+        // Maybe this was done because the property ReactToPropertyChanged required it to be selected?
+        //GlueState.Self.CurrentElement = newElement;
+
+        var hasInheritance = false;
+        if(viewModel.HasInheritance)
         {
-            var gluxCommands = GlueCommands.Self.GluxCommands;
+            newElement.BaseEntity = viewModel.SelectedBaseEntity;
 
-            var newElement = gluxCommands.EntityCommands.AddEntity(
-                directory + viewModel.Name, is2D: true);
+            var baseEntity = ObjectFinder.Self.GetEntitySave(viewModel.SelectedBaseEntity);
 
-            GlueState.Self.CurrentElement = newElement;
+            List<CustomVariable> variablesToRemove = new List<CustomVariable>();
+            // continue here...
 
-            var hasInheritance = false;
-            if(viewModel.HasInheritance)
+            // make X, Y, Z DefinedByBase
+            foreach(var customVariable in newElement.CustomVariables)
             {
-                newElement.BaseEntity = viewModel.SelectedBaseEntity;
+                if(customVariable.Name == "X" || customVariable.Name == "Y" || customVariable.Name == "Z")
+                {
+                    // See if the base has this:
 
-                EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
-                    nameof(newElement.BaseEntity), false, nameof(newElement.BaseEntity), null);
+                    var foundVariableInBase = baseEntity?.GetCustomVariableRecursively(customVariable.Name) != null;
 
-                hasInheritance = true;
+                    if(!foundVariableInBase)
+                    {
+                        variablesToRemove.Add(customVariable);
+                    }
+                    else
+                    {
+                        customVariable.DefinedByBase = true;
+                    }
+                }
             }
 
+            newElement.CustomVariables.RemoveAll(item => variablesToRemove.Contains(item));
 
-            // There are a few important things to note about this function:
-            // 1. Whenever gluxCommands.AddNewNamedObjectToSelectedElement is called, Glue performs a full
-            //    refresh and save. The reason for this is that gluxCommands.AddNewNamedObjectToSelectedElement
-            //    is the standard way to add a new named object to an element, and it may be called by other parts
-            //    of the code (and plugins) that expect the add to be a complete set of logic (add, refresh, save, etc).
-            //    This is less efficient than adding all of them and saving only once, but that would require a second add
-            //    method, which would add complexity. For now, we deal with the slower calls because it's not really noticeable.
-            // 2. Some actions, like adding Points to a polygon, are done after the polygon is created and added, and that requires
-            //    an additional save. Therefore, we do one last save/refresh at the end of this method in certain situations.
-            //    Again, this is less efficient than if we performed just a single call, but a single call would be more complicated.
-            //    because we'd have to suppress all the other calls.
-            bool needsRefreshAndSave = false;
+            //EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
+            //    nameof(newElement.BaseEntity), false, nameof(newElement.BaseEntity), null);
 
-            if(!hasInheritance)
+            Container.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(nameof(newElement.BaseEntity), 
+                null, newElement);
+
+
+            hasInheritance = true;
+        }
+
+
+        // There are a few important things to note about this function:
+        // 1. Whenever gluxCommands.AddNewNamedObjectToSelectedElement is called, Glue performs a full
+        //    refresh and save. The reason for this is that gluxCommands.AddNewNamedObjectToSelectedElement
+        //    is the standard way to add a new named object to an element, and it may be called by other parts
+        //    of the code (and plugins) that expect the add to be a complete set of logic (add, refresh, save, etc).
+        //    This is less efficient than adding all of them and saving only once, but that would require a second add
+        //    method, which would add complexity. For now, we deal with the slower calls because it's not really noticeable.
+        // 2. Some actions, like adding Points to a polygon, are done after the polygon is created and added, and that requires
+        //    an additional save. Therefore, we do one last save/refresh at the end of this method in certain situations.
+        //    Again, this is less efficient than if we performed just a single call, but a single call would be more complicated.
+        //    because we'd have to suppress all the other calls.
+        bool needsRefreshAndSave = false;
+
+        if (!hasInheritance)
+        {
+            if (viewModel.IsSpriteChecked)
             {
-                if (viewModel.IsSpriteChecked)
-                {
-                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                    addObjectViewModel.ObjectName = "SpriteInstance";
-                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Sprite;
-                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                    GlueState.Self.CurrentElement = newElement;
-                }
-
-                if (viewModel.IsTextChecked)
-                {
-                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                    addObjectViewModel.ObjectName = "TextInstance";
-                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Text;
-                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                    GlueState.Self.CurrentElement = newElement;
-                }
-
-                if (viewModel.IsCircleChecked)
-                {
-                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                    addObjectViewModel.ObjectName = "CircleInstance";
-                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Circle;
-                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                    GlueState.Self.CurrentElement = newElement;
-                }
-
-                if (viewModel.IsAxisAlignedRectangleChecked)
-                {
-                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                    addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
-                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
-                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                    GlueState.Self.CurrentElement = newElement;
-                }
-                if (viewModel.IsPolygonChecked)
-                {
-                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                    addObjectViewModel.ObjectName = "PolygonInstance";
-                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Polygon;
-                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-
-                    var nos = await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                    CustomVariableInNamedObject instructions = null;
-                    instructions = nos.GetCustomVariable("Points");
-                    if (instructions == null)
-                    {
-                        instructions = new CustomVariableInNamedObject();
-                        instructions.Member = "Points";
-                        nos.InstructionSaves.Add(instructions);
-                    }
-                    var points = new List<Vector2>();
-                    points.Add(new Vector2(-16, 16));
-                    points.Add(new Vector2(16, 16));
-                    points.Add(new Vector2(16, -16));
-                    points.Add(new Vector2(-16, -16));
-                    points.Add(new Vector2(-16, 16));
-                    instructions.Value = points;
-
-
-                    needsRefreshAndSave = true;
-
-                    GlueState.Self.CurrentElement = newElement;
-                }
-
-                if (viewModel.IsIVisibleChecked)
-                {
-                    newElement.ImplementsIVisible = true;
-                    needsRefreshAndSave = true;
-                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsIVisible), false);
-                }
-
-                if (viewModel.IsIClickableChecked)
-                {
-                    newElement.ImplementsIClickable = true;
-                    needsRefreshAndSave = true;
-                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsIClickable), false);
-                }
-
-                if (viewModel.IsIWindowChecked)
-                {
-                    newElement.ImplementsIWindow = true;
-                    needsRefreshAndSave = true;
-                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsIWindow), false);
-                }
-
-                if (viewModel.IsICollidableChecked)
-                {
-                    newElement.ImplementsICollidable = true;
-                    needsRefreshAndSave = true;
-
-                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsICollidable), false);
-                }
-
-                if (viewModel.IncludeListsInScreens)
-                {
-                    // loop through all screens that have a TMX object and add them.
-                    // be smart - if the base screen does, don't do it in the derived
-                    var allScreens = GlueState.Self.CurrentGlueProject.Screens;
-
-                    foreach (var screen in allScreens)
-                    {
-                        var needsList = GetIfScreenNeedsList(screen);
-
-                        if (needsList)
-                        {
-                            AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-
-                            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                            addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
-                            addObjectViewModel.SourceClassGenericType = newElement.Name;
-                            addObjectViewModel.ObjectName = $"{newElement.GetStrippedName()}List";
-
-
-                            var newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(
-                                addObjectViewModel, screen, listToAddTo: null, selectNewNos: false);
-                            newNos.ExposedInDerived = true;
-
-                            await Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(nameof(newNos.ExposedInDerived), false,
-                                namedObjectSave: newNos);
-
-                            GlueCommands.Self.PrintOutput(
-                                $"Tiled Plugin added {addObjectViewModel.ObjectName} to {screen}");
-
-                            var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screen);
-                        }
-                    }
-                }
-
-
-                if (viewModel.IsIDamageableChecked)
-                {
-                    newElement.Properties.SetValue<bool>("ImplementsIDamageable", true);
-                    needsRefreshAndSave = true;
-                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, "ImplementsIDamageable", false);
-                }
-                if (viewModel.IsIDamageAreaChecked)
-                {
-                    newElement.Properties.SetValue<bool>("ImplementsIDamageArea", true);
-                    needsRefreshAndSave = true;
-                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, "ImplementsIDamageArea", false);
-                }
-
-                if(viewModel.IsIDamageableChecked || viewModel.IsIDamageAreaChecked)
-                {
-                    var variable = newElement.GetCustomVariable("TeamIndex");
-                    await GlueCommands.Self.GluxCommands.ElementCommands.HandleSetVariable(variable, viewModel.EffectiveTeamIndex);
-
-                    if(viewModel.IsOpposingTeamIndexDamageCollisionChecked)
-                    {
-                        var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
-
-                        if(gameScreen != null)
-                        {
-                            await AddGameScreenOpposingTeamIndexCollisionRelationships(newElement, viewModel);
-                        }
-                    }
-                }
-
-
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ForcedElementToAddTo = newElement;
+                addObjectViewModel.ObjectName = "SpriteInstance";
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Sprite;
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                await gluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, newElement);
             }
 
-            // even derived entities can have factories
-            if(viewModel.IsCreateFactoryChecked)
+            if (viewModel.IsTextChecked)
             {
-                newElement.CreatedByOtherEntities = true;
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ForcedElementToAddTo = newElement;
+                addObjectViewModel.ObjectName = "TextInstance";
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Text;
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                await gluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, newElement);
+            }
+
+            if (viewModel.IsCircleChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ForcedElementToAddTo = newElement;
+                addObjectViewModel.ObjectName = "CircleInstance";
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Circle;
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                await gluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, newElement);
+            }
+
+            if (viewModel.IsAxisAlignedRectangleChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ForcedElementToAddTo = newElement;
+                addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                await gluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, newElement);
+            }
+            if (viewModel.IsPolygonChecked)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ForcedElementToAddTo = newElement;
+                addObjectViewModel.ObjectName = "PolygonInstance";
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Polygon;
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+
+                var nos = await gluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, newElement);
+                CustomVariableInNamedObject instructions = null;
+                instructions = nos.GetCustomVariable("Points");
+                if (instructions == null)
+                {
+                    instructions = new CustomVariableInNamedObject();
+                    instructions.Member = "Points";
+                    nos.InstructionSaves.Add(instructions);
+                }
+                var points = new List<Vector2>();
+                points.Add(new Vector2(-16, 16));
+                points.Add(new Vector2(16, 16));
+                points.Add(new Vector2(16, -16));
+                points.Add(new Vector2(-16, -16));
+                points.Add(new Vector2(-16, 16));
+                instructions.Value = points;
+
                 needsRefreshAndSave = true;
             }
 
-            PluginManager.ReactToNewEntityCreated(newElement);
-            if (needsRefreshAndSave)
+            if (viewModel.IsIVisibleChecked)
             {
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
-                    MainGlueWindow.Self.PropertyGrid.Refresh();
-                });
-                var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(newElement);
-                GluxCommands.Self.SaveGlux();
+                newElement.ImplementsIVisible = true;
+                needsRefreshAndSave = true;
+                await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsIVisible), false);
             }
 
-            return newElement;
+            if (viewModel.IsIClickableChecked)
+            {
+                newElement.ImplementsIClickable = true;
+                needsRefreshAndSave = true;
+                await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsIClickable), false);
+            }
+
+            if (viewModel.IsIWindowChecked)
+            {
+                newElement.ImplementsIWindow = true;
+                needsRefreshAndSave = true;
+                await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsIWindow), false);
+            }
+
+            if (viewModel.IsICollidableChecked)
+            {
+                newElement.ImplementsICollidable = true;
+                needsRefreshAndSave = true;
+
+                await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsICollidable), false);
+            }
+
+            if (viewModel.IncludeListsInScreens)
+            {
+                await IncludeListsFor(newElement);
+            }
+
+
+            if (viewModel.IsIDamageableChecked)
+            {
+                newElement.Properties.SetValue<bool>("ImplementsIDamageable", true);
+                needsRefreshAndSave = true;
+                await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, "ImplementsIDamageable", false);
+            }
+            if (viewModel.IsIDamageAreaChecked)
+            {
+                newElement.Properties.SetValue<bool>("ImplementsIDamageArea", true);
+                needsRefreshAndSave = true;
+                await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, "ImplementsIDamageArea", false);
+            }
+
+            if(viewModel.IsIDamageableChecked || viewModel.IsIDamageAreaChecked)
+            {
+                var variable = newElement.GetCustomVariable("TeamIndex");
+                await GlueCommands.Self.GluxCommands.ElementCommands.HandleSetVariable(variable, viewModel.EffectiveTeamIndex);
+
+                if(viewModel.IsOpposingTeamIndexDamageCollisionChecked)
+                {
+                    var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
+
+                    if(gameScreen != null)
+                    {
+                        await AddGameScreenOpposingTeamIndexCollisionRelationships(newElement, viewModel);
+                    }
+                }
+            }
+
+
         }
 
-        private static bool GetIfScreenNeedsList(ScreenSave screen)
+        // even derived entities can have factories
+        if(viewModel.IsCreateFactoryChecked)
+        {
+            newElement.CreatedByOtherEntities = true;
+            needsRefreshAndSave = true;
+        }
+
+        PluginManager.ReactToNewEntityCreated(newElement);
+
+        GlueState.Self.CurrentElement = newElement;
+
+        if(hasInheritance || needsRefreshAndSave)
+        {
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newElement);
+        }
+
+        if (needsRefreshAndSave)
+        {
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                MainGlueWindow.Self.PropertyGrid.Refresh();
+
+                if(hasInheritance)
+                {
+                    // if it has inheritance then the tree item should update to show the triangle:
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newElement);
+                }
+            });
+            //var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(newElement);
+            // Bases need to be generated because they may now contain the Type 
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(ObjectFinder.Self.GetRootBaseElement( newElement ));
+
+            if (newElement.CreatedByOtherEntities && viewModel.IncludeListsInScreens)
+            {
+                var allScreens = GlueState.Self.CurrentGlueProject.Screens;
+
+                foreach (var screen in allScreens)
+                {
+                    var needsList = GetIfScreenNeedsList(screen);
+
+                    if(needsList)
+                    {
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
+                    }
+                }
+            }
+
+            GluxCommands.Self.SaveProjectAndElements();
+        }
+
+
+
+        return newElement;
+    }
+
+    private static async Task IncludeListsFor(EntitySave newElement)
+    {
+        // loop through all screens that have a TMX object and add them.
+        // be smart - if the base screen does, don't do it in the derived
+        var allScreens = GlueState.Self.CurrentGlueProject.Screens;
+
+        foreach (var screen in allScreens)
+        {
+            var needsList = GetIfScreenNeedsList(screen);
+
+            if (needsList)
+            {
+                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+
+                addObjectViewModel.ForcedElementToAddTo = screen;
+                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
+                addObjectViewModel.SourceClassGenericType = newElement.Name;
+                addObjectViewModel.ObjectName = $"{newElement.GetStrippedName()}List";
+
+
+                var newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(
+                    addObjectViewModel, screen, listToAddTo: null, selectNewNos: false);
+                newNos.ExposedInDerived = true;
+
+                await Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(nameof(newNos.ExposedInDerived), false,
+                    namedObjectSave: newNos);
+
+                GlueCommands.Self.PrintOutput(
+                    $"Tiled Plugin added {addObjectViewModel.ObjectName} to {screen}");
+
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
+            }
+        }
+    }
+
+    private static bool GetIfScreenNeedsList(ScreenSave screen)
+    {
+        if (screen.Name.EndsWith("\\GameScreen"))
+        {
+            return true;
+        }
+        else
         {
             var hasTmx = GetIfScreenHasTmxDirectly(screen);
 
@@ -659,671 +758,1135 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             var isDerived = string.IsNullOrEmpty(screen.BaseScreen) == false;
 
+
+
             return hasTmx == true && !isDerived;
         }
+    }
 
 
-        private static bool GetIfScreenHasTmxDirectly(ScreenSave screen)
+    private static bool GetIfScreenHasTmxDirectly(ScreenSave screen)
+    {
+        var hasTmxFile = screen.ReferencedFiles.Any(item => FileManager.GetExtension(item.Name) == "tmx");
+        var hasTmx = hasTmxFile;
+
+
+        if (!hasTmx)
         {
-            var hasTmxFile = screen.ReferencedFiles.Any(item => FileManager.GetExtension(item.Name) == "tmx");
-            var hasTmx = hasTmxFile;
 
-
-            if (!hasTmx)
-            {
-
-                hasTmx = screen.AllNamedObjects.Any(item => item.GetAssetTypeInfo()?.FriendlyName == "LayeredTileMap (.tmx)");
-            }
-            return hasTmx;
+            hasTmx = screen.AllNamedObjects.Any(item => item.GetAssetTypeInfo()?.FriendlyName == "LayeredTileMap (.tmx)");
         }
+        return hasTmx;
+    }
 
-        private async Task AddGameScreenOpposingTeamIndexCollisionRelationships(EntitySave newElement, AddEntityViewModel viewModel)
+
+
+    private async Task AddGameScreenOpposingTeamIndexCollisionRelationships(EntitySave newElement, AddEntityViewModel viewModel)
+    {
+        var newTeamIndex = newElement.GetVariableValueRecursively("TeamIndex") as int?;
+        var newElementName = newElement.Name;
+
+
+        var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
+        var newElementList = gameScreen.NamedObjects.FirstOrDefault(item => item.IsList && item.SourceClassGenericType == newElementName);
+        ////////////////////////////Early Out///////////////////////////
+        if (newElementList == null)
         {
-            var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
+            return;
+        }
+        /////////////////////////End Early Out//////////////////////////
 
-            var newTeamIndex = newElement.GetVariableValueRecursively("TeamIndex") as int?;
 
-            var newElementList = gameScreen.NamedObjects.FirstOrDefault(item => item.IsList && item.SourceClassGenericType == newElement.Name);
 
-            var isNewElementDamageable = viewModel.IsIDamageableChecked;
-            var isNewElementDamageArea = viewModel.IsIDamageAreaChecked;
+        var pairs = GetGameScreenOpposingTeamIndexCollisionPairs(newTeamIndex, newElementList, viewModel);
 
-            ////////////////////////////Early Out///////////////////////////
-            if(newElementList == null)
+        foreach(var pair in pairs)
+        {
+            var collisionRelationshipNos = await PluginManager.ReactToCreateCollisionRelationshipsBetween(pair.First, pair.Second);
+
+            if (collisionRelationshipNos != null)
             {
-                return;
+                collisionRelationshipNos.SetProperty("IsDealDamageChecked", true);
+                collisionRelationshipNos.SetProperty("IsDestroyFirstOnDamageChecked", true);
+                collisionRelationshipNos.SetProperty("IsDestroySecondOnDamageChecked", true);
             }
-            /////////////////////////End Early Out//////////////////////////
+        }
+    }
 
-            var gameScreenNamedObjects = gameScreen.NamedObjects.ToArray();
-            foreach (var item in gameScreenNamedObjects)
+
+    public List<OrderedNamedObjectPair> GetGameScreenOpposingTeamIndexCollisionPairs(int? newTeamIndex, NamedObjectSave newElementList, AddEntityViewModel viewModel)
+    {
+        List<OrderedNamedObjectPair> pairs = new List<OrderedNamedObjectPair>();
+
+        var isNewElementDamageable = viewModel.IsIDamageableChecked;
+        var isNewElementDamageArea = viewModel.IsIDamageAreaChecked;
+
+
+        var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
+
+        /////////////////early out//////////////////
+        if(gameScreen == null)
+        {
+            return pairs;
+        }
+        //////////////end early out///////////////////////
+
+        var gameScreenNamedObjects = gameScreen.NamedObjects.ToArray();
+        foreach (var item in gameScreenNamedObjects)
+        {
+            var isList = item.IsList;
+            var genericTypeName = item.SourceClassGenericType;
+
+            EntitySave entityForList = null;
+            if (!string.IsNullOrEmpty(genericTypeName))
             {
-                var isList = item.IsList;
-                var genericTypeName = item.SourceClassGenericType;
+                entityForList = ObjectFinder.Self.GetEntitySave(genericTypeName);
+            }
 
-                EntitySave entityForList = null;
-                if(!string.IsNullOrEmpty(genericTypeName))
+            if (entityForList != null)
+            {
+                var entityForListIndex = entityForList?.GetVariableValueRecursively("TeamIndex") as int?;
+
+                var isEntityDamageable = entityForList.GetPropertyValue("ImplementsIDamageable") as bool? ?? false;
+                var isEntityDamageArea = entityForList.GetPropertyValue("ImplementsIDamageArea") as bool? ?? false;
+
+                var isCollidable = entityForList.GetPropertyValue("ImplementsICollidable") as bool? ?? false;
+
+                var areApposingDamageInterfaces =
+                    (isEntityDamageable && isNewElementDamageArea) ||
+                    (isEntityDamageArea && isNewElementDamageable);
+
+                if (isCollidable && entityForListIndex != null && newTeamIndex != entityForListIndex && areApposingDamageInterfaces)
                 {
-                    entityForList = ObjectFinder.Self.GetEntitySave(genericTypeName);
-                }
-
-                if(entityForList != null)
-                {
-                    var entityForListIndex = entityForList?.GetVariableValueRecursively("TeamIndex") as int?;
-
-                    var isEntityDamageable = entityForList.GetPropertyValue("ImplementsIDamageable") as bool? ?? false;
-                    var isEntityDamageArea = entityForList.GetPropertyValue("ImplementsIDamageArea") as bool? ?? false;
-
-                    var isCollidable = entityForList.GetPropertyValue("ImplementsICollidable") as bool? ?? false;
-
-                    var areApposingDamageInterfaces =
-                        (isEntityDamageable && isNewElementDamageArea) ||
-                        (isEntityDamageArea && isNewElementDamageable);
-
-                    if(isCollidable && entityForListIndex != null && newTeamIndex != entityForListIndex && areApposingDamageInterfaces)
+                    // do it - add a collision relationship
+                    // Damageable should be first since that's a standard we're pushing
+                    if (isNewElementDamageable && isEntityDamageArea)
                     {
-                        // do it - add a collision relationship
-                        // Damageable should be first since that's a standard we're pushing
-
-                        NamedObjectSave collisionRelationshipNos = null;
-
-                        if(isNewElementDamageable && isEntityDamageArea)
-                        {
-                            collisionRelationshipNos = await PluginManager.ReactToCreateCollisionRelationshipsBetween(newElementList, item);
-                        }
-                        else
-                        {
-                            collisionRelationshipNos = await PluginManager.ReactToCreateCollisionRelationshipsBetween(item, newElementList );
-                        }
-
-                        if(collisionRelationshipNos != null)
-                        {
-                            collisionRelationshipNos.SetProperty("IsDealDamageChecked", true);
-                            collisionRelationshipNos.SetProperty("IsDestroyFirstOnDamageChecked", true);
-                            collisionRelationshipNos.SetProperty("IsDestroySecondOnDamageChecked", true);
-                        }
-                    }
-                }
-
-            }
-        }
-
-        public void AddEntity(EntitySave entitySave)
-        {
-            AddEntity(entitySave, false);
-        }
-
-        public void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage)
-        {
-
-            entitySave.Tags.Add("GLUE");
-            entitySave.Source = "GLUE";
-
-            var glueProject = GlueState.Self.CurrentGlueProject;
-
-            glueProject.Entities.Add(entitySave);
-
-            glueProject.Entities.SortByName();
-
-            var customCodeFilePath =
-                GlueCommands.Self.FileCommands.GetCustomCodeFilePath(entitySave);
-            #region Create the Entity custom code file (not the generated version)
-
-
-
-            var newItem = GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(
-                customCodeFilePath, false);
-
-            string projectNamespace = GlueState.Self.ProjectNamespace;
-
-
-            string directory = FileManager.GetDirectory(entitySave.Name);
-            if (!directory.ToLower().EndsWith(projectNamespace.ToLower() + "/entities/"))
-            {
-                GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElement(entitySave);
-                // test this on doubly-embedded Entities.
-                projectNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElement(entitySave);
-                // += (".Entities." + FileManager.RemovePath(directory)).Replace("/", "");
-            }
-
-            StringBuilder stringBuilder = new StringBuilder(CodeWriter.EntityTemplateCode);
-
-            CodeWriter.SetClassNameAndNamespace(
-                projectNamespace,
-                entitySave.ClassName,
-                stringBuilder);
-
-            string modifiedTemplate = stringBuilder.ToString();
-
-
-            if (newItem == null)
-            {
-                if (!suppressAlreadyExistingFileMessage)
-                {
-                    MessageBox.Show("There is already a file named\n\n" + customCodeFilePath + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
-                }
-            }
-            else
-            {
-                FileManager.SaveText(modifiedTemplate, customCodeFilePath.FullPath);
-            }
-            #endregion
-
-            #region Create <EntityName>.Generated.cs
-
-            string generatedFileName = FileManager.MakeRelative(directory).Replace("/", "\\") + entitySave.ClassName + ".Generated.cs";
-
-            ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(generatedFileName, true);
-
-            #endregion
-
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entitySave);
-
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
-
-            GlueCommands.Self.ProjectCommands.SaveProjects();
-
-            GluxCommands.Self.SaveGlux();
-        }
-
-        #endregion
-
-        #region Add CustomVariable
-
-        public void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true)
-        {
-            var element = GlueState.Self.CurrentElement;
-            AddCustomVariableToElement(newVariable, element, save);
-        }
-
-        public async Task AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true)
-        {
-            await TaskManager.Self.AddAsync(() =>
-            {
-                // expose a variable that exposes the category
-                CustomVariable customVariable = new CustomVariable();
-
-                customVariable.Type = category.Name;
-                customVariable.Name = "Current" + category.Name + "State";
-
-                GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(
-                    customVariable, element, save);
-
-            }, $"Adding category {category} as variable to {element}");
-        }
-
-        public void AddCustomVariableToElement(CustomVariable newVariable, GlueElement element, bool save = true)
-        { 
-            element.CustomVariables.Add(newVariable);
-
-            // by default new variables should not be included in states. 
-            foreach(var category in element.StateCategoryList)
-            {
-                if (!category.ExcludedVariables.Contains(newVariable.Name))
-                { 
-                    category.ExcludedVariables.Add(newVariable.Name);
-                }
-            }
-
-            InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
-
-
-            CustomVariableHelper.SetDefaultValueFor(newVariable, element);
-
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-
-            GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-
-            UpdateInstanceCustomVariables(element);
-
-            PluginManager.ReactToVariableAdded(newVariable);
-
-            // Generate code after PluginMangager.React so that the code can include any changes made by plugins.
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-
-            if (GlueState.Self.CurrentElement == element)
-            {
-                // Vic asks = why do we call ReactToItemSelect instead of setting the custom variable. Is it to force a refresh?
-                // On because actually people usually don't want to select the variable because it's rare to actually modify the variable
-                // through its properties. Instead, it's more common to select the variables folder and use the variables tab
-                //GlueState.Self.CurrentCustomVariable = newVariable;
-                PluginManager.ReactToItemSelect(GlueState.Self.CurrentTreeNode);
-            }
-
-            if (save)
-            {
-                GluxCommands.Self.SaveGlux();
-            }
-
-        }
-
-        public async Task AddCustomVariableToElementAsync(CustomVariable newVariable, GlueElement element, bool save = true)
-        {
-            await TaskManager.Self.AddAsync(() => AddCustomVariableToElement(newVariable, element, save),
-                $"Adding variable {newVariable.Name} to {element}");
-        }
-
-
-
-        private void UpdateInstanceCustomVariables(IElement currentElement)
-        {
-            List<NamedObjectSave> namedObjectsToUpdate = null;
-
-            if (currentElement is EntitySave)
-            {
-                namedObjectsToUpdate = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(currentElement.Name);
-            }
-
-            if (namedObjectsToUpdate != null)
-            {
-                foreach (NamedObjectSave nos in namedObjectsToUpdate)
-                {
-                    nos.UpdateCustomProperties();
-                }
-            }
-        }
-        #endregion
-
-        #region Set CustomVariable
-
-        public async Task HandleSetVariable(CustomVariable variable, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true)
-        {
-            var element = ObjectFinder.Self.GetElementContaining(variable);
-            var oldValue = variable.DefaultValue;
-
-            variable.DefaultValue = value;
-
-            await EditorObjects.IoC.Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
-                "DefaultValue", variable, oldValue);
-
-
-            if(performSaveAndGenerateCode)
-            {
-
-                if(element != null)
-                {
-                    var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
-                    var throwaway2 = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
-
-                }
-                else
-                {
-                    GlueCommands.Self.GluxCommands.SaveGlux();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                }
-            }
-
-            if(updateUi)
-            {
-                GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-                GlueCommands.Self.RefreshCommands.RefreshVariables();
-            }
-
-        }
-
-        #endregion
-
-        #region Add StateSaveCategory
-
-        public async Task AddStateSaveCategoryAsync(string categoryName, GlueElement element)
-        {
-            await TaskManager.Self.AddAsync(() =>
-            {
-                var newCategory = new StateSaveCategory();
-                newCategory.Name = categoryName;
-
-                foreach (var variable in element.CustomVariables)
-                {
-                    // new categories should have all variables excluded initially.
-                    newCategory.ExcludedVariables.Add(variable.Name);
-                }
-
-                element.StateCategoryList.Add(newCategory);
-
-                List<NamedObjectSave> nosList = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(element.Name);
-                List<EntitySave> derivedEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(element.Name);
-                for (int i = 0; i < derivedEntities.Count; i++)
-                {
-                    EntitySave entitySave = derivedEntities[i];
-
-                    nosList.AddRange(ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entitySave.Name));
-                }
-
-                foreach (NamedObjectSave nos in nosList)
-                {
-                    nos.UpdateCustomProperties();
-                }
-
-                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-                GlueState.Self.CurrentStateSaveCategory = newCategory;
-
-                GluxCommands.Self.SaveGlux();
-            }, nameof(AddStateSaveCategoryAsync));
-        }
-
-        #endregion
-
-        #region ReferencedFile
-
-        [Obsolete("This function does way too much. Moving this to GluxCommands")]
-        public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
-            PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage)
-        {
-            creationReport = "";
-            errorMessage = null;
-
-            ReferencedFileSave referencedFileSaveToReturn = null;
-
-            string whyItIsntValid;
-            // Let's see if there is already an Entity with the same name
-            string fileWithoutPath = FileManager.RemovePath(FileManager.RemoveExtension(absoluteFileName));
-
-            bool isValid = 
-                NameVerifier.IsReferencedFileNameValid(fileWithoutPath, ati, referencedFileSaveToReturn, containerForFile, out whyItIsntValid);
-
-            if (!isValid)
-            {
-                errorMessage = "Invalid file name:\n" + fileWithoutPath + "\n" + whyItIsntValid;
-            }
-            else
-            {
-                Zipper.UnzipAndModifyFileIfZip(ref absoluteFileName);
-                string extension = FileManager.GetExtension(absoluteFileName);
-                    
-                bool isValidExtensionOrIsConfirmedByUser;
-                bool isUnknownType;
-                CheckAndWarnAboutUnknownFileTypes(unknownTypeHandle, extension, out isValidExtensionOrIsConfirmedByUser, out isUnknownType);
-
-                string fileToAdd = null;
-                if (isValidExtensionOrIsConfirmedByUser)
-                {
-
-                    string directoryThatFileShouldBeRelativeTo = GetFullPathContentDirectory(containerForFile, directoryInsideContainer);
-
-                    string projectDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
-
-                    bool needsToCopy = !FileManager.IsRelativeTo(absoluteFileName, projectDirectory);
-
-
-                    if (needsToCopy)
-                    {
-                        fileToAdd = directoryThatFileShouldBeRelativeTo + FileManager.RemovePath(absoluteFileName);
-                        fileToAdd = FileManager.MakeRelative(fileToAdd, ProjectManager.ContentProject.GetAbsoluteContentFolder());
-
-                        try
-                        {
-                            FileHelper.RecursivelyCopyContentTo(absoluteFileName,
-                                FileManager.GetDirectory(absoluteFileName),
-                                directoryThatFileShouldBeRelativeTo);
-                        }
-                        catch (System.IO.FileNotFoundException fnfe)
-                        {
-                            errorMessage = "Could not copy the files because of a missing file: " + fnfe.Message;
-                        }
+                        pairs.Add(new OrderedNamedObjectPair { First = newElementList, Second = item });
                     }
                     else
                     {
-                        fileToAdd = GetNameOfFileRelativeToContentFolder(absoluteFileName, directoryThatFileShouldBeRelativeTo, projectDirectory);
-
-                    }
-
-                }
-
-                if(string.IsNullOrEmpty(errorMessage))
-                { 
-                    BuildToolAssociation bta = null;
-
-                    if (ati != null && !string.IsNullOrEmpty(ati.CustomBuildToolName))
-                    {
-                        bta =
-                            BuildToolAssociationManager.Self.GetBuilderToolAssociationByName(ati.CustomBuildToolName);
-                    }
-
-                    if (containerForFile != null)
-                    {
-                        referencedFileSaveToReturn = containerForFile.AddReferencedFile(fileToAdd, ati, bta);
-                    }
-                    else
-                    {
-                        bool useFullPathAsName = false;
-                        // todo - support built files here
-                        referencedFileSaveToReturn =
-                            GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(fileToAdd, useFullPathAsName);
-                    }
-
-
-
-                    // This will be null if there was an error above in creating this file
-                    if (referencedFileSaveToReturn != null)
-                    {
-                        if (containerForFile != null)
-                            containerForFile.HasChanged = true;
-
-                        if (fileToAdd.EndsWith(".csv"))
-                        {
-                            string fileToAddAbsolute = GlueCommands.Self.GetAbsoluteFileName(fileToAdd, true);
-                            CsvCodeGenerator.GenerateAndSaveDataClass(referencedFileSaveToReturn, referencedFileSaveToReturn.CsvDelimiter);
-                        }
-                        if (isUnknownType)
-                        {
-                            referencedFileSaveToReturn.LoadedAtRuntime = false;
-                        }
-
-                        GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFileSaveToReturn);
-
-                        PluginManager.ReactToNewFile(referencedFileSaveToReturn);
-                        GluxCommands.Self.SaveGlux();
-                        GlueCommands.Self.ProjectCommands.SaveProjects();
-                        UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
-
-                        string error;
-                        referencedFileSaveToReturn.RefreshSourceFileCache(false, out error);
-
-                        if (!string.IsNullOrEmpty(error))
-                        {
-                            ErrorReporter.ReportError(referencedFileSaveToReturn.Name, error, false);
-                        }
-                    }
-                }
-            }
-
-            return referencedFileSaveToReturn;
-        }
-
-        public static string GetNameOfFileRelativeToContentFolder(string absoluteSourceFileName, string directoryThatFileShouldBeRelativeTo, string projectDirectory)
-        {
-            string fileToAdd = "";
-            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(absoluteSourceFileName);
-
-            if (rfs != null)
-            {
-                fileToAdd = rfs.Name;
-            }
-            else
-            {
-                fileToAdd = FileManager.MakeRelative(absoluteSourceFileName, ProjectManager.ContentProject.GetAbsoluteContentFolder());
-            }
-            return fileToAdd;
-        }
-
-        public static void CheckAndWarnAboutUnknownFileTypes(PromptHandleEnum unknownTypeHandle, string extension, out bool isValidExtensionOrIsConfirmedByUser, out bool isUnknownType)
-        {
-            isValidExtensionOrIsConfirmedByUser = true;
-            isUnknownType = false;
-
-            if (AvailableAssetTypes.Self.GetAssetTypeFromExtension(extension) == null && extension != "csv")
-            {
-                DialogResult dialogResult = DialogResult.Yes;
-                bool addToList;
-
-                if (!AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets.Contains(extension))
-                {
-                    switch (unknownTypeHandle)
-                    {
-                        case PromptHandleEnum.Prompt:
-                            dialogResult = MessageBox.Show("The extension " + extension + " is not recognized by Glue.  " +
-                                                           "Glue will not be able to generate code for this file, but will add it to your game project.\n\nDo you " +
-                                                           "want to add this file?", "Add unknown type?", MessageBoxButtons.YesNo);
-                            break;
-                        case PromptHandleEnum.DoYes:
-                            dialogResult = DialogResult.Yes;
-                            break;
-                        case PromptHandleEnum.DoNo:
-                            dialogResult = DialogResult.No;
-                            break;
-                        default:
-                            throw new NotImplementedException();
-                    }
-
-                    addToList = true;
-                }
-                else
-                {
-                    // This means the user has already said "yes" to adding this type
-                    dialogResult = DialogResult.Yes;
-                    addToList = false;
-                }
-
-
-                if (dialogResult == DialogResult.No)
-                {
-                    isValidExtensionOrIsConfirmedByUser = false;
-                }
-                else
-                {
-                    isUnknownType = true;
-                    if (addToList)
-                    {
-                        AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets.Add(extension);
+                        pairs.Add(new OrderedNamedObjectPair { First = item, Second = newElementList });
                     }
                 }
             }
         }
 
-        public static string GetFullPathContentDirectory(IElement element, string directoryRelativeToElement)
+        return pairs;
+    }
+
+    public void AddEntity(EntitySave entitySave)
+    {
+        AddEntity(entitySave, false);
+    }
+
+    public void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage)
+    {
+
+        entitySave.Tags.Add("GLUE");
+        entitySave.Source = "GLUE";
+
+        var glueProject = GlueState.Self.CurrentGlueProject;
+
+        glueProject.Entities.Add(entitySave);
+
+        glueProject.Entities.SortByName();
+
+        var customCodeFilePath =
+            GlueCommands.Self.FileCommands.GetCustomCodeFilePath(entitySave);
+        #region Create the Entity custom code file (not the generated version)
+
+        var newItem = GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(
+            customCodeFilePath, false);
+
+        var shouldRewriteCode = newItem != null;
+
+        if (newItem == null)
         {
-            string resultNameInFolder = "";
-
-            if (!String.IsNullOrEmpty(directoryRelativeToElement))
+            if (!suppressAlreadyExistingFileMessage)
             {
-                //string directory = directoryTreeNode.GetRelativePath().Replace("/", "\\");
-
-                resultNameInFolder = directoryRelativeToElement;
-            }
-            else if (element != null)
-            {
-                //string directory = elementToAddTo.GetRelativePath().Replace("/", "\\");
-
-                resultNameInFolder = element.Name.Replace(@"/", @"\");
-            }
-            else
-            {
-                resultNameInFolder = "GlobalContent/";
-            }
-
-            if (!resultNameInFolder.EndsWith("\\") && !resultNameInFolder.EndsWith("/"))
-            {
-                resultNameInFolder += "\\";
-            }
-
-
-            return ProjectManager.ContentDirectory + resultNameInFolder;
-        }
-
-        #endregion
-
-        #region Events
-
-        public async Task AddEventToElement(AddEventViewModel viewModel, GlueElement glueElement)
-        {
-
-            string eventName = viewModel.EventName;
-
-            string failureMessage;
-            bool isInvalid = NameVerifier.IsEventNameValid(eventName,
-                glueElement, out failureMessage);
-
-            if (isInvalid)
-            {
-                GlueCommands.Self.DialogCommands.ShowMessageBox(failureMessage);
-            }
-            else if (!isInvalid)
-            {
-                await TaskManager.Self.AddAsync(() =>
-                {
-                    EventResponseSave eventResponseSave = new EventResponseSave();
-                    eventResponseSave.EventName = eventName;
-
-                    eventResponseSave.SourceObject = viewModel.TunnelingObject;
-                    eventResponseSave.SourceObjectEvent = viewModel.TunnelingEvent;
-
-                    eventResponseSave.SourceVariable = viewModel.SourceVariable;
-                    eventResponseSave.BeforeOrAfter = viewModel.BeforeOrAfter;
-
-                    eventResponseSave.DelegateType = viewModel.DelegateType;
-
-                    AddEventToElement(glueElement, eventResponseSave);
-                }, $"Adding element {viewModel.EventName}");
+                MessageBox.Show("There is already a file named\n\n" + customCodeFilePath + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
             }
         }
 
-        public void AddEventToElement(GlueElement currentElement, EventResponseSave eventResponseSave)
+        if(shouldRewriteCode)
         {
-            currentElement.Events.Add(eventResponseSave);
-
-            string fullGeneratedFileName = ProjectManager.ProjectBase.Directory + EventManager.GetGeneratedEventFileNameForElement(currentElement);
-
-            if (!File.Exists(fullGeneratedFileName))
-            {
-                CodeWriter.AddEventGeneratedCodeFileForElement(currentElement);
-            }
-
-            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-
-            GluxCommands.Self.SaveGlux();
-
-            GlueState.Self.CurrentEventResponseSave = eventResponseSave;
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCustomCode(entitySave);
         }
         #endregion
 
-        #region Property Set
+        #region Create <EntityName>.Generated.cs
 
-        public async Task ReactToPropertyChanged(GlueElement element, string propertyName, object oldValue)
-        {
-            if(element is EntitySave entitySave)
-            {
-                Container.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(propertyName, oldValue, entitySave);
-            }
-            else if(element is ScreenSave screenSave)
-            {
-                Container.Get<ScreenSaveSetVariableLogic>().ReactToScreenPropertyChanged(screenSave, propertyName, oldValue);
-            }
-        }
+        var customCodePath = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(entitySave);
+        var directory = customCodePath.GetDirectoryContainingThis();
+
+        string generatedFileName = FileManager.MakeRelative(directory.FullPath).Replace("/", "\\") + entitySave.ClassName + ".Generated.cs";
+
+        ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(generatedFileName, true);
 
         #endregion
 
-        /// <summary>
-        /// Updates the argument glueElement from its base types. This updates variables and named objects.
-        /// </summary>
-        /// <param name="glueElement">The base Glue element to update.</param>
-        /// <returns>Whether the object updated</returns>
-        public bool UpdateFromBaseType(GlueElement glueElement)
-        {
-            bool haveChangesOccurred = false;
-            if (ObjectFinder.Self.GlueProject != null)
-            {
-                haveChangesOccurred |= ElementExtensionMethods.UpdateNamedObjectsFromBaseType(glueElement);
+        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entitySave);
 
-                ElementExtensionMethods.UpdateCustomVariablesFromBaseType(glueElement);
+        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
+
+        GlueCommands.Self.ProjectCommands.SaveProjects();
+
+        GluxCommands.Self.SaveProjectAndElements();
+    }
+
+    #endregion
+
+    #region Add CustomVariable
+
+    public void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true)
+    {
+        var element = GlueState.Self.CurrentElement;
+        AddCustomVariableToElementImmediate(newVariable, element, save);
+    }
+
+    public async Task AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true)
+    {
+        await TaskManager.Self.AddAsync(() =>
+        {
+            // expose a variable that exposes the category
+            CustomVariable customVariable = new CustomVariable();
+
+            var categoryOwner = ObjectFinder.Self.GetElementContaining(category);
+
+            var name = category.Name;
+            if(categoryOwner != null && categoryOwner != element)
+            {
+                name = categoryOwner.Name.Replace("\\", ".") + "." + name;
             }
-            return haveChangesOccurred;
+
+            customVariable.Type = name;
+            customVariable.Name = "Current" + category.Name + "State";
+            customVariable.SetByDerived = true;
+
+            AddCustomVariableToElementImmediate(
+                customVariable, element, save);
+
+        }, $"Adding category {category} as variable to {element}");
+    }
+
+    void AddCustomVariableToElementImmediate(CustomVariable newVariable, GlueElement element, bool save = true)
+    { 
+        element.CustomVariables.Add(newVariable);
+
+        // by default new variables should not be included in states. 
+        foreach(var category in element.StateCategoryList)
+        {
+            if (!category.ExcludedVariables.Contains(newVariable.Name))
+            { 
+                category.ExcludedVariables.Add(newVariable.Name);
+            }
         }
 
+        InheritanceManager.UpdateAllDerivedElementFromBaseValues(regenerateCode:false, currentElement: element);
+
+        CustomVariableHelper.SetDefaultValueFor(newVariable, element);
+
+        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+
+        GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+
+        UpdateInstanceCustomVariables(element);
+
+        PluginManager.ReactToVariableAdded(newVariable);
+
+        // Generate code after PluginMangager.React so that the code can include any changes made by plugins.
+        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+
+        if (GlueState.Self.CurrentElement == element)
+        {
+            // Vic asks = why do we call ReactToItemSelect instead of setting the custom variable. Is it to force a refresh?
+            // On because actually people usually don't want to select the variable because it's rare to actually modify the variable
+            // through its properties. Instead, it's more common to select the variables folder and use the variables tab
+            //GlueState.Self.CurrentCustomVariable = newVariable;
+            PluginManager.ReactToItemSelect(GlueState.Self.CurrentTreeNode);
+        }
+
+        if (save)
+        {
+            GluxCommands.Self.SaveProjectAndElements();
+        }
 
     }
+
+    public async Task AddCustomVariableToElementAsync(CustomVariable newVariable, GlueElement element, bool save = true)
+    {
+        await TaskManager.Self.AddAsync(() => AddCustomVariableToElementImmediate(newVariable, element, save),
+            $"Adding variable {newVariable.Name} to {element}");
+    }
+
+
+
+    private void UpdateInstanceCustomVariables(IElement currentElement)
+    {
+        List<NamedObjectSave> namedObjectsToUpdate = null;
+
+        if (currentElement is EntitySave)
+        {
+            namedObjectsToUpdate = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(currentElement.Name);
+        }
+
+        if (namedObjectsToUpdate != null)
+        {
+            foreach (NamedObjectSave nos in namedObjectsToUpdate)
+            {
+                nos.UpdateCustomProperties();
+            }
+        }
+    }
+    #endregion
+
+    #region Set CustomVariable
+
+    public async Task HandleSetVariable(CustomVariable variable, object value, bool performSaveAndGenerateCode = true,
+        bool updateUi = true)
+    {
+        var element = ObjectFinder.Self.GetElementContaining(variable);
+        var oldValue = variable.DefaultValue;
+
+        variable.DefaultValue = value;
+
+        await EditorObjects.IoC.Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
+            "DefaultValue", variable, oldValue);
+
+
+        if(performSaveAndGenerateCode)
+        {
+
+            if(element != null)
+            {
+                var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                if(element.BaseElement != null)
+                {
+                    var baseElement = ObjectFinder.Self.GetRootBaseElement(element);
+                    if(baseElement != null)
+                    {
+                        // Generate the root base because it may have definitions for the types that have changed... 
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(baseElement);
+                    }
+                }
+            }
+            else
+            {
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+            }
+        }
+
+        if(updateUi)
+        {
+            GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+            GlueCommands.Self.RefreshCommands.RefreshVariables();
+        }
+
+    }
+
+    #endregion
+
+    #region Add StateSaveCategory
+
+    public async Task AddStateSaveCategoryAsync(string categoryName, GlueElement element)
+    {
+        await TaskManager.Self.AddAsync(() =>
+        {
+            var newCategory = new StateSaveCategory();
+            newCategory.Name = categoryName;
+
+            foreach (var variable in element.CustomVariables)
+            {
+                // new categories should have all variables excluded initially.
+                newCategory.ExcludedVariables.Add(variable.Name);
+            }
+
+            element.StateCategoryList.Add(newCategory);
+
+            List<NamedObjectSave> nosList = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(element.Name);
+            List<EntitySave> derivedEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(element.Name);
+            for (int i = 0; i < derivedEntities.Count; i++)
+            {
+                EntitySave entitySave = derivedEntities[i];
+
+                nosList.AddRange(ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entitySave.Name));
+            }
+
+            foreach (NamedObjectSave nos in nosList)
+            {
+                nos.UpdateCustomProperties();
+            }
+
+            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+            GlueState.Self.CurrentStateSaveCategory = newCategory;
+
+            GluxCommands.Self.SaveProjectAndElements();
+        }, nameof(AddStateSaveCategoryAsync));
+    }
+
+    #endregion
+
+    #region ReferencedFile
+
+    [Obsolete("This function does way too much. Moving this to GluxCommands")]
+    public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
+        PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage)
+    {
+        creationReport = "";
+        errorMessage = null;
+
+        ReferencedFileSave referencedFileSaveToReturn = null;
+
+        string whyItIsntValid;
+        // Let's see if there is already an Entity with the same name
+        string fileWithoutPath = FileManager.RemovePath(FileManager.RemoveExtension(absoluteFileName));
+
+        bool isValid = 
+            NameVerifier.IsReferencedFileNameValid(fileWithoutPath, ati, referencedFileSaveToReturn, containerForFile, out whyItIsntValid);
+
+        if (!isValid)
+        {
+            errorMessage = "Invalid file name:\n" + fileWithoutPath + "\n" + whyItIsntValid;
+        }
+        else
+        {
+            Zipper.UnzipAndModifyFileIfZip(ref absoluteFileName);
+            string extension = FileManager.GetExtension(absoluteFileName);
+                
+            bool isValidExtensionOrIsConfirmedByUser;
+            bool isUnknownType;
+            CheckAndWarnAboutUnknownFileTypes(unknownTypeHandle, extension, out isValidExtensionOrIsConfirmedByUser, out isUnknownType);
+
+            string fileToAdd = null;
+            if (isValidExtensionOrIsConfirmedByUser)
+            {
+
+                string directoryThatFileShouldBeRelativeTo = GetFullPathContentDirectory(containerForFile, directoryInsideContainer);
+
+                string projectDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
+
+                bool needsToCopy = !FileManager.IsRelativeTo(absoluteFileName, projectDirectory);
+
+
+                if (needsToCopy)
+                {
+                    fileToAdd = directoryThatFileShouldBeRelativeTo + FileManager.RemovePath(absoluteFileName);
+                    fileToAdd = FileManager.MakeRelative(fileToAdd, ProjectManager.ContentProject.GetAbsoluteContentFolder());
+
+                    try
+                    {
+                        FileHelper.RecursivelyCopyContentTo(absoluteFileName,
+                            FileManager.GetDirectory(absoluteFileName),
+                            directoryThatFileShouldBeRelativeTo);
+                    }
+                    catch (System.IO.FileNotFoundException fnfe)
+                    {
+                        errorMessage = "Could not copy the files because of a missing file: " + fnfe.Message;
+                    }
+                }
+                else
+                {
+                    fileToAdd = GetNameOfFileRelativeToContentFolder(absoluteFileName, directoryThatFileShouldBeRelativeTo, projectDirectory);
+
+                }
+
+            }
+
+            if(string.IsNullOrEmpty(errorMessage))
+            { 
+                BuildToolAssociation bta = null;
+
+                if (ati != null && !string.IsNullOrEmpty(ati.CustomBuildToolName))
+                {
+                    bta =
+                        BuildToolAssociationManager.Self.GetBuilderToolAssociationByName(ati.CustomBuildToolName);
+                }
+
+                if (containerForFile != null)
+                {
+                    referencedFileSaveToReturn = containerForFile.AddReferencedFile(fileToAdd, ati, bta);
+                }
+                else
+                {
+                    bool useFullPathAsName = false;
+                    // todo - support built files here
+                    referencedFileSaveToReturn =
+                        GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(fileToAdd, useFullPathAsName);
+                }
+
+
+
+                // This will be null if there was an error above in creating this file
+                if (referencedFileSaveToReturn != null)
+                {
+                    if (containerForFile != null)
+                        containerForFile.HasChanged = true;
+
+                    if (fileToAdd.EndsWith(".csv"))
+                    {
+                        string fileToAddAbsolute = GlueCommands.Self.GetAbsoluteFileName(fileToAdd, true);
+                        CsvCodeGenerator.GenerateAndSaveDataClass(referencedFileSaveToReturn, referencedFileSaveToReturn.CsvDelimiter);
+                    }
+                    if (isUnknownType)
+                    {
+                        referencedFileSaveToReturn.LoadedAtRuntime = false;
+                    }
+
+                    GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFileSaveToReturn);
+
+                    PluginManager.ReactToNewFile(referencedFileSaveToReturn, ati);
+                    GluxCommands.Self.SaveProjectAndElements();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                    UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
+
+                    string error;
+                    referencedFileSaveToReturn.RefreshSourceFileCache(false, out error);
+
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        ErrorReporter.ReportError(referencedFileSaveToReturn.Name, error, false);
+                    }
+                }
+            }
+        }
+
+        return referencedFileSaveToReturn;
+    }
+
+    public static string GetNameOfFileRelativeToContentFolder(string absoluteSourceFileName, string directoryThatFileShouldBeRelativeTo, string projectDirectory)
+    {
+        string fileToAdd = "";
+        var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(absoluteSourceFileName);
+
+        if (rfs != null)
+        {
+            fileToAdd = rfs.Name;
+        }
+        else
+        {
+            fileToAdd = FileManager.MakeRelative(absoluteSourceFileName, ProjectManager.ContentProject.GetAbsoluteContentFolder());
+        }
+        return fileToAdd;
+    }
+
+    public static void CheckAndWarnAboutUnknownFileTypes(PromptHandleEnum unknownTypeHandle, string extension, out bool isValidExtensionOrIsConfirmedByUser, out bool isUnknownType)
+    {
+        isValidExtensionOrIsConfirmedByUser = true;
+        isUnknownType = false;
+
+        if (AvailableAssetTypes.Self.GetAssetTypeFromExtension(extension) == null && extension != "csv")
+        {
+            DialogResult dialogResult = DialogResult.Yes;
+            bool addToList;
+
+            if (!AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets.Contains(extension))
+            {
+                switch (unknownTypeHandle)
+                {
+                    case PromptHandleEnum.Prompt:
+                        dialogResult = MessageBox.Show("The extension " + extension + " is not recognized by Glue.  " +
+                                                       "Glue will not be able to generate code for this file, but will add it to your game project.\n\nDo you " +
+                                                       "want to add this file?", "Add unknown type?", MessageBoxButtons.YesNo);
+                        break;
+                    case PromptHandleEnum.DoYes:
+                        dialogResult = DialogResult.Yes;
+                        break;
+                    case PromptHandleEnum.DoNo:
+                        dialogResult = DialogResult.No;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                addToList = true;
+            }
+            else
+            {
+                // This means the user has already said "yes" to adding this type
+                dialogResult = DialogResult.Yes;
+                addToList = false;
+            }
+
+
+            if (dialogResult == DialogResult.No)
+            {
+                isValidExtensionOrIsConfirmedByUser = false;
+            }
+            else
+            {
+                isUnknownType = true;
+                if (addToList)
+                {
+                    AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets.Add(extension);
+                }
+            }
+        }
+    }
+
+    public static string GetFullPathContentDirectory(IElement element, string directoryRelativeToElement)
+    {
+        string resultNameInFolder = "";
+
+        if (!String.IsNullOrEmpty(directoryRelativeToElement))
+        {
+            //string directory = directoryTreeNode.GetRelativePath().Replace("/", "\\");
+
+            resultNameInFolder = directoryRelativeToElement;
+        }
+        else if (element != null)
+        {
+            //string directory = elementToAddTo.GetRelativePath().Replace("/", "\\");
+
+            resultNameInFolder = element.Name.Replace(@"/", @"\");
+        }
+        else
+        {
+            resultNameInFolder = "GlobalContent/";
+        }
+
+        if (!resultNameInFolder.EndsWith("\\") && !resultNameInFolder.EndsWith("/"))
+        {
+            resultNameInFolder += "\\";
+        }
+
+
+        return ProjectManager.ContentDirectory + resultNameInFolder;
+    }
+
+    #endregion
+
+    #region Events
+
+    public async Task AddEventToElement(AddEventViewModel viewModel, GlueElement glueElement)
+    {
+
+        string eventName = viewModel.EventName;
+
+        string failureMessage;
+        bool isInvalid = NameVerifier.IsEventNameValid(eventName,
+            glueElement, out failureMessage);
+
+        if (isInvalid)
+        {
+            GlueCommands.Self.DialogCommands.ShowMessageBox(failureMessage);
+        }
+        else if (!isInvalid)
+        {
+            await TaskManager.Self.AddAsync(() =>
+            {
+                EventResponseSave eventResponseSave = new EventResponseSave();
+                eventResponseSave.EventName = eventName;
+
+                eventResponseSave.SourceObject = viewModel.TunnelingObject;
+                eventResponseSave.SourceObjectEvent = viewModel.TunnelingEvent;
+
+                eventResponseSave.SourceVariable = viewModel.SourceVariable;
+                eventResponseSave.BeforeOrAfter = viewModel.BeforeOrAfter;
+
+                eventResponseSave.DelegateType = viewModel.DelegateType;
+
+                AddEventToElement(glueElement, eventResponseSave);
+            }, $"Adding element {viewModel.EventName}");
+        }
+    }
+
+    public void AddEventToElement(GlueElement currentElement, EventResponseSave eventResponseSave)
+    {
+        currentElement.Events.Add(eventResponseSave);
+
+        string fullGeneratedFileName = ProjectManager.ProjectBase.Directory + EventManager.GetGeneratedEventFileNameForElement(currentElement);
+
+        if (!File.Exists(fullGeneratedFileName))
+        {
+            CodeWriter.AddEventGeneratedCodeFileForElement(currentElement);
+        }
+
+        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
+
+        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(currentElement);
+
+        _=GluxCommands.Self.SaveElementAsync(currentElement);
+
+        GlueState.Self.CurrentEventResponseSave = eventResponseSave;
+    }
+    #endregion
+
+    #region Property Set
+
+    public async Task ReactToPropertyChanged(GlueElement element, string propertyName, object oldValue)
+    {
+        if(element is EntitySave entitySave)
+        {
+            Container.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(propertyName, oldValue, entitySave);
+        }
+        else if(element is ScreenSave screenSave)
+        {
+            Container.Get<ScreenSaveSetVariableLogic>().ReactToScreenPropertyChanged(screenSave, propertyName, oldValue);
+        }
+    }
+
+    #endregion
+
+    #region Inheritance
+
+    /// <summary>
+    /// Updates the argument glueElement from its base types. This updates variables and named objects.
+    /// </summary>
+    /// <param name="glueElement">The base Glue element to update.</param>
+    /// <returns>Whether the object updated</returns>
+    public bool UpdateFromBaseType(GlueElement glueElement, bool showPopupAboutObjectErrors = true)
+    {
+        bool haveChangesOccurred = false;
+        if (ObjectFinder.Self.GlueProject != null)
+        {
+            haveChangesOccurred |= UpdateNamedObjectsFromBaseType(glueElement, showPopupAboutObjectErrors);
+
+            UpdateCustomVariablesFromBaseType(glueElement);
+        }
+        return haveChangesOccurred;
+    }
+
+    private void UpdateCustomVariablesFromBaseType(IElement elementToUpdate)
+    {
+
+        IElement baseElement = null;
+        baseElement = ObjectFinder.Self.GetBaseElement(elementToUpdate);
+
+        List<CustomVariable> customVariablesBeforeUpdate = new List<CustomVariable>();
+
+        for (int i = 0; i < elementToUpdate.CustomVariables.Count; i++)
+        {
+            if (elementToUpdate.CustomVariables[i].DefinedByBase)
+            {
+                customVariablesBeforeUpdate.Add(elementToUpdate.CustomVariables[i]);
+            }
+        }
+
+        List<CustomVariable> newCustomVariables = null;
+
+        //EntitySave entity = ProjectManager.GetEntitySave(mBaseEntity);
+
+        if (baseElement != null)
+        {
+            newCustomVariables = baseElement.GetCustomVariablesToBeSetByDerived();
+        }
+        else
+        {
+            newCustomVariables = new List<CustomVariable>();
+        }
+
+        // See if there are any variables to be removed.
+        for (int i = customVariablesBeforeUpdate.Count - 1; i > -1; i--)
+        {
+            bool contains = false;
+
+            for (int j = 0; j < newCustomVariables.Count; j++)
+            {
+                if (customVariablesBeforeUpdate[i].Name == newCustomVariables[j].Name &&
+                    customVariablesBeforeUpdate[i].DefinedByBase)
+                {
+                    contains = true;
+                    break;
+                }
+            }
+
+            if (!contains)
+            {
+                // We got a NamedObject we should remove
+                elementToUpdate.CustomVariables.Remove(customVariablesBeforeUpdate[i]);
+                customVariablesBeforeUpdate.RemoveAt(i);
+            }
+        }
+
+        // Next, see if there are any objects to be added
+        for (int i = 0; i < newCustomVariables.Count; i++)
+        {
+            bool alreadyContainedAsDefinedByBase = false;
+            for (int j = 0; j < customVariablesBeforeUpdate.Count; j++)
+            {
+                if (customVariablesBeforeUpdate[j].Name == newCustomVariables[i].Name &&
+                    customVariablesBeforeUpdate[j].DefinedByBase)
+                {
+                    alreadyContainedAsDefinedByBase = true;
+                }
+            }
+
+            if (!alreadyContainedAsDefinedByBase)
+            {
+                // There isn't a variable by this
+                // name that is already DefinedByBase, 
+                // but there may still be a variable that
+                // is just a regular variable - and in that
+                // case we want to connect the existing variable
+                // with the variable in the base
+                CustomVariable existingInDerived = elementToUpdate.GetCustomVariable(newCustomVariables[i].Name);
+                if (existingInDerived != null)
+                {
+                    existingInDerived.DefinedByBase = true;
+                }
+                else
+                {
+                    CustomVariable customVariable = newCustomVariables[i].Clone();
+
+                    // March 4, 2012
+                    // We used to not
+                    // change the SourceObject
+                    // or the SourceObjectProperty
+                    // values; however, this new variable
+                    // should behave like an exposed variable,
+                    // so it shouldn't have any SourceObject or
+                    // SourceObjectProperty.  If it did, then it
+                    // will access the base NamedObjectSave to set
+                    // its property, and this could cause compilation
+                    // errors if the NOS in the base is marked as private.
+                    // It may also avoid raising events defined in the base.
+                    customVariable.SourceObject = null;
+                    customVariable.SourceObjectProperty = null;
+
+                    customVariable.DefinedByBase = true;
+                    // We'll assume that this thing is going to be the acutal definition
+                    // Update April 11, 2023
+                    // Setting this to false doesn't
+                    // prevent this from being the final
+                    // definition. We want the SetByDerived
+                    // to be true so that the derived variable
+                    // can get removed when saving the .json file.
+                    //customVariable.SetByDerived = false;
+                    customVariable.SetByDerived = true;
+
+                    var indexToInsertAt = elementToUpdate.CustomVariables.Count;
+                    if (i == 0)
+                    {
+                        indexToInsertAt = 0;
+                    }
+                    else
+                    {
+                        var itemBefore = newCustomVariables[i - 1];
+                        var withMatchingName = elementToUpdate.CustomVariables.Find(item => item.Name == itemBefore.Name);
+                        if (withMatchingName != null)
+                        {
+                            indexToInsertAt = 1 + elementToUpdate.CustomVariables.IndexOf(withMatchingName);
+                        }
+                    }
+
+                    elementToUpdate.CustomVariables.Insert(indexToInsertAt, customVariable);
+                }
+            }
+        }
+
+        // update the category
+        foreach (var customVariable in elementToUpdate.CustomVariables)
+        {
+            if (customVariable.DefinedByBase)
+            {
+                var baseVariable = baseElement.CustomVariables.FirstOrDefault(item => item.Name == customVariable.Name);
+                if (!string.IsNullOrEmpty(baseVariable?.Category))
+                {
+                    customVariable.Category = baseVariable.Category;
+                }
+            }
+        }
+    }
+
+
+    private bool UpdateNamedObjectsFromBaseType(INamedObjectContainer derivedNamedObjectContainer, bool showPopupAboutObjectErrors)
+    {
+        bool haveChangesOccurred = false;
+
+        List<NamedObjectSave> referencedObjectsBeforeUpdate = derivedNamedObjectContainer.AllNamedObjects.Where(item => item.DefinedByBase).ToList();
+
+        List<NamedObjectSave> namedObjectsInBaseSetByDerived = new List<NamedObjectSave>();
+        List<NamedObjectSave> namedObjectsExposedInDerived = new List<NamedObjectSave>();
+
+        List<INamedObjectContainer> baseElements = new List<INamedObjectContainer>();
+
+        // July 24, 2011
+        // Before today, this
+        // code would loop through
+        // all base Entities and search
+        // for SetByDerived properties in
+        // any NamedObjectSave. This caused
+        // bugs.  Basically if you had 3 Elements
+        // in an inheritance chain and the one at the
+        // very base defined a NOS to be SetByDerived, then
+        // anything that inherited directly from the base should
+        // be forced to define it.  If it does, then the 3rd Element
+        // in the inheritance chain shouldn't have to define it, but before
+        // today it did.  This caused a lot of problems including generated
+        // code creating the element twice.
+        if (derivedNamedObjectContainer is EntitySave)
+        {
+            if (!string.IsNullOrEmpty(derivedNamedObjectContainer.BaseObject))
+            {
+                baseElements.Add(ObjectFinder.Self.GetElement(derivedNamedObjectContainer.BaseObject));
+            }
+            //List<EntitySave> allBase = ((EntitySave)namedObjectContainer).GetAllBaseEntities();
+            //foreach (EntitySave baseEntitySave in allBase)
+            //{
+            //    baseElements.Add(baseEntitySave);
+            //}
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(derivedNamedObjectContainer.BaseObject))
+            {
+                baseElements.Add(ObjectFinder.Self.GetElement(derivedNamedObjectContainer.BaseObject));
+            }
+            //List<ScreenSave> allBase = ((ScreenSave)namedObjectContainer).GetAllBaseScreens();
+            //foreach (ScreenSave baseScreenSave in allBase)
+            //{
+            //    baseElements.Add(baseScreenSave);
+            //}
+        }
+
+
+        foreach (INamedObjectContainer baseNamedObjectContainer in baseElements)
+        {
+
+            if (baseNamedObjectContainer != null)
+            {
+                namedObjectsInBaseSetByDerived.AddRange(baseNamedObjectContainer.GetNamedObjectsToBeSetByDerived());
+                namedObjectsExposedInDerived.AddRange(baseNamedObjectContainer.GetNamedObjectsToBeExposedInDerived());
+            }
+        }
+
+
+        var derivedNosesToAskAbout = new List<NamedObjectSave>();
+
+
+        for (int i = referencedObjectsBeforeUpdate.Count - 1; i > -1; i--)
+        {
+            var atI = referencedObjectsBeforeUpdate[i];
+
+            var contains = atI.DefinedByBase && namedObjectsInBaseSetByDerived.Any(item => item.InstanceName == atI.InstanceName);
+
+            if (!contains)
+            {
+                contains = namedObjectsExposedInDerived.Any(item => item.InstanceName == atI.InstanceName);
+            }
+
+            if (!contains)
+            {
+
+                NamedObjectSave nos = referencedObjectsBeforeUpdate[i];
+
+                derivedNosesToAskAbout.Add(nos);
+            }
+        }
+
+
+        #region See if there are any objects to be removed from the derived.
+        if (derivedNosesToAskAbout.Count > 0 && showPopupAboutObjectErrors)
+        {
+            // This can happen whenever, like if a project is reloaded and data is changed on disk. However, this
+            // code should never hit as a result of the user making changes in the UI, that should be caught earlier.
+            // See SetByDerivedSetLogic
+            var singleOrPluralPhrase = derivedNosesToAskAbout.Count == 1 ? "object is" : "objects are";
+            var thisOrTheseObjects = derivedNosesToAskAbout.Count == 1 ? "this object" : "these objects";
+
+
+            string message = "The following object is marked as \"defined by base\" but not contained in " +
+                "any base elements\n\n";
+
+            foreach (var nos in derivedNosesToAskAbout)
+            {
+                message += nos.ToString() + "\n";
+            }
+
+            message += "\nWhat would you like to do?";
+
+            var mbmb = new MultiButtonMessageBoxWpf();
+
+            mbmb.MessageText = message;
+
+            mbmb.AddButton($"Remove {thisOrTheseObjects}", DialogResult.Yes);
+            mbmb.AddButton($"Keep {thisOrTheseObjects}, set \"defined by base\" to false", DialogResult.No);
+
+            var dialogResult = mbmb.ShowDialog();
+
+            if (dialogResult == true && (DialogResult)mbmb.ClickedResult == DialogResult.Yes)
+            {
+                foreach (var nos in derivedNosesToAskAbout)
+                {
+                    if (derivedNamedObjectContainer.NamedObjects.Contains(nos))
+                    {
+                        derivedNamedObjectContainer.NamedObjects.Remove(nos);
+                    }
+                    else
+                    {
+                        derivedNamedObjectContainer.NamedObjects
+                            .FirstOrDefault(item => item.ContainedObjects.Contains(nos))
+                            ?.ContainedObjects.Remove(nos);
+                    }
+                    // We got a NamedObject we should remove
+                    referencedObjectsBeforeUpdate.Remove(nos);
+                }
+            }
+            else if (mbmb.ClickedResult is DialogResult clickedDialogResult && clickedDialogResult == DialogResult.No)
+            {
+                foreach (var nos in derivedNosesToAskAbout)
+                {
+                    nos.DefinedByBase = false;
+                    nos.InstantiatedByBase = false;
+                }
+            }
+            haveChangesOccurred = true;
+        }
+        #endregion
+
+        #region Next, see if there are any objects to be added
+        for (int i = 0; i < namedObjectsInBaseSetByDerived.Count; i++)
+        {
+            NamedObjectSave namedObjectInBase = namedObjectsInBaseSetByDerived[i];
+
+            NamedObjectSave matchingDefinedByBase = null;// contains = false;
+            for (int j = 0; j < referencedObjectsBeforeUpdate.Count; j++)
+            {
+                if (referencedObjectsBeforeUpdate[j].InstanceName == namedObjectInBase.InstanceName &&
+                    referencedObjectsBeforeUpdate[j].DefinedByBase)
+                {
+                    matchingDefinedByBase = referencedObjectsBeforeUpdate[j];
+                    break;
+                }
+            }
+
+            if (matchingDefinedByBase == null)
+            {
+                AddSetByDerivedNos(derivedNamedObjectContainer, namedObjectInBase, false);
+            }
+            else
+            {
+                MatchDerivedToBase(namedObjectInBase, matchingDefinedByBase);
+            }
+        }
+
+        for (int i = 0; i < namedObjectsExposedInDerived.Count; i++)
+        {
+            NamedObjectSave nosInBase = namedObjectsExposedInDerived[i];
+
+            NamedObjectSave nosInDerived = referencedObjectsBeforeUpdate
+                .FirstOrDefault(item => item.InstanceName == nosInBase.InstanceName && item.DefinedByBase);
+
+
+            if (nosInDerived == null)
+            {
+                nosInDerived = AddSetByDerivedNos(derivedNamedObjectContainer, nosInBase, true);
+            }
+            else
+            {
+                MatchDerivedToBase(nosInBase, nosInDerived);
+            }
+
+            foreach (var containedInBaseNos in nosInBase.ContainedObjects)
+            {
+                if (containedInBaseNos.ExposedInDerived)
+                {
+                    var containedInDerived = referencedObjectsBeforeUpdate
+                        .FirstOrDefault(item => item.InstanceName == containedInBaseNos.InstanceName && item.DefinedByBase);
+                    if (containedInDerived == null)
+                    {
+                        AddSetByDerivedNos(derivedNamedObjectContainer, containedInBaseNos, true, nosInDerived);
+                    }
+                    else
+                    {
+                        MatchDerivedToBase(containedInBaseNos, containedInDerived);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        return haveChangesOccurred;
+    }
+
+    private static void MatchDerivedToBase(NamedObjectSave inBase, NamedObjectSave inDerived)
+    {
+        inDerived.SourceClassGenericType = inBase.SourceClassGenericType;
+    }
+
+    private static NamedObjectSave AddSetByDerivedNos(INamedObjectContainer derivedContainer,
+        NamedObjectSave namedObjectInBase, bool instantiatedByBase, NamedObjectSave containerToAddTo = null)
+    {
+        NamedObjectSave existingNamedObject = derivedContainer.AllNamedObjects
+            .FirstOrDefault(item => item.InstanceName == namedObjectInBase.InstanceName);
+
+        if (existingNamedObject != null)
+        {
+            existingNamedObject.DefinedByBase = true;
+            existingNamedObject.InstantiatedByBase = instantiatedByBase;
+            return existingNamedObject;
+        }
+        else
+        {
+            NamedObjectSave newNamedObject = namedObjectInBase.Clone();
+
+            // This code may be cloning a list with contained objects, and the
+            // contained objects may not SetByDerived
+            newNamedObject.ContainedObjects.Clear();
+            foreach (var containedCandidate in namedObjectInBase.ContainedObjects)
+            {
+                if (containedCandidate.SetByDerived)
+                {
+                    newNamedObject.ContainedObjects.Add(containedCandidate);
+                }
+            }
+
+            newNamedObject.SetDefinedByBaseRecursively(true);
+            newNamedObject.SetInstantiatedByBaseRecursively(instantiatedByBase);
+
+            // This can't be set by derived because an object it inherits from has that already set
+            newNamedObject.SetSetByDerivedRecursively(false);
+
+            if (containerToAddTo == null)
+            {
+                var indexToAddAt = derivedContainer.NamedObjects.Count;
+
+                var baseContainer = ObjectFinder.Self.GetElementContaining(namedObjectInBase);
+                if(baseContainer != null)
+                {
+                    var indexOfNosInBase = baseContainer.NamedObjects.IndexOf(namedObjectInBase);
+                    if(indexOfNosInBase == -1)
+                    {
+                        var container = baseContainer.NamedObjects.FirstOrDefault(item => 
+                            item.ContainedObjects.Contains(namedObjectInBase));
+                        // todo - this is rare, but we need to find what index this is after in the base, and make this get added
+                        // after in the derived:
+                    }
+                    else
+                    {
+                        for(int i = indexOfNosInBase - 1; i > -1; i--)
+                        {
+                            var itemInBase = baseContainer.NamedObjects[i];
+                            var name = itemInBase.InstanceName;
+
+                            var foundMatchInDerived = derivedContainer.NamedObjects.Find(item => item.InstanceName ==  name);
+                            if(foundMatchInDerived != null)
+                            {
+                                indexToAddAt = derivedContainer.NamedObjects.IndexOf(foundMatchInDerived) + 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                derivedContainer.NamedObjects.Insert(indexToAddAt, newNamedObject);
+            }
+            else
+            {
+                containerToAddTo.ContainedObjects.Add(newNamedObject);
+            }
+
+            return newNamedObject;
+        }
+    }
+
+
+    #endregion
+
 }

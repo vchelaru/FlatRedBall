@@ -214,8 +214,25 @@ namespace FlatRedBall.AnimationEditorForms
                         toReturn.Add(frame);
                     }
                 }
+                if(toReturn.Count == 0 && SelectedFrame != null)
+                {
+                    toReturn.Add(SelectedFrame);
+                }
 
                 return toReturn;
+            }
+            set
+            {
+                List<TreeNode> treeNodes = new List<TreeNode>();
+
+                if (value == null)
+                {
+                    SelectedNodes = new List<TreeNode>();
+                }
+                else
+                {
+                    SelectedNodes = value.Select(item => TreeViewManager.Self.GetTreeNodeFor(item)).ToList();
+                }
             }
         }
 

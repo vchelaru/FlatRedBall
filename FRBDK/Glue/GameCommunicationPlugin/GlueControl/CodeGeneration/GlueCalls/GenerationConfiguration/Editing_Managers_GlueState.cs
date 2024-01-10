@@ -13,14 +13,17 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls.Generatio
                 Namespace = "GlueControl.Managers",
                 Defines = new[] { "IncludeSetVariable", "SupportsEditMode", "HasGum" },
                 Usings = new[] {
-                    "System.Linq"
+                    "System.Linq",
+                    "System.Collections.Generic"
                 },
                 Methods = new Method[0],
                 Properties = new[]
                 {
                     GetProperty_CurrentGlueProject(),
                     GetProperty_CurrentElement(),
-                    GetProperty_CurrentNamedObjectSave()
+                    GetProperty_CurrentNamedObjectSave(),
+                    GetProperty_CurrentNamedObjectSaves(),
+                    GetProperty_SelectedSubIndex()
                 },
                 AddStaticSelfReference = true
             };
@@ -43,6 +46,29 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls.Generatio
                 Name = "CurrentGlueProject",
                 ReturnType = "GlueProjectSave",
                 GetSimpleBody = "ObjectFinder.Self.GlueProject"
+            };
+        }
+
+        private static Property GetProperty_SelectedSubIndex()
+        {
+            return new Property
+            {
+                Name = "SelectedSubIndex",
+                ReturnType = "int?",
+                IsAutomaticProperty = true,
+                SetMethod = new PropertyMethod
+                {
+                    Name = "SetSelectedSubIndex",
+                    Parameters = new[]
+                    {
+                        new Parameter
+                            {
+                                Type = "int?",
+                                Name = "index",
+                                IsParameterUsedByGlue = true
+                            }
+                    }
+                }
             };
         }
 
@@ -75,5 +101,40 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls.Generatio
                 }
             };
         }
+
+        private static Property GetProperty_CurrentNamedObjectSaves()
+        {
+            return new Property
+            {
+                Name = "CurrentNamedObjectSaves",
+                GetBody = "return Editing.EditingManager.Self.CurrentNamedObjects;",
+                ReturnType = "IReadOnlyList<NamedObjectSave>",
+                SetMethod = new PropertyMethod
+                {
+                    Name = "SetCurrentNamedObjectSaves",
+                    Parameters = new[]
+                    {
+                        new Parameter
+                            {
+                                Type = "IReadOnlyList<NamedObjectSave>",
+                                Name = "namedObjectSaves",
+                                IsParameterUsedByGlue = true,
+                                Dependencies = new [] { "nosOwner" }
+                            },
+                            new Parameter
+                            {
+                                Type = "GlueElement",
+                                Name = "nosOwner",
+
+                            }
+                    }
+                }
+            };
+        }
+
+
+
+
+
     }
 }

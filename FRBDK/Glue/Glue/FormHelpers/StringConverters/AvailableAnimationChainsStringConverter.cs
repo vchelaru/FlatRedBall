@@ -10,6 +10,7 @@ using FlatRedBall.Content.Scene;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.SpriteFrame;
 using GluePropertyGridClasses.StringConverters;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.GuiDisplay
 {
@@ -33,7 +34,7 @@ namespace FlatRedBall.Glue.GuiDisplay
         {
             get
             {
-                return Facades.FacadeContainer.Self.ProjectValues.ContentDirectory;
+                return GlueState.Self.ContentDirectory;
             }
         }
 
@@ -117,7 +118,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
         }
 
-        private AnimationChainListSave GetAnimationChainListFile(IElement element, NamedObjectSave referencedNos, StateSave stateSave)
+        public static AnimationChainListSave GetAnimationChainListFile(IElement element, NamedObjectSave referencedNos, StateSave stateSave)
         {
             AnimationChainListSave acls = null;
 
@@ -157,7 +158,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             return acls;
         }
 
-        private static AnimationChainListSave GetReferencedAclsThroughSetVariables(IElement element, NamedObjectSave referencedNos, StateSave stateSave)
+        public static AnimationChainListSave GetReferencedAclsThroughSetVariables(IElement element, NamedObjectSave referencedNos, StateSave stateSave)
         {
             AnimationChainListSave foundAcls = null;
 
@@ -215,7 +216,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
             if (rfs != null)
             {
-                string fullFileName = Facades.FacadeContainer.Self.ProjectValues.ContentDirectory + rfs.Name;
+                string fullFileName = GlueState.Self.ContentDirectory + rfs.Name;
 
                 if (System.IO.File.Exists(fullFileName))
                 {
@@ -226,9 +227,9 @@ namespace FlatRedBall.Glue.GuiDisplay
             return acls;
         }
 
-        private AnimationChainListSave GetAnimationChainListFromScnxReference(NamedObjectSave referencedNos)
+        private static AnimationChainListSave GetAnimationChainListFromScnxReference(NamedObjectSave referencedNos)
         {
-            string sourceFileName = ContentDirectory + referencedNos.SourceFile;
+            string sourceFileName = GlueState.Self.ContentDirectory + referencedNos.SourceFile;
 
             string sourceFileDirectory = FlatRedBall.IO.FileManager.GetDirectory(sourceFileName);
             

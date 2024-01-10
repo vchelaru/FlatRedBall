@@ -1,8 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU</Platforms>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -22,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="FRBDKUpdater\FrbdkUpdaterSettings.cs" />
     <Compile Remove="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
 
@@ -36,9 +35,11 @@
     <None Remove="ErrorPlugin\Icons\CopySingle.png" />
     <None Remove="ErrorPlugin\Icons\ErrorWindowError.png" />
     <None Remove="ErrorPlugin\Icons\Refresh.png" />
+    <None Remove="PointEditingPlugin\Content\AddPolygonPoints.png" />
     <None Remove="PointEditingPlugin\Content\AddRectanglePoints.png" />
     <None Remove="PointEditingPlugin\Content\MoveDown.png" />
     <None Remove="PointEditingPlugin\Content\MoveUp.png" />
+    <None Remove="PointEditingPlugin\Content\ResizePolygon.png" />
     <None Remove="QuickActionPlugin\Icons\Add Entity instance to GameScreen.png" />
     <None Remove="QuickActionPlugin\Icons\Add Entity List to GameScreen.png" />
     <None Remove="QuickActionPlugin\Icons\Add Gum Project.png" />
@@ -64,28 +65,7 @@
     <None Remove="QuickActionPlugin\Views\Open Project.png" />
     <None Remove="QuickActionPlugin\Views\StartWizard.png" />
     <None Remove="SpritePlugin\Icons\fitresize.png" />
-    <None Remove="TreeViewPlugin\Content\icon_back.png" />
-    <None Remove="TreeViewPlugin\Content\icon_code.png" />
-    <None Remove="TreeViewPlugin\Content\icon_collapse_to_definitions.png" />
-    <None Remove="TreeViewPlugin\Content\icon_collision.png" />
-    <None Remove="TreeViewPlugin\Content\icon_collisions.png" />
-    <None Remove="TreeViewPlugin\Content\icon_contract.png" />
-    <None Remove="TreeViewPlugin\Content\icon_entity.png" />
-    <None Remove="TreeViewPlugin\Content\icon_entity_derived.png" />
-    <None Remove="TreeViewPlugin\Content\icon_entity_instance.png" />
-    <None Remove="TreeViewPlugin\Content\icon_entity_list.png" />
-    <None Remove="TreeViewPlugin\Content\icon_event.png" />
-    <None Remove="TreeViewPlugin\Content\icon_file_standard.png" />
-    <None Remove="TreeViewPlugin\Content\icon_file_wildcard.png" />
-    <None Remove="TreeViewPlugin\Content\icon_folder.png" />
-    <None Remove="TreeViewPlugin\Content\icon_folder_open.png" />
-    <None Remove="TreeViewPlugin\Content\icon_forward.png" />
-    <None Remove="TreeViewPlugin\Content\icon_layer.png" />
-    <None Remove="TreeViewPlugin\Content\icon_layers.png" />
-    <None Remove="TreeViewPlugin\Content\icon_screen.png" />
-    <None Remove="TreeViewPlugin\Content\icon_screen_startup.png" />
-    <None Remove="TreeViewPlugin\Content\icon_state.png" />
-    <None Remove="TreeViewPlugin\Content\icon_variable.png" />
+    <None Remove="TreeViewPlugin\Content\StarFilled.png" />
     <None Remove="Wizard\EmbeddedContent\Levels\Level1Map.tmx" />
     <None Remove="Wizard\EmbeddedContent\Levels\Level2Map.tmx" />
     <None Remove="Wizard\EmbeddedContent\Levels\Level3Map.tmx" />
@@ -127,14 +107,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Gum\SkiaGum.Wpf.NetCore3_0\SkiaGum.Wpf.Net6.csproj" />
-    <ProjectReference Include="..\..\..\..\Gum\SkiaGumMonogame\SkiaGumMonogame.csproj" />
-    <ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\..\Tiled\TMXGlueLib\TMXGlueLibCore.csproj" />
-    <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
-    <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
-    <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
+    <ProjectReference Include="..\..\Localization\Localization.csproj" />
+    <ProjectReference Include="..\PluginLibraries\PluginLibraries.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -147,9 +122,11 @@
     <Resource Include="ErrorPlugin\Icons\CopySingle.png" />
     <Resource Include="ErrorPlugin\Icons\ErrorWindowError.png" />
     <Resource Include="ErrorPlugin\Icons\Refresh.png" />
+    <Resource Include="PointEditingPlugin\Content\AddPolygonPoints.png" />
     <Resource Include="PointEditingPlugin\Content\AddRectanglePoints.png" />
     <Resource Include="PointEditingPlugin\Content\MoveDown.png" />
     <Resource Include="PointEditingPlugin\Content\MoveUp.png" />
+    <Resource Include="PointEditingPlugin\Content\ResizePolygon.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Entity instance to GameScreen.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Entity List to GameScreen.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Gum Project.png" />
@@ -175,28 +152,7 @@
     <Resource Include="QuickActionPlugin\Views\Open Project.png" />
     <Resource Include="QuickActionPlugin\Views\StartWizard.png" />
     <Resource Include="SpritePlugin\Icons\fitresize.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_back.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_code.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_collapse_to_definitions.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_collision.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_collisions.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_contract.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_entity.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_entity_derived.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_entity_instance.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_entity_list.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_event.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_file_standard.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_file_wildcard.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_folder.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_folder_open.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_forward.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_layer.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_layers.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_screen.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_screen_startup.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_state.png" />
-    <Resource Include="TreeViewPlugin\Content\icon_variable.png" />
+    <Resource Include="TreeViewPlugin\Content\*.png" />
     <Resource Include="Wizard\Icons\action_forms.png" />
     <Resource Include="Wizard\Icons\action_platformer.png" />
     <Resource Include="Wizard\Icons\action_project.png" />

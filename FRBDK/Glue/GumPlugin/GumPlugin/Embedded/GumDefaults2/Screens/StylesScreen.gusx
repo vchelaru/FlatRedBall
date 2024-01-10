@@ -2499,4 +2499,5 @@
     <BaseType>Controls/DialogBox</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
+  <Behaviors />
 </ScreenSave>

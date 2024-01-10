@@ -85,8 +85,8 @@ namespace TopDownPlugin.Controllers
             }
             ///////////// end early out ///////////
 
-            var entity = GlueState.Self.CurrentEntitySave;
             var viewModel = sender as TopDownEntityViewModel;
+            var entity = viewModel.BackingData;// GlueState.Self.CurrentEntitySave;
             bool shouldGenerateCsv, shouldGenerateEntity, shouldAddTopDownVariables;
 
             DetermineWhatToGenerate(e.PropertyName, viewModel,
@@ -95,6 +95,13 @@ namespace TopDownPlugin.Controllers
             switch (e.PropertyName)
             {
                 case nameof(TopDownEntityViewModel.IsTopDown):
+
+                    if(viewModel.IsTopDown && entity.ImplementsICollidable == false)
+                    {
+                        entity.ImplementsICollidable = true;
+                        await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(entity, nameof(entity.ImplementsICollidable), false);
+                    }
+
                     HandleIsTopDownPropertyChanged(viewModel);
                     break;
                 // already handled in a dedicated method
@@ -139,7 +146,7 @@ namespace TopDownPlugin.Controllers
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddTopDownVariables)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 await TaskManager.Self.AddAsync(
                     () =>
                     {
@@ -171,7 +178,7 @@ namespace TopDownPlugin.Controllers
             //{
             //    GlueCommands.Self.GluxCommands.SetPluginRequirement(MainPlugin, true);
             //    GlueCommands.Self.PrintOutput("Added Top Down Plugin as a required plugin because the entity was marked as a top down entity");
-            //    GlueCommands.Self.GluxCommands.SaveGlux();
+            //    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             //}
 
             if (viewModel.IsTopDown == false)
@@ -182,7 +189,7 @@ namespace TopDownPlugin.Controllers
 
         public void CheckForNoTopDownEntities()
         {
-            var areAnyEntitiesTopDown = GlueState.Self.CurrentGlueProject.Entities
+            var areAnyEntitiesTopDown =  GlueState.Self.CurrentGlueProject.Entities
                 .Any(item => TopDownEntityPropertyLogic.GetIfIsTopDown(item));
 
             if (!areAnyEntitiesTopDown)
@@ -207,7 +214,7 @@ namespace TopDownPlugin.Controllers
 
         private void DetermineWhatToGenerate(string propertyName, TopDownEntityViewModel viewModel, out bool shouldGenerateCsv, out bool shouldGenerateEntity, out bool shouldAddTopDownVariables)
         {
-            var entity = GlueState.Self.CurrentEntitySave;
+            var entity = viewModel.BackingData;
             shouldGenerateCsv = false;
             shouldGenerateEntity = false;
             shouldAddTopDownVariables = false;
@@ -273,7 +280,7 @@ namespace TopDownPlugin.Controllers
                     if (rfs != null && rfs.CreatesDictionary == false)
                     {
                         rfs.CreatesDictionary = true;
-                        GlueCommands.Self.GluxCommands.SaveGlux();
+                        GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                         GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
                     }
 
@@ -293,7 +300,7 @@ namespace TopDownPlugin.Controllers
                         {
                             FlatRedBall.Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
 
-                            GlueCommands.Self.GluxCommands.SaveGlux();
+                            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                         }
                     }
                 },
@@ -325,6 +332,7 @@ namespace TopDownPlugin.Controllers
         private void UpdateViewModelTo(EntitySave currentEntitySave)
         {
             viewModel.IsTopDown = currentEntitySave.Properties.GetValue<bool>(nameof(viewModel.IsTopDown));
+            viewModel.BackingData = currentEntitySave;
             var inheritsFromTopDownEntity = GetIfInheritsFromTopDown(currentEntitySave);
             viewModel.InheritsFromTopDown = inheritsFromTopDownEntity;
 
@@ -409,7 +417,7 @@ namespace TopDownPlugin.Controllers
 
         private void SaveCurrentEntitySaveAnimationDataTask()
         {
-            var filePath = GetAnimationFilePathFor(GlueState.Self.CurrentEntitySave);
+            var filePath = GetAnimationFilePathFor(viewModel.BackingData);
 
             TaskManager.Self.Add(() =>
             {
@@ -423,7 +431,7 @@ namespace TopDownPlugin.Controllers
                     GlueCommands.Self.PrintOutput($"Saved animation file {filePath.FullPath}");
                 });
 
-            }, $"Saving animation file for {GlueState.Self.CurrentEntitySave}");
+            }, $"Saving animation file for {viewModel.BackingData}");
         }
 
         private void AddNecessaryAnimationMovementValuesFor(EntitySave currentEntitySave, ObservableCollection<TopDownValuesViewModel> topDownValues)

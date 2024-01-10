@@ -37,6 +37,32 @@ namespace InputLibrary
             vectorToTransform = transformed;
         }
 
+        public static void TransformVector(ref Vector3 vectorToTransform, ref System.Numerics.Matrix4x4 matrixToTransformBy)
+        {
+
+            Vector3 transformed = Vector3.Zero;
+
+            transformed.X =
+                matrixToTransformBy.M11 * vectorToTransform.X +
+                matrixToTransformBy.M21 * vectorToTransform.Y +
+                matrixToTransformBy.M31 * vectorToTransform.Z +
+                matrixToTransformBy.M41;
+
+            transformed.Y =
+                matrixToTransformBy.M12 * vectorToTransform.X +
+                matrixToTransformBy.M22 * vectorToTransform.Y +
+                matrixToTransformBy.M32 * vectorToTransform.Z +
+                matrixToTransformBy.M42;
+
+            transformed.Z =
+                matrixToTransformBy.M13 * vectorToTransform.X +
+                matrixToTransformBy.M23 * vectorToTransform.Y +
+                matrixToTransformBy.M33 * vectorToTransform.Z +
+                matrixToTransformBy.M43;
+
+            vectorToTransform = transformed;
+        }
+
 
         public static void TransformVector(ref Vector2 vectorToTransform, ref Matrix matrixToTransformBy)
         {
@@ -63,8 +89,8 @@ namespace InputLibrary
             }
 
             Vector3 transformed = new Vector3(cursor.X, cursor.Y, 0);
-            Matrix matrix = managers.Renderer.Camera.GetTransformationMatrix();
-            matrix = Matrix.Invert(matrix);
+            var matrix = managers.Renderer.Camera.GetTransformationMatrix();
+            System.Numerics.Matrix4x4.Invert(matrix, out matrix);
 
             TransformVector(ref transformed, ref matrix);
 
@@ -75,8 +101,8 @@ namespace InputLibrary
         public static float GetWorldY(this Cursor cursor, SystemManagers managers)
         {
             Vector3 transformed = new Vector3(cursor.X, cursor.Y, 0);
-            Matrix matrix = managers.Renderer.Camera.GetTransformationMatrix();
-            matrix = Matrix.Invert(matrix);
+            var matrix = managers.Renderer.Camera.GetTransformationMatrix();
+            System.Numerics.Matrix4x4.Invert(matrix, out matrix);
 
             TransformVector(ref transformed, ref matrix);
 

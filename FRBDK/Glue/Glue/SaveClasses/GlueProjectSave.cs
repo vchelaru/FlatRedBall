@@ -22,6 +22,12 @@ namespace FlatRedBall.Glue.SaveClasses
     }
     #endregion
 
+    public class GlueBookmark
+    {
+        public string Name { get; set; }
+        public string ImageSource { get; set; }
+    }
+
     public class GlueProjectSave
     {
         #region Constants
@@ -44,7 +50,8 @@ namespace FlatRedBall.Glue.SaveClasses
             AddedGeneratedGame1 = 2,
             ListsHaveAssociateWithFactoryBool = 3,
             GumGueHasGetAnimation = 4,
-            GumHasMIsLayoutSuspendedPublic = 4,
+            // Nope, this isn't v4, I checked and it's actually version 14
+            //GumHasMIsLayoutSuspendedPublic = 4,
             CsvInheritanceSupport = 5,
             IPositionedSizedObjectInEngine = 5,
             NugetPackageInCsproj = 6,
@@ -61,6 +68,13 @@ namespace FlatRedBall.Glue.SaveClasses
             // file version for supporting named subcollisions.
             ScreensHaveActivityEditMode = 8,
             SupportsNamedSubcollisions = 8,
+
+            // This was added 5/5/2021, 
+            TimeManagerHasDelaySeconds = 8,
+
+            // Added 8/24/2021
+            GumTextHasIsBold = 8,
+
             GlueSavedToJson = 9,
             IEntityInFrb = 10,
             SeparateJsonFilesForElements = 11,
@@ -71,6 +85,7 @@ namespace FlatRedBall.Glue.SaveClasses
             // Added Feb 28, 2022
             StartupInGeneratedGame = 13,
             RemoveAutoLocalizationOfVariables = 14,
+            GumHasMIsLayoutSuspendedPublic = 14, // not exact, but close enough. Was added March 3, 2022
             SpriteHasUseAnimationTextureFlip = 15,
             RemoveIsScrollableEntityList = 16,
             // Not exact, but close enough to help address issues:
@@ -92,22 +107,41 @@ namespace FlatRedBall.Glue.SaveClasses
             GeneratedCameraSetupFile = 26,
             ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX = 27,
             AutoNameCollisionListsAsSingle = 28,
+
+            // Added retroactively to address problem with project template:
+            GumHasIgnoredByParentSize = 29,
+
             GumTextObjectsUpdateTextWith0ChildDepth = 29,
             HasFrameworkElementManager = 30,
             HasGumSkiaElements = 31,
             ITiledTileMetadataInFrb = 32,
             DamageableHasHealth = 33,
             HasGame1GenerateEarly = 34,
-            ICollidableHasObjectsCollidedAgainst = 35
+            ICollidableHasObjectsCollidedAgainst = 35,
+            HasIRepeatPressableInput = 36,
+            AllTiledFilesGenerated = 37,
+            RemoveRedundantDerivedData = 38,
+            GraphicalUiElementProtectedAnimationProperties = 39,
+            GraphicalUiElementINotifyPropertyChanged = 40,
+            GumTextObjectsHaveTextOverflowProperties = 41,
+            TileShapeCollectionAddToLayerSupportsAutomaticallyUpdated = 42,
+            ISongInFrb = 43,
+            RendererHasExternalEffectManager = 44,
+            SpriteHasSetCollisionFromAnimation = 45,
+            HasIGumScreenOwner = 46,
+            ScreenIsINameable = 47,
+            SpriteManagerHasInsertLayer = 48,
+            GumUsesSystemTypes = 49,
+            // Technically this isn't referencing GumCommon project, but it's referencing code from GumCommon
+            GumCommonCodeReferencing = 50,
+            GumTextSupportsBbCode = 51
         }
 
         #endregion
 
-        #region Fields / Properties
-
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.ICollidableHasObjectsCollidedAgainst;
+        public const int LatestVersion = (int)GluxVersions.GumTextSupportsBbCode;
 
         public int FileVersion { get; set; }
 
@@ -130,6 +164,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #endregion
 
+        #region Screens / Entities
+
         public List<ScreenSave> Screens = new List<ScreenSave>();
 
         public List<EntitySave> Entities = new List<EntitySave>();
@@ -137,6 +173,9 @@ namespace FlatRedBall.Glue.SaveClasses
         public List<GlueElementFileReference> ScreenReferences { get; set; } = new List<GlueElementFileReference>();
         public List<GlueElementFileReference> EntityReferences { get; set; } = new List<GlueElementFileReference>();
 
+        #endregion
+
+        #region Global Files
 
         public List<ReferencedFileSave> GlobalFiles = new List<ReferencedFileSave>();
 
@@ -145,6 +184,18 @@ namespace FlatRedBall.Glue.SaveClasses
         // [JsonIgnore]
         public List<ReferencedFileSave> GlobalFileWildcards = new List<ReferencedFileSave>();
 
+        public GlobalContentSettingsSave GlobalContentSettingsSave = new GlobalContentSettingsSave();
+
+        #endregion
+
+        #region Bookmarks
+
+        public List<GlueBookmark> Bookmarks { get; set; } = new List<GlueBookmark>();
+
+
+        #endregion
+
+        #region Fields / Properties
 
         public GluxPluginData PluginData
         {
@@ -159,8 +210,6 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-
-        public GlobalContentSettingsSave GlobalContentSettingsSave = new GlobalContentSettingsSave();
 
         public List<string> SyncedProjects = new List<string>();
 
@@ -198,9 +247,10 @@ namespace FlatRedBall.Glue.SaveClasses
         // Old projects will still use it, but not new ones.
         public bool UsesTranslation { get; set; }
 
-        [XmlIgnore]
-        [JsonIgnore]
-        public bool GlobalContentHasChanged { get; set; }
+        /// <summary>
+        /// Whether to generate the base Type class for all base screens and entities. If false, these will not be generated.
+        /// </summary>
+        public bool SuppressBaseTypeGeneration { get; set; }
 
         #endregion
 
@@ -425,28 +475,6 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public GlueElement GetElementContaining(CustomVariable customVariable)
-        {
-            foreach (EntitySave entitySave in Entities)
-            {
-                if (entitySave.CustomVariables.Contains(customVariable))
-                {
-                    return entitySave;
-                }
-            }
-
-
-            foreach (ScreenSave screenSave in Screens)
-            {
-                if (screenSave.CustomVariables.Contains(customVariable))
-                {
-                    return screenSave;
-                }
-            }
-
-            return null;
-
-        }
 
         public GlueElement GetElementContaining(StateSave stateSave)
         {

@@ -130,7 +130,7 @@ namespace DialogTreePlugin
                 tab?.Hide();
             }
         }
-        private void HandleNewFile(ReferencedFileSave newFile)
+        private void HandleNewFile(ReferencedFileSave newFile, AssetTypeInfo assetTypeInfo)
         {
             //If the new file is a .json, add it to the dialog tree constants.
             //if(newFile.Name.EndsWith(rawFileType))

@@ -168,7 +168,11 @@ namespace GumPluginCore.CodeGeneration
                         else
                         {
                             line =
-                                $"{instance.MemberNameInCode()} = new {type}(Visual.GetGraphicalUiElementByName(\"{instance.Name}\"));";
+                                // Update June 17, 2023 - I think anything that is possibly a forms control will create itself internally so we don't
+                                // have to do so explicitly:
+                                //$"{instance.MemberNameInCode()} = new {type}(Visual.GetGraphicalUiElementByName(\"{instance.Name}\"));";
+                                                                $"{instance.MemberNameInCode()} = ({type})Visual.GetGraphicalUiElementByName(\"{instance.Name}\").FormsControlAsObject;";
+
                         }
                         method.Line(line);
                     }

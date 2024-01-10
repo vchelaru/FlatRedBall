@@ -2,7 +2,6 @@
 #define THREAD_POOL_IS_SLOW
 #endif
 
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,11 +22,6 @@ using System.Diagnostics;
 using FlatRedBall.Instructions;
 using FlatRedBall.Performance.Measurement;
 
-#if UWP
-using Windows.System.Threading;
-using Windows.Foundation;
-#endif
-
 
 namespace FlatRedBall
 {
@@ -46,38 +40,23 @@ namespace FlatRedBall
 
 
 
-#if UWP
-        IAsyncAction mAction = null;
-#else
         ManualResetEvent mManualResetEvent;
 
-#endif
 
         public Updater()
         {
-#if !UWP
             mManualResetEvent = new ManualResetEvent(false);
-#endif
         }
 
         public void Reset()
         {
             
-#if UWP
-            mAction = null;
-#else
             mManualResetEvent.Reset();
-
-#endif
         }
 
         public void Wait()
         {
-#if UWP
-            mAction.AsTask().Wait();
-#else
             mManualResetEvent.WaitOne();
-#endif
         }
 
         internal void TimedActivity()
@@ -142,11 +121,8 @@ namespace FlatRedBall
         internal void ExecuteInstructions()
         {
             Reset();
-#if UWP
-            mAction = Windows.System.Threading.ThreadPool.RunAsync(ExecuteInstructionsInternal);
-#else
+
             ThreadPool.QueueUserWorkItem(ExecuteInstructionsInternal);
-#endif
         }
         void ExecuteInstructionsInternal(object unusedState)
         {
@@ -169,11 +145,7 @@ namespace FlatRedBall
         internal void UpdateDependencies()
         {
             Reset();
-#if UWP
-            mAction = Windows.System.Threading.ThreadPool.RunAsync(UpdateDependenciesInternal);
-#else
             ThreadPool.QueueUserWorkItem(UpdateDependenciesInternal);
-#endif
         }
         void UpdateDependenciesInternal(object unusedState)
         {
@@ -184,16 +156,8 @@ namespace FlatRedBall
             {
                 Sprite s = AutomaticallyUpdatedSprites[i];
                 s.UpdateDependencies(currentTime);
-
-#if SILVERLIGHT
-                s.UpdateVertices(SpriteManager.Camera);
-
-#endif
-
             }
-#if !UWP
             mManualResetEvent.Set();
-#endif
         }
 
     }
@@ -287,6 +251,17 @@ namespace FlatRedBall
 
         static MethodInfo mRemoveSpriteMethodInfo = typeof(SpriteManager).GetMethod("RemoveSprite", new Type[] { typeof(Sprite) });
 
+        /// <summary>
+        /// List of particles which should be removed on a timer. This is internal, so it can only be used by emitters.
+        /// </summary>
+        /// <remarks>
+        /// As of March 19, 2023 Emitters
+        /// are not used very often. Therefore,
+        /// this list is almost always empty. It
+        /// will remain here for old games but it's
+        /// unlikely new games will use this unless the
+        /// FRB Emitter object gets revived.
+        /// </remarks>
         internal static List<TimedRemovalRecord> mTimedRemovalList = new List<TimedRemovalRecord>(100);
 
         #endregion
@@ -437,11 +412,9 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Read-only collection of SpriteFrames managed by the SpriteManager.
         /// </summary>
-        #endregion
         public static ReadOnlyCollection<SpriteFrame> SpriteFrames
         {
             get { return mSpriteFramesReadOnly; }
@@ -557,7 +530,6 @@ namespace FlatRedBall
         #endregion
 
         #region Methods
-
  
         #region Constructor / Initialize
 
@@ -661,12 +633,15 @@ namespace FlatRedBall
 
         #endregion
 
-        #region Public Methods
-
         #region Add Methods
 
         #region AddLayer, AddToLayer
 
+        /// <summary>
+        /// Adds the argument layer at the end of the Layer list (above all layers except the TopLayer).
+        /// </summary>
+        /// <param name="layerToAdd">The layer ot add.</param>
+        /// <exception cref="InvalidOperationException">Throws InvalidOperationException if this is not called on the primary thread.</exception>
         public static void AddLayer(Layer layerToAdd)
         {
 #if DEBUG
@@ -679,6 +654,29 @@ namespace FlatRedBall
             mLayers.Add(layerToAdd);
         }
 
+        /// <summary>
+        /// Inserts the argument layer at the argument index.
+        /// </summary>
+        /// <param name="layer">The layer to add.</param>
+        /// <param name="index">The insertion index.</param>
+        /// <exception cref="InvalidOperationException">Throws InvalidOperationException if this is not called on the primary thread.</exception>
+        public static void InsertLayer(Layer layer, int index)
+        {
+#if DEBUG
+
+            if (!FlatRedBallServices.IsThreadPrimary())
+            {
+                throw new InvalidOperationException("Objects can only be added on the primary thread");
+            }
+#endif
+            mLayers.Insert(index, layer);
+        }
+
+        /// <summary>
+        /// Creates a new layer, adds it to the internal Layer list on top of all other layers (except the TopLayer), and returns it.
+        /// </summary>
+        /// <returns>The newly-created Layer</returns>
+        /// <exception cref="InvalidOperationException">Throws InvalidOperationException if this is not called on the primary thread.</exception>
         static public Layer AddLayer()
         {
 #if DEBUG
@@ -697,7 +695,8 @@ namespace FlatRedBall
         /// Adds the argument Sprite to the argument Layer. If the Sprite is not already
         /// managed by the SpriteManager, the Sprite will also be added to the internal list
         /// for management. This method can be called multiple times to add a single Sprite to
-        /// multiple Layers.
+        /// multiple Layers. If the Sprite is unlayered, it will be moved to the argument Layer and
+        /// only be drawn on the argument Layer.
         /// 
         /// If the layerToAddTo argument is null then the Sprite is added as a regular un-layered Sprite.
         /// </summary>
@@ -1357,28 +1356,6 @@ namespace FlatRedBall
                 return newSprite;
             }
         }
-
-        public static Sprite AddParticleSprite(Texture2D texture)
-        {
-            Sprite newParticleSprite = CreateParticleSprite(texture);
-            AddSprite(newParticleSprite);
-            return newParticleSprite;
-        }
-
-        /// <summary>
-        /// Returns a particle Sprite which is not managed internally by the engine. This is the most
-        /// efficient type of Sprite in FlatRedBall because it is pooled and the engine does not internally
-        /// update the sprite. 
-        /// </summary>
-        /// <param name="texture">The texture to assign to the sprite.</param>
-        /// <returns>The sprite, which may be returned from a pool of sprites.</returns>
-        public static Sprite AddManualParticleSprite(Texture2D texture)
-        {
-            Sprite newParticleSprite = CreateParticleSprite(texture);
-            AddManualSprite(newParticleSprite);
-            return newParticleSprite;
-        }
-
         public static Sprite AddManagedInvisibleSprite()
         {
 #if DEBUG
@@ -1424,6 +1401,54 @@ namespace FlatRedBall
                     new object[] { spriteToAdd }, timeToAdd);
 
             Instructions.InstructionManager.Instructions.Add(staticMethodInstruction);
+        }
+
+        #endregion
+
+        #region Add Particle Sprite
+
+        /// <summary>
+        /// Creates a new particle sprite and adds it to the SpriteManager for management. The sprite will have
+        /// its AnimationChains assigned to the argument animations property. This sprite is given a TextureScale of 1.
+        /// </summary>
+        /// <param name="animations">The animations to use by the new particle Sprite.</param>
+        /// <param name="animationName">The name of the animation to show. This name must be contained in the argument animations.</param>
+        /// <returns>The newly-created Sprite.</returns>
+        public static Sprite AddParticleSprite(AnimationChainList animations, string animationName = null)
+        {
+            var newParticleSprite = CreateParticleSprite(null);
+
+            newParticleSprite.AnimationChains = animations;
+            newParticleSprite.TextureScale = 1;
+            if(!string.IsNullOrEmpty(animationName))
+            {
+                newParticleSprite.CurrentChainName = animationName;
+                newParticleSprite.TimeIntoAnimation = 0;
+                newParticleSprite.Animate = true;
+            }
+            AddSprite(newParticleSprite);
+            return newParticleSprite;
+        }
+
+        public static Sprite AddParticleSprite(Texture2D texture)
+        {
+            Sprite newParticleSprite = CreateParticleSprite(texture);
+            AddSprite(newParticleSprite);
+            return newParticleSprite;
+        }
+
+        /// <summary>
+        /// Returns a particle Sprite which is not managed internally by the engine. This is the most
+        /// efficient type of Sprite in FlatRedBall because it is pooled and the engine does not internally
+        /// update the sprite. 
+        /// </summary>
+        /// <param name="texture">The texture to assign to the sprite.</param>
+        /// <returns>The sprite, which may be returned from a pool of sprites.</returns>
+        public static Sprite AddManualParticleSprite(Texture2D texture)
+        {
+            Sprite newParticleSprite = CreateParticleSprite(texture);
+            AddManualSprite(newParticleSprite);
+            return newParticleSprite;
         }
 
         #endregion
@@ -1659,6 +1684,7 @@ namespace FlatRedBall
 
         #endregion
 
+        #region AddPositionedObject
         public static void AddPositionedObject(PositionedObject positionedObjectToManage)
         {
 #if DEBUG
@@ -1678,6 +1704,9 @@ namespace FlatRedBall
             mManagedPositionedObjects.Add(positionedObjectToManage);
             //mManagedPositionedObjects.Add(positionedObjectToManage);
         }
+        #endregion
+
+        #region Add DrawableBatch
 
         /// <summary>
         /// Adds the argument IDrawableBatch to the engine to be rendered in order of its Z value.
@@ -1701,9 +1730,7 @@ namespace FlatRedBall
 #endif
             mDrawableBatches.Add(drawableBatch);
         }
-
         
-
         public static void AddZBufferedDrawableBatch(IDrawableBatch drawableBatch)
         {
 #if DEBUG
@@ -1723,6 +1750,10 @@ namespace FlatRedBall
         }
 
         #endregion
+
+        #endregion
+
+        #region Public Methods
 
         public static bool AreAnySpritesReferencingDisposedAssets()
         {
@@ -2087,102 +2118,86 @@ namespace FlatRedBall
 
             spriteToUpdate.UpdateVertices();
 
-            spriteToUpdate.mVerticesForDrawing[0].Position = spriteToUpdate.mVertices[0].Position;
-            spriteToUpdate.mVerticesForDrawing[1].Position = spriteToUpdate.mVertices[1].Position;
-            spriteToUpdate.mVerticesForDrawing[2].Position = spriteToUpdate.mVertices[2].Position;
-            spriteToUpdate.mVerticesForDrawing[3].Position = spriteToUpdate.mVertices[3].Position;
+            // Catch the variables so we avoid multiple property accesses
+            var vertices = spriteToUpdate.mVertices;
+            var verticesForDrawing = spriteToUpdate.mVerticesForDrawing;
 
+            verticesForDrawing[0].Position = vertices[0].Position;
+            verticesForDrawing[1].Position = vertices[1].Position;
+            verticesForDrawing[2].Position = vertices[2].Position;
+            verticesForDrawing[3].Position = vertices[3].Position;
 
     #if MONOGAME
             if (spriteToUpdate.Texture != null && spriteToUpdate.ColorOperation == ColorOperation.Texture)
             {
                 // In this case we'll just use the Alpha for all components (since it's premultiplied)
-                spriteToUpdate.mVerticesForDrawing[0].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[0].Color.W)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[0].Color.W)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[0].Color.W)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[0].Color.W)) << 24);
+                uint alpha0 = (uint)(255 * vertices[0].Color.W);
+                uint alpha1 = (uint)(255 * vertices[1].Color.W);
+                uint alpha2 = (uint)(255 * vertices[2].Color.W);
+                uint alpha3 = (uint)(255 * vertices[3].Color.W);
 
-
-                spriteToUpdate.mVerticesForDrawing[1].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[1].Color.W)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[1].Color.W)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[1].Color.W)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[1].Color.W)) << 24);
-
-                spriteToUpdate.mVerticesForDrawing[2].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[2].Color.W)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[2].Color.W)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[2].Color.W)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[2].Color.W)) << 24);
-
-                spriteToUpdate.mVerticesForDrawing[3].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[3].Color.W)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[3].Color.W)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[3].Color.W)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[3].Color.W)) << 24);
+                verticesForDrawing[0].Color.PackedValue = alpha0 + (alpha0 << 8) + (alpha0 << 16) + (alpha0 << 24);
+                verticesForDrawing[1].Color.PackedValue = alpha1 + (alpha1 << 8) + (alpha1 << 16) + (alpha1 << 24);
+                verticesForDrawing[2].Color.PackedValue = alpha2 + (alpha2 << 8) + (alpha2 << 16) + (alpha2 << 24);
+                verticesForDrawing[3].Color.PackedValue = alpha3 + (alpha3 << 8) + (alpha3 << 16) + (alpha3 << 24);
             }
             else
     #endif
             {
+                verticesForDrawing[0].Color.PackedValue =
+                    ((uint)(255 * vertices[0].Color.X)) +
+                    (((uint)(255 * vertices[0].Color.Y)) << 8) +
+                    (((uint)(255 * vertices[0].Color.Z)) << 16) +
+                    (((uint)(255 * vertices[0].Color.W)) << 24);
 
-                spriteToUpdate.mVerticesForDrawing[0].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[0].Color.X)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[0].Color.Y)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[0].Color.Z)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[0].Color.W)) << 24);
+                verticesForDrawing[1].Color.PackedValue =
+                    ((uint)(255 * vertices[1].Color.X)) +
+                    (((uint)(255 * vertices[1].Color.Y)) << 8) +
+                    (((uint)(255 * vertices[1].Color.Z)) << 16) +
+                    (((uint)(255 * vertices[1].Color.W)) << 24);
 
+                verticesForDrawing[2].Color.PackedValue =
+                    ((uint)(255 * vertices[2].Color.X)) +
+                    (((uint)(255 * vertices[2].Color.Y)) << 8) +
+                    (((uint)(255 * vertices[2].Color.Z)) << 16) +
+                    (((uint)(255 * vertices[2].Color.W)) << 24);
 
-                spriteToUpdate.mVerticesForDrawing[1].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[1].Color.X)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[1].Color.Y)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[1].Color.Z)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[1].Color.W)) << 24);
-
-                spriteToUpdate.mVerticesForDrawing[2].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[2].Color.X)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[2].Color.Y)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[2].Color.Z)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[2].Color.W)) << 24);
-
-                spriteToUpdate.mVerticesForDrawing[3].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[3].Color.X)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[3].Color.Y)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[3].Color.Z)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[3].Color.W)) << 24);
+                verticesForDrawing[3].Color.PackedValue =
+                    ((uint)(255 * vertices[3].Color.X)) +
+                    (((uint)(255 * vertices[3].Color.Y)) << 8) +
+                    (((uint)(255 * vertices[3].Color.Z)) << 16) +
+                    (((uint)(255 * vertices[3].Color.W)) << 24);
             }
 
             if (!spriteToUpdate.FlipHorizontal && !spriteToUpdate.FlipVertical)
             {
-                spriteToUpdate.mVerticesForDrawing[0].TextureCoordinate = spriteToUpdate.mVertices[0].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[1].TextureCoordinate = spriteToUpdate.mVertices[1].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[2].TextureCoordinate = spriteToUpdate.mVertices[2].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[3].TextureCoordinate = spriteToUpdate.mVertices[3].TextureCoordinate;
+                verticesForDrawing[0].TextureCoordinate = vertices[0].TextureCoordinate;
+                verticesForDrawing[1].TextureCoordinate = vertices[1].TextureCoordinate;
+                verticesForDrawing[2].TextureCoordinate = vertices[2].TextureCoordinate;
+                verticesForDrawing[3].TextureCoordinate = vertices[3].TextureCoordinate;
             }
             else if (spriteToUpdate.FlipVertical && spriteToUpdate.FlipHorizontal)
             {
-                spriteToUpdate.mVerticesForDrawing[0].TextureCoordinate = spriteToUpdate.mVertices[2].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[1].TextureCoordinate = spriteToUpdate.mVertices[3].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[2].TextureCoordinate = spriteToUpdate.mVertices[0].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[3].TextureCoordinate = spriteToUpdate.mVertices[1].TextureCoordinate;
+                verticesForDrawing[0].TextureCoordinate = vertices[2].TextureCoordinate;
+                verticesForDrawing[1].TextureCoordinate = vertices[3].TextureCoordinate;
+                verticesForDrawing[2].TextureCoordinate = vertices[0].TextureCoordinate;
+                verticesForDrawing[3].TextureCoordinate = vertices[1].TextureCoordinate;
 
             }
             else if (spriteToUpdate.FlipVertical)
             {
-                spriteToUpdate.mVerticesForDrawing[0].TextureCoordinate = spriteToUpdate.mVertices[3].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[1].TextureCoordinate = spriteToUpdate.mVertices[2].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[2].TextureCoordinate = spriteToUpdate.mVertices[1].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[3].TextureCoordinate = spriteToUpdate.mVertices[0].TextureCoordinate;
+                verticesForDrawing[0].TextureCoordinate = vertices[3].TextureCoordinate;
+                verticesForDrawing[1].TextureCoordinate = vertices[2].TextureCoordinate;
+                verticesForDrawing[2].TextureCoordinate = vertices[1].TextureCoordinate;
+                verticesForDrawing[3].TextureCoordinate = vertices[0].TextureCoordinate;
             }
             else if (spriteToUpdate.FlipHorizontal)
             {
-                spriteToUpdate.mVerticesForDrawing[0].TextureCoordinate = spriteToUpdate.mVertices[1].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[1].TextureCoordinate = spriteToUpdate.mVertices[0].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[2].TextureCoordinate = spriteToUpdate.mVertices[3].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[3].TextureCoordinate = spriteToUpdate.mVertices[2].TextureCoordinate;
-
+                verticesForDrawing[0].TextureCoordinate = vertices[1].TextureCoordinate;
+                verticesForDrawing[1].TextureCoordinate = vertices[0].TextureCoordinate;
+                verticesForDrawing[2].TextureCoordinate = vertices[3].TextureCoordinate;
+                verticesForDrawing[3].TextureCoordinate = vertices[2].TextureCoordinate;
             }
-
         }
 
         #endregion
@@ -2218,9 +2233,10 @@ namespace FlatRedBall
         /// <param name="relativeTo">The layer to move in front of.</param>
         public static void MoveLayerAboveLayer(Layer layerToMove, Layer relativeTo)
         {
+            mLayers.Remove(layerToMove);
+            
             int index = mLayers.IndexOf(relativeTo);
 
-            mLayers.Remove(layerToMove);
             mLayers.Insert(index + 1, layerToMove);
         }
 
@@ -2231,7 +2247,7 @@ namespace FlatRedBall
         public static void RemoveAllParticleSprites()
         {
             // This can be a forward loop because the Sprites in
-            // mSparticleSprites are never removed from that list.
+            // mParticleSprites are never removed from that list.
             for (int i = 0; i < mParticleSprites.Count; i++)
             {
                 if (mParticleSprites[i].mEmpty == false)
@@ -3286,7 +3302,6 @@ namespace FlatRedBall
                 }
             }
         }
-
 
         static private void UpdateMaxParticleCount(int Count)
         {

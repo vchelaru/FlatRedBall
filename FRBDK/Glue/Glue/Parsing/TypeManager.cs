@@ -8,10 +8,10 @@ using System.IO;
 using System.Collections.ObjectModel;
 using FlatRedBall.Math;
 using FlatRedBall.Glue.Elements;
-
-
+using FlatRedBall.Graphics;
 using System.Security.Policy;
-
+using System.Reflection.Metadata.Ecma335;
+using Gum.DataTypes;
 
 namespace FlatRedBall.Glue.Parsing
 {
@@ -24,12 +24,14 @@ namespace FlatRedBall.Glue.Parsing
         static Type[] FlatRedBallTypes;
         static Type[] mTypesInMicrosoftXnaFramework;
         static Type[] mTypesInMicrosoftXnaFrameworkGame;
+#if XNA4
         static Type[] mTypesInMicrosoftXnaFrameworkGraphics;
+#endif
         static Type[] pluginTypes;
 
         static List<Type> mAdditionalTypes = new List<Type>();
 
-        #endregion
+#endregion
 
         public static Type GetTypeFromParsedType(ParsedType parsedType)
         {
@@ -182,6 +184,10 @@ namespace FlatRedBall.Glue.Parsing
             if (typeString == "bool" || typeString == "Boolean" || typeString == "System.Boolean")
             {
                 typeToReturn = typeof(bool);
+            }
+            else if(typeString == "bool?")
+            {
+                typeToReturn = typeof(bool?);
             }
             else if (typeString == "float" || typeString == "Single")
             {
@@ -375,7 +381,7 @@ namespace FlatRedBall.Glue.Parsing
                     }
                 }
 
-
+#if XNA4
                 if (typeToReturn == null && mTypesInMicrosoftXnaFrameworkGraphics != null)
                 {
                     Type[] types = mTypesInMicrosoftXnaFrameworkGraphics;
@@ -390,6 +396,7 @@ namespace FlatRedBall.Glue.Parsing
                     }
 
                 }
+#endif
 
                 if (typeToReturn == null)
                 {
@@ -456,16 +463,16 @@ namespace FlatRedBall.Glue.Parsing
                     mAdditionalTypes.AddRange(types.Where(type => type.FullName.StartsWith(namespaceFilter)));
                 }
             }
-            catch (ReflectionTypeLoadException reflectionException)
+            catch (ReflectionTypeLoadException)
             {
                 System.Windows.Forms.MessageBox.Show("Encountered exception while trying to load " + assembly.FullName +
                     "\nThis is likely because the assembly is using a different version of the .NET framework.");
             }
-            catch (TypeLoadException ex)
+            catch (TypeLoadException)
             {
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
@@ -638,6 +645,11 @@ namespace FlatRedBall.Glue.Parsing
             {
                 return "int?";
             }
+
+            if (qualifiedName.StartsWith("System.Nullable`1[[System.Boolean,"))
+            {
+                return "bool?";
+            }
             else if(qualifiedName.StartsWith("System.Nullable`1[[System.Single,"))
             {
                 return "float?";
@@ -648,6 +660,29 @@ namespace FlatRedBall.Glue.Parsing
             }
 
             return qualifiedName;
+        }
+
+        public static string GetFriendlyGenericName(Type type)
+        {
+            string friendlyName = type?.Name;
+            if (type?.IsGenericType == true)
+            {
+                int iBacktick = friendlyName.IndexOf('`');
+                if (iBacktick > 0)
+                {
+                    friendlyName = friendlyName.Remove(iBacktick);
+                }
+                friendlyName += "<";
+                Type[] typeParameters = type.GetGenericArguments();
+                for (int i = 0; i < typeParameters.Length; ++i)
+                {
+                    string typeParamName = GetFriendlyGenericName(typeParameters[i]);
+                    friendlyName += (i == 0 ? typeParamName : "," + typeParamName);
+                }
+                friendlyName += ">";
+            }
+
+            return friendlyName;
         }
 
 
@@ -754,8 +789,13 @@ namespace FlatRedBall.Glue.Parsing
         {
             switch (type)
             {
-                case "String":
                 case "string":
+                case "String":
+                case "System.String":
+                case "string?":
+                case "String?":
+                case "Nullable<string>":
+                case "Nullable<String>":
                     return "null";
 
                 case "Boolean":
@@ -788,6 +828,8 @@ namespace FlatRedBall.Glue.Parsing
 
                 case "byte":
                 case "Byte":
+                    
+                case "ColorOperation":
 
                     return "0";
                 case "float?":
@@ -795,6 +837,9 @@ namespace FlatRedBall.Glue.Parsing
                 case "long?":
                 case "byte?":
                 case "double?":
+                case "bool?":
+                case "Nullable<Boolean>":
+                case "Nullable<Int32>":
                     return "null";
                 default:
                     throw new ArgumentException("Could not find the value for type " + type);

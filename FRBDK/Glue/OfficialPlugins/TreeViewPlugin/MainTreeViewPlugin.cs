@@ -12,7 +12,9 @@ using OfficialPlugins.TreeViewPlugin.Views;
 using PropertyTools.Wpf;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -35,13 +37,18 @@ namespace OfficialPlugins.TreeViewPlugin
 
         #endregion
 
-        public override bool ShutDown(PluginShutDownReason shutDownReason)
-        {
-            return true;
-        }
-
         public override void StartUp()
         {
+            var pixelHeight = GlueState.Self.GlueSettingsSave.BookmarkRowHeight > 0
+                ? GlueState.Self.GlueSettingsSave.BookmarkRowHeight
+                : 100;
+            MainViewModel.OldBookmarkRowHeight = new System.Windows.GridLength(
+                pixelHeight, System.Windows.GridUnitType.Pixel);
+
+            MainViewModel.IsBookmarkListVisible = GlueState.Self.GlueSettingsSave.IsBookmarksListVisible;
+
+            MainViewModel.PropertyChanged += HandleMainViewModelPropertyChanged;
+
             var findManager = new FindManager(MainViewModel);
             GlueState.Self.Find = findManager;
             mainView = new MainTreeViewControl();
@@ -58,6 +65,30 @@ namespace OfficialPlugins.TreeViewPlugin
 
         }
 
+        private void HandleMainViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case nameof(MainViewModel.IsBookmarkListVisible):
+                case nameof(MainViewModel.BookmarkRowHeight):
+                    if(GlueState.Self.GlueSettingsSave != null)
+                    {
+                        GlueState.Self.GlueSettingsSave.IsBookmarksListVisible = MainViewModel.IsBookmarkListVisible;
+                        if(MainViewModel.IsBookmarkListVisible)
+                        {
+                            GlueState.Self.GlueSettingsSave.BookmarkRowHeight = MainViewModel.BookmarkRowHeight.Value;
+                        }
+                        else
+                        {
+                            GlueState.Self.GlueSettingsSave.BookmarkRowHeight = MainViewModel.OldBookmarkRowHeight.Value;
+                        }
+                        GlueCommands.Self.GluxCommands.SaveSettings();
+
+                    }
+                    break;
+            }
+        }
+
         private void AssignEvents()
         {
             ReactToLoadedGluxEarly += HandleGluxLoadedEarly;
@@ -68,8 +99,9 @@ namespace OfficialPlugins.TreeViewPlugin
             RefreshDirectoryTreeNodes += HandleRefreshDirectoryTreeNodes;
             FocusOnTreeView += HandleFocusOnTreeView;
             ReactToCtrlF += HandleCtrlF;
-            ReactToItemSelectHandler += HandleItemSelected;
+            ReactToItemsSelected += HandleItemsSelected;
             TryHandleTreeNodeDoubleClicked += TryHandleTreeNodeDoubleClick;
+            IsHandlingHotkeys += () => mainView.Bookmarks.IsFocused || mainView.Bookmarks.IsKeyboardFocusWithin;
         }
 
         private bool TryHandleTreeNodeDoubleClick(ITreeNode arg)
@@ -112,32 +144,47 @@ namespace OfficialPlugins.TreeViewPlugin
             });
         }
 
-        private async void HandleItemSelected(ITreeNode selectedTreeNode)
+        private async void HandleItemsSelected(List<ITreeNode> selectedTreeNodes)
         {
-            var tag = selectedTreeNode?.Tag;
             if(SelectionLogic.IsUpdatingThisSelectionOnGlueEvent )
             {
                 var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
+                var wasSuppressingFocus = SelectionLogic.SuppressFocus;
+                SelectionLogic.SuppressFocus = true;
                 SelectionLogic.IsPushingSelectionOutToGlue = false;
-                if (tag != null)
+
+                MainViewModel.DeselectResursively(true);
+
+                for (int i = 0; i < selectedTreeNodes.Count; i++)
                 {
-                    SelectionLogic.SelectByTag(tag);
+                    ITreeNode selectedTreeNode = selectedTreeNodes[i];
+                    var addToSelection = i > 0;
+                    var isLast = i == selectedTreeNodes.Count - 1;
+
+                    if(selectedTreeNode is NodeViewModel vm)
+                    {
+                        await SelectionLogic.SelectByTreeNode(vm, addToSelection, selectAndScroll:isLast);
+                    }
+                    else if (selectedTreeNode.Tag != null)
+                    {
+                        await SelectionLogic.SelectByTag(selectedTreeNode.Tag, addToSelection);
+                    }
+                    else if(selectedTreeNode != null)
+                    {
+                        await SelectionLogic.SelectByPath(selectedTreeNode.GetRelativeFilePath(), addToSelection);
+                    }
+                    else
+                    {
+                        await SelectionLogic.SelectByTreeNode(null, false);
+                    }
                 }
-                else if(selectedTreeNode is NodeViewModel vm)
-                {
-                    await SelectionLogic.SelectByTreeNode(vm);
-                }
-                else if(selectedTreeNode != null)
-                {
-                    SelectionLogic.SelectByPath(selectedTreeNode.GetRelativeFilePath());
-                }
-                else
-                {
-                    await SelectionLogic.SelectByTreeNode(null);
-                }
+
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
+                SelectionLogic.SuppressFocus = wasSuppressingFocus;
 
             }
+
+            MainViewModel.RefreshSelectedItemInfoDisplay(selectedTreeNodes);
 
             MainViewModel.IsForwardButtonEnabled = TreeNodeStackManager.Self.CanGoForward;
             MainViewModel.IsBackButtonEnabled = TreeNodeStackManager.Self.CanGoBack;
@@ -183,7 +230,7 @@ namespace OfficialPlugins.TreeViewPlugin
                     // If the tag changed, push it back out:
                     SelectionLogic.IsPushingSelectionOutToGlue = true;
                     var newSelection = parentNodeViewModel.Children[index];
-                    await SelectionLogic.SelectByTreeNode(newSelection);
+                    await SelectionLogic.SelectByTreeNode(newSelection, false);
                     SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
                 }
             }
@@ -194,6 +241,7 @@ namespace OfficialPlugins.TreeViewPlugin
             pluginTab.Show();
             MainViewModel.AddDirectoryNodes();
             MainViewModel.RefreshGlobalContentTreeNodes();
+            MainViewModel.RefreshBookmarks();
 
         }
 
@@ -213,7 +261,7 @@ namespace OfficialPlugins.TreeViewPlugin
             TreeViewPluginSettingsManager.SaveSettings(settings);
         }
 
-        private void HandleRefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
+        private async void HandleRefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
         {
             var oldTag = SelectionLogic.CurrentNode?.Tag;
             var oldNode = SelectionLogic.CurrentNode;
@@ -250,7 +298,8 @@ namespace OfficialPlugins.TreeViewPlugin
                 var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
                 // If the tag changed, push it back out:
                 SelectionLogic.IsPushingSelectionOutToGlue = oldTag != currentNode?.Tag;
-                SelectionLogic.SelectByTag(currentNode.Tag);
+                // todo - need to add currentTreeNodes (plural)
+                await SelectionLogic.SelectByTag(currentNode.Tag, false);
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
 
                 // This can happen if the last item in a category (like a variable) is removed. If so, push
@@ -263,7 +312,7 @@ namespace OfficialPlugins.TreeViewPlugin
             
         }
 
-        private void HandleRefreshDirectoryTreeNodes()
+        private async void HandleRefreshDirectoryTreeNodes()
         {
             var oldTag = SelectionLogic.CurrentNode?.Tag;
 
@@ -274,7 +323,7 @@ namespace OfficialPlugins.TreeViewPlugin
                 var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
                 // If the tag changed, push it back out:
                 SelectionLogic.IsPushingSelectionOutToGlue = false;
-                SelectionLogic.SelectByTag(oldTag);
+                await SelectionLogic.SelectByTag(oldTag, false);
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
             }
         }
@@ -288,5 +337,15 @@ namespace OfficialPlugins.TreeViewPlugin
         {
             mainView.FocusSearchBox();
         }
+
+        #region Bookmarks
+
+        public void AddBookmark(ITreeNode treeNode)
+        {
+            mainView.AddBookmark(treeNode);
+            MainViewModel.IsBookmarkListVisible = true;
+        }
+
+        #endregion
     }
 }

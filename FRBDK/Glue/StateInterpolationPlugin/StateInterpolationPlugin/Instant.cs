@@ -8,38 +8,38 @@ namespace FlatRedBall.Glue.StateInterpolation
 {
     public class Instant
     {
-        public static float EaseOut(float t, float b, float c, float d)
+        public static float EaseOut(float timeElapsed, float startingValue, float amountToAdd, float durationInSeconds)
         {
-            if(t == d)
+            if(timeElapsed == durationInSeconds)
             {
-                return b + c;
+                return startingValue + amountToAdd;
             }
             else
             {
-                return b;
+                return startingValue;
             }
         }
-        public static float EaseIn(float t, float b, float c, float d)
+        public static float EaseIn(float timeElapsed, float startingValue, float amountToAdd, float durationInSeconds)
         {
-            if (t == d)
+            if (timeElapsed == durationInSeconds)
             {
-                return b;
+                return startingValue;
             }
             else
             {
-                return b + c;
+                return startingValue + amountToAdd;
             }
         }
 
-        public static float EaseInOut(float t, float b, float c, float d)
+        public static float EaseInOut(float timeElapsed, float startingValue, float amountToAdd, float durationInSeconds)
         {
-            if (t == d || t== 0)
+            if (timeElapsed == durationInSeconds || timeElapsed== 0)
             {
-                return b + c;
+                return startingValue + amountToAdd;
             }
             else
             {
-                return b;
+                return startingValue;
             }
         }
     }

@@ -37,37 +37,14 @@ namespace GumPlugin.DataGeneration
             }
         }
 
-        public static async Task SaveElements(Assembly assembly, bool askToOverwrite = true)
+        public static bool AskToSaveIfOverwriting(Assembly assembly)
         {
-            var gumDirectory = GumProjectManager.Self.GetGumProjectFileName().GetDirectoryContainingThis();
-
-
-            Dictionary<string, FilePath> resourceToFileDestinations = new Dictionary<string, FilePath>();
-
-            var resourcesInAssembly = assembly.GetManifestResourceNames();
-            
-            
-            AddElementsToResourceFileDestinations(
-                gumDirectory + @"Components\", 
-                resourceToFileDestinations, 
-                resourcesInAssembly,
-                EmbeddedProjectRoot + ".Components.",
-                ".gucx");
-
-            AddElementsToResourceFileDestinations(
-                gumDirectory + @"Standards\",
-                resourceToFileDestinations,
-                resourcesInAssembly,
-                EmbeddedProjectRoot + ".Standards.",
-                ".gutx");
-
-
-            AddContentItemsToResourceFileDestinations(gumDirectory, resourceToFileDestinations);
+            Dictionary<string, FilePath> resourceToFileDestinations = GetResourceFileDestinations(assembly);
 
             var existingFiles = resourceToFileDestinations.Values.Where(item => item.Exists()).ToArray();
 
             var shouldSave = true;
-            if (existingFiles.Length > 0 && askToOverwrite)
+            if (existingFiles.Length > 0)
             {
                 var message = "The following files will be overwritten:";
 
@@ -84,6 +61,53 @@ namespace GumPlugin.DataGeneration
 
                 shouldSave = result == System.Windows.Forms.DialogResult.Yes;
             }
+
+            return shouldSave;
+        }
+
+        private static Dictionary<string, FilePath> GetResourceFileDestinations(Assembly assembly)
+        {
+            FilePath gumDirectory = null;
+            if (GumProjectManager.Self.GetRfsForGumProject() != null)
+            {
+                gumDirectory = GumProjectManager.Self.GetGumProjectFileName().GetDirectoryContainingThis();
+            }
+            else
+            {
+                gumDirectory = GumProjectManager.Self.DefaultGumProjectDirectory;
+            }
+
+
+            Dictionary<string, FilePath> resourceToFileDestinations = new Dictionary<string, FilePath>();
+
+            var resourcesInAssembly = assembly.GetManifestResourceNames();
+
+
+            AddElementsToResourceFileDestinations(
+                gumDirectory + @"Components\",
+                resourceToFileDestinations,
+                resourcesInAssembly,
+                EmbeddedProjectRoot + ".Components.",
+                ".gucx");
+
+            AddElementsToResourceFileDestinations(
+                gumDirectory + @"Standards\",
+                resourceToFileDestinations,
+                resourcesInAssembly,
+                EmbeddedProjectRoot + ".Standards.",
+                ".gutx");
+
+
+            AddContentItemsToResourceFileDestinations(gumDirectory, resourceToFileDestinations);
+            return resourceToFileDestinations;
+        }
+
+        public static async Task SaveElements(Assembly assembly)
+        {
+            Dictionary<string, FilePath> resourceToFileDestinations = GetResourceFileDestinations(assembly);
+
+
+            bool shouldSave = true;
 
             if (shouldSave)
             {

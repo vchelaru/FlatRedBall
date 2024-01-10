@@ -16,6 +16,7 @@ namespace OfficialPlugins.PathPlugin.Managers
 {
     public static class ViewModelManager
     {
+
         #region Fields/Properties
 
         public static PathViewModel MainViewModel { get; set; }
@@ -27,9 +28,9 @@ namespace OfficialPlugins.PathPlugin.Managers
             {
                 var variableName = MainViewModel?.VariableName ?? AssetTypeInfoManager.PathsVariableName;
 
-                var variable = nos.GetCustomVariable(variableName);
+                var variable = nos?.GetCustomVariable(variableName);
 
-                if(variable == null)
+                if (variable == null && nos != null)
                 {
                     variable = new CustomVariableInNamedObject();
                     variable.Member = variableName;
@@ -42,7 +43,7 @@ namespace OfficialPlugins.PathPlugin.Managers
             }
         }
 
-        static string PathSegmentString => Variable.Value as string;
+        static string PathSegmentString => Variable?.Value as string;
 
         #endregion
 
@@ -64,11 +65,11 @@ namespace OfficialPlugins.PathPlugin.Managers
             MainViewModel.PathSegments.Clear();
 
             var serializedSegments = PathSegmentString;
-            if(!string.IsNullOrEmpty(serializedSegments))
+            if (!string.IsNullOrEmpty(serializedSegments))
             {
                 var pathSegments = JsonConvert.DeserializeObject<List<PathSegment>>(PathSegmentString);
 
-                foreach(var segment in pathSegments)
+                foreach (var segment in pathSegments)
                 {
                     var segmentVm = new PathSegmentViewModel();
                     segmentVm.X = segment.EndX;
@@ -117,7 +118,12 @@ namespace OfficialPlugins.PathPlugin.Managers
                 newVm.SegmentType = vm.SegmentType;
                 newVm.Angle = vm.Angle;
                 MainViewModel.PathSegments.Add(newVm);
+            };
 
+            vm.TextBoxFocus += (_, _) =>
+            {
+                var index = MainViewModel.PathSegments.IndexOf(vm);
+                GlueState.Self.SelectedSubIndex = index;
             };
         }
 
@@ -137,28 +143,32 @@ namespace OfficialPlugins.PathPlugin.Managers
         internal static void HandlePathSegmentsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             ////////Early Out////////////////
-            if(MainViewModel.UpdateModelOnChanges == false)
+            if (MainViewModel.UpdateModelOnChanges == false)
             {
                 return;
             }
             //////End Early Out//////////////
 
+            var element = GlueState.Self.CurrentElement;
 
             TaskManager.Self.Add(() =>
             {
                 UpdateModelToViewModel();
                 SendChangeToPluginManager();
-                GlueCommands.Self.GluxCommands.SaveGlux();
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
             }, $"Modifying Segment List for {nos}");
+
+            if (element != null)
+            {
+                GlueCommands.Self.GluxCommands.SaveElementAsync(element, TaskExecutionPreference.AddOrMoveToEnd);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+            }
         }
 
         private static void UpdateModelToViewModel()
         {
             List<PathSegment> pathSegments = new List<PathSegment>();
 
-            foreach(var segmentVm in MainViewModel.PathSegments)
+            foreach (var segmentVm in MainViewModel.PathSegments)
             {
                 var pathSegment = new PathSegment();
                 pathSegment.AngleUnit = AngleUnit.Degrees;
@@ -168,7 +178,10 @@ namespace OfficialPlugins.PathPlugin.Managers
 
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                Variable.Value = JsonConvert.SerializeObject(pathSegments);
+                if (Variable != null)
+                {
+                    Variable.Value = JsonConvert.SerializeObject(pathSegments);
+                }
             });
         }
 
@@ -190,15 +203,19 @@ namespace OfficialPlugins.PathPlugin.Managers
             //////End Early Out//////////////
 
             var segmentVm = sender as PathSegmentViewModel;
-
+            var element = GlueState.Self.CurrentElement;
             TaskManager.Self.Add(() =>
             {
                 UpdateModelToViewModel();
                 SendChangeToPluginManager();
-                GlueCommands.Self.GluxCommands.SaveGlux();
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
             }, $"Modifying Segment for {nos}");
+
+            if (element != null)
+            {
+                GlueCommands.Self.GluxCommands.SaveElementAsync(element, TaskExecutionPreference.AddOrMoveToEnd);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+            }
         }
 
         private static void SendChangeToPluginManager()

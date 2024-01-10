@@ -120,12 +120,6 @@ namespace TMXGlueLib
             }
         }
         
-        [XmlAttribute("opacity")]
-        public float Opacity
-        {
-            get; set;
-        } = 1.0f;
-        
         [XmlIgnore]
         public TiledMapSave.LayerVisibleBehavior VisibleBehavior = TiledMapSave.LayerVisibleBehavior.Ignore;
 

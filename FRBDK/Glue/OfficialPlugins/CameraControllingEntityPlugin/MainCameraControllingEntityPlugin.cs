@@ -77,6 +77,21 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
 
             ati.VariableDefinitions.Add(new VariableDefinition
             {
+                Name = nameof(FlatRedBall.Entities.CameraControllingEntity.ScrollingWindowWidth),
+                Type = "float",
+                Category = "Targets",
+            });
+
+
+            ati.VariableDefinitions.Add(new VariableDefinition
+            {
+                Name = nameof(FlatRedBall.Entities.CameraControllingEntity.ScrollingWindowHeight),
+                Type = "float",
+                Category = "Targets",
+            });
+
+            ati.VariableDefinitions.Add(new VariableDefinition
+            {
                 Name = nameof(FlatRedBall.Entities.CameraControllingEntity.LerpSmooth),
                 Type = "bool",
                 DefaultValue = ValueToString(defaultInstance.LerpSmooth),

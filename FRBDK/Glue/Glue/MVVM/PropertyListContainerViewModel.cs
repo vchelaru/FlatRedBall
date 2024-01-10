@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Elements;
+﻿using ExCSS;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Interfaces;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -34,6 +35,16 @@ namespace FlatRedBall.Glue.MVVM
         /// </summary>
         public string SyncingConditionProperty { get; set; }
     }
+
+    /// <summary>
+    /// If this attribute is set on a PropertyListContainerViewModel property, then the property will be removed
+    /// if it is set to the default value. This can keep JSON data from getting too big, and reduces the chances
+    /// of merge conflicts.
+    /// </summary>
+    public class RemoveIfDefaultAttribute : Attribute
+    {
+    }
+
     #endregion
 
     /// <summary>
@@ -56,6 +67,7 @@ namespace FlatRedBall.Glue.MVVM
             public string OverridingPropertyName { get; set; }
             public bool IsSynced { get; set; }
             public string SyncingConditionProperty { get; set; }
+            public bool RemoveIfDefault { get; set; }
 
             public override string ToString()
             {
@@ -142,6 +154,10 @@ namespace FlatRedBall.Glue.MVVM
                         information.SyncingConditionProperty =
                             syncedPropertyAttribute.SyncingConditionProperty;
                     }
+                    else if(uncastedAttribute is RemoveIfDefaultAttribute)
+                    {
+                        information.RemoveIfDefault = true;
+                    }
                 }
             }
         }
@@ -202,7 +218,7 @@ namespace FlatRedBall.Glue.MVVM
                 //TaskManager.Self.Add(() =>
                 //{
 
-                // DestroyOnUnload cannot use
+                // DestroyOnUnload cannot used
                 // properties, and that is important
                 // enough that we need to support it.
                 // I could use reflection (which could
@@ -219,8 +235,15 @@ namespace FlatRedBall.Glue.MVVM
                 }
                 else
                 {
-                    // The default for the type may not match the default value on the view model, so force-set the underlying by calling PersistIfDefault
-                    GlueObject.Properties.SetValuePersistIfDefault(modelName, propertyValue);
+                    if(propertyInfo.RemoveIfDefault)
+                    {
+                        GlueObject.Properties.SetValue(modelName, propertyValue, persistIfDefault:false);
+                    }
+                    else
+                    {
+                        // The default for the type may not match the default value on the view model, so force-set the underlying by calling PersistIfDefault
+                        GlueObject.Properties.SetValuePersistIfDefault(modelName, propertyValue);
+                    }
                 }
                 //},
                 NotifyPropertyChanged(modelName);
@@ -228,36 +251,45 @@ namespace FlatRedBall.Glue.MVVM
                 OnSetAndPersist(propertyValue, modelName);
 
 
-                if (element != null)
-                {
-                    TaskManager.Self.Add(() =>
-                    {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                    }, $"Generating code for {element}", TaskExecutionPreference.AddOrMoveToEnd);
-                }
-                else if (isGlobalContent)
-                {
-                    TaskManager.Self.Add(() =>
-                    {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
-                    }, "Generating Global Content Code", TaskExecutionPreference.AddOrMoveToEnd);
-                }
-
-                // Do this in a task after the codegen so that the compiler can pick up on it and restart
-                if (GlueObject is NamedObjectSave namedObject)
-                {
-                    TaskManager.Self.Add(() =>
-                    {
-                        TaskManager.Self.OnUiThread(() =>
-                            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                                propertyName, oldValue, namedObjectSave:namedObject));
-                    },
-                    "Restarting due to change " + namedObject.InstanceName + "." + propertyName, TaskExecutionPreference.AddOrMoveToEnd);
-                }
 
                 if(!IsUpdatingFromGlueObject)
                 {
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    // February 20, 2023
+                    // Generating code and
+                    // reacting to Named Object
+                    // changed previously was not
+                    // surrounded by IsUpdatingFromGlueObject.
+                    // But if we are updating from glue object, 
+                    // why would we ever generate code or notify
+                    // a change has been made? 
+                    if (element != null)
+                    {
+                        TaskManager.Self.Add(() =>
+                        {
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                        }, $"Generating code for {element}", TaskExecutionPreference.AddOrMoveToEnd);
+                    }
+                    else if (isGlobalContent)
+                    {
+                        TaskManager.Self.Add(() =>
+                        {
+                            GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                        }, "Generating Global Content Code", TaskExecutionPreference.AddOrMoveToEnd);
+                    }
+
+                    // Do this in a task after the codegen so that the compiler can pick up on it and restart
+                    if (GlueObject is NamedObjectSave namedObject)
+                    {
+                        TaskManager.Self.Add(() =>
+                        {
+                            TaskManager.Self.OnUiThread(() =>
+                                EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                                    propertyName, oldValue, namedObjectSave:namedObject));
+                        },
+                        "Restarting due to change " + namedObject.InstanceName + "." + propertyName, TaskExecutionPreference.AddOrMoveToEnd);
+                    }
+
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
                 return true;
             }
@@ -305,8 +337,8 @@ namespace FlatRedBall.Glue.MVVM
                     {
                         var method = this.GetType().GetMethod(nameof(SetAndPersist)).MakeGenericMethod(defaultVmValue.GetType());
 
-                        var shouldSync = true;
-                        if(!string.IsNullOrEmpty(kvp.Value.SyncingConditionProperty))
+                        var shouldSync = !kvp.Value.RemoveIfDefault;
+                        if(shouldSync && !string.IsNullOrEmpty(kvp.Value.SyncingConditionProperty))
                         {
                             shouldSync = base.Get<bool>(kvp.Value.SyncingConditionProperty);
                         }
@@ -316,6 +348,10 @@ namespace FlatRedBall.Glue.MVVM
                             // 3rd parameter forces the persist, because if we're in here, the Glue object does not have this
                             // property
                             method.Invoke(this, new object[] { defaultVmValue, viewModelPropertyName, true });
+                        }
+                        else if(!shouldSync && kvp.Value.RemoveIfDefault && propertyDictionary.ContainsKey(viewModelPropertyName))
+                        {
+                            propertyDictionary.Remove(viewModelPropertyName);
                         }
                         handledByVmDefault = true;
                     }
@@ -430,14 +466,8 @@ namespace FlatRedBall.Glue.MVVM
                 toSet = converter.ConvertBack(toSet);
             }
 
-            try
-            {
-                Set<T>((T)toSet, propertyName);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            Set<T>((T)toSet, propertyName);
+
         }
     }
 }

@@ -13,6 +13,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Settings
 {
@@ -58,7 +59,7 @@ namespace FlatRedBall.Glue.Settings
             get
             {
                 var toReturn = new List<string>();
-                foreach (var buildTool in BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList)
+                foreach (var buildTool in GlueState.Self.GlueSettingsSave.BuildToolAssociations)
                 {
                     toReturn.Add(buildTool.ToString());
                 }
@@ -216,13 +217,12 @@ namespace FlatRedBall.Glue.Settings
         {
             string containsName = null;
 
-            oldName = oldName.ToLower().Replace("\\", "/");
+            oldName = oldName.Replace("\\", "/");
 
             for (int i = 0; i < mAvailableApplications.Count; i++)
             {
-                if (mAvailableApplications[i].ToLower().Replace("\\", "/") == oldName)
+                if (String.Equals(mAvailableApplications[i].Replace("\\", "/"), oldName, StringComparison.OrdinalIgnoreCase))
                 {
-
                     containsName = mAvailableApplications[i];
                     break;
                 }

@@ -1,4 +1,7 @@
-﻿using FlatRedBall;
+﻿$GLUE_VERSIONS$
+
+
+using FlatRedBall;
 using FlatRedBall.AI.Pathfinding;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
@@ -42,6 +45,8 @@ namespace $NAMESPACE$.TopDown
 
             float maxDistance = float.PositiveInfinity;
             float minDistance = 0;
+
+#if ShapeManagerCollideAgainstClosest
 
             if (LineOfSight)
             {
@@ -142,6 +147,7 @@ namespace $NAMESPACE$.TopDown
                     }
                 }
             }
+#endif
 
             if (CloserThan != null)
             {

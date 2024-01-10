@@ -87,6 +87,38 @@ namespace GlueFormsCore.ViewModels
 
         #endregion
 
+        #region Failure/Validation
+
+        [DependsOn(nameof(NewVariableName))]
+        public string FailureText
+        {
+            get
+            {
+                string whyIsntValid = "";
+                var isValid = true;
+
+                if(DesiredVariableType == CustomVariableType.New)
+                {
+                    isValid = NameVerifier.IsCustomVariableNameValid(NewVariableName, null, Element, ref whyIsntValid);
+                }
+
+                if (!isValid)
+                {
+                    return whyIsntValid;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        [DependsOn(nameof(FailureText))]
+        public Visibility FailureTextVisibility => string.IsNullOrWhiteSpace(FailureText) ?
+            Visibility.Collapsed : Visibility.Visible;
+
+        #endregion
+
         #region Expose Existing
 
         [DependsOn(nameof(IsExposedVariableChecked))]
@@ -261,6 +293,24 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        public string NewVariableCategory
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public ObservableCollection<string> AvailableCategories
+        {
+            get => Get<ObservableCollection<string>>();
+            set => Set(value);
+        }
+
+        public string NewVariableSummary
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(IsShowStateCategoriesChecked))]
         public List<string> AvailableNewVariableTypes
         {
@@ -296,10 +346,38 @@ namespace GlueFormsCore.ViewModels
             get => Get<bool>();
             set => Set(value);
         }
+        // statics can't be set by derived because that would result in duplicate variables and confusing behavior
+        [DependsOn(nameof(IsStatic))]
+        public Visibility SetByDerivedVisibility => (IsStatic == false).ToVisibility();
 
 
         [DependsOn(nameof(SelectedNewType))]
-        public bool CanBeList => SelectedNewType == "string";
+        public bool CanBeList => 
+            SelectedNewType == "string"
+            // Adding this causes something to crash during XML serialization.
+            // I can't figure out why List<string> serializes okay, but List<float> doesn't.
+            // Serializing a List<string> serializes as shown here:
+            /*
+             *     
+    <CustomVariable>
+      <Properties>
+        <PropertySave>
+          <Name>Type</Name>
+          <ValueAsString>List&lt;string&gt;</ValueAsString>
+          <Type>String</Type>
+        </PropertySave>
+      </Properties>
+      <Name>StringList</Name>
+      <DefaultValue xsi:type="ArrayOfString">
+        <string>String2</string>
+        <string>String1</string>
+        <string>3</string>
+      </DefaultValue>
+      <SetByDerived>true</SetByDerived>
+    </CustomVariable>
+             */
+            //|| SelectedNewType == "float"
+            ;
 
         [DependsOn(nameof(CanBeList))]
         public Visibility ListCheckBoxVisibility => CanBeList
@@ -375,9 +453,8 @@ namespace GlueFormsCore.ViewModels
 
         public AddCustomVariableViewModel(GlueElement glueElement)
         {
+            AvailableCategories = new ObservableCollection<string>(); 
             AvailableExposedVariables = new ObservableCollection<string>();
-
-            TypeConverterHelper.InitializeClasses();
 
             this.Element = glueElement;
 

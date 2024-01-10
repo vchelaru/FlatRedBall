@@ -1,5 +1,4 @@
-﻿using FlatRedBall.Glue.IO;
-using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewModels;
+﻿using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewModels;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -8,9 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 {
@@ -23,11 +21,60 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
         public override void StartUp()
         {
 
-            recentFilesMenuItem = this.AddMenuItemTo("Load Recent...", HandleLoadRecentClicked, "File", preferredIndex:2);
+            recentFilesMenuItem = this.AddMenuItemTo(L.Texts.LoadRecent, L.MenuIds.LoadRecentId, null, L.MenuIds.FileId, preferredIndex:2);
 
-            //RefreshMenuItems();
+            RefreshMenuItems();
 
             this.ReactToLoadedGlux += HandleGluxLoaded;
+        }
+
+        private void RefreshMenuItems()
+        {
+            var recentFiles = GlueState.Self.GlueSettingsSave?.RecentFileList;
+
+            recentFilesMenuItem.DropDownItems.Clear();
+
+            foreach(var item in recentFiles.Where(item => item.IsFavorite))
+            {
+                AddToRecentFilesMenuItem(item);
+            }
+
+            var nonFavorites = recentFiles.Where(item => !item.IsFavorite).ToArray();
+
+            var hasNonFavorites = nonFavorites.Length > 0;
+
+            if(hasNonFavorites)
+            {
+                recentFilesMenuItem.DropDownItems.Add("-");
+
+                foreach(var item in nonFavorites.Take(5))
+                {
+                    AddToRecentFilesMenuItem(item);
+                }
+            }
+
+            recentFilesMenuItem.DropDownItems.Add(L.Texts.More, null, HandleLoadRecentClicked);
+
+            void AddToRecentFilesMenuItem(RecentFileSave item)
+            {
+                var name = FileManager.RemovePath(FileManager.RemoveExtension(item.FileName));
+
+                var directory = FileManager.GetDirectory(item.FileName);
+
+                if(System.IO.Directory.Exists(directory))
+                {
+                    var icoFile = System.IO.Directory.GetFiles(directory, "*.ico").FirstOrDefault();
+
+                    System.Drawing.Icon icon = null;
+                    if(!string.IsNullOrEmpty(icoFile ))
+                    {
+                        // load this into an icon to use in a dropdown item
+                        icon = new System.Drawing.Icon(icoFile);
+                    }
+                    recentFilesMenuItem.DropDownItems.Add(name, icon?.ToBitmap(), (_, _) => GlueCommands.Self.LoadProjectAsync(item.FileName));
+                }
+
+            }
         }
 
         private async void HandleLoadRecentClicked(object sender, EventArgs e)
@@ -44,6 +91,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                         FullPath = recentFile.FileName,
                         IsFavorite = recentFile.IsFavorite
                     };
+                    vm.RemoveClicked += () => HandleRemovedRecentFile(vm, viewModel);
                     viewModel.AllItems.Add(vm);
 
                 }
@@ -81,13 +129,33 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 
         }
 
+        private void HandleRemovedRecentFile(RecentItemViewModel vm, LoadRecentViewModel mainViewModel)
+        {
+            if(GlueState.Self.GlueSettingsSave == null)
+            {
+                return;
+            }
+
+            var fullPath = vm.FullPath;
+            var countRemoved = GlueState.Self.GlueSettingsSave.RecentFileList.RemoveAll(item => item.FileName == fullPath);
+
+            mainViewModel.AllItems.Remove(vm);
+            mainViewModel.RefreshFilteredItems();
+
+            if (countRemoved > 0)
+            {
+                GlueCommands.Self.GluxCommands.SaveSettings();
+            }
+        }
+
         private void HandleGluxLoaded()
         {
             var currentFile = GlueState.Self.CurrentCodeProjectFileName;
 
-            if(ProjectManager.GlueSettingsSave == null)
+            if(GlueState.Self.GlueSettingsSave == null)
             {
-                ProjectManager.GlueSettingsSave = new SaveClasses.GlueSettingsSave();
+                // This should probably not be the responsibility of the plugin. It should be handled elsewhere before this hapens.
+                GlueState.Self.GlueSettingsSave = new SaveClasses.GlueSettingsSave();
             }
 
             if(GlueSettings.RecentFileList == null)
@@ -100,6 +168,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
             if(existing != null)
             {
                 GlueSettings.RecentFileList.Remove(existing);
+                existing.LastTimeAccessed = DateTime.Now;
                 GlueSettings.RecentFileList.Insert(0, existing);
             }
             else
@@ -112,16 +181,22 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                 GlueSettings.RecentFileList.Add(file);
             }
 
+            GlueSettings.RecentFileList = GlueSettings.RecentFileList
+                // Put favorites up front so we don't remove them from the recent files below
+                .OrderBy(item => !item.IsFavorite)
+                .ThenByDescending(item =>  item.LastTimeAccessed).ToList();
+
             // Vic bounces around projects enough that sometimes he needs more...
             // Increase from 30 up now that we have a dedicated window
             // Or why not 60?
-            const int maxItemCount = 60;
+            int maxItemCount = 60 + GlueSettings.RecentFileList.Count(item => item.IsFavorite);
 
             if (GlueSettings.RecentFileList.Count > maxItemCount)
             {
                 GlueSettings.RecentFileList.RemoveAt(GlueSettings.RecentFileList.Count - 1);
             }
 
+            RefreshMenuItems();
 
             GlueCommands.Self.GluxCommands.SaveSettings();
         }

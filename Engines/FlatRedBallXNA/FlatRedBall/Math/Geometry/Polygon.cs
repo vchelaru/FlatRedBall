@@ -10,7 +10,6 @@ using VertexPositionColor = Microsoft.Xna.Framework.Graphics.VertexPositionColor
 
 
 
-
 using System.Collections.ObjectModel;
 using FlatRedBall.Graphics;
 
@@ -80,9 +79,11 @@ namespace FlatRedBall.Math.Geometry
         // Internal so that other objects like Line can set this when performing collision
         internal Point mLastCollisionPoint;
 
+        internal Segment mLastCollisionSegment;
+
         internal Layer mLayerBelongingTo;
 
-        // Whether this is concave, calculated whenever the poits are set
+        // Whether this is concave, calculated whenever the points are set
         bool isConcaveCache;
         bool isClockwiseCache;
 
@@ -99,7 +100,34 @@ namespace FlatRedBall.Math.Geometry
         public RepositionDirections RepositionDirections { get; set; } = RepositionDirections.All;
 
         public float BoundingRadius => mBoundingRadius;
-        
+
+        /// <summary>
+        /// Axis aligned rectangle which bounds the polygon. Contains absolute positions.
+        /// </summary>
+        public FloatRectangle BoundingRectangle
+        {
+            get
+            {
+                double top = float.MinValue, bottom = float.MaxValue, left = float.MaxValue, right = float.MinValue;
+
+                for (int i = 0; i < mPoints.Length; i++)
+                {
+                    var point = AbsolutePointPosition(i);
+
+                    if (point.Y > top)
+                        top = point.Y;
+                    else if (point.Y < bottom)
+                        bottom = point.Y;
+
+                    if (point.X > right)
+                        right = point.X;
+                    else if (point.X < left)
+                        left = point.X;
+                }
+
+                return new FloatRectangle((float)top, (float)bottom, (float)left, (float)right);
+            }
+        }
 
         public bool Visible
         {
@@ -147,7 +175,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (value == null)
                 {
-                    if(TolerateEmptyPolygons == false)
+                    if (TolerateEmptyPolygons == false)
                     {
                         throw new System.IndexOutOfRangeException("Cannot set the Points to null.");
                     }
@@ -164,7 +192,7 @@ namespace FlatRedBall.Math.Geometry
                     if (mPoints == null || mPoints.Length != value.Count)
                     {
                         mPoints = new Point[value.Count];
-                        int valueCountMinusOne = 
+                        int valueCountMinusOne =
                             // In edit mode we tolerate 0-sizes so we need a Math.Max call to prevent negative values
                             System.Math.Max(0, value.Count - 1);
 
@@ -178,7 +206,7 @@ namespace FlatRedBall.Math.Geometry
                     pointCollection = new ReadOnlyCollection<Point>(mPoints);
                     OnPointsChanged(EventArgs.Empty);
 
-                    this.FillVertexArray();
+                    this.FillVertexArray(false);
                     isConcaveCache = this.IsConcave();
                     isClockwiseCache = this.IsClockwise();
                 }
@@ -214,11 +242,19 @@ namespace FlatRedBall.Math.Geometry
         }
 
         /// <summary>
-        /// The absolute position where the last collision was detected in a CollieAgainst method.
+        /// The absolute position where the last collision was detected in a CollideAgainst method.
         /// </summary>
         public Point LastCollisionPoint
         {
             get { return mLastCollisionPoint; }
+        }
+
+        /// <summary>
+        /// Returns the colliding <see cref="Segment"/> from the last collision checked.
+        /// </summary>
+        public Segment LastCollisionSegment
+        {
+            get { return mLastCollisionSegment; }
         }
 
         public Color Color
@@ -265,6 +301,10 @@ namespace FlatRedBall.Math.Geometry
         public Polygon()
         {
             Color = Color.White;
+
+            // The first frame of the game's time is 0. To allow the
+            // vertices to be updated on the first frame set this to -1.
+            mLastFillVertexArrayUpdate = -1;
         }
 
         #endregion
@@ -328,7 +368,7 @@ namespace FlatRedBall.Math.Geometry
 
             for (int i = 0; i < numberOfSides + 1; i++)
             {
-                angleOfCurrentPoint = angleOfFirstPoint + (float)( -i * System.Math.PI * 2) / (float)(numberOfSides);
+                angleOfCurrentPoint = angleOfFirstPoint + (float)(-i * System.Math.PI * 2) / (float)(numberOfSides);
 
                 points[i].X = (float)(System.Math.Cos(angleOfCurrentPoint) * radius);
                 points[i].Y = (float)(System.Math.Sin(angleOfCurrentPoint) * radius);
@@ -390,7 +430,7 @@ namespace FlatRedBall.Math.Geometry
                     mLastCollisionPoint.Y = rectangle.Top;
                     collisionOccurred = true;
                 }
-                UpdateCollisionPointIfPointInsideIsFurtherInside(rectangle.Right, rectangle.Top, 
+                UpdateCollisionPointIfPointInsideIsFurtherInside(rectangle.Right, rectangle.Top,
                     ref longestDistanceSquared, ref collisionOccurred);
                 UpdateCollisionPointIfPointInsideIsFurtherInside(rectangle.Right, rectangle.Bottom,
                     ref longestDistanceSquared, ref collisionOccurred);
@@ -425,7 +465,7 @@ namespace FlatRedBall.Math.Geometry
 
                         float depthSquared = (float)rectangle.VectorFrom(
                             mVertices[i].Position.X,
-                            mVertices[i].Position.Y, 
+                            mVertices[i].Position.Y,
                             this.Z).Length();
 
                         depthSquared = depthSquared * depthSquared;
@@ -478,7 +518,7 @@ namespace FlatRedBall.Math.Geometry
                         rectangle.X - rectangle.ScaleX, rectangle.Y + rectangle.ScaleY);
                     s1.IntersectionPoint(ref s2, out mLastCollisionPoint);
                     if (!double.IsNaN(mLastCollisionPoint.X))
-                        return true;  
+                        return true;
 
                     #endregion
                 }
@@ -572,13 +612,13 @@ namespace FlatRedBall.Math.Geometry
             if ((polygon.mBoundingRadius + mBoundingRadius) * (polygon.mBoundingRadius + mBoundingRadius) >
 
                 (polygon.Position.X - Position.X) * (polygon.Position.X - Position.X) +
-                (polygon.Position.Y - Position.Y) * (polygon.Position.Y - Position.Y)   )
+                (polygon.Position.Y - Position.Y) * (polygon.Position.Y - Position.Y))
             {
                 NumberOfTimesRadiusTestPassed++;
 
 
-//                Segment s1 = new Segment();
-  //              Segment s2 = new Segment();
+                //                Segment s1 = new Segment();
+                //              Segment s2 = new Segment();
 
                 int j;
                 int k;
@@ -630,7 +670,7 @@ namespace FlatRedBall.Math.Geometry
                         return true;
                     }
 
-                    
+
                     k = i + 1 < mVertices.Length ? i + 1 : 0;
                     s1.SetPoints(ref mVertices[i], ref mVertices[k]);
 
@@ -647,11 +687,11 @@ namespace FlatRedBall.Math.Geometry
                             return true;
                         }
                     }
-                     
+
                 }
-                
+
             }
-        
+
             return false;
         }
 
@@ -668,10 +708,10 @@ namespace FlatRedBall.Math.Geometry
         }
 
 
-		public bool CollideAgainst(Capsule2D capsule)
-		{
-			throw new NotImplementedException("This method hasn't been implemented yet.  Please complain on the FlatRedBall forums.");
-		}
+        public bool CollideAgainst(Capsule2D capsule)
+        {
+            throw new NotImplementedException("This method hasn't been implemented yet.  Please complain on the FlatRedBall forums.");
+        }
 
 
         public bool CollideAgainstMove(Polygon polygon, float thisMass, float otherMass)
@@ -682,8 +722,8 @@ namespace FlatRedBall.Math.Geometry
                 throw new ArgumentException("Both masses cannot be 0.  For equal masses pick a non-zero value");
             }
 #endif
-            bool valueToReturn = 
-                CollideAgainstMovePreview(polygon, thisMass, otherMass, 
+            bool valueToReturn =
+                CollideAgainstMovePreview(polygon, thisMass, otherMass,
                 ref this.mLastMoveCollisionReposition, ref polygon.mLastMoveCollisionReposition);
 
             if (valueToReturn)
@@ -710,7 +750,7 @@ namespace FlatRedBall.Math.Geometry
                 throw new ArgumentException("Both masses cannot be 0.  For equal masses pick a non-zero value");
             }
 #endif
-            if(CollideAgainst(rectangle))
+            if (CollideAgainst(rectangle))
             {
                 mVerticesForRectCollision[0].Position.X = rectangle.Left;
                 mVerticesForRectCollision[0].Position.Y = rectangle.Top;
@@ -801,8 +841,8 @@ namespace FlatRedBall.Math.Geometry
                     }
 
                     direction.Normalize();
-                    
-                    
+
+
                     fromCircleToThis.X = direction.X;
                     fromCircleToThis.Y = direction.Y;
 
@@ -842,8 +882,8 @@ namespace FlatRedBall.Math.Geometry
                 }
                 float totalMass = thisMass + otherMass;
 
-                circle.LastMoveCollisionReposition.X = - (float)(amountToMoveOnX * thisMass / totalMass);
-                circle.LastMoveCollisionReposition.Y = - (float)(amountToMoveOnY * thisMass / totalMass);
+                circle.LastMoveCollisionReposition.X = -(float)(amountToMoveOnX * thisMass / totalMass);
+                circle.LastMoveCollisionReposition.Y = -(float)(amountToMoveOnY * thisMass / totalMass);
 
                 circle.TopParent.Position.X += circle.LastMoveCollisionReposition.X;
                 circle.TopParent.Position.Y += circle.LastMoveCollisionReposition.Y;
@@ -861,18 +901,18 @@ namespace FlatRedBall.Math.Geometry
             }
             return false;
         }
-           
 
-		public bool CollideAgainstMove(Capsule2D capsule2D, float thisMass, float otherMass)
-		{
+
+        public bool CollideAgainstMove(Capsule2D capsule2D, float thisMass, float otherMass)
+        {
             throw new NotImplementedException("This method is not implemented. Capsules are intended only for CollideAgainst - use Polygons for CollideAgainstMove and CollideAgainstBounce");
-		}
+        }
 
 
-		public bool CollideAgainstMove(Line line, float thisMass, float otherMass)
-		{
-			throw new NotImplementedException("This method is not implemented.  Complain on the FlatRedBall forums.");
-		}
+        public bool CollideAgainstMove(Line line, float thisMass, float otherMass)
+        {
+            throw new NotImplementedException("This method is not implemented.  Complain on the FlatRedBall forums.");
+        }
 
 
         public bool CollideAgainstMove(ShapeCollection shapeCollection, float thisMass, float otherMass)
@@ -891,7 +931,7 @@ namespace FlatRedBall.Math.Geometry
             }
 #endif
 
-            if(CollideAgainstMove(polygon, thisMass, otherMass))
+            if (CollideAgainstMove(polygon, thisMass, otherMass))
             {
                 PositionedObject thisTopParent = this.TopParent;
                 PositionedObject otherTopParent = polygon.TopParent;
@@ -973,16 +1013,141 @@ namespace FlatRedBall.Math.Geometry
         }
 
 
-		public bool CollideAgainstBounce(Line line, float thisMass, float otherMass, float elasticity)
-		{
-			throw new NotImplementedException();
-		}
+        public bool CollideAgainstBounce(Line line, float thisMass, float otherMass, float elasticity)
+        {
+            throw new NotImplementedException();
+        }
 
-		public bool CollideAgainstBounce(Capsule2D capsule2D, float thisMass, float otherMass, float elasticity)
-		{
-			throw new NotImplementedException("This method is not implemented. Capsules are intended only for CollideAgainst - use Polygons for CollideAgainstMove and CollideAgainstBounce");
-		}
+        public bool CollideAgainstBounce(Capsule2D capsule2D, float thisMass, float otherMass, float elasticity)
+        {
+            throw new NotImplementedException("This method is not implemented. Capsules are intended only for CollideAgainst - use Polygons for CollideAgainstMove and CollideAgainstBounce");
+        }
 
+        public bool CollideAgainstMoveSoft(Polygon polygon, float thisMass, float otherMass, float separationVelocity)
+        {
+            Vector3 thisReposition = Vector3.Zero;
+            Vector3 otherReposition = Vector3.Zero;
+
+            if(CollideAgainstMovePreview(polygon, thisMass, otherMass, ref thisReposition, ref otherReposition))
+            {
+                TopParent.Velocity += thisReposition * separationVelocity * TimeManager.SecondDifference;
+                polygon.TopParent.Velocity += otherReposition * separationVelocity * TimeManager.SecondDifference;
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool CollideAgainstMovePositionSoft(Polygon polygon, float thisMass, float otherMass, float separationVelocity)
+        {
+            Vector3 thisReposition = Vector3.Zero;
+            Vector3 otherReposition = Vector3.Zero;
+
+            if (CollideAgainstMovePreview(polygon, thisMass, otherMass, ref thisReposition, ref otherReposition))
+            {
+                TopParent.Position += thisReposition * separationVelocity * TimeManager.SecondDifference;
+                polygon.TopParent.Position += otherReposition * separationVelocity * TimeManager.SecondDifference;
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool CollideAgainstMovePositionSoft(AxisAlignedRectangle rectangle, float thisMass, float otherMass, float separationVelocity)
+        {
+#if DEBUG
+            if (thisMass == 0 && otherMass == 0)
+            {
+                throw new ArgumentException("Both masses cannot be 0.  For equal masses pick a non-zero value");
+            }
+#endif
+            if (CollideAgainst(rectangle))
+            {
+                mVerticesForRectCollision[0].Position.X = rectangle.Left;
+                mVerticesForRectCollision[0].Position.Y = rectangle.Top;
+
+                mVerticesForRectCollision[1].Position.X = rectangle.Right;
+                mVerticesForRectCollision[1].Position.Y = rectangle.Top;
+
+                mVerticesForRectCollision[2].Position.X = rectangle.Right;
+                mVerticesForRectCollision[2].Position.Y = rectangle.Bottom;
+
+                mVerticesForRectCollision[3].Position.X = rectangle.Left;
+                mVerticesForRectCollision[3].Position.Y = rectangle.Bottom;
+
+                mVerticesForRectCollision[4] = mVerticesForRectCollision[0];
+
+                Vector3 thisMoveCollisionReposition = new Vector3();
+                Vector3 otherMoveCollisionReposition = new Vector3();
+
+                CollideAgainstMovePreview(thisMass, otherMass, ref thisMoveCollisionReposition, ref otherMoveCollisionReposition, mVerticesForRectCollision,
+                    !this.isConcaveCache && this.isClockwiseCache, true);
+
+                // Should this be pushed? Not sure...
+                //mLastMoveCollisionReposition = thisMoveCollisionReposition;
+                //rectangle.mLastMoveCollisionReposition.X = otherMoveCollisionReposition.X;
+                //rectangle.mLastMoveCollisionReposition.Y = otherMoveCollisionReposition.Y;
+
+                TopParent.Position += thisMoveCollisionReposition * separationVelocity * TimeManager.SecondDifference;
+                rectangle.TopParent.Position += otherMoveCollisionReposition * separationVelocity * TimeManager.SecondDifference;
+
+                // Vic asks - the other "soft" repositions don't do this, should we do it here to match Move or match Soft?
+                // Let's match Soft for now...
+                //ForceUpdateDependencies();
+                //rectangle.ForceUpdateDependencies();
+
+                return true;
+            }
+            return false;
+        }
+
+        public bool CollideAgainstMoveSoft(AxisAlignedRectangle rectangle, float thisMass, float otherMass, float separationVelocity)
+        {
+#if DEBUG
+            if (thisMass == 0 && otherMass == 0)
+            {
+                throw new ArgumentException("Both masses cannot be 0.  For equal masses pick a non-zero value");
+            }
+#endif
+            if (CollideAgainst(rectangle))
+            {
+                mVerticesForRectCollision[0].Position.X = rectangle.Left;
+                mVerticesForRectCollision[0].Position.Y = rectangle.Top;
+
+                mVerticesForRectCollision[1].Position.X = rectangle.Right;
+                mVerticesForRectCollision[1].Position.Y = rectangle.Top;
+
+                mVerticesForRectCollision[2].Position.X = rectangle.Right;
+                mVerticesForRectCollision[2].Position.Y = rectangle.Bottom;
+
+                mVerticesForRectCollision[3].Position.X = rectangle.Left;
+                mVerticesForRectCollision[3].Position.Y = rectangle.Bottom;
+
+                mVerticesForRectCollision[4] = mVerticesForRectCollision[0];
+
+                Vector3 thisMoveCollisionReposition = new Vector3();
+                Vector3 otherMoveCollisionReposition = new Vector3();
+
+                CollideAgainstMovePreview(thisMass, otherMass, ref thisMoveCollisionReposition, ref otherMoveCollisionReposition, mVerticesForRectCollision,
+                    !this.isConcaveCache && this.isClockwiseCache, true);
+
+                // Should this be pushed? Not sure...
+                //mLastMoveCollisionReposition = thisMoveCollisionReposition;
+                //rectangle.mLastMoveCollisionReposition.X = otherMoveCollisionReposition.X;
+                //rectangle.mLastMoveCollisionReposition.Y = otherMoveCollisionReposition.Y;
+
+                TopParent.Velocity += thisMoveCollisionReposition * separationVelocity * TimeManager.SecondDifference;
+                rectangle.TopParent.Velocity += otherMoveCollisionReposition * separationVelocity * TimeManager.SecondDifference;
+
+                // Vic asks - the other "soft" repositions don't do this, should we do it here to match Move or match Soft?
+                // Let's match Soft for now...
+                //ForceUpdateDependencies();
+                //rectangle.ForceUpdateDependencies();
+
+                return true;
+            }
+            return false;
+        }
 
         public bool CollideAgainstMovePreview(Polygon polygon, float thisMass, float otherMass,
             ref Vector3 thisMoveCollisionReposition, ref Vector3 argumentPolygonMoveCollisionReposition)
@@ -998,16 +1163,16 @@ namespace FlatRedBall.Math.Geometry
                 CollideAgainstMovePreview(thisMass, otherMass, ref thisMoveCollisionReposition, ref argumentPolygonMoveCollisionReposition, otherVertices, !this.isConcaveCache, !polygon.isConcaveCache);
 
                 toReturn = true;
-				return toReturn;
+                return toReturn;
             }
             return toReturn;
         }
 
-        private void CollideAgainstMovePreview(float thisMass, float otherMass, ref Vector3 thisMoveCollisionReposition, ref Vector3 otherMoveCollisionReposition, 
+        private void CollideAgainstMovePreview(float thisMass, float otherMass, ref Vector3 thisMoveCollisionReposition, ref Vector3 otherMoveCollisionReposition,
             VertexPositionColor[] otherVertices,
             bool canUseAxisSeparating, bool canOtherUseAxisSeparating)
         {
-            if(canUseAxisSeparating && canOtherUseAxisSeparating)
+            if (canUseAxisSeparating && canOtherUseAxisSeparating)
             {
                 PerformAxisSeparatingTheoremCollision(this.mVertices, otherVertices, thisMass, otherMass, out thisMoveCollisionReposition, out otherMoveCollisionReposition);
             }
@@ -1242,7 +1407,7 @@ namespace FlatRedBall.Math.Geometry
                     }
 
                     float distanceToConsider = float.NegativeInfinity;
-                    if(float.IsPositiveInfinity(longestDistanceStep4This) && float.IsPositiveInfinity(longestDistanceStep4Other))
+                    if (float.IsPositiveInfinity(longestDistanceStep4This) && float.IsPositiveInfinity(longestDistanceStep4Other))
                     {
                         // do nothing
                     }
@@ -1254,7 +1419,7 @@ namespace FlatRedBall.Math.Geometry
                     {
                         distanceToConsider = longestDistanceStep4Other;
                     }
-                    else if(longestDistanceStep4This < longestDistanceStep4Other)
+                    else if (longestDistanceStep4This < longestDistanceStep4Other)
                     {
                         distanceToConsider = longestDistanceStep4This;
                     }
@@ -1263,9 +1428,9 @@ namespace FlatRedBall.Math.Geometry
                         distanceToConsider = longestDistanceStep4Other;
                     }
 
-                    if(!float.IsNegativeInfinity(distanceToConsider) && distanceToConsider > longestDistance)
+                    if (!float.IsNegativeInfinity(distanceToConsider) && distanceToConsider > longestDistance)
                     {
-                        if(distanceToConsider == longestDistanceStep4This)
+                        if (distanceToConsider == longestDistanceStep4This)
                         {
                             vectorTo.X = vector3Step4This.X;
                             vectorTo.Y = vector3Step4This.Y;
@@ -1276,7 +1441,7 @@ namespace FlatRedBall.Math.Geometry
                             vectorTo.Y = vector3Step4Other.Y;
                         }
                     }
-                
+
 
 
                 }
@@ -1300,7 +1465,7 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        private void PerformAxisSeparatingTheoremCollision(VertexPositionColor[] vertices, VertexPositionColor[] otherVertices, float thisMass, float otherMass, 
+        private void PerformAxisSeparatingTheoremCollision(VertexPositionColor[] vertices, VertexPositionColor[] otherVertices, float thisMass, float otherMass,
             out Vector3 thisMoveCollisionReposition, out Vector3 otherMoveCollisionReposition)
         {
             Vector3 firstVectorResult, secondVectorResult;
@@ -1320,7 +1485,7 @@ namespace FlatRedBall.Math.Geometry
                 Vector3 firstVectorResultInvertOrder, secondVectorResultInvertOrder;
                 int secondDeepestIndex;
                 GetSeparatingVectors(otherVertices, vertices, otherMass, thisMass,
-                    RepositionDirections.All, this.RepositionDirections, 
+                    RepositionDirections.All, this.RepositionDirections,
                     out secondVectorResultInvertOrder, out firstVectorResultInvertOrder, out secondDeepestIndex);
 
                 if (firstVectorResult.Length() + secondVectorResult.Length() < firstVectorResultInvertOrder.Length() + secondVectorResultInvertOrder.Length())
@@ -1342,10 +1507,10 @@ namespace FlatRedBall.Math.Geometry
 
         }
 
-        private static void GetSeparatingVectors(VertexPositionColor[] firstVertices, VertexPositionColor[] secondVertices, 
-            float firstMass, float secondMass, 
+        private static void GetSeparatingVectors(VertexPositionColor[] firstVertices, VertexPositionColor[] secondVertices,
+            float firstMass, float secondMass,
             RepositionDirections firstRepositionDirections, RepositionDirections secondRepositionDirections,
-            out Vector3 firstVectorResult, out Vector3 secondVectorResult, 
+            out Vector3 firstVectorResult, out Vector3 secondVectorResult,
             out int secondVectorIndex)
         {
             firstVectorResult = new Vector3();
@@ -1462,15 +1627,15 @@ namespace FlatRedBall.Math.Geometry
         {
             // If firstIndex or secondIndex are the last point, make them
             // 0 to make the rest of this method simpler
-            if(firstIndex == mPoints.Length -1)
+            if (firstIndex == mPoints.Length - 1)
             {
                 firstIndex = 0;
             }
-            if(secondIndex == mPoints.Length - 1)
+            if (secondIndex == mPoints.Length - 1)
             {
                 secondIndex = 0;
             }
-            
+
 
             int pointBeforeFirst = firstIndex - 1;
             if (pointBeforeFirst < 0)
@@ -1487,9 +1652,9 @@ namespace FlatRedBall.Math.Geometry
 
         public Polygon Clone()
         {
-			Polygon clonedPolygon = this.Clone<Polygon>();
+            Polygon clonedPolygon = this.Clone<Polygon>();
 
-			return clonedPolygon;
+            return clonedPolygon;
         }
 
 
@@ -1497,7 +1662,7 @@ namespace FlatRedBall.Math.Geometry
         {
             T newPolygon = base.Clone<T>();
             newPolygon.mVisible = false;
-            
+
 #if !SILVERLIGHT
             newPolygon.mLayerBelongingTo = null;
 #endif
@@ -1550,14 +1715,14 @@ namespace FlatRedBall.Math.Geometry
         {
             base.ForceUpdateDependencies();
 
-            FillVertexArray();
+            FillVertexArray(true);
         }
 
         public override void ForceUpdateDependenciesDeep()
         {
             base.ForceUpdateDependenciesDeep();
 
-            FillVertexArray();
+            FillVertexArray(true);
         }
 
 
@@ -1592,12 +1757,12 @@ namespace FlatRedBall.Math.Geometry
             {
                 if (IsPointInside(ref vertices[i]))
                 {
-                    pointsInside.Add( new Point3D(vertices[i]));
+                    pointsInside.Add(new Point3D(vertices[i]));
                 }
             }
 
             Point3D[] pointsToReturn = pointsInside.ToArray();
-            return pointsToReturn;            
+            return pointsToReturn;
         }
 
 
@@ -1853,7 +2018,7 @@ namespace FlatRedBall.Math.Geometry
 
                 var newAngle = MathFunctions.AngleToAngle(firstAngle, secondAngle);
 
-                if(angle == 0)
+                if (angle == 0)
                 {
                     continue;
                 }
@@ -1873,7 +2038,7 @@ namespace FlatRedBall.Math.Geometry
         public bool IsClockwise()
         {
             double sum = 0;
-            for(int i = 0; i < Points.Count-1; i++)
+            for (int i = 0; i < Points.Count - 1; i++)
             {
                 var point = Points[i];
                 var pointAfter = Points[i + 1];
@@ -1921,7 +2086,7 @@ namespace FlatRedBall.Math.Geometry
 
             return b;
         }
-        
+
 
         public bool IsPointInside(Point3D vector)
         {
@@ -1972,11 +2137,10 @@ namespace FlatRedBall.Math.Geometry
 
         #endregion
 
-
         public void InvertPointOrder()
         {
             Point temporaryPoint = new Point();
-            for (int i = 0; i < mPoints.Length/2; i++)
+            for (int i = 0; i < mPoints.Length / 2; i++)
             {
                 temporaryPoint = mPoints[i];
 
@@ -1988,6 +2152,40 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
+        public void KeepThisInsideOf(AxisAlignedRectangle rectangle)
+        {
+            Vector2 repositionVector;
+            repositionVector.X = 0;
+            repositionVector.Y = 0;
+
+            this.ForceUpdateDependencies();
+
+            for(int i = 0; i < mVertices.Length; i++)
+            {
+                if (mVertices[i].Position.X < rectangle.Left)
+                {
+                    repositionVector.X = System.Math.Max(repositionVector.X, rectangle.Left - mVertices[i].Position.X);
+                }
+                else if (mVertices[i].Position.X > rectangle.Right)
+                {
+                    repositionVector.X = System.Math.Min(repositionVector.X, rectangle.Right - mVertices[i].Position.X);
+                }
+
+                if (mVertices[i].Position.Y > rectangle.Top)
+                {
+                    repositionVector.Y = System.Math.Min(repositionVector.Y, rectangle.Top - mVertices[i].Position.Y);
+                }
+                else if (mVertices[i].Position.Y < rectangle.Bottom)
+                {
+                    repositionVector.Y = System.Math.Max(repositionVector.Y, rectangle.Bottom - mVertices[i].Position.Y);
+                }
+            }
+
+            PositionedObject topParent = this.TopParent;
+
+            topParent.Position.X += repositionVector.X;
+            topParent.Position.Y += repositionVector.Y;
+        }
 
         public void OptimizeRadius()
         {
@@ -2056,7 +2254,7 @@ namespace FlatRedBall.Math.Geometry
         {
             ProjectParentVelocityOnLastMoveCollisionTangent(0);
         }
-        
+
 
         public void ProjectParentVelocityOnLastMoveCollisionTangent(float minimumVectorLengthSquared)
         {
@@ -2065,7 +2263,7 @@ namespace FlatRedBall.Math.Geometry
 #else
             if (mLastMoveCollisionReposition.LengthSquared() > minimumVectorLengthSquared &&
 #endif
-                Vector3.Dot(TopParent.Velocity, mLastMoveCollisionReposition) < 0 )
+                Vector3.Dot(TopParent.Velocity, mLastMoveCollisionReposition) < 0)
             {
                 Vector3 collisionAdjustmentNormalized = mLastMoveCollisionReposition;
                 collisionAdjustmentNormalized.Normalize();
@@ -2175,7 +2373,7 @@ namespace FlatRedBall.Math.Geometry
             mPoints[index].Y = yAbsolute;
 
             FlatRedBall.Math.MathFunctions.TransformPoint(ref mPoints[index], ref invertedMatrix);
-            
+
             CalculateBoundingRadius();
             OnPointsChanged(EventArgs.Empty);
         }
@@ -2208,7 +2406,7 @@ namespace FlatRedBall.Math.Geometry
             base.UpdateDependencies(currentTime);
             if (callFillVertexArray)
             {
-                FillVertexArray();
+                FillVertexArray(false);
             }
         }
 
@@ -2377,6 +2575,21 @@ namespace FlatRedBall.Math.Geometry
             return vectorToReturn;
         }
 
+        /// <summary>
+        /// Fills a list with the polygon's segments. It clears the list before populating it.
+        /// </summary>
+        /// <param name="segmentsListToFill">The list to populate.</param>
+        public void FillSegments(List<Segment> segmentsListToFill)
+        {
+            segmentsListToFill.Clear();
+
+            for (int i = 0; i < mVertices.Length - 1; i++)
+            {
+                var segment = new Segment(mVertices[i].Position, mVertices[i + 1].Position);
+                segmentsListToFill.Add(segment);
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -2396,45 +2609,53 @@ namespace FlatRedBall.Math.Geometry
             mBoundingRadius = (float)System.Math.Sqrt(boundingRadiusSquared);
         }
 
-        internal void FillVertexArray()
+        double mLastFillVertexArrayUpdate;
+
+        internal void FillVertexArray(bool forceUpdate)
         {
+            if (!forceUpdate && mLastFillVertexArrayUpdate == TimeManager.CurrentTime)
+            {
+                return;
+            }
+            else
+            {
+                mLastFillVertexArrayUpdate = TimeManager.CurrentTime;
+            }
+
 #if DEBUG
             if (mVertices == null && TolerateEmptyPolygons == false)
             {
                 throw new NullReferenceException("Polygon has not had its points set.");
 
             }
-
 #endif
 
-            if(mVertices != null)
+            if (mVertices != null)
             {
-
                 var premultiplied = new Color();
                 premultiplied.A = mColor.A;
                 premultiplied.R = (byte)(mColor.R * mColor.A / 255);
                 premultiplied.G = (byte)(mColor.G * mColor.A / 255);
                 premultiplied.B = (byte)(mColor.B * mColor.A / 255);
-                
+
                 for (int i = 0; i < mPoints.Length; i++)
                 {
+                    double pointX = mPoints[i].X;
+                    double pointY = mPoints[i].Y;
 
                     mVertices[i].Position.X = (float)(Position.X +
-                        mRotationMatrix.M11 * mPoints[i].X +
-                        mRotationMatrix.M21 * mPoints[i].Y  );
+                        mRotationMatrix.M11 * pointX +
+                        mRotationMatrix.M21 * pointY);
 
                     mVertices[i].Position.Y = (float)(Position.Y +
-                        mRotationMatrix.M12 * mPoints[i].X +
-                        mRotationMatrix.M22 * mPoints[i].Y  );
+                        mRotationMatrix.M12 * pointX +
+                        mRotationMatrix.M22 * pointY);
 
                     mVertices[i].Position.Z = (float)(Position.Z +
-                        mRotationMatrix.M13 * mPoints[i].X +
-                        mRotationMatrix.M23 * mPoints[i].Y);
+                        mRotationMatrix.M13 * pointX +
+                        mRotationMatrix.M23 * pointY);
 
-
-                    mVertices[i].Color= premultiplied;
-
-
+                    mVertices[i].Color = premultiplied;
                 }
             }
         }
@@ -2510,18 +2731,18 @@ namespace FlatRedBall.Math.Geometry
             double totalArea = 0;
             List<double> areas = new List<double>();
 
-            if(polygonList.Count == 0)
+            if (polygonList.Count == 0)
             {
                 return null;
             }
-            if(polygonList.Count == 1)
+            if (polygonList.Count == 1)
             {
                 return polygonList[1];
             }
 
             int count = polygonList.Count;
             int i = 0;
-            for(i = 0; i < count; i++)
+            for (i = 0; i < count; i++)
             {
                 double area = polygonList[i].GetArea();
 
@@ -2531,7 +2752,7 @@ namespace FlatRedBall.Math.Geometry
 
             double randomValue = FlatRedBallServices.Random.NextDouble() * totalArea;
 
-                        
+
             double sumSoFar = 0;
 
             for (i = 0; i < areas.Count; i++)

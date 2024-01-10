@@ -18,22 +18,22 @@ namespace FlatRedBall.Input
         /// <summary>
         /// The default input for moving up, such as the up direction on an analog stick on a gamepad.
         /// </summary>
-        IPressableInput DefaultUpPressable { get; }
+        IRepeatPressableInput DefaultUpPressable { get; }
 
         /// <summary>
         /// The default input for moving down, such as the down direction on an analog stick on a gamepad.
         /// </summary>
-        IPressableInput DefaultDownPressable { get; }
+        IRepeatPressableInput DefaultDownPressable { get; }
 
         /// <summary>
         /// The default input for moving left, such as the left direction on an analog stick on a gamepad.
         /// </summary>
-        IPressableInput DefaultLeftPressable { get; }
+        IRepeatPressableInput DefaultLeftPressable { get; }
 
         /// <summary>
         /// The default input for moving right, such as the right direction on an analog stick on a gamepad.
         /// </summary>
-        IPressableInput DefaultRightPressable { get; }
+        IRepeatPressableInput DefaultRightPressable { get; }
 
         /// <summary>
         /// The default input for moving horizontally, like in a platformer. For example, this may be 
@@ -88,5 +88,23 @@ namespace FlatRedBall.Input
         /// may be the B button on a gamepad;
         /// </summary>
         IPressableInput DefaultCancelInput { get;  }
+    }
+
+    public class ZeroInputDevice : IInputDevice
+    {
+        public I2DInput Default2DInput { get; set; } = new Zero2DInput();
+        public IRepeatPressableInput DefaultUpPressable { get; set; } = new FalsePressableInput();
+        public IRepeatPressableInput DefaultDownPressable { get; set; } = new FalsePressableInput();
+        public IRepeatPressableInput DefaultLeftPressable { get; set; } = new FalsePressableInput();
+        public IRepeatPressableInput DefaultRightPressable { get; set; } = new FalsePressableInput();
+        public I1DInput DefaultHorizontalInput { get; set; } = new Zero1DInput();
+        public I1DInput DefaultVerticalInput { get; set; } = new Zero1DInput();
+        public IPressableInput DefaultPrimaryActionInput { get; set; } = new FalsePressableInput();
+        public IPressableInput DefaultSecondaryActionInput { get; set; } = new FalsePressableInput();
+        public IPressableInput DefaultConfirmInput { get; set; } = new FalsePressableInput();
+        public IPressableInput DefaultJoinInput { get; set; } = new FalsePressableInput();
+        public IPressableInput DefaultPauseInput { get; set; } = new FalsePressableInput();
+        public IPressableInput DefaultBackInput { get; set; } = new FalsePressableInput();
+        public IPressableInput DefaultCancelInput { get; set; } = new FalsePressableInput();
     }
 }

@@ -58,6 +58,11 @@ namespace OfficialPlugins.VariableDisplay
                     .FirstOrDefault(item => item.Name == baseVariable.SourceObjectProperty);
             }
 
+            if(variableDefinition == null)
+            {
+                variableDefinition = baseVariable.VariableDefinition ?? variable.VariableDefinition;
+            }
+
 
             if (!string.IsNullOrEmpty(baseVariable.PreferredDisplayerTypeName) &&
                 VariableDisplayerTypeManager.TypeNameToTypeAssociations.ContainsKey(baseVariable.PreferredDisplayerTypeName))
@@ -74,7 +79,8 @@ namespace OfficialPlugins.VariableDisplay
                 }
             }
             else if (string.IsNullOrEmpty(variable.SourceObject) && instanceMember.PreferredDisplayer == null &&
-                variable?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) && variable.Type == "float")
+                (variable?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) || variable?.Name == nameof(FlatRedBall.PositionedObject.RotationY) || variable?.Name == nameof(FlatRedBall.PositionedObject.RotationX)) && 
+                variable.Type == "float")
             {
                 instanceMember.PreferredDisplayer = typeof(AngleSelectorDisplay);
             }
@@ -106,8 +112,14 @@ namespace OfficialPlugins.VariableDisplay
                     variableDefinition.MinValue.Value;
             }
 
-            instanceMember.CustomSetEvent += async (intance, value) =>
+            if(variableDefinition?.UiCreated != null)
             {
+                instanceMember.UiCreated += (view) => variableDefinition.UiCreated(view);
+            }
+
+            instanceMember.CustomSetPropertyEvent += async (intance, args) =>
+            {
+                var value = args.Value;
                 instanceMember.IsDefault = false;
 
                 //RefreshLogic.IgnoreNextRefresh();
@@ -147,12 +159,20 @@ namespace OfficialPlugins.VariableDisplay
                 }
 
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
-
+                var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                if (element.BaseElement != null)
+                {
+                    var baseElement = ObjectFinder.Self.GetRootBaseElement(element);
+                    if (baseElement != null)
+                    {
+                        // Generate the root base because it may have definitions for the types that have changed... 
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(baseElement);
+                    }
+                }
+                
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
+                GlueCommands.Self.RefreshCommands.RefreshVariables();
             };
 
             instanceMember.SetValueError = (newValue) =>
@@ -161,7 +181,7 @@ namespace OfficialPlugins.VariableDisplay
                 {
                     element.GetCustomVariableRecursively(name).DefaultValue = null;
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
 
                     GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
@@ -201,14 +221,14 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        public static void UpdateShownVariables(DataUiGrid grid, IElement element)
+        public static void UpdateShownVariables(DataUiGrid grid, GlueElement element)
         {
             grid.Categories.Clear();
 
             List<MemberCategory> categories = new List<MemberCategory>();
 
-            CreateAndAddCategory(categories, "Variables");
-            CreateInstanceMembersForVariables(element as GlueElement, categories);
+            CreateAndAddCategory(categories, Localization.Texts.Variables);
+            CreateInstanceMembersForVariables(element, categories);
 
             AddAlternatingColors(grid, categories);
 
@@ -236,9 +256,9 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static MemberCategory CreateAndAddCategory(List<MemberCategory> categories, string categoryName)
+        private static MemberCategory CreateAndAddCategory(List<MemberCategory> categories, string categoryLabel)
         {
-            var defaultCategory = new MemberCategory(categoryName);
+            var defaultCategory = new MemberCategory(categoryLabel);
             defaultCategory.FontSize = 14;
             categories.Add(defaultCategory);
             return defaultCategory;
@@ -261,7 +281,7 @@ namespace OfficialPlugins.VariableDisplay
 
                     element.CustomVariables.Add(customVariable);
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
                 }
             }
 
@@ -310,8 +330,9 @@ namespace OfficialPlugins.VariableDisplay
                 //TypeConverter converter = variable.GetTypeConverter(element);
                 //instanceMember.TypeConverter = converter;
 
-                instanceMember.CustomSetEvent += (intance, value) =>
+                instanceMember.CustomSetPropertyEvent += (intance, args) =>
                 {
+                    var value = args.Value;
                     instanceMember.IsDefault = false;
 
                     RefreshLogic.IgnoreNextRefresh();
@@ -330,11 +351,11 @@ namespace OfficialPlugins.VariableDisplay
 
 
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
 
                     GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 };
 
                 instanceMember.CustomGetEvent += (instance) =>

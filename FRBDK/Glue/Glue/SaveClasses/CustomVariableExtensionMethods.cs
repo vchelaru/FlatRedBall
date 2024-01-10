@@ -11,6 +11,8 @@ using FlatRedBall.Instructions;
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using Microsoft.Xna.Framework;
+using WpfDataUi.Controls;
+using FlatRedBall.Glue.Plugins;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -48,7 +50,7 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             if (customVariable.GetIsCsv())
             {
-                string fullFileName = FacadeContainer.Self.ProjectValues.ContentDirectory + customVariable.Type;
+                string fullFileName = GlueState.ContentDirectory + customVariable.Type;
                 ReferencedFileSave foundRfs = GlueCommands.FileCommands.GetReferencedFile(fullFileName);
 
                 if (foundRfs != null)
@@ -65,6 +67,37 @@ namespace FlatRedBall.Glue.SaveClasses
             var result = ObjectFinder.Self.GetStateSaveCategory(customVariable, containingElement);
 
             return result.IsState;
+        }
+
+        public static bool GetIsBaseElementType(this CustomVariable customVariable)
+        {
+            return GetIsBaseElementType(customVariable, out _);
+        }
+
+        public static bool GetIsBaseElementType(this CustomVariable customVariable, out GlueElement element)
+        {
+            var type = customVariable.Type;
+
+            return GetIsBaseElementType(type, out element);
+        }
+
+        public static bool GetIsBaseElementType(string type, out GlueElement element)
+        {
+            element = null;
+            if (!GlueState.CurrentGlueProject.SuppressBaseTypeGeneration && type.Contains("."))
+            {
+                if (type.StartsWith("Entities.") && type.EndsWith("Type"))
+                {
+                    // strip of Entities. and Type and see if there's an entity with a matching name:
+                    var entityName = type.Substring(0, type.Length - "Type".Length).Replace(".", "\\");
+
+                    element = GlueState.CurrentGlueProject.Entities.FirstOrDefault(item => item.Name == entityName);
+
+                    return element != null;
+                }
+            }
+
+            return false;
         }
 
         public static (bool isState, StateSaveCategory category) GetIsVariableStateAndCategory(this CustomVariable customVariable, GlueElement containingElement = null)
@@ -92,61 +125,83 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static void SetDefaultValueAccordingToType(this CustomVariable customVariable, string typeAsString)
         {
-            Type type = TypeManager.GetTypeFromString(typeAsString);
 
-            if (type == typeof(string))
+            object newValue = "";
+
+            // This method checks the Type and OverridingType so it can't rely just on GetDefaultValueAccordingToType;
+            if (customVariable.GetIsFile())
             {
-                customVariable.DefaultValue = "";
-            }
-            else if (type == null && customVariable.Type == "VariableState")
-            {
-                customVariable.DefaultValue = "";
-            }
-                // We used to check just Texture2D, but we want to check all file types since we're expanding that
-            //else if (type == typeof(Microsoft.Xna.Framework.Graphics.Texture2D))
-            else if (customVariable.GetIsFile())
-            {
-                customVariable.DefaultValue = "";
-            }
-            else if (type == typeof(Microsoft.Xna.Framework.Color))
-            {
-                customVariable.DefaultValue = "";
-            }
-            else if (type == typeof(byte))
-            {
-                customVariable.DefaultValue = (byte)0;
-            }
-            else if (type == typeof(short))
-            {
-                customVariable.DefaultValue = (short)0;
-            }
-            else if (type == typeof(int))
-            {
-                customVariable.DefaultValue = (int)0;
-            }
-            else if (type == typeof(long))
-            {
-                customVariable.DefaultValue = (long)0;
-            }
-            else if (type == typeof(char))
-            {
-                customVariable.DefaultValue = ' ';
-            }
-            else if (type == typeof(float))
-            {
-                customVariable.DefaultValue = 0.0f;
-            }
-            else if (type == typeof(double))
-            {
-                customVariable.DefaultValue = 0.0;
+                newValue = "";
             }
             else
             {
-                // This will be things like types defined in CSV values
-                customVariable.DefaultValue = "";
+                newValue = GetDefaultValueAccordingToType(typeAsString);
+
             }
+            customVariable.DefaultValue = newValue;
 
             customVariable.FixEnumerationTypes();
+        }
+
+        public static object GetDefaultValueAccordingToType(string typeAsString)
+        {
+            Type type = TypeManager.GetTypeFromString(typeAsString);
+            object newValue = "";
+
+            if (type == typeof(string))
+            {
+                newValue = "";
+            }
+            else if (type == null && typeAsString == "VariableState")
+            {
+                newValue = "";
+            }
+            else if(GetIsFile(typeAsString))
+            {
+                newValue = "";
+            }
+            else if (type == typeof(Microsoft.Xna.Framework.Color))
+            {
+                newValue = "";
+            }
+            else if (type == typeof(byte))
+            {
+                newValue = (byte)0;
+            }
+            else if (type == typeof(short))
+            {
+                newValue = (short)0;
+            }
+            else if (type == typeof(int))
+            {
+                newValue = (int)0;
+            }
+            else if (type == typeof(long))
+            {
+                newValue = (long)0;
+            }
+            else if (type == typeof(char))
+            {
+                newValue = ' ';
+            }
+            else if (type == typeof(float))
+            {
+                newValue = 0.0f;
+            }
+            else if (type == typeof(double))
+            {
+                newValue = 0.0;
+            }
+            else if (type == typeof(bool))
+            {
+                newValue = false;
+            }
+            else if (type == typeof(bool?))
+            {
+                newValue = (bool?)null;
+            }
+
+            return newValue;
         }
 
         public static void FixAllTypes(this CustomVariable customVariable)
@@ -160,6 +215,13 @@ namespace FlatRedBall.Glue.SaveClasses
                 var type = customVariable.Type;
                 variableValue = FixValue(variableValue, type);
                 customVariable.DefaultValue = variableValue;
+            }
+
+            if(!string.IsNullOrEmpty( customVariable.VariableDefinition?.PreferredDisplayerName))
+            {
+                // Since variable displayers can be handled by plugins, then the plugin must also handle converting the name to type
+                // since the type is not necessarily known here.:
+                PluginManager.TryAssignPreferredDisplayerFromName(customVariable);
             }
         }
 
@@ -389,7 +451,7 @@ namespace FlatRedBall.Glue.SaveClasses
             // removed when code was generated for it.  We
             // don't want this to happen so we're going to always
             // treat strings as non-files...for now at least.
-            if (typeName != null && typeName.ToLower() == "string")
+            if (String.Equals(typeName, "string", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
@@ -500,11 +562,11 @@ namespace FlatRedBall.Glue.SaveClasses
             }
             else
             {
-                IElement container = ObjectFinder.Self.GetElementContaining(customVariable);
+                var container = ObjectFinder.Self.GetElementContaining(customVariable);
 
                 if (container != null && !string.IsNullOrEmpty(container.BaseElement))
                 {
-                    IElement baseElement = GlueState.CurrentGlueProject.GetElement(container.BaseElement);
+                    var baseElement = GlueState.CurrentGlueProject.GetElement(container.BaseElement);
                     if (baseElement != null)
                     {
                         CustomVariable customVariableInBase = baseElement.GetCustomVariableRecursively(customVariable.Name);

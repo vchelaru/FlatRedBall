@@ -7,15 +7,18 @@ using FlatRedBall.Glue.Elements;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.FormHelpers;
+using WpfDataUi.DataTypes;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
+    #region NosVariableAssignment class
     public class NosVariableAssignment
     {
         public NamedObjectSave NamedObjectSave;
         public string VariableName;
         public object Value;
     }
+    #endregion
 
     public interface IGluxCommands
     {
@@ -43,10 +46,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <summary>
         /// Saves the glue project immediately if in a task, and adds a task if not
         /// </summary>
+        [Obsolete("Use SaveProjectAndElements since it more clearly indicates what it does. Glux files are not used on new projects anymore.")]
         void SaveGlux(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap);
 
+        /// <summary>
+        /// Saves the glue project and all screen/entity files immediately if in a task, and adds a task if not
+        /// </summary>
+        void SaveProjectAndElements(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap);
+
+
         //void SaveElement(GlueElement element);
-        Task SaveElementAsync(GlueElement element);
+        Task SaveElementAsync(GlueElement element, TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Fifo);
 
         void SaveSettings();
 
@@ -83,7 +93,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="includeDirectoryInGlobalContentInName">Whether to include the subdirectory 
         /// in the name of the newly-created file.</param>
         /// <returns>The new ReferencedFileSave.</returns>
-        ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool includeDirectoryInGlobalContentInName);
+        ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool includeDirectoryInGlobalContentInName, AssetTypeInfo forcedAssetTypeInfo = null);
 
         /// <summary>
         /// Adds an entry to GlobalContent for a ReferencedFileSave which is already referenced in a different element.
@@ -96,8 +106,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         Task AddReferencedFileToGlobalContentAsync(ReferencedFileSave rfs, bool generateAndSave = true, bool updateUi = true);
         Task AddReferencedFileToElementAsync(ReferencedFileSave rfs, GlueElement element, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
-        [Obsolete("use AddReferencedFileToGlobalContentAsync")]
-        void AddReferencedFileToGlobalContent(ReferencedFileSave rfs);
+
         [Obsolete("use AddReferencedFileToElementAsync")]
         void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element);
 
@@ -113,14 +122,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, string extraCommandLineArguments,
             EditorObjects.SaveClasses.BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options,
-            GlueElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true);
+            GlueElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true, AssetTypeInfo forcedAssetTypeInfo = null);
 
 
         [Obsolete("Use RemoveReferencedFileAsync")]
         void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true);
         Task RemoveReferencedFileAsync(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true);
 
-        Task DuplicateAsync(ReferencedFileSave rfs, GlueElement forcedContainer = null);
+        Task DuplicateAsync(ReferencedFileSave rfs, GlueElement forcedContainer = null, FilePath desiredFolder = null);
         
 
         #endregion
@@ -139,8 +148,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         FilePath GetElementJsonLocation(GlueElement element);
 
-        FilePath GetPreviewLocation(GlueElement glueElement, StateSave stateSave);
+        FilePath GetPreviewLocation(GlueElement glueElement, StateSave stateSave = null);
 
+        #endregion
+
+        #region CustomVariables
+        Task CopyCustomVariableToGlueElement(CustomVariable original, GlueElement element);
         #endregion
 
         #region Entity
@@ -183,17 +196,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="value">The value of the variable.</param>
         [Obsolete("Use SetVariableOnAsync")]
         void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true);
+            bool updateUi = true, bool recordUndo = true, SetPropertyCommitType commitType = SetPropertyCommitType.Full);
 
         Task SetVariableOnAsync(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true);
+            bool updateUi = true, bool recordUndo = true);
 
         Task SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
             bool performSaveAndGenerateCode = true,
-            bool updateUi = true);
+            bool updateUi = true, bool recordUndo = true);
 
         Task SetPropertyOnAsync(NamedObjectSave nos, string propertyName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true);
+            bool updateUi = true, bool recordUndo = true);
 
         Task ReactToPropertyChanged(NamedObjectSave nos, string propertyName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true);
@@ -201,13 +214,34 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         Task<List<ToolsUtilities.GeneralResponse<NamedObjectSave>>> CopyNamedObjectListIntoElement(List<NamedObjectSave> nosList, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
+        /// <summary>
+        /// Creates a copy of the argument NamedObjectSave nos in the target element. If the target element has a list of appropriate type (such as a PlayerList for a Player instance), then
+        /// the newly-created NamedObjectSave is added to the list.
+        /// </summary>
+        /// <param name="nos">The original NamedObjectSave.</param>
+        /// <param name="targetElement">The target GlueElement which should contain the newly-created copy.</param>
+        /// <param name="performSaveAndGenerateCode">Whether to save projects and generated code.</param>
+        /// <param name="updateUi">Whether to update UI.</param>
+        /// <returns></returns>
         Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
+        /// <summary>
+        /// Creates a copy of the argument NamedObjectSave nos in the target element. If a targetNos is passed, then that is used as the list. If no target NOS is passed, then the target element
+        /// is searched for an appropriate list matching the original nos type.
+        /// </summary>
+        /// <param name="nos">The original NamedObjectSave.</param>
+        /// <param name="targetElement">The target element</param>
+        /// <param name="targetNos">The target NamedObjectSave, which could be a List or it could be an item inside of a list.</param>
+        /// <param name="performSaveAndGenerateCode">Whether to save projectxs and geneate code.</param>
+        /// <param name="updateUi">hehter to update the UI.</param>
+        /// <returns></returns>
+        Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, NamedObjectSave targetNos, bool performSaveAndGenerateCode = true, bool updateUi = true);
+
         void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true, bool updateUi = true,
-            List<string> additionalFilesToRemove = null);
+            List<string> additionalFilesToRemove = null, bool notifyPluginsOfRemoval = true);
 
         Task RemoveNamedObjectListAsync(List<NamedObjectSave> namedObjectListToRemove, bool performSaveAndGenerateCode = true,
-            bool updateUi = true, List<string> additionalFilesToRemove = null);
+            bool updateUi = true, List<string> additionalFilesToRemove = null, bool notifyPluginsOfRemoval = true);
         #endregion
 
         #region Custom Variable
@@ -221,6 +255,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #region StateSaveCategory
 
         void RemoveStateSaveCategory(StateSaveCategory category);
+
+        #endregion
+
+        #region StateSave
+
+        Task AddStateSave(StateSave newState, StateSaveCategory category, GlueElement element);
+
+        Task CopyStateSaveIntoElement(StateSave stateSave, StateSaveCategory category, GlueElement element);
 
         #endregion
 

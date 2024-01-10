@@ -71,8 +71,10 @@ namespace FlatRedBall.Glue.SaveClasses
         /// <returns>The found property value, or the default for the type if not found.</returns>
         public static T GetValue<T>(this List<PropertySave> propertySaveList, string nameToSearchFor)
         {
-            var copy = propertySaveList.ToArray();
-            foreach (PropertySave propertySave in copy)
+            // ToArray is slow, and now that we have better tasks we may not need it, so let's remove that and get faster:
+            //var copy = propertySaveList.ToArray();
+            //foreach (PropertySave propertySave in copy)
+            foreach (PropertySave propertySave in propertySaveList)
             {
                 if (propertySave.Name == nameToSearchFor)
                 {
@@ -92,6 +94,18 @@ namespace FlatRedBall.Glue.SaveClasses
                     else if(typeof(T).IsEnum && uncastedValue is long asLong2)
                     {
                         return (T)((object)(int)asLong2);
+                    }
+                    else if( typeof(T) == typeof(int?) && uncastedValue is long asLong3)
+                    {
+                        return (T)((object)(int?)asLong3);
+                    }
+                    else if( typeof(T) == typeof(float?) && uncastedValue is double asDouble3)
+                    {
+                        return (T)((object)(float?)asDouble3);
+                    }
+                    else if (typeof(T) == typeof(decimal?) && uncastedValue is double asDouble4)
+                    {
+                        return (T)((object)(decimal?)asDouble4);
                     }
                     else if (typeof(T).IsEnum && uncastedValue is int asInt)
                     {
@@ -142,44 +156,109 @@ namespace FlatRedBall.Glue.SaveClasses
                     newPropertySave.Name = nameToSearchFor;
                     newPropertySave.Value = value;
 
-                    if(typeof(T) == typeof(int))
-                    {
-                        newPropertySave.Type = "int";
-                    }
-                    else if(typeof(T) == typeof(float))
-                    {
-                        newPropertySave.Type = "float";
-                    }
-                    else if (typeof(T) == typeof(decimal))
-                    {
-                        newPropertySave.Type = "decimal";
-                    }
-                    else
-                    {
-                        newPropertySave.Type = typeof(T).Name;
-                    }
-
+                    AssignTypeOnProperty<T>(newPropertySave);
 
                     propertySaveList.Add(newPropertySave);
                 }
             }
         }
 
-        public static void SetValuePersistIfDefault(this List<PropertySave> propertySaveList, string nameToSearchFor, object value)
+        private static void AssignTypeOnProperty<T>(PropertySave newPropertySave)
         {
-            var existingProperty = propertySaveList.FirstOrDefault(item => item.Name == nameToSearchFor);
-            if (existingProperty != null)
+            if (typeof(T) == typeof(int))
             {
-
-                existingProperty.Value = value;
+                newPropertySave.Type = "int";
             }
+            else if(typeof(T) == typeof(int?))
+            {
+                newPropertySave.Type = "int?";
+            }
+            else if (typeof(T) == typeof(long))
+            {
+                newPropertySave.Type = "long";
+            }
+            else if (typeof(T) == typeof(long?))
+            {
+                newPropertySave.Type = "long?";
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                newPropertySave.Type = "float";
+            }
+            else if (typeof(T) == typeof(float?))
+            {
+                newPropertySave.Type = "float?";
+            }
+            else if (typeof(T) == typeof(decimal))
+            {
+                newPropertySave.Type = "decimal";
+            }
+            else if (typeof(T) == typeof(decimal?))
+            {
+                newPropertySave.Type = "decimal?";
+            }
+
+            else if (typeof(T) == typeof(bool))
+            {
+                newPropertySave.Type = "bool";
+            }
+
+            else if (typeof(T) == typeof(bool?))
+            {
+                newPropertySave.Type = "bool?";
+            }
+
+            else if (typeof(T) == typeof(byte))
+            {
+                newPropertySave.Type = "byte";
+            }
+
+            else if (typeof(T) == typeof(byte?))
+            {
+                newPropertySave.Type = "byte?";
+            }
+
             else
             {
-                // If we got here then that means there isn't already something in place for this
-                PropertySave newPropertySave = new PropertySave();
-                newPropertySave.Name = nameToSearchFor;
-                newPropertySave.Value = value;
-                propertySaveList.Add(newPropertySave);
+                newPropertySave.Type = typeof(T).Name;
+            }
+        }
+
+        public static void SetValuePersistIfDefault<T>(this List<PropertySave> propertySaveList, string nameToSearchFor, T value)
+        {
+            SetValue(propertySaveList, nameToSearchFor, value, true);
+        }
+
+        public static void SetValue<T>(this List<PropertySave> propertySaveList, string nameToSearchFor, T value, bool persistIfDefault)
+        {
+            var handled = false;
+            if(!persistIfDefault)
+            {
+                bool isDefault = IsValueDefault(value);
+                if (isDefault)
+                {
+                    propertySaveList.RemoveAll(item => item.Name == nameToSearchFor);
+                    handled = true;
+                }
+            }
+
+            if(!handled)
+            {
+                var existingProperty = propertySaveList.FirstOrDefault(item => item.Name == nameToSearchFor);
+                if (existingProperty != null)
+                {
+
+                    existingProperty.Value = value;
+                }
+                else
+                {
+                    // If we got here then that means there isn't already something in place for this
+                    PropertySave newPropertySave = new PropertySave();
+                    newPropertySave.Name = nameToSearchFor;
+                    newPropertySave.Value = value;
+                    AssignTypeOnProperty<T>(newPropertySave);
+                    propertySaveList.Add(newPropertySave);
+                }
             }
         }
 
@@ -215,6 +294,21 @@ namespace FlatRedBall.Glue.SaveClasses
             if (value is string)
             {
                 return string.IsNullOrEmpty((string)value);
+            }
+
+
+            if(value == null)
+            {
+                return true;
+            }
+
+            if(value is Enum)
+            {
+                var values = Enum.GetValues(value.GetType());
+                if(values.Length > 0)
+                {
+                    return values.GetValue(0).Equals(value);
+                }
             }
 
             return false;

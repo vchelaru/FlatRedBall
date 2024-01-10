@@ -140,29 +140,13 @@ namespace OfficialPlugins.ErrorReportingPlugin
             var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(derivedElement);
             foreach (var derivedNos in derivedElement.AllNamedObjects)
             {
-                if(derivedNos.InstantiatedByBase)
+                var hasError = InvalidInstantiateByBaseErrorViewModel.GetIfHasError(derivedNos, derivedElement, baseElements);
+
+                if(hasError)
                 {
-                    // we better find something in the base that has the same name which instantiates. Otherwise, this thing
-                    // never gets instantiated and it can cause runtime errors.
+                    var errorVm = new InvalidInstantiateByBaseErrorViewModel(derivedNos);
+                    errors.Add(errorVm);
 
-                    var foundInBase = false;
-
-                    foreach(var baseElement in baseElements)
-                    {
-                        var baseNos = baseElement.AllNamedObjects
-                            .FirstOrDefault(item => item.InstanceName == derivedNos.InstanceName);
-
-                        if(baseNos != null && baseNos.SetByDerived == false)
-                        {
-                            // found a match
-                            foundInBase = true;
-                        }
-                    }
-                    if(!foundInBase)
-                    {
-                        var errorVm = new InvalidInstantiateByBaseErrorViewModel(derivedNos);
-                        errors.Add(errorVm);
-                    }
                 }
             }
         }

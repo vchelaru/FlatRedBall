@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 
@@ -128,19 +129,19 @@ namespace FlatRedBall.Graphics
                 return FlatRedBall.Graphics.BlendOperation.Regular;
             }
 
-            switch (op.ToLower())
+            switch(op)
             {
-                case "regular":
-                    return FlatRedBall.Graphics.BlendOperation.Regular;
-                case "add":
-                    return FlatRedBall.Graphics.BlendOperation.Add;
-                case "alphaadd":
-                    return FlatRedBall.Graphics.BlendOperation.Add;
-                case "modulate":
-                    return FlatRedBall.Graphics.BlendOperation.Modulate;
-                case "modulate2x":
-                    return FlatRedBall.Graphics.BlendOperation.Modulate2X;
-                case "nonpremultipliedalpha":
+                case var _ when String.Equals(op, "regular", StringComparison.OrdinalIgnoreCase):
+                    return BlendOperation.Regular;
+                case var _ when String.Equals(op, "add", StringComparison.OrdinalIgnoreCase):
+                    return BlendOperation.Add;
+                case var _ when String.Equals(op, "alphaadd", StringComparison.OrdinalIgnoreCase):
+                    return BlendOperation.Add;
+                case var _ when String.Equals(op, "modulate", StringComparison.OrdinalIgnoreCase):
+                    return BlendOperation.Modulate;
+                case var _ when String.Equals(op, "modulate2x", StringComparison.OrdinalIgnoreCase):
+                    return BlendOperation.Modulate2X;
+                case var _ when String.Equals(op, "nonpremultipliedalpha", StringComparison.OrdinalIgnoreCase):
                     return BlendOperation.NonPremultipliedAlpha;
                 default:
                     throw new NotImplementedException("Color Operation " + op + " not implemented");

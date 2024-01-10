@@ -3,24 +3,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.TreeViewPlugin.Views" xmlns:pt="http://propertytools.org/wpf" xmlns:controls="clr-namespace:GlueFormsCore.Controls;assembly=GlueFormsCore"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:pt="http://propertytools.org/wpf" 
+             xmlns:controls="clr-namespace:GlueFormsCore.Controls;assembly=GlueFormsCore"
              mc:Ignorable="d" 
+             PreviewKeyDown="UserControl_PreviewKeyDown"
              d:DesignHeight="450" d:DesignWidth="350">
-    <UserControl.Resources>
-
-    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" x:Name="ButtonsToolBar"></RowDefinition>
+            <RowDefinition Height="{Binding BookmarkRowHeight, Mode=TwoWay}" x:Name="BookmarkRow"></RowDefinition>
+            <RowDefinition Height="Auto" x:Name="BookmarkSplitter"></RowDefinition>
             <RowDefinition Height="Auto" x:Name="SearchBoxRow"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto" x:Name="SelectedItemsGrid"></RowDefinition>
+
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
             <Button IsEnabled="{Binding IsBackButtonEnabled}" Click="BackButtonClicked" Width="24" Margin="2,2,0,2">
                 <Button.ToolTip>
                     <StackPanel>
-                        <TextBlock FontWeight="Bold">Back (ALT + &lt;-)</TextBlock>
-                        <TextBlock>Selects the previously-selected item</TextBlock>
+                        <TextBlock FontWeight="Bold"><Label Content="{x:Static localization:Texts.Back}" /> (ALT + &lt;-)</TextBlock>
+                        <TextBlock Text="{x:Static localization:Texts.SelectPreviousItem}" />
                     </StackPanel>
                 </Button.ToolTip>
                 <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_back.png">
@@ -30,8 +34,8 @@
             <Button Click="NextButtonClicked" IsEnabled="{Binding IsForwardButtonEnabled}"  Width="24" Margin="2,2,0,2">
                 <Button.ToolTip>
                     <StackPanel>
-                        <TextBlock FontWeight="Bold">Forward (ALT + -&gt;)</TextBlock>
-                        <TextBlock>Selects the next item in the selection stack</TextBlock>
+                        <TextBlock FontWeight="Bold"><Label Content="{x:Static localization:Texts.Forward}" /> (ALT + -&gt;)</TextBlock>
+                        <TextBlock Text="{x:Static localization:Texts.SelectionStackNext}" />
                     </StackPanel>
                 </Button.ToolTip>
                 <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_forward.png">
@@ -41,8 +45,8 @@
             <Button Click="CollapseAllClicked" Width="24" Margin="2,2,0,2">
                 <Button.ToolTip>
                     <StackPanel>
-                        <TextBlock FontWeight="Bold">Collapse All</TextBlock>
-                        <TextBlock>Collapses all folders and containers</TextBlock>
+                        <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.CollapseAll}" />
+                        <TextBlock Text="{x:Static localization:Texts.CollapseAllFolders}" />
                     </StackPanel>
                 </Button.ToolTip>
                 <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_contract.png">
@@ -52,17 +56,71 @@
             <Button Click="CollapseToDefinitionsClicked" Width="24" Margin="2,2,0,2">
                 <Button.ToolTip>
                     <StackPanel>
-                        <TextBlock FontWeight="Bold">Scope To Definitions</TextBlock>
-                        <TextBlock>Collapses all Screens and Entities, expands the top-level folders</TextBlock>
+                        <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.ScopeDefinitions}" />
+                        <TextBlock  Text="{x:Static localization:Texts.CollapseFoldersExpandsTopLevel}" />
                     </StackPanel>
                 </Button.ToolTip>
                 <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_collapse_to_definitions.png">
 
                 </Image>
             </Button>
+            <ToggleButton Width="24" Margin="2,2,0,2" IsChecked="{Binding IsBookmarkListVisible}">
+                <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/StarFilled.png">
+                </Image>
+            </ToggleButton>
 
         </StackPanel>
-        <controls:SearchBar Grid.Row="1" x:Name="SearchBar" 
+
+        <ListBox x:Name="Bookmarks" Grid.Row="1" 
+                 Visibility="{Binding BookmarkListVisibility}"
+                 AllowDrop="True" 
+                 MouseMove="Bookmarks_MouseMove" 
+                 Drop="Bookmarks_Drop" 
+                 SelectionChanged="Bookmarks_SelectionChanged"
+                 KeyDown="Bookmarks_KeyDown"
+                 PreviewKeyDown="Bookmarks_PreviewKeyDown"
+                 LostFocus="Bookmarks_LostFocus"
+                 MouseDoubleClick="Bookmarks_MouseDoubleClick"
+                 ItemsSource="{Binding Bookmarks}"
+                 SelectedItem="{Binding SelectedBookmark}"
+                 >
+            <ListBox.Resources>
+
+                <!--Defines a context menu-->
+                <ContextMenu x:Key="MyElementMenu">
+                    <MenuItem Header="Remove from Favorites" Click="DeleteBookmark_MenuItem_Click"/>
+                </ContextMenu>
+
+                <!--Sets a context menu for each ListBoxItem in the current ListBox-->
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="ContextMenu" Value="{StaticResource MyElementMenu}"/>
+                </Style>
+
+            </ListBox.Resources>
+            <ListBox.ItemTemplate>
+
+                <DataTemplate>
+                    <Grid x:Name="ItemGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Source="{Binding ImageSource}" Width="18" Margin="0 0 4 0"/>
+                        <pt:EditableTextBlock Grid.Column="1" Text="{Binding Text}" />
+                        
+                        <!--FontWeight="{Binding FontWeight}" 
+                                              IsEditing="{Binding IsEditing}"-->
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <GridSplitter Grid.Row="2" Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                Visibility="{Binding BookmarkListVisibility}"
+                      />
+
+        <controls:SearchBar Grid.Row="3" x:Name="SearchBar" 
                             ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked" 
                             DismissHintTextClicked="SearchBar_DismissHintTextClicked"
                             ArrowKeyPushed="SearchBar_ArrowKeyPushed"
@@ -72,7 +130,7 @@
         <ListBox x:Name="FlatList" 
                  ItemsSource= "{Binding FlattenedItems}"
                  SelectedItem ="{Binding FlattenedSelectedItem}"
-                 Grid.Row="2"
+                 Grid.Row="4"
                  Visibility="{Binding SearchListVisibility}"
                  PreviewMouseLeftButtonDown="FlatList_MouseLeftButtonDown"
                  >
@@ -96,13 +154,14 @@
         
         <pt:TreeListBox x:Name="MainTreeView" 
                         Visibility="{Binding MainTreeViewVisibility}"
-                        Grid.Row="2" 
-                        SelectionMode="Single" 
+                        Grid.Row="4" 
+                        SelectionMode="Extended"
                         AllowDrop="True"
                         VirtualizingStackPanel.IsVirtualizing="False" 
                         HierarchySource="{Binding VisibleRoot}"
                         ChildrenPath="VisibleChildren"
                         KeyDown="MainTreeView_KeyDown"
+                        PreviewKeyDown="MainTreeView_PreviewKeyDown"
                         PreviewMouseLeftButtonDown="MainTreeView_PreviewMouseLeftButtonDown"
                         PreviewMouseRightButtonDown="MainTreeView_PreviewMouseRightButtonDown"
                         PreviewMouseLeftButtonUp="MainTreeView_PreviewMouseLeftButtonUp"
@@ -111,6 +170,7 @@
                         DragLeave="MainTreeView_DragLeave"
                         Drop="MainTreeView_Drop"
                         DragEnter="MainTreeView_DragEnter"
+                        DragOver="MainTreeView_DragOver"
                         MouseDoubleClick="MainTreeView_MouseDoubleClick"
                         MouseMove="MainTreeView_MouseMove">
             
@@ -135,5 +195,8 @@
                 </DataTemplate>
             </pt:TreeListBox.ItemTemplate>
         </pt:TreeListBox>
+        <Grid x:Name="SelectionPanel" Grid.Row="5">
+            <Label Visibility="{Binding SelectedItemInfoVisibility}" Content="{Binding SelectedItemInfoDisplay}"></Label>
+        </Grid>
     </Grid>
 </UserControl>

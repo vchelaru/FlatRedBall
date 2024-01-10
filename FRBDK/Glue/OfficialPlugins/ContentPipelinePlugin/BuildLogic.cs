@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Math.Geometry;
@@ -33,7 +32,7 @@ namespace OfficialPlugins.MonoGameContent
         static string GetCommandLineBuildExe(VisualStudioProject project)
         {
 
-            if(project.DotNetVersion == "v6.0")
+            if(project.DotNetVersion?.Major >= 6)
             {
                 return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\.dotnet\tools\mgcb.exe";
             }
@@ -43,7 +42,7 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
-        public void RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline, ContentPipelineController controller)
+        public async Task RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline, ContentPipelineController controller)
         {
 
             var mgcbToUse = GetCommandLineBuildExe(project);
@@ -74,7 +73,7 @@ namespace OfficialPlugins.MonoGameContent
 
                 foreach (var fileToBeBuilt in allReferencedFileSaves)
                 {
-                    UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
+                    await UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
                 }
             }
 
@@ -338,6 +337,8 @@ namespace OfficialPlugins.MonoGameContent
 
             var commandLineBuildExe = GetCommandLineBuildExe(project);
 
+            var contentDirectory = GlueState.ContentDirectory;
+
             //////////////EARLY OUT////////////////////////
             if (commandLineBuildExe == null)
             {
@@ -368,10 +369,15 @@ namespace OfficialPlugins.MonoGameContent
 
                 return toReturn;
             }
+
+            if(string.IsNullOrEmpty(contentDirectory))
+            {
+                return toReturn;
+            }
+
             ////////////END EARLY OUT//////////////////////
 
 
-            var contentDirectory = GlueState.ContentDirectory;
 
             var relativeToContent = FileManager.MakeRelative(rfsFilePath.FullPath, contentDirectory);
 
@@ -389,7 +395,7 @@ namespace OfficialPlugins.MonoGameContent
                 await TaskManager.Self.AddAsync(() =>
                 {
                     // If the user closes the project while the startup is happening, just skip the task - no need to build
-                    if (GlueState.CurrentGlueProject != null)
+                    if (GlueState.CurrentGlueProject != null && GlueState.IsProjectLoaded(project))
                     {
 
                         if (contentItem.GetIfNeedsBuild(destinationDirectory) || rebuild)
@@ -408,7 +414,7 @@ namespace OfficialPlugins.MonoGameContent
                         foreach (var extension in contentItem.GetBuiltExtensions())
                         {
                             toReturn.Add(absoluteToAddNoExtension + "." + extension);
-                            AddFileToProject(project,
+                            AddFileToProjectIfNotAlreadyIncluded(project,
                                 absoluteToAddNoExtension + "." + extension,
                                 relativeToAddNoExtension + "." + extension,
                                 saveProjectAfterAdd);
@@ -424,7 +430,7 @@ namespace OfficialPlugins.MonoGameContent
 
         private void InstallBuilderIfNecessary(VisualStudioProject visualStudioProject)
         {
-            var needsBuilder = visualStudioProject.DotNetVersion == "v6.0";
+            var needsBuilder = visualStudioProject.DotNetVersion.Major >= 6;
 
             ///////////Early Out//////////////////
             if(!needsBuilder)
@@ -538,7 +544,13 @@ namespace OfficialPlugins.MonoGameContent
         {
             var ati = file.GetAssetTypeInfo();
 
-            return IsBuiltByContentPipeline(file.Name, file.UseContentPipeline || ati?.MustBeAddedToContentPipeline == true, forcePngsToContentPipeline);
+            var supportsContentPipeline = file.UseContentPipeline || ati?.MustBeAddedToContentPipeline == true;
+            if(supportsContentPipeline && ati != null)
+            {
+                supportsContentPipeline = ati.CanBeAddedToContentPipeline;
+            }
+
+            return IsBuiltByContentPipeline(file.Name, supportsContentPipeline, forcePngsToContentPipeline);
         }
 
         private static bool IsBuiltByContentPipeline(string fileName, bool rfsUseContentPipeline, bool forcePngsToContentPipeline)
@@ -575,7 +587,7 @@ namespace OfficialPlugins.MonoGameContent
             return false;
         }
 
-        private void AddFileToProject(VisualStudioProject project, string absoluteFile, string link, bool saveProjectAfterAdd)
+        private void AddFileToProjectIfNotAlreadyIncluded(VisualStudioProject project, string absoluteFile, string link, bool saveProjectAfterAdd)
         {
             //project.AddContentBuildItem(file, SyncedProjectRelativeType.Linked, false);
 

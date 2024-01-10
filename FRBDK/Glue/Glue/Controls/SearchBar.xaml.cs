@@ -1,16 +1,8 @@
 ﻿using FlatRedBall.Glue.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace GlueFormsCore.Controls
 {
@@ -24,6 +16,7 @@ namespace GlueFormsCore.Controls
         public event Action DismissHintTextClicked;
 
         public event Action EnterPressed;
+        public event Action EscapePressed;
         public event Action<Key> ArrowKeyPushed;
         public SearchBar()
         {
@@ -36,6 +29,7 @@ namespace GlueFormsCore.Controls
             if (e.Key == Key.Escape)
             {
                 ViewModel.SearchBoxText = string.Empty;
+                EscapePressed?.Invoke();
             }
             else if(e.Key == Key.Enter)
             {
@@ -46,6 +40,11 @@ namespace GlueFormsCore.Controls
 
         private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
         {
+            var vm = ViewModel;
+            if(vm != null)
+            {
+                vm.SearchBoxText = null;
+            }
             ClearSearchButtonClicked?.Invoke();
         }
 

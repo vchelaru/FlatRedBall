@@ -207,7 +207,6 @@ namespace GumPlugin.Managers
                     if (IsNineSliceSource(variable, state))
                     {
                         string variableValue = variable.Value as string;
-
                         var shouldUsePattern = NineSliceExtensions.GetIfShouldUsePattern(variableValue);
 
                         if (shouldUsePattern)
@@ -512,9 +511,6 @@ namespace GumPlugin.Managers
 
                 string oldRelative = FileManager.RelativeDirectory;
 
-                string gumxFile = null;
-
-
                 FileManager.RelativeDirectory = GetGumxDirectory(fileName);
                 LoadGumxIfNecessaryFromDirectory(FileManager.RelativeDirectory);
 
@@ -789,10 +785,10 @@ namespace GumPlugin.Managers
 
             bool IsFormsOrGumRuntime(ProjectItem projectItem)
             {
-                return projectItem.UnevaluatedInclude?.ToLower().EndsWith("runtime.generated.cs") == true ||
-                    projectItem.UnevaluatedInclude?.ToLower().EndsWith("runtime.cs") == true ||
-                    projectItem.UnevaluatedInclude?.ToLower().EndsWith("forms.generated.cs") == true ||
-                    projectItem.UnevaluatedInclude?.ToLower().EndsWith("forms.cs") == true;
+                return  projectItem.UnevaluatedInclude?.EndsWith("runtime.generated.cs", StringComparison.OrdinalIgnoreCase) ?? 
+                        projectItem.UnevaluatedInclude?.EndsWith("runtime.cs", StringComparison.OrdinalIgnoreCase) ??
+                        projectItem.UnevaluatedInclude?.EndsWith("forms.generated.cs", StringComparison.OrdinalIgnoreCase) ?? 
+                        projectItem.UnevaluatedInclude?.EndsWith("forms.cs", StringComparison.OrdinalIgnoreCase) ?? false;
             }
 
             var codeItemsMadeForGumObjects = project.EvaluatedItems.Where(IsFormsOrGumRuntime).ToArray();

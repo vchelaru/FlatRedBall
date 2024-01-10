@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                                                                          
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              xmlns:local="clr-namespace:TileGraphicsPlugin.Behaviors"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -25,38 +25,28 @@
       <ColumnDefinition></ColumnDefinition>
     </Grid.ColumnDefinitions>
 
-    <Label Visibility="{Binding ScaleVisible}" HorizontalAlignment="Right">Scale:</Label>
+        <Label Visibility="{Binding ScaleVisible}" HorizontalAlignment="Right" Content="{x:Static localization:Texts.Scale}" />
+        <Label Visibility="{Binding LayerVisibilityVisible}" Grid.Row="1" HorizontalAlignment="Right" Content="{x:Static localization:Texts.LayerVisibility}" />
+        <Label Visibility="{Binding OffsetVisible}" Grid.Row="2" HorizontalAlignment="Right" Content="{x:Static localization:Texts.OffsetX}" />
+        <Label Visibility="{Binding OffsetVisible}" Grid.Row="3" HorizontalAlignment="Right" Content="{x:Static localization:Texts.OffsetY}" />
+        <Label Visibility="{Binding OffsetVisible}" Grid.Row="4" HorizontalAlignment="Right" Content="{x:Static localization:Texts.OffsetZ}" />
+        <Label Visibility="{Binding LayerNameVisible}" Grid.Row="5" HorizontalAlignment="Right" Content="{x:Static localization:Texts.LayerName}" />
+        <Label Visibility="{Binding CsvPropertyTypeVisible}" Grid.Row="8" HorizontalAlignment="Right"  Content="{x:Static localization:Texts.VariableType}" />
 
-    <Label Visibility="{Binding LayerVisibilityVisible}" Grid.Row="1" HorizontalAlignment="Right">Layer visibility:</Label>
-
-    <Label Visibility="{Binding OffsetVisible}" Grid.Row="2" HorizontalAlignment="Right">X Offset:</Label>
-
-    <Label Visibility="{Binding OffsetVisible}" Grid.Row="3" HorizontalAlignment="Right">Y Offset:</Label>
-
-    <Label Visibility="{Binding OffsetVisible}" Grid.Row="4" HorizontalAlignment="Right">Z Offset:</Label>
-
-    <Label Visibility="{Binding LayerNameVisible}" Grid.Row="5" HorizontalAlignment="Right">Layer Name:</Label>
-
-    <Label Visibility="{Binding CsvPropertyTypeVisible}" Grid.Row="8" HorizontalAlignment="Right">Variable Type:</Label>
-
-
-    <TextBox Visibility="{Binding ScaleVisible}" Grid.Column="1" x:Name="ScaleTextBox" Height="17" Width ="50" HorizontalAlignment="Left" Margin="4"
-               Text="{Binding Scale}" local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
+        <TextBox Visibility="{Binding ScaleVisible}" Grid.Column="1" x:Name="ScaleTextBox" Height="17" Width ="50" HorizontalAlignment="Left" Margin="4"
+                 Text="{Binding Scale}" local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
     <ComboBox  Visibility="{Binding LayerVisibilityVisible}" Grid.Row="1" Grid.Column="1" Width="100" SelectedItem="{Binding LayerVisibility}" HorizontalAlignment="Left"  Margin="4"
                 ItemsSource="{Binding LayerVisibilityOptions}">
     </ComboBox>
     <TextBox Visibility="{Binding OffsetVisible}" Grid.Row="2" Grid.Column="1" Height="18" Width ="50" Text="{Binding XOffset}" HorizontalAlignment="Left" Margin="4,3,4,4" local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
     <TextBox Visibility="{Binding OffsetVisible}" Grid.Row="3" Grid.Column="1" Height="18" Width ="50" Text="{Binding YOffset}" HorizontalAlignment="Left" Margin="4,3,4,4" local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
     <TextBox Visibility="{Binding OffsetVisible}" Grid.Row="4" Grid.Column="1" Height="18" Width ="50" Text="{Binding ZOffset}" HorizontalAlignment="Left" Margin="4,3,4,4" local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
-
     <TextBox  Visibility="{Binding LayerNameVisible}" Grid.Row="5" Grid.Column="1" Height="18" Width ="75" Text="{Binding LayerName}" HorizontalAlignment="Left" Margin="4,3,4,4" local:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"></TextBox>
 
+    <CheckBox Visibility="{Binding CopyImagesVisible}" Grid.Row="6" IsChecked="{Binding CopyImages}" Margin="3,0,0,0" Grid.Column="1"  Content="{x:Static localization:Texts.CopyImages}" />
+    <CheckBox Visibility="{Binding RequireTileVisible}" Grid.Row="7" IsChecked="{Binding RequireTile}" Margin="3,0,0,0" Grid.Column="1" Content="{x:Static localization:Texts.RequireTile}" />
 
-    <CheckBox Visibility="{Binding CopyImagesVisible}" Grid.Row="6" IsChecked="{Binding CopyImages}" Margin="3,0,0,0" Grid.Column="1">Copy images</CheckBox>
-    <CheckBox Visibility="{Binding RequireTileVisible}" Grid.Row="7" IsChecked="{Binding RequireTile}" Margin="3,0,0,0" Grid.Column="1">Require Tile</CheckBox>
-
-    <ComboBox Visibility="{Binding CsvPropertyTypeVisible}" Grid.Row="8" Grid.Column="1" Width="100" SelectedItem="{Binding CsvPropertyType}" HorizontalAlignment="Left"  Margin="4"
-            ItemsSource="{Binding CsvPropertyTypeOptions}">
+    <ComboBox Visibility="{Binding CsvPropertyTypeVisible}" Grid.Row="8" Grid.Column="1" Width="100" SelectedItem="{Binding CsvPropertyType}" HorizontalAlignment="Left"  Margin="4" ItemsSource="{Binding CsvPropertyTypeOptions}">
     </ComboBox>
 
     <TextBox Grid.Row="9" Height="20" VerticalAlignment="Top" Margin="3"

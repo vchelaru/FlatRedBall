@@ -1,5 +1,5 @@
 //#if DESKTOP_GL || WINDOWS
-#if WINDOWS
+#if WINDOWS || MONOGAME_381
 #define USE_CUSTOM_SHADER
 #endif
 
@@ -322,6 +322,7 @@ namespace FlatRedBall.Graphics
 #if USE_CUSTOM_SHADER
         static BasicEffect mBasicEffect;
         static Effect mEffect;
+        static Effect mExternalEffect;
         static Effect mCurrentEffect;
 
 #else
@@ -344,7 +345,6 @@ namespace FlatRedBall.Graphics
         #region Texture Fields
 
         static Texture2D mTexture;
-        static string mColorOperation;
         static BlendOperation mBlendOperation;
         static TextureAddressMode mTextureAddressMode;
 
@@ -422,7 +422,7 @@ namespace FlatRedBall.Graphics
             mCurrentEffect.TextureEnabled = value != null;
             mCurrentEffect.Texture = mTexture;
 #else
-                    mCurrentEffect.Parameters["CurrentTexture"].SetValue(mTexture);
+            mEffectManager.ParameterCurrentTexture.SetValue(mTexture);
 #endif
         }
 
@@ -608,11 +608,21 @@ namespace FlatRedBall.Graphics
             private set { lastFrameRenderBreakList = value; }
         }
 
+        /// <summary>
+        /// When this is enabled texture colors will be translated to linear space before 
+        /// any other shader operations are performed. This is useful for games with 
+        /// lighting and other special shader effects. If the colors are left in gamma 
+        /// space the shader calculations will crush the colors and not look like natural 
+        /// lighting. Delinearization must be done by the developer in the last render 
+        /// step when rendering to the screen. This technique is called gamma correction.
+        /// Disabled by default.
+        /// </summary>
+        public static bool LinearizeTextures { get; set; }
 
         #endregion
 
         #region Internal Properties
-        
+
 
         /// <summary>
         /// Sets the color operation on the graphics device if the set value differs from the current value.
@@ -694,14 +704,30 @@ namespace FlatRedBall.Graphics
 			}
         }
 
-        static public Effect Effect
+#if USE_CUSTOM_SHADER
+        static CustomEffectManager mEffectManager = new CustomEffectManager();
+        public static CustomEffectManager ExternalEffectManager { get; } = new CustomEffectManager();
+
+        public static Effect Effect
         {
-            set 
-            { 
-                mEffect = value; 
-            }
             get { return mEffect; }
+            set
+            {
+                mEffect = value;
+                mEffectManager.Effect = mEffect;
+            }
         }
+
+        public static Effect ExternalEffect
+        {
+            get { return mExternalEffect; }
+            set
+            {
+                mExternalEffect = value;
+                ExternalEffectManager.Effect = mExternalEffect;
+            }
+        }
+#endif
 
         #endregion
 
@@ -1084,7 +1110,7 @@ namespace FlatRedBall.Graphics
                 throw exception;
             }
 #endif
-            #endregion
+#endregion
 
             #region Make sure the GraphicsDeviceManager is not null
 #if DEBUG
@@ -1095,7 +1121,7 @@ namespace FlatRedBall.Graphics
                 throw exception;
             }
 #endif
-            #endregion
+#endregion
 
 
             if (section != null)
@@ -1181,10 +1207,7 @@ namespace FlatRedBall.Graphics
 
         internal static void ForceSetColorOperation(ColorOperation value)
         {
-
             mLastColorOperationSet = value;
-
-
 
 #if !USE_CUSTOM_SHADER
             switch (value)
@@ -1242,43 +1265,25 @@ namespace FlatRedBall.Graphics
             }
 
 #else
-            string valueAsString;
-
-            switch (value)
-            {
-                case ColorOperation.Add: valueAsString = "Add"; break;
-                case ColorOperation.Color: valueAsString = "Color"; break;
-                case ColorOperation.ColorTextureAlpha: valueAsString = "ColorTextureAlpha"; break;
-                case ColorOperation.InverseTexture: valueAsString = "InverseTexture"; break;
-                case ColorOperation.Modulate: valueAsString = "Modulate"; break;
-                case ColorOperation.Subtract: valueAsString = "Subtract"; break;
-                case ColorOperation.Texture: valueAsString = "Texture"; break;
-                case ColorOperation.Modulate2X: valueAsString = "Modulate2X"; break;
-                case ColorOperation.Modulate4X: valueAsString = "Modulate4X"; break;
-                case ColorOperation.InterpolateColor: valueAsString = "InterpolateColor"; break;
-                default: throw new InvalidOperationException();
-            }
-
-
-            if(mCurrentEffect == null)
-            {
-                mCurrentEffect = mEffect;
-            }
-            EffectTechnique technique =
-                mCurrentEffect.Techniques[valueAsString];
+            var technique = mEffectManager.GetVertexColorTechniqueFromColorOperation(value);
 
             if (technique == null)
             {
                 string errorString =
-                    "Could not find a technique named " + valueAsString +
-                    " in the current shader.  If using a custom shader verify that " +
-                    "this pixel shader technique exists.  Otherwise use a standard " +
-                    "ColorOperation.";
+                    "Could not find a technique for " + value.ToString() +
+                    ", filter: " + FlatRedBallServices.GraphicsOptions.TextureFilter +
+                    " in the current shader. If using a custom shader verify that" +
+                    " this pixel shader technique exists.";
+                throw new Exception(errorString);
             }
             else
             {
+                if (mCurrentEffect == null)
+                {
+                    mCurrentEffect = mEffect;
+                }
+
                 mCurrentEffect.CurrentTechnique = technique;
-                mColorOperation = valueAsString;
             }
 #endif
         }
@@ -1520,12 +1525,17 @@ namespace FlatRedBall.Graphics
             vertsPerVertexBuffer.Clear();
             TextureFilter oldFilter = FlatRedBallServices.GraphicsOptions.TextureFilter;
 
-            FlatRedBallServices.GraphicsOptions.TextureFilter = TextureFilter.Linear;
+            // Augu 28, 2023 - why do we use linear
+            // filtering for polygons? This won't make 
+            // the lines anti-aliased. It just blends the
+            // textels. This doesn't seem necessary, and is 
+            // just a waste of performance.
+            //FlatRedBallServices.GraphicsOptions.TextureFilter = TextureFilter.Linear;
 
             if (layer == null)
             {
                 // reset the camera as it may have been set differently by layers
-#if  !USE_CUSTOM_SHADER
+#if !USE_CUSTOM_SHADER
                 camera.SetDeviceViewAndProjection( mEffect, false);
                 camera.SetDeviceViewAndProjection( mGenericEffect, false );
 #else
@@ -1537,7 +1547,7 @@ namespace FlatRedBall.Graphics
             else
             {
 
-#if  !USE_CUSTOM_SHADER
+#if !USE_CUSTOM_SHADER
                 camera.SetDeviceViewAndProjection( mEffect, layer.RelativeToCamera);
                 camera.SetDeviceViewAndProjection( mGenericEffect, layer.RelativeToCamera );
 #else
@@ -2097,7 +2107,8 @@ namespace FlatRedBall.Graphics
                 //DrawVBList(camera, mShapesVertexBufferList, mRenderBreaks, verticesToDraw, PrimitiveType.LineStrip, VertexPositionColor.SizeInBytes);
             }
 
-            FlatRedBallServices.GraphicsOptions.TextureFilter = oldFilter;
+            // See comment above on this.
+            //FlatRedBallServices.GraphicsOptions.TextureFilter = oldFilter;
         }
 
         #endregion
@@ -2423,7 +2434,7 @@ namespace FlatRedBall.Graphics
 
                         }
                     }
-#elif XNA4 
+#elif XNA4
                     EffectTechnique currentTechnique = effectToUse.CurrentTechnique;
                     foreach (EffectPass pass in currentTechnique.Passes)
                     {

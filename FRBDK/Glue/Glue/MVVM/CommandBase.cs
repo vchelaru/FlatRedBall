@@ -9,7 +9,9 @@ namespace FlatRedBall.Glue.MVVM
 {
     public class CommandBase : ICommand
     {
+#pragma warning disable CS0067 // Implemented for interface
         public event EventHandler CanExecuteChanged;
+#pragma warning restore CS0067 // The event 'CommandBase.CanExecuteChanged' is never used
 
         Action execute;
         Func<bool> canExecuteFunc;

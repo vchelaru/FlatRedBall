@@ -35,7 +35,7 @@ namespace GumPluginCore.CodeGeneration
 
         public static void GenerateAddCollision(StringBuilder stringBuilder, IElement element, NamedObjectSave nos)
         {
-            if(IsIGumCollidable(element) || InheritsFromIGumCollidable(element))
+            if(IsIGumCollidable(element) || InheritsFromIGumCollidable(element as GlueElement))
             {
                 stringBuilder.AppendLine($"GumCoreShared.FlatRedBall.Embedded.GumCollidableExtensions.AddCollision(this, wrapperForAttachment);");
                 stringBuilder.AppendLine($"GumCoreShared.FlatRedBall.Embedded.GumCollidableExtensions.UpdateShapePositionsFromGum(this);");
@@ -55,7 +55,7 @@ namespace GumPluginCore.CodeGeneration
             element is EntitySave entitySave && 
             entitySave.Properties.GetValue<bool>(GumCollidableManager.ImplementsIGumCollidable);
 
-        public static bool InheritsFromIGumCollidable(IElement element)
+        public static bool InheritsFromIGumCollidable(GlueElement element)
         {
             return ObjectFinder.Self.GetAllBaseElementsRecursively(element).Any(item =>
                 item.Properties.GetValue<bool>(GumCollidableManager.ImplementsIGumCollidable));

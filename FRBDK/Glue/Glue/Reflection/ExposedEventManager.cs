@@ -50,30 +50,13 @@ namespace FlatRedBall.Glue.Reflection
         {
             List<ExposableEvent> returnValues = new List<ExposableEvent>();
 
-            // February 18, 2012
-            // Not sure why this checks
-            // both if the Entity is IClickable
-            // and IWindow, but only IWindow has
-            // these events.  Let's fix that:
-            //if (entitySave.ImplementsIClickable || entitySave.ImplementsIWindow)
-            if (entitySave.GetImplementsIWindowRecursively())
-            {
-                AddIWindowEvents(returnValues);
 
-            }
-
-            if (entitySave.GetImplementsIVisibleRecursively())
-            {
-                returnValues.Add(new ExposableEvent( "AfterVisibleSet", "Visible", BeforeOrAfter.After));
-                returnValues.Add(new ExposableEvent("BeforeVisibleSet", "Visible", BeforeOrAfter.Before));
-            }
 
             // todo:  Will want to implement after Enabled set events
 
             GetExposableEventsFor(entitySave, returnValues);
 
 
-            returnValues.Sort(Sort);
             if (removeAlreadyExposed)
             {
                 RemoveAlreadyExposed(entitySave, returnValues);
@@ -106,7 +89,6 @@ namespace FlatRedBall.Glue.Reflection
 
             GetExposableEventsFor(screenSave, returnValues);
 
-            returnValues.Sort(Sort);
 
             if (removeAlreadyExposed)
             {
@@ -130,9 +112,44 @@ namespace FlatRedBall.Glue.Reflection
 
         }
 
-        static void GetExposableEventsFor(IElement element, List<ExposableEvent> listToFill)
+        static void GetExposableEventsFor(GlueElement element, List<ExposableEvent> listToFill)
         {
-            if(element is ScreenSave)
+            // February 18, 2012
+            // Not sure why this checks
+            // both if the Entity is IClickable
+            // and IWindow, but only IWindow has
+            // these events.  Let's fix that:
+            //if (entitySave.ImplementsIClickable || entitySave.ImplementsIWindow)
+            if (element is EntitySave entitySave)
+            {
+
+                if (entitySave.GetImplementsIVisibleRecursively())
+                {
+                    listToFill.Add(new ExposableEvent("AfterVisibleSet", "Visible", BeforeOrAfter.After));
+                    listToFill.Add(new ExposableEvent("BeforeVisibleSet", "Visible", BeforeOrAfter.Before));
+                }
+                if(entitySave.GetImplementsIWindowRecursively())
+                {
+                    AddIWindowEvents(listToFill);
+                }
+
+                if(ImplementsIDamageableRecursively(entitySave))
+                {
+                    listToFill.Add(new ExposableEvent( nameof(Entities.IDamageable.Died) ));
+                    listToFill.Add(new ExposableEvent( nameof(Entities.IDamageable.ReactToDamageReceived) ));
+                }
+
+                if(ImplementsIDamageAreaRecursively(entitySave))
+                {
+                    listToFill.Add(new ExposableEvent(nameof(Entities.IDamageArea.ReactToDamageDealt)));
+                    listToFill.Add(new ExposableEvent(nameof(Entities.IDamageArea.KilledDamageable)));
+                    listToFill.Add(new ExposableEvent(nameof(Entities.IDamageArea.RemovedByCollision)));
+                }
+
+            }
+
+
+            if (element is ScreenSave)
             {
                 listToFill.Add(new ExposableEvent("BeforeCollision"));
             }
@@ -140,8 +157,11 @@ namespace FlatRedBall.Glue.Reflection
             // Update June 4, 2013:
             // Not supplying StartPushed 
             // event anymore - too specific
-            listToFill.Add(new ExposableEvent( "BackPushed"));
+            // Update Feb 8, 2023:
+            // Not supporting back event either:
+            //listToFill.Add(new ExposableEvent( "BackPushed"));
             //listToFill.Add(new ExposableEvent( "StartPushed"));
+
             listToFill.Add(new ExposableEvent("ResolutionOrOrientationChanged"));
 
             // Victor Chelaru May 12, 2013
@@ -172,8 +192,43 @@ namespace FlatRedBall.Glue.Reflection
                     listToFill.Add(new ExposableEvent(ers.EventName));
                 }
             }
+
+            listToFill.Sort(Sort);
         }
 
+        static bool ImplementsIDamageAreaRecursively(EntitySave entity)
+        {
+            if (entity?.Properties.GetValue<bool>("ImplementsIDamageArea") == true)
+            {
+                return true;
+            }
+            else
+            {
+                var baseEntity = ObjectFinder.Self.GetBaseElement(entity) as EntitySave;
+                if (baseEntity != null)
+                {
+                    return ImplementsIDamageAreaRecursively(baseEntity);
+                }
+            }
+            return false;
+        }
+
+        static bool ImplementsIDamageableRecursively(EntitySave entity)
+        {
+            if (entity?.Properties.GetValue<bool>("ImplementsIDamageable") == true)
+            {
+                return true;
+            }
+            else
+            {
+                var baseEntity = ObjectFinder.Self.GetBaseElement(entity) as EntitySave;
+                if (baseEntity != null)
+                {
+                    return ImplementsIDamageableRecursively(baseEntity);
+                }
+            }
+            return false;
+        }
 
         public static List<ExposableEvent> GetExposableEventsFor(NamedObjectSave namedObjectSave, IElement parent)
         {

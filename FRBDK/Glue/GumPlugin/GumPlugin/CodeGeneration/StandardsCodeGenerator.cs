@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using Gum.DataTypes;
 using Gum.DataTypes.Variables;
+using GumPluginCore.CodeGeneration;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -36,48 +37,9 @@ namespace GumPlugin.CodeGeneration
 
         public StandardsCodeGenerator()
         {
-            mStandardSetterReplacements.Add("Text", (codeBlock) =>
-            {
-                //codeBlock.If("this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren")
-                //    .Line("// make it have no line wrap width before assignign the text:")
-                //    .Line("ContainedText.Width = 0;");
+            TextCodeGenerator.Self.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
 
-                //codeBlock.Line("ContainedText.RawText = value;");
-                //codeBlock.Line("UpdateLayout();");
-
-                codeBlock.Line("var widthBefore = ContainedText.WrappedTextWidth;");
-                codeBlock.Line("var heightBefore = ContainedText.WrappedTextHeight;");
-
-                codeBlock.Line("if (this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren)");
-                codeBlock.Line("{");
-                codeBlock.Line("    // make it have no line wrap width before assignign the text:");
-                codeBlock.Line("    ContainedText.Width = 0;");
-                codeBlock.Line("}");
-
-
-                codeBlock.Line("ContainedText.RawText = value;");
-
-                codeBlock.Line("var shouldUpdate = widthBefore != ContainedText.WrappedTextWidth || heightBefore != ContainedText.WrappedTextHeight;");
-
-                codeBlock.Line("if (shouldUpdate)");
-                codeBlock.Line("{");
-                if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GumTextObjectsUpdateTextWith0ChildDepth)
-                {
-                    codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, 0);");
-                }
-                else
-                {
-                    codeBlock.Line("    UpdateLayout(true, int.MaxValue/2);");
-                }
-                codeBlock.Line("}");
-            });
-
-            mStandardSetterReplacements.Add("FontScale", (codeBlock) =>
-            {
-                codeBlock.Line("ContainedText.FontScale = value;");
-                codeBlock.Line("UpdateLayout();");
-            });
-
+            
             mStandardSetterReplacements.Add("SourceFile", codeBlock =>
             {
                 codeBlock.Line("this.Texture = value;");
@@ -150,43 +112,62 @@ namespace GumPlugin.CodeGeneration
             mStandardElementToQualifiedTypes.Add("Rectangle", "RenderingLibrary.Math.Geometry.LineRectangle");
             mStandardElementToQualifiedTypes.Add("Polygon", "RenderingLibrary.Math.Geometry.LinePolygon");
 
-            mStandardElementToQualifiedTypes.Add("Arc", "SkiaPlugin.Renderables.RenderableArc");
-            mStandardElementToQualifiedTypes.Add("ColoredCircle", "SkiaPlugin.Renderables.RenderableCircle");
-            mStandardElementToQualifiedTypes.Add("LottieAnimation", "SkiaPlugin.Renderables.RenderableLottieAnimation");
-            mStandardElementToQualifiedTypes.Add("RoundedRectangle", "SkiaPlugin.Renderables.RenderableRoundedRectangle");
-            mStandardElementToQualifiedTypes.Add("Svg", "SkiaPlugin.Renderables.RenderableSvg");
+            mStandardElementToQualifiedTypes.Add("Arc", "SkiaGum.Renderables.RenderableArc");
+            mStandardElementToQualifiedTypes.Add("ColoredCircle", "SkiaGum.Renderables.RenderableCircle");
+            mStandardElementToQualifiedTypes.Add("LottieAnimation", "SkiaGum.Renderables.RenderableLottieAnimation");
+            mStandardElementToQualifiedTypes.Add("RoundedRectangle", "SkiaGum.Renderables.RenderableRoundedRectangle");
+            mStandardElementToQualifiedTypes.Add("Svg", "SkiaGum.Renderables.RenderableSvg");
+            mStandardElementToQualifiedTypes.Add("Canvas", "SkiaGum.Renderables.RenderableCanvas");
 
 
             // What we will never support (as is)
 
+            variableNamesToAddForProperties.Add(new VariableSave
+            {
+                IsFile = false,
+                IsFont = false,
+
+                Type = "Microsoft.Xna.Framework.Color",
+                Name = "Color"
+            });
+        }
+
+        public void RefreshVariableNamesToSkipForProperties()
+        {
+            mVariableNamesToSkipForProperties.Clear();
+
+            TextCodeGenerator.Self.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
+
+            void ExcludeIfVersionLessThan(string propertyName, GluxVersions gluxVersion)
+            {
+                if(GlueState.Self.CurrentGlueProject.FileVersion < (int)gluxVersion)
+                {
+                    mVariableNamesToSkipForProperties.Add(propertyName);
+                }
+            }
 
             mVariableNamesToSkipForProperties.Add("Custom Texture Coordinates"); // replaced by texture address mode
             mVariableNamesToSkipForProperties.Add("Height Units");
             mVariableNamesToSkipForProperties.Add("Width Units");
             mVariableNamesToSkipForProperties.Add("Parent");
             mVariableNamesToSkipForProperties.Add("Guide");
-            mVariableNamesToSkipForProperties.Add("IsItalic");
-            mVariableNamesToSkipForProperties.Add("IsBold");
+
 
             mVariableNamesToSkipForProperties.Add("X Origin");
             mVariableNamesToSkipForProperties.Add("X Units");
             mVariableNamesToSkipForProperties.Add("Y Origin");
             mVariableNamesToSkipForProperties.Add("Y Units");
-            mVariableNamesToSkipForProperties.Add("IgnoredByParentSize");
 
             mVariableNamesToSkipForProperties.Add("FlipHorizontal");
 
 
-            mVariableNamesToSkipForProperties.Add("Font");
-            mVariableNamesToSkipForProperties.Add("FontSize");
 
             mVariableNamesToSkipForProperties.Add("X");
             mVariableNamesToSkipForProperties.Add("Y");
             mVariableNamesToSkipForProperties.Add("Width");
             mVariableNamesToSkipForProperties.Add("Height");
             mVariableNamesToSkipForProperties.Add("Visible");
-            mVariableNamesToSkipForProperties.Add("OutlineThickness");
-            mVariableNamesToSkipForProperties.Add("UseFontSmoothing");
+
 
             mVariableNamesToSkipForProperties.Add("HasEvents");
             mVariableNamesToSkipForProperties.Add("ExposeChildrenEvents");
@@ -225,15 +206,17 @@ namespace GumPlugin.CodeGeneration
                 mVariableNamesToSkipForProperties.Add("CurrentChainName");
             }
 
-            variableNamesToAddForProperties.Add(new VariableSave
-            {
-                IsFile = false,
-                IsFont = false,
+            // It turns out we dont' have a way to skip/include properties by version. To be safe we are going to exclude these for now. In the future we need to have version-based
+            // include/exclude just like the StateCodeGenerator:
+            ExcludeIfVersionLessThan("CustomFrameTextureCoordinateWidth", GluxVersions.GumUsesSystemTypes);
+            ExcludeIfVersionLessThan("LineHeightMultiplier", GluxVersions.GumUsesSystemTypes);
 
-                Type = "Microsoft.Xna.Framework.Color",
-                Name = "Color"
-            });
+            // Do not generate AutoGrid properties - they are already handled by GraphicalUiElement
+            mVariableNamesToSkipForProperties.Add("AutoGridHorizontalCells");
+            mVariableNamesToSkipForProperties.Add("AutoGridVerticalCells");
 
+            // always ignore this because it's handled by GraphicalUiElement:
+            mVariableNamesToSkipForProperties.Add("IgnoredByParentSize");
         }
 
 
@@ -253,7 +236,7 @@ namespace GumPlugin.CodeGeneration
 
             // This needs to be public because it can be exposed as public in a public class
             //ICodeBlock currentBlock = codeBlock.Class("partial", runtimeClassName, " : Gum.Wireframe.GraphicalUiElement");
-            ICodeBlock classBodyBlock = codeBlock.Class("public partial", runtimeClassName, " : Gum.Wireframe.GraphicalUiElement");
+            ICodeBlock classBodyBlock = codeBlock.Class("public partial", runtimeClassName, " : global::Gum.Wireframe.GraphicalUiElement");
 
             GueDerivingClassCodeGenerator.Self.GenerateConstructor(standardElementSave, classBodyBlock, runtimeClassName);
 
@@ -277,26 +260,8 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)
         {
-            if(standardElementSave.Name == "Sprite")
-            {
-                var textureCoordinatesMethodBlock = classBodyBlock.Function("public void", "SetTextureCoordinatesFrom", "FlatRedBall.Graphics.Animation.AnimationFrame frbAnimationFrame");
-
-                textureCoordinatesMethodBlock.Line("this.Texture = frbAnimationFrame.Texture;");
-                textureCoordinatesMethodBlock.Line("this.TextureAddress = Gum.Managers.TextureAddress.Custom;");
-                textureCoordinatesMethodBlock.Line("this.TextureLeft = FlatRedBall.Math.MathFunctions.RoundToInt(frbAnimationFrame.LeftCoordinate * frbAnimationFrame.Texture.Width);");
-                textureCoordinatesMethodBlock.Line("this.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt((frbAnimationFrame.RightCoordinate - frbAnimationFrame.LeftCoordinate) * frbAnimationFrame.Texture.Width);");
-                textureCoordinatesMethodBlock.Line("this.TextureTop = FlatRedBall.Math.MathFunctions.RoundToInt(frbAnimationFrame.TopCoordinate * frbAnimationFrame.Texture.Height);");
-                textureCoordinatesMethodBlock.Line("this.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt((frbAnimationFrame.BottomCoordinate - frbAnimationFrame.TopCoordinate) * frbAnimationFrame.Texture.Height);");
-
-                var sourceFileNameProperty = classBodyBlock.Property("public string", "SourceFileName");
-                sourceFileNameProperty.Line("set => base.SetProperty(\"SourceFile\", value);");
-            }
-            else if(standardElementSave.Name == "Text")
-            {
-                var overrideTextRenderingPositionModeProperty = classBodyBlock.Property("public RenderingLibrary.Graphics.TextRenderingPositionMode?", "OverrideTextRenderingPositionMode");
-                overrideTextRenderingPositionModeProperty.Line("get => mContainedText.OverrideTextRenderingPositionMode;");
-                overrideTextRenderingPositionModeProperty.Line("set => mContainedText.OverrideTextRenderingPositionMode = value;");
-            }
+            SpriteCodeGenerator.Self.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
+            TextCodeGenerator.Self.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
         }
 
         private void GenerateGenericContainerCode(ICodeBlock codeBlock)
@@ -304,6 +269,22 @@ namespace GumPlugin.CodeGeneration
             codeBlock.Line(@"
     public class ContainerRuntime<T> : ContainerRuntime where T : Gum.Wireframe.GraphicalUiElement, new()
     {
+        public int ItemCount
+        {
+            get => base.Children.Count;
+            set
+            {
+                while(base.Children.Count < value)
+                {
+                    AddChild();
+                }
+                while(base.Children.Count > value)
+                {
+                    RemoveChild(base.Children.Last() as T);
+                }
+            }
+        }
+
         public new System.Collections.Generic.IEnumerable<T> Children
         {
             get
@@ -397,20 +378,8 @@ namespace GumPlugin.CodeGeneration
                 }
             }
 
-            if(standardElementSave.Name == "Text")
-            {
-                // generate text-specific properties here:
-                GenerateVariable(currentBlock, containedGraphicalObjectName, 
-                    new VariableSave { Name = "BitmapFont", Type = "RenderingLibrary.Graphics.BitmapFont" }, 
-                    standardElementSave);
-                
-                GenerateVariable(currentBlock, containedGraphicalObjectName,
-                    new VariableSave { Name = "WrappedText", Type = "System.Collections.Generic.List<string>" },
-                    standardElementSave,
-                    generateSetter:false);
-
-            }
-            else if(standardElementSave.Name == "Sprite")
+            TextCodeGenerator.Self.GenerateVariableProperties(standardElementSave, currentBlock, containedGraphicalObjectName);
+            if(standardElementSave.Name == "Sprite")
             {
                 GenerateVariable(currentBlock, containedGraphicalObjectName,
                     new VariableSave { Name = "Texture", Type = "Microsoft.Xna.Framework.Graphics.Texture2D" },
@@ -494,7 +463,7 @@ namespace GumPlugin.CodeGeneration
             return true;
         }
 
-        private void GenerateVariable(ICodeBlock currentBlock, string containedGraphicalObjectName, Gum.DataTypes.Variables.VariableSave variable, ElementSave elementSave, 
+        public void GenerateVariable(ICodeBlock currentBlock, string containedGraphicalObjectName, Gum.DataTypes.Variables.VariableSave variable, ElementSave elementSave, 
             bool generateSetter = true)
         {
             #region Get Variable Type
@@ -534,11 +503,11 @@ namespace GumPlugin.CodeGeneration
 
             if(generateSetter)
             {
-                GenerateSetter(containedGraphicalObjectName, variable, propertyCodeBlock, variableName, whatToGetOrSet, elementSave);
+                GenerateSetter(containedGraphicalObjectName, variable, propertyCodeBlock, whatToGetOrSet, elementSave);
             }
         }
 
-        private void GenerateSetter(string propertyName, VariableSave variable, ICodeBlock property, string variableName, string whatToGetOrSet, ElementSave elementSave)
+        private void GenerateSetter(string propertyName, VariableSave variable, ICodeBlock property, string whatToGetOrSet, ElementSave elementSave)
         {
             var setter = property.Set();
             bool wasHandled = TryHandleCustomSetter(variable, elementSave, setter);
@@ -557,6 +526,12 @@ namespace GumPlugin.CodeGeneration
                     rightSide = AdjustStandardElementVariableSetIfNecessary(variable, rightSide);
 
                     setter.Line(whatToGetOrSet + " = " + rightSide + ";");
+
+                    if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GraphicalUiElementINotifyPropertyChanged)
+                    {
+                        // notify it changing...
+                        setter.Line("NotifyPropertyChanged();");
+                    }
                 }
 
                 if(variablesToCallLayoutAfter.Contains(variable.Name))
@@ -622,10 +597,22 @@ namespace GumPlugin.CodeGeneration
 
                 if(!string.IsNullOrEmpty(colorComponent))
                 {
+                    var version = GlueState.Self.CurrentGlueProject.FileVersion;
+                    if(version >= (int)GluxVersions.GumUsesSystemTypes || GlueState.Self.CurrentMainProject.IsFrbSourceLinked())
+                    {
+                        //setter.Line($"var color = {containedObject}.Color;");
+                        setter.Line("// The new version of Glue is moving away from XNA color values. This code converts color values. If this doesn't run, you need to upgrade your GLUX version.");
+                        setter.Line("// More info here: https://flatredball.com/documentation/tools/glue-reference/glujglux/");
 
-                    setter.Line($"var color = {containedObject}.Color;");
-                    setter.Line($"color.{colorComponent} = (byte)value;");
-                    setter.Line($"{containedObject}.Color = color;");
+                        setter.Line($"var color = ToolsUtilitiesStandard.Helpers.ColorExtensions.With{variable.Name}({containedObject}.Color, (byte)value);");
+                        setter.Line($"{containedObject}.Color = color;");
+                    }
+                    else
+                    {
+                        setter.Line($"var color = {containedObject}.Color;");
+                        setter.Line($"color.{colorComponent} = (byte)value;");
+                        setter.Line($"{containedObject}.Color = color;");
+                    }
                     return true;
                 }
             }
@@ -633,7 +620,7 @@ namespace GumPlugin.CodeGeneration
             return false;
         }
 
-        private void GenerateGetter(string propertyName, VariableSave variable, 
+        private void GenerateGetter(string containedGraphicalObjectName, VariableSave variable, 
             ICodeBlock property, string variableName, string whatToGetOrSet, ElementSave elementSave)
         {
             var getter = property.Get();
@@ -645,7 +632,7 @@ namespace GumPlugin.CodeGeneration
 
                 if (mStandardGetterReplacements.ContainsKey(variableName))
                 {
-                    mStandardGetterReplacements[propertyName](getter);
+                    mStandardGetterReplacements[variableName](getter);
                 }
                 else
                 {
@@ -715,7 +702,13 @@ namespace GumPlugin.CodeGeneration
             {
                 value = "Gum.RenderingLibrary.BlendExtensions.ToBlend(" + value + ")";
             }
-
+            else if (variableSave.Type == "Microsoft.Xna.Framework.Color")
+            {
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumUsesSystemTypes || GlueState.Self.CurrentMainProject.IsFrbSourceLinked())
+                {
+                    value = $"RenderingLibrary.Graphics.XNAExtensions.ToXNA({value})";
+                }
+            }
             return value;
         }
 
@@ -724,6 +717,13 @@ namespace GumPlugin.CodeGeneration
             if (variableSave.Type == "Blend")
             {
                 value = "Gum.RenderingLibrary.BlendExtensions.ToBlendState(" + value + ")";
+            }
+            else if(variableSave.Type == "Microsoft.Xna.Framework.Color")
+            {
+                if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumUsesSystemTypes || GlueState.Self.CurrentMainProject.IsFrbSourceLinked())
+                {
+                    value = $"RenderingLibrary.Graphics.XNAExtensions.ToSystemDrawing({value})";
+                }
             }
 
 

@@ -35,6 +35,14 @@ namespace OfficialPluginsCore.Wizard.Managers
 
         public async Task Apply(WizardViewModel vm)
         {
+            ///////////////////Early Out/////////////////////
+            if (GlueState.Self.CurrentGlueProject == null)
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox("There is no project loaded, so the wizard cannot run");
+                return;
+            }
+            ////////////////End Early Out////////////////////
+
             #region Initialization and utility methods
 
             var tasks = new List<TaskItemViewModel>();
@@ -187,7 +195,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             AddTask("Saving Project", () =>
             {
-                GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
                 return Task.CompletedTask;
             });
 
@@ -284,6 +292,9 @@ namespace OfficialPluginsCore.Wizard.Managers
             {
                 cloudCollisionNos = await MainAddScreenPlugin.AddCollision(gameScreen, "CloudCollision",
                     setFromMapObject: vm.AddTiledMap);
+
+                cloudCollisionNos.SetVariable("RepositionUpdateStyle", "Upward");
+
             }
 
             if (vm.AddHudLayer)
@@ -592,7 +603,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     if (vm.PlayerControlType == GameType.Platformer)
                     {
                         // mark as platformer
-                        PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityPlatformer");
+                        PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeEntityPlatformer", playerEntity);
 
                         if(vm.ShowAddPlayerSpritePlatformerAnimations && vm.AddPlayerSpritePlatformerAnimations)
                         {
@@ -608,7 +619,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     else if (vm.PlayerControlType == GameType.Topdown)
                     {
                         // mark as top down
-                        PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityTopDown");
+                        PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeEntityTopDown", playerEntity);
                     }
                 }
 
@@ -732,13 +743,6 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             playerEntity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(addEntityVm);
 
-
-
-            if (playerEntity == null)
-            {
-                int m = 3;
-            }
-
             if (vm.PlayerControlType == GameType.Platformer && vm.PlayerCollisionType == CollisionType.Rectangle)
             {
                 // this should have an AARect, so let's adjust it to match the right size/position as explained here:
@@ -793,7 +797,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 if (vm.AddPlayerToList)
                 {
                     AddObjectViewModel addPlayerVm = new AddObjectViewModel();
-
+                    addPlayerVm.ForcedElementToAddTo = gameScreen;
                     addPlayerVm.SourceType = SourceType.Entity;
                     addPlayerVm.SourceClassType = playerEntity.Name;
                     addPlayerVm.ObjectName = "Player1";
@@ -961,7 +965,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 displaySettings.AspectRatioWidth = aspectRatioWidth;
                 displaySettings.AspectRatioHeight = aspectRatioHeight;
-                displaySettings.FixedAspectRatio = true;
+                displaySettings.AspectRatioBehavior = AspectRatioBehavior.FixedAspectRatio;
 
                 displaySettings.Scale = scalePercent;
 
@@ -978,7 +982,16 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             var cameraNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addCameraControllerVm, gameScreen, null, selectNewNos: false);
 
-            if (vm.FollowPlayersWithCamera && vm.AddPlayerListToGameScreen)
+            if(cameraNos == null)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
+            else if(ObjectFinder.Self.GetElementContaining(cameraNos) == null)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
+
+            if (vm.FollowPlayersWithCamera && vm.FollowPlayersWithCameraVisibility)
             {
                 await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
                     cameraNos,
@@ -987,7 +1000,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     performSaveAndGenerateCode: false,
                     updateUi: false);
             }
-            if (vm.KeepCameraInMap && vm.AddTiledMap)
+            if (vm.KeepCameraInMap && vm.KeepCameraInMapVisibility)
             {
                 await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
                     cameraNos,

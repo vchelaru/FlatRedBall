@@ -1,19 +1,8 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using Glue;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -63,12 +52,24 @@ namespace FlatRedBall.Glue.Controls
             Button button = new Button();
             button.Click += HandleButtonClickInternal;
             button.TabIndex = buttons.Count;
-            button.Content = text;
+            //button.Content = text;
+
+            TextBlock myTextBlock = new TextBlock();
+            // Set the TextWrapping property to Wrap
+            myTextBlock.TextWrapping = TextWrapping.Wrap;
+            // Set the text of the TextBlock
+            myTextBlock.Text = text;
+
+            // Set the content of the Button to the TextBlock
+            button.Content = myTextBlock;
+
             button.Tag  = result;
 
             button.Margin = new Thickness(8,4,8,4);
 
-            button.Height = 30;
+            // Make this 50 so that it is bigger and can have 2 lines of text. 
+            // Eventually this could be automatic.
+            button.Height = 50;
 
             buttons.Add(button);
 

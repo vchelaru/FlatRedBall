@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              xmlns:local="clr-namespace:TopDownPlugin.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500">
@@ -15,7 +15,7 @@
         <!--<CheckBox IsChecked="{Binding IsTopDown}" 
                   Visibility="{Binding TopDownCheckBoxVisibility}"
                   VerticalContentAlignment="Center">Is Top-Down Entity</CheckBox>-->
-        <Label Visibility="{Binding InheritanceLabelVisibility}">This entity inherits from a Top-Down Entity</Label>
+        <Label Visibility="{Binding InheritanceLabelVisibility}" Content="{x:Static localization:Texts.HintEntityInheritsFromTopDown}" />
 
         <Grid Grid.Row="1" Visibility="{Binding TopDownUiVisibility}">
             <Grid.ColumnDefinitions>
@@ -64,9 +64,7 @@
                                                 <Condition Property="IsSelected"
                                             Value="True" />
                                             </MultiTrigger.Conditions>
-                                            <Setter Property="Background"
-                                    TargetName="Bd"
-                                    Value="OrangeRed" />
+                                            <Setter Property="Background" TargetName="Bd" Value="OrangeRed" />
                                         </MultiTrigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -82,11 +80,8 @@
             <local:AllTopDownValuesView  Visibility="{Binding MovementValueVisibility}" Grid.Column="2">
             </local:AllTopDownValuesView>
 
-            
             <local:AllAnimationValuesView Visibility="{Binding AnimationVisibility}" Grid.Column="2">
             </local:AllAnimationValuesView>
         </Grid>
-        
-
     </Grid>
 </UserControl>

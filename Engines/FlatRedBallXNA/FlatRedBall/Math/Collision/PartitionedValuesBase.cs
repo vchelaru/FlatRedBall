@@ -18,6 +18,11 @@ namespace FlatRedBall.Math.Collision
 
         public abstract void Sort();
 
+        public override string ToString()
+        {
+            return $"{PartitionedObject} on {axis}";
+        }
+
     }
 
     public class PartitionedEntity<T> : PartitionedValuesBase where T : PositionedObject

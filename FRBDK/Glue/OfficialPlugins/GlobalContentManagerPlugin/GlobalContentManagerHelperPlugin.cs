@@ -26,8 +26,14 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         ToolStripMenuItem mMenuItem;
         MenuStrip mMenuStrip;
 
+#pragma warning disable CS0067 // Needed for interface
         public event Action<IPlugin, string, string> ReactToPluginEventAction;
+#pragma warning restore CS0067 // The event 'GlobalContentManagerHelperPlugin.ReactToPluginEventAction' is never used
+
+
+#pragma warning disable CS0067 // Needed for interface
         public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
+#pragma warning restore CS0067 // The event 'GlobalContentManagerHelperPlugin.ReactToPluginEventWithReturnAction' is never used
 
         #region IPlugin Members
 
@@ -52,7 +58,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         public bool ShutDown(PluginShutDownReason shutDownReason)
         {
-            ToolStripMenuItem itemToAddTo = GetItem("Content");
+            ToolStripMenuItem itemToAddTo = GetItem(Localization.MenuIds.ContentId);
 
             itemToAddTo.DropDownItems.Remove(mMenuItem);
 
@@ -67,8 +73,8 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         {
             mMenuStrip = menuStrip;
 
-            mMenuItem = new ToolStripMenuItem("GlobalContent Membership");
-            ToolStripMenuItem itemToAddTo = GetItem("Content");
+            mMenuItem = new ToolStripMenuItem(Localization.Texts.GlobalContentMembership);
+            ToolStripMenuItem itemToAddTo = GetItem(Localization.MenuIds.ContentId);
 
             itemToAddTo.DropDownItems.Add(mMenuItem);
             mMenuItem.Click += mMenuItem_Click;
@@ -88,7 +94,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         {
             foreach (ToolStripMenuItem item in mMenuStrip.Items)
             {
-                if (item.Text == name)
+                if (item.Name == name)
                 {
                     return item;
                 }

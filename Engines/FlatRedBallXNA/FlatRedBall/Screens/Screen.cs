@@ -33,7 +33,7 @@ namespace FlatRedBall.Screens
     /// <summary>
     /// Base class for screens typically defined through Glue.
     /// </summary>
-    public class Screen : IInstructable
+    public class Screen : INameable, IInstructable
     {
         #region Fields
 
@@ -220,7 +220,7 @@ namespace FlatRedBall.Screens
             internal set;
         }
 
-
+        public string Name { get; set; }
 
         #endregion
 
@@ -740,6 +740,11 @@ namespace FlatRedBall.Screens
                     // to say. However, if it's nameable and the name doesn't match, let's null it out only if the object does
                     // have a name. If the name is null, then that means the object didn't change its name, but rather it never 
                     // had one.
+                    // Update May 6, 2023
+                    // The plot thickens! Unfortunately TileShapeCollections which use Tile shapes pull directly from the map's internal
+                    // TileShapeCollections, where each TileShapeCollection has its name matching the Type that is put in it. These names may
+                    // not match up. Ultimately this should be enforced by FRB as convention, and we should have errors for this. Vic is going
+                    // to add a card to make sure this is enforced in Glue.
                     if(instance is INameable nameable && nameable.Name != beforeDot && !string.IsNullOrEmpty(nameable.Name))
                     {
                         instance = null;

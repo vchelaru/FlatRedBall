@@ -234,5 +234,66 @@ namespace GlueControl.Models
             return null;
         }
 
+        public static CustomVariable GetCustomVariableRecursively(this GlueElement element, string variableName)
+        {
+            //////////////////////Early Out///////////////////////////////////
+            if (string.IsNullOrEmpty(variableName))
+            {
+                return null;
+            }
+
+            ////////////////////End Early Out//////////////////////////
+            if (variableName.StartsWith("this."))
+            {
+                variableName = variableName.Substring("this.".Length);
+            }
+            CustomVariable foundVariable = element.GetCustomVariable(variableName);
+
+            if (foundVariable != null)
+            {
+                return foundVariable;
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(element.BaseObject))
+                {
+                    var baseElement = ObjectFinder.Self.GetElement(element.BaseObject);
+
+                    if (baseElement != null)
+                    {
+                        foundVariable = GetCustomVariableRecursively(baseElement, variableName);
+                    }
+                }
+
+                return foundVariable;
+            }
+        }
+
+        /// <summary>
+        /// Returns all named objects contained in this object (both single and objects in lists) as well
+        /// as all named objects in base elements.
+        /// </summary>
+        /// <param name="element">Element named object container.</param>
+        /// <returns>All named objects.</returns>
+        public static IEnumerable<NamedObjectSave> GetAllNamedObjectsRecurisvely(this GlueElement element)
+        {
+            if (element != null)
+            {
+                foreach (NamedObjectSave nos in element.AllNamedObjects)
+                {
+                    yield return nos;
+                }
+
+                var allDerived = ObjectFinder.Self.GetAllBaseElementsRecursively(element);
+
+                foreach (var derived in allDerived)
+                {
+                    foreach (NamedObjectSave nos in derived.AllNamedObjects)
+                    {
+                        yield return nos;
+                    }
+                }
+            }
+        }
     }
 }

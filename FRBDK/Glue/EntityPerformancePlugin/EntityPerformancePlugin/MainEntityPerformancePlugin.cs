@@ -4,6 +4,7 @@ using EntityPerformancePlugin.Models;
 using EntityPerformancePlugin.ViewModels;
 using EntityPerformancePlugin.Views;
 using EntityPerformancePluginCore.CodeGenerators;
+using FlatRedBall.Entities;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
@@ -89,16 +90,16 @@ namespace EntityPerformancePlugin
 
                 if(entity != null)
                 {
-                    RefreshView();
+                    RefreshView(GlueState.Self.CurrentEntitySave);
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 }
             }
         }
 
-        private void HandlePropertyChanged(string changedMember, object oldValue, GlueElement currentElement)
+        private void HandlePropertyChanged(string changedMember, object oldValue, GlueElement owningElement)
         {
-            var currentEntity = currentElement as EntitySave;
+            var currentEntity = owningElement as EntitySave;
             var instance = GlueState.Self.CurrentNamedObjectSave;
 
             if (currentEntity != null && changedMember == nameof(EntitySave.Name) && instance == null)
@@ -116,9 +117,9 @@ namespace EntityPerformancePlugin
 
                 if (foundModel != null)
                 {
-                    foundModel.Name = GlueState.Self.CurrentElement.Name;
+                    foundModel.Name = currentEntity.Name;
 
-                    RefreshView();
+                    RefreshView(currentEntity);
 
                     SavePerformanceData();
                 }
@@ -127,7 +128,7 @@ namespace EntityPerformancePlugin
             {
                 string oldName = (string)oldValue;
 
-                var foundModel = model.EntityManagementValueList.FirstOrDefault(item => item.Name == currentElement.Name);
+                var foundModel = model.EntityManagementValueList.FirstOrDefault(item => item.Name == owningElement.Name);
 
                 var foundInstance = foundModel?.InstanceManagementValuesList.FirstOrDefault(item => item.Name == oldName);
 
@@ -135,9 +136,14 @@ namespace EntityPerformancePlugin
                 {
                     foundInstance.Name = instance.InstanceName;
 
-                    RefreshView();
+                    RefreshView(currentEntity);
 
-                    SavePerformanceData();
+                    if (viewModel == null)
+                    {
+                        throw new NullReferenceException($"{nameof(viewModel)} is null, entity is {currentEntity?.ToString() ?? "null"}");
+                    }
+
+                    SavePerformanceData(currentEntity);
                 }
             }
         }
@@ -152,7 +158,7 @@ namespace EntityPerformancePlugin
             {
                 var isRootSelected = viewModel?.IsRootSelected;
                 var selectedInstance = viewModel?.SelectedInstance;
-                RefreshView();
+                RefreshView(element as EntitySave);
 
                 if(isRootSelected == true)
                 {
@@ -295,15 +301,19 @@ namespace EntityPerformancePlugin
             }
             if(shouldSaveGlux)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
 
             SavePerformanceData();
 
         }
 
-        private void SavePerformanceData()
+        private void SavePerformanceData(GlueElement entity = null)
         {
+            if(viewModel ==null)
+            {
+                throw new NullReferenceException($"{nameof(viewModel)} is null, entity is {entity?.ToString() ?? "null"}");
+            }
             var currentEntityViewModel = ViewModelToModelConverter.ToModel(viewModel);
 
             model.EntityManagementValueList.RemoveAll(item => item.Name == viewModel.EntityName);
@@ -352,7 +362,7 @@ namespace EntityPerformancePlugin
                     tab = this.CreateTab(mainControl, "Entity Performance");
                 }
                 tab.Show();
-                RefreshView();
+                RefreshView(GlueState.Self.CurrentEntitySave);
             }
             else
             {
@@ -361,21 +371,23 @@ namespace EntityPerformancePlugin
 
         }
 
-        private void RefreshView()
+        private void RefreshView(EntitySave entitySave)
         {
             saveOnViewModelChanges = false;
             {
-                if (GlueState.Self.CurrentEntitySave != null && mainControl != null)
+                entitySave = entitySave ?? GlueState.Self.CurrentEntitySave;
+                if (entitySave != null)
                 {
-                    var entitySave = GlueState.Self.CurrentEntitySave;
-
                     var entityModel = GetOrCreateEntityManagementValuesFor(entitySave);
 
                     viewModel = ModelToViewModelConverter.ToViewModel(entityModel);
                     AssignInstancetypesOn(viewModel, entitySave);
                     viewModel.AssignPropertyChangedEventsOnInstanceViewModels();
                     viewModel.AnyValueChanged += HandleViewModelValueChanged;
-                    mainControl.DataContext = viewModel;
+                    if ( mainControl != null)
+                    {
+                        mainControl.DataContext = viewModel;
+                    }
                 }
 
                 if(GlueState.Self.CurrentNamedObjectSave != null)
@@ -387,7 +399,7 @@ namespace EntityPerformancePlugin
         }
 
         /// <summary>
-        /// Assigns the instance type onto the instance view models ocntained in the main view model.
+        /// Assigns the instance type onto the instance view models contained in the main view model.
         /// This is needed so that the Glue data is the authority on the type of an instance, rather than
         /// relying on stored values on a model or view model.
         /// </summary>
@@ -447,8 +459,20 @@ namespace EntityPerformancePlugin
                 }
 
                 UpdateInstanceValuesToInstance(instanceValues, instance);
-
             }
+
+            // Instances can get removed, so let's check for that too:
+            for(int i = values.InstanceManagementValuesList.Count- 1; i > -1; i--)
+            {
+
+                // Is there a matching item?
+                var matchingItem = entitySave.AllNamedObjects.FirstOrDefault(item => item.InstanceName == values.InstanceManagementValuesList[i].Name);
+                if(matchingItem == null)
+                {
+                    values.InstanceManagementValuesList.RemoveAt(i);
+                }
+            }
+
 
             return values;
         }
