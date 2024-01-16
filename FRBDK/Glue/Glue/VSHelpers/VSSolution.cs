@@ -33,7 +33,7 @@ namespace FlatRedBall.Glue.VSHelpers
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet.exe",
-                    Arguments = $"sln \"{solution.FullPath}\" add \"{project.FullPath}\"",
+                    Arguments = $"sln \"{solution.FullPath}\" add \"{project.FullPath.Replace("/", "\\")}\" --in-root",
                     CreateNoWindow = true,
                     WindowStyle = ProcessWindowStyle.Hidden,
                     RedirectStandardOutput = true,

@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Forms;
 using L = Localization;
 using MessageBox = System.Windows.Forms.MessageBox;
+using GlueFormsCore.Extensions;
 
 namespace FlatRedBall.Glue.Controls;
 
@@ -36,6 +37,13 @@ public partial class CreatePluginWindow
         FillInstalledPluginComboBox();
 
         UpdateToSelectedSource();
+
+        Loaded += HandleLoaded;
+    }
+
+    private void HandleLoaded(object sender, RoutedEventArgs e)
+    {
+        this.MoveToCursor();
     }
 
     #region Methods
