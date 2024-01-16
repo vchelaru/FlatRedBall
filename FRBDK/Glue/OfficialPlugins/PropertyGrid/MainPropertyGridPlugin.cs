@@ -244,7 +244,10 @@ namespace OfficialPlugins.VariableDisplay
                 }
                 foreach(var variable in ati.VariableDefinitions)
                 {
-                    variable.DefaultValue = null;
+                    if(variable.CanBeSetInFile == false)
+                    {
+                        variable.DefaultValue = null;
+                    }
                 }
             }
 
