@@ -558,7 +558,7 @@ public static class RightClickHelper
             var screen = targetNode.Tag as ScreenSave;
             if (menuShowingAction == MenuShowingAction.RightButtonDrag)
             {
-                if (draggedNode.IsEntityNode())
+                if (draggedNode?.IsEntityNode() == true)
                 {
                     Add(L.Texts.EntityAddInstance, () => OnAddEntityInstanceClick(targetNode, draggedNode));
                     Add(L.Texts.EntityListAdd, () => OnAddEntityListClick(targetNode, draggedNode));
