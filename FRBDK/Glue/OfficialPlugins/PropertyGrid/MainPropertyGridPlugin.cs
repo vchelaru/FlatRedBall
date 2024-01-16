@@ -223,6 +223,8 @@ namespace OfficialPlugins.VariableDisplay
             // 1. I like the solution above to avoid confusion; but there are times when an object has properties which don't
             //    come from file - like the X/Y values of a TileMap. Therefore, some properties should have defaults that stick
             //    around. Eventually this probably means a new property on the VariableDefinition object.
+            // Update January 16, 2024 - added CanBeSetInFile. If false, then we won't null out the default value because
+            // there's no way this could be specified in a file so the default value is actually used.
             var isFile = namedObject.SourceType == SourceType.File;
 
             var ati = namedObject.GetAssetTypeInfo();
@@ -244,7 +246,7 @@ namespace OfficialPlugins.VariableDisplay
                 }
                 foreach(var variable in ati.VariableDefinitions)
                 {
-                    if(variable.CanBeSetInFile == false)
+                    if(variable.CanBeSetInFile)
                     {
                         variable.DefaultValue = null;
                     }
