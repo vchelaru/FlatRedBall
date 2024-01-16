@@ -2455,6 +2455,12 @@ public static class RightClickHelper
                     .ToList();
             }
         }
+        else if(GlueState.Self.CurrentReferencedFileSave != null)
+        {
+            objectToMove = GlueState.Self.CurrentReferencedFileSave;
+            listToRemoveFrom = GlueState.Self.CurrentElement.ReferencedFiles;
+            listForIndexing = GlueState.Self.CurrentElement.ReferencedFiles;
+        }
     }
 
 
@@ -2464,6 +2470,8 @@ public static class RightClickHelper
         var variableMoved = objectMoved as CustomVariable;
         var namedObjectMoved = objectMoved as NamedObjectSave;
         var stateSaveMoved = objectMoved as StateSave;
+        var fileMoved = objectMoved as ReferencedFileSave;
+
         // Should this be the current? Or the "container" of what was moved...
         var element = GlueState.Self.CurrentElement;
 
@@ -2486,6 +2494,12 @@ public static class RightClickHelper
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.All); // todo - this could be more efficient...
 
             GlueState.Self.CurrentStateSave = stateSaveMoved;
+        }
+        else if(fileMoved != null)
+        {
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.All); // this could be just files eventually
+
+            GlueState.Self.CurrentReferencedFileSave = fileMoved;
         }
 
         GlueState.Self.CurrentElement.SortStatesToCustomVariables();

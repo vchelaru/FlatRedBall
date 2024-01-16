@@ -89,12 +89,16 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     // I don't think we want the files in Glue to identically match the order of the files in the 
                     // Glux - we will want to alphabetize them.
                     //int index = nodeList.IndexOf(nodeForFile);
+                    // Update January 15, 2024 
+                    // they should match because file order matters for things like Spine.
+                    // This sucks but...we need to do it:
+                    int index = nodeList.IndexOf(nodeForFile);
 
-                    //if (i != index)
-                    //{
-                    //    nodeList.RemoveAt(index);
-                    //    nodeList.Insert(i, nodeForFile);
-                    //}
+                    if (i != index)
+                    {
+                        nodeList.RemoveAt(index);
+                        nodeList.Insert(i, nodeForFile);
+                    }
 
                     string newText = FileManager.RemovePath(file.Name);
                     if (newText != nodeForFile.Text)
@@ -108,7 +112,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             RemoveTreeNodesForRemovedReferenceFileSavesIn(this.Children, glueElement.ReferencedFiles, glueElement);
 
-            this.SortByTextConsideringDirectories(Children, true);
+            // no, don't sort! See above why this is important:
+            //this.SortByTextConsideringDirectories(Children, true);
         }
 
         public NodeViewModel GetTreeNodeFor(ReferencedFileSave referencedFileSave)
