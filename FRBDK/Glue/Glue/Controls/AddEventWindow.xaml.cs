@@ -140,8 +140,8 @@ public partial class AddEventWindow
     private void TunnelingVariableComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         AlternativeTextBox.Text =
-            TunnelingObjectComboBox.Text +
-            TunnelingEventComboBox.Text;
+            TunnelingObjectComboBox.SelectedItem?.ToString() +
+            TunnelingEventComboBox.SelectedItem?.ToString();
     }
 
     /// <summary>
@@ -163,6 +163,11 @@ public partial class AddEventWindow
         foreach (var availableVariable in availableEvents)
         {
             this.TunnelingEventComboBox.Items.Add(availableVariable);
+        }
+
+        if(this.TunnelingEventComboBox.Items.Count > 0)
+        {
+            this.TunnelingEventComboBox.SelectedItem = this.TunnelingEventComboBox.Items[0];
         }
     }
 
