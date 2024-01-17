@@ -787,6 +787,11 @@ namespace FlatRedBall.Content
 
 #endregion
 
+				else if(typeof(T) == typeof(Effect))
+				{
+					return base.Load<T>(assetName);
+				}
+
 #region else, exception!
 
                 else
