@@ -1617,7 +1617,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 }
                 else
                 {
-                    TaskManager.Self.Add(() =>
+                    TaskManager.Self.AddAsync(() =>
                     {
                         AddExistingFileManager.Self.AddSingleFile(fileName, ref userCancelled);
 
