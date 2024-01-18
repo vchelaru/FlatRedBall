@@ -186,6 +186,13 @@ namespace FlatRedBall.Entities
 
         public bool IsKeepingTargetsInView { get; set; } = false;
 
+        [Obsolete("Use TargetApproachCoefficient instead, since this value is confusingly named.")]
+        public float LerpCoefficient
+        {
+            get => TargetApproachCoefficient;
+            set => TargetApproachCoefficient = value;
+        }
+
         /// <summary>
         /// The amount of smoothing. The larger the number, faster the Camera moves. This value is ignored if TargetApproachStyle is Immediate.
         /// </summary>
@@ -194,13 +201,6 @@ namespace FlatRedBall.Entities
         /// then the velocity of the camera will be 20*5 = 100. 
         /// If TargetApproachStyle is ConstantSpeed, this is the speed of the camera in pixels per second. regardless of the distance to the target.
         /// </remarks>
-        [Obsolete("Use TargetApproachCoefficient instead, since this value is confusingly named.")]
-        public float LerpCoefficient
-        {
-            get => TargetApproachCoefficient;
-            set => TargetApproachCoefficient = value;
-        }
-
         public float TargetApproachCoefficient { get; set; } = 5;
 
         /// <summary>
