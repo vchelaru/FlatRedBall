@@ -345,11 +345,28 @@ namespace EditorObjects.SaveClasses
 
                 while ((str = process.StandardError.ReadLine()) != null)
                 {
-                    if (printError != null)
+                    // fxc.exe treats warnings as errors. Annoying.
+                    // Only way to address this is to search for " warning " in the string :(
+                    var isWarning = str?.Contains(" warning ") == true ||
+                        str?.StartsWith("warning ") == true ||
+                        string.IsNullOrEmpty(str);
+
+                    if(isWarning)
                     {
-                        printError(str);
+                        if (printOutput != null)
+                        {
+                            printOutput(str);
+                        }
                     }
-                    errorString += str + "\n";
+                    else
+                    {
+
+                        if (printError != null)
+                        {
+                            printError(str);
+                        }
+                        errorString += str + "\n";
+                    }
                 }
                 if (!string.IsNullOrEmpty(errorString))
                 {
