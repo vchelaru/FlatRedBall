@@ -97,7 +97,7 @@ namespace EditorObjects.SaveClasses
             {
                 var executable = GetExecutable();
                 var arguments = GetArguments($"c:\\Input.{SourceFileType}", $"c:\\Output.{DestinationFileType}", null);
-                return $"{GetExecutable()} {arguments}";
+                return $"{executable} {arguments}";
             }
         }
 
@@ -196,7 +196,7 @@ namespace EditorObjects.SaveClasses
 
             if (!string.IsNullOrEmpty(executable) && FileManager.IsRelative(executable))
             {
-                executable = FileManager.RelativeDirectory + executable;
+                executable = FileManager.RemoveDotDotSlash( FileManager.RelativeDirectory + executable);
             }
 
             return executable;
@@ -235,7 +235,7 @@ namespace EditorObjects.SaveClasses
             {
                 if (!string.IsNullOrEmpty(DestinationFileArgumentPrefix))
                 {
-                    arguments += DestinationFileArgumentPrefix + " \"" + destinationFile + "\"";
+                    arguments += " " + DestinationFileArgumentPrefix + " \"" + destinationFile + "\"";
                 }
                 else
                 {
