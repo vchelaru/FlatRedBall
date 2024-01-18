@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OfficialPlugins.EffectPlugin.Managers;
 using System.ComponentModel.Composition;
+using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace OfficialPlugins.EffectPlugin
 {
@@ -24,7 +25,10 @@ namespace OfficialPlugins.EffectPlugin
         private void HandleLoadGlux()
         {
             var project = GlueState.Self.CurrentGlueProject;
-            var isFna = false;
+
+            var vsProject = GlueState.Self.CurrentMainProject;
+
+            var isFna = vsProject is FnaDesktopProject;
 
             if(isFna)
             {
