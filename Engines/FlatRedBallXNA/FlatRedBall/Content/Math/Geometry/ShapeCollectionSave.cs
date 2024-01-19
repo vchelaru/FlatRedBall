@@ -8,6 +8,7 @@ using FlatRedBall.Math;
 using FileManager = FlatRedBall.IO.FileManager;
 using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
+using System.Text.RegularExpressions;
 
 namespace FlatRedBall.Content.Math.Geometry
 {
@@ -198,6 +199,7 @@ namespace FlatRedBall.Content.Math.Geometry
                     match.RelativeX = rectangle.X;
                     match.RelativeY = rectangle.Y;
                     match.RelativeZ = rectangle.Z;
+                    UpdateAbsoluteToRelativePositions(match);
                 }
             }
 
@@ -232,6 +234,7 @@ namespace FlatRedBall.Content.Math.Geometry
                     match.RelativeX = circleSave.X;
                     match.RelativeY = circleSave.Y;
                     match.RelativeZ = circleSave.Z;
+                    UpdateAbsoluteToRelativePositions(match);
                 }
             }
 
@@ -264,6 +267,7 @@ namespace FlatRedBall.Content.Math.Geometry
                 match.RelativeX = cube.X;
                 match.RelativeY = cube.Y;
                 match.RelativeZ = cube.Z;
+                UpdateAbsoluteToRelativePositions(match);
             }
 
             for (int i = 0; i < SphereSaves.Count; i++)
@@ -295,6 +299,7 @@ namespace FlatRedBall.Content.Math.Geometry
                 match.RelativeX = sphere.X;
                 match.RelativeY = sphere.Y;
                 match.RelativeZ = sphere.Z;
+                UpdateAbsoluteToRelativePositions(match);
             }
 
             for (int i = 0; i < PolygonSaves.Count; i++)
@@ -326,6 +331,39 @@ namespace FlatRedBall.Content.Math.Geometry
                 match.RelativeX = polygon.X;
                 match.RelativeY = polygon.Y;
                 match.RelativeZ = polygon.Z;
+                UpdateAbsoluteToRelativePositions(match);
+            }
+        }
+
+        private static void UpdateAbsoluteToRelativePositions(PositionedObject positionedObject)
+        {
+            var parent = positionedObject.Parent;
+            // cheaper than a ForceUpdateDependencies because we don't want to update the parent:
+            if (parent != null && !positionedObject.IgnoreParentPosition)
+            {
+                if (positionedObject.ParentRotationChangesPosition)
+                {
+                    var parentMatrix = parent.RotationMatrix;
+                    positionedObject.Position.X = parent.Position.X +
+                        parentMatrix.M11 * positionedObject.RelativePosition.X +
+                        parentMatrix.M21 * positionedObject.RelativePosition.Y +
+                        parentMatrix.M31 * positionedObject.RelativePosition.Z;
+
+                    positionedObject.Position.Y = parent.Position.Y +
+                        parentMatrix.M12 * positionedObject.RelativePosition.X +
+                        parentMatrix.M22 * positionedObject.RelativePosition.Y +
+                        parentMatrix.M32 * positionedObject.RelativePosition.Z;
+
+                    positionedObject.Position.Z = parent.Position.Z +
+                        parentMatrix.M13 * positionedObject.RelativePosition.X +
+                        parentMatrix.M23 * positionedObject.RelativePosition.Y +
+                        parentMatrix.M33 * positionedObject.RelativePosition.Z;
+
+                }
+                else
+                {
+                    positionedObject.Position = positionedObject.RelativePosition + parent.Position;
+                }
             }
         }
 
