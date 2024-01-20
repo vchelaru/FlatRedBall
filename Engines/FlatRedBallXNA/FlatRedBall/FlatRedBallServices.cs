@@ -112,9 +112,15 @@ namespace FlatRedBall
         #endregion
     }
 
+    public class SyntaxVersionAttribute : Attribute
+    {
+        public int Version = 51;
+    }
+
     public static partial class FlatRedBallServices
     {
         internal static SingleThreadSynchronizationContext singleThreadSynchronizationContext;
+
         #region Fields
 
         static List<IManager> mManagers = new List<IManager>();
@@ -163,6 +169,7 @@ namespace FlatRedBall
         private static Texture2D _textureToDraw = null;
         private static SpriteBatch _loadingScreenSpriteBatch = null;
         private static Rectangle _sourceRect;
+
 
         #endregion
 

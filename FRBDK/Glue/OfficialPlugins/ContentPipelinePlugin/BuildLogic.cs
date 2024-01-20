@@ -87,7 +87,7 @@ namespace OfficialPlugins.MonoGameContent
 
         public static bool GetIfNeedsMonoGameFilesBuilt(ProjectBase project)
         {
-            return project is DesktopGlProject ||
+            return project is MonoGameDesktopGlBaseProject ||
                 project is AndroidProject ||
                 project is UwpProject
                 // todo: need to support iOS
@@ -294,7 +294,7 @@ namespace OfficialPlugins.MonoGameContent
             // PSVita
             // XboxOne
             // Switch
-            if (project is DesktopGlProject)
+            if (project is MonoGameDesktopGlBaseProject)
             {
                 platform = "DesktopGL";
             }

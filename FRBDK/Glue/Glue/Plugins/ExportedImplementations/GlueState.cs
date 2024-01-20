@@ -467,7 +467,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 }
                 else
                 {
-                    if(CurrentMainProject is DesktopGlProject)
+                    if(CurrentMainProject is MonoGameDesktopGlBaseProject)
                     {
                         // todo - handle different types of projects
                         string projectReferenceName;

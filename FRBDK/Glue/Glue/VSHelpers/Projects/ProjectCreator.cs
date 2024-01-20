@@ -235,11 +235,19 @@ Additional Info:
         {
             public string Preprocessor;
             public Func<ProjectBase> Func;
+            public Version MinVersion;
 
             public PreprocessorAndFunc(string preprocessor, Func<ProjectBase> func)
             {
                 Preprocessor = preprocessor;
                 Func = func;
+            }
+
+            public PreprocessorAndFunc(string preprocessor, Version minVersion, Func<ProjectBase> func)
+            {
+                Preprocessor = preprocessor;
+                Func = func;
+                MinVersion = minVersion;
             }
         }
 
@@ -247,6 +255,22 @@ Additional Info:
         private static ProjectBase TryGetProjectTypeFromDefineConstants(Project coreVisualStudioProject, out string message)
         {
             string preProcessorConstants = GetPreProcessorConstantsFromProject(coreVisualStudioProject);
+            var frameworkProperty = coreVisualStudioProject.AllEvaluatedProperties.FirstOrDefault(item => item.Name == "TargetFrameworkVersion");
+            var dotNetVersionString = frameworkProperty?.EvaluatedValue;
+            Version version = null;
+            if (dotNetVersionString?.StartsWith("v") == true)
+            {
+                var afterV = dotNetVersionString.Substring(1);
+                try
+                {
+                    version = new Version(afterV);
+                }
+                catch
+                {
+
+                }
+
+            }
 
             //string sasfd = ProjectManager.LibrariesPath;
 
@@ -272,7 +296,8 @@ Additional Info:
                 loadCalls.Add(new PreprocessorAndFunc("ANDROID", () => new AndroidProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("IOS", () => new IosMonogameProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("UWP", () => new UwpProject(coreVisualStudioProject)));
-                loadCalls.Add(new PreprocessorAndFunc("DESKTOP_GL", () => new DesktopGlProject(coreVisualStudioProject)));
+                loadCalls.Add(new PreprocessorAndFunc("DESKTOP_GL", new Version(6,0), () => new MonoGameDesktopGlNetCoreProject(coreVisualStudioProject)));
+                loadCalls.Add(new PreprocessorAndFunc("DESKTOP_GL", () => new MonoGameDesktopGlNetFrameworkProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("FNA", () => new FnaDesktopProject(coreVisualStudioProject)));
                 // Do XNA_4 last, since every 
                 // other project type has this 
@@ -285,7 +310,12 @@ Additional Info:
 
                 foreach (var call in loadCalls)
                 {
-                    if(preProcessorConstants?.Contains(call.Preprocessor) == true)
+                    var matchesPreprocessor =
+                        preProcessorConstants?.Contains(call.Preprocessor) == true;
+
+                    var matchesOrExceedsVersion = call.MinVersion == null || version >= call.MinVersion;
+
+                    if (matchesPreprocessor && matchesOrExceedsVersion)
                     {
                         toReturn = call.Func();
                         break;
@@ -306,9 +336,9 @@ Additional Info:
                         message += "\n\nThis project has no preprocessor directives. An unknown error has occurred.";
 
                         message += "\n\nThe project has the following properties:";
-                        foreach (var property in coreVisualStudioProject.Properties)
+                        foreach (var vsProperty in coreVisualStudioProject.Properties)
                         {
-                            message += $"{property.Name} {property.EvaluatedValue}";
+                            message += $"{vsProperty.Name} {vsProperty.EvaluatedValue}";
                         }
                     }
                     else

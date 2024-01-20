@@ -135,6 +135,8 @@ namespace FlatRedBall.Glue.SaveClasses
             // Technically this isn't referencing GumCommon project, but it's referencing code from GumCommon
             GumCommonCodeReferencing = 50,
             GumTextSupportsBbCode = 51
+
+            // Stop! If adding an entry here, modify SyntaxVersionAttribute.Version
         }
 
         #endregion

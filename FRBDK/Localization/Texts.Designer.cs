@@ -2608,7 +2608,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Begin a search with \&quot;f \&quot;, \&quot;e \&quot;, \&quot;s \&quot;, \&quot;o \&quot;, or \&quot;v \&quot; (letter then space) to filter results..
+        ///   Looks up a localized string similar to Begin a search with &quot;f&quot;, &quot;e&quot;, &quot;s&quot;, &quot;o&quot;, or &quot;v&quot; (letter then space) to filter results..
         /// </summary>
         public static string FilterResultsDescription {
             get {

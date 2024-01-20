@@ -33,6 +33,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         List<string> mExtensionsToIgnore = new List<string>();
 
+        public int? FlatRedBallSyntaxVersion { get; set; } 
+
         #endregion
 
         #region Properties
@@ -631,6 +633,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
 
             LoadContentProject();
+
+            FindSyntaxVersion();
+        }
+
+        protected virtual void FindSyntaxVersion()
+        {
+            // derived are responsible for this
         }
 
         public override void Unload()

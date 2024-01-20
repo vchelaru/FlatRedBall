@@ -178,7 +178,7 @@
     <value>Error details:</value>
   </data>
   <data name="FilterResultsDescription" xml:space="preserve">
-    <value>Begin a search with \"f \", \"e \", \"s \", \"o \", or \"v \" (letter then space) to filter results.</value>
+    <value>Begin a search with "f", "e", "s", "o", or "v" (letter then space) to filter results.</value>
   </data>
   <data name="FilteredToFiles" xml:space="preserve">
     <value>Filtered to Files...</value>
