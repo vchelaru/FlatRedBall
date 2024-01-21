@@ -14,6 +14,7 @@ using FlatRedBall.Glue.IO;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 using FlatRedBall.Glue.Parsing;
+using Gum.DataTypes.Variables;
 
 namespace GumPlugin.Managers
 {
@@ -770,14 +771,19 @@ namespace GumPlugin.Managers
                             variableName = "Current" + variableName;
                         }
 
-                        var hasAlreadyBeenAdded = newAti.VariableDefinitions.Any(item => item.Name == variableName);
+                        var existing = newAti.VariableDefinitions.FirstOrDefault(item => item.Name == variableName);
+                        var hasAlreadyBeenAdded = existing != null;
 
                         if (!hasAlreadyBeenAdded)
                         {
 
                             var variableDefinition = new VariableDefinition();
                             variableDefinition.Category = variable.Category;
-                            variableDefinition.DefaultValue = variable.Value?.ToString();
+
+                            // We should bubble up the recursive value so that it can show here:
+                            //variableDefinition.DefaultValue = variable.Value?.ToString();
+                            variableDefinition.DefaultValue = state.GetValueRecursive(variableName)?.ToString();
+
                             variableDefinition.Name = variableName; // gum variables can have spaces, but Glue variables can't
 
                             variableDefinition.Type = QualifyGumVariableType(variable, element);
@@ -786,6 +792,11 @@ namespace GumPlugin.Managers
 
                             newAti.VariableDefinitions.Add(variableDefinition);
 
+                        }
+                        else
+                        {
+                            // This could be different per type so let's do this:
+                            existing.DefaultValue = state.GetValueRecursive(variableName)?.ToString();
                         }
                     }
                 }

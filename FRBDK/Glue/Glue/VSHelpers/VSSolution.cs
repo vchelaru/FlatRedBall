@@ -23,6 +23,38 @@ namespace FlatRedBall.Glue.VSHelpers
             set;
         }
 
+        public static bool RemoveProjectReference(FilePath solution, string project, out string output, out string error)
+        {
+            output = string.Empty;
+            error = string.Empty;
+
+            if(solution.Exists())
+            {
+                var contents = System.IO.File.ReadAllText(solution.FullPath);
+
+                if(contents?.Contains(project) == true)
+                {
+                    var indexOfProjectReference = contents.IndexOf(project);
+                    const string startOfTextToRemove = "Project(\"";
+                    const string endOfTextToRemove = "EndProject";
+
+                    var indexOfStart = contents.LastIndexOf(startOfTextToRemove, indexOfProjectReference);
+                    var indexOfEnd = contents.IndexOf(endOfTextToRemove, indexOfProjectReference + project.Length);
+
+                    if(indexOfStart > -1 && indexOfEnd > -1)
+                    {
+                        var endWithLenth = indexOfEnd + endOfTextToRemove.Length;
+                        // Remove between indexOfStart and indexOfEnd
+                        contents = contents.Remove(indexOfStart, endWithLenth - indexOfStart);
+
+                        System.IO.File.WriteAllText(solution.FullPath, contents);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public static bool AddExistingProjectWithDotNet(FilePath solution, FilePath project, out string output, out string error)
         {
             output = null;
