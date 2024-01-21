@@ -893,13 +893,19 @@ public class MainGumPlugin : PluginBase
                 startInfo.FileName = executable;
                 startInfo.UseShellExecute = false;
 
+                GlueCommands.Self.PrintOutput($"{startInfo.FileName} {startInfo.Arguments}");
+
                 var process = System.Diagnostics.Process.Start(startInfo);
 
                 process.WaitForExit();
             },
             Localization.Texts.RefreshingFontCache);
 
-
+            var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
+            if(gumRfs != null)
+            {
+                GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(gumRfs);
+            }
         }
     }
 
