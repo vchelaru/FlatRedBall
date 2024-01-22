@@ -3018,7 +3018,7 @@ namespace FlatRedBall
                 for (int i = 0; i < mLayers.Count; i++)
                 {
                     var layer = mLayers[i];
-                    for(int idbIndex = 0; idbIndex < layer.Batches.Count; i++)
+                    for(int idbIndex = 0; idbIndex < layer.Batches.Count; idbIndex++)
                     {
                         var batch = layer.Batches[idbIndex];
                         if (batch.UpdateEveryFrame)
