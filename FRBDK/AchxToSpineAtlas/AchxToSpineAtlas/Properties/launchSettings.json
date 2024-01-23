@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AchxToSpineAtlas": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\Owner\\Documents\\FlatRedBallProjects\\Oliver\\Oliver\\Content\\Entities\\Player\\PlatformerAnimations.achx C:\\Users\\Owner\\Documents\\FlatRedBallProjects\\Oliver\\Oliver\\Content\\Entities\\Player\\PlatformerAnimations.atlas"
+    }
+  }
+}
