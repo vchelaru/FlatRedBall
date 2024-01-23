@@ -175,7 +175,8 @@ internal static class AddSourceManager
     {
         await TaskManager.Self.AddAsync(() =>
         {
-            var projectReferences = GetProjectReferencesForCurrentProject();
+            var projectReferences = GetNecessaryProjectReferencesForCurrentProject();
+            var necessaryReferencesStripped = projectReferences.Select(item => FileManager.RemovePath(item.RelativeProjectFilePath)).ToArray();
 
             string outerError = null;
             string innerError;
@@ -211,12 +212,34 @@ internal static class AddSourceManager
 
             if (!string.IsNullOrEmpty(frbRootFolder) && !string.IsNullOrEmpty(gumRootFolder))
             {
-
-
                 //Update project references
-                var sln = VSSolution.FromFile(GlueState.Self.CurrentSlnFileName);
+                var slnFilePath = GlueState.Self.CurrentSlnFileName;
+                var sln = VSSolution.FromFile(slnFilePath);
 
-                var referencedProject = sln.ReferencedProjects;
+                var referencedProjects = sln.ReferencedProjects;
+
+                List<string> slnProjectReferencesToRemove = new List<string>();
+                // remove any old references:
+                foreach(var existingReference in referencedProjects)
+                {
+                    var strippedExisting = FileManager.RemovePath(existingReference);
+
+                    var willBeReplaced = necessaryReferencesStripped.Contains(strippedExisting);
+
+                    if(willBeReplaced)
+                    {
+                        slnProjectReferencesToRemove.Add(existingReference);
+                    }
+                }
+
+                foreach(var referenceToRemove in  slnProjectReferencesToRemove)
+                {
+                    VSSolution.RemoveProjectReference(slnFilePath, referenceToRemove, out string _, out string _);
+                }
+
+                // references may have been removed so re-load it:
+                sln = VSSolution.FromFile(slnFilePath);
+                referencedProjects = sln.ReferencedProjects;
 
                 var proj = GlueState.Self.CurrentMainProject;
 
@@ -224,18 +247,18 @@ internal static class AddSourceManager
 
                 foreach (var projectReference in projectReferences)
                 {
-                    AddProjectReference(sln, referencedProject, proj, addGeneralResponse, projectReference, frbRootFolder, gumRootFolder);
+                    AddProjectReference(sln, referencedProjects, proj, addGeneralResponse, projectReference, frbRootFolder, gumRootFolder);
                 }
 
                 var isFNA = GlueState.Self.CurrentMainProject is FnaDesktopProject;
                 if (includeGumSkia)
                 {
-                    AddProjectReference(sln, referencedProject, proj, addGeneralResponse, isFNA ? GumSkiaFNA : GumSkia, frbRootFolder, gumRootFolder);
+                    AddProjectReference(sln, referencedProjects, proj, addGeneralResponse, isFNA ? GumSkiaFNA : GumSkia, frbRootFolder, gumRootFolder);
                 }
 
                 if (isFNA)
                 {
-                    AddProjectReference(sln, referencedProject, proj, addGeneralResponse, FNA, frbRootFolder, gumRootFolder);
+                    AddProjectReference(sln, referencedProjects, proj, addGeneralResponse, FNA, frbRootFolder, gumRootFolder);
                 }
 
                 if (addGeneralResponse.Succeeded)
@@ -270,7 +293,7 @@ internal static class AddSourceManager
         }, "Linking game to FRB Source");
     }
 
-    private static List<ProjectReference> GetProjectReferencesForCurrentProject()
+    private static List<ProjectReference> GetNecessaryProjectReferencesForCurrentProject()
     {
         if (GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6) {
             // When we support Android/iOS .NET 6, we need to handle those here:
@@ -345,7 +368,7 @@ internal static class AddSourceManager
         return true;
     }
 
-    private static void AddProjectReference(VSSolution sln, List<string> referencedProject, VisualStudioProject proj, 
+    private static void AddProjectReference(VSSolution sln, List<string> existingProjectReferences, VisualStudioProject proj, 
         GeneralResponse addGeneralResponse, ProjectReference reference,
         string frbRootFolder, string gumRootFolder
         )
@@ -360,7 +383,7 @@ internal static class AddSourceManager
 
         if (extension == "csproj")
         {
-            if (!AddProject(referencedProject, sln.FullFileName, fullPath))
+            if (!AddProject(existingProjectReferences, sln.FullFileName, fullPath))
             {
                 addGeneralResponse.Succeeded = false;
                 addGeneralResponse.Message = $"Failed to add {fullPath}";
@@ -370,7 +393,7 @@ internal static class AddSourceManager
         }
         else if (extension == "shproj")
         {
-            if (!AddSharedProject(referencedProject, sln.FullFileName, fullPath, reference.ProjectTypeId, reference.ProjectId, fullPath.NoPathNoExtension))
+            if (!AddSharedProject(existingProjectReferences, sln.FullFileName, fullPath, reference.ProjectTypeId, reference.ProjectId, fullPath.NoPathNoExtension))
             {
                 addGeneralResponse.Succeeded = false;
                 addGeneralResponse.Message = $"Failed to add {fullPath}";

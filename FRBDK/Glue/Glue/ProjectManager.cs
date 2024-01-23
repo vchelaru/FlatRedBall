@@ -496,23 +496,7 @@ namespace FlatRedBall.Glue
 
             return wasAnythingBuild;
         }
-
-        /// <summary>
-        /// Updates the presence of the RFS in the main project.  If the RFS has project specific files, then those
-        /// files are updated in the appropriate synced project.  
-        /// </summary>
-        /// <remarks>
-        /// This method does not update synced projects if the synced projects use the same file.  The reason is because
-        /// this is taken care of when the projects are saved later on.
-        /// </remarks>
-        /// <param name="referencedFileSave">The RFS representing the file to update membership on.</param>
-        /// <returns>Whether anything was added to any projects.</returns>
-        [Obsolete("Use GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject")]
-        public static bool UpdateFileMembershipInProject(ReferencedFileSave referencedFileSave)
-        {
-            return GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFileSave);
-        }
-        
+                
         #endregion
 
         #region Internal Methods

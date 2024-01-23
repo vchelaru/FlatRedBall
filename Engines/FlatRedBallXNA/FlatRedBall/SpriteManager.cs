@@ -210,7 +210,14 @@ namespace FlatRedBall
         static PositionedObjectList<SpriteFrame> mSpriteFrames;
         static ReadOnlyCollection<SpriteFrame> mSpriteFramesReadOnly;
 
+        /// <summary>
+        /// Unlayered, sorted drawable batches
+        /// </summary>
         static List<IDrawableBatch> mDrawableBatches;
+
+        /// <summary>
+        /// Unlayered, ZBuffered drawable batches
+        /// </summary>
         static internal List<IDrawableBatch> mZBufferedDrawableBatches = new List<IDrawableBatch>();
         static ReadOnlyCollection<IDrawableBatch> mDrawableBatchesReadOnlyCollection;
 
@@ -2982,6 +2989,44 @@ namespace FlatRedBall
             for (int i = 0; i < mSpriteFrames.Count; i++)
             {
                 mSpriteFrames[i].Manage();
+            }
+
+            // January 21,2024
+            // This used to be handled
+            // in Renderer, but now we want
+            // to have this happen before CustomActivity
+            // so that updating collision will properly use
+            // animation state.
+            if(Renderer.UpdateDrawableBatches)
+            {
+                for(int i = 0; i < mDrawableBatches.Count; i++)
+                {
+                    var batch = mDrawableBatches[i];
+                    if(batch.UpdateEveryFrame)
+                    {
+                        batch.Update();
+                    }
+                }
+                for(int i = 0; i < mZBufferedDrawableBatches.Count; i++)
+                {
+                    var batch = mZBufferedDrawableBatches[i];
+                    if (batch.UpdateEveryFrame)
+                    {
+                        batch.Update();
+                    }
+                }
+                for (int i = 0; i < mLayers.Count; i++)
+                {
+                    var layer = mLayers[i];
+                    for(int idbIndex = 0; idbIndex < layer.Batches.Count; idbIndex++)
+                    {
+                        var batch = layer.Batches[idbIndex];
+                        if (batch.UpdateEveryFrame)
+                        {
+                            batch.Update();
+                        }
+                    }
+                }
             }
 
             if (section != null)
