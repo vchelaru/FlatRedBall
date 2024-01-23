@@ -66,6 +66,9 @@ namespace AchxToSpineAtlas
                 {
                     stringBuilder.AppendLine(animationChain.Name);
                     var frame = animationChain.Frames[0];
+
+                    WarnIfFrameTextureDiffers(frame, texture);
+
                     WriteFrameCooordinates(stringBuilder, frame);
                 }
                 else
@@ -74,6 +77,8 @@ namespace AchxToSpineAtlas
                     {
                         var frame = animationChain.Frames[i];
 
+                        WarnIfFrameTextureDiffers(frame, texture);
+
                         stringBuilder.AppendLine(animationChain.Name + "_" + i);
                         WriteFrameCooordinates(stringBuilder, frame);
                     }
@@ -81,6 +86,16 @@ namespace AchxToSpineAtlas
             }
 
             return stringBuilder.ToString();
+        }
+
+        private static void WarnIfFrameTextureDiffers(AnimationFrameSave frame, string texture)
+        {
+            var frameTexture = frame.TextureName?.Replace("\\", "/");
+
+            if(frameTexture != texture)
+            {
+                Console.WriteLine($"warning : animation frame uses different texture from first: {frameTexture}");
+            }
         }
 
         private static void WriteFrameCooordinates(StringBuilder stringBuilder, AnimationFrameSave frame)
