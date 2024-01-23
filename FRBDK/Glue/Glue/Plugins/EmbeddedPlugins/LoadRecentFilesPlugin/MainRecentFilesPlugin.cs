@@ -104,6 +104,29 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 
             window.DataContext = viewModel;
 
+            foreach (var item in viewModel.AllItems)
+            {
+                item.PropertyChanged += (sender, args) =>
+                {
+                    if (args.PropertyName == nameof(item.IsFavorite))
+                    {
+                        var isFavorite = item.IsFavorite;
+
+                        var existing = GlueSettings.RecentFileList.FirstOrDefault(candidate => candidate.FileName == item.FullPath);
+
+                        if (existing != null)
+                        {
+                            existing.IsFavorite = isFavorite;
+                        }
+
+                        GlueCommands.Self.GluxCommands.SaveSettings();
+
+                        RefreshMenuItems();
+
+                    }
+                };
+            }
+
             var result = window.ShowDialog();
 
             if(result == true)
@@ -126,29 +149,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                     }
                 }
                 GlueCommands.Self.GluxCommands.SaveSettings();
-            }
-
-            foreach (var item in viewModel.AllItems)
-            {
-                item.PropertyChanged += (sender, args) =>
-                {
-                    if (args.PropertyName == nameof(item.IsFavorite))
-                    {
-                        var isFavorite = item.IsFavorite;
-
-                        var existing = GlueSettings.RecentFileList.FirstOrDefault(candidate => candidate.FileName == item.FullPath);
-
-                        if (existing != null)
-                        {
-                            existing.IsFavorite = isFavorite;
-                        }
-
-                        GlueCommands.Self.GluxCommands.SaveSettings();
-
-                        RefreshMenuItems();
-
-                    }
-                };
             }
         }
 
