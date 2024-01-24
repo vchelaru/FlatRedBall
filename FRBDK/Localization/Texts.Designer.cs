@@ -2320,15 +2320,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to set game/edit mode to {0}.
-        /// </summary>
-        public static string FailedToSetGameEditModeToX {
-            get {
-                return ResourceManager.GetString("FailedToSetGameEditModeToX", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Falling.
         /// </summary>
         public static string Falling {

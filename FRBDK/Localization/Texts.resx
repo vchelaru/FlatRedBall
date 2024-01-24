@@ -2428,9 +2428,6 @@ for {1}?</value>
   <data name="AnimationSpeed" xml:space="preserve">
     <value>Animation Speed</value>
   </data>
-  <data name="FailedToSetGameEditModeToX" xml:space="preserve">
-    <value>Failed to set game/edit mode to {0}</value>
-  </data>
   <data name="CouldNotLoadProjectSeeOutput" xml:space="preserve">
     <value>Could not load the project. Check the output window for more information.</value>
   </data>

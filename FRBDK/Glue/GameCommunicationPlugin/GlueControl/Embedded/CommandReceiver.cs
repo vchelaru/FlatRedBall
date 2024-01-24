@@ -293,47 +293,55 @@ namespace GlueControl
                 response.Message = "The ScreenManager.CurrentScreen is null, so the screen cannot be restarted. Is the screen you are viewing abstract (such as GameScreen)? If so, this may be why the Screen hasn't been created.";
 
             }
-
-            if (value != FlatRedBall.Screens.ScreenManager.IsInEditMode)
+            try
             {
-                CameraLogic.RecordCameraForCurrentScreen();
-
-                FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
-
-                if (value)
+                if (value != FlatRedBall.Screens.ScreenManager.IsInEditMode)
                 {
-                    FlatRedBallServices.Game.IsMouseVisible = true;
+                    CameraLogic.RecordCameraForCurrentScreen();
 
-                    if(ObjectFinder.Self.GlueProject == null)
+                    FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
+
+                    if (value)
                     {
-                        GlueCommands.Self.LoadProject(setEditMode.AbsoluteGlueProjectFilePath);
-                    }
+                        FlatRedBallServices.Game.IsMouseVisible = true;
 
-                    // If in edit mode, polygons can get sent over from Glue
-                    // without points. We don't want to crash the game when this
-                    // happens.
-                    // Should we preserve the old value and reset it back? This adds
-                    // complexity, and I don't know if there's any benefit because this
-                    // property is usually false to catch coding errors, but code can't be
-                    // added without restarting the app, which would then reset this value back
-                    // to false. Let's keep it simple.
-                    Polygon.TolerateEmptyPolygons = true;
+                        if(ObjectFinder.Self.GlueProject == null)
+                        {
+                            GlueCommands.Self.LoadProject(setEditMode.AbsoluteGlueProjectFilePath);
+                        }
+
+                        // If in edit mode, polygons can get sent over from Glue
+                        // without points. We don't want to crash the game when this
+                        // happens.
+                        // Should we preserve the old value and reset it back? This adds
+                        // complexity, and I don't know if there's any benefit because this
+                        // property is usually false to catch coding errors, but code can't be
+                        // added without restarting the app, which would then reset this value back
+                        // to false. Let's keep it simple.
+                        Polygon.TolerateEmptyPolygons = true;
 #if SpriteHasTolerateMissingAnimations
-                    Sprite.TolerateMissingAnimations = true;
+                        Sprite.TolerateMissingAnimations = true;
 #endif
-                    if(!CameraSetup.Data.AllowWindowResizing)
-                    {
-                        CameraSetup.Data.AllowWindowResizing = true;
-                        CameraSetup.ResetWindow();
+                        if(!CameraSetup.Data.AllowWindowResizing)
+                        {
+                            CameraSetup.Data.AllowWindowResizing = true;
+                            CameraSetup.ResetWindow();
+                        }
                     }
+
+                    FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction = (entityNameGameType) => InstanceLogic.Self.CreateEntity(entityNameGameType);
+
+
+                    RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: value, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
+
+
                 }
 
-                FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction = (entityNameGameType) => InstanceLogic.Self.CreateEntity(entityNameGameType);
-
-
-                RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: value, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
-
-
+            }
+            catch(Exception ex)
+            {
+                response.Succeeded = false;
+                response.Message = $"Unexpected error:\n{ex.ToString()}";
             }
 
             return response;

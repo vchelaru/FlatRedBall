@@ -761,14 +761,14 @@ namespace GameCommunicationPlugin.GlueControl
 
             if (response?.Succeeded != true)
             {
-                var message = string.Format(Localization.Texts.FailedToSetGameEditModeToX, CompilerViewModel.PlayOrEdit);
+                var message = string.Format($"Failed to set game/edit mode to {CompilerViewModel.PlayOrEdit}\n");
                 if (response == null)
                 {
-                    message += Localization.Texts.GameSendNoResponseBack;
+                    message += "Game sent back no response";
                 }
                 else
                 {
-                    message += response.Message;
+                    message += $"Game sent back the following message: {response.Message}";
                 }
                 ReactToPluginEvent("Compiler_Output_Standard", message);
                 GlueCommands.Self.PrintOutput(message);
