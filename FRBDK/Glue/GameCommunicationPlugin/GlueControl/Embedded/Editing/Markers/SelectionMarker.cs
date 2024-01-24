@@ -841,7 +841,7 @@ namespace GlueControl.Editing
             /////////End Early Out///////////////
 
 
-            IsGrabbed = ownerAsPositionable != null;
+            IsGrabbed = ownerAsPositionable != null && global::FlatRedBall.FlatRedBallServices.Game.IsActive;
 
             ScreenPointPushed = new Microsoft.Xna.Framework.Point(mouse.X, mouse.Y);
             if (ownerAsPositionable != null)
