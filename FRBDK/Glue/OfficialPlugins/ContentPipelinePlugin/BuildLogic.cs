@@ -430,10 +430,10 @@ namespace OfficialPlugins.MonoGameContent
 
         private void InstallBuilderIfNecessary(VisualStudioProject visualStudioProject)
         {
-            var needsBuilder = visualStudioProject.DotNetVersion.Major >= 6;
+            var needs3_8_1_Builder = visualStudioProject.DotNetVersion.Major >= 6;
 
             ///////////Early Out//////////////////
-            if(!needsBuilder)
+            if(!needs3_8_1_Builder)
             {
                 return;
             }
@@ -453,6 +453,7 @@ namespace OfficialPlugins.MonoGameContent
 
             var hasMgcb = output?.Contains("dotnet-mgcb ") == true;
 
+
             if(!hasMgcb)
             {
                 var exe = "dotnet";
@@ -470,6 +471,41 @@ namespace OfficialPlugins.MonoGameContent
                 output = process.StandardOutput.ReadToEnd();
                 GlueCommands.PrintOutput(output);
 
+            }
+            else
+            {
+                // verify the version is right:
+                var lines = output.Split('\n');
+                var mgcbLines = lines.Where(item => item.Contains("dotnet-mgcb"));
+                var found3_8_1 = false;
+                Version versionFound = null;
+
+                foreach(var line in mgcbLines)
+                {
+                    var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                    if(parts.Length > 1 && parts[0] == "dotnet-mgcb" && Version.TryParse(parts[1], out Version version))
+                    {
+                        versionFound = version;
+                        found3_8_1 = version.Major == 3 && version.Minor == 8 && version.Build == 1;
+                        if(found3_8_1)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                if(!found3_8_1)
+                {
+                    if(versionFound == null)
+                    {
+                        GlueCommands.PrintError("Could not find a version of MGCB, but dotnet reported that dotnet-mgcb is installed.");
+                    }
+                    else
+                    {
+                        GlueCommands.PrintError($"dotnet-mgcb (the content pipeline) is already installed, but using version {versionFound}.");
+                    }
+                }
             }
         }
 
