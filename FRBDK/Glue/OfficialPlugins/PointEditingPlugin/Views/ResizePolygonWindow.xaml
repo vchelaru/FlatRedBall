@@ -19,11 +19,11 @@
             </Grid.ColumnDefinitions>
 
             <Label Content="{x:Static localization:Texts.Width}" />
-            <TextBox Grid.Column="1" Width="80" HorizontalAlignment="Left" Text="{Binding WidthPercentage}"></TextBox>
+            <TextBox Grid.Column="1" Width="80" HorizontalAlignment="Left" KeyDown="WidthTextBox_KeyDown" Text="{Binding WidthPercentage}"></TextBox>
             <Label Grid.Column="2">%</Label>
 
             <Label Grid.Row="1" Content="{x:Static localization:Texts.Height}" />
-            <TextBox Grid.Row="1" Grid.Column="1"  Width="80" HorizontalAlignment="Left" Text="{Binding HeightPercentage}"></TextBox>
+            <TextBox Grid.Row="1" Grid.Column="1"  Width="80" HorizontalAlignment="Left" KeyDown="HeightTextBox_KeyDown" Text="{Binding HeightPercentage}"></TextBox>
             <Label Grid.Row="1" Grid.Column="2">%</Label>
 
         </Grid>
