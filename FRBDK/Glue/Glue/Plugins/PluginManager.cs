@@ -44,6 +44,7 @@ using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using WpfDataUi.DataTypes;
+using EditorObjects.IoC;
 //using Gum.Wireframe;
 //using Gum.Converters;
 
@@ -65,9 +66,6 @@ namespace FlatRedBall.Glue.Plugins
 
         [ImportMany(AllowRecomposition = true)]
         public IEnumerable<IMenuStripPlugin> MenuStripPlugins { get; set; } = new List<IMenuStripPlugin>();
-
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<ICurrentElement> CurrentElementPlugins { get; set; } = new List<ICurrentElement>();
 
         [ImportMany(AllowRecomposition = true)]
         public IEnumerable<ICodeGeneratorPlugin> CodeGeneratorPlugins { get; set; } = new List<ICodeGeneratorPlugin>();
@@ -151,13 +149,10 @@ namespace FlatRedBall.Glue.Plugins
 
         protected override void StartAllPlugins(List<string> pluginsToIgnore = null)
         {
-
-
             var allPlugins = new List<IEnumerable<IPlugin>>
             {
                 MenuStripPlugins,
                 CodeGeneratorPlugins,
-                CurrentElementPlugins
             };
 
             foreach (var pluginList in allPlugins)
@@ -181,7 +176,6 @@ namespace FlatRedBall.Glue.Plugins
                 if(container.FailureException != null)
                 {
                     PluginManager.ReceiveError(container.FailureException.ToString());
-
                 }
             }
 
@@ -213,7 +207,6 @@ namespace FlatRedBall.Glue.Plugins
         {
             ImportedPlugins = new List<PluginBase>();
             MenuStripPlugins = new List<IMenuStripPlugin>();
-            CurrentElementPlugins = new List<ICurrentElement>();
             CodeGeneratorPlugins = new List<ICodeGeneratorPlugin>();
         }
 
@@ -228,9 +221,9 @@ namespace FlatRedBall.Glue.Plugins
                     .Add(new PluginErrors.PluginErrorReporter());
             }
 
-            if (mGlobalInstance == null)
+            if (globalPluginsManager == null)
             {
-                mGlobalInstance = new PluginManager(true)
+                globalPluginsManager = new PluginManager(true)
                 {
                     // global assemblies must not be collectible for now (2nd argument == false).  This is because
                     // some plugins (like Tiled) use the `XmlSerializer`, but as of now the XmlSerializer class
@@ -246,23 +239,23 @@ namespace FlatRedBall.Glue.Plugins
                     //AssemblyContext = new AssemblyLoadContext(null, false),
                 };
 
-                mGlobalInstance.AssemblyContext = new AssemblyLoadContext(null, false);
+                globalPluginsManager.AssemblyContext = new AssemblyLoadContext(null, false);
 
-                mGlobalInstance.LoadPlugins(@"FRBDK\Plugins", pluginsToIgnore);
+                globalPluginsManager.LoadPlugins(@"FRBDK\Plugins", pluginsToIgnore);
 
-                foreach (var output in mGlobalInstance.CompileOutput)
+                foreach (var output in globalPluginsManager.CompileOutput)
                 {
                     ReceiveOutput(output);
                 }
-                foreach (var output in mGlobalInstance.CompileErrors)
+                foreach (var output in globalPluginsManager.CompileErrors)
                 {
                     ReceiveError(output);
                 }
             }
 
-            if (mProjectInstance != null)
+            if (projectSpecificPluginManager != null)
             {
-                foreach (IPlugin plugin in ((PluginManager)mProjectInstance).mPluginContainers.Keys)
+                foreach (IPlugin plugin in ((PluginManager)projectSpecificPluginManager).mPluginContainers.Keys)
                 {
                     ShutDownPlugin(plugin, PluginShutDownReason.GlueShutDown);
                 }
@@ -274,14 +267,14 @@ namespace FlatRedBall.Glue.Plugins
                 // collector runs.  Since we might end up re-loading a new version of the plugins that were previously
                 // loaded to be safe we want to pause for GC to occur to make sure the old project specific plugins
                 // are fully unloaded before we retry to load the new ones.
-                mProjectInstance.AssemblyContext.Unload();
-                mProjectInstance.AssemblyContext = null;
-                mProjectInstance = null;
+                projectSpecificPluginManager.AssemblyContext.Unload();
+                projectSpecificPluginManager.AssemblyContext = null;
+                projectSpecificPluginManager = null;
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
 
-            mProjectInstance = new PluginManager(false)
+            projectSpecificPluginManager = new PluginManager(false)
             {
                 // Project specific plugins should always be loaded in a collectible assembly, so they can be
                 // unloaded
@@ -299,29 +292,54 @@ namespace FlatRedBall.Glue.Plugins
                 var runnablePluginDirectory = CopyProjectPluginsToRunnableDirectory(pluginDirectory);
                 if (runnablePluginDirectory != null)
                 {
-                    mProjectInstance.LoadPlugins(runnablePluginDirectory.FullPath);
+                    projectSpecificPluginManager.LoadPlugins(runnablePluginDirectory);
                 }
 
-                if(mProjectInstance.CompileOutput != null)
+                if(projectSpecificPluginManager.CompileOutput != null)
                 {
-                    foreach (var output in mProjectInstance.CompileOutput)
+                    foreach (var output in projectSpecificPluginManager.CompileOutput)
                     {
                         ReceiveOutput(output);
                     }
                 }
 
-                if(mProjectInstance.CompileErrors != null)
+                if(projectSpecificPluginManager.CompileErrors != null)
                 {
-                    foreach (var output in mProjectInstance.CompileErrors)
+                    foreach (var output in projectSpecificPluginManager.CompileErrors)
                     {
                         ReceiveError(output);
+                    }
+                }
+
+                // check for dupes:
+                HashSet<string> globalPluginNames = globalPluginsManager.PluginContainers.Select(item => item.Value.Plugin.FriendlyName).ToHashSet();
+
+                foreach(var projectSpecificPlugin in projectSpecificPluginManager.PluginContainers)
+                {
+                    var friendlyName = projectSpecificPlugin.Value.Plugin.FriendlyName;
+                    var alreadyLoaded = globalPluginNames.Contains(friendlyName);
+
+                    if(alreadyLoaded)
+                    {
+                        string message =
+                            $"The project-specific plugin {friendlyName} is already loaded globally. This can cause unexpected behavior.";
+
+                        var globalPlugin = globalPluginsManager.PluginContainers.First(item => item.Value.Plugin.FriendlyName == friendlyName);
+
+                        message += $"\nGlobal Plugin Location: {globalPlugin.Value.AssemblyLocation}";
+                        message += $"\nProject Plugin Location: {projectSpecificPlugin.Value.AssemblyLocation}";
+
+
+                        PluginManager.PrintError(
+                            message,
+                            (PluginManager)globalPluginsManager);
                     }
                 }
             }
 
             mInstances.Clear();
-            mInstances.Add(mGlobalInstance);
-            mInstances.Add(mProjectInstance);
+            mInstances.Add(globalPluginsManager);
+            mInstances.Add(projectSpecificPluginManager);
         }
 
         public static bool InstallPlugin(InstallationType installationType, string localPlugFile)
@@ -679,13 +697,13 @@ namespace FlatRedBall.Glue.Plugins
         {
             if (mPreInitializeOutput.Length != 0)
             {
-                PrintOutput(mPreInitializeOutput.ToString(), ((PluginManager)mGlobalInstance));
+                PrintOutput(mPreInitializeOutput.ToString(), ((PluginManager)globalPluginsManager));
             }
 
             //System.Threading.Thread.Sleep(300);
             if (mPreInitializeError.Length != 0)
             {
-                PrintError(mPreInitializeError.ToString(), ((PluginManager)mGlobalInstance));
+                PrintError(mPreInitializeError.ToString(), ((PluginManager)globalPluginsManager));
             }
             mPreInitializeOutput.Clear();
             mPreInitializeError.Clear();
@@ -1493,26 +1511,6 @@ namespace FlatRedBall.Glue.Plugins
             ResumeRelativeDirectory("ReactToLoadedGlux");
         }
 
-        internal static void RefreshCurrentElement()
-        {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                foreach (ICurrentElement plugin in pluginManager.CurrentElementPlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        ICurrentElement plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.RefreshCurrentElement();
-                            },container, "Failed in RefreshCurrentElement");
-                    }
-                }
-            }
-        }
-
         internal static void ReactToVariableAdded(CustomVariable newVariable)
         {
             CallMethodOnPlugin(
@@ -1679,7 +1677,7 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToGluxClose()
         {
-            foreach (KeyValuePair<IPlugin, PluginContainer> kvp in ((PluginManager)mProjectInstance).mPluginContainers)
+            foreach (KeyValuePair<IPlugin, PluginContainer> kvp in ((PluginManager)projectSpecificPluginManager).mPluginContainers)
             {
                 if (kvp.Value.IsEnabled)
                 {

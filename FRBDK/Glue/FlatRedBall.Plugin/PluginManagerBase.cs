@@ -40,8 +40,8 @@ namespace FlatRedBall.Glue.Plugins
         protected const String CompatibilityFileName = "Compatibility.txt";
         protected bool mError = false;
 
-        protected static PluginManagerBase mGlobalInstance;
-        protected static PluginManagerBase mProjectInstance;
+        protected static PluginManagerBase globalPluginsManager;
+        protected static PluginManagerBase projectSpecificPluginManager;
 
         protected static List<PluginManagerBase> mInstances = new List<PluginManagerBase>();
         protected bool mGlobal;
@@ -56,12 +56,12 @@ namespace FlatRedBall.Glue.Plugins
 
         public static PluginManagerBase GetGlobalPluginManager()
         {
-            return mGlobalInstance;
+            return globalPluginsManager;
         }
 
         public static PluginManagerBase GetProjectPluginManager()
         {
-            return mProjectInstance;
+            return projectSpecificPluginManager;
         }
 
 
@@ -173,7 +173,7 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        protected static bool PopulateCatalog(PluginManagerBase instance, string absoluteFilePath, List<string> pluginsToIgnore = null)
+        protected static bool PopulateCatalog(PluginManagerBase instance, FilePath filePath, List<string> pluginsToIgnore = null)
         {
             instance.mError = false;
 
@@ -184,7 +184,7 @@ namespace FlatRedBall.Glue.Plugins
                 AppDomain currentDomain = AppDomain.CurrentDomain;
                 //currentDomain.AssemblyResolve += reh;
 
-                AggregateCatalog catalog = instance.CreateCatalog(absoluteFilePath, pluginsToIgnore);
+                AggregateCatalog catalog = instance.CreateCatalog(filePath, pluginsToIgnore);
 
                 var container = new CompositionContainer(catalog);
                 container.ComposeParts(instance);
@@ -272,7 +272,7 @@ namespace FlatRedBall.Glue.Plugins
             return null;
         }
 
-        private AggregateCatalog CreateCatalog(string absoluteFilePath, List<string> pluginsToIgnore = null)
+        private AggregateCatalog CreateCatalog(FilePath filePath, List<string> pluginsToIgnore = null)
         {
 
             mExternalAssemblies.Clear();
@@ -280,7 +280,7 @@ namespace FlatRedBall.Glue.Plugins
 
             var returnValue = new AggregateCatalog();
 
-            var pluginDirectories = GetPluginDirectories(absoluteFilePath);
+            var pluginDirectories = GetPluginDirectories(filePath);
 
             foreach (var directory in pluginDirectories)
             {
@@ -316,7 +316,7 @@ namespace FlatRedBall.Glue.Plugins
             return returnValue;
         }
 
-        private List<string> GetPluginDirectories(string absoluteFilePath)
+        private List<string> GetPluginDirectories(FilePath filePath)
         {
             var pluginDirectories = new List<string>();
 
@@ -325,7 +325,7 @@ namespace FlatRedBall.Glue.Plugins
                 var paths = new List<string>
                                          {
                                              FileManager.GetDirectory(Application.ExecutablePath) + "Plugins",
-                                             absoluteFilePath
+                                             filePath.FullPath
                                          };
                 // Glue startup is super verbose, we can quite it down now that plugins seem to be working fine:
                 //foreach (string path in paths)
@@ -342,7 +342,7 @@ namespace FlatRedBall.Glue.Plugins
             }
             else
             {
-                AddDirectoriesForInstance(pluginDirectories, absoluteFilePath);
+                AddDirectoriesForInstance(pluginDirectories, filePath.FullPath);
             }
             return pluginDirectories;
         }
@@ -634,6 +634,7 @@ namespace FlatRedBall.Glue.Plugins
             if (!mPluginContainers.ContainsKey(plugin))
             {
                 PluginContainer pluginContainer = new PluginContainer(plugin);
+
                 mPluginContainers.Add(plugin, pluginContainer);
 
                 try
@@ -741,13 +742,13 @@ namespace FlatRedBall.Glue.Plugins
             bool doesPluginWantToShutDown = true;
             PluginContainer container;
 
-            if (mGlobalInstance.mPluginContainers.ContainsKey(pluginToShutDown))
+            if (globalPluginsManager.mPluginContainers.ContainsKey(pluginToShutDown))
             {
-                container = mGlobalInstance.mPluginContainers[pluginToShutDown];
+                container = globalPluginsManager.mPluginContainers[pluginToShutDown];
             }
             else
             {
-                container = mProjectInstance.mPluginContainers[pluginToShutDown];
+                container = projectSpecificPluginManager.mPluginContainers[pluginToShutDown];
             }
 
             try
@@ -784,12 +785,12 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        public bool LoadPlugins(string absoluteFilePath, List<string> pluginsToIgnore = null)
+        public bool LoadPlugins(FilePath filePath, List<string> pluginsToIgnore = null)
         {
             CompileOutput = new List<string>();
             CompileErrors = new List<string>();
 
-            bool succeeded = PopulateCatalog (this, absoluteFilePath, pluginsToIgnore);
+            bool succeeded = PopulateCatalog (this, filePath, pluginsToIgnore);
 
             if (succeeded)
             {
