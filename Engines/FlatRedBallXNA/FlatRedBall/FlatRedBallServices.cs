@@ -114,7 +114,7 @@ namespace FlatRedBall
 
     public class SyntaxVersionAttribute : Attribute
     {
-        public int Version = 51;
+        public int Version = 52;
     }
 
     public static partial class FlatRedBallServices

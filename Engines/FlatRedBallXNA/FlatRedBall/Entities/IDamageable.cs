@@ -10,6 +10,7 @@ namespace FlatRedBall.Entities
     {
         Dictionary<IDamageArea, double> DamageAreaLastDamage { get; }
         int TeamIndex { get; }
+        bool IsDamageReceivingEnabled { get; }
         decimal CurrentHealth { get; set; }
         decimal MaxHealth { get; set; }
 
@@ -30,7 +31,7 @@ namespace FlatRedBall.Entities
     {
         /// <summary>
         /// Returns whether the argument IDamageable should take damage from the argument IDamageArea.
-        /// This returns true if the team indexes are different, ifthe damageable has > 0 CurrentHealth,
+        /// This returns true if the team indexes are different, if the damageable has > 0 CurrentHealth,
         /// and if enough time has passed since the last damage was dealt by this particular IDamageArea instance. 
         /// </summary>
         /// <param name="damageable">The damageable object, typically a Player or Enemy.</param>
@@ -38,7 +39,10 @@ namespace FlatRedBall.Entities
         /// <returns></returns>
         public static bool ShouldTakeDamage(this IDamageable damageable, IDamageArea damageArea)
         {
-            if (damageable.TeamIndex == damageArea.TeamIndex || damageable.CurrentHealth <= 0)
+            if (damageable.TeamIndex == damageArea.TeamIndex
+                || damageable.CurrentHealth <= 0
+                || !damageArea.IsDamageDealingEnabled
+                || !damageable.IsDamageReceivingEnabled)
             {
                 return false;
             }
