@@ -269,6 +269,24 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
             }
 
+            // If
+            // * objectInDerived.DefinedByBase = true
+            // -- and --
+            // * objectByBase.SetByDerived = true
+            // Then in most cases the derived will have its SetByDerived = false because
+            // there is a simple base/derived relationship. But if the inheritance chain
+            // is 3 long, then the middle one will have both DefinedByBase = true *and* SetByDerived = true.
+            // This differs from the most common case, and ElementCommands.cs assumes the default case 
+            // the derived is to have SetByDerived = false;
+            if(shouldStrip)
+            {
+                if(nos.SetByDerived == true)
+                {
+                    shouldStrip = false;
+                }
+            }
+
+
             if(shouldStrip)
             { 
                 // see if any properties differ from the base
@@ -339,7 +357,8 @@ namespace FlatRedBall.Glue.SaveClasses
                 nos1.AddToManagers != nos2.AddToManagers ||
                 nos1.IncludeInICollidable != nos2.IncludeInICollidable ||
                 nos1.IncludeInIClickable != nos2.IncludeInIClickable ||
-                nos1.SourceName != nos2.SourceName;
+                nos1.SourceName != nos2.SourceName ||
+                nos1.HasPublicProperty != nos2.HasPublicProperty;
 
             return differ;
         }

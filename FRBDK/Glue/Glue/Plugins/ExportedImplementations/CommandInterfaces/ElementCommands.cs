@@ -1837,6 +1837,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                 }
             }
 
+            // For more information on this property, see GlueProjectSaveExtensions.DetermineIfShouldStripNos
             newNamedObject.SetDefinedByBaseRecursively(true);
             newNamedObject.SetInstantiatedByBaseRecursively(instantiatedByBase);
 

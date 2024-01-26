@@ -248,6 +248,7 @@ namespace FlatRedBall.Glue.SaveClasses
         [XmlIgnore]
         [JsonIgnore]
         [CategoryAttribute("Scrollable Entity List")]
+        [Obsolete("This is no longer used, it should never be assigned or read")]
         public string ItemType
         {
             get

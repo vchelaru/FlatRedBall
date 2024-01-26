@@ -716,6 +716,14 @@ namespace FlatRedBall.Glue.Plugins
             set;
         } = new List<Game1CodeGenerator>();
 
+        /// <summary>
+        /// Registers the argument ElementComponentCodeGenerator to Glue's code generator list. 
+        /// This method also registers the code generator so that it belongs to this plugin in case
+        /// the plugin wants to remove it later.
+        /// Code generators that are added here run on every element, and it is up to the 
+        /// code generator to decide if it should actually write code.
+        /// </summary>
+        /// <param name="codeGenerator">The component to add.</param>
         public void RegisterCodeGenerator(ElementComponentCodeGenerator codeGenerator)
         {
             CodeGenerators.Add(codeGenerator);

@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.CodeGenerators
 {
+    /// <summary>
+    /// Base class for a code generator responsible for generating a stand-alone file. This is typically
+    /// used to inject utility classes or runtime objects.
+    /// </summary>
     public abstract class FullFileCodeGenerator
     {
         public abstract string RelativeFile { get; }
