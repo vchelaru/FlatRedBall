@@ -134,7 +134,8 @@ namespace FlatRedBall.Glue.SaveClasses
             GumUsesSystemTypes = 49,
             // Technically this isn't referencing GumCommon project, but it's referencing code from GumCommon
             GumCommonCodeReferencing = 50,
-            GumTextSupportsBbCode = 51
+            GumTextSupportsBbCode = 51,
+            DamageDealingToggles = 52
 
             // Stop! If adding an entry here, modify SyntaxVersionAttribute.Version
         }
@@ -143,7 +144,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GumTextSupportsBbCode;
+        public const int LatestVersion = (int)GluxVersions.DamageDealingToggles;
 
         public int FileVersion { get; set; }
 

@@ -9,6 +9,7 @@ namespace FlatRedBall.Entities
     {
         event Action Destroyed;
         double SecondsBetweenDamage { get; set; }
+        bool IsDamageDealingEnabled { get; }
         object DamageDealer { get; }
         int TeamIndex { get; }
 
