@@ -102,6 +102,9 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
                     if (UsesDamageV3)
                     {
                         codeBlock.Line("public bool IsDamageReceivingEnabled { get; set; } = true;");
+                        codeBlock.Line("public double InvulnerabilityTimeAfterDamage { get; set; } = 0;");
+                        codeBlock.Line("public bool IsInvulnerable => TimeManager.CurrentScreenSecondsSince(LastDamageTime) < InvulnerabilityTimeAfterDamage;");
+                        codeBlock.Line("public double LastDamageTime { get; set; } = -999;");
                     }
                 }
             }
