@@ -6,9 +6,11 @@ using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
+using System;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
+    [Obsolete("This is similar to FullFileCodeGenerator. Use that instead. You will need to implement namespace and class blocks if migrating there.")]
     public abstract class EntireClassCodeGenerator
     {
         #region Properties
