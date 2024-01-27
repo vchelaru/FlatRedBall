@@ -1802,6 +1802,10 @@ namespace FlatRedBall
 
         public async Task PlayAnimationsAsync(params string[] animations)
         {
+            if(animations.Length > 0)
+            {
+                this.Animate = true;
+            }
             foreach(var animation in animations)
             {
                 CurrentChainName = animation;
