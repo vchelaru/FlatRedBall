@@ -14,7 +14,7 @@ namespace FlatRedBall.Entities
         double InvulnerabilityTimeAfterDamage { get; }
         double LastDamageTime { get; set; }
         decimal CurrentHealth { get; set; }
-        bool IsInvulnerable { get; }
+        
         decimal MaxHealth { get; set; }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace FlatRedBall.Entities
                 || damageable.CurrentHealth <= 0
                 || !damageArea.IsDamageDealingEnabled
                 || !damageable.IsDamageReceivingEnabled
-                || damageable.IsInvulnerable)
+                || TimeManager.CurrentScreenSecondsSince(damageable.LastDamageTime) < damageable.InvulnerabilityTimeAfterDamage)
             {
                 return false;
             }
