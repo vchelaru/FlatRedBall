@@ -130,7 +130,7 @@ namespace NAudioPlugin.Managers
 
             var path = $"Content/{relativeFileName}";
 
-            var contentManagerName = contentManagerName ?? "contentManagerName";
+            var contentManagerName = contentManager ?? "contentManagerName";
 
             if(file.DestroyOnUnload == false)
             {

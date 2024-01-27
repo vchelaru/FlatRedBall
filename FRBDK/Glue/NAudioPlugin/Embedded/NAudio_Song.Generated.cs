@@ -62,7 +62,8 @@ namespace FlatRedBall.NAudio
             get => volume;
             set
             {
-                volume = value;
+                // prevent it from going negative. Although technically supported, it's confusing...
+                volume = System.Math.Max(value, 0);
                 if (reader != null)
                 {
                     reader.Volume = volume;
