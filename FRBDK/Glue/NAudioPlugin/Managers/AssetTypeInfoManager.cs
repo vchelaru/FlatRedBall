@@ -122,12 +122,15 @@ namespace NAudioPlugin.Managers
             ReferencedFileSave file, string contentManager)
         {
             var instanceName = file.GetInstanceName();
-
+            if(file.LoadedOnlyWhenReferenced)
+            {
+                instanceName = "m" + instanceName;
+            }
             var relativeFileName = file.Name.ToLowerInvariant();
 
             var path = $"Content/{relativeFileName}";
 
-            var contentManagerName = "contentManagerName";
+            var contentManagerName = contentManagerName ?? "contentManagerName";
 
             if(file.DestroyOnUnload == false)
             {

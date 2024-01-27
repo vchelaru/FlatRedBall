@@ -64,7 +64,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        #region Generate Fields (Static Members)
+        #region Fields (Static Members)
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock,  SaveClasses.IElement element)
         {
@@ -91,8 +91,9 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             for (int i = 0; i < element.ReferencedFiles.Count; i++)
             {
+                var file = element.ReferencedFiles[i];
                 AppendFieldOrPropertyForReferencedFile(codeBlock,
-                    element.ReferencedFiles[i], element, contentManagerName);
+                    file, element, contentManagerName);
 
                 //stringBuilder.AppendLine(GetFieldForReferencedFile(mSaveObject.ReferencedFiles[i]));
 
@@ -178,6 +179,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
+        #region Initialize
+
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock,  SaveClasses.IElement element)
         {
             for (int i = 0; i < element.ReferencedFiles.Count; i++)
@@ -194,6 +197,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             return codeBlock;
         }
+
+        #endregion
 
         public static void GenerateAddToManagersStatic(ICodeBlock codeBlock,  SaveClasses.IElement element)
         {
