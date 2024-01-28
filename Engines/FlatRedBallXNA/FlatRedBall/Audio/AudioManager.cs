@@ -64,6 +64,10 @@ namespace FlatRedBall.Audio
         } = 1.0f;
 
         static float? masterSongVolume = null;
+
+        /// <summary>
+        /// The default volume for playing songs, applied when calling Play(Song). Ranges between 0 and 1.
+        /// </summary>
         public static float? MasterSongVolume
         {
             get => masterSongVolume;
