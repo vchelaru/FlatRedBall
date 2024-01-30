@@ -43,7 +43,7 @@ namespace AchxToSpineAtlas
             var texture = firstFrame.TextureName?.Replace("\\", "/");
 
             var achxDirectory = Path.GetDirectoryName(achxLocation);
-            var textureFull = Path.Combine(achxLocation, texture);
+            var textureFull = Path.Combine(achxDirectory, texture);
             var destinationDirectory = Path.GetDirectoryName(destinationLocation);
 
             var relativeTexture = FlatRedBall.IO.FileManager.MakeRelative(textureFull, destinationDirectory);
