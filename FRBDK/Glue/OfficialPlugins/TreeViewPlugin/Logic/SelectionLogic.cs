@@ -111,6 +111,11 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             else
             {
                 didSelectionChange = currentNodes.Any(item => item.Tag == nodeViewModel.Tag) == false;
+
+                if(!didSelectionChange && replaceSelection)
+                {
+                    didSelectionChange = currentNodes.Contains(nodeViewModel) == false;
+                }
             }
 
 
@@ -119,6 +124,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                 currentNodes.Clear();
 
                 mainViewModel.DeselectResursively(callSelectionLogic: false);
+
             }
 
 
