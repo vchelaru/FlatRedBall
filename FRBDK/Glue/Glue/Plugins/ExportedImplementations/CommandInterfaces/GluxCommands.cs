@@ -2888,6 +2888,8 @@ public class GluxCommands : IGluxCommands
                 newElement.Name = StringFunctions.IncrementNumberAtEnd(newElement.Name);
             }
 
+            newElement.FixAllTypes();
+
             if (newElement is ScreenSave newScreenSave)
             {
                 await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreenSave);
