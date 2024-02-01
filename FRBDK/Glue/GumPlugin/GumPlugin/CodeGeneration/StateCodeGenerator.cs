@@ -423,8 +423,11 @@ namespace GumPlugin.CodeGeneration
             {
                 toReturn = false;
             }
+
+            var isVariableState = variable.IsState(container);
+
             // states can't set states on this
-            if(variable.IsState(container) && string.IsNullOrEmpty(variable.SourceObject ) )
+            if(isVariableState && string.IsNullOrEmpty(variable.SourceObject ) )
             {
                 toReturn = false;
             }
@@ -488,6 +491,19 @@ namespace GumPlugin.CodeGeneration
                         {
                             // This doesn't exist anywhere in the inheritance chain, so we don't want to generate it:
                             toReturn = false;
+                        }
+
+                        if(isVariableState)
+                        {
+                            // see if the base type has this category. If so, see if the state name exists. If not, we should skip generation:
+                            var category = baseElement.Categories.FirstOrDefault(item => item.Name == variable.Type);
+                            var variableValueAsString = variable.Value?.ToString();
+
+                            if(!string.IsNullOrEmpty(variableValueAsString) && category != null && !category.States.Any(item => item.Name == variableValueAsString))
+                            {
+                                // this references an invalid state. This can happen if a state is deleted from an entity 
+                                toReturn = false;
+                            }
                         }
                     }
                 }
