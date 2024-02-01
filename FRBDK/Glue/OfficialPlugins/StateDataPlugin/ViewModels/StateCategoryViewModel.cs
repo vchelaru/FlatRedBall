@@ -322,10 +322,19 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             {
                 var valueAsString = whatToConvert?.ToString();
 
-                if(TypeManager.TryConvertStringValue(variable.Type, valueAsString, out object convertedValue))
+                // If this is a color like "White", we want to keep that named color
+                if(variable.Type == "Color")
                 {
-                    return convertedValue;
+                    // keep this as-is.
                 }
+                else
+                {
+                    if(TypeManager.TryConvertStringValue(variable.Type, valueAsString, out object convertedValue))
+                    {
+                        return convertedValue;
+                    }
+                }
+
                 return whatToConvert;
             }
             catch
