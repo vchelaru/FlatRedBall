@@ -37,6 +37,12 @@ namespace Npc.Managers
             private set;
         }
 
+        public string? DefaultDestinationDirectory
+        {
+            get;
+            private set;
+        }
+
         public void ProcessCommandLineArguments(string[] forcedArgs = null)
         {
             var args = forcedArgs ?? Environment.GetCommandLineArgs();
@@ -61,6 +67,11 @@ namespace Npc.Managers
                 else if (string.Equals(arg, "showsourcecheckbox", StringComparison.OrdinalIgnoreCase))
                 {
                     ShowSourceCheckbox = true;
+                }
+                else if(arg.StartsWith("defaultdestinationdirectory=", StringComparison.OrdinalIgnoreCase))
+                {
+                    DefaultDestinationDirectory = arg.Substring("defaultdestinationdirectory".Length + 1).Replace("\"", "");
+
                 }
             }
         }

@@ -122,7 +122,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                             HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(dtoSerialized));
                             break;
                         default:
-                            int m = 3;
                             break;
                     }
                 }
@@ -200,7 +199,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         private async Task HandleSetVariable(SetVariableDto setVariableDto, bool regenerateAndSave = true, bool sendBackToGame = true)
         {
 
-            await TaskManager.Self.AddAsync(async () =>
+            await TaskManager.Self.AddAsync(() =>
             {
                 var type = string.Join('\\', setVariableDto.InstanceOwner.Split('.').Skip(1));
 
@@ -747,7 +746,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region CurrentDisplayInfoDto
 
-        private async void HandleDto(CurrentDisplayInfoDto dto)
+        private void HandleDto(CurrentDisplayInfoDto dto)
         {
             var zoomValue = dto.ZoomPercentage;
 
@@ -921,9 +920,11 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         public class NosReferenceVariableAssignment
         {
+#pragma warning disable CS0649 // These are set from json deserialization
             public NamedObjectSaveReference NamedObjectSave;
             public string VariableName;
             public TypedParameter Value;
+#pragma warning restore CS0649 // Field 'CommandReceiver.NosReferenceVariableAssignment.NamedObjectSave' is never assigned to, and will always have its default value null
         }
 
         private object Convert(object parameter, string typeName)
@@ -989,7 +990,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
             else if(parameter is JArray asJArray)
             {
-                int m = 3;
                 if(typeName == GetFriendlyName(typeof(List<NosVariableAssignment>)) ||
                     typeName == GetFriendlyName(typeof(IReadOnlyList<NosVariableAssignment>)))
                 {
@@ -1071,10 +1071,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 else if(typeName == "Nullable<Int32>")
                 {
                     converted = (int?)asLong;
-                }
-                else
-                {
-                    int m = 3;
                 }
             }
             else if(parameter is object)

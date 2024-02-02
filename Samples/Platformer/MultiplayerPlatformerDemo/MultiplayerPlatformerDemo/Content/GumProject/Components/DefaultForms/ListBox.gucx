@@ -291,7 +291,7 @@
       <SetsValue>false</SetsValue>
     </Variable>
     <Variable>
-      <Type>ScrollBarVisibilityState</Type>
+      <Type>ScrollBarVisibility</Type>
       <Name>ScrollBarVisibilityState</Name>
       <SetsValue>false</SetsValue>
     </Variable>
@@ -357,6 +357,7 @@
   </State>
   <Category>
     <Name>ListBoxCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Enabled</Name>
       <Variable>
@@ -425,6 +426,7 @@
   </Category>
   <Category>
     <Name>ScrollBarVisibility</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>NoScrollBar</Name>
       <Variable>

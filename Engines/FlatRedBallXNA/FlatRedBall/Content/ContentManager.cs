@@ -62,9 +62,10 @@ namespace FlatRedBall.Content
         TextureContentLoader textureContentLoader = new TextureContentLoader();
 
 		//internal Dictionary<string, Type> mAssetTypeAssociation;
-		internal Dictionary<string, object> mAssets;
-		internal Dictionary<string, IDisposable> mDisposableDictionary = new Dictionary<string, IDisposable>();
-		Dictionary<string, object> mNonDisposableDictionary = new Dictionary<string, object>();
+		internal Dictionary<string, object> mAssets = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+		internal Dictionary<string, IDisposable> mDisposableDictionary = new Dictionary<string, IDisposable>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, object> mNonDisposableDictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
 		Dictionary<string, Action> mUnloadMethods = new Dictionary<string, Action>();
 
@@ -199,7 +200,6 @@ namespace FlatRedBall.Content
 		{
 			mName = name;
 			//    mAssetTypeAssociation = new Dictionary<string, Type>();
-			mAssets = new Dictionary<string, object>();
 			ManualResetEventList = new List<ManualResetEvent>();
 		}
 
@@ -208,7 +208,6 @@ namespace FlatRedBall.Content
 		{
 			mName = name;
 			//    mAssetTypeAssociation = new Dictionary<string, Type>();
-			mAssets = new Dictionary<string, object>();
 			ManualResetEventList = new List<ManualResetEvent>();
 		}
 
@@ -786,6 +785,11 @@ namespace FlatRedBall.Content
 #endif
 
 #endregion
+
+				else if(typeof(T) == typeof(Effect))
+				{
+					return base.Load<T>(assetName);
+				}
 
 #region else, exception!
 

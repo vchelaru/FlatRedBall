@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -128,25 +129,26 @@ namespace OfficialPluginsCore.Wizard.ViewModels
         private async Task<bool> RemoteFileExists(string url)
         {
             ErrorMessage = null;
+            HttpClient httpClient = new HttpClient();
+
             try
             {
-                //Creating the HttpWebRequest
-                var request = WebRequest.Create(url) as HttpWebRequest;
-                //Setting the Request method HEAD, you can also use GET too.
-                request.Method = "HEAD";
-                //Getting the Web Response.
-                var response = (await request.GetResponseAsync()) as HttpWebResponse;
+                //Creating the HttpClient request
+                var request = new HttpRequestMessage(HttpMethod.Head, url);
+                var response = await httpClient.SendAsync(request);
+
                 //Returns TRUE if the Status code == 200
                 var toReturn = (response.StatusCode == HttpStatusCode.OK);
-                response.Close();
+
                 return toReturn;
             }
-            catch (Exception e)
+            catch (HttpRequestException e)
             {
                 ErrorMessage = e.Message;
-                //Any exception will returns false.
+                //Any exception will return false.
                 return false;
             }
+
         }
     }
 

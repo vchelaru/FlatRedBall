@@ -52,7 +52,7 @@ namespace GlueControl.Editing
             {
                 var element = ObjectFinder.Self.GetElement(elementName);
 
-                var pointsTunneled = element?.CustomVariables.FirstOrDefault(varItem => varItem.SourceObjectProperty == "Points");
+                var pointsTunneled = element?.CustomVariables?.FirstOrDefault(varItem => varItem.SourceObjectProperty == "Points");
                 if (pointsTunneled != null)
                 {
                     var namedObject = element.GetNamedObject(pointsTunneled.SourceObject);

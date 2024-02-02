@@ -178,7 +178,7 @@
     <value>Error details:</value>
   </data>
   <data name="FilterResultsDescription" xml:space="preserve">
-    <value>Begin a search with \"f \", \"e \", \"s \", \"o \", or \"v \" (letter then space) to filter results.</value>
+    <value>Begin a search with "f", "e", "s", "o", or "v" (letter then space) to filter results.</value>
   </data>
   <data name="FilteredToFiles" xml:space="preserve">
     <value>Filtered to Files...</value>
@@ -364,7 +364,8 @@
     <value>Gum Plugin - handle new FRB screen {0}</value>
   </data>
   <data name="GumConfirmDeleteScreen" xml:space="preserve">
-    <value>Delete the Gum Screen {0}\nfor {1}?</value>
+    <value>Delete the Gum Screen {0}
+for {1}?</value>
   </data>
   <data name="GumProjectFileCanOnlyAddedToGlobal" xml:space="preserve">
     <value>The Gum project file (.gumx) can only be added to global content.</value>
@@ -412,7 +413,7 @@
     <value>Snapping</value>
   </data>
   <data name="WarningLocalizationFileChange" xml:space="preserve">
-    <value>This will also reload if localization CSV files change.\nIf unchecked, the game will only respond to file changes (like TMX) in edit mode</value>
+    <value>This will also reload if localization CSV files change. If unchecked, the game will only respond to file changes (like TMX) in edit mode</value>
   </data>
   <data name="ErrorGameThrewNullString" xml:space="preserve">
     <value>Null string returned back from the game</value>
@@ -1458,9 +1459,6 @@
   <data name="ListSortEveryFrame" xml:space="preserve">
     <value>Sort List every frame</value>
   </data>
-  <data name="ObjectNoPartitioning" xml:space="preserve">
-    <value>This object has no partitioning options available.</value>
-  </data>
   <data name="HintObjectAutoPartition" xml:space="preserve">
     <value>This object is automatically partitioned, or it does not need partitioning</value>
   </data>
@@ -1690,10 +1688,10 @@
     <value>Project Commands</value>
   </data>
   <data name="GlueWizardRun" xml:space="preserve">
-    <value>Run Glue Wizard</value>
+    <value>Run Wizard</value>
   </data>
   <data name="GlueWizardDescription" xml:space="preserve">
-    <value>The Glue Wizard can help you get a fully functional game set up in seconds.</value>
+    <value>The New Project Wizard can help you get a fully functional game set up in seconds.</value>
   </data>
   <data name="ProjectCreateNew" xml:space="preserve">
     <value>Create New Project</value>
@@ -2429,9 +2427,6 @@
   </data>
   <data name="AnimationSpeed" xml:space="preserve">
     <value>Animation Speed</value>
-  </data>
-  <data name="FailedToSetGameEditModeToX" xml:space="preserve">
-    <value>Failed to set game/edit mode to {0}</value>
   </data>
   <data name="CouldNotLoadProjectSeeOutput" xml:space="preserve">
     <value>Could not load the project. Check the output window for more information.</value>

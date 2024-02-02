@@ -43,6 +43,7 @@ using System.Windows.Forms.Design;
 using FlatRedBall.Glue.AutomatedGlue;
 using static FlatRedBall.Debugging.Debugger;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
+using WpfDataUi.DataTypes;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
@@ -1823,7 +1824,7 @@ public class GluxCommands : IGluxCommands
         var toReturn = new List<ToolsUtilities.GeneralResponse<NamedObjectSave>>();
         foreach (var originalNos in nosList)
         {
-            var response = await CopyNamedObjectIntoElementInner(originalNos, targetElement, performSaveAndGenerateCode:false, updateUi: false, notifyPlugins: false);
+            var response = await CopyNamedObjectIntoElementInner(originalNos, targetElement, targetNos:null, performSaveAndGenerateCode:false, updateUi: false, notifyPlugins: false);
             toReturn.Add(response);
         }
 
@@ -1882,18 +1883,29 @@ public class GluxCommands : IGluxCommands
         return toReturn;
     }
 
-    public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
+    public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave originalNos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
     {
-        return await CopyNamedObjectIntoElementInner(nos, targetElement, performSaveAndGenerateCode, updateUi, notifyPlugins: true);
+        return await CopyNamedObjectIntoElementInner(originalNos, targetElement, null, performSaveAndGenerateCode, updateUi, notifyPlugins: true);
     }
 
-    public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElementInner(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode, bool updateUi,
+    public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave originalNos, GlueElement targetElement, NamedObjectSave targetNos, bool performSaveAndGenerateCode = true, bool updateUi = true)
+    {
+        return await CopyNamedObjectIntoElementInner(originalNos, targetElement, targetNos, performSaveAndGenerateCode, updateUi, notifyPlugins: true);
+    }
+
+
+    private async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElementInner(NamedObjectSave originalNos, GlueElement targetElement, NamedObjectSave targetNos, bool performSaveAndGenerateCode, bool updateUi,
         bool notifyPlugins)
     {
         bool succeeded = true;
 
         //// moving to another element, so let's copy
-        NamedObjectSave newNos = nos.Clone();
+        NamedObjectSave newNos = originalNos.Clone();
+
+        // In case this is defined in base, we want to still allow copying it, but mark it 
+        // as not defined by base:
+        newNos.DefinedByBase = false;
+        newNos.InstantiatedByBase = false;
 
         UpdateNosAttachmentAfterDragDrop(newNos, targetElement);
 
@@ -1913,7 +1925,27 @@ public class GluxCommands : IGluxCommands
             newNos.InstanceName = StringFunctions.IncrementNumberAtEnd(newNos.InstanceName);
         }
 
-        var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(newNos, targetElement);
+
+
+        // if the current object is a list, or if the current object is in a list that matches this type, then use that
+        var possibleLists = ObjectFinder.Self.GetPossibleListsToContain(newNos, targetElement);
+        NamedObjectSave listOfThisType = null;
+        if(targetNos != null)
+        {
+            // is it a list?
+            var targetList = targetNos.IsList ? targetNos : 
+                targetElement.NamedObjects.FirstOrDefault(item => item.ContainedObjects?.Contains(targetNos) == true);
+
+            if(targetList != null && possibleLists.Contains(targetList))
+            {
+                listOfThisType = targetList;
+            }
+        }
+
+        if(listOfThisType == null)
+        {
+            listOfThisType = ObjectFinder.Self.GetDefaultListToContain(newNos, targetElement);
+        }
 
         if (listOfThisType != null)
         {
@@ -1930,7 +1962,7 @@ public class GluxCommands : IGluxCommands
 
         if (referenceCheck == ProjectManager.CheckResult.Failed)
         {
-            generalResponse.Message = $"Could not copy {nos.InstanceName} because it would result in a circular reference";
+            generalResponse.Message = $"Could not copy {originalNos.InstanceName} because it would result in a circular reference";
             succeeded = false;
             // VerifyReferenceGraph (currently) shows a popup so we don't have to here
             if (listOfThisType != null)
@@ -1941,11 +1973,6 @@ public class GluxCommands : IGluxCommands
             {
                 targetElement.NamedObjects.Remove(newNos);
             }
-        }
-        if (succeeded && nos.DefinedByBase)
-        {
-            succeeded = false;
-            generalResponse.Message = $"Could not copy {nos.InstanceName} because it is defined by base. Select the object in the base screen/entity to copy it";
         }
 
         if (succeeded)
@@ -2367,9 +2394,9 @@ public class GluxCommands : IGluxCommands
 
     [Obsolete("Use SetVariableOnAsync")]
     public async void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-        bool updateUi = true, bool recordUndo = true)
+        bool updateUi = true, bool recordUndo = true, SetPropertyCommitType commitType = SetPropertyCommitType.Full)
     {
-        await SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins: true, recordUndo:recordUndo);
+        await SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins: true, recordUndo:recordUndo, commitType);
     }
 
 
@@ -2382,7 +2409,7 @@ public class GluxCommands : IGluxCommands
     }
 
     private async Task SetVariableOnInner(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-        bool updateUi = true, bool notifyPlugins = true, bool recordUndo = true)
+        bool updateUi = true, bool notifyPlugins = true, bool recordUndo = true, SetPropertyCommitType commitType = SetPropertyCommitType.Full)
     {
         // XML serialization doesn't like enums
         var needsEnum = GlueState.Self.CurrentGlueProject.FileVersion < (int)GlueProjectSave.GluxVersions.GlueSavedToJson;
@@ -2483,7 +2510,8 @@ public class GluxCommands : IGluxCommands
                 {
                     NamedObjectSave = nos,
                     ChangedPropertyName = memberName,
-                    OldValue = oldValue
+                    OldValue = oldValue,
+                    CommitType = commitType
                 };
                 PluginManager.ReactToChangedProperty(memberName, oldValue, nosContainer, variableChange);
 
@@ -2494,7 +2522,8 @@ public class GluxCommands : IGluxCommands
                         NamedObject = nos,
                         ChangedMember = memberName,
                         OldValue = oldValue,
-                        RecordUndo = recordUndo
+                        RecordUndo = recordUndo,
+                        CommitType = commitType
                     }
                 });
             }
@@ -2858,6 +2887,8 @@ public class GluxCommands : IGluxCommands
             {
                 newElement.Name = StringFunctions.IncrementNumberAtEnd(newElement.Name);
             }
+
+            newElement.FixAllTypes();
 
             if (newElement is ScreenSave newScreenSave)
             {

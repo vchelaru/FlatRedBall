@@ -104,7 +104,7 @@ namespace GlueCommunication
                         Connected();
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     //Debug.WriteLine($"Listening Error: {ex}");
                 }

@@ -7,7 +7,7 @@ using Microsoft.Build.Evaluation;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
-    public class DesktopGlLinuxProject : DesktopGlProject
+    public class DesktopGlLinuxProject : MonoGameDesktopGlNetFrameworkProject
     {
 
         public override string ProjectId { get { return "DesktopGlLinux"; } }

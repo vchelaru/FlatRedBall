@@ -42,7 +42,7 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
-        public void RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline, ContentPipelineController controller)
+        public async Task RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline, ContentPipelineController controller)
         {
 
             var mgcbToUse = GetCommandLineBuildExe(project);
@@ -73,7 +73,7 @@ namespace OfficialPlugins.MonoGameContent
 
                 foreach (var fileToBeBuilt in allReferencedFileSaves)
                 {
-                    UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
+                    await UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
                 }
             }
 
@@ -87,7 +87,7 @@ namespace OfficialPlugins.MonoGameContent
 
         public static bool GetIfNeedsMonoGameFilesBuilt(ProjectBase project)
         {
-            return project is DesktopGlProject ||
+            return project is MonoGameDesktopGlBaseProject ||
                 project is AndroidProject ||
                 project is UwpProject
                 // todo: need to support iOS
@@ -294,7 +294,7 @@ namespace OfficialPlugins.MonoGameContent
             // PSVita
             // XboxOne
             // Switch
-            if (project is DesktopGlProject)
+            if (project is MonoGameDesktopGlBaseProject)
             {
                 platform = "DesktopGL";
             }
@@ -337,6 +337,8 @@ namespace OfficialPlugins.MonoGameContent
 
             var commandLineBuildExe = GetCommandLineBuildExe(project);
 
+            var contentDirectory = GlueState.ContentDirectory;
+
             //////////////EARLY OUT////////////////////////
             if (commandLineBuildExe == null)
             {
@@ -367,10 +369,15 @@ namespace OfficialPlugins.MonoGameContent
 
                 return toReturn;
             }
+
+            if(string.IsNullOrEmpty(contentDirectory))
+            {
+                return toReturn;
+            }
+
             ////////////END EARLY OUT//////////////////////
 
 
-            var contentDirectory = GlueState.ContentDirectory;
 
             var relativeToContent = FileManager.MakeRelative(rfsFilePath.FullPath, contentDirectory);
 
@@ -388,7 +395,7 @@ namespace OfficialPlugins.MonoGameContent
                 await TaskManager.Self.AddAsync(() =>
                 {
                     // If the user closes the project while the startup is happening, just skip the task - no need to build
-                    if (GlueState.CurrentGlueProject != null)
+                    if (GlueState.CurrentGlueProject != null && GlueState.IsProjectLoaded(project))
                     {
 
                         if (contentItem.GetIfNeedsBuild(destinationDirectory) || rebuild)
@@ -423,10 +430,10 @@ namespace OfficialPlugins.MonoGameContent
 
         private void InstallBuilderIfNecessary(VisualStudioProject visualStudioProject)
         {
-            var needsBuilder = visualStudioProject.DotNetVersion.Major >= 6;
+            var needs3_8_1_Builder = visualStudioProject.DotNetVersion.Major >= 6;
 
             ///////////Early Out//////////////////
-            if(!needsBuilder)
+            if(!needs3_8_1_Builder)
             {
                 return;
             }
@@ -446,6 +453,7 @@ namespace OfficialPlugins.MonoGameContent
 
             var hasMgcb = output?.Contains("dotnet-mgcb ") == true;
 
+
             if(!hasMgcb)
             {
                 var exe = "dotnet";
@@ -463,6 +471,41 @@ namespace OfficialPlugins.MonoGameContent
                 output = process.StandardOutput.ReadToEnd();
                 GlueCommands.PrintOutput(output);
 
+            }
+            else
+            {
+                // verify the version is right:
+                var lines = output.Split('\n');
+                var mgcbLines = lines.Where(item => item.Contains("dotnet-mgcb"));
+                var found3_8_1 = false;
+                Version versionFound = null;
+
+                foreach(var line in mgcbLines)
+                {
+                    var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                    if(parts.Length > 1 && parts[0] == "dotnet-mgcb" && Version.TryParse(parts[1], out Version version))
+                    {
+                        versionFound = version;
+                        found3_8_1 = version.Major == 3 && version.Minor == 8 && version.Build == 1;
+                        if(found3_8_1)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                if(!found3_8_1)
+                {
+                    if(versionFound == null)
+                    {
+                        GlueCommands.PrintError("Could not find a version of MGCB, but dotnet reported that dotnet-mgcb is installed.");
+                    }
+                    else
+                    {
+                        GlueCommands.PrintError($"dotnet-mgcb (the content pipeline) is already installed, but using version {versionFound}.");
+                    }
+                }
             }
         }
 
@@ -537,7 +580,13 @@ namespace OfficialPlugins.MonoGameContent
         {
             var ati = file.GetAssetTypeInfo();
 
-            return IsBuiltByContentPipeline(file.Name, file.UseContentPipeline || ati?.MustBeAddedToContentPipeline == true, forcePngsToContentPipeline);
+            var supportsContentPipeline = file.UseContentPipeline || ati?.MustBeAddedToContentPipeline == true;
+            if(supportsContentPipeline && ati != null)
+            {
+                supportsContentPipeline = ati.CanBeAddedToContentPipeline;
+            }
+
+            return IsBuiltByContentPipeline(file.Name, supportsContentPipeline, forcePngsToContentPipeline);
         }
 
         private static bool IsBuiltByContentPipeline(string fileName, bool rfsUseContentPipeline, bool forcePngsToContentPipeline)

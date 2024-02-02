@@ -62,7 +62,8 @@ namespace FlatRedBall.NAudio
             get => volume;
             set
             {
-                volume = value;
+                // prevent it from going negative. Although technically supported, it's confusing...
+                volume = System.Math.Max(value, 0);
                 if (reader != null)
                 {
                     reader.Volume = volume;
@@ -82,10 +83,21 @@ namespace FlatRedBall.NAudio
 
         public NAudio_Song(string fileName)
         {
-            var extension = FlatRedBall.IO.FileManager.GetExtension(fileName);
+            var fullFile = fileName;
+            if (FlatRedBall.IO.FileManager.IsRelative(fullFile))
+            {
+                fullFile = FlatRedBall.IO.FileManager.RelativeDirectory + fileName;
+            }
+            var extension = FlatRedBall.IO.FileManager.GetExtension(fullFile);
             if (extension == "mp3")
             {
-                this.reader = new AudioFileReader(fileName);
+#if DEBUG
+                if(!System.IO.File.Exists(fullFile))
+                {
+                    throw new FileNotFoundException($"Could not find NAudio song file: {fullFile}");
+                }
+#endif
+                this.reader = new AudioFileReader(fullFile);
                 loopStream = new LoopStream(reader);
             }
             else

@@ -5,7 +5,7 @@
   <State>
     <Name>Default</Name>
     <Variable>
-      <Type>CursorMoveCategoryState</Type>
+      <Type>CursorMoveCategory</Type>
       <Name>CursorMoveCategoryState</Name>
       <SetsValue>false</SetsValue>
     </Variable>
@@ -3832,6 +3832,7 @@
   </State>
   <Category>
     <Name>CursorMoveCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>LeftRightMoveSupported</Name>
       <Variable>

@@ -74,8 +74,8 @@ namespace GlueFormsCore.SetVariable.NamedObjectSaves
                         var singleOrPluralPhrase = orphanedNoses.Count == 1 ? "object" : "objects";
                         var thisOrTheseObjects = orphanedNoses.Count == 1 ? "this object" : "these objects";
                         var message = 
-                            $"Changing SetByDerived will result in the following {singleOrPluralPhrase} no longer being defined by base. What" +
-                            $"would you like to do with {thisOrTheseObjects}:";
+                            $"Changing SetByDerived will result in the following {singleOrPluralPhrase} no longer being defined by base. What " +
+                            $"would you like to do with {thisOrTheseObjects}:\n";
 
                         foreach (var nos in orphanedNoses)
                         {

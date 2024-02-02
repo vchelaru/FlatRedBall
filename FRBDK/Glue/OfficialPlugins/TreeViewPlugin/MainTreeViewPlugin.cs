@@ -37,11 +37,6 @@ namespace OfficialPlugins.TreeViewPlugin
 
         #endregion
 
-        public override bool ShutDown(PluginShutDownReason shutDownReason)
-        {
-            return true;
-        }
-
         public override void StartUp()
         {
             var pixelHeight = GlueState.Self.GlueSettingsSave.BookmarkRowHeight > 0
@@ -106,6 +101,7 @@ namespace OfficialPlugins.TreeViewPlugin
             ReactToCtrlF += HandleCtrlF;
             ReactToItemsSelected += HandleItemsSelected;
             TryHandleTreeNodeDoubleClicked += TryHandleTreeNodeDoubleClick;
+            IsHandlingHotkeys += () => mainView.Bookmarks.IsFocused || mainView.Bookmarks.IsKeyboardFocusWithin;
         }
 
         private bool TryHandleTreeNodeDoubleClick(ITreeNode arg)
@@ -157,7 +153,7 @@ namespace OfficialPlugins.TreeViewPlugin
                 SelectionLogic.SuppressFocus = true;
                 SelectionLogic.IsPushingSelectionOutToGlue = false;
 
-                MainViewModel.DeselectResursively();
+                MainViewModel.DeselectResursively(true);
 
                 for (int i = 0; i < selectedTreeNodes.Count; i++)
                 {

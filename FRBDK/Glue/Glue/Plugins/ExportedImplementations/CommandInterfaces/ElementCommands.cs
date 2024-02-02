@@ -1594,13 +1594,13 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     }
 
 
-    private bool UpdateNamedObjectsFromBaseType(INamedObjectContainer namedObjectContainer, bool showPopupAboutObjectErrors)
+    private bool UpdateNamedObjectsFromBaseType(INamedObjectContainer derivedNamedObjectContainer, bool showPopupAboutObjectErrors)
     {
         bool haveChangesOccurred = false;
 
-        List<NamedObjectSave> referencedObjectsBeforeUpdate = namedObjectContainer.AllNamedObjects.Where(item => item.DefinedByBase).ToList();
+        List<NamedObjectSave> referencedObjectsBeforeUpdate = derivedNamedObjectContainer.AllNamedObjects.Where(item => item.DefinedByBase).ToList();
 
-        List<NamedObjectSave> namedObjectsSetByDerived = new List<NamedObjectSave>();
+        List<NamedObjectSave> namedObjectsInBaseSetByDerived = new List<NamedObjectSave>();
         List<NamedObjectSave> namedObjectsExposedInDerived = new List<NamedObjectSave>();
 
         List<INamedObjectContainer> baseElements = new List<INamedObjectContainer>();
@@ -1619,11 +1619,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         // in the inheritance chain shouldn't have to define it, but before
         // today it did.  This caused a lot of problems including generated
         // code creating the element twice.
-        if (namedObjectContainer is EntitySave)
+        if (derivedNamedObjectContainer is EntitySave)
         {
-            if (!string.IsNullOrEmpty(namedObjectContainer.BaseObject))
+            if (!string.IsNullOrEmpty(derivedNamedObjectContainer.BaseObject))
             {
-                baseElements.Add(ObjectFinder.Self.GetElement(namedObjectContainer.BaseObject));
+                baseElements.Add(ObjectFinder.Self.GetElement(derivedNamedObjectContainer.BaseObject));
             }
             //List<EntitySave> allBase = ((EntitySave)namedObjectContainer).GetAllBaseEntities();
             //foreach (EntitySave baseEntitySave in allBase)
@@ -1633,9 +1633,9 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         }
         else
         {
-            if (!string.IsNullOrEmpty(namedObjectContainer.BaseObject))
+            if (!string.IsNullOrEmpty(derivedNamedObjectContainer.BaseObject))
             {
-                baseElements.Add(ObjectFinder.Self.GetElement(namedObjectContainer.BaseObject));
+                baseElements.Add(ObjectFinder.Self.GetElement(derivedNamedObjectContainer.BaseObject));
             }
             //List<ScreenSave> allBase = ((ScreenSave)namedObjectContainer).GetAllBaseScreens();
             //foreach (ScreenSave baseScreenSave in allBase)
@@ -1650,12 +1650,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             if (baseNamedObjectContainer != null)
             {
-                namedObjectsSetByDerived.AddRange(baseNamedObjectContainer.GetNamedObjectsToBeSetByDerived());
+                namedObjectsInBaseSetByDerived.AddRange(baseNamedObjectContainer.GetNamedObjectsToBeSetByDerived());
                 namedObjectsExposedInDerived.AddRange(baseNamedObjectContainer.GetNamedObjectsToBeExposedInDerived());
             }
         }
 
-        #region See if there are any objects to be removed from the derived.
 
         var derivedNosesToAskAbout = new List<NamedObjectSave>();
 
@@ -1664,7 +1663,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         {
             var atI = referencedObjectsBeforeUpdate[i];
 
-            var contains = atI.DefinedByBase && namedObjectsSetByDerived.Any(item => item.InstanceName == atI.InstanceName);
+            var contains = atI.DefinedByBase && namedObjectsInBaseSetByDerived.Any(item => item.InstanceName == atI.InstanceName);
 
             if (!contains)
             {
@@ -1681,6 +1680,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         }
 
 
+        #region See if there are any objects to be removed from the derived.
         if (derivedNosesToAskAbout.Count > 0 && showPopupAboutObjectErrors)
         {
             // This can happen whenever, like if a project is reloaded and data is changed on disk. However, this
@@ -1713,13 +1713,13 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             {
                 foreach (var nos in derivedNosesToAskAbout)
                 {
-                    if (namedObjectContainer.NamedObjects.Contains(nos))
+                    if (derivedNamedObjectContainer.NamedObjects.Contains(nos))
                     {
-                        namedObjectContainer.NamedObjects.Remove(nos);
+                        derivedNamedObjectContainer.NamedObjects.Remove(nos);
                     }
                     else
                     {
-                        namedObjectContainer.NamedObjects
+                        derivedNamedObjectContainer.NamedObjects
                             .FirstOrDefault(item => item.ContainedObjects.Contains(nos))
                             ?.ContainedObjects.Remove(nos);
                     }
@@ -1740,14 +1740,14 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         #endregion
 
         #region Next, see if there are any objects to be added
-        for (int i = 0; i < namedObjectsSetByDerived.Count; i++)
+        for (int i = 0; i < namedObjectsInBaseSetByDerived.Count; i++)
         {
-            NamedObjectSave namedObjectSetByDerived = namedObjectsSetByDerived[i];
+            NamedObjectSave namedObjectInBase = namedObjectsInBaseSetByDerived[i];
 
             NamedObjectSave matchingDefinedByBase = null;// contains = false;
             for (int j = 0; j < referencedObjectsBeforeUpdate.Count; j++)
             {
-                if (referencedObjectsBeforeUpdate[j].InstanceName == namedObjectSetByDerived.InstanceName &&
+                if (referencedObjectsBeforeUpdate[j].InstanceName == namedObjectInBase.InstanceName &&
                     referencedObjectsBeforeUpdate[j].DefinedByBase)
                 {
                     matchingDefinedByBase = referencedObjectsBeforeUpdate[j];
@@ -1757,11 +1757,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             if (matchingDefinedByBase == null)
             {
-                AddSetByDerivedNos(namedObjectContainer, namedObjectSetByDerived, false);
+                AddSetByDerivedNos(derivedNamedObjectContainer, namedObjectInBase, false);
             }
             else
             {
-                MatchDerivedToBase(namedObjectSetByDerived, matchingDefinedByBase);
+                MatchDerivedToBase(namedObjectInBase, matchingDefinedByBase);
             }
         }
 
@@ -1775,7 +1775,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             if (nosInDerived == null)
             {
-                nosInDerived = AddSetByDerivedNos(namedObjectContainer, nosInBase, true);
+                nosInDerived = AddSetByDerivedNos(derivedNamedObjectContainer, nosInBase, true);
             }
             else
             {
@@ -1790,7 +1790,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                         .FirstOrDefault(item => item.InstanceName == containedInBaseNos.InstanceName && item.DefinedByBase);
                     if (containedInDerived == null)
                     {
-                        AddSetByDerivedNos(namedObjectContainer, containedInBaseNos, true, nosInDerived);
+                        AddSetByDerivedNos(derivedNamedObjectContainer, containedInBaseNos, true, nosInDerived);
                     }
                     else
                     {
@@ -1810,11 +1810,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         inDerived.SourceClassGenericType = inBase.SourceClassGenericType;
     }
 
-    private static NamedObjectSave AddSetByDerivedNos(INamedObjectContainer namedObjectContainer,
-    NamedObjectSave namedObjectSetByDerived, bool instantiatedByBase, NamedObjectSave containerToAddTo = null)
+    private static NamedObjectSave AddSetByDerivedNos(INamedObjectContainer derivedContainer,
+        NamedObjectSave namedObjectInBase, bool instantiatedByBase, NamedObjectSave containerToAddTo = null)
     {
-        NamedObjectSave existingNamedObject = namedObjectContainer.AllNamedObjects
-            .FirstOrDefault(item => item.InstanceName == namedObjectSetByDerived.InstanceName);
+        NamedObjectSave existingNamedObject = derivedContainer.AllNamedObjects
+            .FirstOrDefault(item => item.InstanceName == namedObjectInBase.InstanceName);
 
         if (existingNamedObject != null)
         {
@@ -1824,12 +1824,12 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         }
         else
         {
-            NamedObjectSave newNamedObject = namedObjectSetByDerived.Clone();
+            NamedObjectSave newNamedObject = namedObjectInBase.Clone();
 
             // This code may be cloning a list with contained objects, and the
             // contained objects may not SetByDerived
             newNamedObject.ContainedObjects.Clear();
-            foreach (var containedCandidate in namedObjectSetByDerived.ContainedObjects)
+            foreach (var containedCandidate in namedObjectInBase.ContainedObjects)
             {
                 if (containedCandidate.SetByDerived)
                 {
@@ -1837,6 +1837,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                 }
             }
 
+            // For more information on this property, see GlueProjectSaveExtensions.DetermineIfShouldStripNos
             newNamedObject.SetDefinedByBaseRecursively(true);
             newNamedObject.SetInstantiatedByBaseRecursively(instantiatedByBase);
 
@@ -1845,7 +1846,37 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             if (containerToAddTo == null)
             {
-                namedObjectContainer.NamedObjects.Add(newNamedObject);
+                var indexToAddAt = derivedContainer.NamedObjects.Count;
+
+                var baseContainer = ObjectFinder.Self.GetElementContaining(namedObjectInBase);
+                if(baseContainer != null)
+                {
+                    var indexOfNosInBase = baseContainer.NamedObjects.IndexOf(namedObjectInBase);
+                    if(indexOfNosInBase == -1)
+                    {
+                        var container = baseContainer.NamedObjects.FirstOrDefault(item => 
+                            item.ContainedObjects.Contains(namedObjectInBase));
+                        // todo - this is rare, but we need to find what index this is after in the base, and make this get added
+                        // after in the derived:
+                    }
+                    else
+                    {
+                        for(int i = indexOfNosInBase - 1; i > -1; i--)
+                        {
+                            var itemInBase = baseContainer.NamedObjects[i];
+                            var name = itemInBase.InstanceName;
+
+                            var foundMatchInDerived = derivedContainer.NamedObjects.Find(item => item.InstanceName ==  name);
+                            if(foundMatchInDerived != null)
+                            {
+                                indexToAddAt = derivedContainer.NamedObjects.IndexOf(foundMatchInDerived) + 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                derivedContainer.NamedObjects.Insert(indexToAddAt, newNamedObject);
             }
             else
             {

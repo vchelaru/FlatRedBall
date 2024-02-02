@@ -1157,9 +1157,10 @@ namespace Gum.Wireframe
         {
             if (this.Children != null)
             {
-                foreach(var child in Children)
+                for (int i = 0; i < Children.Count; i++)
                 {
-                    if(child is GraphicalUiElement gue)
+                    IRenderableIpso child = Children[i];
+                    if (child is GraphicalUiElement gue)
                     {
                         if (gue.BindingContextBinding == vmPropertyName && gue.BindingContextBindingPropertyOwner == EffectiveBindingContext)
                         {
@@ -1171,8 +1172,9 @@ namespace Gum.Wireframe
             }
             else
             {
-                foreach(var gue in ContainedElements)
+                for (int i = 0; i < mWhatThisContains.Count; i++)
                 {
+                    GraphicalUiElement gue = mWhatThisContains[i];
                     if (gue.BindingContextBinding == vmPropertyName && gue.BindingContextBindingPropertyOwner == EffectiveBindingContext)
                     {
                         gue.UpdateToVmProperty(vmPropertyName);

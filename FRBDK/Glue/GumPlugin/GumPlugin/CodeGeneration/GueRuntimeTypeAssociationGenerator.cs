@@ -156,28 +156,41 @@ namespace GumPlugin.CodeGeneration
                 // don't understand how this code was working
                 // before, but this is causing problems, so I'm
                 // going to fix it:
-                //if(FormsClassCodeGenerator.Self.GetIfShouldGenerate(component))
+                // Update November 27, 2023 Vic
+                // I now understand why this code was written this
+                // way. For standard forms objects like Button, the 
+                // fulfillments will be based on the element behaviors 
+                // above. If GetIfShouldGenerate is false, that means we
+                // aren't going to generate code for this type of forms component
+                // because it's part of the standard FlatRedBall.Forms library. If
+                // the object has Forms, but it is not a standard, then we will handle 
+                // the fulfillment here:
+                var isCustomComponent =
+                    FormsClassCodeGenerator.Self.GetIfShouldGenerate(component);
+                if (isCustomComponent)
+                {
+                    var shouldGenerate = FormsClassCodeGenerator.Self.GetIfShouldGenerate(component);
 
-                var shouldGenerate = FormsClassCodeGenerator.Self.GetIfShouldGenerate(component);
+                    if (FormsClassCodeGenerator.Self.GetIfShouldGenerate(component) || 
+                        (component.Behaviors != null && GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(component.Behaviors) != null))
+                        {
+                        // associate them:
+                        var newFulfillment = new AssociationFulfillment();
+                        newFulfillment.Element = component;
+                        newFulfillment.IsCompletelyFulfilled = true;
 
-                if (FormsClassCodeGenerator.Self.GetIfShouldGenerate(component) || 
-                    (component.Behaviors != null && GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(component.Behaviors) != null))
-                    {
-                    // associate them:
-                    var newFulfillment = new AssociationFulfillment();
-                    newFulfillment.Element = component;
-                    newFulfillment.IsCompletelyFulfilled = true;
+                        string standardFormsType = null;
+                        if(component.Behaviors != null)
+                        {
+                            standardFormsType = GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(component.Behaviors);
+                        }
 
-                    string standardFormsType = null;
-                    if(component.Behaviors != null)
-                    {
-                        standardFormsType = GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(component.Behaviors);
+                        newFulfillment.ControlType = standardFormsType ?? FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(component) + 
+                            "." + FormsClassCodeGenerator.Self.GetUnqualifiedRuntimeTypeFor(component);
+
+                        associationFulfillments.Add(newFulfillment);
                     }
 
-                    newFulfillment.ControlType = standardFormsType ?? FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(component) + 
-                        "." + FormsClassCodeGenerator.Self.GetUnqualifiedRuntimeTypeFor(component);
-
-                    associationFulfillments.Add(newFulfillment);
                 }
             }
 

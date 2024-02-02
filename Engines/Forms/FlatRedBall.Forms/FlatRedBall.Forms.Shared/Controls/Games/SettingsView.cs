@@ -130,8 +130,9 @@ namespace FlatRedBall.Forms.Controls.Games
             if(IsAutoApplyingChangesToEngine)
             {
 #if !__IOS__
-
-                MediaPlayer.Volume = (float)MusicVolumePercentage / 100;
+                // MediaPlayer.Volume is handled by AudioManager.MasterSongVolume
+                //MediaPlayer.Volume = (float)MusicVolumePercentage / 100;
+                AudioManager.MasterSongVolume = (float)MusicVolumePercentage / 100;
 #endif
             }
 

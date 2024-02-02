@@ -50,7 +50,7 @@ namespace OfficialPlugins.SongPlugin.ViewModels
         public bool IsSetVolumeChecked
         {
             get => Get<bool>();
-            set => Set(value);
+            set => SetAndPersist(value);
         }
 
         [DependsOn(nameof(IsSetVolumeChecked))]

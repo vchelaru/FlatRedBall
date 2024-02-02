@@ -41,6 +41,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
+    #region RecentFileSave
+
     public class RecentFileSave
     {
         public string FileName { get; set; }
@@ -49,6 +51,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public override string ToString() => $"{FileName} {LastTimeAccessed}";
     }
+
+    #endregion
 
     /// <summary>
     /// Global glue settings for the current user, not tied to any particular project.
@@ -66,16 +70,6 @@ namespace FlatRedBall.Glue.SaveClasses
         // to manually set them up.
         [XmlElementAttribute("Association")]
         public ExternalSeparatingList<FileProgramAssociations> Associations = new ExternalSeparatingList<FileProgramAssociations>();
-
-        // November 22, 2022
-        // DO NOT mark this as obsolete yet.
-        // Doing so will make the XmlSerializer
-        // ignore this property which will make old paths get lost.
-        // Annoying. Can mark this as obsolete when enough time has
-        // passed. Perhaps 1 year? Doing so will at worst wipe some recent
-        // files for users, but the 1 year period gives enough time to migrate.
-        //[Obsolete("Use RecentFileList")]
-        public List<string> RecentFiles = new List<string>();
 
         public List<RecentFileSave> RecentFileList { get; set; } = new List<RecentFileSave>();
 
@@ -151,6 +145,8 @@ namespace FlatRedBall.Glue.SaveClasses
         }
         [XmlIgnore] public CultureInfo CurrentCulture { get; set; }
 
+        public string DefaultNewProjectDirectory { get; set; }
+
         #endregion
 
         public void Save()
@@ -177,6 +173,8 @@ namespace FlatRedBall.Glue.SaveClasses
             BuildToolAssociations.ReAddExternals();
         }
 
+        #region Loading-related Methods
+
         public void FixAllTypes()
         {
             CurrentCulture ??= CultureInfo.InstalledUICulture.TwoLetterISOLanguageName switch
@@ -191,16 +189,6 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 FixAllTypes(property);
             }
-
-            foreach(var recentFileName in RecentFiles)
-            {
-                RecentFileList.Add(new RecentFileSave
-                {
-                    FileName = recentFileName,
-                });
-            }
-
-            RecentFiles.Clear();
         }
 
         private static void FixAllTypes(PropertySave property)
@@ -224,5 +212,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             BuildToolAssociations.AddExternalRange(externals);
         }
-	}
+
+        #endregion
+    }
 }

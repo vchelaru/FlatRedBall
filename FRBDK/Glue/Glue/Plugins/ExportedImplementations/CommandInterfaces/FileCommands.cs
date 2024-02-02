@@ -90,12 +90,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         ReferencedFileSave[] GetAllRfses()
         {
             var allRfses =
-                GlueProject.Entities.SelectMany(item => item.ReferencedFiles)
+                GlueProject?.Entities.SelectMany(item => item.ReferencedFiles)
                 .Concat(GlueProject.Screens.SelectMany(item2 => item2.ReferencedFiles))
                 .Concat(GlueProject.GlobalFiles)
                 .ToArray();
 
-            return allRfses;
+            return allRfses ?? new ReferencedFileSave[0];
         }
 
         public List<FilePath> GetAllReferencedFileNames()

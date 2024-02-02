@@ -247,12 +247,6 @@ namespace GlueControl.Models
             set;
         }
 
-        public bool IncludeInIVisible
-        {
-            get;
-            set;
-        }
-
         public bool IncludeInICollidable
         {
             get;
@@ -409,7 +403,6 @@ namespace GlueControl.Models
             //mTypedMembersReadOnly = new ReadOnlyCollection<TypedMemberBase>(mTypedMembers);
             ////Events = new List<EventSave>();
 
-            IncludeInIVisible = true;
             IncludeInIClickable = true;
             IncludeInICollidable = true;
             //CallActivity = true;

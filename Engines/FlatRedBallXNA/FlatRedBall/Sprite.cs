@@ -532,7 +532,6 @@ namespace FlatRedBall
         }
 
 
-        #region XML Docs
         /// <summary>
         /// Whether to flip the Sprite's texture on the y Axis (left and right switch).
         /// </summary>
@@ -543,14 +542,12 @@ namespace FlatRedBall
         /// is no efficiency consequence for using either method.  If a Sprite
         /// is animated, this value will be overwritten by the AnimationChain being used.
         /// </remarks>
-        #endregion
         public bool FlipHorizontal
         {
             get { return mFlipHorizontal; }
             set { mFlipHorizontal = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Whether to flip the Sprite's texture on the x Axis (top and bottom switch).
         /// </summary>
@@ -561,7 +558,6 @@ namespace FlatRedBall
         /// There is no efficiency consequence for using either method.  If a Sprite
         /// is animated, this value will be overwritten by the AnimationChain being used.
         /// </remarks>
-        #endregion
         public bool FlipVertical
         {
             get { return mFlipVertical; }
@@ -587,7 +583,7 @@ namespace FlatRedBall
 
         /// <summary>
         /// The top pixel displayed on the sprite. Default is 0.
-        /// This value is in pixel coordiantes, so it typically ranges from 0 to the height of the referenced texture.
+        /// This value is in pixel coordinates, so it typically ranges from 0 to the height of the referenced texture.
         /// </summary>
         [ExportOrder(2)]
         public float TopTexturePixel
@@ -634,6 +630,10 @@ namespace FlatRedBall
         }
 
 
+        /// <summary>
+        /// The bottom pixel displayed on the sprite. Default is the height of the texture.
+        /// This value is in pixel coordiantes, so it typically ranges from 0 to the height of the referenced texture.
+        /// </summary>
         [ExportOrder(2)]
         public float BottomTexturePixel
         {
@@ -661,6 +661,10 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// The left coordinate in texture coordinates on the sprite. Default is 0.
+        /// This value is in texture coordinates, not pixels. A value of 1 represents the right side of the texture.
+        /// </summary>
         [ExportOrder(2)]
         public float LeftTextureCoordinate
         {
@@ -674,7 +678,10 @@ namespace FlatRedBall
             }
         }
 
-
+        /// <summary>
+        /// The left pixel displayed on the sprite. Default is 0.
+        /// This value is in pixel coordinates, so it typically ranges from 0 to the width of the referenced texture.
+        /// </summary>
         [ExportOrder(2)]
         public float LeftTexturePixel
         {
@@ -702,6 +709,10 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// The right coordinate in texture coordinates on the sprite. Default is 1.
+        /// This value is in texture coordinates, not pixels. A value of 1 represents the right side of the texture.
+        /// </summary>
         [ExportOrder(2)]
         public float RightTextureCoordinate
         {
@@ -715,7 +726,10 @@ namespace FlatRedBall
             }
         }
 
-       
+        /// <summary>
+        /// The right pixel displayed on the sprite. Default is the width of the texture.
+        /// This value is in pixel coordinates, so it typically ranges from 0 to the width of the referenced texture.
+        /// </summary>
         [ExportOrder(2)]
         public float RightTexturePixel
         {
@@ -1247,7 +1261,6 @@ namespace FlatRedBall
             set { mTimeCreated = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Controls the visibility of the Sprite
         /// </summary>
@@ -1257,7 +1270,6 @@ namespace FlatRedBall
         /// the Sprite will continue to behave regularly; custom behavior, movement, attachment,
         /// and animation are still executed, and collision is possible.
         /// </remarks>
-        #endregion
         public virtual bool Visible
         {
             get { return mVisible; }
@@ -1555,7 +1567,7 @@ namespace FlatRedBall
         ///  - Flip Horizontal (if IgnoreAnimationChainTextureFlip is true)
         ///  - Relative X and Y (if UseAnimationRelativePosition is true
         ///  - Executes AnimationFrame instructions
-        ///  - Adjusts the size of the sprite if its TextureScale
+        ///  - Adjusts the size of the sprite if its TextureScale is greater than 0
         /// </summary>
         /// <remarks>
         /// This method is automatically called for sprites which are automatically updated (default) and which are using
@@ -1568,42 +1580,47 @@ namespace FlatRedBall
                 mCurrentFrameIndex < mAnimationChains[mCurrentChainIndex].Count)
             {
                 var frame = mAnimationChains[mCurrentChainIndex][mCurrentFrameIndex];
-				// Set the property so that any necessary values change:
-//				mTexture = mAnimationChains[mCurrentChainIndex][mCurrentFrameIndex].Texture;
-                Texture = frame.Texture;
-                this.Vertices[0].TextureCoordinate.X = frame.LeftCoordinate;
-                this.Vertices[1].TextureCoordinate.X = frame.RightCoordinate;
-                this.Vertices[2].TextureCoordinate.X = frame.RightCoordinate;
-                this.Vertices[3].TextureCoordinate.X = frame.LeftCoordinate;
+                UpdateToAnimationFrame(frame);
 
-                this.Vertices[0].TextureCoordinate.Y = frame.TopCoordinate;
-                this.Vertices[1].TextureCoordinate.Y = frame.TopCoordinate;
-                this.Vertices[2].TextureCoordinate.Y = frame.BottomCoordinate;
-                this.Vertices[3].TextureCoordinate.Y = frame.BottomCoordinate;
-
-                if (mIgnoreAnimationChainTextureFlip == false)
-                {
-                    mFlipHorizontal = frame.FlipHorizontal;
-                    mFlipVertical = frame.FlipVertical;
-                }
-
-                if (mUseAnimationRelativePosition)
-                {
-                    RelativePosition.X = frame.RelativeX;
-                    RelativePosition.Y = frame.RelativeY;
-                }
-
-                foreach(var instruction in frame.Instructions)
-                {
-                    instruction.Execute();
-                }
-
-                UpdateScale();
-                
             }
         }
 
-        
+        public void UpdateToAnimationFrame(AnimationFrame frame)
+        {
+            // Set the property so that any necessary values change:
+            //				mTexture = mAnimationChains[mCurrentChainIndex][mCurrentFrameIndex].Texture;
+            this.Texture = frame.Texture;
+            this.Vertices[0].TextureCoordinate.X = frame.LeftCoordinate;
+            this.Vertices[1].TextureCoordinate.X = frame.RightCoordinate;
+            this.Vertices[2].TextureCoordinate.X = frame.RightCoordinate;
+            this.Vertices[3].TextureCoordinate.X = frame.LeftCoordinate;
+
+            this.Vertices[0].TextureCoordinate.Y = frame.TopCoordinate;
+            this.Vertices[1].TextureCoordinate.Y = frame.TopCoordinate;
+            this.Vertices[2].TextureCoordinate.Y = frame.BottomCoordinate;
+            this.Vertices[3].TextureCoordinate.Y = frame.BottomCoordinate;
+
+            if (mIgnoreAnimationChainTextureFlip == false)
+            {
+                mFlipHorizontal = frame.FlipHorizontal;
+                mFlipVertical = frame.FlipVertical;
+            }
+
+            if (mUseAnimationRelativePosition)
+            {
+                RelativePosition.X = frame.RelativeX;
+                RelativePosition.Y = frame.RelativeY;
+            }
+
+            foreach (var instruction in frame.Instructions)
+            {
+                instruction.Execute();
+            }
+
+            UpdateScale();
+        }
+
+
         #region XML Docs
         /// <summary>
         /// Returns a clone of this instance.
@@ -1785,14 +1802,24 @@ namespace FlatRedBall
 
         public async Task PlayAnimationsAsync(params string[] animations)
         {
+            if(animations.Length > 0)
+            {
+                this.Animate = true;
+            }
             foreach(var animation in animations)
             {
                 CurrentChainName = animation;
-                try
+
+                if(CurrentChain == null)
                 {
-                    await TimeManager.DelaySeconds(CurrentChain.TotalLength);
+                    throw new InvalidOperationException($"Could not set the current chain to {animation} because this animation does not exist");
                 }
-                catch (TaskCanceledException) { return; }
+                // This should not try/catch. If it does, then any caller will continue after it's finished, causing additional logic to run after a screen has ended:
+                //try
+                //{
+                    await TimeManager.DelaySeconds(CurrentChain.TotalLength);
+                //}
+                //catch (TaskCanceledException) { return; }
             }
         }
 
@@ -1994,7 +2021,6 @@ namespace FlatRedBall
 
                     if (timeIntoAnimation < frameTime)
                     {
-                        mCurrentFrameIndex = frameIndex;
 
                         break;
                     }
@@ -2005,6 +2031,7 @@ namespace FlatRedBall
                         frameIndex = (frameIndex + 1) % CurrentChain.Count;
                     }
                 }
+                mCurrentFrameIndex = frameIndex;
             }
         }
 

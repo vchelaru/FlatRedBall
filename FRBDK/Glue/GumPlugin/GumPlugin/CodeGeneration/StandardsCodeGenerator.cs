@@ -39,8 +39,7 @@ namespace GumPlugin.CodeGeneration
         {
             TextCodeGenerator.Self.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
 
-            TextCodeGenerator.Self.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
-
+            
             mStandardSetterReplacements.Add("SourceFile", codeBlock =>
             {
                 codeBlock.Line("this.Texture = value;");
@@ -123,6 +122,29 @@ namespace GumPlugin.CodeGeneration
 
             // What we will never support (as is)
 
+            variableNamesToAddForProperties.Add(new VariableSave
+            {
+                IsFile = false,
+                IsFont = false,
+
+                Type = "Microsoft.Xna.Framework.Color",
+                Name = "Color"
+            });
+        }
+
+        public void RefreshVariableNamesToSkipForProperties()
+        {
+            mVariableNamesToSkipForProperties.Clear();
+
+            TextCodeGenerator.Self.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
+
+            void ExcludeIfVersionLessThan(string propertyName, GluxVersions gluxVersion)
+            {
+                if(GlueState.Self.CurrentGlueProject.FileVersion < (int)gluxVersion)
+                {
+                    mVariableNamesToSkipForProperties.Add(propertyName);
+                }
+            }
 
             mVariableNamesToSkipForProperties.Add("Custom Texture Coordinates"); // replaced by texture address mode
             mVariableNamesToSkipForProperties.Add("Height Units");
@@ -135,7 +157,6 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("X Units");
             mVariableNamesToSkipForProperties.Add("Y Origin");
             mVariableNamesToSkipForProperties.Add("Y Units");
-            mVariableNamesToSkipForProperties.Add("IgnoredByParentSize");
 
             mVariableNamesToSkipForProperties.Add("FlipHorizontal");
 
@@ -168,13 +189,6 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("Children Layout");
             mVariableNamesToSkipForProperties.Add("StackSpacing");
 
-            // eventually add these, but for now this is a quick fix:
-            mVariableNamesToSkipForProperties.Add("AutoGridHorizontalCells");
-            mVariableNamesToSkipForProperties.Add("AutoGridVerticalCells");
-
-            
-
-
             // This restriction is only enforced Gum-side, not runtime-side (yet? ever?)
             mVariableNamesToSkipForProperties.Add("Contained Type");
 
@@ -192,23 +206,17 @@ namespace GumPlugin.CodeGeneration
                 mVariableNamesToSkipForProperties.Add("CurrentChainName");
             }
 
-            variableNamesToAddForProperties.Add(new VariableSave
-            {
-                IsFile = false,
-                IsFont = false,
-
-                Type = "Microsoft.Xna.Framework.Color",
-                Name = "Color"
-            });
-
-
             // It turns out we dont' have a way to skip/include properties by version. To be safe we are going to exclude these for now. In the future we need to have version-based
             // include/exclude just like the StateCodeGenerator:
-            mVariableNamesToSkipForProperties.Add("CustomFrameTextureCoordinateWidth");
-            mVariableNamesToSkipForProperties.Add("LineHeightMultiplier");
+            ExcludeIfVersionLessThan("CustomFrameTextureCoordinateWidth", GluxVersions.GumUsesSystemTypes);
+            ExcludeIfVersionLessThan("LineHeightMultiplier", GluxVersions.GumUsesSystemTypes);
 
+            // Do not generate AutoGrid properties - they are already handled by GraphicalUiElement
+            mVariableNamesToSkipForProperties.Add("AutoGridHorizontalCells");
+            mVariableNamesToSkipForProperties.Add("AutoGridVerticalCells");
 
-
+            // always ignore this because it's handled by GraphicalUiElement:
+            mVariableNamesToSkipForProperties.Add("IgnoredByParentSize");
         }
 
 

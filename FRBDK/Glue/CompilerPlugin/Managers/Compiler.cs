@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CompilerPlugin.ViewModels;
 using CompilerLibrary.ViewModels;
+using CompilerLibrary.Error;
 
 namespace CompilerPlugin.Managers
 {
@@ -144,9 +145,11 @@ namespace CompilerPlugin.Managers
             }
         }
 
-        internal async Task<bool> Compile(Action<string> printOutput, Action<string> printError,
+        internal async Task<CompileGeneralResponse> Compile(Action<string> printOutput, Action<string> printError,
             string configuration = "Debug", bool printMsBuildCommand = false)
         {
+            var toReturn = new CompileGeneralResponse();
+
             try
             {
                 while (_compilerViewModel.IsCompiling)
@@ -176,6 +179,8 @@ namespace CompilerPlugin.Managers
 
                 //do we actually want to do this ?
                 var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName;
+
+
                 if (shouldCompile && projectFileName != null)
                 {
 
@@ -279,10 +284,12 @@ namespace CompilerPlugin.Managers
                     {
                         Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", environmentBefore);
                     }
+                    toReturn.Succeeded = succeeded;
                     if (!succeeded)
                     {
                         if(didUserKillProcess)
                         {
+                            toReturn.WasCancelled = true;
                             printOutput("Build cancelled by user");
                         }
                         else
@@ -303,14 +310,14 @@ namespace CompilerPlugin.Managers
 
                         }
                     }
-                    return succeeded;
+                    toReturn.Succeeded = succeeded;
                 }
-                return false;
             }
             finally
             {
                 _compilerViewModel.IsCompiling = false;
             }
+            return toReturn;
         }
 
         private async Task<bool> StartMsBuildWithParameters(Action<string> printOutput, Action<string> printError, string startOutput, string endOutput, string arguments, string msbuildLocation)

@@ -10,10 +10,20 @@ namespace FlatRedBall.Entities
     {
         Dictionary<IDamageArea, double> DamageAreaLastDamage { get; }
         int TeamIndex { get; }
+        bool IsDamageReceivingEnabled { get; }
+        double InvulnerabilityTimeAfterDamage { get; }
+        double LastDamageTime { get; set; }
         decimal CurrentHealth { get; set; }
+        
         decimal MaxHealth { get; set; }
 
+        /// <summary>
+        /// Event raised before damage is dealt. This event can be used to modify the damage dealt.
+        /// </summary>
         Func<decimal, IDamageArea, decimal> ModifyDamageReceived { get; set; }
+        /// <summary>
+        /// Event raised when damage is received. This is called after CurrentHealth has been modified.
+        /// </summary>
         Action<decimal, IDamageArea> ReactToDamageReceived { get; set; }
         Action<decimal, IDamageArea> Died { get; set; }
 
@@ -24,7 +34,7 @@ namespace FlatRedBall.Entities
     {
         /// <summary>
         /// Returns whether the argument IDamageable should take damage from the argument IDamageArea.
-        /// This returns true if the team indexes are different, ifthe damageable has > 0 CurrentHealth,
+        /// This returns true if the team indexes are different, if the damageable has > 0 CurrentHealth,
         /// and if enough time has passed since the last damage was dealt by this particular IDamageArea instance. 
         /// </summary>
         /// <param name="damageable">The damageable object, typically a Player or Enemy.</param>
@@ -32,7 +42,11 @@ namespace FlatRedBall.Entities
         /// <returns></returns>
         public static bool ShouldTakeDamage(this IDamageable damageable, IDamageArea damageArea)
         {
-            if (damageable.TeamIndex == damageArea.TeamIndex || damageable.CurrentHealth <= 0)
+            if (damageable.TeamIndex == damageArea.TeamIndex
+                || damageable.CurrentHealth <= 0
+                || !damageArea.IsDamageDealingEnabled
+                || !damageable.IsDamageReceivingEnabled
+                || TimeManager.CurrentScreenSecondsSince(damageable.LastDamageTime) < damageable.InvulnerabilityTimeAfterDamage)
             {
                 return false;
             }
@@ -42,6 +56,7 @@ namespace FlatRedBall.Entities
                 // damage area, so deal damage and record the time in the damageAreaLastDamage
                 // dictionary.
                 damageable.DamageAreaLastDamage.Add(damageArea, TimeManager.CurrentScreenTime);
+                damageable.LastDamageTime = TimeManager.CurrentScreenTime;
 
                 // Remove the damage area from the dictionary when it is destroyed or else
                 // the Player may accumulate a large collection of damage areas, resulting in
@@ -59,6 +74,7 @@ namespace FlatRedBall.Entities
                 {
                     // If so, update the last damage time.
                     damageable.DamageAreaLastDamage[damageArea] = TimeManager.CurrentScreenTime;
+                    damageable.LastDamageTime                   = TimeManager.CurrentScreenTime;
                     return true;
                 }
                 else
@@ -90,14 +106,21 @@ namespace FlatRedBall.Entities
             var modifiedByBoth = damageArea.ModifyDamageDealt?.Invoke(modifiedByDamageable, damageable) ?? modifiedByDamageable;
 
             var healthBefore = damageable.CurrentHealth;
-
+            
             if (modifiedByBoth != 0)
             {
-                damageable.CurrentHealth -= modifiedByBoth;
+                decimal newHealth = damageable.CurrentHealth - modifiedByBoth;
+                
+                if (newHealth > damageable.MaxHealth)
+                {
+                    newHealth = damageable.MaxHealth;
+                }
+                
+                damageable.CurrentHealth = newHealth;
             }
 
             // We used to not raise events when taking 0 damage, but we may want
-            // to have some kind of logic play when taking 0 damage, likeplay a sound
+            // to have some kind of logic play when taking 0 damage, like play a sound
             // effect to indicate that this is not a spot that an enemy can get hit.
             damageable.ReactToDamageReceived?.Invoke(modifiedByBoth, damageArea);
             damageArea.ReactToDamageDealt?.Invoke(modifiedByBoth, damageable);

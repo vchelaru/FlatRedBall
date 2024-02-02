@@ -36,7 +36,16 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
 
             // update view model
             aboutViewModel.CopyrightText = "FlatRedBall " + DateTime.Now.Year;
-            aboutViewModel.Version = Version.Parse( Application.ProductVersion);
+            // ProductVersion can include a + at the end like:
+            // 2022.06.27.675+05e1a322330656d5225ed141495bb391916ec600
+            if(Application.ProductVersion.Contains("+"))
+            {
+                aboutViewModel.Version = Version.Parse(Application.ProductVersion.Substring(0, Application.ProductVersion.IndexOf("+")));
+            }
+            else
+            {
+                aboutViewModel.Version = Version.Parse( Application.ProductVersion);
+            }
             aboutViewModel.RefreshVersionInfo();
             var glueProject = GlueState.Self.CurrentGlueProject;
 

@@ -12,6 +12,7 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Content.Instructions;
+using System.Windows.Navigation;
 
 namespace FlatRedBall.Glue.Elements;
 
@@ -998,8 +999,20 @@ public class ObjectFinder : IObjectFinder
 
     }
 
+    public List<NamedObjectSave> GetPossibleListsToContain(NamedObjectSave namedObject, GlueElement containerElement)
+    {
+        var namedObjectSourceClassType = namedObject.SourceClassType;
+        return GetPossibleListsToContain(namedObjectSourceClassType, containerElement);
+    }
+
     public NamedObjectSave GetDefaultListToContain(string namedObjectSourceClassType, GlueElement containerElement)
     {
+        return GetPossibleListsToContain(namedObjectSourceClassType, containerElement).FirstOrDefault();
+    }
+
+    public List<NamedObjectSave> GetPossibleListsToContain(string namedObjectSourceClassType, GlueElement containerElement)
+    {
+        List<NamedObjectSave> possibleContainers = new List<NamedObjectSave>();
         var isNosShape = namedObjectSourceClassType == "FlatRedBall.Math.Geometry.Circle" ||
                           namedObjectSourceClassType == "FlatRedBall.Math.Geometry.AxisAlignedRectangle" ||
                           namedObjectSourceClassType == "FlatRedBall.Math.Geometry.Polygon";
@@ -1009,18 +1022,30 @@ public class ObjectFinder : IObjectFinder
 
         if (isNosShape)
         {
-            return containerElement.NamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection);
-        }
-        else if (nosEntity != null)
-        {
-            return GetDefaultListToContain(nosEntity, containerElement);
+            possibleContainers.AddRange(containerElement.NamedObjects.Where(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection));
         }
 
-        return null;
+        if (nosEntity != null)
+        {
+            possibleContainers.AddRange(GetPossibleListsToContain(nosEntity, containerElement));
+        }
+        else
+        {
+            possibleContainers.AddRange(containerElement.NamedObjects.Where(item => item.IsList && item.SourceClassGenericType == namedObjectSourceClassType));
+        }
+
+        return possibleContainers;
     }
 
     public NamedObjectSave GetDefaultListToContain(EntitySave nosEntity, GlueElement containerElement)
     {
+        return GetPossibleListsToContain(nosEntity, containerElement).FirstOrDefault();
+    }
+
+    public List<NamedObjectSave> GetPossibleListsToContain(EntitySave nosEntity, GlueElement containerElement)
+    { 
+        var toReturn = new List<NamedObjectSave>();
+
         var baseEntityTypes = GetAllBaseElementsRecursively(nosEntity);
 
         // Do the top-level NamedObjects instead of AllNamedObjects
@@ -1034,12 +1059,12 @@ public class ObjectFinder : IObjectFinder
                 {
                     if (listEntityType == nosEntity || baseEntityTypes.Contains(listEntityType))
                     {
-                        return listCandidate;
+                        toReturn.Add(listCandidate);
                     }
                 }
             }
         }
-        return null;
+        return toReturn;
     }
 
     public NamedObjectSave GetRootDefiningObject(NamedObjectSave derivedNos)
@@ -1054,7 +1079,7 @@ public class ObjectFinder : IObjectFinder
 
             var baseContainer = GetBaseElement(container);
 
-            var nosInBase = baseContainer.AllNamedObjects.FirstOrDefault(item => item.InstanceName == derivedNos.InstanceName);
+            var nosInBase = baseContainer?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == derivedNos.InstanceName);
 
             if(nosInBase == null)
             {
@@ -1193,7 +1218,9 @@ public class ObjectFinder : IObjectFinder
 
 
 
-            if (isTunneled)
+            if (isTunneled && 
+                // This could be the case on an unload of the project:
+                containingElement != null)
             {
                 string property = customVariable.SourceObjectProperty;
 

@@ -22,6 +22,7 @@ using GlueFormsCore.Extensions;
 using FlatRedBall.Glue.IO;
 using System.Threading.Tasks;
 using L = Localization;
+using ShimSkiaSharp;
 
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
@@ -182,7 +183,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 ObjectFinder.Self.GlueProject.Entities.ToList();
 
             addObjectViewModel.AvailableFiles =
-                GlueState.Self.CurrentElement.ReferencedFiles.ToList();
+                addObjectViewModel.EffectiveElement.ReferencedFiles.ToList();
 
             if (addObjectViewModel.SelectedItem != null)
             {
@@ -605,6 +606,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlueElement container = null)
         {
             container ??= GlueState.Self.CurrentElement;
+
+            if(container == null)
+            {
+                throw new NullReferenceException("The current element is null)");
+            }
 
             var viewModel = new AddCustomVariableViewModel(container)
             {

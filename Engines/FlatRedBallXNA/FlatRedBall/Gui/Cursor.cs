@@ -2050,7 +2050,11 @@ namespace FlatRedBall.Gui
         }
 
 
-
+        /// <summary>
+        /// Returns the change in X world coordinate of the cursor at the argument Z position since last frame
+        /// </summary>
+        /// <param name="zPosition">The Z position. For 2D games, pass 0.</param>
+        /// <returns>The change in world coordiantes since last frame.</returns>
         public float WorldXChangeAt(float zPosition)
         {
             return WorldXChangeAt(zPosition, this.Camera.Orthogonal, this.Camera.OrthogonalWidth);
@@ -2128,9 +2132,13 @@ namespace FlatRedBall.Gui
         }
 
 
+        /// <summary>
+        /// Returns the change in Y coordiante of the cursor at the argument Z position since last frame. Since this is in world coordiantes, positive Y points up.
+        /// </summary>
+        /// <param name="zPosition">The Z position. For 2D games, pass 0.</param>
+        /// <returns>The change in world cooriantes since last frame.</returns>
         public float WorldYChangeAt(float zPosition)
         {
-
             return WorldYChangeAt(zPosition, this.Camera.Orthogonal, this.Camera.OrthogonalHeight);
 
         }

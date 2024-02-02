@@ -6,19 +6,40 @@ namespace GameCommunicationPlugin.CodeGeneration
 {
     public class Game1GlueCommunicationGenerator : Game1CodeGenerator
     {
+
         public Game1GlueCommunicationGenerator(bool isGameCommunicationEnabled, int portNumber)
         {
             IsGameCommunicationEnabled = isGameCommunicationEnabled;
             PortNumber = portNumber;
-        }   
+        }
 
+        public bool GenerateConnectionOnlyInDebug { get; set; } = true;
         public bool IsGameCommunicationEnabled { get; set; }
         public int PortNumber { get; set; }
         public override void GenerateClassScope(ICodeBlock codeBlock)
         {
             if(IsGameCommunicationEnabled)
             {
+                AddIfDebug(codeBlock);
                 codeBlock.Line("GlueCommunication.GameConnectionManager gameConnectionManager;");
+                EndIfDebug(codeBlock);
+            }
+        }
+
+        private void AddIfDebug(ICodeBlock codeBlock)
+        {
+            if (GenerateConnectionOnlyInDebug)
+            {
+                codeBlock.Line("#if DEBUG");
+            }
+        }
+
+
+        private void EndIfDebug(ICodeBlock codeBlock)
+        {
+            if (GenerateConnectionOnlyInDebug)
+            {
+                codeBlock.Line("#endif");
             }
         }
 
@@ -48,6 +69,7 @@ namespace GameCommunicationPlugin.CodeGeneration
                 codeBlock.Line("};");
                 codeBlock.Line();
 
+                AddIfDebug(codeBlock);
                 codeBlock.Line($"gameConnectionManager = new GlueCommunication.GameConnectionManager({PortNumber});");
                 codeBlock.Line("gameConnectionManager.OnPacketReceived += async (packet) =>");
                 codeBlock.Line("{");
@@ -64,36 +86,7 @@ namespace GameCommunicationPlugin.CodeGeneration
                 codeBlock.Line("    }");
                 codeBlock.Line("};");
                 codeBlock.Line("this.Exiting += (not, used) => gameConnectionManager.Dispose();");
-
-                //if(GameCommunicationHelper.IsFrbUsesJson())
-                //{
-                //    codeBlock.Line("GlueCommunication.GameConnectionManager.CanUseJsonManager = true;");
-                //    codeBlock.Line("var gjmInstance = GlueCommunication.Json.GlueJsonManager.Instance;");
-                //    codeBlock.Line("gameConnectionManager.OnPacketReceived += async (packet) =>");
-                //    codeBlock.Line("{");
-                //    codeBlock.Line("    if (packet.Packet.PacketType == \"JsonUpdate\")");
-                //    codeBlock.Line("    {");
-                //    codeBlock.Line("        await gjmInstance.ProcessUpdatePacket(packet.Packet);");
-                //    codeBlock.Line("    }");
-                //    codeBlock.Line("};");
-                //    //codeBlock.Line("gjmInstance.HandleUpdatedSelection += async (dto) => await glueControlManager.ProcessMessage(dto);");
-                //    //codeBlock.Line("gjmInstance.SendPacket += (packet) => gameConnectionManager.SendItem(packet);");
-                //    //codeBlock.Line("gjmInstance.SendPacketWithResponse += (packet) => { return gameConnectionManager.SendItemWithResponse(packet); };");
-                //}
-
-                //Test Block
-                //codeBlock.Line("System.Threading.Tasks.Task.Run(() =>");
-                //codeBlock.Line("{");
-                //codeBlock.Line("    while (true)");
-                //codeBlock.Line("    {");
-                //codeBlock.Line("        System.Threading.Thread.Sleep(500);");
-                //codeBlock.Line("        gameConnectionManager.SendItem(new GlueCommunication.GameConnectionManager.Packet");
-                //codeBlock.Line("        {");
-                //codeBlock.Line("            PacketType = \"Test\",");
-                //codeBlock.Line("            Payload = System.DateTime.Now.ToLongTimeString(),");
-                //codeBlock.Line("        });");
-                //codeBlock.Line("    }");
-                //codeBlock.Line("});");
+                EndIfDebug(codeBlock);
             }
         }
     }

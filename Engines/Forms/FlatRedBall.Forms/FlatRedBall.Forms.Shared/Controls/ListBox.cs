@@ -23,8 +23,13 @@ namespace FlatRedBall.Forms.Controls
         public bool DoListItemsHaveFocus 
         {
             get => doListBoxItemsHaveFocus;
-            private set
+            set
             {
+                if(!IsFocused && value)
+                {
+                    IsFocused = true;
+                }
+
                 doListBoxItemsHaveFocus = value;
 
                 if (SelectedIndex > -1 && SelectedIndex < ListBoxItemsInternal.Count)
@@ -146,6 +151,10 @@ namespace FlatRedBall.Forms.Controls
         /// </summary>
         public event Action<object, SelectionChangedEventArgs> SelectionChanged;
         public event FocusUpdateDelegate FocusUpdate;
+
+        /// <summary>
+        /// Event raised when the user presses a button at the top-level (if the list box has focus, but the individual items do not)
+        /// </summary>
         public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
         public event Action<int> GenericGamepadButtonPushed;
 

@@ -39,10 +39,19 @@ namespace GumPluginCore.CodeGeneration
                 codeBlock.Line("    ContainedText.Width = 0;");
                 codeBlock.Line("}");
 
+                var fileVersion = GlueState.Self.CurrentGlueProject?.FileVersion;
 
-                codeBlock.Line("ContainedText.RawText = value;");
+                // don't directly set it, go through the CustomSetPropertyOnRenderable so bbcode works
+                if(fileVersion >= (int)GluxVersions.GumTextSupportsBbCode)
+                {
+                    codeBlock.Line("global::Gum.Wireframe.CustomSetPropertyOnRenderable.TrySetPropertyOnText(ContainedText, this, nameof(Text), value);");
+                }
+                else
+                {
+                    codeBlock.Line("ContainedText.RawText = value;");
+                }
 
-                if (GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GraphicalUiElementINotifyPropertyChanged)
+                if (fileVersion >= (int)GluxVersions.GraphicalUiElementINotifyPropertyChanged)
                 {
                     codeBlock.Line("NotifyPropertyChanged();");
                 }
@@ -51,7 +60,7 @@ namespace GumPluginCore.CodeGeneration
 
                 codeBlock.Line("if (shouldUpdate)");
                 codeBlock.Line("{");
-                if (GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GumTextObjectsUpdateTextWith0ChildDepth)
+                if (fileVersion >= (int)GluxVersions.GumTextObjectsUpdateTextWith0ChildDepth)
                 {
                     codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, int.MaxValue/2);");
                 }

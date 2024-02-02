@@ -104,7 +104,7 @@ namespace FlatRedBall.Glue.IO
                 project is Windows8MonoGameProject || 
                 project is AndroidProject ||
                 project is UwpProject ||
-                project is DesktopGlProject;
+                project is MonoGameDesktopGlBaseProject;
 
         }
 

@@ -445,11 +445,7 @@ namespace FlatRedBall.Graphics
                     // DRAWABLE BATCHES:  Only DrawableBatches remain so draw them all.
                     while (batchIndex < mVisibleBatches.Count)
                     {
-                        IDrawableBatch batchAtIndex = mVisibleBatches[batchIndex];
-                        if (mUpdateDrawableBatches && batchAtIndex.UpdateEveryFrame)
-                        {
-                            batchAtIndex.Update();
-                        }
+                        var batchAtIndex = mVisibleBatches[batchIndex];
 
                         if (Renderer.RecordRenderBreaks)
                         {
@@ -632,11 +628,6 @@ namespace FlatRedBall.Graphics
                     while (nextBatchSortValue <= nextSpriteSortValue && nextBatchSortValue <= nextTextSortValue && batchIndex < mVisibleBatches.Count)
                     {
                         IDrawableBatch batchAtIndex = mVisibleBatches[batchIndex];
-
-                        if (mUpdateDrawableBatches && batchAtIndex.UpdateEveryFrame)
-                        {
-                            batchAtIndex.Update();
-                        }
 
                         if(Renderer.RecordRenderBreaks)
                         {
@@ -1149,10 +1140,6 @@ namespace FlatRedBall.Graphics
 
                     foreach (var drawableBatch in SpriteManager.mZBufferedDrawableBatches)
                     {
-                        if (drawableBatch.UpdateEveryFrame)
-                        {
-                            drawableBatch.Update();
-                        }
                         drawableBatch.Draw(camera);
                     }
 

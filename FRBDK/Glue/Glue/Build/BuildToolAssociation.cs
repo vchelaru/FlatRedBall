@@ -97,7 +97,7 @@ namespace EditorObjects.SaveClasses
             {
                 var executable = GetExecutable();
                 var arguments = GetArguments($"c:\\Input.{SourceFileType}", $"c:\\Output.{DestinationFileType}", null);
-                return $"{GetExecutable()} {arguments}";
+                return $"{executable} {arguments}";
             }
         }
 
@@ -196,7 +196,7 @@ namespace EditorObjects.SaveClasses
 
             if (!string.IsNullOrEmpty(executable) && FileManager.IsRelative(executable))
             {
-                executable = FileManager.RelativeDirectory + executable;
+                executable = FileManager.RemoveDotDotSlash( FileManager.RelativeDirectory + executable);
             }
 
             return executable;
@@ -235,7 +235,7 @@ namespace EditorObjects.SaveClasses
             {
                 if (!string.IsNullOrEmpty(DestinationFileArgumentPrefix))
                 {
-                    arguments += DestinationFileArgumentPrefix + " \"" + destinationFile + "\"";
+                    arguments += " " + DestinationFileArgumentPrefix + " \"" + destinationFile + "\"";
                 }
                 else
                 {
@@ -345,11 +345,28 @@ namespace EditorObjects.SaveClasses
 
                 while ((str = process.StandardError.ReadLine()) != null)
                 {
-                    if (printError != null)
+                    // fxc.exe treats warnings as errors. Annoying.
+                    // Only way to address this is to search for " warning " in the string :(
+                    var isWarning = str?.Contains(" warning ") == true ||
+                        str?.StartsWith("warning ") == true ||
+                        string.IsNullOrEmpty(str);
+
+                    if(isWarning)
                     {
-                        printError(str);
+                        if (printOutput != null)
+                        {
+                            printOutput(str);
+                        }
                     }
-                    errorString += str + "\n";
+                    else
+                    {
+
+                        if (printError != null)
+                        {
+                            printError(str);
+                        }
+                        errorString += str + "\n";
+                    }
                 }
                 if (!string.IsNullOrEmpty(errorString))
                 {

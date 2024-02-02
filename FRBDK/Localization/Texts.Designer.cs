@@ -2320,15 +2320,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to set game/edit mode to {0}.
-        /// </summary>
-        public static string FailedToSetGameEditModeToX {
-            get {
-                return ResourceManager.GetString("FailedToSetGameEditModeToX", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Falling.
         /// </summary>
         public static string Falling {
@@ -2608,7 +2599,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Begin a search with \&quot;f \&quot;, \&quot;e \&quot;, \&quot;s \&quot;, \&quot;o \&quot;, or \&quot;v \&quot; (letter then space) to filter results..
+        ///   Looks up a localized string similar to Begin a search with &quot;f&quot;, &quot;e&quot;, &quot;s&quot;, &quot;o&quot;, or &quot;v&quot; (letter then space) to filter results..
         /// </summary>
         public static string FilterResultsDescription {
             get {
@@ -3139,7 +3130,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Glue Wizard can help you get a fully functional game set up in seconds..
+        ///   Looks up a localized string similar to The New Project Wizard can help you get a fully functional game set up in seconds..
         /// </summary>
         public static string GlueWizardDescription {
             get {
@@ -3148,7 +3139,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Run Glue Wizard.
+        ///   Looks up a localized string similar to Run Wizard.
         /// </summary>
         public static string GlueWizardRun {
             get {
@@ -3256,7 +3247,8 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete the Gum Screen {0}\nfor {1}?.
+        ///   Looks up a localized string similar to Delete the Gum Screen {0}
+        ///for {1}?.
         /// </summary>
         public static string GumConfirmDeleteScreen {
             get {
@@ -5223,15 +5215,6 @@ namespace Localization {
         public static string ObjectNew {
             get {
                 return ResourceManager.GetString("ObjectNew", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This object has no partitioning options available..
-        /// </summary>
-        public static string ObjectNoPartitioning {
-            get {
-                return ResourceManager.GetString("ObjectNoPartitioning", resourceCulture);
             }
         }
         
@@ -7900,7 +7883,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will also reload if localization CSV files change.\nIf unchecked, the game will only respond to file changes (like TMX) in edit mode.
+        ///   Looks up a localized string similar to This will also reload if localization CSV files change. If unchecked, the game will only respond to file changes (like TMX) in edit mode.
         /// </summary>
         public static string WarningLocalizationFileChange {
             get {

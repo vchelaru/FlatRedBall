@@ -30,6 +30,12 @@
       <SetsValue>false</SetsValue>
     </Variable>
     <Variable>
+      <Type>float?</Type>
+      <Name>CustomFrameTextureCoordinateWidth</Name>
+      <Category>Source</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>bool</Type>
       <Name>ExposeChildrenEvents</Name>
       <Value xsi:type="xsd:boolean">false</Value>

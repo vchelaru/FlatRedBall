@@ -39,12 +39,14 @@ namespace GlueFormsCore.SetVariable.EntitySaves
             }
 
 
-            List<EntitySave> entitiesToRefresh = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entitySave);
-            entitiesToRefresh.AddRange(entitySave.GetAllBaseEntities());
-            entitiesToRefresh.Add(entitySave);
+            List<EntitySave> entityTypesToSearchFor = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entitySave);
+            entityTypesToSearchFor.AddRange(entitySave.GetAllBaseEntities());
+            entityTypesToSearchFor.Add(entitySave);
+
+            HashSet<GlueElement> elementsToRegenerate = new HashSet<GlueElement>();
 
             // We need to re-generate all objects that use this Entity
-            foreach (EntitySave entityToRefresh in entitiesToRefresh)
+            foreach (var entityToRefresh in entityTypesToSearchFor)
             {
                 List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entityToRefresh.Name);
 
@@ -54,9 +56,14 @@ namespace GlueFormsCore.SetVariable.EntitySaves
 
                     if (namedObjectContainer != null)
                     {
-                        CodeWriter.GenerateCode(namedObjectContainer);
+                        elementsToRegenerate.Add(namedObjectContainer);
                     }
                 }
+            }
+
+            foreach(var element in elementsToRegenerate)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             }
             GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
         }

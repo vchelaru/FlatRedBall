@@ -64,6 +64,10 @@ namespace FlatRedBall.Audio
         } = 1.0f;
 
         static float? masterSongVolume = null;
+
+        /// <summary>
+        /// The default volume for playing songs, applied when calling Play(Song). Ranges between 0 and 1.
+        /// </summary>
         public static float? MasterSongVolume
         {
             get => masterSongVolume;
@@ -359,7 +363,6 @@ namespace FlatRedBall.Audio
                 mIsSongUsingGlobalContent = isSongGlobalContent;
 
 
-
 #if ANDROID
 				try
 				{
@@ -444,6 +447,10 @@ namespace FlatRedBall.Audio
             CurrentlyPlayingISong = null;
         }
 
+        /// <summary>
+        /// Stops the current song (either XNA or ISong) and sets the currently playing song
+        /// to null. This does not clear the CurrentSong/CurrentISong properties, so PlaySong can be called to resume the same song.
+        /// </summary>
         public static void StopSong()
         {
             if(mCurrentISong != null)
@@ -599,7 +606,7 @@ namespace FlatRedBall.Audio
             }
 #endif
             ///////////////////Early Out////////////////////////////////
-            if(!AreSongsEnabled || ScreenManager.IsInEditMode)
+            if(!AreSoundEffectsEnabled || ScreenManager.IsInEditMode)
             {
                 return;
             }
@@ -687,6 +694,29 @@ namespace FlatRedBall.Audio
         }
         public static int GetNumberOfTimesCurrentlyPlaying(SoundEffect soundEffect) =>
             mSoundEffectPlayInfos.Count(item => item.SoundEffect == soundEffect);
+        #endregion
+
+        #region SoundEffectInstance
+
+        public static void Play(SoundEffectInstance soundEffectInstance)
+        {
+            ///////////////////Early Out////////////////////////////////
+            if (!AreSoundEffectsEnabled || ScreenManager.IsInEditMode)
+            {
+                return;
+            }
+            ///////////////End Early Out////////////////////////////////
+
+            //bool shouldPlay = SoundEffectPlayingBehavior == Audio.SoundEffectPlayingBehavior.PlayAlways ||
+            // 
+            //    mSoundsPlayedThisFrame.Contains(soundEffectInstance.Name) == false;
+
+            soundEffectInstance.Volume = MasterSoundVolume;
+            soundEffectInstance.Play();
+
+            // todo - store information about max sound effects playing?
+        }
+
         #endregion
 
         #region Manager methods

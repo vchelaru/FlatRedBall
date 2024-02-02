@@ -322,6 +322,12 @@ namespace GlueControl.Dtos
 
     #endregion
 
+    #region ForceClientSizeUpdatesDto
+
+    public class ForceClientSizeUpdatesDto { }
+
+    #endregion
+
     #region CreateNewEntityDto
     public class CreateNewEntityDto
     {
@@ -337,7 +343,6 @@ namespace GlueControl.Dtos
         public string ElementNameGame { get; set; }
     }
     #endregion
-
 
     #region UpdateStateSaveCategory
 

@@ -54,6 +54,7 @@ namespace {GlueState.Self.ProjectNamespace}.Entities
         string CurrentMovementName {{ get; }}
         float MaxAbsoluteXVelocity {{ get; }}
         float MaxAbsoluteYVelocity {{ get; }}
+        global::FlatRedBall.Input.I1DInput HorizontalInput {{get;}}
     }}
 }}";
             return toReturn;

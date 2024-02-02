@@ -82,7 +82,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             RefreshGlueState(false);
         }
 
-        public static void HandleSelected(NodeViewModel nodeViewModel, bool focus = true)
+        public static void HandleSelected(NodeViewModel nodeViewModel, bool focus, bool replaceSelection)
         {
             IsUpdatingThisSelectionOnGlueEvent = false;
 
@@ -93,7 +93,10 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             {
                 didSelectionChange = false;
             }
-            else if (currentNodes.Count == 0 && newTag == null)
+            // Someone could change from a node without a tag to a different node without a tag,
+            // so base it on the nodeViewModel
+            //else if (currentNodes.Count == 0 && newTag == null)
+            else if (currentNodes.Count == 0 && nodeViewModel == null)
             {
                 didSelectionChange = false;
             }
@@ -108,11 +111,27 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             else
             {
                 didSelectionChange = currentNodes.Any(item => item.Tag == nodeViewModel.Tag) == false;
+
+                if(!didSelectionChange && replaceSelection)
+                {
+                    didSelectionChange = currentNodes.Contains(nodeViewModel) == false;
+                }
             }
+
+
+            if(replaceSelection)
+            {
+                currentNodes.Clear();
+
+                mainViewModel.DeselectResursively(callSelectionLogic: false);
+
+            }
+
 
             if (nodeViewModel != null)
             {
                 currentNodes.Add(nodeViewModel);
+                nodeViewModel.SetSelectNoSelectionLogic(true);
             }
 
             if (nodeViewModel != null && nodeViewModel.IsSelected && focus)
@@ -123,7 +142,6 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             RefreshGlueState(didSelectionChange);
 
             IsUpdatingThisSelectionOnGlueEvent = true;
-
         }
 
         private static void RefreshGlueState(bool forcePushToGlue)
@@ -173,7 +191,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                 {
                     SelectionLogic.IsUpdatingThisSelectionOnGlueEvent = false;
 
-                    mainViewModel.DeselectResursively();
+                    mainViewModel.DeselectResursively(true);
                     //currentNode.IsSelected = false;
                     currentNodes.Clear();
 
@@ -186,7 +204,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                 {
                     if(CurrentNode?.IsSelected == false && !addToSelection)
                     {
-                        mainViewModel.DeselectResursively();
+                        mainViewModel.DeselectResursively(true);
                         // Selecting a tree node deselects the current node, but that can take some time and cause
                         // some inconsistent behavior. To solve this, we will forcefully deselect the current node 
                         // so the consequence of selecting this node is immediate:
@@ -198,7 +216,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                     }
                     if(suppressFocusCopy)
                     {
-                        treeNode.SelectNoFocus();
+                        treeNode.SetSelectNoSelectionLogic(true);
                         if(addToSelection)
                         {
                             if(currentNodes.Contains(treeNode) == false)

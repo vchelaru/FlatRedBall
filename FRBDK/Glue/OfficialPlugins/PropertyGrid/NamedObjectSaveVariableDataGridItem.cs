@@ -88,7 +88,8 @@ namespace OfficialPlugins.PropertyGrid
         {
             CustomGetEvent += HandleCustomGet;
 
-            CustomSetEvent += HandleVariableSet;
+            //CustomSetEvent += HandleVariableSet;
+            CustomSetPropertyEvent += HandleVariableSet;
 
             SetValueError += (newValue) =>
             {
@@ -252,10 +253,11 @@ namespace OfficialPlugins.PropertyGrid
             }
         }
 
-        private async void HandleVariableSet(object owner, object value)
+        private async void HandleVariableSet(object owner, SetPropertyArgs args)
         {
             if (GlueState.Self.CurrentGlueProject == null)
                 return;
+            var value = args.Value;
             //NamedObjectVariableChangeLogic.ReactToValueSet(instance, memberName, value, out bool makeDefault);
 
             //static void ReactToValueSet(NamedObjectSave instance, string memberName, object value, out bool makeDefault)
@@ -319,46 +321,52 @@ namespace OfficialPlugins.PropertyGrid
                 GlueCommands.Self.GluxCommands.SetVariableOn(
                     NamedObjectSave,
                     NameOnInstance,
-                    value, performSaveAndGenerateCode: false, updateUi: false);
+                    value, performSaveAndGenerateCode: false, updateUi: false, commitType: args.CommitType);
 #pragma warning restore CS0618 // Type or member is obsolete
 
 
-                // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
-                await System.Threading.Tasks.Task.Delay(400);
 
-                // Set subtext before refreshing property grid
-                NamedObjectVariableShowingLogic.AssignVariableSubtext(NamedObjectSave, categories.ToList(), NamedObjectSave.GetAssetTypeInfo());
-
-                IsDefault = makeDefault;
-
-                await TaskManager.Self.AddAsync(async () =>
+                // If it's an intermediate set, no need to generate, refresh UI, or save:
+                if(args.CommitType == SetPropertyCommitType.Full)
                 {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(Container);
-                    EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
 
-                    GlueCommands.Self.DoOnUiThread(() =>
+                    // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
+                    await System.Threading.Tasks.Task.Delay(400);
+
+                    // Set subtext before refreshing property grid
+                    NamedObjectVariableShowingLogic.AssignVariableSubtext(NamedObjectSave, categories.ToList(), NamedObjectSave.GetAssetTypeInfo());
+
+                    IsDefault = makeDefault;
+
+                    await TaskManager.Self.AddAsync(async () =>
                     {
-                        MainGlueWindow.Self.PropertyGrid.Refresh();
-                        PropertyGridHelper.UpdateNamedObjectDisplay();
-                        if (DisplayName == "Name")
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(Container);
+                        EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
+
+                        GlueCommands.Self.DoOnUiThread(() =>
                         {
-                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(Container,
-                                // We can be faster by doing only a NamedObject refresh, since the only way this could change is the Name...right?
-                                FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.TreeNodeRefreshType.NamedObjects);
+                            MainGlueWindow.Self.PropertyGrid.Refresh();
+                            PropertyGridHelper.UpdateNamedObjectDisplay();
+                            if (DisplayName == "Name")
+                            {
+                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(Container,
+                                    // We can be faster by doing only a NamedObject refresh, since the only way this could change is the Name...right?
+                                    FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.TreeNodeRefreshType.NamedObjects);
+                            }
+                        });
+
+                        if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
+                        {
+                            await GlueCommands.Self.GluxCommands.SaveElementAsync(Container);
                         }
-                    });
-
-                    if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
-                    {
-                        await GlueCommands.Self.GluxCommands.SaveElementAsync(Container);
-                    }
-                    else
-                    {
-                        GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
-                    }
+                        else
+                        {
+                            GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
+                        }
 
 
-                }, $"Delayed task to do all updates for {NamedObjectSave}", TaskExecutionPreference.AddOrMoveToEnd);
+                    }, $"Delayed task to do all updates for {NamedObjectSave}", TaskExecutionPreference.AddOrMoveToEnd);
+                }
 
             }
         }

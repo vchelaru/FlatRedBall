@@ -4,6 +4,20 @@
   <State>
     <Name>Default</Name>
     <Variable>
+      <Type>int</Type>
+      <Name>AutoGridHorizontalCells</Name>
+      <Value xsi:type="xsd:int">4</Value>
+      <Category>Children</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>int</Type>
+      <Name>AutoGridVerticalCells</Name>
+      <Value xsi:type="xsd:int">4</Value>
+      <Category>Children</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>ChildrenLayout</Type>
       <Name>Children Layout</Name>
       <Value xsi:type="xsd:int">0</Value>
@@ -66,6 +80,13 @@
     </Variable>
     <Variable>
       <Type>bool</Type>
+      <Name>IgnoredByParentSize</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Parent</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
       <Name>IsXamarinFormsControl</Name>
       <Value xsi:type="xsd:boolean">false</Value>
       <SetsValue>true</SetsValue>
@@ -73,6 +94,7 @@
     <Variable>
       <Type>string</Type>
       <Name>Parent</Name>
+      <Category>Parent</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -81,6 +103,13 @@
       <Value xsi:type="xsd:float">0</Value>
       <Category>Flip and Rotation</Category>
       <SetsValue>false</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>StackSpacing</Name>
+      <Value xsi:type="xsd:float">0</Value>
+      <Category>Children</Category>
+      <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>bool</Type>
@@ -151,5 +180,14 @@
       <Category>Position</Category>
       <SetsValue>true</SetsValue>
     </Variable>
+    <VariableList xsi:type="VariableListSaveOfString">
+      <Type>string</Type>
+      <Name>VariableReferences</Name>
+      <Category>References</Category>
+      <IsFile>false</IsFile>
+      <IsHiddenInPropertyGrid>false</IsHiddenInPropertyGrid>
+      <Value />
+    </VariableList>
   </State>
+  <Behaviors />
 </StandardElementSave>

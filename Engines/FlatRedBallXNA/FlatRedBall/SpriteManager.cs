@@ -22,11 +22,6 @@ using System.Diagnostics;
 using FlatRedBall.Instructions;
 using FlatRedBall.Performance.Measurement;
 
-#if UWP
-using Windows.System.Threading;
-using Windows.Foundation;
-#endif
-
 
 namespace FlatRedBall
 {
@@ -45,38 +40,23 @@ namespace FlatRedBall
 
 
 
-#if UWP
-        IAsyncAction mAction = null;
-#else
         ManualResetEvent mManualResetEvent;
 
-#endif
 
         public Updater()
         {
-#if !UWP
             mManualResetEvent = new ManualResetEvent(false);
-#endif
         }
 
         public void Reset()
         {
             
-#if UWP
-            mAction = null;
-#else
             mManualResetEvent.Reset();
-
-#endif
         }
 
         public void Wait()
         {
-#if UWP
-            mAction.AsTask().Wait();
-#else
             mManualResetEvent.WaitOne();
-#endif
         }
 
         internal void TimedActivity()
@@ -141,11 +121,8 @@ namespace FlatRedBall
         internal void ExecuteInstructions()
         {
             Reset();
-#if UWP
-            mAction = Windows.System.Threading.ThreadPool.RunAsync(ExecuteInstructionsInternal);
-#else
+
             ThreadPool.QueueUserWorkItem(ExecuteInstructionsInternal);
-#endif
         }
         void ExecuteInstructionsInternal(object unusedState)
         {
@@ -168,11 +145,7 @@ namespace FlatRedBall
         internal void UpdateDependencies()
         {
             Reset();
-#if UWP
-            mAction = Windows.System.Threading.ThreadPool.RunAsync(UpdateDependenciesInternal);
-#else
             ThreadPool.QueueUserWorkItem(UpdateDependenciesInternal);
-#endif
         }
         void UpdateDependenciesInternal(object unusedState)
         {
@@ -183,16 +156,8 @@ namespace FlatRedBall
             {
                 Sprite s = AutomaticallyUpdatedSprites[i];
                 s.UpdateDependencies(currentTime);
-
-#if SILVERLIGHT
-                s.UpdateVertices(SpriteManager.Camera);
-
-#endif
-
             }
-#if !UWP
             mManualResetEvent.Set();
-#endif
         }
 
     }
@@ -245,7 +210,14 @@ namespace FlatRedBall
         static PositionedObjectList<SpriteFrame> mSpriteFrames;
         static ReadOnlyCollection<SpriteFrame> mSpriteFramesReadOnly;
 
+        /// <summary>
+        /// Unlayered, sorted drawable batches
+        /// </summary>
         static List<IDrawableBatch> mDrawableBatches;
+
+        /// <summary>
+        /// Unlayered, ZBuffered drawable batches
+        /// </summary>
         static internal List<IDrawableBatch> mZBufferedDrawableBatches = new List<IDrawableBatch>();
         static ReadOnlyCollection<IDrawableBatch> mDrawableBatchesReadOnlyCollection;
 
@@ -3017,6 +2989,44 @@ namespace FlatRedBall
             for (int i = 0; i < mSpriteFrames.Count; i++)
             {
                 mSpriteFrames[i].Manage();
+            }
+
+            // January 21,2024
+            // This used to be handled
+            // in Renderer, but now we want
+            // to have this happen before CustomActivity
+            // so that updating collision will properly use
+            // animation state.
+            if(Renderer.UpdateDrawableBatches)
+            {
+                for(int i = 0; i < mDrawableBatches.Count; i++)
+                {
+                    var batch = mDrawableBatches[i];
+                    if(batch.UpdateEveryFrame)
+                    {
+                        batch.Update();
+                    }
+                }
+                for(int i = 0; i < mZBufferedDrawableBatches.Count; i++)
+                {
+                    var batch = mZBufferedDrawableBatches[i];
+                    if (batch.UpdateEveryFrame)
+                    {
+                        batch.Update();
+                    }
+                }
+                for (int i = 0; i < mLayers.Count; i++)
+                {
+                    var layer = mLayers[i];
+                    for(int idbIndex = 0; idbIndex < layer.Batches.Count; idbIndex++)
+                    {
+                        var batch = layer.Batches[idbIndex];
+                        if (batch.UpdateEveryFrame)
+                        {
+                            batch.Update();
+                        }
+                    }
+                }
             }
 
             if (section != null)

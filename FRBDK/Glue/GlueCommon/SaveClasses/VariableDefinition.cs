@@ -73,6 +73,8 @@ namespace FlatRedBall.Glue.Elements
         [JsonIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, List<string>> CustomGetForcedOptionFunc;
 
+        // Added Jan 15 2024, default to true to match behavior 
+        public bool CanBeSetInFile = true;
 
         public bool HasGetter { get; set; } = true;
 

@@ -614,6 +614,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 mTimeJumpPushed = CurrentTime;
                 this.YVelocity = CurrentMovement.JumpVelocity;
                 ValuesJumpedWith = CurrentMovement;
+                mIsOnGround = false;
 
                 mCanContinueToApplyJumpToHold = true;
 

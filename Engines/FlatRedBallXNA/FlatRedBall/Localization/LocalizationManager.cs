@@ -251,7 +251,7 @@ namespace FlatRedBall.Localization
             }
         }
 
-        public static string[] TranslateMultiple(string stringID)
+        public static string[] TranslateMultiple(string stringID, int? forcedLanguage = null)
         {
             if (stringID == null)
             {
@@ -259,8 +259,9 @@ namespace FlatRedBall.Localization
             }
             else if (mStringDatabase.ContainsKey(stringID))
             {
+                var language = forcedLanguage ?? CurrentLanguage;
                 var entry = mStringDatabase[stringID];
-                var toReturn = entry.Rows.Select(item => item[CurrentLanguage]);
+                var toReturn = entry.Rows.Select(item => item[language]);
 
                 return toReturn.ToArray();
             }

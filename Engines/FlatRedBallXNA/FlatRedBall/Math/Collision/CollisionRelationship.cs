@@ -1374,6 +1374,9 @@ namespace FlatRedBall.Math.Collision
             public PartitionedValuesBase SecondPartition;
 
             public Axis? PartitioningAxis = null;
+
+
+
             /// <summary>
             /// The half size (width or height) of the largest object in the first list. This should be the largest
             /// of X or Y, since this value is used for "secondary" partitioning too.
@@ -1385,6 +1388,9 @@ namespace FlatRedBall.Math.Collision
             /// of X or Y, since this value is used for "secondary" partitioning too.
             /// </summary>
             public float SecondHalfSize;
+
+            // 
+            public bool ShouldPerformSecondaryAxisPartitioning;
 
             public void CalculateValuesForCollision(CollisionRelationship relationship)
             {
@@ -1616,6 +1622,10 @@ namespace FlatRedBall.Math.Collision
 
             for (int i = firstList.Count - 1; i > -1; i--)
             {
+                if(i >= firstList.Count)
+                {
+                    continue;
+                }
                 var first = firstList[i];
                 parameters.ItemInFirstList = first;
                 parameters.FirstIndex = i;
@@ -1679,6 +1689,10 @@ namespace FlatRedBall.Math.Collision
 
             for (int i = firstList.Count - 1; i > -1; i--)
             {
+                if (i >= firstList.Count)
+                {
+                    continue;
+                }
                 var first = firstList[i];
                 parameters.ItemInFirstList = first;
                 parameters.FirstIndex = i;

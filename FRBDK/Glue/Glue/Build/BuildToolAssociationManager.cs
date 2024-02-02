@@ -8,6 +8,7 @@ using FlatRedBall.Glue.Controls;
 using System.Windows.Forms;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using L = Localization;
+using Glue;
 
 namespace FlatRedBall.Glue.Managers;
 
@@ -134,7 +135,10 @@ public class BuildToolAssociationManager
         }
 
         nfw.ResultName = FileManager.RemoveExtension(FileManager.RemovePath(fileName));
-        DialogResult result = nfw.ShowDialog();
+        DialogResult result = DialogResult.Cancel;
+        
+        GlueCommands.Self.DoOnUiThread(() => result = nfw.ShowDialog(MainGlueWindow.Self));
+        //result = nfw.ShowDialog();
         extraCommandLineArguments = "";
 
         if (result == DialogResult.OK)

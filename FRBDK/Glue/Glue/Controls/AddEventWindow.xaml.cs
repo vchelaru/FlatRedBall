@@ -8,6 +8,7 @@ using FlatRedBall.Glue.GuiDisplay;
 using GlueFormsCore.ViewModels;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using GlueFormsCore.Extensions;
 
 namespace FlatRedBall.Glue.Controls;
 /// <summary>
@@ -36,10 +37,7 @@ public partial class AddEventWindow
     {
         InitializeComponent();
 
-        FillAvailableDelegateTypes();
-        FillTunnelingObjects();
-        FillTypeConverters();
-        UpdateGenericTypeElementsVisibility();
+        this.Loaded += (_,_) => this.MoveToCursor();
     }
 
     /// <summary>
@@ -142,8 +140,8 @@ public partial class AddEventWindow
     private void TunnelingVariableComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         AlternativeTextBox.Text =
-            TunnelingObjectComboBox.Text +
-            TunnelingEventComboBox.Text;
+            TunnelingObjectComboBox.SelectedItem?.ToString() +
+            TunnelingEventComboBox.SelectedItem?.ToString();
     }
 
     /// <summary>
@@ -166,6 +164,11 @@ public partial class AddEventWindow
         {
             this.TunnelingEventComboBox.Items.Add(availableVariable);
         }
+
+        if(this.TunnelingEventComboBox.Items.Count > 0)
+        {
+            this.TunnelingEventComboBox.SelectedItem = this.TunnelingEventComboBox.Items[0];
+        }
     }
 
     /// <summary>
@@ -182,8 +185,16 @@ public partial class AddEventWindow
 
     private void SetFrom(AddEventViewModel viewModel)
     {
+
+        FillAvailableDelegateTypes();
+        FillTunnelingObjects();
+        FillTypeConverters();
+        UpdateGenericTypeElementsVisibility();
+
         if (viewModel.TunnelingObject != null)
         {
+            this.TunnelingObjectComboBox.SelectedItem = viewModel.TunnelingObject;
+
             foreach (var item in this.TunnelingEventComboBox.Items)
             {
                 if (String.Equals(item.ToString(), viewModel.TunnelingEvent, StringComparison.OrdinalIgnoreCase))
@@ -206,6 +217,16 @@ public partial class AddEventWindow
         if (ViewModel.ExposableEvents.Count > 0 && AvailableEventsComboBox.Items.Count > 0)
         {
             AvailableEventsComboBox.SelectedIndex = 0;
+        }
+
+        if(viewModel.TunnelingObject != null)
+        {
+            this.EventTypeTunnel.IsChecked = true;
+
+            if(this.TunnelingEventComboBox.SelectedItem == null && this.TunnelingEventComboBox.Items.Count > 0)
+            {
+                this.TunnelingEventComboBox.SelectedItem = this.TunnelingEventComboBox.Items[0];
+            }
         }
     }
 

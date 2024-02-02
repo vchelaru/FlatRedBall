@@ -1,4 +1,5 @@
-﻿using FlatRedBall.PlatformerPlugin.Data;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.PlatformerPlugin.Data;
 using FlatRedBall.PlatformerPlugin.ViewModels;
 using FlatRedBall.Utilities;
 using Newtonsoft.Json;
@@ -67,6 +68,9 @@ namespace PlatformerPluginCore.Views
             values.Name = newItemName;
 
             ViewModel.PlatformerValues.Add(values);
+
+            // This adds new items to the dropdowns:
+            GlueCommands.Self.RefreshCommands.RefreshVariables();
         }
 
 

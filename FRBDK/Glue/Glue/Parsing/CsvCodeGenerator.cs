@@ -429,7 +429,7 @@ namespace FlatRedBall.Glue
 
                     if (foundRfs == null)
                     {
-                        int m = 3;
+                        // do we want to have an error here?
                     }
                     else
                     {

@@ -2121,7 +2121,6 @@ namespace FlatRedBall.Math.Geometry
 
         #endregion
 
-
         public void InvertPointOrder()
         {
             Point temporaryPoint = new Point();
@@ -2137,6 +2136,40 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
+        public void KeepThisInsideOf(AxisAlignedRectangle rectangle)
+        {
+            Vector2 repositionVector;
+            repositionVector.X = 0;
+            repositionVector.Y = 0;
+
+            this.ForceUpdateDependencies();
+
+            for(int i = 0; i < mVertices.Length; i++)
+            {
+                if (mVertices[i].Position.X < rectangle.Left)
+                {
+                    repositionVector.X = System.Math.Max(repositionVector.X, rectangle.Left - mVertices[i].Position.X);
+                }
+                else if (mVertices[i].Position.X > rectangle.Right)
+                {
+                    repositionVector.X = System.Math.Min(repositionVector.X, rectangle.Right - mVertices[i].Position.X);
+                }
+
+                if (mVertices[i].Position.Y > rectangle.Top)
+                {
+                    repositionVector.Y = System.Math.Min(repositionVector.Y, rectangle.Top - mVertices[i].Position.Y);
+                }
+                else if (mVertices[i].Position.Y < rectangle.Bottom)
+                {
+                    repositionVector.Y = System.Math.Max(repositionVector.Y, rectangle.Bottom - mVertices[i].Position.Y);
+                }
+            }
+
+            PositionedObject topParent = this.TopParent;
+
+            topParent.Position.X += repositionVector.X;
+            topParent.Position.Y += repositionVector.Y;
+        }
 
         public void OptimizeRadius()
         {

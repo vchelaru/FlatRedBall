@@ -31,7 +31,10 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
 
         #endregion
 
-        public static bool UsesDamageV2 => GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.DamageableHasHealth;
+        public static bool UsesDamageV2 => GlueState.Self.CurrentMainProject.IsFrbSourceLinked()
+                                           || GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.DamageableHasHealth;
+        public static bool UsesDamageV3 => GlueState.Self.CurrentMainProject.IsFrbSourceLinked()
+                                           || GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.DamageDealingToggles;
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
@@ -70,6 +73,11 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
                         codeBlock.Line("public Action<FlatRedBall.Entities.IDamageable> RemovedByCollision { get; set; }");
 
                     }
+
+                    if (UsesDamageV3)
+                    {
+                        codeBlock.Line("public bool IsDamageDealingEnabled { get; set; } = true;");
+                    }
                 }
 
                 if (shouldImplementIDamageable)
@@ -89,6 +97,13 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
 
                         codeBlock.Line("public decimal CurrentHealth { get; set; }");
                         codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageArea> Died { get; set; }");
+                    }
+
+                    if (UsesDamageV3)
+                    {
+                        codeBlock.Line("public bool IsDamageReceivingEnabled { get; set; } = true;");
+                        codeBlock.Line("public double InvulnerabilityTimeAfterDamage { get; set; } = 0;");
+                        codeBlock.Line("public double LastDamageTime { get; set; } = -999;");
                     }
                 }
             }

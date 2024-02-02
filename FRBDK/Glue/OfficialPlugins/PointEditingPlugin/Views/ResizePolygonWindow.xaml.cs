@@ -37,6 +37,22 @@ public partial class ResizePolygonWindow : Window
     {
         this.DialogResult = true;
     }
+
+    private void WidthTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if(e.Key == System.Windows.Input.Key.Enter)
+        {
+            this.DialogResult = true;
+        }
+    }
+
+    private void HeightTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (e.Key == System.Windows.Input.Key.Enter)
+        {
+            this.DialogResult = true;
+        }
+    }
 }
 
 // maybe move to a different file eventually?

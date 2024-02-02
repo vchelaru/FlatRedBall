@@ -143,7 +143,6 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
         static bool CanHaveSubCollisions(NamedObjectSave nos)
         {
-            EntitySave entity = null;
             if (nos != null)
             {
                 return GetEntitySaveReferencedBy(nos)?.IsICollidableRecursive() == true;

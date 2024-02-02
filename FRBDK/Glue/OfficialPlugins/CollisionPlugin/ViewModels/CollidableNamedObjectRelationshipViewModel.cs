@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Math;
+using Localization;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -30,8 +31,19 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(CanBePartitioned))]
         public Visibility PartitioningControlUiVisibility => CanBePartitioned.ToVisibility();
 
+        public bool DefinedByBase
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(CanBePartitioned))]
         public Visibility AlreadyOrCantBePartitionedVisibility => (!CanBePartitioned).ToVisibility();
+
+        [DependsOn(nameof(NoPartitioningText))]
+        public string NoPartitioningText =>
+            DefinedByBase ? "Partitioning properties are not available on derived objects"
+            : "Partitioning not available for this object";
 
         [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
         public bool PerformCollisionPartitioning
@@ -203,6 +215,6 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         public CollidableNamedObjectRelationshipViewModel()
         {
             NamedObjectPairs = new ObservableCollection<NamedObjectPairRelationshipViewModel>();
-}
+        }
     }
 }

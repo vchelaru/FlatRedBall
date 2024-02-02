@@ -33,6 +33,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Windows;
 using System.Windows.Media;
+using WpfDataUi.DataTypes;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -188,7 +189,7 @@ namespace FlatRedBall.Glue.Plugins
         public object OldValue { get; set; }
         public NamedObjectSave NamedObject { get; set; }
         public bool RecordUndo { get; set; } = true;
-
+        public SetPropertyCommitType CommitType { get; set; } = SetPropertyCommitType.Full;
         public override string ToString()
         {
             return $"{NamedObject}.{ChangedMember}";
@@ -535,6 +536,12 @@ namespace FlatRedBall.Glue.Plugins
         /// </summary>
         public Func<object, int, int, Task> ReactToObjectReordered;
 
+        /// <summary>
+        /// Raised to determine if a plugin should handle a hotkey. A plugin should return true if it has its own hotkey handling given
+        /// its current state, such as if a control has focus.
+        /// </summary>
+        public Func<bool> IsHandlingHotkeys;
+
         #endregion
 
         public abstract void StartUp();
@@ -647,7 +654,12 @@ namespace FlatRedBall.Glue.Plugins
             control.Background = ToolbarBackgroundBrush;
             control.BorderBrush = ToolbarBackgroundBrush;
 
-            toAddTo.Items.Add(control);
+            if(control.Parent == null)
+            {
+                toAddTo.Items.Add(control);
+
+            }
+
         }
 
         private void Toolbar_Loaded(object sender, RoutedEventArgs e)
@@ -704,6 +716,14 @@ namespace FlatRedBall.Glue.Plugins
             set;
         } = new List<Game1CodeGenerator>();
 
+        /// <summary>
+        /// Registers the argument ElementComponentCodeGenerator to Glue's code generator list. 
+        /// This method also registers the code generator so that it belongs to this plugin in case
+        /// the plugin wants to remove it later.
+        /// Code generators that are added here run on every element, and it is up to the 
+        /// code generator to decide if it should actually write code.
+        /// </summary>
+        /// <param name="codeGenerator">The component to add.</param>
         public void RegisterCodeGenerator(ElementComponentCodeGenerator codeGenerator)
         {
             CodeGenerators.Add(codeGenerator);

@@ -480,8 +480,9 @@ namespace OfficialPlugins.VariableDisplay
                 return instance.SourceName;
             };
 
-            instanceMember.CustomSetEvent += (owner, value) =>
+            instanceMember.CustomSetPropertyEvent += (owner, args) =>
             {
+                var value = args.Value;
                 instanceMember.IsDefault = false;
                 RefreshLogic.IgnoreNextRefresh();
 
@@ -525,8 +526,9 @@ namespace OfficialPlugins.VariableDisplay
                 instanceMember.MakeReadOnly();
             }
 
-            instanceMember.CustomSetEvent += (throwaway, value) =>
+            instanceMember.CustomSetPropertyEvent += (throwaway, args) =>
             {
+                var value = args.Value;
                 instanceMember.IsDefault = false;
                 RefreshLogic.IgnoreNextRefresh();
 
@@ -564,8 +566,9 @@ namespace OfficialPlugins.VariableDisplay
 
             var oldValue = instance.IsEditingLocked;
 
-            instanceMember.CustomSetEvent += (throwaway, value) =>
+            instanceMember.CustomSetPropertyEvent += (throwaway, args) =>
             {
+                var value = args.Value;
                 instanceMember.IsDefault = false;
                 RefreshLogic.IgnoreNextRefresh();
 

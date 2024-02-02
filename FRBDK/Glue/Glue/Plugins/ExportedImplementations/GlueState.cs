@@ -375,6 +375,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public PluginSettings CurrentPluginSettings => ProjectManager.PluginSettings;
 
+        public bool IsProjectLoaded(VisualStudioProject project)
+        {
+            return CurrentMainProject == project || SyncedProjects.Contains(project);
+        }
 
         /// <summary>
         /// The global glue settings for the current user, not tied to a particular project.
@@ -463,7 +467,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 }
                 else
                 {
-                    if(CurrentMainProject is DesktopGlProject)
+                    if(CurrentMainProject is MonoGameDesktopGlBaseProject)
                     {
                         // todo - handle different types of projects
                         string projectReferenceName;

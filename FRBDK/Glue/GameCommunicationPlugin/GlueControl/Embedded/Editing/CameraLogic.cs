@@ -26,6 +26,8 @@ namespace GlueControl.Editing
         #region Fields/Properties
         static int[] zoomLevels = new int[]
         {
+            10000,
+            7500,
             5000,
             3600,
             2400,

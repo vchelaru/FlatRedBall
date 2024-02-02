@@ -112,9 +112,15 @@ namespace FlatRedBall
         #endregion
     }
 
+    public class SyntaxVersionAttribute : Attribute
+    {
+        public int Version = 52;
+    }
+
     public static partial class FlatRedBallServices
     {
         internal static SingleThreadSynchronizationContext singleThreadSynchronizationContext;
+
         #region Fields
 
         static List<IManager> mManagers = new List<IManager>();
@@ -163,6 +169,7 @@ namespace FlatRedBall
         private static Texture2D _textureToDraw = null;
         private static SpriteBatch _loadingScreenSpriteBatch = null;
         private static Rectangle _sourceRect;
+
 
         #endregion
 
@@ -292,8 +299,9 @@ namespace FlatRedBall
                     // If we're setting the mClientWith and mClientHeight, we need
                     // to adjust the cameras:
                     // Update cameras
-                    foreach (Camera camera in SpriteManager.Cameras)
+                    for (int i = 0; i < SpriteManager.Cameras.Count; i++)
                     {
+                        Camera camera = SpriteManager.Cameras[i];
                         camera.UpdateOnResize();
                     }
                 }
@@ -325,7 +333,7 @@ namespace FlatRedBall
                     // above
                     mGraphicsOptions.ResumeDeviceReset();
 
-#if WINDOWS 
+#if WINDOWS || FNA
                     FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
 #endif
 
@@ -350,7 +358,7 @@ namespace FlatRedBall
 
             mGraphicsOptions.ResumeDeviceReset();
 
-    #if WINDOWS
+    #if WINDOWS || FNA
             FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
     #endif
             //mGraphicsOptions.ResumeDeviceReset();
@@ -482,7 +490,6 @@ namespace FlatRedBall
         {
 
             PreInitialization(game, graphics);
-
             GraphicsOptions graphicsOptions = new GraphicsOptions(game, graphics);
 
 
@@ -550,7 +557,6 @@ namespace FlatRedBall
             // am wondering why we have both, and why can't we just
             // use one of them.
 
-
 #if WINDOWS && !STANDARD
             mOwner =
                 System.Windows.Forms.Form.FromHandle(mWindowHandle);
@@ -566,7 +572,7 @@ namespace FlatRedBall
 
             mOwner.Resize += new EventHandler(Window_ClientSizeChanged);
 #else
-            game.Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
+            game.Window.ClientSizeChanged += Window_ClientSizeChanged;
 #endif
             // call this *after assignign the events
             mGraphicsOptions.Initialize();
@@ -781,9 +787,18 @@ namespace FlatRedBall
 
         static void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
         {
+            // Nov 14, 2023
+            // For some reason 
+            // keeping this in causes
+            // resolutions to reset when
+            // resizing. Commenting this out
+            // for now, may return to this in 
+            // the future.
+#if !FNA
             PresentationParameters presentationParameters = e.GraphicsDeviceInformation.PresentationParameters;
             mGraphicsOptions.SetPresentationParameters(ref presentationParameters);
             e.GraphicsDeviceInformation.PresentationParameters = presentationParameters;
+#endif
         }
 
         static bool mHandlingReset = false;
@@ -791,7 +806,6 @@ namespace FlatRedBall
 
         internal static void graphics_DeviceReset(object sender, EventArgs e)
         {
-
             if (mGraphicsOptions == null) return;
 
             HandleResize();
@@ -818,8 +832,9 @@ namespace FlatRedBall
                 //Window_ClientSizeChanged(sender, e);
 
                 // Update cameras
-                foreach (Camera camera in SpriteManager.Cameras)
+                for (int i = 0; i < SpriteManager.Cameras.Count; i++)
                 {
+                    Camera camera = SpriteManager.Cameras[i];
                     camera.UpdateOnResize();
                 }
 
@@ -827,9 +842,9 @@ namespace FlatRedBall
             }
         }
 
-            #endregion
+#endregion
             
-            #endregion
+#endregion
 
         #region Public Methods
 
@@ -1451,9 +1466,9 @@ namespace FlatRedBall
             {
                 Renderer.Draw(section);
             }
-        #if PROFILE
+#if PROFILE
             TimeManager.TimeSection("Renderer.Draw();");
-        #endif
+#endif
 
 
             // Just in case code is going to modify any of the textures that were used in rendering:
@@ -1549,7 +1564,6 @@ namespace FlatRedBall
             }
         }
 
-#if !FRB_MDX && !XNA3
         public static void SuspendEngine(string textureToDraw, Rectangle sourceRect)
         {
             Unload("SuspendEngine");
@@ -1583,7 +1597,6 @@ namespace FlatRedBall
                 }
             }
         }
-#endif
 
         #endregion
 
@@ -1828,6 +1841,6 @@ namespace FlatRedBall
 
         #endregion
 
-        #endregion
+#endregion
     }
 }

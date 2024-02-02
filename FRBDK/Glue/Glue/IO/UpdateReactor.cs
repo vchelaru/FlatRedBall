@@ -95,30 +95,6 @@ namespace FlatRedBall.Glue.IO
 
                     handled |= GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
                     shouldSave = true;
-
-                    MainGlueWindow.Self.Invoke((MethodInvoker)delegate
-                    {
-                        if (rfs.GetContainerType() == ContainerType.Entity)
-                        {
-                            if (GlueState.Self.CurrentEntitySave != null)
-                            {
-                                if (GlueState.Self.CurrentEntitySave == rfs.GetContainer())
-                                {
-                                    PluginManager.RefreshCurrentElement();
-                                }
-                            }
-                        }
-                        else if (rfs.GetContainerType() == ContainerType.Screen)
-                        {
-                            if (GlueState.Self.CurrentScreenSave != null)
-                            {
-                                if (GlueState.Self.CurrentScreenSave == rfs.GetContainer())
-                                {
-                                    PluginManager.RefreshCurrentElement();
-                                }
-                            }
-                        }
-                    });
                 }
                 else
                 {

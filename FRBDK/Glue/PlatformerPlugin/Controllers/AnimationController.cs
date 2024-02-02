@@ -85,7 +85,10 @@ namespace PlatformerPluginCore.Controllers
             dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxXVelocityAbsolute), Localization.Texts.Velocity);
 
             dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinYVelocity), Localization.Texts.Velocity);
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxYVelocity),Localization.Texts.Velocity);
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxYVelocity), Localization.Texts.Velocity);
+
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinHorizontalInputAbsolute), "Input");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxHorizontalInputAbsolute), "Input");
 
             var velocityFirstGridLength = new GridLength(150);
             dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MinXVelocityAbsolute)).FirstGridLength = velocityFirstGridLength;

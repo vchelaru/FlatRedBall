@@ -23,7 +23,9 @@ namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
             this.rfsUsingContentPipeline = rfsUsingContentPipeline;
 
             this.Details = "The two files " + rfsUsingContentPipeline + " and " + rfsNotUsingContentPipeline +
-                " have the same file name but one is using the content pipeline and the other is not.  This can cause runtime errors.";
+                $" have the same file name.\n{rfsUsingContentPipeline} is using the content pipeline." +
+                $"\n{rfsNotUsingContentPipeline} is not." +
+                $"\nThis can cause runtime errors.";
         }
 
         public override void HandleDoubleClick()

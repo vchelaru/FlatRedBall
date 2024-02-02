@@ -34,7 +34,7 @@ namespace GumPluginCore.CodeGeneration
                 GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
             if (hasCommon)
             {
-                codeBlock.Line("global::GumRuntime.ElementSaveExtensions.CustomCreateGraphicalComponentFunc = Gum.Wireframe.RuntimeObjectCreator.TryHandleAsBaseType;");
+                codeBlock.Line("global::GumRuntime.ElementSaveExtensions.CustomCreateGraphicalComponentFunc = GetRenderable;");
 
                 codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.SetPropertyOnRenderable = global::Gum.Wireframe.CustomSetPropertyOnRenderable.SetPropertyOnRenderable;");
                 codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.UpdateFontFromProperties = global::Gum.Wireframe.CustomSetPropertyOnRenderable.UpdateToFontValues;");
@@ -88,9 +88,8 @@ namespace GumPluginCore.CodeGeneration
 
         public override void GenerateClassScope(ICodeBlock codeBlock)
         {
-            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
-                GlueState.Self.CurrentMainProject.IsFrbSourceLinked(); 
-            if (hasSkia && !hasCommon)
+            
+            if (hasSkia)
             {
                 var function = codeBlock.Function("RenderingLibrary.Graphics.IRenderable", "GetSkiaType", "string name");
                 var switchStatement = function.Switch("name");
@@ -99,6 +98,23 @@ namespace GumPluginCore.CodeGeneration
                 switchStatement.CaseNoBreak("\"RoundedRectangle\"").Line("return new SkiaGum.Renderables.RenderableRoundedRectangle();");
                 function.Line("return null;");
             }
+
+
+            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+            if (hasCommon)
+            {
+                var function = codeBlock.Function("RenderingLibrary.Graphics.IRenderable", "GetRenderable", "string name, global::RenderingLibrary.ISystemManagers managers");
+                function.Line("var asBaseType = Gum.Wireframe.RuntimeObjectCreator.TryHandleAsBaseType(name, managers);");
+                if(hasSkia)
+                {
+                    var ifBlock = function.If("asBaseType == null");
+                    ifBlock.Line("asBaseType = GetSkiaType(name);");
+                }
+                function.Line("return asBaseType;");
+            }
+
+
         }
     }
 }

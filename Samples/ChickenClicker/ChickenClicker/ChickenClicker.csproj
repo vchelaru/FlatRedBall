@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
@@ -308,46 +308,6 @@
     </Compile>
     <Compile Include="GlobalContent.Generated.cs" />
     <Compile Include="GlueCommunication\GameConnectionManager.Generated.cs" />
-    <Compile Include="GlueControl\CommandReceiver.Generated.cs" />
-    <Compile Include="GlueControl\Dtos.Generated.cs" />
-    <Compile Include="GlueControl\Editing\CameraLogic.Generated.cs" />
-    <Compile Include="GlueControl\Editing\CopyPasteManager.Generated.cs" />
-    <Compile Include="GlueControl\Editing\EditingManager.Generated.cs" />
-    <Compile Include="GlueControl\Editing\EditorVisuals.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Guides.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Managers\GenerateCodeCommands.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Managers\GlueCommands.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Managers\GlueCommandsStateBase.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Managers\GlueState.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Managers\GluxCommands.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Managers\ObjectFinder.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Managers\RefreshCommands.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Markers\MeasurementMarker.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Markers\PolygonPointHandles.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Markers\SelectionMarker.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Markers\TileShapeCollectionMarker.Generated.cs" />
-    <Compile Include="GlueControl\Editing\MoveObjectToContainerLogic.Generated.cs" />
-    <Compile Include="GlueControl\Editing\SelectionLogic.Generated.cs" />
-    <Compile Include="GlueControl\Editing\VariableAssignmentLogic.Generated.cs" />
-    <Compile Include="GlueControl\Editing\Visuals\Arrow.Generated.cs" />
-    <Compile Include="GlueControl\Forms\ObjectCreationWindow.Generated.cs" />
-    <Compile Include="GlueControl\GlueCallsClassGenerationManager.Generated.cs" />
-    <Compile Include="GlueControl\GlueControlManager.Generated.cs" />
-    <Compile Include="GlueControl\InstanceLogic.Generated.cs" />
-    <Compile Include="GlueControl\Models\CustomVariable.Generated.cs" />
-    <Compile Include="GlueControl\Models\GlueElement.Generated.cs" />
-    <Compile Include="GlueControl\Models\GlueElementFileReference.Generated.cs" />
-    <Compile Include="GlueControl\Models\GlueProjectSave.Generated.cs" />
-    <Compile Include="GlueControl\Models\GlueProjectSaveExtensions.Generated.cs" />
-    <Compile Include="GlueControl\Models\IElementExtensionMethods.Generated.cs" />
-    <Compile Include="GlueControl\Models\INamedObjectContainer.Generated.cs" />
-    <Compile Include="GlueControl\Models\NamedObjectSave.Generated.cs" />
-    <Compile Include="GlueControl\Models\NamedObjectSaveExtensionMethods.Generated.cs" />
-    <Compile Include="GlueControl\Models\ReferencedFileSave.Generated.cs" />
-    <Compile Include="GlueControl\Models\StateSave.Generated.cs" />
-    <Compile Include="GlueControl\Models\StateSaveCategory.Generated.cs" />
-    <Compile Include="GlueControl\Runtime\DynamicEntity.Generated.cs" />
-    <Compile Include="GlueControl\Screens\EntityViewingScreen.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IButtonBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\ICheckBoxBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IComboBoxBehavior.Generated.cs" />
@@ -627,6 +587,9 @@
     <None Update="Content\ShaderForcePoint.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GlueControl\" />
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />

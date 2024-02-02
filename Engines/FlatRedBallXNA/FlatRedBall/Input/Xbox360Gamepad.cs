@@ -15,8 +15,11 @@ namespace FlatRedBall.Input
         Radial = 0,
         //BoundingBox = 1, // Not currently supported
         Cross
-
     }
+
+    /// <summary>
+    /// The button layout of the face and shoulder buttons. Xbox and Nintendo controllers swap the X/Y and A/B buttons.
+    /// </summary>
     public enum ButtonLayout
     {
         Unknown,
@@ -40,6 +43,11 @@ namespace FlatRedBall.Input
         PlayStationDualShock,
     }
 
+    /// <summary>
+    /// A list of button positions on the face of a controller which can be used to generalize
+    /// a button regardless of the button letter. This addresses the inconsistent button names between
+    /// Nintendo and Xbox controllers.
+    /// </summary>
     public enum ButtonPosition
     {
         FaceDown,
@@ -840,6 +848,7 @@ namespace FlatRedBall.Input
             return returnValue;
 
         }
+        public bool ButtonDown(ButtonPosition buttonPosition) => ButtonDown(GetButtonFromPosition(buttonPosition));
 
         /// <summary>
         /// Returns whether the argument button type is pushed. For analog buttons, such as LeftTrigger 
@@ -1007,7 +1016,7 @@ namespace FlatRedBall.Input
 
             return returnValue;
         }
-
+        public bool ButtonPushed(ButtonPosition buttonPosition) => ButtonPushed(GetButtonFromPosition(buttonPosition));
 
         public bool ButtonReleased(Button button)
         {
@@ -1156,6 +1165,7 @@ namespace FlatRedBall.Input
             return returnValue;
 
         }
+        public bool ButtonReleased(ButtonPosition buttonPosition) => ButtonReleased(GetButtonFromPosition(buttonPosition));
 
         /// <summary>
         /// Returns whether the argument was pushed this frame, or whether it is continually being held down and a "repeat" press
@@ -1194,6 +1204,8 @@ namespace FlatRedBall.Input
             return false;
 
         }
+        public bool ButtonRepeatRate(ButtonPosition buttonPosition, double timeAfterPush = .35, double timeBetweenRepeating = .12) => 
+            ButtonRepeatRate(GetButtonFromPosition(buttonPosition), timeAfterPush, timeBetweenRepeating);
 
         /// <summary>
         /// Returns an Xbox360ButtonReference for the argument Button.
@@ -1212,11 +1224,15 @@ namespace FlatRedBall.Input
             return cachedButtons[button];
         }
 
-        public Xbox360ButtonReference GetButton(ButtonPosition buttonPosition)
+        public Xbox360ButtonReference GetButton(ButtonPosition buttonPosition) =>
+            GetButton(GetButtonFromPosition(buttonPosition));
+        
+
+        public Button GetButtonFromPosition(ButtonPosition buttonPosition)
         {
             Button button = Button.A;
 
-            if(this.ButtonLayout == ButtonLayout.NintendoPro)
+            if (this.ButtonLayout == ButtonLayout.NintendoPro)
             {
                 switch (buttonPosition)
                 {
@@ -1234,7 +1250,7 @@ namespace FlatRedBall.Input
                         break;
                 }
             }
-            else if(this.ButtonLayout == ButtonLayout.GameCube)
+            else if (this.ButtonLayout == ButtonLayout.GameCube)
             {
                 switch (buttonPosition)
                 {
@@ -1271,17 +1287,19 @@ namespace FlatRedBall.Input
                 }
             }
 
-            return GetButton(button);
+            return button;
         }
 
         #endregion
 
         /// <summary>
         /// Clears the input on this controller for this frame. This includes
-        /// analog stick values, button values, and trigger values.
+        /// analog stick values, button values, trigger values, and vibration motor values (resets to 0).
         /// </summary>
         public void Clear()
         {
+            this.SetVibration(0, 0);
+
             // do these before setting the states:
             for (int i = 0; i < NumberOfButtons; i++)
             {
@@ -1304,7 +1322,7 @@ namespace FlatRedBall.Input
             var isConnected = mGamePadState.IsConnected;
             var wasConnected = mGamePadState.IsConnected;
 
-#if MONOGAME
+#if MONOGAME || FNA
             // In MonoGame, calling the GamePadState constructor makes it connected.
             if(isConnected)
             {
@@ -1312,21 +1330,36 @@ namespace FlatRedBall.Input
             }
             else
             {
+#if FNA
+                mGamePadState = new GamePadState();
+#endif
+
+#if MONOGAME
                 mGamePadState = GamePadState.Default;
+#endif
             }
-            if(wasConnected)
+            if (wasConnected)
             {
                 mLastGamePadState = new GamePadState(new GamePadThumbSticks(), new GamePadTriggers(), new GamePadButtons(), new GamePadDPad());
             }
             else
             {
+#if FNA
+                mLastGamePadState = new GamePadState();
+#endif
+
+#if MONOGAME
                 mLastGamePadState = GamePadState.Default;
+#endif
             }
 #else
-            // XNA doesn't have .Default
-            mGamePadState = new GamePadState();
+                // XNA doesn't have .Default
+                mGamePadState = new GamePadState();
             mLastGamePadState = new GamePadState() ;
 #endif
+
+
+
 
 
             mLeftStick.Clear();
@@ -1458,8 +1491,10 @@ namespace FlatRedBall.Input
         public void IgnoreButtonForOneFrame(Button buttonToIgnore)
         {
             mButtonsIgnoredForThisFrame[(int)buttonToIgnore] = true;
-
         }
+
+        public void IgnoreButtonForOneFrame(ButtonPosition buttonPosition) => 
+            IgnoreButtonForOneFrame(GetButtonFromPosition(buttonPosition));
 
 
         /// <summary>
@@ -1752,7 +1787,7 @@ namespace FlatRedBall.Input
 
         private void UpdateInputManagerBack()
         {
-#if WINDOWS_PHONE || MONOGAME
+#if MONOGAME
             if (mGamePadState.IsButtonDown(Buttons.Back) && !mLastGamePadState.IsButtonDown(Buttons.Back))
             {
                 InputManager.BackPressed = true;

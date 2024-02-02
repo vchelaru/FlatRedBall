@@ -336,6 +336,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         GenerateVariableSummary(codeBlock, customVariable);
                     }
 
+
                     ICodeBlock set = codeBlock.Property(propertyHeader, Static:customVariable.IsShared)
                         .Set();
 
@@ -363,6 +364,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     // Static vars can't be virtual
                     bool isVirtual = !customVariable.IsShared;
+                    if (!string.IsNullOrWhiteSpace(customVariable.Summary))
+                    {
+                        GenerateVariableSummary(codeBlock, customVariable);
+                    }
                     codeBlock.AutoProperty(customVariable.Name, customVariable.Scope, Virtual: isVirtual, Static: customVariable.IsShared, Type: memberType);
                 }
             }

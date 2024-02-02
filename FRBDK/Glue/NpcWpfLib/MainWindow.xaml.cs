@@ -43,8 +43,10 @@ namespace Npc
             }
             ViewModel.SelectedProject = Npc.Data.EmptyTemplates.Projects.FirstOrDefault();
 
-            string folderName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\FlatRedBallProjects\";
-            ViewModel.ProjectLocation = folderName;
+
+
+            string defaultNewProjectLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\FlatRedBallProjects\";
+            ViewModel.ProjectDestinationLocation = defaultNewProjectLocation;
             ViewModel.IsCancelButtonVisible = true;
 
             ViewModel.PropertyChanged += HandlePropertyChanged;
@@ -124,6 +126,7 @@ namespace Npc
         public void ProcessCommandLineArguments(string arguments)
         {
             string[] args = null;
+            // todo- this needs to handle spaces in file paths...
             if(!string.IsNullOrEmpty(arguments))
             {
                 args = arguments.Split(' ');
@@ -132,7 +135,7 @@ namespace Npc
 
             if (!string.IsNullOrEmpty(CommandLineManager.Self.ProjectLocation))
             {
-                ViewModel.ProjectLocation = CommandLineManager.Self.ProjectLocation;
+                ViewModel.ProjectDestinationLocation = CommandLineManager.Self.ProjectLocation;
             }
 
             if (!string.IsNullOrEmpty(CommandLineManager.Self.DifferentNamespace))
@@ -148,6 +151,12 @@ namespace Npc
             }
             ViewModel.SourceCheckboxVisibility = 
                 CommandLineManager.Self.ShowSourceCheckbox ? Visibility.Visible : Visibility.Collapsed;
+
+            if (!string.IsNullOrEmpty(CommandLineManager.Self.DefaultDestinationDirectory) && 
+                System.IO.Directory.Exists(CommandLineManager.Self.DefaultDestinationDirectory))
+            {
+                ViewModel.ProjectDestinationLocation = CommandLineManager.Self.DefaultDestinationDirectory;
+            }
         }
 
         void SelectLocationClicked(object sender, RoutedEventArgs args)
@@ -157,7 +166,7 @@ namespace Npc
 
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                ViewModel.ProjectLocation = fbd.SelectedPath;
+                ViewModel.ProjectDestinationLocation = fbd.SelectedPath;
             }
         }
 

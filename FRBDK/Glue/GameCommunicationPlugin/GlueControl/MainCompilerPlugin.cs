@@ -93,7 +93,6 @@ namespace GameCommunicationPlugin.GlueControl
         Timer dragDropTimer;
 
         System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1, 1);
-        DateTime lastGetCall;
 
         #endregion
 
@@ -144,7 +143,7 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             
             this.ReactToNewFileHandler += _refreshManager.HandleNewFile;
-            this.ReactToFileChangeHandler += manager.HandleFileChanged;
+            this.ReactToFileChange += manager.HandleFileChanged;
             this.ReactToCodeFileChange += _refreshManager.HandleFileChanged;
             this.ReactToElementRenamed += ToolbarController.Self.HandleScreenRenamed;
 
@@ -494,7 +493,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             }
 
-            GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
+            AddNewtonsoft();
 
             gameHostView.HandleGluxLoaded();
         }
@@ -762,14 +761,14 @@ namespace GameCommunicationPlugin.GlueControl
 
             if (response?.Succeeded != true)
             {
-                var message = string.Format(Localization.Texts.FailedToSetGameEditModeToX, CompilerViewModel.PlayOrEdit);
+                var message = string.Format($"Failed to set game/edit mode to {CompilerViewModel.PlayOrEdit}\n");
                 if (response == null)
                 {
-                    message += Localization.Texts.GameSendNoResponseBack;
+                    message += "Game sent back no response";
                 }
                 else
                 {
-                    message += response.Message;
+                    message += $"Game sent back the following message: {response.Message}";
                 }
                 ReactToPluginEvent("Compiler_Output_Standard", message);
                 GlueCommands.Self.PrintOutput(message);
@@ -848,34 +847,6 @@ namespace GameCommunicationPlugin.GlueControl
             await CommandSender.Self.Send(setCameraAspectRatioDto);
         }
 
-        private SetCameraSetupDto ToDto(DisplaySettings displaySettings)
-        {
-            var toReturn = new SetCameraSetupDto();
-            toReturn.AllowWindowResizing = displaySettings.AllowWindowResizing;
-
-            if(displaySettings.FixedAspectRatio)
-            {
-                toReturn.AspectRatio = displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight;
-            }
-
-            toReturn.DominantInternalCoordinates = displaySettings.DominantInternalCoordinates;
-            toReturn.Is2D = displaySettings.Is2D;
-            toReturn.IsFullScreen = displaySettings.RunInFullScreen;
-            toReturn.IsGenerateCameraDisplayCodeEnabled = displaySettings.GenerateDisplayCode;
-            toReturn.ResizeBehavior = displaySettings.ResizeBehavior;
-            toReturn.ResizeBehaviorGum = displaySettings.ResizeBehaviorGum;
-            toReturn.ResolutionHeight = displaySettings.ResolutionHeight;
-            toReturn.ResolutionWidth = displaySettings.ResolutionWidth;
-            toReturn.Scale = displaySettings.Scale;
-            toReturn.ScaleGum = displaySettings.ScaleGum;
-            toReturn.TextureFilter = (Microsoft.Xna.Framework.Graphics.TextureFilter)displaySettings.TextureFilter;
-
-            return toReturn;
-
-
-
-        }
-
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
         {
             ReactToPluginEvent("Compiler_Output_Standard", "Applying changes");
@@ -904,7 +875,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
             {
-                GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
+                AddNewtonsoft();
             }
 
             _refreshManager.CreateStopAndRestartTask($"{propertyName} changed");
@@ -912,6 +883,11 @@ namespace GameCommunicationPlugin.GlueControl
             ReactToPluginEvent("Compiler_Output_Standard", "Waiting for tasks to finish...");
             await TaskManager.Self.WaitForAllTasksFinished();
             ReactToPluginEvent("Compiler_Output_Standard", "Finishined adding/generating code for GlueControlManager");
+        }
+
+        private static void AddNewtonsoft()
+        {
+            GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "13.0.3");
         }
 
         private void SaveCompilerSettingsModel()
@@ -1176,7 +1152,8 @@ namespace GameCommunicationPlugin.GlueControl
                 
                 case "GameCommunicationPlugin_PacketReceived_OldDTO":
                     var commands = new List<string> { payload };
-                    _commandReceiver.HandleCommandsFromGame(commands, GlueViewSettingsViewModel.PortNumber);
+                    // do we want to await this?
+                    _=_commandReceiver.HandleCommandsFromGame(commands, GlueViewSettingsViewModel.PortNumber);
                     break;
             }
         }

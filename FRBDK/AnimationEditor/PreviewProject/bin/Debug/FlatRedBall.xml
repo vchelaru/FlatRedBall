@@ -6190,6 +6190,11 @@
             Whether to smoothly approach the target location. If false, the camera follows the entity without any smoothing.
             </summary>
         </member>
+        <member name="P:FlatRedBall.Entities.CameraControllingEntity.LerpSmoothZoom">
+            <summary>
+            Whether to smoothly approach the desired zoom. If false, the camera immediately adjusts zoom without any smoothing.
+            </summary>
+        </member>
         <member name="P:FlatRedBall.Entities.CameraControllingEntity.LerpCoefficient">
             <summary>
             The amount of smoothing. The larger the number, the longer the camera takes to smooth. This value is ignored if LerpSmooth is false.

@@ -56,10 +56,11 @@ namespace FlatRedBall.Debugging
 
         static List<string> mCommandLineOutput = new List<string>();
 
-#if DEBUG
+        // Why is this expensive to have in debug? If the user doesn't ask for memory, this doesn't get used.
+//#if DEBUG
         static RollingAverage mAllocationAverage = new RollingAverage(4);
         static long mLastMemoryUse = -1;
-#endif
+//#endif
 
         public static StringBuilder LogStringBuilder = new StringBuilder();
 
@@ -212,7 +213,6 @@ namespace FlatRedBall.Debugging
                 currentUsage = GC.GetTotalMemory(false);
                 memoryInformation = "Total Memory: " + currentUsage.ToString("N0");
 
-#if DEBUG
             if (mLastMemoryUse >= 0)
             {
                 long difference = currentUsage - mLastMemoryUse;
@@ -224,12 +224,9 @@ namespace FlatRedBall.Debugging
             }
             memoryInformation += "\nAverage Growth per second: " +
                 mAllocationAverage.Average.ToString("N0");
-#endif
 
             LastCalculationTime = TimeManager.CurrentTime;
-#if DEBUG
             mLastMemoryUse = currentUsage;
-#endif
 
 
             return memoryInformation;
@@ -251,7 +248,16 @@ namespace FlatRedBall.Debugging
             // SpriteManager
             stringBuilder.AppendLine(SpriteManager.ManagedPositionedObjects.Count + " PositionedObjects");
 
-            var entityCount = SpriteManager.ManagedPositionedObjects.Where(item => item.GetType().FullName.Contains(".Entities")).Count();
+            var entityCount = 0;
+            
+            for(int i = 0; i < SpriteManager.ManagedPositionedObjects.Count; i++)
+            {
+                var item = SpriteManager.ManagedPositionedObjects[i];
+                if(item.GetType().FullName.Contains(".Entities"))
+                {
+                    entityCount++;
+                }
+            }
             stringBuilder.AppendLine($"{indentString} {entityCount} Entities");
 
             total += SpriteManager.ManagedPositionedObjects.Count;
@@ -259,7 +265,15 @@ namespace FlatRedBall.Debugging
             var totalSpriteCount = SpriteManager.AutomaticallyUpdatedSprites.Count;
             stringBuilder.AppendLine(totalSpriteCount + " Sprites");
 
-            var spriteNonParticleEntityCount = SpriteManager.AutomaticallyUpdatedSprites.Where(item => item.GetType().FullName.Contains(".Entities")).Count();
+            var spriteNonParticleEntityCount = 0;
+            for(int i = 0; i < SpriteManager.AutomaticallyUpdatedSprites.Count; i++)
+            {
+                var item = SpriteManager.AutomaticallyUpdatedSprites[i];
+                if(item.GetType().FullName.Contains(".Entities"))
+                {
+                    spriteNonParticleEntityCount++;
+                }
+            }
             stringBuilder.AppendLine(indentString + spriteNonParticleEntityCount + " Entity Sprites");
             stringBuilder.AppendLine(indentString + SpriteManager.ParticleCount + " Particles");
             var normalSpriteCount = SpriteManager.AutomaticallyUpdatedSprites.Count - spriteNonParticleEntityCount - SpriteManager.ParticleCount;

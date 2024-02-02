@@ -65,10 +65,18 @@ namespace FlatRedBall.Glue.Managers
             }
             else if(copiedObjectClone is NamedObjectSave asNos)
             {
-                var response = await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(asNos, GlueState.Self.CurrentElement);
+                var response = await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(asNos, GlueState.Self.CurrentElement, 
+                    // pass the current nos so that we can attempt to add it to the current list
+                    // This could be the list itself, or a child of the list - either is fine
+                    GlueState.Self.CurrentNamedObjectSave);
                 if(response.Succeeded == false)
                 {
                     GlueCommands.Self.PrintError(response.Message);
+                }
+                else
+                {
+                    // the pasted object could be stuffed in a list. Select it so we know that it was created.
+                    GlueState.Self.CurrentNamedObjectSave = response.Data;
                 }
             }
             else if(copiedObjectClone is StateSave asStateSave)

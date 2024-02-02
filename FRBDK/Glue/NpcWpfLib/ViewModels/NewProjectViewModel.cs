@@ -37,7 +37,7 @@ namespace Npc.ViewModels
             set => Set(value);
         }
 
-        public string ProjectLocation
+        public string ProjectDestinationLocation
         {
             get => Get<string>();
             set => Set(value);
@@ -87,19 +87,19 @@ namespace Npc.ViewModels
             get => IsDifferentNamespaceChecked ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        [DependsOn(nameof(ProjectLocation))]
+        [DependsOn(nameof(ProjectDestinationLocation))]
         [DependsOn(nameof(ProjectName))]
         public string CombinedProjectDirectory
         {
             get
             {
-                if (!ProjectLocation.EndsWith("\\") && !ProjectLocation.EndsWith("/"))
+                if (!ProjectDestinationLocation.EndsWith("\\") && !ProjectDestinationLocation.EndsWith("/"))
                 {
-                    return ProjectLocation + "\\" + ProjectName;
+                    return ProjectDestinationLocation + "\\" + ProjectName;
                 }
                 else
                 {
-                    return ProjectLocation + ProjectName;
+                    return ProjectDestinationLocation + ProjectName;
 
                 }
             }
@@ -107,7 +107,7 @@ namespace Npc.ViewModels
 
         [DependsOn(nameof(IsCreateProjectDirectoryChecked))]
         [DependsOn(nameof(CombinedProjectDirectory))]
-        [DependsOn(nameof(ProjectLocation))]
+        [DependsOn(nameof(ProjectDestinationLocation))]
         public string FinalDirectory
         {
             get
@@ -118,7 +118,7 @@ namespace Npc.ViewModels
                 }
                 else
                 {
-                    return ProjectLocation;
+                    return ProjectDestinationLocation;
                 }
             }
         }

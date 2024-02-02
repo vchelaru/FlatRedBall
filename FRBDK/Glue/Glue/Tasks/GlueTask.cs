@@ -35,7 +35,17 @@ namespace FlatRedBall.Glue.Tasks
 
         public bool DoOnUiThread { get; set; }
 
-        public override string ToString() => DisplayInfo;
+        public override string ToString()
+        {
+            if (!IsCancelled)
+            {
+                return DisplayInfo;
+            }
+            else
+            {
+                return $"Cancelled {DisplayInfo}";
+            }
+        }
 
         public object Result { get; set; }
 

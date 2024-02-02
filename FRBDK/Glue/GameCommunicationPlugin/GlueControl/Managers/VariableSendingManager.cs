@@ -284,10 +284,6 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 currentValue = nos.RemoveFromManagersWhenInvisible;
             }
-            else if(changedMember == nameof(NamedObjectSave.IncludeInIVisible))
-            {
-                currentValue = nos.IncludeInIVisible;
-            }
             else if (changedMember == nameof(NamedObjectSave.IncludeInICollidable))
             {
                 currentValue = nos.IncludeInICollidable;
@@ -656,8 +652,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             return clone;
         }
 
-        private string ToGameType(GlueElement element) =>
-            GlueState.Self.ProjectNamespace + "." + element.Name.Replace("\\", ".");
+        private string ToGameType(GlueElement element)
+        {
+
+            var projectNamespace = GlueState.Self.ProjectNamespace;
+            
+            return projectNamespace + "." + element.Name.Replace("\\", ".");
+
+        }
 
         private async Task<GlueVariableSetDataResponse> TryPushVariable(GlueVariableSetData data)
         {
@@ -679,6 +681,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         private GlueVariableSetData GetGlueVariableSetDataDto(string variableOwningNosName, string rawMemberName, string type, string value, GlueElement currentElement, AssignOrRecordOnly assignOrRecordOnly, bool isState)
         {
+            if(currentElement == null)
+            {
+                throw new ArgumentNullException(nameof(currentElement));
+            }
             var data = new GlueVariableSetData();
             data.InstanceOwnerGameType = ToGameType(currentElement);
             data.Type = type;

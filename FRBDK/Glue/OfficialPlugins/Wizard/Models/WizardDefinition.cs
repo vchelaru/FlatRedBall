@@ -284,8 +284,8 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddText("A Camera Controller Entity instance cannot be added because there is no game screen.", nameof(ViewModel.NoGameScreen));
 
                 formsData.AddBoolValue("Add Camera Controller", nameof(ViewModel.AddCameraController), nameof(ViewModel.AddGameScreen));
-                formsData.AddBoolValue("Follow Players with Camera", nameof(ViewModel.FollowPlayersWithCamera), nameof(ViewModel.AddGameScreen));
-                formsData.AddBoolValue("Keep Camera in Map bounds", nameof(ViewModel.KeepCameraInMap), nameof(ViewModel.AddGameScreen));
+                formsData.AddBoolValue("Follow Players with Camera", nameof(ViewModel.FollowPlayersWithCamera), nameof(ViewModel.FollowPlayersWithCameraVisibility));
+                formsData.AddBoolValue("Keep Camera in Map bounds", nameof(ViewModel.KeepCameraInMap), nameof(ViewModel.KeepCameraInMapVisibility));
 
                 FormsDataList.Add(formsData);
             }

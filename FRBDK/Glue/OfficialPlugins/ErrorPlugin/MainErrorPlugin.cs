@@ -66,7 +66,7 @@ namespace OfficialPlugins.ErrorPlugin
             RefreshCommands.RefreshErrorsAction = () => RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
         }
 
-        public void RefreshErrors() => RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
+        public void RefreshAllErrors() => RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
 
         private void HandleRefreshClicked(object sender, EventArgs e)
         {

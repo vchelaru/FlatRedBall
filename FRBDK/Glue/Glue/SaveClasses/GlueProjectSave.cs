@@ -68,6 +68,13 @@ namespace FlatRedBall.Glue.SaveClasses
             // file version for supporting named subcollisions.
             ScreensHaveActivityEditMode = 8,
             SupportsNamedSubcollisions = 8,
+
+            // This was added 5/5/2021, 
+            TimeManagerHasDelaySeconds = 8,
+
+            // Added 8/24/2021
+            GumTextHasIsBold = 8,
+
             GlueSavedToJson = 9,
             IEntityInFrb = 10,
             SeparateJsonFilesForElements = 11,
@@ -100,6 +107,10 @@ namespace FlatRedBall.Glue.SaveClasses
             GeneratedCameraSetupFile = 26,
             ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX = 27,
             AutoNameCollisionListsAsSingle = 28,
+
+            // Added retroactively to address problem with project template:
+            GumHasIgnoredByParentSize = 29,
+
             GumTextObjectsUpdateTextWith0ChildDepth = 29,
             HasFrameworkElementManager = 30,
             HasGumSkiaElements = 31,
@@ -122,14 +133,18 @@ namespace FlatRedBall.Glue.SaveClasses
             SpriteManagerHasInsertLayer = 48,
             GumUsesSystemTypes = 49,
             // Technically this isn't referencing GumCommon project, but it's referencing code from GumCommon
-            GumCommonCodeReferencing = 50
+            GumCommonCodeReferencing = 50,
+            GumTextSupportsBbCode = 51,
+            DamageDealingToggles = 52
+
+            // Stop! If adding an entry here, modify SyntaxVersionAttribute.Version
         }
 
         #endregion
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GumCommonCodeReferencing;
+        public const int LatestVersion = (int)GluxVersions.DamageDealingToggles;
 
         public int FileVersion { get; set; }
 

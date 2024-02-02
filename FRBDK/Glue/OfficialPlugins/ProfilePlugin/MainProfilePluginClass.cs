@@ -35,7 +35,7 @@ namespace OfficialPluginsCore.ProfilePlugin
         {
             CodeItemAdder.Self.UpdateCodePresenceInProject();
 
-            GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
+            GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "13.0.3");
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
         }

@@ -25,7 +25,11 @@ namespace GumPluginCore.CodeGeneration
                 GenerateSetTextureCoordinatesFrom(classBodyBlock);
                 GenerateSourceFileNameProperty(classBodyBlock);
                 GenerateCurrentChainNameProperty(classBodyBlock);
-                GeneratePlayAnimationsAsync(classBodyBlock);
+
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.TimeManagerHasDelaySeconds)
+                {
+                    GeneratePlayAnimationsAsync(classBodyBlock);
+                }
             }
         }
 
@@ -37,14 +41,29 @@ namespace GumPluginCore.CodeGeneration
             {
                 var sourceFileNameProperty = classBodyBlock.Property("public string", "CurrentChainName");
                 sourceFileNameProperty.Line("get => ContainedSprite.CurrentChainName;");
-                sourceFileNameProperty.Line("set => ContainedSprite.CurrentChainName = value;");
+
+                var setter = sourceFileNameProperty.Set();
+                setter.Line("ContainedSprite.CurrentChainName = value;");
+
+                setter.If("ContainedSprite.UpdateToCurrentAnimationFrame()")
+                    .Line("UpdateTextureValuesFrom(ContainedSprite);");
             }
         }
 
         private static void GenerateSourceFileNameProperty(ICodeBlock classBodyBlock)
         {
             var sourceFileNameProperty = classBodyBlock.Property("public string", "SourceFileName");
-            sourceFileNameProperty.Line("set => base.SetProperty(\"SourceFile\", value);");
+            var setter = sourceFileNameProperty.Set();
+            setter.Line("base.SetProperty(\"SourceFile\", value);");
+
+            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+            if(hasCommon)
+            {
+                setter.If("ContainedSprite.UpdateToCurrentAnimationFrame()")
+                    .Line("UpdateTextureValuesFrom(ContainedSprite);");
+            }
+
         }
 
         private static void GeneratePlayAnimationsAsync(ICodeBlock classBodyBlock)

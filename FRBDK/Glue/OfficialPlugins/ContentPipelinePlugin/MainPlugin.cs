@@ -146,10 +146,10 @@ namespace OfficialPlugins.MonoGameContent
                 var forcePngsToPipeline = controller.Settings.UseContentPipelineOnAllPngs;
                 if (BuildLogic.IsBuiltByContentPipeline(rfs, forcePngsToPipeline))
                 {
-                    menuToModify.Add("Rebuild Content Pipeline File (xnb)", (not, used) =>
+                    menuToModify.Add("Rebuild Content Pipeline File (xnb)", async (not, used) =>
                     {
                         var fullFileName = GlueCommands.Self.GetAbsoluteFileName(rfs);
-                        BuildLogic.Self.TryAddXnbReferencesAndBuild(fullFileName, GlueState.CurrentMainProject, false, rebuild:true);
+                        await BuildLogic.Self.TryAddXnbReferencesAndBuild(fullFileName, GlueState.CurrentMainProject, false, rebuild:true);
                     });
                 }
 
@@ -261,12 +261,12 @@ namespace OfficialPlugins.MonoGameContent
             controller.LoadOrCreateSettings();
             viewModel.UseContentPipelineOnPngs = controller.Settings.UseContentPipelineOnAllPngs;
             aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
-            BuildLogic.Self.RefreshBuiltFilesFor(GlueState.CurrentMainProject, viewModel.UseContentPipelineOnPngs, controller);
+            _ = BuildLogic.Self.RefreshBuiltFilesFor(GlueState.CurrentMainProject, viewModel.UseContentPipelineOnPngs, controller);
         }
 
         private void HandleLoadedSyncedProject(ProjectBase project)
         {
-            BuildLogic.Self.RefreshBuiltFilesFor((VisualStudioProject)project, viewModel.UseContentPipelineOnPngs, controller);
+            _ = BuildLogic.Self.RefreshBuiltFilesFor((VisualStudioProject)project, viewModel.UseContentPipelineOnPngs, controller);
         }
 
         private void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)

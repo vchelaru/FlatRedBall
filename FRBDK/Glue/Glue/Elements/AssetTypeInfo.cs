@@ -232,6 +232,12 @@ namespace FlatRedBall.Glue.Elements
 		Type mSaveType;
 
         public bool MustBeAddedToContentPipeline;
+        // This was added December 13, 2023. Prior to this date, 
+        // all objects assumed they could be added to content pipeline.
+        // Therefore, we will set this to true for now to assume that it can
+        // be, and we can set this to false over time to exclude items that cannot
+        // be in content pipeline.
+        public bool CanBeAddedToContentPipeline = true;
         public bool ShouldBeDisposed;
 
         public bool CanBeCloned;

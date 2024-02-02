@@ -14,7 +14,12 @@
         </Grid.RowDefinitions>
 
         <WrapPanel Orientation="Horizontal" Visibility="{Binding EntireUiVisibility}">
-
+            <Button Click="Button_Click" Height="19" Width="19" Margin="3,0,0,0">
+                <Button.ToolTip>
+                    <TextBlock>Clear Output</TextBlock>
+                </Button.ToolTip>
+                <Image IsHitTestVisible="False" Width="25" Source="/CompilerPlugin;component/Icons/DeleteOutput.png" ></Image>
+            </Button>
             <views:WhileStoppedView
                 Visibility="{Binding WhileStoppedViewVisibility}"
                 BuildClicked="HandleCompileClick"

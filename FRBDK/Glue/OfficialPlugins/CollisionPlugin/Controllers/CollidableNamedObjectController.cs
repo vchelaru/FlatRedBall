@@ -60,6 +60,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             // Set this before updating from Glue object so that we don't persist values which 
             // don't apply
             viewModel.CanBePartitioned = CollisionCodeGenerator.CanBePartitioned(thisNamedObject);
+            viewModel.DefinedByBase = thisNamedObject.DefinedByBase;
             viewModel.UpdateFromGlueObject();
             if(viewModel.CanBePartitioned)
             {
@@ -160,7 +161,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             var name2 = collidable?.InstanceName;
 
             var pairViewModel = new NamedObjectPairRelationshipViewModel();
-            pairViewModel.AddObjectClicked += (not, used) => HandleAddCollisionRelationshipAddClicked(pairViewModel);
+            pairViewModel.AddObjectClicked += (_, _) => _=HandleAddCollisionRelationshipAddClicked(pairViewModel);
             pairViewModel.OtherObjectName = name2;
             pairViewModel.SelectedNamedObjectName = thisNamedObject.InstanceName;
 

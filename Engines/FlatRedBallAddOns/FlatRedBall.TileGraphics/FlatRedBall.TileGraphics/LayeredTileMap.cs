@@ -845,8 +845,12 @@ namespace FlatRedBall.TileGraphics
                 out bool flipVertically,
                 out bool flipDiagonally);
 
+            // If we flip, it needs to be made clockwise, but if we flip 2x, it automatically reverts
+            // back to being clockwise
+            var shouldMakeClockwise = false;
             if (flipDiagonally)
             {
+                shouldMakeClockwise = !shouldMakeClockwise;
                 for (int i = 0; i < cloned.Points.Count; i++)
                 {
                     Point point = cloned.Points[i];
@@ -860,11 +864,17 @@ namespace FlatRedBall.TileGraphics
             }
             if (flipHorizontally)
             {
+                shouldMakeClockwise = !shouldMakeClockwise;
                 cloned.FlipRelativePointsHorizontally();
             }
             if (flipVertically)
             {
+                shouldMakeClockwise = !shouldMakeClockwise;
                 cloned.FlipRelativePointsVertically();
+            }
+            if (shouldMakeClockwise)
+            {
+                cloned.InvertPointOrder();
             }
         }
 
@@ -1029,9 +1039,10 @@ namespace FlatRedBall.TileGraphics
             {
                 SpriteManager.AddPositionedObject(this);
             }
-            foreach (var item in this.mMapLists)
+            
+            for(int i = 0; i < mMapLists.Count; i++)
             {
-                item.AddToManagers(layer);
+                mMapLists[i].AddToManagers(layer);
             }
         }
 
@@ -1156,8 +1167,9 @@ namespace FlatRedBall.TileGraphics
             // Force execution now for performance reasons
             var filteredInfos = Properties.Values.Where(predicate).ToList();
 
-            foreach (var layer in map.MapLayers)
+            for(int i = 0; i < map.MapLayers.Count; i++)
             {
+                var layer = map.MapLayers[i];
                 RemoveTilesFromLayer(filteredInfos, layer);
             }
         }

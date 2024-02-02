@@ -7,6 +7,7 @@ using FlatRedBall.Glue.Elements;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.FormHelpers;
+using WpfDataUi.DataTypes;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -195,7 +196,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="value">The value of the variable.</param>
         [Obsolete("Use SetVariableOnAsync")]
         void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true, bool recordUndo = true);
+            bool updateUi = true, bool recordUndo = true, SetPropertyCommitType commitType = SetPropertyCommitType.Full);
 
         Task SetVariableOnAsync(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true, bool recordUndo = true);
@@ -213,7 +214,28 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         Task<List<ToolsUtilities.GeneralResponse<NamedObjectSave>>> CopyNamedObjectListIntoElement(List<NamedObjectSave> nosList, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
+        /// <summary>
+        /// Creates a copy of the argument NamedObjectSave nos in the target element. If the target element has a list of appropriate type (such as a PlayerList for a Player instance), then
+        /// the newly-created NamedObjectSave is added to the list.
+        /// </summary>
+        /// <param name="nos">The original NamedObjectSave.</param>
+        /// <param name="targetElement">The target GlueElement which should contain the newly-created copy.</param>
+        /// <param name="performSaveAndGenerateCode">Whether to save projects and generated code.</param>
+        /// <param name="updateUi">Whether to update UI.</param>
+        /// <returns></returns>
         Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
+
+        /// <summary>
+        /// Creates a copy of the argument NamedObjectSave nos in the target element. If a targetNos is passed, then that is used as the list. If no target NOS is passed, then the target element
+        /// is searched for an appropriate list matching the original nos type.
+        /// </summary>
+        /// <param name="nos">The original NamedObjectSave.</param>
+        /// <param name="targetElement">The target element</param>
+        /// <param name="targetNos">The target NamedObjectSave, which could be a List or it could be an item inside of a list.</param>
+        /// <param name="performSaveAndGenerateCode">Whether to save projectxs and geneate code.</param>
+        /// <param name="updateUi">hehter to update the UI.</param>
+        /// <returns></returns>
+        Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, NamedObjectSave targetNos, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
         void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true, bool updateUi = true,
             List<string> additionalFilesToRemove = null, bool notifyPluginsOfRemoval = true);

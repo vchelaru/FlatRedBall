@@ -109,12 +109,10 @@ namespace FlatRedBall.Graphics
             // For now do nothing, but we may want to perform some checks here against whether we're using REACH or HIDEF
         }
 
-        #region XML Docs
         /// <summary>
         /// Sets the width of the backbuffer and resets the device
         /// Use SetResolution() to set both width and height simultaneously
         /// </summary>
-        #endregion
         public int ResolutionWidth
         {
             get { return mResolutionWidth; }
@@ -125,12 +123,10 @@ namespace FlatRedBall.Graphics
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Sets the height of the backbuffer and resets the device
         /// Use SetResolution() to set both width and height simultaneously
         /// </summary>
-        #endregion
         public int ResolutionHeight
         {
             get { return mResolutionHeight; }
@@ -141,11 +137,9 @@ namespace FlatRedBall.Graphics
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets or sets the background color of all cameras
         /// </summary>
-        #endregion
         [XmlIgnoreAttribute()]
         public Color BackgroundColor
         {
@@ -263,11 +257,9 @@ namespace FlatRedBall.Graphics
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Enables or disables multisampling
         /// </summary>
-        #endregion
         public bool UseMultiSampling
         {
             get { return mUseMultiSampling; }
@@ -369,7 +361,7 @@ namespace FlatRedBall.Graphics
 
         void HandleClientSizeOrOrientationChange(object sender, EventArgs e)
         {
-#if !WINDOWS
+#if !WINDOWS && !FNA
             SizeOrOrientationChanged?.Invoke(this, null);
 #endif
         }
@@ -498,7 +490,7 @@ namespace FlatRedBall.Graphics
 
             // Not sure why but the GameWindow's resolution change doesn't fire
             // That's okay, we now have a custom event for it.  Glue will generate against this:
-#if !WINDOWS
+#if !WINDOWS && !FNA
 
             SizeOrOrientationChanged?.Invoke(this, null);
 #endif
@@ -526,7 +518,7 @@ namespace FlatRedBall.Graphics
             mResolutionWidth = width;
             mResolutionHeight = height;
             ResetDevice();
-#if !WINDOWS
+#if !WINDOWS && !FNA
 
             SizeOrOrientationChanged?.Invoke(this, null);
 #endif
@@ -757,7 +749,7 @@ namespace FlatRedBall.Graphics
             presentationParameters.IsFullScreen = windowedFullscreenMode == WindowedFullscreenMode.Fullscreen ;
         }
 
-            #endregion
+        #endregion
 
             #region File Operations
 
@@ -803,4 +795,4 @@ namespace FlatRedBall.Graphics
         #endregion
     }
 
-    }
+}

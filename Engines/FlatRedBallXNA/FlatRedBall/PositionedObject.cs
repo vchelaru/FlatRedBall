@@ -1266,6 +1266,11 @@ namespace FlatRedBall
         #region Public Methods
 
         // Not sure why AttachTo is virtual, it just makes things slower
+        /// <summary>
+        /// Attaches this to the argument PositionedObject (sets this.Parent). This method
+        /// does not change relative values, so "this" may "snap" to the new parent's position.
+        /// </summary>
+        /// <param name="newParent">The new parent.</param>
         public void AttachTo(PositionedObject newParent)
         {
             this.AttachTo(newParent, changeRelative: false);

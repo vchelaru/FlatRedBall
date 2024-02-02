@@ -1026,13 +1026,13 @@ namespace FlatRedBall.Math.Geometry
 
         internal void ResetLastUpdateTimes()
         {
-            foreach (var shape in mAxisAlignedRectangles) { shape.LastDependencyUpdate = -1; }
-            foreach (var shape in mCircles) { shape.LastDependencyUpdate = -1; }
-            foreach (var shape in mPolygons) { shape.LastDependencyUpdate = -1; }
-            foreach (var shape in mLines) { shape.LastDependencyUpdate = -1; }
-            foreach (var shape in mSpheres) { shape.LastDependencyUpdate = -1; }
-            foreach (var shape in mAxisAlignedCubes) { shape.LastDependencyUpdate = -1; }
-            foreach (var shape in mCapsule2Ds) { shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mAxisAlignedRectangles.Count; i++) { AxisAlignedRectangle shape = mAxisAlignedRectangles[i]; shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mCircles.Count; i++) { Circle shape = mCircles[i]; shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mPolygons.Count; i++) { Polygon shape = mPolygons[i]; shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mLines.Count; i++) { Line shape = mLines[i]; shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mSpheres.Count; i++) { Sphere shape = mSpheres[i]; shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mAxisAlignedCubes.Count; i++) { AxisAlignedCube shape = mAxisAlignedCubes[i]; shape.LastDependencyUpdate = -1; }
+            for (int i = 0; i < mCapsule2Ds.Count; i++) { Capsule2D shape = mCapsule2Ds[i]; shape.LastDependencyUpdate = -1; }
         }
 
         #endregion
@@ -2197,6 +2197,24 @@ namespace FlatRedBall.Math.Geometry
         public bool IsMouseOver(Gui.Cursor cursor, Layer layer)
         {
             return cursor.IsOn3D(this, layer);
+        }
+
+        public void KeepThisInsideOf(AxisAlignedRectangle rectangle)
+        {
+            for(int i = 0; i < mCircles.Count; i++)
+            {
+                mCircles[i].KeepThisInsideOf(rectangle);
+            }
+
+            for(int i = 0; i < mAxisAlignedRectangles.Count; i++)
+            {
+                mAxisAlignedRectangles[i].KeepThisInsideOf(rectangle);
+            }
+
+            for(int i = 0; i < mPolygons.Count; i++)
+            {
+                mPolygons[i].KeepThisInsideOf(rectangle);
+            }
         }
     }
 }

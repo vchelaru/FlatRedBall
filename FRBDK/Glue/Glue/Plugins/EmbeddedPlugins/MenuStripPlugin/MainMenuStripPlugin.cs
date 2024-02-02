@@ -104,7 +104,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             {
                 Plugins.Add(Localization.Texts.PluginInstall, () => new InstallPluginWindow().Show(MainGlueWindow.Self));
                 Plugins.Add(Localization.Texts.PluginUninstall, () => new UninstallPluginWindow().Show(MainGlueWindow.Self));
-                Plugins.Add(Localization.Texts.PluginCreate, () => new CreatePluginWindow().Show());
+                Plugins.Add(Localization.Texts.PluginCreate, () => new CreatePluginWindow().ShowDialog());
                 Plugins.DropDownItems.Add(new ToolStripSeparator());
             }
 
@@ -113,7 +113,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             var Help = AddTopLevelMenuItem(Localization.Texts.Help, Localization.MenuIds.HelpId);
             {
-                Help.Add(Localization.Texts.Tutorials, () => OpenInBrowser("http://flatredball.com/documentation/tutorials/"));
+                Help.Add(Localization.Texts.Tutorials, () => OpenInBrowser("https://docs.flatredball.com/flatredball/tutorials"));
                 Help.Add(Localization.Texts.ReportABug, () => OpenInBrowser("https://github.com/vchelaru/flatredball/issues"));
             }
         }

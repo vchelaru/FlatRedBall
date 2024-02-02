@@ -13,13 +13,36 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
 {
     public class Game1GlueControlGenerator : Game1CodeGenerator
     {
+        public bool GenerateConnectionOnlyInDebug { get; set; } = true;
+        private void AddIfDebug(ICodeBlock codeBlock)
+        {
+            if (GenerateConnectionOnlyInDebug)
+            {
+                codeBlock.Line("#if DEBUG");
+            }
+        }
+
+
+        private void EndIfDebug(ICodeBlock codeBlock)
+        {
+            if (GenerateConnectionOnlyInDebug)
+            {
+                codeBlock.Line("#endif");
+            }
+        }
+
         public bool IsGlueControlManagerGenerationEnabled { get; set; }
         public int PortNumber { get; set; }
         public override void GenerateClassScope(ICodeBlock codeBlock)
         {
             if(IsGlueControlManagerGenerationEnabled)
             {
+                AddIfDebug(codeBlock);
+
                 codeBlock.Line("GlueControl.GlueControlManager glueControlManager;");
+
+                EndIfDebug(codeBlock);
+
             }
         }
 
@@ -122,6 +145,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
         {
             if (IsGlueControlManagerGenerationEnabled)
             {
+                AddIfDebug(codeBlock);
                 codeBlock.Line($"glueControlManager = new GlueControl.GlueControlManager({PortNumber})");
                 codeBlock.Line("{");
                 codeBlock.Line("    GameConnectionManager = gameConnectionManager,");
@@ -134,7 +158,6 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 sizeChangedInnerBlockIf.Line("GlueControl.Editing.CameraLogic.UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);");
                 sizeChangedInnerBlock.Line("GlueControl.Editing.CameraLogic.PushZoomLevelToEditor();");
                 codeBlock.Line(";");
-
                 // Vic says - We run all Glue commands before running custom initialize. The reason is - custom initialize
                 // may make modifications to objects that are created by glue commands (such as assigning acceleration to objects
                 // in a list), but it is unlikely that scripts will make modifications to objects created in CustomInitialize because
@@ -163,6 +186,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                     }
                 }
                 codeBlock.Line(";");
+                EndIfDebug(codeBlock);
 
                 if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasScreenManagerAfterScreenDestroyed)
                 {

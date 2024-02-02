@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Math;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -34,7 +35,7 @@ namespace Microsoft.Xna.Framework
         /// The Z value is ignored.
         /// </summary>
         /// <param name="vector">The argument vector.</param>
-        /// <returns>The angle in radians, or null if the Vector has X and Y values both equal to 0.</returns>
+        /// <returns>The angle in radians between 0 and 2 * PI, or null if the Vector has X and Y values both equal to 0.</returns>
         public static float? Angle(this Vector3 vector)
         {
             if(vector.X == 0 && vector.Y == 0)
@@ -43,7 +44,7 @@ namespace Microsoft.Xna.Framework
             }
             else
             {
-                return (float)System.Math.Atan2(vector.Y, vector.X);
+                return MathFunctions.RegulateAngle((float)System.Math.Atan2(vector.Y, vector.X));
             }
         }
 
@@ -52,7 +53,7 @@ namespace Microsoft.Xna.Framework
         /// and increasing the angle moves counterclockwise. The Z value is ignored.
         /// </summary>
         /// <param name="vector">The argument angle.</param>
-        /// <returns>The angle in degrees, or null if the Vector has X and Y values both equal to 0.</returns>
+        /// <returns>The angle in degrees between 0 and 360, or null if the Vector has X and Y values both equal to 0.</returns>
         public static float? AngleDegrees(this Vector3 vector)
         {
             if (vector.X == 0 && vector.Y == 0)
@@ -61,7 +62,7 @@ namespace Microsoft.Xna.Framework
             }
             else
             {
-                return MathHelper.ToDegrees( (float)System.Math.Atan2(vector.Y, vector.X));
+                return MathHelper.ToDegrees(MathFunctions.RegulateAngle((float)System.Math.Atan2(vector.Y, vector.X)));
             }
         }
 
@@ -159,13 +160,30 @@ namespace Microsoft.Xna.Framework
 
         /// <summary>
         /// Returns a unit vector with a Z value of 0 pointing in the direction
-        /// specified by the radians value.
+        /// specified by the radians argument.
         /// </summary>
         /// <param name="radians">The direction in radians, where 0 is to the right, and
         /// values increase counterclockwise.</param>
         /// <returns>A new Vector3 pointing in the desired direction.</returns>
         public static Vector3 FromAngle(float radians)
         {
+            return new Vector3(
+                (float)Math.Cos(radians),
+                (float)Math.Sin(radians),
+                0
+                );
+        }
+
+        /// <summary>
+        /// Returns a unit vector with a Z value of 0 pointing in the direction
+        /// specified by the degrees argument.
+        /// </summary>
+        /// <param name="angleDegrees">The direction in angles, where 0 is to the right, and
+        /// values increase counterclockwise.</param>
+        /// <returns>A new Vector3 pointing in the desired direction.</returns>
+        public static Vector3 FromAngleDegrees(float angleDegrees)
+        {
+            var radians = MathHelper.ToRadians(angleDegrees);
             return new Vector3(
                 (float)Math.Cos(radians),
                 (float)Math.Sin(radians),

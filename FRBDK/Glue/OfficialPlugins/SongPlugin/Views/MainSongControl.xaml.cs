@@ -1,4 +1,5 @@
-﻿using FlatRedBall.IO;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
 using NAudio.Vorbis;
 using NAudio.Wave;
 using OfficialPlugins.SongPlugin.ViewModels;
@@ -96,15 +97,27 @@ namespace OfficialPlugins.SongPlugin.Views
 
         internal void StopPlaying()
         {
-
-            if (mediaPlayer != null)
+            // There seems to be some threading issue here, so let's try multiple times, then
+            // tolerate the error so we don't lose the plugin:
+            try
             {
-                mediaPlayer.Stop();
-                mediaPlayer.Position = TimeSpan.Zero;
+                GlueCommands.Self.TryMultipleTimes(() =>
+                {
 
+                    if (mediaPlayer != null)
+                    {
+                        mediaPlayer.Stop();
+                        mediaPlayer.Position = TimeSpan.Zero;
+
+                    }
+
+                    nAudioOutputDevice?.Stop();
+                });
             }
-
-            nAudioOutputDevice?.Stop();
+            catch(Exception ex)
+            {
+                GlueCommands.Self.PrintError("Error stopping song:\n" + ex);
+            }
         }
 
         internal void PlaySong()
