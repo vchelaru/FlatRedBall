@@ -177,7 +177,7 @@ public class GluxCommands : IGluxCommands
             throw new ArgumentNullException(nameof(element));
         }
 
-        if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
+        if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
         {
             await TaskManager.Self.AddAsync(async () =>
             {

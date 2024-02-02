@@ -1,40 +1,13 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using OfficialPlugins.Common.ViewModels;
-using OfficialPlugins.TreeViewPlugin.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 {
-    internal class AchxViewModel : ViewModel, ICameraZoomViewModel
+    internal class AchxViewModel : ViewModel
     {
-        [DependsOn(nameof(CurrentZoomPercent))]
-        public float CurrentZoomScale => CurrentZoomPercent / 100.0f;
-
-        public float CurrentZoomPercent
-        {
-            get => Get<float>();
-            set
-            {
-                Set(value);
-            }
-        }
-
-        public float CurrentAnimationZoomPercent
-        {
-            get => Get<float>();
-            set
-            {
-                Set(value);
-            }
-        }
-
-        public List<int> ZoomPercentages { get; set; } =
-            new List<int> { 4000, 2000, 1500, 1000, 750, 500, 350, 200, 100, 75, 50, 25, 10, 5 };
+        public ZoomViewModel WholeZoom { get; set; }
+        public ZoomViewModel SingleZoom { get; set; }
 
         public int ResolutionWidth
         {
@@ -86,6 +59,12 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             }
         }
 
+        public bool IsShowGuidesChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(SelectedItem))]
         public AnimationFrameViewModel SelectedAnimationFrame => 
             SelectedItem as AnimationFrameViewModel;
@@ -96,7 +75,11 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public AchxViewModel()
         {
-            CurrentZoomPercent = 100;
+            WholeZoom = new ZoomViewModel();
+            SingleZoom = new ZoomViewModel();
+
+            WholeZoom.CurrentZoomPercent = 100;
+            SingleZoom.CurrentZoomPercent = 100;
         }
     }
 }

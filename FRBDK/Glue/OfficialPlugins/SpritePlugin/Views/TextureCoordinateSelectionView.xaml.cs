@@ -118,7 +118,7 @@ namespace OfficialPlugins.SpritePlugin.Views
 
             // Initialize CameraLogic after initializing the background so the background
             // position can be set
-            CameraLogic.Initialize(this, this.Canvas, this.Background);
+            CameraLogic.Initialize(this, null, this.Canvas, this.Background);
             MouseEditingLogic.Initialize(this, cameraLogic);
 
             this.Canvas.Children.Add(MainSprite);

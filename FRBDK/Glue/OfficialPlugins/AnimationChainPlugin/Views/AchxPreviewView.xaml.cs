@@ -65,6 +65,10 @@ namespace OfficialPlugins.ContentPreview.Views
         List<PolygonRuntime> Outlines = new List<PolygonRuntime>();
         List<SkiaShapeRuntime> AnimationShapes = new List<SkiaShapeRuntime>();
 
+        // todo - Vic says - let's move all the bototm grid stuff into its own class:
+        PolygonRuntime BottomWindowHorizontalGuide;
+        PolygonRuntime BottomWindowVerticalGuide;
+
         SolidRectangleRuntime GumBackground { get; set; }
         SolidRectangleRuntime GumAnimationBackground { get; set; }
 
@@ -93,14 +97,28 @@ namespace OfficialPlugins.ContentPreview.Views
 
         private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == nameof(ViewModel.SelectedAnimationChain))
+            switch (e.PropertyName)
             {
-                RefreshOutlines();
-                RefreshAnimation();
+                case nameof(ViewModel.SelectedAnimationChain):
 
-                GumCanvas.InvalidateVisual();
-                GumCanvasAnimation.InvalidateVisual();
+                    RefreshOutlines();
+                    RefreshAnimation();
+
+                    GumCanvas.InvalidateVisual();
+                    GumCanvasAnimation.InvalidateVisual();
+
+                    break;
+                case nameof(ViewModel.IsShowGuidesChecked):
+                    RefreshBottomGuideVisibility();
+                    break;
             }
+        }
+
+        private void RefreshBottomGuideVisibility()
+        {
+            BottomWindowVerticalGuide.Visible = ViewModel.IsShowGuidesChecked;
+            BottomWindowHorizontalGuide.Visible = ViewModel.IsShowGuidesChecked;
+            GumCanvasAnimation.InvalidateVisual();
         }
 
         public void ForceRefreshAchx(FilePath achxFilePath = null, bool preserveSelection = false)
@@ -235,18 +253,7 @@ namespace OfficialPlugins.ContentPreview.Views
                 if (ViewModel.SelectedAnimationFrame != null || ViewModel.SelectedShape != null)
                 {
                     var frame = ViewModel.SelectedAnimationFrame ?? ViewModel.SelectedShape.Parent;
-                    MainAnimationSprite.Width = 100;
-                    MainAnimationSprite.Height = 100;
-                    MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
-                    MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
-                    MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
-                    MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
-                    MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
-                    MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-                    MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-
-                    MainAnimationSprite.Visible = true;
-
+                    
                     List<ShapeViewModel> shapes;
                     if(ViewModel.SelectedShape != null)
                     {
@@ -260,9 +267,7 @@ namespace OfficialPlugins.ContentPreview.Views
                         shapes = ViewModel.SelectedAnimationFrame.VisibleChildren.ToList();
                     }
 
-                    RenderShapes(shapes);
-
-                    FocusAnimation();
+                    RenderFrame(frame, shapes);
                 }
                 else if (ViewModel.SelectedAnimationChain != null)
                 {
@@ -325,8 +330,8 @@ namespace OfficialPlugins.ContentPreview.Views
                     var outline = new ColoredCircleRuntime();
                     outline.Color = SKColors.White;
 
-                    outline.X = shape.X;
-                    outline.Y = shape.Y - shape.Radius;
+                    outline.X = shape.X - shape.Radius;
+                    outline.Y = -shape.Y - shape.Radius;
                     outline.Width = shape.Radius * 2;
                     outline.Height = shape.Radius * 2;
 
@@ -371,25 +376,45 @@ namespace OfficialPlugins.ContentPreview.Views
 
             Dispatcher.Invoke(() =>
             {
-                MainAnimationSprite.Width = 100;
-                MainAnimationSprite.Height = 100;
-                MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
-                MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
-                MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
-                MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
-                MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
-                MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-                MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-
-                MainAnimationSprite.Visible = true;
-
-                if (_isFirstTime)
-                    FocusAnimation();
-
-                RenderShapes(frame.VisibleChildren.ToList());
-
+                RenderFrame(frame, frame.VisibleChildren.ToList());
+                
                 CameraLogicAnimation.RefreshCameraZoomToViewModel();
             });
+        }
+
+        private void RenderFrame(AnimationFrameViewModel frame, List<ShapeViewModel> shapes)
+        {
+            // don't use percentage, because that will result in a flipped sprite having negative width and height
+            //MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            //MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.Absolute;
+            MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.Absolute;
+            MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
+            MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
+            MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
+            MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
+            MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
+            MainAnimationSprite.Visible = true;
+            MainAnimationSprite.Y = 0;
+
+            if (frame.FlipHorizontal)
+            {
+                MainAnimationSprite.TextureLeft += MainAnimationSprite.TextureWidth;
+                MainAnimationSprite.TextureWidth = -MainAnimationSprite.TextureWidth;
+            }
+            if (frame.FlipVertical)
+            {
+                MainAnimationSprite.TextureTop += MainAnimationSprite.TextureHeight;
+                MainAnimationSprite.TextureHeight = -MainAnimationSprite.TextureHeight;
+                MainAnimationSprite.Y -= MainAnimationSprite.TextureHeight;
+            }
+            MainAnimationSprite.Width = System.Math.Abs(MainAnimationSprite.TextureWidth);
+            MainAnimationSprite.Height = System.Math.Abs(MainAnimationSprite.TextureHeight);
+
+
+            RenderShapes(shapes);
+
+
         }
 
         private void CreatePolygonFor(AnimationFrameSave frame)
@@ -490,15 +515,40 @@ namespace OfficialPlugins.ContentPreview.Views
             CreateBackground();
             CreateMainSprite();
 
+            CreateBottomGuideLines();
+
             // do this after creating the background so that it can be passed here:
-            CameraLogic.Initialize(this, this.GumCanvas, this.GumBackground);
-            CameraLogicAnimation.Initialize(this, this.GumCanvasAnimation, this.GumAnimationBackground);
+            CameraLogic.Initialize(this, (this.DataContext as AchxViewModel)?.WholeZoom, this.GumCanvas, this.GumBackground);
+            CameraLogicAnimation.Initialize(this, (this.DataContext as AchxViewModel)?.SingleZoom, this.GumCanvasAnimation, this.GumAnimationBackground);
 
             _animationTimer.Elapsed += (sender, args) => RunAnimation();
             _animationTimer.Interval = 1;
             _animationTimer.Start();
         }
 
+        private void CreateBottomGuideLines()
+        {
+            this.BottomWindowHorizontalGuide = new PolygonRuntime();
+            BottomWindowHorizontalGuide.IsFilled = false;
+            BottomWindowHorizontalGuide.Color = SKColors.White;
+            BottomWindowHorizontalGuide.Points = new List<SKPoint>
+            {
+                new SKPoint(-100_000, 0),
+                new SKPoint(100_000, 0),
+            };
+
+            this.GumCanvasAnimation.Children.Add(BottomWindowHorizontalGuide);
+
+            this.BottomWindowVerticalGuide = new PolygonRuntime();
+            BottomWindowVerticalGuide.IsFilled = false;
+            BottomWindowVerticalGuide.Color = SKColors.White;
+            BottomWindowVerticalGuide.Points = new List<SKPoint>
+            {
+                new SKPoint(0, -100_000),
+                new SKPoint(0, 100_000),
+            };
+            this.GumCanvasAnimation.Children.Add(BottomWindowVerticalGuide);
+        }
 
         private void CreateMainSprite()
         {
@@ -511,6 +561,8 @@ namespace OfficialPlugins.ContentPreview.Views
 
             MainAnimationSprite = new SpriteRuntime();
             MainAnimationSprite.Visible = false;
+            MainAnimationSprite.XOrigin = RenderingLibrary.Graphics.HorizontalAlignment.Center;
+            MainAnimationSprite.YOrigin = RenderingLibrary.Graphics.VerticalAlignment.Center;
             MainAnimationSprite.Width = 100;
             MainAnimationSprite.Height = 100;
             MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
@@ -597,7 +649,7 @@ namespace OfficialPlugins.ContentPreview.Views
         {
             if (MainSprite.Texture == null || GumCanvas.ActualWidth == 0 || GumCanvas.ActualHeight == 0)
             {
-                ViewModel.CurrentZoomPercent = 100;
+                ViewModel.WholeZoom.CurrentZoomPercent = 100;
             }
             else
             {
@@ -606,7 +658,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
                 var minZoom = Math.Min(zoomToFitWidth, zoomToFitHeight);
 
-                ViewModel.CurrentZoomPercent = (float)minZoom * 100;
+                ViewModel.WholeZoom.CurrentZoomPercent = (float)minZoom * 100;
             }
 
 
@@ -618,7 +670,7 @@ namespace OfficialPlugins.ContentPreview.Views
         {
             if (MainAnimationSprite.Texture == null || GumCanvasAnimation.ActualWidth == 0 || GumCanvasAnimation.ActualHeight == 0)
             {
-                ViewModel.CurrentAnimationZoomPercent = 100;
+                ViewModel.WholeZoom.CurrentAnimationZoomPercent = 100;
             }
             else
             {
@@ -627,7 +679,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
                 var minZoom = Math.Min(zoomToFitWidth, zoomToFitHeight);
 
-                ViewModel.CurrentAnimationZoomPercent = (float)minZoom * 100;
+                ViewModel.WholeZoom.CurrentAnimationZoomPercent = (float)minZoom * 100;
             }
 
 
@@ -658,25 +710,27 @@ namespace OfficialPlugins.ContentPreview.Views
             {
                 if(treeViewItem.DataContext is AnimationChainViewModel animationChainVm)
                 {
-                    FocusAnimation(animationChainVm.BackingModel);
+                    FocusSingleToSprite();
+                    FocusWholeToAnimation(animationChainVm.BackingModel);
                 }
                 else if(treeViewItem.DataContext is AnimationFrameViewModel animationFrameVm)
                 {
-                    FocusFrame(animationFrameVm.BackingModel);
+                    FocusSingleToSprite();
+                    FocusWholeToFrame(animationFrameVm.BackingModel);
                 }
             }
         }
 
-        private void FocusAnimation(AnimationChainSave backingModel)
+        private void FocusWholeToAnimation(AnimationChainSave backingModel)
         {
-            if(backingModel.Frames.Count > 0)
+            if (backingModel.Frames.Count > 0)
             {
                 var firstFrame = backingModel.Frames[0];
-                FocusFrame(firstFrame);
+                FocusWholeToFrame(firstFrame);
             }
         }
 
-        private void FocusFrame(AnimationFrameSave animationFrame)
+        private void FocusWholeToFrame(AnimationFrameSave animationFrame)
         {
             var centerX = (animationFrame.LeftCoordinate + animationFrame.RightCoordinate) / 2.0f;
             var centerY = (animationFrame.TopCoordinate + animationFrame.BottomCoordinate) / 2.0f;
@@ -684,17 +738,17 @@ namespace OfficialPlugins.ContentPreview.Views
             var camera = GumCanvas.SystemManagers.Renderer.Camera;
 
             // If already zoomed in, stay zoomed in...
-            if(ViewModel.CurrentZoomPercent < 100)
+            if (ViewModel.WholeZoom.CurrentZoomPercent < 100)
             {
-                ViewModel.CurrentZoomPercent = 100;
+                ViewModel.WholeZoom.CurrentZoomPercent = 100;
             }
-            camera.X = centerX - (GumCanvas.CanvasSize.Width / 2f) / ViewModel.CurrentZoomScale;
-            camera.Y = centerY - (GumCanvas.CanvasSize.Height / 2f) / ViewModel.CurrentZoomScale;
+            camera.X = centerX - (GumCanvas.CanvasSize.Width / 2f) / ViewModel.WholeZoom.CurrentZoomScale;
+            camera.Y = centerY - (GumCanvas.CanvasSize.Height / 2f) / ViewModel.WholeZoom.CurrentZoomScale;
 
             CameraLogic.RefreshCameraZoomToViewModel();
         }
 
-        private void FocusAnimation()
+        private void FocusSingleToSprite()
         {
             var centerX = (MainAnimationSprite.GetAbsoluteLeft() + MainAnimationSprite.GetAbsoluteRight()) / 2.0f;
             var centerY = (MainAnimationSprite.GetAbsoluteTop() + MainAnimationSprite.GetAbsoluteBottom()) / 2.0f;
@@ -702,12 +756,12 @@ namespace OfficialPlugins.ContentPreview.Views
             var camera = GumCanvasAnimation.SystemManagers.Renderer.Camera;
 
             //// If already zoomed in, stay zoomed in...
-            if (ViewModel.CurrentZoomPercent < 100)
+            if (ViewModel.SingleZoom.CurrentZoomPercent < 100)
             {
-                ViewModel.CurrentZoomPercent = 100;
+                ViewModel.SingleZoom.CurrentZoomPercent = 100;
             }
-            camera.X = centerX - (GumCanvasAnimation.CanvasSize.Width / 2f) / ViewModel.CurrentZoomScale;
-            camera.Y = centerY - (GumCanvasAnimation.CanvasSize.Height / 2f) / ViewModel.CurrentZoomScale;
+            camera.X = centerX - (GumCanvasAnimation.CanvasSize.Width / 2f) / ViewModel.SingleZoom.CurrentZoomScale;
+            camera.Y = centerY - (GumCanvasAnimation.CanvasSize.Height / 2f) / ViewModel.SingleZoom.CurrentZoomScale;
 
             CameraLogicAnimation.RefreshCameraZoomToViewModel();
         }
