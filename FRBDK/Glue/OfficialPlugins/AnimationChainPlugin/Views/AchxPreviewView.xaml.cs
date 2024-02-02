@@ -330,8 +330,8 @@ namespace OfficialPlugins.ContentPreview.Views
                     var outline = new ColoredCircleRuntime();
                     outline.Color = SKColors.White;
 
-                    outline.X = shape.X;
-                    outline.Y = shape.Y - shape.Radius;
+                    outline.X = shape.X - shape.Radius;
+                    outline.Y = -shape.Y - shape.Radius;
                     outline.Width = shape.Radius * 2;
                     outline.Height = shape.Radius * 2;
 
