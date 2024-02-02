@@ -56,7 +56,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                     if(ViewModel.SelectedAnimationFrame != null)
                     {
                         View.PropertyGrid.Visibility = System.Windows.Visibility.Visible;
-                        View.ShowInPropertyGrid(ViewModel.SelectedAnimationFrame);
+                        PropertyGridManager.ShowInPropertyGrid(ViewModel.SelectedAnimationFrame);
                     }
                     else if(ViewModel.SelectedShape != null)
                     {
@@ -66,7 +66,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                     else
                     {
                         View.PropertyGrid.Visibility = System.Windows.Visibility.Visible;
-                        View.ShowInPropertyGrid(ViewModel.SelectedAnimationChain);
+                        PropertyGridManager.ShowInPropertyGrid(ViewModel.SelectedAnimationChain);
                     }
                     break;
             }
@@ -100,7 +100,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             }
 
             Tab.Show();
-            view.GumCanvas.InvalidateVisual();
+            view.TopGumCanvas.InvalidateVisual();
         }
 
 

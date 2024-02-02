@@ -13,6 +13,8 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 {
     internal static class MemberCategoryManager
     {
+        #region Animation Chain
+
         public static void SetMemberCategories(DataUiGrid grid, AnimationChainViewModel selectedAnimationChain)
         {
             grid.Categories.Clear();
@@ -20,29 +22,60 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             grid.Categories.AddRange(CreateMemberCategories(selectedAnimationChain));
         }
 
+        private static List<MemberCategory> CreateMemberCategories(AnimationChainViewModel selectedAnimationChain)
+        {
+            List<MemberCategory> toReturn = new List<MemberCategory>();
+
+            var mainCategory = new MemberCategory();
+            toReturn.Add(mainCategory);
+
+            Add(nameof(AnimationChainViewModel.Name));
+            Add(nameof(AnimationChainViewModel.Duration));
+
+            return toReturn;
+
+            void Add(string propertyName)
+            {
+                var member = new InstanceMember(propertyName, selectedAnimationChain);
+                member.IsReadOnly = true;
+                mainCategory.Members.Add(member);
+            }
+        }
+
+        #endregion
+
+        #region Animation Frame
+
         public static void SetMemberCategories(DataUiGrid grid, AnimationFrameViewModel selectedAnimationFrame)
         {
-            var propertiesToShow = new string[]
-            {
-                nameof(AnimationFrameViewModel.LengthInSeconds),
+            List<MemberCategory> list = new List<MemberCategory>();
 
-            };
+            var mainCategory = new MemberCategory();
+            list.Add(mainCategory);
 
-            var category = grid.Categories[0];
-            for(int i = category.Members.Count-1; i> -1; i--)
+
+            Add(nameof(AnimationFrameViewModel.StrippedTextureName));
+            Add(nameof(AnimationFrameViewModel.XOffset));
+            Add(nameof(AnimationFrameViewModel.YOffset));
+            Add(nameof(AnimationFrameViewModel.X), canWrite:true);
+            Add(nameof(AnimationFrameViewModel.Y), canWrite: true);
+            Add(nameof(AnimationFrameViewModel.Width));
+            Add(nameof(AnimationFrameViewModel.Height));
+            Add(nameof(AnimationFrameViewModel.LengthInSeconds));
+            Add(nameof(AnimationFrameViewModel.FlipHorizontal));
+            Add(nameof(AnimationFrameViewModel.FlipVertical));
+
+            void Add(string propertyName, bool canWrite = false)
             {
-                var member = category.Members[i];
-                if(propertiesToShow.Contains(member.Name) == false)
-                {
-                    category.Members.RemoveAt(i);
-                }
+                var member = new InstanceMember(propertyName, selectedAnimationFrame);
+                member.IsReadOnly = !canWrite;
+                mainCategory.Members.Add(member);
             }
 
-            foreach(var member in category.Members)
-            {
-                // for now....
-                member.IsReadOnly = true;
-            }
+            grid.InsertSpacesInCamelCaseMemberNames();
+
+            grid.Categories.Clear();
+            grid.Categories.AddRange(list);
 
             grid.InsertSpacesInCamelCaseMemberNames();
         }
@@ -56,35 +89,8 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
         //    return toReturn;
         //}
 
-        private static List<MemberCategory> CreateMemberCategories(AnimationChainViewModel selectedAnimationChain)
-        {
-            List<MemberCategory> toReturn = new List<MemberCategory>();
+        #endregion
 
-            var mainCategory = new MemberCategory();
-            toReturn.Add(mainCategory);
 
-            mainCategory.Members.Add(GetNameMember(selectedAnimationChain));
-            mainCategory.Members.Add(GetDurationMember(selectedAnimationChain));
-
-            return toReturn;
-        }
-
-        private static InstanceMember GetNameMember(AnimationChainViewModel selectedAnimationChain)
-        {
-            var nameInstanceMember = new InstanceMember("Name", selectedAnimationChain);
-            nameInstanceMember.CustomGetEvent += (instance) => ((AnimationChainViewModel)instance)?.Name;
-            nameInstanceMember.CustomGetTypeEvent += (instance) => typeof(string);
-            //nameInstanceMember.CustomSetEvent += (instance, value) => ((AnimationChainViewModel)instance).Name = (string)value;
-            return nameInstanceMember;
-        }
-
-        public static InstanceMember GetDurationMember(AnimationChainViewModel selectedAnimationChain)
-        {
-            var nameInstanceMember = new InstanceMember("Duration", selectedAnimationChain);
-            nameInstanceMember.CustomGetEvent += (instance) => ((AnimationChainViewModel)instance)?.LengthInSeconds;
-            nameInstanceMember.CustomGetTypeEvent += (instance) => typeof(float);
-            //nameInstanceMember.CustomSetEvent += (instance, value) => ((AnimationChainViewModel)instance).Name = (string)value;
-            return nameInstanceMember;
-        }
     }
 }

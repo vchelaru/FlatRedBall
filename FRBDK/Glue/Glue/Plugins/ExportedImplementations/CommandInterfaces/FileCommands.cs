@@ -210,7 +210,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public FilePath GetGlobalContentFolder() =>
             ProjectManager.ProjectBase.GetAbsoluteContentFolder() + "GlobalContent/";
 
-
+        public void IgnoreNextChangeOnFile(FilePath filePath) => IgnoreNextChangeOnFile(filePath.FullPath);
         public void IgnoreNextChangeOnFile(string absoluteFileName)
         {
             IO.FileWatchManager.IgnoreNextChangeOnFile(absoluteFileName);
