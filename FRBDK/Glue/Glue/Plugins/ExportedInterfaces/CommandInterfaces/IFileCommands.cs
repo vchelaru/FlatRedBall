@@ -40,6 +40,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         FilePath GetGlobalContentFolder();
 
         void IgnoreNextChangeOnFile(string absoluteFileName);
+        void IgnoreNextChangeOnFile(FilePath filePath);
 
         string GetFullFileName(ReferencedFileSave rfs);
         FilePath GetFilePath(ReferencedFileSave rfs);

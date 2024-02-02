@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.MVVM;
+﻿using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.MVVM;
 using OfficialPlugins.Common.ViewModels;
 using System.Collections.ObjectModel;
 
@@ -72,6 +73,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         [DependsOn(nameof(SelectedItem))]
         public ShapeViewModel SelectedShape =>
             SelectedItem as ShapeViewModel;
+
+        public AnimationChainListSave BackgingData { get; internal set; }
 
         public AchxViewModel()
         {

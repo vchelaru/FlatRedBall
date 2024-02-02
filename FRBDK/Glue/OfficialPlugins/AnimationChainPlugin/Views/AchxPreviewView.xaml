@@ -56,7 +56,7 @@
                 <RowDefinition Height="5"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
-            <wpf1:GumSKElement x:Name="GumCanvas" Grid.Row="0"
+            <wpf1:GumSKElement x:Name="TopGumCanvas" Grid.Row="0"
                     MouseDown="GumCanvas_MouseDown"
                     MouseMove="GumCanvas_MouseMove"
                     MouseWheel="GumCanvas_MouseWheel"
@@ -78,7 +78,7 @@
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <CheckBox IsChecked="{Binding IsShowGuidesChecked}">Show Guides</CheckBox>
                 </StackPanel>
-                <wpf1:GumSKElement x:Name="GumCanvasAnimation" Grid.Row="1"
+                <wpf1:GumSKElement x:Name="BottomGumCanvas" Grid.Row="1"
                         MouseDown="GumAnimationCanvas_MouseDown"
                         MouseMove="GumAnimationCanvas_MouseMove"
                         MouseWheel="GumAnimationCanvas_MouseWheel"

@@ -3,6 +3,7 @@ using FlatRedBall.Glue.MVVM;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,10 +21,10 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             set => Set(value);
         }
 
-        public float LengthInSeconds
+        public float Duration
         {
             get => Get<float>();
-            set => Set(value);
+            private set => Set(value);
         }
 
         public AnimationChainSave BackingModel { get; private set; }
@@ -38,13 +39,29 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         {
             BackingModel = animationChain;
             Name = animationChain.Name;
-            LengthInSeconds = animationChain.Frames.Sum(item => item.FrameLength);
+            Duration = animationChain.Frames.Sum(item => item.FrameLength);
 
             foreach(var frame in animationChain.Frames)
             {
                 var frameVm = new AnimationFrameViewModel();
                 frameVm.SetFrom(this, frame, resolutionWidth, resolutionHeight);
+                frameVm.PropertyChanged += HandleFrameViewModelPropertyChanged;
                 VisibleChildren.Add(frameVm);
+            }
+        }
+
+        public Action FrameUpdatedByUi;
+
+        private void HandleFrameViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var vm = (AnimationFrameViewModel)sender;
+            var frame = vm.BackingModel;
+
+            var changed = vm.ApplyToFrame(frame);
+
+            if(changed)
+            {
+                FrameUpdatedByUi?.Invoke();
             }
         }
     }

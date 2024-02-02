@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Math;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,15 +20,29 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public AnimationFrameSave BackingModel { get; set; }
         public AnimationChainViewModel Parent { get; private set; }
+
+        public string StrippedTextureName
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public float LengthInSeconds
         {
             get => Get<float>();
             set => Set(value);
         }
 
-        public string StrippedTextureName
+
+        public float XOffset
         {
-            get => Get<string>();
+            get => Get<float>();
+            set => Set(value);
+        }
+
+        public float YOffset
+        {
+            get => Get<float>();
             set => Set(value);
         }
 
@@ -69,6 +84,42 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             get => Get<bool>();
             set => Set(value);
         }
+
+        [DependsOn(nameof(LeftCoordinate))]
+        public float X
+        {
+            get => LeftCoordinate;
+            set
+            {
+                var difference = value - LeftCoordinate;
+
+                LeftCoordinate += difference;
+                RightCoordinate += difference;
+            }
+        }
+
+        [DependsOn(nameof(TopCoordinate))]
+        public float Y
+        {
+            get => TopCoordinate;
+            set
+            {
+                var difference = value - TopCoordinate;
+
+                TopCoordinate += difference;
+                BottomCoordinate += difference;
+            }
+        }
+
+        [DependsOn(nameof(RightCoordinate))]
+        [DependsOn(nameof(LeftCoordinate))]
+        public int Width => MathFunctions.RoundToInt( (RightCoordinate - LeftCoordinate) );
+
+        [DependsOn(nameof(BottomCoordinate))]
+        [DependsOn(nameof(TopCoordinate))]
+        public int Height => MathFunctions.RoundToInt( (BottomCoordinate - TopCoordinate) );
+
+
 
         public ObservableCollection<ShapeViewModel> VisibleChildren
         {
@@ -126,6 +177,36 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
                     shape.SetFrom(this, circ);
                     VisibleChildren.Add(shape);
                 }
+        }
+
+        public bool ApplyToFrame(AnimationFrameSave animationFrame)
+        {
+            var toReturn = false;
+            // build this slowly over time:
+            if(animationFrame.LeftCoordinate != LeftCoordinate)
+            {
+                animationFrame.LeftCoordinate = LeftCoordinate;
+                toReturn = true;
+            }
+
+            if(animationFrame.TopCoordinate != TopCoordinate)
+            {
+                animationFrame.TopCoordinate = TopCoordinate;
+                toReturn = true;
+            }
+
+            if(animationFrame.RightCoordinate != RightCoordinate)
+            {
+                animationFrame.RightCoordinate = RightCoordinate;
+                toReturn = true;
+            }
+
+            if(animationFrame.BottomCoordinate != BottomCoordinate)
+            {
+                animationFrame.BottomCoordinate = BottomCoordinate;
+                toReturn = true;
+            }
+            return toReturn;
         }
     }
 }
