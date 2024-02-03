@@ -46,51 +46,79 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
         #region Animation Frame
 
-        public static void SetMemberCategories(DataUiGrid grid, AnimationFrameViewModel selectedAnimationFrame)
+        public static void SetMemberCategories(DataUiGrid grid, AnimationFrameViewModel animationFrame)
         {
-            List<MemberCategory> list = new List<MemberCategory>();
+            var list = new List<MemberCategory>();
+
+            var currentCategory = new MemberCategory();
+            list.Add(currentCategory);
+
+
+            Add(nameof(animationFrame.StrippedTextureName));
+            Add(nameof(animationFrame.LengthInSeconds), canWrite: true);
+
+            currentCategory = new MemberCategory();
+            list.Add(currentCategory);
+            currentCategory.Name = "Texture Coordinates";
+
+            Add(nameof(animationFrame.X), canWrite:true);
+            Add(nameof(animationFrame.Y), canWrite: true);
+            Add(nameof(animationFrame.Width), canWrite: true);
+            Add(nameof(animationFrame.Height), canWrite: true);
+
+            Add(nameof(animationFrame.FlipHorizontal), canWrite:true);
+            Add(nameof(animationFrame.FlipVertical), canWrite: true);
+
+            currentCategory = new MemberCategory();
+            list.Add(currentCategory);
+            currentCategory.Name = "Offset";
+
+            Add(nameof(animationFrame.RelativeX), canWrite:true);
+            Add(nameof(animationFrame.RelativeY), canWrite:true);
+
+            grid.Categories.Clear();
+            grid.Categories.AddRange(list);
+            grid.InsertSpacesInCamelCaseMemberNames();
+
+            return;
+
+            void Add(string propertyName, bool canWrite = false)
+            {
+                var member = new InstanceMember(propertyName, animationFrame);
+                member.IsReadOnly = !canWrite;
+                currentCategory.Members.Add(member);
+            }
+        }
+
+        #endregion
+
+        #region Circle
+
+        private static void SetmemberCategories(DataUiGrid grid, CircleViewModel circle)
+        {
+            var list = new List<MemberCategory>();
 
             var mainCategory = new MemberCategory();
             list.Add(mainCategory);
 
-
-            Add(nameof(AnimationFrameViewModel.StrippedTextureName));
-            Add(nameof(AnimationFrameViewModel.RelativeX));
-            Add(nameof(AnimationFrameViewModel.RelativeY));
-            Add(nameof(AnimationFrameViewModel.X), canWrite:true);
-            Add(nameof(AnimationFrameViewModel.Y), canWrite: true);
-            Add(nameof(AnimationFrameViewModel.Width), canWrite: true);
-            Add(nameof(AnimationFrameViewModel.Height), canWrite: true);
-            Add(nameof(AnimationFrameViewModel.LengthInSeconds), canWrite: true);
-            Add(nameof(AnimationFrameViewModel.FlipHorizontal), canWrite:true);
-            Add(nameof(AnimationFrameViewModel.FlipVertical), canWrite: true);
+            Add(nameof(circle.Name));
+            Add(nameof(circle.X));
+            Add(nameof(circle.Y));
+            Add(nameof(circle.Radius));
 
             void Add(string propertyName, bool canWrite = false)
             {
-                var member = new InstanceMember(propertyName, selectedAnimationFrame);
+                var member = new InstanceMember(propertyName, circle);
                 member.IsReadOnly = !canWrite;
                 mainCategory.Members.Add(member);
             }
 
-            grid.InsertSpacesInCamelCaseMemberNames();
-
             grid.Categories.Clear();
             grid.Categories.AddRange(list);
-
             grid.InsertSpacesInCamelCaseMemberNames();
+
         }
 
-        //private static List<MemberCategory> CreateMemberCategories(AnimationFrameViewModel animationFrameViewModel)
-        //{
-        //    List<MemberCategory> toReturn = new List<MemberCategory>();
-
-        //    // todo - add more here...
-
-        //    return toReturn;
-        //}
-
         #endregion
-
-
     }
 }

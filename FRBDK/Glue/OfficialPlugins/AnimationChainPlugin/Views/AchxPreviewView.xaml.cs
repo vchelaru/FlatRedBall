@@ -315,7 +315,7 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
-        private void RenderShapes(List<ShapeViewModel> shapes)
+        private void RenderShapes(List<ShapeViewModel> shapes, AnimationFrameViewModel owner)
         {
             foreach (var shape in AnimationShapes)
             {
@@ -334,10 +334,13 @@ namespace OfficialPlugins.ContentPreview.Views
 
                     var verticalCenter = shape.Height / 2.0f;
 
-                    var left = shape.X;
-                    var top = verticalCenter + (verticalCenter - shape.Y) + shape.Height / 2.0f;
-                    var right = shape.X + shape.Width;
-                    var bottom = verticalCenter + (verticalCenter - shape.Y) - shape.Height / 2.0f;
+                    var shapeLeft = shape.X + owner.RelativeX;
+                    var shapeTop = verticalCenter - shape.Y - owner.RelativeY;
+
+                    var left = shapeLeft;
+                    var top = verticalCenter + (shapeTop) + shape.Height / 2.0f;
+                    var right = shapeLeft + shape.Width;
+                    var bottom = verticalCenter + (shapeTop) - shape.Height / 2.0f;
 
                     outline.IsFilled = false;
                     outline.Points = new List<SKPoint>
@@ -360,8 +363,8 @@ namespace OfficialPlugins.ContentPreview.Views
                     var outline = new ColoredCircleRuntime();
                     outline.Color = SKColors.White;
 
-                    outline.X = shape.X - shape.Radius;
-                    outline.Y = -shape.Y - shape.Radius;
+                    outline.X = shape.X - shape.Radius + owner.RelativeX;
+                    outline.Y = -shape.Y - shape.Radius - owner.RelativeY;
                     outline.Width = shape.Radius * 2;
                     outline.Height = shape.Radius * 2;
 
@@ -425,7 +428,8 @@ namespace OfficialPlugins.ContentPreview.Views
             MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
             MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
             MainAnimationSprite.Visible = true;
-            MainAnimationSprite.Y = 0;
+            MainAnimationSprite.X = frame.RelativeX;
+            MainAnimationSprite.Y = -frame.RelativeY;
 
             if (frame.FlipHorizontal)
             {
@@ -442,7 +446,7 @@ namespace OfficialPlugins.ContentPreview.Views
             MainAnimationSprite.Height = System.Math.Abs(MainAnimationSprite.TextureHeight);
 
 
-            RenderShapes(shapes);
+            RenderShapes(shapes, frame);
 
 
         }
