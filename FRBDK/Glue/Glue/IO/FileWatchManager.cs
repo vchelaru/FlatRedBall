@@ -15,9 +15,7 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.IO
 {
-
-
-    #region 
+    #region Enums
 
     enum IgnoreReason
     {
@@ -34,7 +32,6 @@ namespace FlatRedBall.Glue.IO
         #region Fields
 
         static ChangedFileGroup filesWaitingToBeFlushed;
-
 
         public static bool PerformFlushing = true;
 
@@ -53,34 +50,6 @@ namespace FlatRedBall.Glue.IO
         public static void Initialize()
         {
             filesWaitingToBeFlushed = new ChangedFileGroup();
-
-            // Files like 
-            // the .glux and
-            // .csproj files are
-            // saved by Glue, but
-            // when they change on
-            // disk Glue needs to react
-            // to the change.  To react to
-            // the change, Glue keeps a file
-            // watch on these files.  However
-            // when Glue saves these files it kicks
-            // of a file change.  Therefore, any time
-            // Glue changes one of these files it needs
-            // to know to ignore the next file change since
-            // it came from itself.  Furthermore, multiple plugins
-            // and parts of Glue may kick off multiple saves.  Therefore
-            // we can't just keep track of a bool on whether to ignore the
-            // next change or not - instead we have to keep track of an int
-            // to mark how many changes Glue should ignore.
-            Dictionary<string, int> mChangesToIgnore = new Dictionary<string, int>();
-            filesWaitingToBeFlushed.SetIgnoreDictionary(mChangesToIgnore);
-
-            //mExternallyBuiltFileWatcher = new FileSystemWatcher();
-            //mExternallyBuiltFileWatcher.Filter = "*.*";
-            //mExternallyBuiltFileWatcher.IncludeSubdirectories = true;
-            //mExternallyBuiltFileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.DirectoryName ;
-            //mExternallyBuiltFileWatcher.EnableRaisingEvents = false;
-            //mExternallyBuiltFileWatcher.Changed += new FileSystemEventHandler(ExternallyBuiltFileChangedEventRaised);
         }
 
 
@@ -220,12 +189,17 @@ namespace FlatRedBall.Glue.IO
             {
                 IsFlushing = true;
 
+
                 var filesToFlush = new List<FileChange>();
 
 
                 if (filesWaitingToBeFlushed.CanFlush)
                 {
                     filesToFlush.AddRange(filesWaitingToBeFlushed.AllFiles);
+                    if (FileWatchManager.IsPrintingDiagnosticOutput && filesToFlush.Count > 0)
+                    {
+                        GlueCommands.Self.PrintOutput($"Flushing {filesToFlush.Count} files");
+                    }
                     filesWaitingToBeFlushed.Clear();
                 }
 
@@ -261,6 +235,11 @@ namespace FlatRedBall.Glue.IO
                         }
                         TaskManager.Self.Add(async () =>
                         {
+                            if (FileWatchManager.IsPrintingDiagnosticOutput)
+                            {
+                                GlueCommands.Self.PrintOutput($"Flushing {file} files");
+                            }
+
                             var didReact = await FlushChangedFile(fileCopy);
                             if (didReact)
                             {
@@ -306,6 +285,5 @@ namespace FlatRedBall.Glue.IO
         }
 
         #endregion
-
     }
 }

@@ -9,6 +9,7 @@
         <CheckBox IsChecked="{Binding LogTaskDetailsToOutput}" VerticalContentAlignment="Center">Log Task Details to Output</CheckBox>
         <CheckBox IsChecked="{Binding LogQueueChanges}" VerticalContentAlignment="Center">Log Queueing - if unchecked only processing is logged</CheckBox>
         <CheckBox IsChecked="{Binding LogPluginCalls}" VerticalContentAlignment="Center">Log Plugin Calls</CheckBox>
+        <CheckBox IsChecked="{Binding LogFileWatch}" VerticalContentAlignment="Center">Log File Watch</CheckBox>
 
         <Label Content="{Binding CurrentTaskText}"></Label>
     </StackPanel>

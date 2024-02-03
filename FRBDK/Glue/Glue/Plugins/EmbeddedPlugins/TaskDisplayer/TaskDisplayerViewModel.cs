@@ -1,4 +1,5 @@
 ﻿using System;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Tasks;
@@ -28,6 +29,18 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
         {
             get => Get<bool>();
             set => Set(value);
+        }
+
+        public bool LogFileWatch
+        {
+            get => Get<bool>();
+            set
+            {
+                if(Set(value))
+                {
+                    FileWatchManager.IsPrintingDiagnosticOutput = value;
+                }
+            }
         }
 
         public TaskDisplayerViewModel()

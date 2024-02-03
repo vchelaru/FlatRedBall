@@ -198,6 +198,10 @@ namespace FlatRedBall.IO
             return StandardizedCaseSensitive;
         }
 
+        /// <summary>
+        /// Replaces all slashes to be forward slashes.
+        /// </summary>
+        /// <param name="stringToReplace">The string to modify</param>
         static void ReplaceSlashes(ref string stringToReplace)
         {
             bool isNetwork = false;

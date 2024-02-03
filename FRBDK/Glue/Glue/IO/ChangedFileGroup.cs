@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.IO
@@ -58,32 +60,38 @@ namespace FlatRedBall.Glue.IO
             Changes = new ReadOnlyCollection<FileChange>(mChangedFiles);
         }
 
-        public void Add(string fileName, FileChangeType changeType)
+        /// <summary>
+        /// Attempts to add the change to the internal list of changed files. This only adds if the file is not already added
+        /// </summary>
+        /// <param name="fileName">The file to add</param>
+        /// <param name="changeType">The file change</param>
+        /// <returns>Whether the file was added</returns>
+        public bool Add(FilePath filePath, FileChangeType changeType)
         {
-            fileName = FileManager.Standardize(fileName);
-
-            lock(mChangedFiles)
+            var wasAdded = false;
+            lock (mChangedFiles)
             {
-                var contains = mChangedFiles.Any(item => item.FilePath == fileName);
+                var contains = mChangedFiles.Any(item => item.FilePath == filePath);
 
                 if (!contains)
                 {
 
                     mChangedFiles.Add(new FileChange
                     {
-                        FilePath = fileName,
+                        FilePath = filePath,
                         ChangeType = changeType
                     });
+                    wasAdded = true;
                 }
 
                 LastAdd = DateTime.Now;
             }
-
+            return wasAdded;
         }
 
         public void Clear()
         {
-            lock(mChangedFiles)
+            lock (mChangedFiles)
             {
                 mChangedFiles.Clear();
             }
@@ -91,7 +99,7 @@ namespace FlatRedBall.Glue.IO
 
         public void Sort(Comparison<FileChange> comparison)
         {
-            lock(mChangedFiles)
+            lock (mChangedFiles)
             {
                 mChangedFiles.Sort(comparison);
             }
@@ -105,7 +113,25 @@ namespace FlatRedBall.Glue.IO
     {
         #region Fields
 
-        Dictionary<string, int> mChangesToIgnore;
+        // Files like 
+        // the .glux and
+        // .csproj files are
+        // saved by Glue, but
+        // when they change on
+        // disk Glue needs to react
+        // to the change.  To react to
+        // the change, Glue keeps a file
+        // watch on these files.  However
+        // when Glue saves these files it kicks
+        // of a file change.  Therefore, any time
+        // Glue changes one of these files it needs
+        // to know to ignore the next file change since
+        // it came from itself.  Furthermore, multiple plugins
+        // and parts of Glue may kick off multiple saves.  Therefore
+        // we can't just keep track of a bool on whether to ignore the
+        // next change or not - instead we have to keep track of an int
+        // to mark how many changes Glue should ignore.
+        ConcurrentDictionary<string, int> mChangesToIgnore;
 
         FileSystemWatcher mFileSystemWatcher;
 
@@ -129,11 +155,7 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        public object LockObject
-        {
-            get;
-            private set;
-        }
+        object LockObject;
 
         public bool Enabled
         {
@@ -149,9 +171,9 @@ namespace FlatRedBall.Glue.IO
             }
             set
             {
-                if(value?.EndsWith("/") == true)
+                if (value?.EndsWith("/") == true)
                 {
-                    mFileSystemWatcher.Path = value.Substring(0, value.Length-1);
+                    mFileSystemWatcher.Path = value.Substring(0, value.Length - 1);
                 }
                 else
                 {
@@ -160,7 +182,7 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        public ReadOnlyCollection<FileChange> DeletedFiles => mDeletedFiles.Changes; 
+        public ReadOnlyCollection<FileChange> DeletedFiles => mDeletedFiles.Changes;
 
         public ReadOnlyCollection<FileChange> ChangedFiles
         {
@@ -187,7 +209,7 @@ namespace FlatRedBall.Glue.IO
 
         public ChangedFileGroup()
         {
-            mChangesToIgnore = new Dictionary<string, int>();
+            mChangesToIgnore = new ConcurrentDictionary<string, int>();
             LockObject = new object();
             mFileSystemWatcher = new FileSystemWatcher();
 
@@ -212,14 +234,14 @@ namespace FlatRedBall.Glue.IO
                 NotifyFilters.DirectoryName;
 
 
-            mFileSystemWatcher.Deleted += new FileSystemEventHandler(HandleFileSystemDelete);
-            mFileSystemWatcher.Changed += new FileSystemEventHandler(HandleFileSystemChange);
+            mFileSystemWatcher.Deleted += HandleFileSystemDelete;
+            mFileSystemWatcher.Changed += HandleFileSystemChange;
             // May 6, 2022
             mFileSystemWatcher.Created += HandleFileSystemCreated;
             mFileSystemWatcher.Renamed += HandleRename;
         }
 
-        
+
 
         string[] extensionsToIgnoreRenames_CreatesAndDeletes = new string[]
         {
@@ -229,21 +251,7 @@ namespace FlatRedBall.Glue.IO
             SaveClasses.GlueProjectSave.EntityExtension
         };
 
-        private void HandleRename(object sender, RenamedEventArgs e)
-        {
-            var extension = FileManager.GetExtension(e.Name);
 
-
-            var shouldProcess = extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension) == false;
-
-            if(shouldProcess)
-            {
-                // Process both the old and the new just in case someone depended on the old
-                AddChangedFileTo(e.OldFullPath, FileChangeType.Renamed, mChangedFiles);
-                AddChangedFileTo(e.FullPath, FileChangeType.Renamed, mChangedFiles);
-            }
-
-        }
 
         public void ClearIgnores()
         {
@@ -269,22 +277,42 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        public void SetIgnoreDictionary(Dictionary<string, int> sharedInstance)
-        {
-            mChangesToIgnore = sharedInstance;
-        }
-
         void HandleFileSystemDelete(object sender, FileSystemEventArgs e)
         {
             string fileName = e.FullPath;
             ChangeInformation toAddTo = mDeletedFiles;
 
-            bool shouldIgnoreDelete = GetIfShouldIgnoreDelete(fileName);
-            if(!shouldIgnoreDelete)
+            var extension = FileManager.GetExtension(fileName);
+            bool shouldProcess = !extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension) &&
+                !IsSkippedBasedOnTypeOrLocation(e.Name);
+
+
+            if (shouldProcess)
             {
-                AddChangedFileTo(fileName, FileChangeType.Deleted, toAddTo);
+                TryAddChangedFileTo(fileName, FileChangeType.Deleted, toAddTo);
             }
 
+        }
+
+        void HandleFileSystemChange(object sender, FileSystemEventArgs e)
+        {
+            string fileName = e.FullPath;
+
+            bool shouldProcess = !IsSkippedBasedOnTypeOrLocation(e.Name);
+
+
+            if (e.ChangeType == WatcherChangeTypes.Renamed)
+            {
+                var extension = FileManager.GetExtension(fileName);
+                shouldProcess = !extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension);
+            }
+
+            if (shouldProcess)
+            {
+                ChangeInformation toAddTo = mChangedFiles;
+
+                TryAddChangedFileTo(fileName, FileChangeType.Modified, toAddTo);
+            }
         }
 
         private void HandleFileSystemCreated(object sender, FileSystemEventArgs e)
@@ -292,69 +320,78 @@ namespace FlatRedBall.Glue.IO
             string fileName = e.FullPath;
 
             var extension = FileManager.GetExtension(fileName);
-            bool shouldProcess = !extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension);
+            bool shouldProcess = !extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension) &&
+                !IsSkippedBasedOnTypeOrLocation(e.Name);
+
 
             if (shouldProcess)
             {
                 ChangeInformation toAddTo = mChangedFiles;
 
-                bool wasAdded = AddChangedFileTo(fileName, FileChangeType.Created, toAddTo);
+                TryAddChangedFileTo(fileName, FileChangeType.Created, toAddTo);
             }
         }
 
-        private bool GetIfShouldIgnoreDelete(string fileName)
+        private void HandleRename(object sender, RenamedEventArgs e)
         {
-            var extension = FileManager.GetExtension(fileName);
-            return extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension);
-        }
+            var extension = FileManager.GetExtension(e.Name);
 
-        void HandleFileSystemChange(object sender, FileSystemEventArgs e)
-        {
-            string fileName = e.FullPath;
 
-            bool shouldProcess = true;
+            var shouldProcess = extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension) == false &&
+                !IsSkippedBasedOnTypeOrLocation(e.Name);
 
-            if(e.ChangeType == WatcherChangeTypes.Renamed)
+            if (shouldProcess)
             {
-                var extension = FileManager.GetExtension(fileName);
-                shouldProcess = !extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension);
-            }
-            
-            if(shouldProcess)
-            {
-                ChangeInformation toAddTo = mChangedFiles;
-
-                bool wasAdded = AddChangedFileTo(fileName, FileChangeType.Modified, toAddTo);
+                // Process both the old and the new just in case someone depended on the old
+                TryAddChangedFileTo(e.OldFullPath, FileChangeType.Renamed, mChangedFiles);
+                TryAddChangedFileTo(e.FullPath, FileChangeType.Renamed, mChangedFiles);
             }
         }
 
-        private bool AddChangedFileTo(string fileName, FileChangeType fileChangeType, ChangeInformation toAddTo)
+        bool IsSkippedBasedOnTypeOrLocation(FilePath filePath) => 
+            filePath.Standardized.Contains("/.vs/") 
+            || filePath.Standardized.StartsWith(".vs") 
+            || filePath.Standardized.Contains("/bin/Debug/", StringComparison.InvariantCultureIgnoreCase) 
+            || filePath.Standardized.EndsWith(".generated.cs", StringComparison.InvariantCultureIgnoreCase);
+
+
+        private void TryAddChangedFileTo(string fileName, FileChangeType fileChangeType, ChangeInformation toAddTo)
         {
             bool wasAdded = false;
 
-            lock (LockObject)
-            {
-                bool wasIgnored = false;
+            bool wasIgnored = false;
 
-                // When a file changes, it's deleted and then added. Therefore, if we make a change (delete + create), but we ignore
-                // one change, that means that the delete will get ignored, but the create won't. Therefore, we should not check ignores
-                // on deletes:
-                if(fileChangeType != FileChangeType.Deleted)
+            // When a file changes, it's deleted and then added. Therefore, if we make a change (delete + create), but we ignore
+            // one change, that means that the delete will get ignored, but the create won't. Therefore, we should not check ignores
+            // on deletes:
+            if (fileChangeType != FileChangeType.Deleted)
+            {
+                wasIgnored = TryIgnoreFileChange(fileName);
+            }
+
+            if (wasIgnored)
+            {
+                if (FileWatchManager.IsPrintingDiagnosticOutput)
                 {
-                    wasIgnored = TryIgnoreFileChange(fileName);
+                    GlueCommands.Self.PrintOutput($"Ignoring {fileChangeType} on {fileName}");
                 }
-                if (!wasIgnored)
+            }
+            else // !wasIgnored
+            {
+                lock (LockObject)
                 {
-                    toAddTo.Add(fileName, fileChangeType);
+                    wasAdded = toAddTo.Add(fileName, fileChangeType);
                     if (SortDelegate != null)
                     {
                         toAddTo.Sort(SortDelegate);
                     }
-                    wasAdded = true;
                 }
-                mLastModification = DateTime.Now;
+                if (wasAdded && FileWatchManager.IsPrintingDiagnosticOutput)
+                {
+                    GlueCommands.Self.PrintOutput($"Storing change {fileChangeType} on {fileName} for flushing");
+                }
             }
-            return wasAdded;
+            mLastModification = DateTime.Now;
         }
 
         bool TryIgnoreFileChange(string fileName)
@@ -376,22 +413,18 @@ namespace FlatRedBall.Glue.IO
 
         public void IgnoreNextChangeOn(string fileName)
         {
-            lock (LockObject)
+            if (FileManager.IsRelative(fileName))
             {
-
-                if (FileManager.IsRelative(fileName))
-                {
-                    throw new Exception("File name should be absolute");
-                }
-                string standardized = FileManager.Standardize(fileName, null, false).ToLowerInvariant() ;
-                if (mChangesToIgnore.ContainsKey(standardized))
-                {
-                    mChangesToIgnore[standardized] = 1 + mChangesToIgnore[standardized];
-                }
-                else
-                {
-                    mChangesToIgnore[standardized] = 1;
-                }
+                throw new Exception("File name should be absolute");
+            }
+            string standardized = FileManager.Standardize(fileName, null, false).ToLowerInvariant();
+            if (mChangesToIgnore.ContainsKey(standardized))
+            {
+                mChangesToIgnore[standardized] = 1 + mChangesToIgnore[standardized];
+            }
+            else
+            {
+                mChangesToIgnore[standardized] = 1;
             }
         }
 
