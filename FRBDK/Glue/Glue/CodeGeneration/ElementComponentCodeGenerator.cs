@@ -22,7 +22,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         // We don't generate using statements.  Why?
         // Because multiple plugins may generate using
         // statements for types that would conflict.  Therefore
-        // plugins should just use the full type nme for things that
+        // plugins should just use the full type name for things that
         // aren't by default added in the generate code template.
 
         public virtual void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
@@ -140,7 +140,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         /// add code to the UpdateDependencies block then Glue will not generate an UpdateDependencies call.
         /// </summary>
         /// <remarks>
-        /// UpdateDependences has historically been implemented in custom code on Glue entities. This is slowly
+        /// UpdateDependencies has historically been implemented in custom code on Glue entities. This is slowly
         /// changing with the introduction of the entity performance plugin which can generate code to
         /// update attachments. But we don't want to break all projects that have custom code UpdateDependencies
         /// </remarks>
