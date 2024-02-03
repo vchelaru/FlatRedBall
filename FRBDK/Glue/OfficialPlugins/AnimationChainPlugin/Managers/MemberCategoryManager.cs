@@ -94,7 +94,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
         #region Circle
 
-        private static void SetmemberCategories(DataUiGrid grid, CircleViewModel circle)
+        public static void SetMemberCategories(DataUiGrid grid, CircleViewModel circle)
         {
             var list = new List<MemberCategory>();
 

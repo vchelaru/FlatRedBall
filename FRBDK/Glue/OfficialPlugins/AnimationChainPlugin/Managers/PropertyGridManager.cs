@@ -31,5 +31,12 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             PropertyGrid.Refresh();
         }
 
+        internal static void ShowInPropertyGrid(CircleViewModel circle)
+        {
+            PropertyGrid.Instance = circle;
+            MemberCategoryManager.SetMemberCategories(PropertyGrid, circle);
+            PropertyGrid.Refresh();
+        }
+
     }
 }

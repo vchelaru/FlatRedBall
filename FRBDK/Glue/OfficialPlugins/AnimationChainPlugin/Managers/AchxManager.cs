@@ -53,17 +53,26 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             {
                 case nameof(ViewModel.SelectedAnimationChain):
                 case nameof(ViewModel.SelectedAnimationFrame):
-                    if(ViewModel.SelectedAnimationFrame != null)
+                case nameof(ViewModel.SelectedShape):
+                    if(ViewModel.SelectedShape != null)
+                    {
+                        if(ViewModel.SelectedShape is CircleViewModel circle)
+                        {
+                            View.PropertyGrid.Visibility = System.Windows.Visibility.Visible;
+                            PropertyGridManager.ShowInPropertyGrid(circle);
+                        }
+                        else
+                        {
+                            View.PropertyGrid.Visibility = System.Windows.Visibility.Hidden;
+
+                        }
+                    }
+                    else if(ViewModel.SelectedAnimationFrame != null)
                     {
                         View.PropertyGrid.Visibility = System.Windows.Visibility.Visible;
                         PropertyGridManager.ShowInPropertyGrid(ViewModel.SelectedAnimationFrame);
                     }
-                    else if(ViewModel.SelectedShape != null)
-                    {
-                        //Show Shape Properties
-                        View.PropertyGrid.Visibility = System.Windows.Visibility.Hidden;
-                    }
-                    else
+                    else if(ViewModel.SelectedAnimationChain != null)
                     {
                         View.PropertyGrid.Visibility = System.Windows.Visibility.Visible;
                         PropertyGridManager.ShowInPropertyGrid(ViewModel.SelectedAnimationChain);
