@@ -33,25 +33,12 @@ namespace FlatRedBall.Glue.IO
     {
         #region Fields
 
-        //static FileSystemWatcher mFileSystemWatcher;
-        static ChangedFileGroup mChangedProjectFiles;
-        //static FileSystemWatcher mExternallyBuiltFileWatcher;
-
-        //static ChangeInformation ContainedFilesChangeInfo = new ChangeInformation();
-        //static ChangeInformation BehaviorChangeInfo = new ChangeInformation();
-        //static ChangeInformation ExternallyBuiltFilesChangeInfo = new ChangeInformation();
-        static ChangeInformation BuiltFileChangeInfo = new ChangeInformation();
-
-        //static List<string> mChangedFiles = new List<string>();
-        //static List<string> mChangedBehaviors = new List<string>();
-        //static List<string> mChangedExternallyBuiltFiles = new List<string>();
-
-        //static DateTime mLastChangedFileAdded;
-        //static DateTime mLastChangedExternallyBuiltFileAdded;
-
+        static ChangedFileGroup filesWaitingToBeFlushed;
 
 
         public static bool PerformFlushing = true;
+
+        public static bool IsPrintingDiagnosticOutput = false;
 
         static bool IsFlushing;
         #endregion
@@ -61,159 +48,11 @@ namespace FlatRedBall.Glue.IO
         static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1);
         #endregion
 
-        #region Event Methods
-
-        //static void FileChangedEventRaised(object sender, FileSystemEventArgs e)
-        //{
-        //            IgnoreReason ignoreReason;
-        //            bool isFileIgnored = FileWatchManager.IsFileIgnored(e.FullPath, out ignoreReason);
-
-        //            if (!isFileIgnored)
-        //            {
-        //                ContainedFilesChangeInfo.Add(fileName);
-        //            }
-        //            else if (ignoreReason == IgnoreReason.BuiltFile)
-        //            {
-        //                string fileName = e.FullPath;
-
-        //                string standardizedFileName = FileManager.Standardize(fileName).ToLower();
-
-        //                // If it's in the bin folder, we still want to notify the PluginManager in case any 
-        //                // plugins are going to react to this
-        //                BuiltFileChangeInfo.Add(standardizedFileName);
-        //            }
-        //}
-
-        //static void ExternallyBuiltFileChangedEventRaised(object sender, FileSystemEventArgs e)
-        //{
-        //    lock (LockObject)
-        //    {
-        //        // Normally we want to ignore files that are outside of the directory tree,
-        //        // but not for externally built files.
-        //        //bool isFileIgnored = FileWatchManager.IsFileIgnored(e.FullPath);
-
-        //        //if (!isFileIgnored)
-        //        {
-        //            string fileName = e.FullPath;
-
-        //            ExternallyBuiltFilesChangeInfo.Add(fileName);
-        //        }
-        //    }
-        //}
-
-        #endregion
-
         #region Methods
-
-
-        private static async Task<bool> ReactToChangedFile(FileChange file)
-        {
-            bool wasAnythingChanged = false;
-
-            IgnoreReason reason = IgnoreReason.NotIgnored;
-            bool isIgnored = false;
-
-            isIgnored = IsFileIgnoredBasedOnFileType(file.FilePath, out reason);
-
-            if (!isIgnored)
-            {
-                bool handled = await UpdateReactor.UpdateFile(file.FilePath, file.ChangeType);
-                wasAnythingChanged |= handled;
-            }
-            else if (reason == IgnoreReason.BuiltFile)
-            {
-                Plugins.PluginManager.ReactToChangedBuiltFile(file.FilePath.FullPath);
-                wasAnythingChanged = true;
-            }
-
-
-            return wasAnythingChanged;
-        }
-
-
-        public static void FlushAndClearIgnores()
-        {
-            Flush();
-            mChangedProjectFiles.ClearIgnores();
-        }
-
-        /// <summary>
-        /// Loops through all files that have been changed since the last flush, allowing
-        /// Glue (and plugins) to react to these changed files. 
-        /// </summary>
-        /// <remarks>
-        /// The handling of the system event is in ChangedFileGroup.
-        /// </remarks>
-        public static async Task Flush()
-        {
-            await semaphoreSlim.WaitAsync();
-            if (!IsFlushing && PerformFlushing)
-            {
-                IsFlushing = true;
-
-                var filesToFlush = new List<FileChange>();
-
-
-                if(mChangedProjectFiles.CanFlush)
-                {
-                    filesToFlush.AddRange(mChangedProjectFiles.AllFiles);
-                    mChangedProjectFiles.Clear();
-                }
-
-                bool shouldRefreshUnreferencedFiles = false;
-
-                var distinctFiles =
-                    filesToFlush.Distinct().ToArray();
-
-                foreach (var file in distinctFiles)
-                {
-
-                    var fileCopy = file;
-
-                    // The task internally will skip files if they are to be ignored, but projects can have
-                    // *so many* generated files, that putting a check here on generated can eliminate hundreds
-                    // of tasks from being created, improving startup performance
-                    IgnoreReason reason;
-                    bool isIgnored = IsFileIgnoredBasedOnFileType(fileCopy.FilePath, out reason);
-
-                    // November 12, 2019
-                    // Vic asks - why do we only ignore files that are generated here?
-                    //var skip = isIgnored && reason == IgnoreReason.GeneratedCodeFile;
-                    var skip = isIgnored;
-
-                    if(!skip)
-                    {
-                        // If individual files changed, we will flush. But if a directory changed, we'll ignore that
-                        // for refreshing unreferenced files. Unreferenced files can change if a file changes or is deleted 
-                        // or added, so the specific file will appear in this list. Use that not the directory. 
-                        if(!fileCopy.FilePath.IsDirectory)
-                        {
-                            shouldRefreshUnreferencedFiles = true;
-                        }
-                        TaskManager.Self.Add(async () =>
-                            {
-                                var didReact = await ReactToChangedFile(fileCopy);
-                                if (didReact)
-                                {
-                                    UnreferencedFilesManager.Self.IsRefreshRequested = true;
-                                }
-                            },
-                            "Reacting to changed file " + fileCopy.FilePath);
-                    }
-                }
-
-                if (shouldRefreshUnreferencedFiles)
-                {
-                    UnreferencedFilesManager.Self.RefreshUnreferencedFiles(async: true);
-                }
-                IsFlushing = false;
-            }
-            semaphoreSlim.Release();
-        }
 
         public static void Initialize()
         {
-            mChangedProjectFiles = new ChangedFileGroup();
+            filesWaitingToBeFlushed = new ChangedFileGroup();
 
             // Files like 
             // the .glux and
@@ -234,13 +73,7 @@ namespace FlatRedBall.Glue.IO
             // next change or not - instead we have to keep track of an int
             // to mark how many changes Glue should ignore.
             Dictionary<string, int> mChangesToIgnore = new Dictionary<string, int>();
-            mChangedProjectFiles.SetIgnoreDictionary(mChangesToIgnore);
-
-            // Oct 11, 2022 - why do we sort? This actually adds a bit to
-            // the loading process since so many files can change on disk.
-            // Was this for debugging? I can't figure out why we might want this
-            // so I'm going to remove this to make Glue load faster:
-            //mChangedProjectFiles.SortDelegate = CompareFiles;
+            filesWaitingToBeFlushed.SetIgnoreDictionary(mChangesToIgnore);
 
             //mExternallyBuiltFileWatcher = new FileSystemWatcher();
             //mExternallyBuiltFileWatcher.Filter = "*.*";
@@ -252,13 +85,14 @@ namespace FlatRedBall.Glue.IO
 
 
         public static void IgnoreNextChangeOnFile(FilePath filePath) => IgnoreNextChangeOnFile(filePath.FullPath);
+
         public static void IgnoreNextChangeOnFile(string file)
         {
             // all changed file groups share the same instance, so we only
             // have to use one of them:
             
 #if !UNIT_TESTS
-            mChangedProjectFiles.IgnoreNextChangeOn(file);
+            filesWaitingToBeFlushed.IgnoreNextChangeOn(file);
             //if(FileManager.GetExtension(file) == "csproj")
             //{
             //    Plugins.PluginManager.ReceiveOutput($"Ignore {file} {mChangedProjectFiles.NumberOfTimesToIgnore(file)} times");
@@ -283,18 +117,18 @@ namespace FlatRedBall.Glue.IO
                 }
 
                 // Could be null if initialization failed due to XNA not being installed
-                if (mChangedProjectFiles != null)
+                if (filesWaitingToBeFlushed != null)
                 {
-                    mChangedProjectFiles.Path = directory;
-                    mChangedProjectFiles.Enabled = true;
+                    filesWaitingToBeFlushed.Path = directory;
+                    filesWaitingToBeFlushed.Enabled = true;
                 }
             }
             else
             {
                 // Could be null if initialization failed due to XNA not being installed
-                if (mChangedProjectFiles != null)
+                if (filesWaitingToBeFlushed != null)
                 {
-                    mChangedProjectFiles.Enabled = false;
+                    filesWaitingToBeFlushed.Enabled = false;
                 }
             }
         }
@@ -306,14 +140,6 @@ namespace FlatRedBall.Glue.IO
             bool returnValue = folderName == ProjectManager.ProjectBase.Name && string.IsNullOrEmpty(Directory.GetFiles(directory).FirstOrDefault(s => FileManager.GetExtension(s) == "sln"));
             return returnValue;
         }
-
-        //public static void SetExternallyBuiltContentDirectory(string absoluteDirectory)
-        //{
-
-        //    mExternallyBuiltFileWatcher.Path = absoluteDirectory;
-        //    mExternallyBuiltFileWatcher.EnableRaisingEvents = true;
-        //}
-
 
         private static bool IsFileIgnoredBasedOnFileType(FilePath filePath, out IgnoreReason reason)
         {
@@ -370,50 +196,116 @@ namespace FlatRedBall.Glue.IO
             return isIgnored;                
         }
 
-        private static bool IsBuiltFile(string fileName)
+        #endregion
+
+        #region Flush Files
+
+        public static void FlushAndClearIgnores()
         {
-            if (!FileManager.IsRelative(fileName))
-            {
-                string projectDirectory = ProjectManager.ProjectRootDirectory;
-                fileName = FileManager.MakeRelative(fileName, projectDirectory);
-            }
-            return fileName.StartsWith("bin/") || fileName.StartsWith("bin\\");
+            _ = Flush();
+            filesWaitingToBeFlushed.ClearIgnores();
         }
 
-        private static int CompareFiles(FileChange first, FileChange second)
+        /// <summary>
+        /// Loops through all files that have been changed since the last flush, allowing
+        /// Glue (and plugins) to react to these changed files. 
+        /// </summary>
+        /// <remarks>
+        /// The handling of the system event is in ChangedFileGroup.
+        /// </remarks>
+        public static async Task Flush()
         {
-            int firstValue = GetFileValue(first.FilePath.FullPath);
-            int secondValue = GetFileValue(second.FilePath.FullPath);
-            // I think I had this backwards, if the second has a greater value, then it should be positive
-//            return firstValue - secondValue;
-            return secondValue - firstValue;
+            await semaphoreSlim.WaitAsync();
+            if (!IsFlushing && PerformFlushing)
+            {
+                IsFlushing = true;
+
+                var filesToFlush = new List<FileChange>();
+
+
+                if (filesWaitingToBeFlushed.CanFlush)
+                {
+                    filesToFlush.AddRange(filesWaitingToBeFlushed.AllFiles);
+                    filesWaitingToBeFlushed.Clear();
+                }
+
+                bool shouldRefreshUnreferencedFiles = false;
+
+                var distinctFiles =
+                    filesToFlush.Distinct().ToArray();
+
+                foreach (var file in distinctFiles)
+                {
+
+                    var fileCopy = file;
+
+                    // The task internally will skip files if they are to be ignored, but projects can have
+                    // *so many* generated files, that putting a check here on generated can eliminate hundreds
+                    // of tasks from being created, improving startup performance
+                    IgnoreReason reason;
+                    bool isIgnored = IsFileIgnoredBasedOnFileType(fileCopy.FilePath, out reason);
+
+                    // November 12, 2019
+                    // Vic asks - why do we only ignore files that are generated here?
+                    //var skip = isIgnored && reason == IgnoreReason.GeneratedCodeFile;
+                    var skip = isIgnored;
+
+                    if (!skip)
+                    {
+                        // If individual files changed, we will flush. But if a directory changed, we'll ignore that
+                        // for refreshing unreferenced files. Unreferenced files can change if a file changes or is deleted 
+                        // or added, so the specific file will appear in this list. Use that not the directory. 
+                        if (!fileCopy.FilePath.IsDirectory)
+                        {
+                            shouldRefreshUnreferencedFiles = true;
+                        }
+                        TaskManager.Self.Add(async () =>
+                        {
+                            var didReact = await FlushChangedFile(fileCopy);
+                            if (didReact)
+                            {
+                                UnreferencedFilesManager.Self.IsRefreshRequested = true;
+                            }
+                        },
+                            "Reacting to changed file " + fileCopy.FilePath);
+                    }
+                }
+
+                if (shouldRefreshUnreferencedFiles)
+                {
+                    UnreferencedFilesManager.Self.RefreshUnreferencedFiles(async: true);
+                }
+                IsFlushing = false;
+            }
+            semaphoreSlim.Release();
         }
 
 
-        static int GetFileValue(string file)
+        private static async Task<bool> FlushChangedFile(FileChange file)
         {
-            // CSProj files first
-            
-            string extension = FileManager.GetExtension(file);
-            if (extension == "csproj" ||
-                extension == "vcproj")
+            bool wasAnythingChanged = false;
+
+            IgnoreReason reason = IgnoreReason.NotIgnored;
+            bool isIgnored = false;
+
+            isIgnored = IsFileIgnoredBasedOnFileType(file.FilePath, out reason);
+
+            if (!isIgnored)
             {
-                return 3;
+                bool handled = await UpdateReactor.UpdateFile(file.FilePath, file.ChangeType);
+                wasAnythingChanged |= handled;
             }
-            else if (extension == "contentproj")
+            else if (reason == IgnoreReason.BuiltFile)
             {
-                return 2;
+                Plugins.PluginManager.ReactToChangedBuiltFile(file.FilePath.FullPath);
+                wasAnythingChanged = true;
             }
-            else if (extension == "glux" || extension == "gluj")
-            {
-                return 1;
-            }
-            else
-            {
-                return 0;
-            }
+
+
+            return wasAnythingChanged;
         }
 
         #endregion
+
     }
 }
