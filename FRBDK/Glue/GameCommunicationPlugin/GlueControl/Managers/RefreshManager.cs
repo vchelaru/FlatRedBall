@@ -31,16 +31,6 @@ using CompilerLibrary.Error;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
-    #region Classes
-
-    public class ExpiringFilePath
-    {
-        public DateTimeOffset? Expiration { get; set; }
-        public FilePath FilePath { get; set; }
-    }
-
-    #endregion
-
     public class RefreshManager
     {
         public RefreshManager(Func<string, string, Task<string>> eventCallerWithReturn, Action<string, string> eventCaller)

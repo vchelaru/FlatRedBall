@@ -41,6 +41,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void IgnoreNextChangeOnFile(string absoluteFileName);
         void IgnoreNextChangeOnFile(FilePath filePath);
+        void IgnoreChangeOnFileUntil(FilePath filePath, DateTimeOffset expiration);
 
         string GetFullFileName(ReferencedFileSave rfs);
         FilePath GetFilePath(ReferencedFileSave rfs);

@@ -184,7 +184,8 @@ namespace OfficialPlugins.ContentPreview.Views
             var animationChain = ViewModel.BackgingData;
             var filePath = this.achxFilePath;
 
-            GlueCommands.Self.FileCommands.IgnoreNextChangeOnFile(filePath);
+            GlueCommands.Self.FileCommands.IgnoreChangeOnFileUntil(
+                filePath, DateTimeOffset.Now.AddSeconds(2));
             try
             {
                 GlueCommands.Self.TryMultipleTimes(() =>

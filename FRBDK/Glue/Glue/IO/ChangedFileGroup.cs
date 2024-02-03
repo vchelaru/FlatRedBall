@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 
@@ -131,10 +132,11 @@ namespace FlatRedBall.Glue.IO
         // we can't just keep track of a bool on whether to ignore the
         // next change or not - instead we have to keep track of an int
         // to mark how many changes Glue should ignore.
-        ConcurrentDictionary<string, int> mChangesToIgnore;
+        ConcurrentDictionary<FilePath, int> mChangesToIgnore;
+
+        ConcurrentDictionary<FilePath, DateTimeOffset> timedChangesToIgnore;
 
         FileSystemWatcher mFileSystemWatcher;
-
 
         static TimeSpan mMinimumTimeAfterChangeToReact = new TimeSpan(0, 0, 1);
 
@@ -209,7 +211,9 @@ namespace FlatRedBall.Glue.IO
 
         public ChangedFileGroup()
         {
-            mChangesToIgnore = new ConcurrentDictionary<string, int>();
+            mChangesToIgnore = new ConcurrentDictionary<FilePath, int>();
+            timedChangesToIgnore = new ConcurrentDictionary<FilePath, DateTimeOffset>();
+
             LockObject = new object();
             mFileSystemWatcher = new FileSystemWatcher();
 
@@ -240,8 +244,6 @@ namespace FlatRedBall.Glue.IO
             mFileSystemWatcher.Created += HandleFileSystemCreated;
             mFileSystemWatcher.Renamed += HandleRename;
         }
-
-
 
         string[] extensionsToIgnoreRenames_CreatesAndDeletes = new string[]
         {
@@ -348,14 +350,13 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        bool IsSkippedBasedOnTypeOrLocation(FilePath filePath) => 
-            filePath.Standardized.Contains("/.vs/") 
-            || filePath.Standardized.StartsWith(".vs") 
-            || filePath.Standardized.Contains("/bin/Debug/", StringComparison.InvariantCultureIgnoreCase) 
+        bool IsSkippedBasedOnTypeOrLocation(FilePath filePath) =>
+            filePath.Standardized.Contains("/.vs/")
+            || filePath.Standardized.StartsWith(".vs")
+            || filePath.Standardized.Contains("/bin/Debug/", StringComparison.InvariantCultureIgnoreCase)
             || filePath.Standardized.EndsWith(".generated.cs", StringComparison.InvariantCultureIgnoreCase);
 
-
-        private void TryAddChangedFileTo(string fileName, FileChangeType fileChangeType, ChangeInformation toAddTo)
+        private void TryAddChangedFileTo(FilePath fileName, FileChangeType fileChangeType, ChangeInformation toAddTo)
         {
             bool wasAdded = false;
 
@@ -367,6 +368,14 @@ namespace FlatRedBall.Glue.IO
             if (fileChangeType != FileChangeType.Deleted)
             {
                 wasIgnored = TryIgnoreFileChange(fileName);
+            }
+
+            if(!wasIgnored)
+            {
+                if(timedChangesToIgnore.TryGetValue(fileName, out DateTimeOffset expiration))
+                {
+                    wasIgnored = expiration > DateTimeOffset.Now;
+                }
             }
 
             if (wasIgnored)
@@ -394,22 +403,21 @@ namespace FlatRedBall.Glue.IO
             mLastModification = DateTime.Now;
         }
 
-        bool TryIgnoreFileChange(string fileName)
+        bool TryIgnoreFileChange(FilePath fileName)
         {
-            fileName = fileName.ToLowerInvariant();
-            int changesToIgnore = 0;
+            int changesToIgnore;
 
-            fileName = FileManager.Standardize(fileName, null, false);
-
-            if (mChangesToIgnore.ContainsKey(fileName))
+            if(mChangesToIgnore.TryGetValue(fileName, out changesToIgnore))
             {
-                changesToIgnore = mChangesToIgnore[fileName];
-
                 mChangesToIgnore[fileName] = System.Math.Max(0, changesToIgnore - 1);
             }
-
+            else
+            {
+                changesToIgnore = 0;
+            }
             return changesToIgnore > 0;
         }
+
 
         public void IgnoreNextChangeOn(string fileName)
         {
@@ -425,6 +433,18 @@ namespace FlatRedBall.Glue.IO
             else
             {
                 mChangesToIgnore[standardized] = 1;
+            }
+        }
+
+        public void IgnoreChangeOnFileUntil(FilePath filePath, DateTimeOffset expiration)
+        {
+            if (timedChangesToIgnore.TryGetValue(filePath, out DateTimeOffset existing))
+            {
+                timedChangesToIgnore[filePath] = existing > expiration ? expiration : expiration;
+            }
+            else
+            {
+                timedChangesToIgnore[filePath] = expiration;
             }
         }
 

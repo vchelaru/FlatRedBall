@@ -34,13 +34,13 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         }
 
 
-        public float XOffset
+        public float RelativeX
         {
             get => Get<float>();
             set => Set(value);
         }
 
-        public float YOffset
+        public float RelativeY
         {
             get => Get<float>();
             set => Set(value);
@@ -113,11 +113,19 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         [DependsOn(nameof(RightCoordinate))]
         [DependsOn(nameof(LeftCoordinate))]
-        public int Width => MathFunctions.RoundToInt( (RightCoordinate - LeftCoordinate) );
+        public int Width
+        {
+            get => MathFunctions.RoundToInt((RightCoordinate - LeftCoordinate));
+            set => RightCoordinate = value + LeftCoordinate;
+        }
 
         [DependsOn(nameof(BottomCoordinate))]
         [DependsOn(nameof(TopCoordinate))]
-        public int Height => MathFunctions.RoundToInt( (BottomCoordinate - TopCoordinate) );
+        public int Height
+        {
+            get => MathFunctions.RoundToInt((BottomCoordinate - TopCoordinate));
+            set => BottomCoordinate = value + TopCoordinate;
+        }
 
 
 
@@ -159,6 +167,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             FlipHorizontal = animationFrame.FlipHorizontal;
             FlipVertical = animationFrame.FlipVertical;
 
+            RelativeX = animationFrame.RelativeX;
+            RelativeY = animationFrame.RelativeY;
 
             var rectangles = animationFrame.ShapeCollectionSave?.AxisAlignedRectangleSaves;
             if (rectangles != null)
@@ -183,6 +193,19 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         {
             var toReturn = false;
             // build this slowly over time:
+
+            if(animationFrame.RelativeX != RelativeX)
+            {
+                animationFrame.RelativeX = RelativeX;
+                toReturn = true;
+            }
+
+            if(animationFrame.RelativeY != RelativeY)
+            {
+                animationFrame.RelativeY = RelativeY;
+                toReturn = true;
+            }
+
             if(animationFrame.LeftCoordinate != LeftCoordinate)
             {
                 animationFrame.LeftCoordinate = LeftCoordinate;
@@ -206,6 +229,19 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
                 animationFrame.BottomCoordinate = BottomCoordinate;
                 toReturn = true;
             }
+
+            if(animationFrame.FlipVertical != FlipVertical)
+            {
+                animationFrame.FlipVertical = FlipVertical;
+                toReturn = true;
+            }
+
+            if(animationFrame.FlipHorizontal != FlipHorizontal)
+            {
+                animationFrame.FlipHorizontal = FlipHorizontal;
+                toReturn = true;
+            }
+
             return toReturn;
         }
     }

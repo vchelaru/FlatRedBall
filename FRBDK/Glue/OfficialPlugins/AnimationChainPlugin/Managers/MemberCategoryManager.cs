@@ -55,15 +55,15 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
 
             Add(nameof(AnimationFrameViewModel.StrippedTextureName));
-            Add(nameof(AnimationFrameViewModel.XOffset));
-            Add(nameof(AnimationFrameViewModel.YOffset));
+            Add(nameof(AnimationFrameViewModel.RelativeX));
+            Add(nameof(AnimationFrameViewModel.RelativeY));
             Add(nameof(AnimationFrameViewModel.X), canWrite:true);
             Add(nameof(AnimationFrameViewModel.Y), canWrite: true);
-            Add(nameof(AnimationFrameViewModel.Width));
-            Add(nameof(AnimationFrameViewModel.Height));
-            Add(nameof(AnimationFrameViewModel.LengthInSeconds));
-            Add(nameof(AnimationFrameViewModel.FlipHorizontal));
-            Add(nameof(AnimationFrameViewModel.FlipVertical));
+            Add(nameof(AnimationFrameViewModel.Width), canWrite: true);
+            Add(nameof(AnimationFrameViewModel.Height), canWrite: true);
+            Add(nameof(AnimationFrameViewModel.LengthInSeconds), canWrite: true);
+            Add(nameof(AnimationFrameViewModel.FlipHorizontal), canWrite:true);
+            Add(nameof(AnimationFrameViewModel.FlipVertical), canWrite: true);
 
             void Add(string propertyName, bool canWrite = false)
             {

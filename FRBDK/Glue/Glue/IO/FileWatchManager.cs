@@ -52,7 +52,6 @@ namespace FlatRedBall.Glue.IO
             filesWaitingToBeFlushed = new ChangedFileGroup();
         }
 
-
         public static void IgnoreNextChangeOnFile(FilePath filePath) => IgnoreNextChangeOnFile(filePath.FullPath);
 
         public static void IgnoreNextChangeOnFile(string file)
@@ -69,6 +68,9 @@ namespace FlatRedBall.Glue.IO
 
 #endif
         }
+
+        public static void IgnoreChangeOnFileUntil(FilePath filePath, DateTimeOffset expiration) =>
+            filesWaitingToBeFlushed.IgnoreChangeOnFileUntil(filePath, expiration);
 
         public static void UpdateToProjectDirectory()
         {

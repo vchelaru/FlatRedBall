@@ -106,7 +106,7 @@ namespace OfficialPluginsCore.AnimationChainPlugin
 
         private void HandleFileChanged(FilePath filePath, FileChangeType fileChange)
         {
-            if (filePath.Extension == "achx" && fileChange == FileChangeType.Modified)
+            if (filePath.Extension == "achx")
             {
                 this.RefreshErrors();
 
