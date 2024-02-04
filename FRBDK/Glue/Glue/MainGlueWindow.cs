@@ -63,6 +63,8 @@ public partial class MainGlueWindow : Form
         StartupManager.SetMsBuildEnvironmentVariable();
 
         GlueCommands.Self.DialogCommands.IsMainWindowDisposed = () => IsDisposed;
+        GlueCommands.Self.DialogCommands.Win32Window = this;
+
 
         Self = this;
         GlueCommands.Self.DialogCommands.ManagedThreadId = 

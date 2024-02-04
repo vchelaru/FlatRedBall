@@ -75,6 +75,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         int ManagedThreadId { get; set; }
 
         Func<bool> IsMainWindowDisposed { get; set; }
+        IWin32Window Win32Window { get; set; }
 
         void FocusTab(string dialogTitle);
 

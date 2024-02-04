@@ -205,7 +205,7 @@ namespace FlatRedBall.Glue.SetVariable
                     mbmb.AddButton("Remove this variable", DialogResult.Yes);
                     mbmb.AddButton("Keep this as a non-functional Variable (it will no longer control the object's visibility)", DialogResult.No);
 
-                    DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
+                    DialogResult result = mbmb.ShowDialog(GlueCommands.Self.DialogCommands.Win32Window);
 
                     if (result == DialogResult.Yes)
                     {

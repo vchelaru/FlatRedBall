@@ -59,7 +59,7 @@ namespace FlatRedBall.Glue.AutomatedGlue
                 {
                     // todo when we convert over:
                     //System.Windows.MessageBox.Show(MainWpfWindow, text, caption);
-                    MessageBox.Show(MainGlueWindow.Self, text, caption);
+                    MessageBox.Show(GlueCommands.Self.DialogCommands.Win32Window, text, caption);
                 });
             }
         }

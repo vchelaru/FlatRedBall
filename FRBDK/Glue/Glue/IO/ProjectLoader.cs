@@ -591,7 +591,7 @@ namespace FlatRedBall.Glue.IO
                 mbmb.AddButton("Try loading again", DialogResult.Retry);
                 mbmb.AddButton("Test for conflicts", DialogResult.Yes);
 
-                DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
+                DialogResult result = mbmb.ShowDialog(GlueCommands.Self.DialogCommands.Win32Window);
                 initializationWindow.Close();
 
                 switch (result)

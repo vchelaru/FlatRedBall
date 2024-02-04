@@ -76,15 +76,15 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             {
                 Settings.Add(
                     Localization.Texts.FileAssociations,
-                    () => new FileAssociationWindow().ShowDialog(MainGlueWindow.Self));
+                    () => new FileAssociationWindow().ShowDialog(GlueCommands.Self.DialogCommands.Win32Window));
 
                 Settings.Add(
                     Localization.Texts.FileBuildTools,
-                    () => new FileBuildToolAssociationWindow(GlueState.Self.GlueSettingsSave.BuildToolAssociations).Show(MainGlueWindow.Self));
+                    () => new FileBuildToolAssociationWindow(GlueState.Self.GlueSettingsSave.BuildToolAssociations).Show(GlueCommands.Self.DialogCommands.Win32Window));
 
                 Settings.Add(
                     Localization.Texts.PerformanceSettings,
-                    () => new PerformanceSettingsWindow().ShowDialog(MainGlueWindow.Self));
+                    () => new PerformanceSettingsWindow().ShowDialog(GlueCommands.Self.DialogCommands.Win32Window));
 
                 Settings.Add(
                     Localization.Texts.Preferences,
@@ -102,8 +102,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             var Plugins = AddTopLevelMenuItem(Localization.Texts.Plugins, Localization.MenuIds.PluginId);
             {
-                Plugins.Add(Localization.Texts.PluginInstall, () => new InstallPluginWindow().Show(MainGlueWindow.Self));
-                Plugins.Add(Localization.Texts.PluginUninstall, () => new UninstallPluginWindow().Show(MainGlueWindow.Self));
+                Plugins.Add(Localization.Texts.PluginInstall, () => new InstallPluginWindow().Show(GlueCommands.Self.DialogCommands.Win32Window));
+                Plugins.Add(Localization.Texts.PluginUninstall, () => new UninstallPluginWindow().Show(GlueCommands.Self.DialogCommands.Win32Window));
                 Plugins.Add(Localization.Texts.PluginCreate, () => new CreatePluginWindow().ShowDialog());
                 Plugins.DropDownItems.Add(new ToolStripSeparator());
             }
@@ -140,7 +140,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
 
 
-            if (tiw.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
+            if (tiw.ShowDialog(GlueCommands.Self.DialogCommands.Win32Window) == DialogResult.OK)
             {
                 List<ReferencedFileSave> matchingReferencedFileSaves = new List<ReferencedFileSave>();
                 List<string> matchingRegularFiles = new List<string>();

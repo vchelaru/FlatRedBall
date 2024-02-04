@@ -176,7 +176,7 @@ namespace FlatRedBall.Glue.Settings
 			if (application == "New Application...")
 			{
 				OpenFileDialog ofd = new OpenFileDialog();
-				if (ofd.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
+				if (ofd.ShowDialog(GlueCommands.Self.DialogCommands.Win32Window) == DialogResult.OK)
 				{
 					string result = ofd.FileName;
 

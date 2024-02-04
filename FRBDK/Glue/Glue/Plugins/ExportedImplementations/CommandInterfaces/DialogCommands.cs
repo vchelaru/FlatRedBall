@@ -960,6 +960,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public System.Windows.Forms.PropertyGrid PropertyGrid { get; set; }
         public int ManagedThreadId { get; set; }
         public Func<bool> IsMainWindowDisposed { get; set; }
+        public IWin32Window Win32Window { get; set; }
 
 
         #region Set Focus
@@ -1041,7 +1042,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             tiw.Message = L.Texts.CategoryEnterName;
             tiw.Text = L.Texts.CategoryNew;
 
-            DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
+            DialogResult result = tiw.ShowDialog(GlueCommands.Self.DialogCommands.Win32Window);
 
             if (result == DialogResult.OK)
             {
@@ -1070,7 +1071,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             tiw.Text = L.Texts.StateNew;
 
 
-            DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
+            DialogResult result = tiw.ShowDialog(GlueCommands.Self.DialogCommands.Win32Window);
 
             if (result == DialogResult.OK)
             {
