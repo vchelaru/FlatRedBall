@@ -48,11 +48,6 @@ public partial class MainGlueWindow : Form
 
     public IContainer Components => components;
 
-    public int NumberOfStoredRecentFiles
-    {
-        get;
-        set;
-    }
 
     #endregion
 

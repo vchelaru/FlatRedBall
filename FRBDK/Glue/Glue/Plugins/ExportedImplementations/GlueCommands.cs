@@ -249,7 +249,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             //save.WindowTop = this.Top;
             //save.WindowHeight = this.Height;
             //save.WindowWidth = this.Width;
-            save.StoredRecentFiles = MainGlueWindow.Self.NumberOfStoredRecentFiles;
 
             List<List<string>> AllTabs = new List<List<string>>
             {
