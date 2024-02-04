@@ -561,7 +561,7 @@ namespace CompilerPlugin.Managers
             this._compilerViewModel.DidRunnerStartProcess = false;
 
 
-            if (!global::Glue.MainGlueWindow.Self.IsDisposed)
+            if (!GlueCommands.Self.DialogCommands.IsMainWindowDisposed())
             {
                 // This can get disposed in the meantime...
                 try

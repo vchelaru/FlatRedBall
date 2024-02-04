@@ -592,7 +592,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void MoveToCursor(System.Windows.Window window)
         {
-            var source = System.Windows.PresentationSource.FromVisual(MainGlueWindow.MainWpfControl);
+            var source = System.Windows.PresentationSource.FromVisual(
+                MainPanelControl.Self);
             window.MoveToCursor(source);
         }
 
@@ -957,6 +958,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         #endregion
 
         public System.Windows.Forms.PropertyGrid PropertyGrid { get; set; }
+        public int ManagedThreadId { get; set; }
+        public Func<bool> IsMainWindowDisposed { get; set; }
+
 
         #region Set Focus
 

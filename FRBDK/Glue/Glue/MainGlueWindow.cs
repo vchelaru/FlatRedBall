@@ -41,9 +41,8 @@ public partial class MainGlueWindow : Form
 {
     #region Fields/Properties
 
-    public static MainPanelControl MainWpfControl { get; private set; }
+    MainPanelControl MainWpfControl { get; set; }
     public static MainGlueWindow Self { get; private set; }
-    public static int UiThreadId { get; private set; }
 
     private MenuStrip mMenu;
 
@@ -63,8 +62,11 @@ public partial class MainGlueWindow : Form
         // Running on AnyCPU means we run in 64 bit and can load VS 22 64 bit libs.
         StartupManager.SetMsBuildEnvironmentVariable();
 
+        GlueCommands.Self.DialogCommands.IsMainWindowDisposed = () => IsDisposed;
+
         Self = this;
-        UiThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+        GlueCommands.Self.DialogCommands.ManagedThreadId = 
+            System.Threading.Thread.CurrentThread.ManagedThreadId;
         InitializeComponent();
 
         CreateMenuStrip();

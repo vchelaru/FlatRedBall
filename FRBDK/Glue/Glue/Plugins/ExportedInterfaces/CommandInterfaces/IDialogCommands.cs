@@ -72,6 +72,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         // Not sure where this belongs, but doing this so it's not part of the main window:
         System.Windows.Forms.PropertyGrid PropertyGrid { get; set; }
+        int ManagedThreadId { get; set; }
+
+        Func<bool> IsMainWindowDisposed { get; set; }
 
         void FocusTab(string dialogTitle);
 

@@ -678,7 +678,9 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        public bool IsOnUiThread => System.Threading.Thread.CurrentThread.ManagedThreadId == global::Glue.MainGlueWindow.UiThreadId;
+        public bool IsOnUiThread => 
+            System.Threading.Thread.CurrentThread.ManagedThreadId == 
+            GlueCommands.Self.DialogCommands.ManagedThreadId;
 
         public bool IsInTask()
         {

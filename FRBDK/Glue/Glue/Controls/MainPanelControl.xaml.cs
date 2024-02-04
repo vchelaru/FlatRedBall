@@ -8,6 +8,7 @@ using FlatRedBall.Glue.SaveClasses;
 using Glue;
 using GlueFormsCore.ViewModels;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -326,5 +327,122 @@ namespace GlueFormsCore.Controls
             }
 
         }
+
+        public void Invoke(Action action)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+
+            this.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    if (wasInTask)
+                    {
+                        RunOnUiThreadTasked(action);
+                    }
+                    else
+                    {
+                        action();
+                    }
+                }
+                catch (Exception)
+                {
+                    if (!GlueCommands.Self.DialogCommands.IsMainWindowDisposed() && !ProjectManager.WantsToCloseProject)
+                    {
+                        throw;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+        }
+
+        public new T Invoke<T>(Func<T> func)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+
+            base.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    if (wasInTask)
+                    {
+                        RunOnUiThreadTasked(func);
+                    }
+                    else
+                    {
+                        func();
+                    }
+                }
+                catch (Exception)
+                {
+                    if (!GlueCommands.Self.DialogCommands.IsMainWindowDisposed())
+                    {
+                        throw;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return default;
+        }
+
+        public Task Invoke(Func<Task> func)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+            Task toReturn = Task.CompletedTask;
+
+            var asyncResult = base.Dispatcher.BeginInvoke(() =>
+            {
+                try
+                {
+                    toReturn = wasInTask ? RunOnUiThreadTasked(func) : func();
+                }
+                catch (Exception)
+                {
+                    if (!GlueCommands.Self.DialogCommands.IsMainWindowDisposed())
+                    {
+                        throw;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return asyncResult.Task;
+        }
+
+        public Task<T> Invoke<T>(Func<Task<T>> func)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+            Task<T> toReturn = Task.FromResult(default(T));
+
+            base.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    if (wasInTask)
+                    {
+                        toReturn = RunOnUiThreadTasked(func);
+                    }
+                    else
+                    {
+                        toReturn = func();
+                    }
+                }
+                catch (Exception)
+                {
+                    if (!GlueCommands.Self.DialogCommands.IsMainWindowDisposed())
+                    {
+                        throw;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return toReturn;
+        }
+
+        private void RunOnUiThreadTasked(Action action) => action();
+        private T RunOnUiThreadTasked<T>(Func<T> action) => action();
+        private Task<T> RunOnUiThreadTasked<T>(Func<Task<T>> action) => action();
     }
 }
