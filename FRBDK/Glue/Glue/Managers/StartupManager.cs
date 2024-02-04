@@ -28,7 +28,7 @@ namespace Glue.Managers
 {
     public static class StartupManager
     {
-        public static async void StartUpGlue(object sender, EventArgs e)
+        public static async void StartUpGlue(Action<PluginCategories> ShareUiReferences)
         {
             // We need to load the glue settings before loading the plugins so that we can shut off plugins according to settings
             GlueCommands.Self.LoadGlueSettings();
@@ -50,8 +50,7 @@ namespace Glue.Managers
 
             var initializationWindow = new InitializationWindowWpf();
 
-            // Initialize GlueGui before using it:
-            GlueGui.Initialize(mMenu);
+
             initializationWindow.Show();
 
             SetScreenMessage(Localization.Texts.InitializingGlueSystems);
@@ -77,9 +76,6 @@ namespace Glue.Managers
                 Environment.Exit(2);
                 return;
             }
-
-            SetScreenSubMessage(Localization.Texts.InitializeErrorReporting);
-            ErrorReporter.Initialize(this);
 
             SetScreenSubMessage(Localization.Texts.InitializingRightClickMenus);
             RightClickHelper.Initialize();
@@ -136,10 +132,7 @@ namespace Glue.Managers
                 EditorData.FileAssociationSettings.LoadSettings();
                 EditorData.LoadGlueLayoutSettings();
 
-                if (EditorData.GlueLayoutSettings.Maximized)
-                    WindowState = FormWindowState.Maximized;
 
-                ProjectManager.mForm = this;
 
             }
             catch (Exception exc)
@@ -152,7 +145,7 @@ namespace Glue.Managers
                         FileManager.UserApplicationDataForThisApplication + "InitError.txt");
                     PluginManager.ReceiveError(exc.ToString());
 
-                    HasErrorOccurred = true;
+                    GlueState.Self.HasErrorOccurred = true;
                 }
                 else
                 {
@@ -164,7 +157,6 @@ namespace Glue.Managers
                 if (GlueGui.ShowGui)
                 {
                     initializationWindow.Close();
-                    this.BringToFront();
                 }
             }
 

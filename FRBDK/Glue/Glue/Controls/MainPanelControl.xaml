@@ -14,8 +14,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ui:ThemeResources />
-                <ui:XamlControlsResources />
+                <!--<ui:ThemeResources />-->
+                <!--<ui:XamlControlsResources />-->
                 <!--<ResourceDictionary Source="/Themes/Dark.xaml" />-->
                 <!--<ResourceDictionary Source="/Themes/Light.xaml" />-->
             </ResourceDictionary.MergedDictionaries>

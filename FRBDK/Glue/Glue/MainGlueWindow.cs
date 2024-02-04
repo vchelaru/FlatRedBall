@@ -33,14 +33,13 @@ using Newtonsoft.Json;
 using System.Threading;
 using System.IO;
 using System.ServiceModel.Channels;
+using Glue.Managers;
 
 namespace Glue;
 
 public partial class MainGlueWindow : Form
 {
     #region Fields/Properties
-
-    public bool HasErrorOccurred = false;
 
     public static MainPanelControl MainWpfControl { get; private set; }
     public static MainGlueWindow Self { get; private set; }
@@ -189,7 +188,21 @@ public partial class MainGlueWindow : Form
         this.FormClosing += this.MainGlueWindow_FormClosing;
         this.Load += (sender, args) =>
         {
-            StartupManager.StartUpGlue();
+            // Initialize GlueGui before using it:
+            GlueGui.Initialize(mMenu);
+            ErrorReporter.Initialize(this);
+
+            StartupManager.StartUpGlue(ShareUiReferences);
+
+            if (EditorData.GlueLayoutSettings.Maximized)
+                WindowState = FormWindowState.Maximized;
+
+            ProjectManager.mForm = this;
+            if (GlueGui.ShowGui)
+            {
+                this.BringToFront();
+            }
+
         };
         this.Move += HandleWindowMoved;
 

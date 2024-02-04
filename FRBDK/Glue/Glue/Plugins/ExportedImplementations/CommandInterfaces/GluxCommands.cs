@@ -296,7 +296,7 @@ public class GluxCommands : IGluxCommands
         if (ProjectManager.GlueProjectSave != null)
         {
 
-            if (MainGlueWindow.Self.HasErrorOccurred)
+            if (GlueState.Self.HasErrorOccurred)
             {
                 var projectName = GlueState.Self.GlueProjectFileName.NoPathNoExtension;
 
@@ -404,10 +404,10 @@ public class GluxCommands : IGluxCommands
                         PluginManager.ReceiveError("Error saving glux:\n\n" + e.ToString());
                     });
 
-                    MainGlueWindow.Self.HasErrorOccurred = true;
+                    GlueState.Self.HasErrorOccurred = true;
                 }
 
-                if (!MainGlueWindow.Self.HasErrorOccurred)
+                if (!GlueState.Self.HasErrorOccurred)
                 {
                     List<FilePath> fileChangesToIgnore = GlueState.Self.CurrentGlueProject.GetAllSerializedFiles(GlueState.Self.GlueProjectFileName);
                     foreach (var fileToIgnore in fileChangesToIgnore)
