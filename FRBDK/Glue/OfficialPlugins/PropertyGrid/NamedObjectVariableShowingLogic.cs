@@ -844,7 +844,7 @@ namespace OfficialPlugins.VariableDisplay
 
             GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
-            MainGlueWindow.Self.PropertyGrid.Refresh();
+            GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
 
             PluginManager.ReactToChangedProperty(memberName, oldValue, element, new PluginManager.NamedObjectSavePropertyChange
             {

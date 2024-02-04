@@ -956,6 +956,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
+        public System.Windows.Forms.PropertyGrid PropertyGrid { get; set; }
+
         #region Set Focus
 
         public void FocusTab(string dialogTitle)

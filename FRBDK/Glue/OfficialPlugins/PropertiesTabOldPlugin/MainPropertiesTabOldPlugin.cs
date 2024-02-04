@@ -103,7 +103,7 @@ namespace OfficialPluginsCore.PropertiesTabOldPlugin
             this.PropertyGridContextMenu.Name = "PropertyGridContextMenu";
             this.PropertyGridContextMenu.Size = new System.Drawing.Size(61, 4);
 
-            MainGlueWindow.Self.PropertyGrid = this.PropertyGrid;
+            GlueCommands.Self.DialogCommands.PropertyGrid = this.PropertyGrid;
 
             PropertyGridHelper.Initialize(PropertyGrid);
 

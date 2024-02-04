@@ -140,9 +140,9 @@ namespace GlueFormsCore.Controls
 
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                if (MainGlueWindow.Self.PropertyGrid != null)
+                if (GlueCommands.Self.DialogCommands.PropertyGrid != null)
                 {
-                    MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
+                    GlueCommands.Self.DialogCommands.PropertyGrid.SelectedObject = null;
                 }
             });
 

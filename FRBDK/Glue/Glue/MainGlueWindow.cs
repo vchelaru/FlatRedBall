@@ -49,8 +49,6 @@ public partial class MainGlueWindow : Form
 
     public IContainer Components => components;
 
-    public PropertyGrid PropertyGrid;
-
     public int NumberOfStoredRecentFiles
     {
         get;
@@ -59,125 +57,11 @@ public partial class MainGlueWindow : Form
 
     #endregion
 
-    private static void SetMsBuildEnvironmentVariable()
-    {
-        // August 21, 2023
-        // At some point in 
-        // the past, loading
-        // .NET 6.0 projects in
-        // Glue failed. It seemed
-        // to happen on machines which
-        // only had .NET 7 installed. At
-        // one point I had a Github issue which
-        // discussed this but I can't find it anymore.
-        // This problem does not occur for older (.NET 4.7)
-        // projects, so this is only needed when loading .NET
-        // 6 projects. However, this code is run 1 time when Glue
-        // first starts up. At this point we don't know what kind of 
-        // project will be loaded. In fact, one project could get loaded
-        // then a different one could get loaded. Also, .NET 4.7 is old, and
-        // fewer and fewer projects using .NET 4.7 exist, so over time this will
-        // be for all projects. Therefore, just do the check always.
-        var startInfo = new ProcessStartInfo("dotnet", "--list-sdks")
-        {
-            RedirectStandardOutput = true
-        };
-
-        var process = Process.Start(startInfo)!;
-        process.WaitForExit(1000);
-
-        var output = process.StandardOutput.ReadToEnd();
-
-
-        if (String.IsNullOrEmpty(output))
-        {
-            // Ensure dotnet is installed. If not, we will assume the user uses .NET Framework.
-            // Any further checks on .NET usage are not required.
-            if (!System.IO.File.Exists(@"C:\Program Files\dotnet\dotnet.exe"))
-            {
-                MessageBox.Show(Localization.Texts.ErrorDotNetIsNotInstalledOrEnvironmentVariables);
-                return;
-            }
-
-            startInfo = new ProcessStartInfo("&\"dotnet.exe\"", "--list-sdks")
-            {
-                RedirectStandardOutput = true,
-                WorkingDirectory = @"C:\Program Files\dotnet"
-            };
-
-            process = Process.Start(startInfo)!;
-            process.WaitForExit(1000);
-
-            output = process.StandardOutput.ReadToEnd();
-        }
-
-        if (String.IsNullOrEmpty(output))
-        {
-            var message = String.Format(Localization.Texts.ErrorCouldNotFindNetSix, output) + Localization.Texts.ErrorDotnetMultipleIssue;
-
-            GlueCommands.Self.PrintOutput(message);
-
-            MessageBox.Show(message);
-            return;
-        }
-
-        var sdkPaths = Regex.Matches(output, "([0-9]+)[.]([0-9]+)[.]([0-9]+) \\[(.*)\\]")
-            .OfType<Match>()
-            // https://stackoverflow.com/questions/75702346/why-does-the-presence-of-net-7-0-2-sdk-cause-the-sdk-resolver-microsoft-dotnet?noredirect=1#comment133550210_75702346
-            // "7.0." instead of "7.0.201"
-            //.Where(item => item.Value.StartsWith("7.0.") == false)
-            .Where(m => int.Parse(m.Groups[1].Value) < 7)
-            .OrderByDescending(m => int.Parse(m.Groups[1].Value))
-            .ThenByDescending(m => int.Parse(m.Groups[2].Value))
-            .ThenByDescending(m => int.Parse(m.Groups[3].Value))
-            .Select(m => System.IO.Path.Combine(m.Groups[4].Value, m.Groups[1].Value + "." + m.Groups[2].Value + "." + m.Groups[3].Value, "MSBuild.dll"))
-            .ToArray();
-
-        //Useful for debugging query above
-        //var allSdks = sdkPaths.Aggregate((a, b) => a + "," + b);
-        //MessageBox.Show(allSdks);
-
-        if (sdkPaths.Any())
-        {
-            string sdkPath = null;
-
-            foreach (var path in sdkPaths)
-            {
-                if (File.Exists(path))
-                {
-                    sdkPath = path;
-                    break;
-                }
-            }
-
-            //sdkPaths.FirstOrDefault(item => item.Contains("sdk\\6."));
-            if (String.IsNullOrEmpty(sdkPath))
-            {
-                //    sdkPath = sdkPaths.Last();
-
-                var message = String.Format(Localization.Texts.ErrorCouldNotFindNetSix, output);
-                GlueCommands.Self.PrintOutput(message);
-                MessageBox.Show(message);
-            }
-            else
-            {
-                Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
-                GlueCommands.Self.PrintOutput($"Using MSBUILD from {sdkPath}");
-            }
-        }
-        else
-        {
-            var message = String.Format(Localization.Texts.ErrorCouldNotFindNetSix, output);
-            GlueCommands.Self.PrintOutput(message);
-            MessageBox.Show(message);
-        }
-    }
-
     public MainGlueWindow()
     {
         // Vic says - this makes Glue use the latest MSBuild environments
         // Running on AnyCPU means we run in 64 bit and can load VS 22 64 bit libs.
-        SetMsBuildEnvironmentVariable();
+        StartupManager.SetMsBuildEnvironmentVariable();
 
         Self = this;
         UiThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
@@ -248,126 +132,6 @@ public partial class MainGlueWindow : Form
         this.PerformLayout();
     }
 
-    public new void Invoke(Action action)
-    {
-        var wasInTask = TaskManager.Self.IsInTask();
-
-        this.Invoke((MethodInvoker)delegate
-        {
-            try
-            {
-                if (wasInTask)
-                {
-                    RunOnUiThreadTasked(action);
-                }
-                else
-                {
-                    action();
-                }
-            }
-            catch (Exception)
-            {
-                if (!IsDisposed && !ProjectManager.WantsToCloseProject)
-                {
-                    throw;
-                }
-                // otherwise, we don't care, they're exiting
-            }
-        });
-    }
-
-    public new T Invoke<T>(Func<T> func)
-    {
-        var wasInTask = TaskManager.Self.IsInTask();
-
-        base.Invoke((MethodInvoker)delegate
-        {
-            try
-            {
-                if (wasInTask)
-                {
-                    RunOnUiThreadTasked(func);
-                }
-                else
-                {
-                    func();
-                }
-            }
-            catch (Exception)
-            {
-                if (!IsDisposed)
-                {
-                    throw;
-                }
-                // otherwise, we don't care, they're exiting
-            }
-        });
-
-        return default;
-    }
-
-    public Task Invoke(Func<Task> func)
-    {
-        var wasInTask = TaskManager.Self.IsInTask();
-        Task toReturn = Task.CompletedTask;
-
-        var asyncResult = base.BeginInvoke((MethodInvoker)delegate
-        {
-            try
-            {
-                toReturn = wasInTask ? RunOnUiThreadTasked(func) : func();
-            }
-            catch (Exception)
-            {
-                if (!IsDisposed)
-                {
-                    throw;
-                }
-                // otherwise, we don't care, they're exiting
-            }
-        });
-
-        asyncResult.AsyncWaitHandle.WaitOne();
-
-        return toReturn;
-    }
-
-    public Task<T> Invoke<T>(Func<Task<T>> func)
-    {
-        var wasInTask = TaskManager.Self.IsInTask();
-        Task<T> toReturn = Task.FromResult(default(T));
-
-        base.Invoke((MethodInvoker)delegate
-        {
-            try
-            {
-                if (wasInTask)
-                {
-                    toReturn = RunOnUiThreadTasked(func);
-                }
-                else
-                {
-                    toReturn = func();
-                }
-            }
-            catch (Exception)
-            {
-                if (!IsDisposed)
-                {
-                    throw;
-                }
-                // otherwise, we don't care, they're exiting
-            }
-        });
-
-        return toReturn;
-    }
-
-    private void RunOnUiThreadTasked(Action action) => action();
-    private T RunOnUiThreadTasked<T>(Func<T> action) => action();
-    private Task<T> RunOnUiThreadTasked<T>(Func<Task<T>> action) => action();
-
-
     private void ShareUiReferences(PluginCategories pluginCategories)
     {
         PluginManager.ShareMenuStripReference(mMenu, pluginCategories);
@@ -375,7 +139,6 @@ public partial class MainGlueWindow : Form
         PluginManager.PrintPreInitializeOutput();
         Application.DoEvents();
     }
-
 
     private static bool _wantsToExit = false;
     private void MainGlueWindow_FormClosing(object sender, FormClosingEventArgs e)

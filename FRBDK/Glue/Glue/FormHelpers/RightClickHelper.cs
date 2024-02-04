@@ -1534,7 +1534,7 @@ public static class RightClickHelper
                 stateSave.SetValue(cv.Name, cv.DefaultValue);
             }
 
-            MainGlueWindow.Self.PropertyGrid.Refresh();
+            GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 

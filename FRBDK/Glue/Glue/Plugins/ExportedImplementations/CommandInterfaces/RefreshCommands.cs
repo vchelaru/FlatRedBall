@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                MainGlueWindow.Self.PropertyGrid.Refresh();
+                GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
                 //PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
                 UpdateDisplayedPropertyGridProperties();
             });
@@ -103,7 +103,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             ///////////////Early Out/////////////////////
             if (node == null)
             {
-                MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
+                GlueCommands.Self.DialogCommands.PropertyGrid.SelectedObject = null;
 
                 return;
             }
@@ -145,11 +145,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else if (node.IsGlobalContentContainerNode() && ProjectManager.GlueProjectSave != null)
             {
-                MainGlueWindow.Self.PropertyGrid.SelectedObject = ProjectManager.GlueProjectSave.GlobalContentSettingsSave;
+                GlueCommands.Self.DialogCommands.PropertyGrid.SelectedObject = ProjectManager.GlueProjectSave.GlobalContentSettingsSave;
             }
             else
             {
-                MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
+                GlueCommands.Self.DialogCommands.PropertyGrid.SelectedObject = null;
             }
         }
 

@@ -538,7 +538,7 @@ namespace FlatRedBall.Glue.IO
 
                                 if (entity == GlueState.Self.CurrentEntitySave)
                                 {
-                                    MainGlueWindow.Self.PropertyGrid.Refresh();
+                                    GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
                                 }
                             }
                         }

@@ -112,7 +112,7 @@ namespace GlueFormsCore.Managers
             if (isValidBase == false)
             {
                 entitySave.BaseEntity = (string)oldValue;
-                MainGlueWindow.Self.PropertyGrid.Refresh();
+                GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
             }
             else
             {

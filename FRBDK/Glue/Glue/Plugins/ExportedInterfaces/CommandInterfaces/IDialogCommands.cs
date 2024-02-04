@@ -70,6 +70,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
+        // Not sure where this belongs, but doing this so it's not part of the main window:
+        System.Windows.Forms.PropertyGrid PropertyGrid { get; set; }
+
         void FocusTab(string dialogTitle);
 
 
@@ -83,5 +86,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void MoveToCursor(System.Windows.Window window);
 
         void GoToDefinitionOfSelection();
+
+
     }
 }
