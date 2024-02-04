@@ -11,6 +11,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Glue;
+using GlueFormsCore.Controls;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -164,7 +165,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             if (!ProjectManager.WantsToCloseProject)
             {
-                MainGlueWindow.Self.BeginInvoke(new EventHandler(RefreshSelectionInternal));
+                MainPanelControl.Self.BeginInvoke(() => RefreshSelectionInternal(this, null));
             }
 
         }

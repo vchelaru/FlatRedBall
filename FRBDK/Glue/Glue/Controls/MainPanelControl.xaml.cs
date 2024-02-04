@@ -441,6 +441,8 @@ namespace GlueFormsCore.Controls
             return toReturn;
         }
 
+        public void BeginInvoke(Action action) => Dispatcher.BeginInvoke(action);
+
         private void RunOnUiThreadTasked(Action action) => action();
         private T RunOnUiThreadTasked<T>(Func<T> action) => action();
         private Task<T> RunOnUiThreadTasked<T>(Func<Task<T>> action) => action();

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Tasks;
 using FlatRedBall.IO;
+using GlueFormsCore.Controls;
 
 namespace FlatRedBall.Glue.Managers
 {
@@ -650,7 +651,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else
             {
-                global::Glue.MainGlueWindow.Self.Invoke(() => action.Invoke().Wait());
+                MainPanelControl.Self.Invoke(() => action.Invoke().Wait());
             }
         }
 
@@ -662,7 +663,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else
             {
-                global::Glue.MainGlueWindow.Self.Invoke(action);
+                MainPanelControl.Self.Invoke(action);
             }
         }
 
@@ -674,7 +675,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else
             {
-                global::Glue.MainGlueWindow.Self.BeginInvoke(action);
+                MainPanelControl.Self.BeginInvoke(action);
             }
         }
 
