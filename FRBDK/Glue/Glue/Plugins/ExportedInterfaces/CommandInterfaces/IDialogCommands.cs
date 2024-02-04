@@ -85,7 +85,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             string tunneledVariableName = "", GlueElement container = null);
 
 
-        void SetFormOwner(System.Windows.Forms.Form form);
         void FocusOnTreeView();
         void MoveToCursor(System.Windows.Window window);
 

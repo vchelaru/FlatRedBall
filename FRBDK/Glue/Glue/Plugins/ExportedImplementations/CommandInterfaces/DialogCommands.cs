@@ -1217,11 +1217,5 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
-        public void SetFormOwner(Form form)
-        {
-            if (MainGlueWindow.Self != null)
-                form.Owner = MainGlueWindow.Self;
-        }
-
     }
 }
