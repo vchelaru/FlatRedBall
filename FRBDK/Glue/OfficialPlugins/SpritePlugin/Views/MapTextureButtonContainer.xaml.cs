@@ -79,7 +79,7 @@ namespace OfficialPlugins.SpritePlugin.Views
                 else
                 {
                     window.Width = 300;
-                    window.Height = 300;
+                    window.Height = 500;
                     GlueCommands.Self.DialogCommands.MoveToCursor(window);
 
                     //better way to have viewmodel update itself from window?
