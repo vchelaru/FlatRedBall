@@ -42,6 +42,8 @@ public partial class MainGlueWindow : Form
     #region Fields/Properties
 
     MainPanelControl MainWpfControl { get; set; }
+
+    [Obsolete("Don't use this, it will go away when we move to full WPF as the base")]
     public static MainGlueWindow Self { get; private set; }
 
     private MenuStrip mMenu;

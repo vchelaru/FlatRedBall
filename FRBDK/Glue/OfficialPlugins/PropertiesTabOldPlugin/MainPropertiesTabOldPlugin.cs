@@ -21,7 +21,6 @@ namespace OfficialPluginsCore.PropertiesTabOldPlugin
     {
         PluginTab pluginTab;
         public System.Windows.Forms.PropertyGrid PropertyGrid;
-        private System.Windows.Forms.ContextMenuStrip PropertyGridContextMenu;
 
 
         public override void StartUp()
@@ -75,12 +74,6 @@ namespace OfficialPluginsCore.PropertiesTabOldPlugin
         private void CreatePropertyGrid()
         {
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
-            if(MainGlueWindow.Self?.Components == null)
-            {
-                throw new Exception("Components is null, this is an error which will prevent the property grid from working correctly.");
-            }
-            this.PropertyGridContextMenu = new System.Windows.Forms.ContextMenuStrip(MainGlueWindow.Self.Components);
-
             // 
             // PropertyGrid
             // 
@@ -96,12 +89,6 @@ namespace OfficialPluginsCore.PropertiesTabOldPlugin
             this.PropertyGrid.ToolbarVisible = false;
             this.PropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
             this.PropertyGrid.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.PropertyGrid_SelectedGridItemChanged);
-
-            // 
-            // PropertyGridContextMenu
-            // 
-            this.PropertyGridContextMenu.Name = "PropertyGridContextMenu";
-            this.PropertyGridContextMenu.Size = new System.Drawing.Size(61, 4);
 
             GlueCommands.Self.DialogCommands.PropertyGrid = this.PropertyGrid;
 

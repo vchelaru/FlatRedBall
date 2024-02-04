@@ -9,15 +9,16 @@
              d:DesignHeight="450" d:DesignWidth="800"
              PreviewKeyDown="UserControl_PreviewKeyDown"
              MouseDown="UserControl_MouseDown"
-             
              >
     <UserControl.Resources>
         <ResourceDictionary>
+
             <ResourceDictionary.MergedDictionaries>
                 <!--<ui:ThemeResources />-->
                 <!--<ui:XamlControlsResources />-->
                 <!--<ResourceDictionary Source="/Themes/Dark.xaml" />-->
                 <!--<ResourceDictionary Source="/Themes/Light.xaml" />-->
+                
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
