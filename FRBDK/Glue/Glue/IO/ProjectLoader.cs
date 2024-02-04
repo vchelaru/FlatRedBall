@@ -188,7 +188,7 @@ namespace FlatRedBall.Glue.IO
 
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(true);
 
-                TaskManager.Self.OnUiThread(() => MainGlueWindow.Self.Text = Texts.FrbEditor + " - " + projectFileName);
+                TaskManager.Self.OnUiThread(() => GlueCommands.Self.DialogCommands.SetTitle(Texts.FrbEditor + " - " + projectFileName));
 
                 if (shouldSaveGlux)
                 {

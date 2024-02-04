@@ -43,13 +43,7 @@ public partial class MainGlueWindow : Form
 
     MainPanelControl MainWpfControl { get; set; }
 
-    [Obsolete("Don't use this, it will go away when we move to full WPF as the base")]
-    public static MainGlueWindow Self { get; private set; }
-
     private MenuStrip mMenu;
-
-    public IContainer Components => components;
-
 
     #endregion
 
@@ -61,11 +55,10 @@ public partial class MainGlueWindow : Form
 
         GlueCommands.Self.DialogCommands.IsMainWindowDisposed = () => IsDisposed;
         GlueCommands.Self.DialogCommands.Win32Window = this;
+        GlueCommands.Self.DialogCommands.ManagedThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+        GlueCommands.Self.DialogCommands.SetTitle = (newtitle) => this.Text = newtitle;
+        GlueCommands.Self.DialogCommands.CloseMainWindow = () => this.Close();
 
-
-        Self = this;
-        GlueCommands.Self.DialogCommands.ManagedThreadId = 
-            System.Threading.Thread.CurrentThread.ManagedThreadId;
         InitializeComponent();
 
         CreateMenuStrip();

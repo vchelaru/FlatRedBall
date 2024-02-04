@@ -961,6 +961,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public int ManagedThreadId { get; set; }
         public Func<bool> IsMainWindowDisposed { get; set; }
         public IWin32Window Win32Window { get; set; }
+        public Action<string> SetTitle { get; set; }
+        public Action CloseMainWindow { get; set; }
 
 
         #region Set Focus

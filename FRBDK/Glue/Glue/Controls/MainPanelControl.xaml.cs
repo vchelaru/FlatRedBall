@@ -147,7 +147,7 @@ namespace GlueFormsCore.Controls
                 }
             });
 
-            GlueCommands.Self.DoOnUiThread(() => MainGlueWindow.Self.Text = Localization.Texts.FrbEditor);
+            GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.DialogCommands.SetTitle(Localization.Texts.FrbEditor));
             ProjectManager.WantsToCloseProject = false;
             TaskManager.Self.RecordTaskHistory($"--Ending Close Project Command --");
 
@@ -356,7 +356,7 @@ namespace GlueFormsCore.Controls
             });
         }
 
-        public new T Invoke<T>(Func<T> func)
+        public T Invoke<T>(Func<T> func)
         {
             var wasInTask = TaskManager.Self.IsInTask();
 

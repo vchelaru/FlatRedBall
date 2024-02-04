@@ -76,7 +76,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public void CloseGlue()
         {
-            MainGlueWindow.Self.Close();
+            DialogCommands.CloseMainWindow();
             Process.GetCurrentProcess().Kill();
         }
 
