@@ -148,7 +148,7 @@ namespace OfficialPlugins.VariableDisplay
             var dictionary = MainPanelControl.ResourceDictionary;
             const byte brightness = 227;
             var color = Color.FromRgb(brightness, brightness, brightness);
-            if (dictionary.Contains("BlackSelected"))
+            if (dictionary?.Contains("BlackSelected") == true)
             {
                 color = (Color)MainPanelControl.ResourceDictionary["BlackSelected"];
             }

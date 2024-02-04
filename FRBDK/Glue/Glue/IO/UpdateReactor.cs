@@ -22,6 +22,7 @@ using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Parsing;
 using System.Security.Cryptography.Pkcs;
 using System.Threading.Tasks;
+using GlueFormsCore.Controls;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -133,7 +134,7 @@ namespace FlatRedBall.Glue.IO
 
             if (changedFile.Extension == "")
             {
-                MainGlueWindow.Self.Invoke((MethodInvoker)delegate
+                MainPanelControl.Self.Invoke(() =>
                 {
                     try
                     {

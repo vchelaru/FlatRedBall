@@ -18,6 +18,7 @@ using CompilerLibrary.ViewModels;
 using System.Threading;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using System.ComponentModel;
+using GlueFormsCore.Controls;
 
 namespace CompilerPlugin.Managers
 {
@@ -566,7 +567,8 @@ namespace CompilerPlugin.Managers
                 // This can get disposed in the meantime...
                 try
                 {
-                    global::Glue.MainGlueWindow.Self.Invoke(() =>
+                    
+                    MainPanelControl.Self.Invoke(() =>
                     {
                         IsRunning = runningGameProcess != null;
                         DidRunnerStartProcess = GetDidFrbEditorStartProcess();
