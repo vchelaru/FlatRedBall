@@ -996,7 +996,10 @@ namespace GameCommunicationPlugin.GlueControl
             await _refreshManager.PushGlueSelectionToGame(categoryName, stateName);
         }
 
-
+        public void SetIsLoggingSentCommands(bool isLoggingSentCommands)
+        {
+            CompilerViewModel.IsPrintEditorToGameCheckboxChecked = isLoggingSentCommands;
+        }
 
 
         private void HandleGrabbedTreeNodeChanged(ITreeNode treeNode, TreeNodeAction action)
