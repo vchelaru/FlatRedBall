@@ -278,6 +278,7 @@ namespace OfficialPluginsCore.Wizard.Models
                 options.Add("1920x1080 (16:9)", CameraResolution._1920x1080);
 
                 formsData.AddIntValue("Game Scale%", nameof(ViewModel.ScalePercent));
+                formsData.AddBoundText(nameof(ViewModel.EffectiveCameraResolutionText));
 
                 formsData.AddText("The Camera Controller Entity can simplify code for following a player and staying within the bounds of a map.");
 
