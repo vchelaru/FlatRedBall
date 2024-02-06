@@ -162,17 +162,18 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 ShouldRestartOnChange &&
                 GetIfShouldReactToFileChange(fileName);
 
-            var rfses = GlueCommands.Self.FileCommands.GetReferencedFiles(fileName.FullPath);
+            var rfsesUsingSource = GlueCommands.Self.FileCommands.GetReferencedFilesUsingSourceFile(fileName);
 
-            if(shouldReactToFileChange && rfses.Count > 0)
+            if(shouldReactToFileChange && rfsesUsingSource.Count > 0)
             {
-                // If this file is only used to build other files (like an ODS -> CSV), then do not
+                // If this file is used to build other files (like an ODS -> CSV), then do not
                 // react to this change since the built file should result in a reaction:
-                var areAllBuilt = rfses.All(item => item.IsFileSourceForThis(fileName));
+                shouldReactToFileChange = false;
             }
 
             if (shouldReactToFileChange)
             {
+                var rfses = GlueCommands.Self.FileCommands.GetReferencedFiles(fileName.FullPath);
                 var firstRfs = rfses.FirstOrDefault();
                 var isGlobalContent = rfses.Any(item => item.GetContainer() == null);
 

@@ -295,6 +295,48 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return files;
         }
 
+        public List<ReferencedFileSave> GetReferencedFilesUsingSourceFile(FilePath filePath)
+        {
+            List<ReferencedFileSave> files = new List<ReferencedFileSave>();
+
+            if (GlueProject != null)
+            {
+                foreach (ScreenSave screenSave in GlueProject.Screens.ToArray())
+                {
+                    foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles.ToArray())
+                    {
+                        if (!string.IsNullOrEmpty(rfs.SourceFile) && GlueCommands.Self.GetAbsoluteFilePath(rfs.SourceFile) == filePath)
+                        {
+                            files.Add(rfs);
+                        }
+                    }
+                }
+
+                foreach (EntitySave entitySave in GlueProject.Entities.ToArray())
+                {
+                    foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles.ToArray())
+                    {
+                        if (!string.IsNullOrEmpty(rfs.SourceFile) && GlueCommands.Self.GetAbsoluteFilePath(rfs.SourceFile) == filePath)
+                        {
+                            files.Add(rfs);
+                        }
+                    }
+                }
+
+                foreach (ReferencedFileSave rfs in GlueProject.GlobalFiles.ToArray())
+                {
+                    if (!string.IsNullOrEmpty(rfs.SourceFile) && GlueCommands.Self.GetAbsoluteFilePath(rfs.SourceFile) == filePath)
+                    {
+                        files.Add(rfs);
+                    }
+                }
+            }
+
+            return files;
+        }
+
+
+
         public GeneralResponse GetLastParseResponse(FilePath file)
         {
             // only return failure if there is an entry in the FileReferenceManager, otherwise return success:
