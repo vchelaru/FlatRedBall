@@ -241,7 +241,7 @@ namespace GlueControl.Editing
 
         public static IEnumerable<PositionedObject> GetAvailableObjects(ElementEditingMode elementEditingMode)
         {
-            IEnumerable<PositionedObject> availableItems = null;
+            IEnumerable<PositionedObject> availableItems = new List<PositionedObject>();
 
             if (elementEditingMode == ElementEditingMode.EditingScreen)
             {

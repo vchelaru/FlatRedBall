@@ -384,8 +384,8 @@ namespace GlueControl
                 }
                 else
                 {
-                    // todo - handle inheritance
-                    elementGameType = entityInstance.GetType().FullName;
+                    // This could be null if viewing an abstract entity:
+                    elementGameType = entityInstance?.GetType().FullName;
                 }
             }
             else
@@ -393,19 +393,14 @@ namespace GlueControl
                 elementGameType = ScreenManager.CurrentScreen?.GetType().FullName;
             }
 
-            var elementGlueType = CommandReceiver.GameElementTypeToGlueElement(elementGameType);
+            if(elementGameType != null)
+            {
+                var elementGlueType = CommandReceiver.GameElementTypeToGlueElement(elementGameType);
 
-            var element = ObjectFinder.Self.GetElement(elementGlueType);
+                var element = ObjectFinder.Self.GetElement(elementGlueType);
 
-            //if (!string.IsNullOrEmpty(elementGameType))
-            //{
-            //    var split = elementGameType.Split('.').ToList().Skip(1);
-            //    dto.ElementNameGlue = string.Join("\\", split);
-
-            //    SendToGlue(dto);
-            //}
-
-            var throwaway = GlueState.Self.SetCurrentNamedObjectSaves(namedObjectSaves, element);
+                var throwaway = GlueState.Self.SetCurrentNamedObjectSaves(namedObjectSaves, element);
+            }
 #endif
         }
 
