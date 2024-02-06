@@ -10,7 +10,6 @@ using FlatRedBall.Content;
 //using FlatRedBall.Gui;
 //using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using FlatRedBall.Glue.Interfaces;
-using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
 using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
@@ -334,16 +333,6 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
-        [XmlIgnore]
-        [JsonIgnore]
-        [Browsable(false)]
-        public List<SourceReferencingFile> SourceFileCache
-        {
-            get;
-            // Setter is made public so extension methods can access it
-            set;
-        } = new List<SourceReferencingFile>();
-
         [Category("Build")]
         public string SourceFile
         {
@@ -527,7 +516,6 @@ namespace FlatRedBall.Glue.SaveClasses
             AddToManagers = true;
 
             CsvDelimiter = AvailableDelimiters.Comma;
-            SourceFileCache = new List<SourceReferencingFile>();
             LoadedAtRuntime = true;
             OpensWith = "<DEFAULT>";
 

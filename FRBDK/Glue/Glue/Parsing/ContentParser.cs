@@ -23,7 +23,6 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Content.Scene;
 
 using FlatRedBall.Content.SpriteFrame;
-using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
 
 using Color = Microsoft.Xna.Framework.Color;
 
@@ -166,101 +165,6 @@ namespace EditorObjects.Parsing
             return toReturn;
         }
 
-        public static List<SourceReferencingFile> GetSourceReferencingFilesReferencedByAsset(string fileName)
-        {
-            return GetSourceReferencingFilesReferencedByAsset(fileName, TopLevelOrRecursive.TopLevel);
-        }
-
-        public static List<SourceReferencingFile> GetSourceReferencingFilesReferencedByAsset(string fileName, TopLevelOrRecursive topLevelOrRecursive)
-        {
-            string throwAwayString = "";
-            string throwawayVerboseString = "";
-
-            return GetSourceReferencingFilesReferencedByAsset(fileName, topLevelOrRecursive, ErrorBehavior.ThrowException, ref throwAwayString, ref throwawayVerboseString);
-        }
-
-        public static List<SourceReferencingFile> GetSourceReferencingFilesReferencedByAsset(string fileName, TopLevelOrRecursive topLevelOrRecursive, ErrorBehavior errorBehavior, ref string error, ref string verboseError)
-        {
-            string fileExtension = FileManager.GetExtension(fileName);
-
-            List<SourceReferencingFile> referencedFiles = null;
-
-            switch (fileExtension)
-            {
-                //case "scnx":
-                //    try
-                //    {
-                //        SpriteEditorScene ses = SpriteEditorScene.FromFile(fileName);
-
-                //        referencedFiles = ses.GetSourceReferencingReferencedFiles(RelativeType.Absolute);
-                //    }
-                //    catch (Exception e)
-                //    {
-                //        error = "Error loading file " + fileName + ": " + e.Message;
-                //        referencedFiles = new List<SourceReferencingFile>();
-                //        verboseError = e.ToString();
-                //    }
-                //    break;
-                //default:
-                //    referencedFiles = new List<SourceReferencingFile>();
-                //    break;
-            }
-/**/
-            if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
-            {
-                //First we need to get a list of all referenced files
-                List<FilePath> filesToSearch = new List<FilePath>();
-
-                try
-                {
-                    // GetFilesReferencedByAsset can throw an error if the file doesn't
-                    // exist.  But we don't really care if it's missing if it can't reference
-                    // others.  I mean, sure we care, but it's not relevant here.  Other systems
-                    // can check for that.
-                    if (CanFileReferenceOtherFiles(fileName))
-                    {
-                        GetFilesReferencedByAsset(fileName, topLevelOrRecursive, filesToSearch);
-                    }
-                }
-                catch (Exception e)
-                {
-                    if (errorBehavior == ErrorBehavior.ThrowException)
-                    {
-                        throw;
-                    }
-                    else
-                    {
-                        error += e.Message + "\n";
-                    }
-                }
-
-
-
-                if (filesToSearch != null)
-                {
-                    for (int i = filesToSearch.Count - 1; i > -1; i--)
-                    {
-                        string errorForThisFile = "";
-                        string verboseErrorForThisFile = "";
-                        List<SourceReferencingFile> subReferencedFiles = GetSourceReferencingFilesReferencedByAsset(filesToSearch[i].FullPath, topLevelOrRecursive,
-                            errorBehavior, ref errorForThisFile, ref verboseErrorForThisFile);
-                        // error may have already been set.  If it has already been set, we don't want to dump more errors (which may just be duplicates anyway)
-                        if (string.IsNullOrEmpty(error))
-                        {
-                            error += errorForThisFile;
-                        }
-
-                        if (subReferencedFiles != null)
-                        {
-                            referencedFiles.AddRange(subReferencedFiles);
-                        }
-                    }
-                }
-            }
-/**/
-            return referencedFiles;
-
-        }
 
         public static List<FilePath> GetFilesReferencedByAsset(FilePath filePath)
 		{
@@ -633,26 +537,6 @@ namespace EditorObjects.Parsing
             return referencedFiles;
         }
 
-        public static void EliminateDuplicateSourceReferencingFiles(List<SourceReferencingFile> sourceReferencingFileList)
-        {
-            for (int i = sourceReferencingFileList.Count - 1; i > -1; i--)
-            {
-//                bool hasFoundDuplicate = false;
-
-                SourceReferencingFile firstSrf = sourceReferencingFileList[i];
-
-                for (int j = i - 1; j > -1; j--)
-                {
-                    SourceReferencingFile otherSrf = sourceReferencingFileList[j];
-
-                    if (otherSrf.HasTheSameFilesAs(firstSrf))
-                    {
-                        sourceReferencingFileList.RemoveAt(i);
-                        break;
-                    }
-                }
-            }
-        }
 
         public static object GetValueForProperty(string fileName, string objectName, string propertyName)
         {

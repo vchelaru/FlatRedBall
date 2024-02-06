@@ -134,7 +134,6 @@ namespace OfficialPlugins.VariableDisplay
             settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.FilePath));
             settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.CachedInstanceName));
             settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.OpensWith));
-            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.SourceFileCache));
             settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.IsCreatedByWildcard));
 
             // todo - removing this until we get the dropdown working....

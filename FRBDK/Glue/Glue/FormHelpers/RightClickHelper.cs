@@ -867,13 +867,6 @@ public static class RightClickHelper
             }
 
 
-            if (!string.IsNullOrEmpty(rfs.SourceFile) || rfs.SourceFileCache?.Count > 0)
-            {
-                AddSeparator();
-                AddItem(mViewSourceInExplorer);
-                AddItem(mRebuildFile);
-            }
-
             AddItem(mCopyToBuildFolder);
 
             var filePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);

@@ -12,7 +12,6 @@ using FlatRedBall.Glue.Errors;
 using FlatRedBall.Content;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Managers;
-using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.SaveClasses
@@ -36,17 +35,6 @@ namespace FlatRedBall.Glue.SaveClasses
                 returnValue |= instance.GetIsFileOutOfDate(contentDirectory + instance.SourceFile, contentDirectory + instance.Name);
             }
 
-            if(instance.SourceFileCache != null)
-            {
-                foreach (SourceReferencingFile srf in instance.SourceFileCache)
-                {
-                    returnValue |= instance.GetIsFileOutOfDate(
-                        contentDirectory + srf.SourceFile,
-                        contentDirectory + srf.DestinationFile);
-                }
-            }
-
-
             return returnValue;
         }
 
@@ -65,24 +53,6 @@ namespace FlatRedBall.Glue.SaveClasses
                 string absoluteSourceName = GlueCommands.Self.GetAbsoluteFileName(instance.SourceFile, true);
 
                 error = instance.PerformBuildOnFile(absoluteSourceName, absoluteDestinationName, runAsync);
-            }
-
-
-            if(instance.SourceFileCache != null)
-            {
-                foreach (SourceReferencingFile srf in instance.SourceFileCache)
-                {
-                    string absoluteSourceName = GlueCommands.Self.GetAbsoluteFileName(srf.SourceFile, true);
-                    string absoluteDestinationName = GlueCommands.Self.GetAbsoluteFileName(srf.DestinationFile, true);
-
-                    string resultOfBuild = instance.PerformBuildOnFile(absoluteSourceName, absoluteDestinationName, runAsync);
-
-                    if (!string.IsNullOrEmpty(resultOfBuild))
-                    {
-                        error += resultOfBuild;
-                    }
-                }
-
             }
 
             return error;
@@ -104,9 +74,6 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
                 else
                 {
-
-                    instance.SourceFileCache = ContentParser.GetSourceReferencingFilesReferencedByAsset(fullName, TopLevelOrRecursive.Recursive, ErrorBehavior.ContinueSilently, ref error, ref verboseError);
-
                     bool hasErrorOccurred = !string.IsNullOrEmpty(error);
 
                     if (!string.IsNullOrEmpty(verboseError))
@@ -119,7 +86,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     {
                         bool forceError = false;
 
-                        if (buildOnMissingFile && (!string.IsNullOrEmpty(instance.SourceFile) || instance.SourceFileCache?.Count != 0))
+                        if (buildOnMissingFile && (!string.IsNullOrEmpty(instance.SourceFile)))
                         {
                             string subError = instance.PerformExternalBuild(runAsync:false);
 
@@ -154,11 +121,6 @@ namespace FlatRedBall.Glue.SaveClasses
                         }
                     }
 
-                }
-
-                if(instance.SourceFileCache != null)
-                {
-                    ContentParser.EliminateDuplicateSourceReferencingFiles(instance.SourceFileCache);
                 }
             }
             catch (Exception e)
