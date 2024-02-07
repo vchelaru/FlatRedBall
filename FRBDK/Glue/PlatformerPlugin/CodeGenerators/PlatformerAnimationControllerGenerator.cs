@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,6 +11,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
     public class PlatformerAnimationControllerGenerator : Singleton<PlatformerAnimationControllerGenerator>
     {
         string RelativeFileLocation => "Platformer/PlatformerAnimationController.Generated.cs";
+        public FilePath FileLocation => GlueState.Self.CurrentGlueProjectDirectory + RelativeFileLocation;
 
 
         public void GenerateAndSave()
