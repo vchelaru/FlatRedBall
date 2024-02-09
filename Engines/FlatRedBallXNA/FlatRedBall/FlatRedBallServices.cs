@@ -114,9 +114,10 @@ namespace FlatRedBall
 
     public class SyntaxVersionAttribute : Attribute
     {
-        public int Version = 52;
+        public int Version;
     }
 
+    [SyntaxVersion(Version=52)]
     public static partial class FlatRedBallServices
     {
         internal static SingleThreadSynchronizationContext singleThreadSynchronizationContext;
