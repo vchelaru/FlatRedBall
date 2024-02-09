@@ -869,7 +869,7 @@ namespace GameCommunicationPlugin.GlueControl
             else
             {
                 TaskManager.Self.Add(() => EmbeddedCodeManager.RemoveAll(), "Removing Glue Control Code");
-                TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Removing Glue Control Code New");
+                TaskManager.Self.Add(() => GlueCallsCodeGenerator.RemoveAll(), "Removing Glue Control Code New");
 
             }
 
