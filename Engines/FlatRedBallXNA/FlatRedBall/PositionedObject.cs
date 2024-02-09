@@ -2025,7 +2025,6 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Updates the absolute position and rotation using relative values and the Parent PositionedObject.
         /// </summary>
@@ -2033,7 +2032,6 @@ namespace FlatRedBall
         /// This method recurs up the hierarchical chain calling UpdateDependencies so that the entire family of 
         /// PositionedObjects is positioned appropriately.
         /// </remarks>
-        #endregion
         public virtual void UpdateDependencies(double currentTime)
         {
 
