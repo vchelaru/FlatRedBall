@@ -10,6 +10,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 {
@@ -19,8 +20,10 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
         {
             var derivedElements = ObjectFinder.Self.GetAllDerivedElementsRecursive(element as GlueElement);
 
+            var glueProject = GlueState.Self.CurrentGlueProject;
+
             var shouldGenerate = derivedElements.Count > 0 &&
-                GlueState.Self.CurrentGlueProject.SuppressBaseTypeGeneration == false;
+                glueProject.SuppressBaseTypeGeneration == false;
 
 
             /////////////////////Early Out////////////////////////////////
@@ -30,7 +33,11 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             }
             ///////////////////End Early Out//////////////////////////////
 
-            var classBlock = codeBlock.Class("public partial", $"{element.ClassName}Type");
+            string typeOrVariant = glueProject.FileVersion >= (int)GluxVersions.VariantsInsteadOfTypes
+                ? "Variant"
+                : "Type";
+
+            var classBlock = codeBlock.Class("public partial", $"{element.ClassName}{typeOrVariant}");
 
             classBlock.Line("public string Name { get; set; }");
             classBlock.Line("public override string ToString() {return Name; }");
@@ -50,7 +57,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 
             foreach (var derivedElement in derivedElements)
             {
-                classBlock.Line($"public static {element.ClassName}Type {derivedElement.ClassName} {{ get; private set; }} = new {element.ClassName}Type");
+                classBlock.Line($"public static {element.ClassName}{typeOrVariant} {derivedElement.ClassName} {{ get; private set; }} = new {element.ClassName}{typeOrVariant}");
                 var block = classBlock.Block();
                 block.Line($"Name = \"{derivedElement.ClassName}\",");
                 block.Line($"Type = typeof({derivedElement.Name.Replace("/", ".").Replace("\\", ".")}),");
@@ -89,7 +96,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
                 classBlock.Line(";");
             }
 
-            classBlock.Line($"public static List<{element.ClassName}Type> All = new List<{element.ClassName}Type>{{");
+            classBlock.Line($"public static List<{element.ClassName}{typeOrVariant}> All = new List<{element.ClassName}{typeOrVariant}>{{");
             var innerList = classBlock.CodeBlockIndented();
             foreach (var derivedElement in derivedElements)
             {
@@ -102,7 +109,12 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 
         private static void CreateFromNameMethod(IElement element, List<GlueElement> derivedElements, ICodeBlock classBlock)
         {
-            var fromName = classBlock.Function($"public static {element.ClassName}Type", "FromName", "string name");
+            var glueProject = GlueState.Self.CurrentGlueProject;
+
+            string typeOrVariant = glueProject.FileVersion >= (int)GluxVersions.VariantsInsteadOfTypes
+                ? "Variant"
+                : "Type";
+            var fromName = classBlock.Function($"public static {element.ClassName}{typeOrVariant}", "FromName", "string name");
             var switchBlock = fromName.Switch("name");
             foreach (var derivedElement in derivedElements)
             {

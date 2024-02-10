@@ -20,6 +20,7 @@ using System.Collections.ObjectModel;
 using FlatRedBall.Utilities;
 using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Math.Geometry;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 
 namespace FlatRedBall.Glue.Reflection
@@ -1023,6 +1024,8 @@ namespace FlatRedBall.Glue.Reflection
         {
             List<string> toReturn = new List<string>();
 
+            var glueProject = ObjectFinder.Self.GlueProject;
+
             toReturn.AddRange(mAvailablePrimitives);
 
             if (allowNone == false)
@@ -1042,7 +1045,7 @@ namespace FlatRedBall.Glue.Reflection
                     }
                 }
             }
-            foreach (ReferencedFileSave rfs in ObjectFinder.Self.GlueProject.GlobalFiles)
+            foreach (ReferencedFileSave rfs in glueProject.GlobalFiles)
             {
                 TryAddRfsType(rfs);
             }
@@ -1051,7 +1054,7 @@ namespace FlatRedBall.Glue.Reflection
             // element, but any CSV in the project will make a class
             // that is accessible from outside of that class, and we want
             // to make sure that we can do the same thing
-            foreach (var element in ObjectFinder.Self.GlueProject.AllElements())
+            foreach (var element in glueProject.AllElements())
             {
                 foreach(var rfs in element.ReferencedFiles)
                 {
@@ -1066,18 +1069,23 @@ namespace FlatRedBall.Glue.Reflection
             // if screens are needed...if so
             // add them later.
 
+
+
             if(!GlueState.Self.CurrentGlueProject.SuppressBaseTypeGeneration)
             {
-                foreach(var entity in ObjectFinder.Self.GlueProject.Entities)
+                string typeOrVariant = glueProject.FileVersion >= (int)GluxVersions.VariantsInsteadOfTypes
+                    ? "Variant"
+                    : "Type";
+                foreach (var entity in glueProject.Entities)
                 {
                     var isBaseEntity = string.IsNullOrEmpty(entity.BaseElement);
 
                     if(isBaseEntity)
                     {
-                        var hasDerived = ObjectFinder.Self.GlueProject.Entities.Any(item => item.BaseElement == entity.Name);
+                        var hasDerived = glueProject.Entities.Any(item => item.BaseElement == entity.Name);
                         if(hasDerived)
                         {
-                            var typeName = entity.Name.Replace("\\", ".") + "Type";
+                            var typeName = entity.Name.Replace("\\", ".") + typeOrVariant;
                             toReturn.Add(typeName);
                         }
                     }

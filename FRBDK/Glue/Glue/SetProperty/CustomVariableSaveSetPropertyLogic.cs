@@ -1026,7 +1026,13 @@ public class CustomVariableSaveSetPropertyLogic
 
                 }
             }
+            else if(oldType?.EndsWith("Type") == true || newType?.EndsWith("Variant") == true)
+            {
+                // This is converting form a type to something else like a variant. Let's leave it the same
 
+                newValue = currentValue?.ToString();
+                wasAbleToConvert = true;
+            }
             if (wasAbleToConvert == false)
             {
                 newValue = CustomVariableExtensionMethods.GetDefaultValueAccordingToType(newType);

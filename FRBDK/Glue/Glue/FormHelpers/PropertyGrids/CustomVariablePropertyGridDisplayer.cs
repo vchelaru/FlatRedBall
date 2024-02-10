@@ -63,7 +63,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             }
 
 
-            HandleTypeProperty(instance);
+            IncludeOrExcludeTypeProperty(instance);
 
             if (instance.DefinedByBase)
             {
@@ -116,7 +116,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
         }
 
-        private void HandleTypeProperty(CustomVariable variable)
+        private void IncludeOrExcludeTypeProperty(CustomVariable variable)
         {
 
             if (variable != null && 
