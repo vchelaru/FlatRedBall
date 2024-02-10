@@ -1721,7 +1721,18 @@ public static class RightClickHelper
 
                 if (askAreYouSure)
                 {
-                    var message = String.Format(L.Texts.DeleteQuestionX, currentObject);
+
+                    string message = string.Empty;
+                    if(currentObject is ReferencedFileSave)
+                    {
+                        // don't say "delete" because it's just being removed unless the user 
+                        // choses to delete on the subsequent dialog
+                        message = $"Are you sure you want to remove\n{currentObject}";
+                    }
+                    else
+                    {
+                        message = String.Format(L.Texts.DeleteQuestionX, currentObject);
+                    }
 
                     reallyRemoveResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message, "Remove?");
                 }
