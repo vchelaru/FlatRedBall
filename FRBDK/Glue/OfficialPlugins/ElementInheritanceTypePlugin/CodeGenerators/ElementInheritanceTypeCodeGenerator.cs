@@ -47,9 +47,9 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             classBlock.Line("public Func<string, object> GetFile {get; private set; }");
             classBlock.Line("public Action<string> LoadStaticContent { get; private set; }");
 
-
-            classBlock.Line($"public {element.ClassName} CreateNew(Microsoft.Xna.Framework.Vector3 position) => Factory.CreateNew(position) as {element.ClassName};");
-            classBlock.Line($"public {element.ClassName} CreateNew(float x = 0, float y = 0) => Factory.CreateNew(x, y) as {element.ClassName};");
+            FillCreateNew("Microsoft.Xna.Framework.Vector3 position", "position.X, position.Y", element, classBlock);
+            FillCreateNew("float x = 0, float y = 0", "x, y", element, classBlock);
+           
 
             CreateVariableFields(element, classBlock);
 
@@ -103,9 +103,42 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
                 innerList.Line(derivedElement.ClassName + ",");
             }
             classBlock.Line($"}};");
-
-
         }
+
+        private static void FillCreateNew(string methodHeaderParameters, string innerCallParameters, IElement element, ICodeBlock codeBlock)
+        {
+            codeBlock = codeBlock.Function($"public {element.ClassName}", "CreateNew", methodHeaderParameters);
+
+            var ifBlock = codeBlock.If("this.Factory != null");
+            {
+                ifBlock.Line($"var toReturn = Factory.CreateNew({innerCallParameters}) as {element.ClassName};");
+                ifBlock.Line("return toReturn;");
+            }
+            var elseBlock = ifBlock.End().Else();
+            {
+                var hasFactory = element is EntitySave asEntity && asEntity.IsAbstract == false && asEntity.CreatedByOtherEntities;
+                if (hasFactory)
+                {
+                    elseBlock.Line($"var toReturn = Factories.{element.ClassName}Factory.CreateNew({innerCallParameters});");
+
+                    foreach(var variable in element.CustomVariables)
+                    {
+                        if(variable.DefaultValue != null)
+                        {
+                            elseBlock.Line($"toReturn.{variable.Name} = this.{variable.Name};");
+                        }
+                    }
+
+                    elseBlock.Line("return toReturn;");
+                }
+                else
+                {
+                    elseBlock.Line("return null;");
+                }
+
+            }
+        }
+
 
         private static void CreateFromNameMethod(IElement element, List<GlueElement> derivedElements, ICodeBlock classBlock)
         {
