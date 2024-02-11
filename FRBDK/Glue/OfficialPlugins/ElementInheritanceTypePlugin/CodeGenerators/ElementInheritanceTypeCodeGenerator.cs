@@ -7,6 +7,7 @@ using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,43 +58,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 
             foreach (var derivedElement in derivedElements)
             {
-                classBlock.Line($"public static {element.ClassName}{typeOrVariant} {derivedElement.ClassName} {{ get; private set; }} = new {element.ClassName}{typeOrVariant}");
-                var block = classBlock.Block();
-                block.Line($"Name = \"{derivedElement.ClassName}\",");
-                block.Line($"Type = typeof({derivedElement.Name.Replace("/", ".").Replace("\\", ".")}),");
-                var hasFactory = derivedElement is EntitySave derivedEntity && derivedEntity.CreatedByOtherEntities;
-                if (hasFactory)
-                {
-                    block.Line($"Factory = Factories.{derivedElement.ClassName}Factory.Self,");
-                }
-                block.Line($"GetFile = {QualifiedTypeName(derivedElement)}.GetFile,");
-                block.Line($"LoadStaticContent = {QualifiedTypeName(derivedElement)}.LoadStaticContent,");
-
-                foreach (var variable in element.CustomVariables.Where(item => item.SetByDerived 
-                    // Why don't we generate is shared? Now that we can inherit shared variables, let's do it so that the user can specify variables for the type, like a Display Name
-                    //&& !item.IsShared
-                ))
-                {
-                    if (!ShouldSkip(variable))
-                    {
-                        var matchingVariable = derivedElement.CustomVariables.FirstOrDefault(item => item.Name == variable.Name) ?? variable;
-                        if (matchingVariable.DefaultValue != null)
-                        {
-                            // If it's null, just use whatever is defined on the base
-                            var rightSide = CustomVariableCodeGenerator.GetRightSideOfEquals(matchingVariable, derivedElement);
-
-                            // It seems like the variable.DefaultValue can be String.Empty
-                            // If so, it bypasses the != null check, but still produces an empty
-                            // right-slide assignment, so let's just put that here
-                            if (!string.IsNullOrEmpty(rightSide))
-                            {
-                                block.Line($"{variable.Name} = {rightSide},");
-                            }
-                        }
-                    }
-                }
-
-                classBlock.Line(";");
+                CreateDerivedVariantClass(element, typeOrVariant, classBlock, derivedElement);
             }
 
             classBlock.Line($"public static List<{element.ClassName}{typeOrVariant}> All = new List<{element.ClassName}{typeOrVariant}>{{");
@@ -103,6 +68,52 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
                 innerList.Line(derivedElement.ClassName + ",");
             }
             classBlock.Line($"}};");
+        }
+
+        private void CreateDerivedVariantClass(IElement element, string typeOrVariant, ICodeBlock classBlock, GlueElement derivedElement)
+        {
+            classBlock.Line($"public static {element.ClassName}{typeOrVariant} {derivedElement.ClassName} {{ get; private set; }} = new {element.ClassName}{typeOrVariant}");
+            var block = classBlock.Block();
+            block.Line($"Name = \"{derivedElement.ClassName}\",");
+            block.Line($"Type = typeof({derivedElement.Name.Replace("/", ".").Replace("\\", ".")}),");
+            var hasFactory = derivedElement is EntitySave derivedEntity && derivedEntity.CreatedByOtherEntities;
+            if (hasFactory)
+            {
+                block.Line($"Factory = Factories.{derivedElement.ClassName}Factory.Self,");
+            }
+            block.Line($"GetFile = {QualifiedTypeName(derivedElement)}.GetFile,");
+            block.Line($"LoadStaticContent = {QualifiedTypeName(derivedElement)}.LoadStaticContent,");
+
+            foreach (var variable in element.CustomVariables.Where(item => item.SetByDerived
+            // Why don't we generate is shared? Now that we can inherit shared variables, let's do it so that the user can specify variables for the type, like a Display Name
+            //&& !item.IsShared
+            ))
+            {
+                if (!ShouldSkip(variable))
+                {
+                    var matchingVariable = derivedElement.CustomVariables.FirstOrDefault(item => item.Name == variable.Name) ?? variable;
+                    if (matchingVariable.DefaultValue != null)
+                    {
+                        // If it's null, just use whatever is defined on the base
+                        var rightSide = CustomVariableCodeGenerator.GetRightSideOfEquals(matchingVariable, derivedElement);
+                        if(IsTypeFileType(matchingVariable.Type) && !string.IsNullOrEmpty(rightSide))
+                        {
+                            // put quotes around it:
+                            rightSide = $"\"{rightSide}\"";
+                        }
+
+                        // It seems like the variable.DefaultValue can be String.Empty
+                        // If so, it bypasses the != null check, but still produces an empty
+                        // right-slide assignment, so let's just put that here
+                        if (!string.IsNullOrEmpty(rightSide))
+                        {
+                            block.Line($"{variable.Name} = {rightSide},");
+                        }
+                    }
+                }
+            }
+
+            classBlock.Line(";");
         }
 
         private static void FillCreateNew(string methodHeaderParameters, string innerCallParameters, IElement element, ICodeBlock codeBlock)
@@ -123,9 +134,18 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 
                     foreach(var variable in element.CustomVariables)
                     {
-                        if(variable.DefaultValue != null)
+                        // don't assign position values - those aget set in the Create New method:
+                        if(variable.Name != "X" && variable.Name != "Y" && variable.Name != "Z")
                         {
-                            elseBlock.Line($"toReturn.{variable.Name} = this.{variable.Name};");
+                            var rightSide = $"this.{variable.Name}";
+                            if (IsTypeFileType(variable.Type))
+                            {
+                                var type = CustomVariableCodeGenerator.GetMemberTypeFor(variable, element);
+                                rightSide = $"{element.ClassName}.GetFile(this.{variable.Name}) as {type}";
+                            }
+
+
+                            elseBlock.Line($"toReturn.{variable.Name} = {rightSide};");
                         }
                     }
 
@@ -167,13 +187,26 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
                     // We want this to not be a property, and to not have any source class type so that it generates
                     // as a simple field
                     tempVariable.Name = variable.Name;
-                    tempVariable.Type = variable.Type;
+
+                    tempVariable.Type = ConvertFileToType(variable.Type);
                     tempVariable.DefaultValue = variable.DefaultValue;
                     tempVariable.OverridingPropertyType = variable.OverridingPropertyType;
 
                     CustomVariableCodeGenerator.AppendCodeForMember(element as GlueElement, classBlock, tempVariable, forceGenerateExposed:true);
                 }
             }
+        }
+
+        private static bool IsTypeFileType(string type)
+        {
+            return type == 
+                // todo - add more here...
+                "AnimationChainList"; 
+        }
+
+        private string ConvertFileToType(string type)
+        {
+            return IsTypeFileType(type) ? "string" : type;
         }
 
         bool ShouldSkip(CustomVariable customVariable)
