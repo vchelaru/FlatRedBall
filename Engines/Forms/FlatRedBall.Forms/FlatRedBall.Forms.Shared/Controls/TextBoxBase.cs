@@ -785,7 +785,7 @@ namespace FlatRedBall.Forms.Controls
                         lineNumber++;
                     }
                 }
-
+                
                 var lineHeight = coreTextObject.BitmapFont.LineHeightInPixels;
 
                 if(TextWrapping == TextWrapping.Wrap)
@@ -800,9 +800,16 @@ namespace FlatRedBall.Forms.Controls
         {
             indexIntoLine = System.Math.Min(indexIntoLine, stringToMeasure.Length);
             var substring = stringToMeasure.Substring(0, indexIntoLine);
-            var measure = this.coreTextObject.BitmapFont.MeasureString(substring);
             caretComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
-            caretComponent.X = measure + this.textComponent.X;
+            if(this.coreTextObject.BitmapFont != null)
+            {
+                var measure = this.coreTextObject.BitmapFont.MeasureString(substring);
+                caretComponent.X = measure + this.textComponent.X;
+            }
+            else
+            {
+                caretComponent.X = 0;
+            }
         }
 
         private void UpdateToIsFocused()
