@@ -84,12 +84,13 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             block.Line($"GetFile = {QualifiedTypeName(derivedElement)}.GetFile,");
             block.Line($"LoadStaticContent = {QualifiedTypeName(derivedElement)}.LoadStaticContent,");
 
-            foreach (var variable in element.CustomVariables.Where(item => item.SetByDerived
+            foreach (var variable in element.CustomVariables
+                //.Where(item => item.SetByDerived
             // Why don't we generate is shared? Now that we can inherit shared variables, let's do it so that the user can specify variables for the type, like a Display Name
             //&& !item.IsShared
-            ))
+            )
             {
-                if (!ShouldSkip(variable))
+                if (!ShouldSkipVariantField(variable))
                 {
                     var matchingVariable = derivedElement.CustomVariables.FirstOrDefault(item => item.Name == variable.Name) ?? variable;
                     if (matchingVariable.DefaultValue != null)
@@ -134,8 +135,15 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 
                     foreach(var variable in element.CustomVariables)
                     {
+                        var shouldGenerateVariable = 
+                            !ShouldSkipVariantField(variable) &&
+                            variable.IsShared == false &&
+                            variable.Name != "X" && 
+                            variable.Name != "Y" && 
+                            variable.Name != "Z";
+
                         // don't assign position values - those aget set in the Create New method:
-                        if(variable.Name != "X" && variable.Name != "Y" && variable.Name != "Z")
+                        if(shouldGenerateVariable)
                         {
                             var rightSide = $"this.{variable.Name}";
                             if (IsTypeFileType(variable.Type))
@@ -182,7 +190,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             CustomVariable tempVariable = new CustomVariable();
             foreach (var variable in element.CustomVariables.Where(item => item.SetByDerived))
             {
-                if (!ShouldSkip(variable))
+                if (!ShouldSkipVariantField(variable))
                 {
                     // We want this to not be a property, and to not have any source class type so that it generates
                     // as a simple field
@@ -209,8 +217,12 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             return IsTypeFileType(type) ? "string" : type;
         }
 
-        bool ShouldSkip(CustomVariable customVariable)
+        static bool ShouldSkipVariantField(CustomVariable customVariable)
         {
+            if(customVariable.SetByDerived == false)
+            {
+                return true;
+            }
             var type = customVariable.Type;
             switch (type)
             {
