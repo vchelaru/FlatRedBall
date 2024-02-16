@@ -101,7 +101,7 @@
             </RadioButton>
 
             <StackPanel Visibility="{Binding AccelerationValuesVisibility}">
-                <TextBlock Text="{x:Static localization:Texts.SlowDownTime}" />
+                <TextBlock Text="Speed Up Time:" />
                 <TextBox HorizontalAlignment="Left" Width="50"  Text="{Binding AccelerationTime}"
                          KeyUp="TextBox_KeyEnterUpdate">
                     <TextBox.ToolTip>
