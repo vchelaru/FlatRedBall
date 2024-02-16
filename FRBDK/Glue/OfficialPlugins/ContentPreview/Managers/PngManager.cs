@@ -38,8 +38,8 @@ namespace OfficialPlugins.ContentPreview.Managers
         {
             if(View == null)
             {
-                View = new PngPreviewView();
                 ViewModel = new PngViewModel();
+                View = new PngPreviewView(ViewModel);
                 View.DataContext = ViewModel;
                 View.Initialize(new SpritePlugin.Managers.CameraLogic());
             }

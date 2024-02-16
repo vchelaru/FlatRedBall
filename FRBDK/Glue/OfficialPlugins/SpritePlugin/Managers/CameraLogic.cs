@@ -24,8 +24,12 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         Camera Camera => Canvas.SystemManagers.Renderer.Camera;
 
-        private ICameraZoomViewModel cameraZoom;
-        ICameraZoomViewModel ViewModel => cameraZoom;
+        private ICameraZoomViewModel viewModel;
+        public ICameraZoomViewModel ViewModel
+        {
+            get => viewModel;
+            set => viewModel = value;
+        }
 
         GumSKElement Canvas;
 
@@ -64,7 +68,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
         {
             Canvas = canvas;
             View = view;
-            cameraZoom = cameraZoomViewModel;
+            viewModel = cameraZoomViewModel;
             Background = background;
             Camera.X = -20;
             Camera.Y = -20;

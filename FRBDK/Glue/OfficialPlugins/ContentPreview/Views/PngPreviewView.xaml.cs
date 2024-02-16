@@ -37,8 +37,9 @@ namespace OfficialPlugins.ContentPreview.Views
 
         private CameraLogic _cameraLogic;
 
-        public PngPreviewView()
+        public PngPreviewView(PngViewModel viewModel)
         {
+            this.DataContext = viewModel;
             InitializeComponent();
 
             this.Loaded += HandleLoaded;
@@ -85,7 +86,7 @@ namespace OfficialPlugins.ContentPreview.Views
             CreateMainSprite();
 
             // do this after creating the background so that it can be passed here:
-            _cameraLogic.Initialize(this, null, this.GumCanvas, this.GumBackground);
+            _cameraLogic.Initialize(this, ViewModel, this.GumCanvas, this.GumBackground);
 
         }
 

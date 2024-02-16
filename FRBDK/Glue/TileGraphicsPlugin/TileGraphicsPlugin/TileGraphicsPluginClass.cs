@@ -456,16 +456,23 @@ public class TileGraphicsPluginClass : PluginBase
     {
         var isTmx = new FilePath(absoluteFile).Extension == "tmx";
 
-        if(isTmx)
+        if(isTmx && System.IO.File.Exists(absoluteFile))
         {
-            TiledMapSave save = TiledMapSave.FromFile(absoluteFile);
-
-            // loop through each layer, adding it:
-            foreach(var layer in save.MapLayers)
+            try
             {
-                availableObjects.Add($"{layer.Name} (FlatRedBall.TileCollisions.TileShapeCollection)");
-                availableObjects.Add($"{layer.Name} (FlatRedBall.TileGraphics.MapDrawableBatch)");
+                TiledMapSave save = TiledMapSave.FromFile(absoluteFile);
 
+                // loop through each layer, adding it:
+                foreach(var layer in save.MapLayers)
+                {
+                    availableObjects.Add($"{layer.Name} (FlatRedBall.TileCollisions.TileShapeCollection)");
+                    availableObjects.Add($"{layer.Name} (FlatRedBall.TileGraphics.MapDrawableBatch)");
+
+                }
+            }
+            catch(Exception e)
+            {
+                GlueCommands.Self.PrintError(e.ToString());
             }
         }
 

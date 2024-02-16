@@ -118,7 +118,7 @@ namespace OfficialPlugins.SpritePlugin.Views
 
             // Initialize CameraLogic after initializing the background so the background
             // position can be set
-            CameraLogic.Initialize(this, null, this.Canvas, this.Background);
+            CameraLogic.Initialize(this, ViewModel, this.Canvas, this.Background);
             MouseEditingLogic.Initialize(this, cameraLogic);
 
             this.Canvas.Children.Add(MainSprite);
@@ -154,6 +154,7 @@ namespace OfficialPlugins.SpritePlugin.Views
             this.Canvas.Children.Add(linegrid);
 
             this.DataContextChanged += HandleDataContextChanged;
+
         }
 
         private void CreateSpriteOutline()
@@ -198,6 +199,7 @@ namespace OfficialPlugins.SpritePlugin.Views
         {
             if(ViewModel != null)
             {
+                this.CameraLogic.ViewModel = ViewModel;
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
             }
         }
