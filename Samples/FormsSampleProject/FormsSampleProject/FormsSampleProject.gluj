@@ -99,6 +99,7 @@
     "AspectRatioWidth": 16.0,
     "AspectRatioHeight": 9.0,
     "SupportLandscape": true,
+    "AllowWindowResizing": true,
     "Scale": 100,
     "ScaleGum": 100,
     "DominantInternalCoordinates": 1,

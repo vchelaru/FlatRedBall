@@ -329,19 +329,24 @@ namespace FlatRedBall.Forms.Controls.Games
             textComponent.SetProperty("Text", text);
 
 
+            var tags = BbCodeParser.Parse(text, CustomSetPropertyOnRenderable.Tags);
+            var strippedLength = BbCodeParser.RemoveTags(text, tags).Length;
+
             var shouldPrintCharacterByCharacter = LettersPerSecond > 0 && !forceImmediatePrint;
             if(shouldPrintCharacterByCharacter)
             {
                 coreTextObject.MaxLettersToShow = 0;
                 var allTextShownState = new global::Gum.DataTypes.Variables.StateSave();
+
+
                 allTextShownState.Variables.Add(new global::Gum.DataTypes.Variables.VariableSave
                 {
                     Name = "TextInstance.MaxLettersToShow",
-                    Value = text.Length,
+                    Value = strippedLength,
                     SetsValue = true
                 });
 
-                var duration = text.Length / (float)LettersPerSecond;
+                var duration = strippedLength / (float)LettersPerSecond;
 
                 showLetterTweener = this.Visual.InterpolateTo(NoTextShownState, allTextShownState, duration, InterpolationType.Linear, Easing.Out);
 
@@ -360,7 +365,7 @@ namespace FlatRedBall.Forms.Controls.Games
             }
             else
             {
-                coreTextObject.MaxLettersToShow = text.Length;
+                coreTextObject.MaxLettersToShow = strippedLength;
 
                 if (TakingInput && continueIndicatorInstance != null)
                 {
@@ -378,6 +383,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
         private string[] ConvertToPages(string text)
         {
+
             var limitsLines = 
                 this.coreTextObject.MaxNumberOfLines != null || 
                 this.textComponent.HeightUnits != global::Gum.DataTypes.DimensionUnitType.RelativeToChildren;
@@ -390,14 +396,18 @@ namespace FlatRedBall.Forms.Controls.Games
             }
             else
             {
+                var foundTags = BbCodeParser.Parse(text, CustomSetPropertyOnRenderable.Tags);
+
+                var withRemovedTags = BbCodeParser.RemoveTags(text, foundTags);
+
                 var unlimitedLines = new List<string>();
                 var oldVerticalMode = this.coreTextObject.TextOverflowVerticalMode;
                 this.coreTextObject.TextOverflowVerticalMode = RenderingLibrary.Graphics.TextOverflowVerticalMode.SpillOver;
-                coreTextObject.RawText = text;
+                coreTextObject.RawText = withRemovedTags;
                 coreTextObject.UpdateLines(unlimitedLines);
 
                 this.coreTextObject.TextOverflowVerticalMode = oldVerticalMode;
-                this.textComponent.SetProperty("Text", text);
+                this.textComponent.SetProperty("Text", withRemovedTags);
 
                 var limitedLines = coreTextObject.WrappedText;
 
@@ -416,13 +426,21 @@ namespace FlatRedBall.Forms.Controls.Games
                     currentPage.Clear();
 
                     StringBuilder stringBuilder = new StringBuilder();
+                    int strippedTextCount = 0;
                     while(absoluteLineNumber < unlimitedLines.Count)
                     {
                         stringBuilder.Clear();
 
                         for(int i = 0; i < limitedLines.Count && absoluteLineNumber < unlimitedLines.Count; i++)
                         {
-                            stringBuilder.Append(unlimitedLines[absoluteLineNumber]);
+                            var toAppend = unlimitedLines[absoluteLineNumber];
+                            var sizeBeforeTags = toAppend.Length;
+                            if(foundTags.Count > 0)
+                            {
+                                toAppend = BbCodeParser.AddTags(toAppend, foundTags, strippedTextCount);
+                            }
+                            strippedTextCount += sizeBeforeTags;
+                            stringBuilder.Append(toAppend);
                             absoluteLineNumber++;
                         }
                         pages.Add(stringBuilder.ToString());
@@ -472,7 +490,10 @@ namespace FlatRedBall.Forms.Controls.Games
                 return;
             }
             //////////////////End Early Out///////////////////
-            var hasMoreToType = coreTextObject.MaxLettersToShow < currentPageText?.Length;
+            //var hasMoreToType = coreTextObject.MaxLettersToShow < currentPageText?.Length;
+
+            // Use the raw text since that has stripped out the tags
+            var hasMoreToType = coreTextObject.MaxLettersToShow < coreTextObject.RawText.Length;
             if (hasMoreToType)
             {
                 showLetterTweener?.Stop();
