@@ -162,6 +162,106 @@
         "EventType": 7,
         "TimestampUtc": "2024-02-12T13:42:41.0259382Z"
       }
+    ],
+    "Owner": [
+      {
+        "NewName": "MainMenuGum.ContainerInstance1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-17T13:16:58.849265Z"
+      },
+      {
+        "NewName": "MainMenuGum.SecondStack",
+        "OldName": "MainMenuGum.ContainerInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-17T13:17:04.3539667Z"
+      },
+      {
+        "NewName": "MainMenuGum.ButtonStandardInstance1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-17T13:18:49.0225153Z"
+      },
+      {
+        "NewName": "MainMenuGum.ButtonStandardInstance1",
+        "OldName": "MainMenuGum.ButtonStandardInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-17T13:19:26.0550836Z"
+      },
+      {
+        "NewName": "MainMenuGum.ShowDialogButton",
+        "OldName": "MainMenuGum.ButtonStandardInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-17T13:19:31.3723099Z"
+      },
+      {
+        "NewName": "MainMenuGum.TextInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-17T13:30:44.7249579Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "MainMenuGum.Text TextInstance in MainMenuGum",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2024-02-17T13:46:43.7318549Z"
+      },
+      {
+        "NewName": "TestScreen",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 0,
+        "TimestampUtc": "2024-02-17T14:25:22.4718202Z"
+      },
+      {
+        "NewName": "TestScreen.ColoredRectangleInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-17T14:25:25.9520485Z"
+      },
+      {
+        "NewName": "TestScreen.ColoredRectangleInstance1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-17T14:25:27.7887566Z"
+      },
+      {
+        "NewName": "TestScreen.BlueRectangle",
+        "OldName": "TestScreen.ColoredRectangleInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-17T14:25:45.1195673Z"
+      },
+      {
+        "NewName": "TestScreen.WhiteRectangle",
+        "OldName": "TestScreen.ColoredRectangleInstance",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-17T14:25:50.2923384Z"
+      },
+      {
+        "NewName": "MainMenuGum.TextInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-17T16:58:12.0981079Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "MainMenuGum.Text TextInstance in MainMenuGum",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2024-02-17T17:18:41.945088Z"
+      }
     ]
   }
 }

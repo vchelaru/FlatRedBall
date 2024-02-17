@@ -68,7 +68,8 @@ namespace FlatRedBall.Forms.Controls.Games
         }
 
         /// <summary>
-        /// The number of letters to show per second when printing out in "typewriter style". If null, 0, or negative, then the text will be shown immediately.
+        /// The number of letters to show per second when printing out in "typewriter style". 
+        /// If null, 0, or negative, then the text is shown immediately.
         /// </summary>
         public int? LettersPerSecond { get; set; } = 20;
 
@@ -132,6 +133,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
         #endregion
 
+        #region Show Methods
         /// <summary>
         /// Shows the dialog box (adds it to managers and sets IsVisible to true) and begins showing the text.
         /// </summary>
@@ -165,7 +167,12 @@ namespace FlatRedBall.Forms.Controls.Games
         /// </summary>
         /// <param name="text">The text to print out, either immediately or letter-by-letter according to LettersPerSecond.</param>
         /// <returns>A task which completes when the text has been displayed and the DialogBox has been dismissed.</returns>
-        public Task ShowAsync(string text) => ShowAsync(new string[] { text });
+        public Task ShowAsync(string text)
+        {
+            var pages = ConvertToPages(text);
+            return ShowAsync(pages);
+        }
+
 
         public async Task ShowAsync(IEnumerable<string> pages, FlatRedBall.Graphics.Layer frbLayer = null)
         {
@@ -367,6 +374,68 @@ namespace FlatRedBall.Forms.Controls.Games
                 FinishedTypingPage?.Invoke(this, null);
             }
         }
+
+
+        private string[] ConvertToPages(string text)
+        {
+            var limitsLines = 
+                this.coreTextObject.MaxNumberOfLines != null || 
+                this.textComponent.HeightUnits != global::Gum.DataTypes.DimensionUnitType.RelativeToChildren;
+
+            if(!limitsLines)
+            {
+                // it can show any number of lines, it's up to the user to handle spillover
+                // by limiting the page length or by expanding the dialog box.
+                return new string[] { text };
+            }
+            else
+            {
+                var unlimitedLines = new List<string>();
+                var oldVerticalMode = this.coreTextObject.TextOverflowVerticalMode;
+                this.coreTextObject.TextOverflowVerticalMode = RenderingLibrary.Graphics.TextOverflowVerticalMode.SpillOver;
+                coreTextObject.RawText = text;
+                coreTextObject.UpdateLines(unlimitedLines);
+
+                this.coreTextObject.TextOverflowVerticalMode = oldVerticalMode;
+                this.textComponent.SetProperty("Text", text);
+
+                var limitedLines = coreTextObject.WrappedText;
+
+                if (unlimitedLines.Count == limitedLines.Count)
+                {
+                    // no need to break it up
+                    return new string[] { text };
+                }
+                else
+                {
+                    var pages = new List<string>();
+
+                    var absoluteLineNumber = 0;
+
+                    var currentPage = new StringBuilder();
+                    currentPage.Clear();
+
+                    StringBuilder stringBuilder = new StringBuilder();
+                    while(absoluteLineNumber < unlimitedLines.Count)
+                    {
+                        stringBuilder.Clear();
+
+                        for(int i = 0; i < limitedLines.Count && absoluteLineNumber < unlimitedLines.Count; i++)
+                        {
+                            stringBuilder.Append(unlimitedLines[absoluteLineNumber]);
+                            absoluteLineNumber++;
+                        }
+                        pages.Add(stringBuilder.ToString());
+                    }
+
+                    return pages.ToArray();
+                }
+            }
+
+
+        }
+
+        #endregion
 
         #region Event Handler Methods
 
