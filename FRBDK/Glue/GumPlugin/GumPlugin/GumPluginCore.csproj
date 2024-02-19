@@ -267,6 +267,7 @@
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\Geometry\SolidRectangle.cs" Link="Embedded\LibraryFiles\RenderingLibrary\SolidRectangle.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\MathFunctions.cs" Link="Embedded\LibraryFiles\RenderingLibrary\MathFunctions.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\SystemManagers.cs" Link="Embedded\LibraryFiles\RenderingLibrary\SystemManagers.cs" />
+    <Compile Include="..\..\..\..\..\Gum\GumRuntime\BbCodeParser.cs" Link="BbCodeParser.cs" />
     <Compile Include="..\..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\AnimatedStateSave.cs" Link="Animation\AnimatedStateSave.cs" />
     <Compile Include="..\..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\AnimationReferenceSave.cs" Link="Animation\AnimationReferenceSave.cs" />
     <Compile Include="..\..\..\..\..\Gum\StateAnimationPlugin\SaveClasses\AnimationSave.cs" Link="Animation\AnimationSave.cs" />

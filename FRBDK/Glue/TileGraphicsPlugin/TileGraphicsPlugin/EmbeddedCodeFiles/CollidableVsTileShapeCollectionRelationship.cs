@@ -225,10 +225,10 @@ namespace FlatRedBall.Math.Collision
 
                         didCollisionOccur = true;
 
-#if ICollidableHasItemsCollidedAgainst
+#if ICollidableHasItemsCollidedAgainst || REFERENCES_FRB_SOURCE
                         singleObject.ItemsCollidedAgainst.Add(data.TileShapeCollection.Name);
 #endif
-#if ICollidableHasObjectsCollidedAgainst
+#if ICollidableHasObjectsCollidedAgainst || REFERENCES_FRB_SOURCE
                         singleObject.ObjectsCollidedAgainst.Add(data.TileShapeCollection);
 #endif
                     }
