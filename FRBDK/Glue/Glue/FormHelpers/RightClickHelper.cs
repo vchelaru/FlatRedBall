@@ -478,8 +478,6 @@ public static class RightClickHelper
 
     static GeneralToolStripMenuItem mFillValuesFromDefault;
 
-    static GeneralToolStripMenuItem mUseContentPipeline;
-
     static GeneralToolStripMenuItem mRemoveFromProjectQuick;
     static GeneralToolStripMenuItem mCreateNewFileForMissingFile;
 
@@ -851,13 +849,6 @@ public static class RightClickHelper
             {
                 AddRemoveFromProjectItems();
             }
-
-            if (rfs.IsCreatedByWildcard == false)
-            {
-                AddItem(mUseContentPipeline);
-            }
-            //AddItem(form.openWithDEFAULTToolStripMenuItem);
-
 
             if (FileManager.GetExtension(rfs.Name) == "csv" || rfs.TreatAsCsv)
             {
@@ -1279,14 +1270,8 @@ public static class RightClickHelper
         mRemoveFromProjectQuick = new GeneralToolStripMenuItem(L.Texts.RemoveFromProjectQuick);
         mRemoveFromProjectQuick.Click += RemoveFromProjectQuick;
 
-        mUseContentPipeline = new GeneralToolStripMenuItem(L.Texts.PipelineContentToggle);
-        mUseContentPipeline.Click += mUseContentPipeline_Click;
-
         mCreateNewFileForMissingFile = new GeneralToolStripMenuItem(L.Texts.FileCreateForMissing);
         mCreateNewFileForMissingFile.Click += CreateNewFileForMissingFileClick;
-
-        mViewFileLoadOrder = new GeneralToolStripMenuItem(L.Texts.ViewFileOrder);
-        mViewFileLoadOrder.Click += ViewFileOrderClick;
 
         mCreateZipPackage = new GeneralToolStripMenuItem(L.Texts.ZipPackageCreate);
         mCreateZipPackage.Click += CreateZipPackageClick;
@@ -1533,12 +1518,6 @@ public static class RightClickHelper
 
             GluxCommands.Self.SaveProjectAndElements();
         }
-    }
-
-    static void mUseContentPipeline_Click(object sender, EventArgs e)
-    {
-        ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
-
     }
 
     static void AddStateClick(object sender, EventArgs e)
