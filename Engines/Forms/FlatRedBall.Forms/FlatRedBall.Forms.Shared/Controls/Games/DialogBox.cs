@@ -396,9 +396,12 @@ namespace FlatRedBall.Forms.Controls.Games
             }
             else
             {
-                var foundTags = BbCodeParser.Parse(text, CustomSetPropertyOnRenderable.Tags);
-
-                var withRemovedTags = BbCodeParser.RemoveTags(text, foundTags);
+                // To remove the tags, we must keep newlines in since since that's how the tags are removed...
+                var foundTagsWithNewlines = BbCodeParser.Parse(text, CustomSetPropertyOnRenderable.Tags);
+                // ...but when we add the tags back in, we do it without counting newlines, so we need to remove newlines for 
+                // the tags that are added back in:
+                var foundTagsWithoutNewlines = BbCodeParser.Parse(text.Replace("\n", ""), CustomSetPropertyOnRenderable.Tags);
+                var withRemovedTags = BbCodeParser.RemoveTags(text, foundTagsWithNewlines);
 
                 var unlimitedLines = new List<string>();
                 var oldVerticalMode = this.coreTextObject.TextOverflowVerticalMode;
@@ -435,12 +438,12 @@ namespace FlatRedBall.Forms.Controls.Games
                         {
                             var toAppend = unlimitedLines[absoluteLineNumber];
                             var sizeBeforeTags = toAppend.Length;
-                            if(foundTags.Count > 0)
+                            if(foundTagsWithoutNewlines.Count > 0)
                             {
-                                toAppend = BbCodeParser.AddTags(toAppend, foundTags, strippedTextCount);
+                                toAppend = BbCodeParser.AddTags(toAppend, foundTagsWithoutNewlines, strippedTextCount);
                             }
                             strippedTextCount += sizeBeforeTags;
-                            stringBuilder.Append(toAppend);
+                            stringBuilder.Append(toAppend + "\n");
                             absoluteLineNumber++;
                         }
                         pages.Add(stringBuilder.ToString());

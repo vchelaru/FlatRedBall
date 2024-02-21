@@ -90,6 +90,9 @@ namespace TopDownPlugin.CodeGenerators
                 .Set("private")
                     .Line("mCurrentMovement = value;");
 
+            codeBlock.Line("public string CurrentMovementName => CurrentMovement?.Name;");
+            codeBlock.Line("public float MaxSpeed => CurrentMovement?.MaxSpeed ?? 0;");
+
 
             codeBlock.Property("public FlatRedBall.Input.IInputDevice", "InputDevice")
                 .Line("get;")
@@ -113,7 +116,7 @@ namespace TopDownPlugin.CodeGenerators
                 .AutoSet();
 
             codeBlock.Line("/// <summary>");
-            codeBlock.Line("/// The input object which controls the horizontal movement of the character.");
+            codeBlock.Line("/// The input object which controls the movement of the character.");
             codeBlock.Line("/// Common examples include a d-pad, analog stick, or keyboard keys.");
             codeBlock.Line("/// </summary>");
             codeBlock.AutoProperty("public FlatRedBall.Input.I2DInput", "MovementInput");
