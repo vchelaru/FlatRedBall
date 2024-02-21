@@ -679,7 +679,6 @@ namespace FlatRedBall.Math.Geometry
             return !double.IsNaN(intersectionPoint.X);
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the point where this segment intersects the argument segment.
         /// </summary>
@@ -688,7 +687,6 @@ namespace FlatRedBall.Math.Geometry
         /// argument segment.  If the two segments do not touch, the point
         /// will have both values be double.NAN.
         /// </returns>
-        #endregion
         public void IntersectionPoint(ref Segment s2, out Point intersectionPoint)
         {          
             // code borrowed from 

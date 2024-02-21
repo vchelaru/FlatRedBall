@@ -1,6 +1,7 @@
 #define PreVersion
 #define HasFormsObject
 #define AddedGeneratedGame1
+#define REFERENCES_FRB_SOURCE
 
 
 
@@ -162,7 +163,11 @@ namespace FlatRedBall.Math.Collision
         /// <returns></returns>
         public static bool DoFirstCollisionLineVsShapeCollection(Line line, TileShapeCollection tileShapeCollection)
         {
+#if ShapeManagerCollideAgainstClosest
             return tileShapeCollection.CollideAgainstClosest(line);
+#else
+            return false;
+#endif
         }
     }
 
@@ -224,8 +229,11 @@ namespace FlatRedBall.Math.Collision
 
                         didCollisionOccur = true;
 
-#if ICollidableHasItemsCollidedAgainst
+#if ICollidableHasItemsCollidedAgainst || REFERENCES_FRB_SOURCE
                         singleObject.ItemsCollidedAgainst.Add(data.TileShapeCollection.Name);
+#endif
+#if ICollidableHasObjectsCollidedAgainst || REFERENCES_FRB_SOURCE
+                        singleObject.ObjectsCollidedAgainst.Add(data.TileShapeCollection);
 #endif
                     }
                 }

@@ -196,7 +196,14 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
                     // as a simple field
                     tempVariable.Name = variable.Name;
 
-                    tempVariable.Type = ConvertFileToType(variable.Type);
+                    if(IsTypeFileType(variable.Type))
+                    {
+                        tempVariable.Type = "string";
+                    }
+                    else
+                    {
+                        tempVariable.Type = CustomVariableCodeGenerator.GetMemberTypeFor(variable, element);
+                    }
                     tempVariable.DefaultValue = variable.DefaultValue;
                     tempVariable.OverridingPropertyType = variable.OverridingPropertyType;
 
@@ -210,11 +217,6 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             return type == 
                 // todo - add more here...
                 "AnimationChainList"; 
-        }
-
-        private string ConvertFileToType(string type)
-        {
-            return IsTypeFileType(type) ? "string" : type;
         }
 
         static bool ShouldSkipVariantField(CustomVariable customVariable)

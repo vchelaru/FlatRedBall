@@ -109,9 +109,12 @@ namespace TMXGlueLib
                                 var properties = tileset.TileDictionary[item.gid.Value - tileset.Firstgid];
                                 if (!string.IsNullOrEmpty(properties.Type))
                                 {
-
-                                    item.properties.Add(new property { name = "Type", Type = "string", value = properties.Type });
-                                    item.PropertyDictionary["Type"] = properties.Type;
+                                    if(item.PropertyDictionary.ContainsKey("Type")) {
+                                        //If it already has a Type, it's overridden in tiled so we don't want the base tileset Type
+                                    } else {
+                                        item.properties.Add(new property { name = "Type", Type = "string", value = properties.Type });
+                                        item.PropertyDictionary["Type"] = properties.Type;
+                                    }
                                 }
                             }
 
@@ -1111,7 +1114,7 @@ namespace TMXGlueLib
 
         private static bool IsName(string key)
         {
-            return property.GetStrippedName(key).ToLower() == "name";
+            return String.Equals(property.GetStrippedName(key), "name", StringComparison.OrdinalIgnoreCase);
         }
 
         public void CalculateWorldCoordinates(int layerIndex, int tileIndex, int tileWidth, int tileHeight, int layerWidth, out float x, out float y, out float z)

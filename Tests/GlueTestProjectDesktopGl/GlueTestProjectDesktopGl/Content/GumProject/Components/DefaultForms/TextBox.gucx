@@ -232,6 +232,7 @@
   </State>
   <Category>
     <Name>TextBoxCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Enabled</Name>
     </State>

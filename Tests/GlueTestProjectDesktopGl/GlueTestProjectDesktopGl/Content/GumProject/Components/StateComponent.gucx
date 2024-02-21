@@ -77,7 +77,7 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>Category1State</Type>
+      <Type>Category1</Type>
       <Name>StateComponentContainedFolderedInstance.Category1State</Name>
       <Value xsi:type="xsd:string">Categorized1</Value>
       <SetsValue>true</SetsValue>
@@ -113,7 +113,7 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>Category1State</Type>
+      <Type>Category1</Type>
       <Name>StateComponentContainedInstance.Category1State</Name>
       <Value xsi:type="xsd:string">Categorized1</Value>
       <SetsValue>true</SetsValue>
@@ -218,7 +218,7 @@
   <State>
     <Name>NonDefaultState</Name>
     <Variable>
-      <Type>Category1State</Type>
+      <Type>Category1</Type>
       <Name>StateComponentContainedFolderedInstance.Category1State</Name>
       <Value xsi:type="xsd:string">Categorized2</Value>
       <SetsValue>true</SetsValue>
@@ -230,7 +230,7 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>Category1State</Type>
+      <Type>Category1</Type>
       <Name>StateComponentContainedInstance.Category1State</Name>
       <Value xsi:type="xsd:string">Categorized2</Value>
       <SetsValue>true</SetsValue>
@@ -244,10 +244,11 @@
   </State>
   <Category>
     <Name>Category1</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Categorized1</Name>
       <Variable>
-        <Type>Category1State</Type>
+        <Type>Category1</Type>
         <Name>StateComponentContainedFolderedInstance.Category1State</Name>
         <Value xsi:type="xsd:string">Categorized1</Value>
         <SetsValue>true</SetsValue>
@@ -271,7 +272,7 @@
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
-        <Type>Category1State</Type>
+        <Type>Category1</Type>
         <Name>StateComponentContainedInstance.Category1State</Name>
         <Value xsi:type="xsd:string">Categorized1</Value>
         <SetsValue>true</SetsValue>
@@ -286,7 +287,7 @@
     <State>
       <Name>Categorized2</Name>
       <Variable>
-        <Type>Category1State</Type>
+        <Type>Category1</Type>
         <Name>StateComponentContainedFolderedInstance.Category1State</Name>
         <Value xsi:type="xsd:string">Categorized2</Value>
         <SetsValue>true</SetsValue>
@@ -310,7 +311,7 @@
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
-        <Type>Category1State</Type>
+        <Type>Category1</Type>
         <Name>StateComponentContainedInstance.Category1State</Name>
         <Value xsi:type="xsd:string">Categorized2</Value>
         <SetsValue>true</SetsValue>
@@ -325,6 +326,7 @@
   </Category>
   <Category>
     <Name>Category2</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>CategorizedA</Name>
     </State>

@@ -1,3 +1,9 @@
+#define PreVersion
+#define HasFormsObject
+#define AddedGeneratedGame1
+#define REFERENCES_FRB_SOURCE
+
+
 using GlueTestProject.DataTypes;
 using FlatRedBall.TileGraphics;
 using System;
@@ -100,8 +106,9 @@ namespace FlatRedBall.TileEntities
             {
                 var entitiesToRemove = new List<string>();
 
-                foreach (var layer in layeredTileMap.MapLayers)
+                for(int i = 0; i < layeredTileMap.MapLayers.Count; i++)
                 {
+                    var layer = layeredTileMap.MapLayers[i];
                     CreateEntitiesFrom(entitiesToRemove, layer, layeredTileMap.TileProperties, layeredTileMap.WidthPerTile ?? 16, restrictions);
                 }
                 if (CurrentSettings.RemoveTileObjectsAfterEntityCreation)
@@ -244,6 +251,7 @@ namespace FlatRedBall.TileEntities
                                 var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
                                 entityCollision.Polygons.Add(polygon);
                                 polygon.AttachTo(entity, false);
+                                polygon.RelativeRotationZ = polygon.RotationZ;
                             }
                         }
                     }
@@ -340,6 +348,25 @@ namespace FlatRedBall.TileEntities
                                     {
                                         ApplyPropertiesTo(entity, layer, tileIndex, propertyList);
                                         createdEntityOfThisType = true;
+
+#if ITiledTileMetadataInFrb
+                                        if(entity is FlatRedBall.Entities.ITiledTileMetadata asEntity) 
+                                        {
+                                            float tx, ty;                                            
+                                            layer.GetTextureCoordiantesForOrderedTile(tileIndex, out tx, out ty);
+                                            var ttm = new FlatRedBall.Entities.TiledTileMetadata() 
+                                            {
+                                                LeftTextureCoordinate = tx,
+                                                TopTextureCoordinate = ty,
+                                                RightTextureCoordinate = tx + (tileSize / layer.Texture.Width),
+                                                BottomTextureCoordinate = ty + (tileSize / layer.Texture.Height)
+                                            };
+                                            
+                                            ttm.RotationZ = layer.GetRotationZForOrderedTile(tileIndex);
+
+                                            asEntity.SetTileMetadata(ttm);
+                                        }
+#endif
                                     }
                                 }
                             }
@@ -473,7 +500,7 @@ namespace FlatRedBall.TileEntities
                             $"Check the property type in your TMX and make sure it matches the type on the entity.";
                         throw new Exception(message, e);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         // Since this code indiscriminately tries to set properties, it may set properties which don't
                         // actually exist. Therefore, we tolerate failures.
@@ -526,6 +553,7 @@ namespace FlatRedBall.TileEntities
             {
                 case "System.String": return "string";
                 case "System.Single": return "float";
+                case "System.Decimal": return "decimal";
 
             }
             return type;
@@ -549,6 +577,15 @@ namespace FlatRedBall.TileEntities
                 if (float.TryParse((string)valueToSet, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out floatValue))
                 {
                     valueToSet = floatValue;
+                }
+            }
+            else if (valueType == "decimal")
+            {
+                decimal decimalValue;
+
+                if (decimal.TryParse((string)valueToSet, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out decimalValue))
+                {
+                    valueToSet = decimalValue;
                 }
             }
             else if (valueType == "int")

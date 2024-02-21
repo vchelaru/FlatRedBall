@@ -27,4 +27,5 @@
     <BaseType>ColoredRectangle</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
+  <Behaviors />
 </ScreenSave>

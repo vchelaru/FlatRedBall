@@ -101,6 +101,12 @@ namespace GumPlugin.Managers
                  "\n{" +
                  "\n var wasSuspended = Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended;" +
                  "\n Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = true;";
+
+            if(string.IsNullOrEmpty(qualifiedName))
+            {
+                qualifiedName = rfs?.RuntimeType;
+            }
+
             if(string.IsNullOrEmpty(qualifiedName))
             {
                 toReturn +=
@@ -684,7 +690,7 @@ namespace GumPlugin.Managers
                 {
                     var uncastedLine = ComponentAti.CustomLoadFunc(innerElement, nos, rfs, contentManagerName);
                     // remove the semicolon 
-                    return uncastedLine.Substring(0, uncastedLine.Length - 1) + " as " + GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element) + ";";
+                    return uncastedLine;
 
                 };
 

@@ -651,10 +651,10 @@ namespace TMXGlueLib
                             case "zlib":
 #if SUPPORTS_ZLIB
                                 data = new Ionic.Zlib.ZlibStream(data, Ionic.Zlib.CompressionMode.Decompress, false);
+                                break;
 #else
                                 throw new NotImplementedException("Does not support zlib");
 #endif
-                                break;
                             case null:
                                 // Not compressed. Data is already decoded.
                                 break;
@@ -876,6 +876,12 @@ namespace TMXGlueLib
         public string Type
         {
             get; set;
+        }
+
+        [XmlAttribute(AttributeName = "class")]
+        public string Class {
+            get { return Type; }
+            set { Type = value; }
         }
 
         [XmlIgnore]

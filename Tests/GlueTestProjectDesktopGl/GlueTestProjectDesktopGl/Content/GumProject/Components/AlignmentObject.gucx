@@ -140,6 +140,7 @@
   </State>
   <Category>
     <Name>Position</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>State1</Name>
       <Variable>
