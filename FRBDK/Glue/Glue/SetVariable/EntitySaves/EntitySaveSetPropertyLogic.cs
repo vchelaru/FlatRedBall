@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using FlatRedBall.Glue.CodeGeneration;
-using FlatRedBall.Glue.Parsing;
 using System.Windows.Forms;
 using FlatRedBall.Glue.Factories;
-using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Elements;
-using Glue;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -17,6 +11,7 @@ using GlueFormsCore.SetVariable.EntitySaves;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
+using L = Localization;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -198,16 +193,14 @@ namespace FlatRedBall.Glue.SetVariable
                 CustomVariable variableToRemove = entitySave.GetCustomVariable("Visible");
                 if (variableToRemove != null)
                 {
-                    List<string> throwawayList = new List<string>();
+                    var throwawayList = new List<string>();
 
-                    var mbmb = new MultiButtonMessageBox();
-                    mbmb.MessageText = "This entity has a \"Visible\" variable exposed.  This variable is no longer valid.  What would you like to do?";
-                    mbmb.AddButton("Remove this variable", DialogResult.Yes);
-                    mbmb.AddButton("Keep this as a non-functional Variable (it will no longer control the object's visibility)", DialogResult.No);
-
-                    DialogResult result = mbmb.ShowDialog(GlueCommands.Self.DialogCommands.Win32Window);
-
-                    if (result == DialogResult.Yes)
+                    var mbmb = new MultiButtonMessageBoxWpf();
+                    mbmb.MessageText = L.Texts.VariableEntityExposed;
+                    mbmb.AddButton(L.Texts.VariableRemove, DialogResult.Yes);
+                    mbmb.AddButton(L.Texts.VariableKeepNonFunctioning, DialogResult.No);
+                    var result = mbmb.ShowDialog();
+                    if ((DialogResult)mbmb.ClickedResult == DialogResult.Yes)
                     {
                         GlueCommands.Self.GluxCommands.RemoveCustomVariable(variableToRemove, throwawayList);
                     }

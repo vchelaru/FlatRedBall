@@ -691,6 +691,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change {0} to {1} in {2}.
+        /// </summary>
+        public static string ChangeAToBInC {
+            get {
+                return ResourceManager.GetString("ChangeAToBInC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Character moves downhill.
         /// </summary>
         public static string CharacterMovesDownhill {
@@ -966,6 +975,33 @@ namespace Localization {
         public static string Confirm {
             get {
                 return ResourceManager.GetString("Confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test for conflicts.
+        /// </summary>
+        public static string ConflictTest {
+            get {
+                return ResourceManager.GetString("ConflictTest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set &apos;IsContainer&apos; back to false.
+        /// </summary>
+        public static string ContainerRevertToFalse {
+            get {
+                return ResourceManager.GetString("ContainerRevertToFalse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set the container&apos;s type to {0}.
+        /// </summary>
+        public static string ContainerSetTypeToX {
+            get {
+                return ResourceManager.GetString("ContainerSetTypeToX", resourceCulture);
             }
         }
         
@@ -1398,6 +1434,24 @@ namespace Localization {
         public static string Done {
             get {
                 return ResourceManager.GetString("Done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do nothing (your project will likely not compile so you will need to fix this manually).
+        /// </summary>
+        public static string DoNothingFixManually {
+            get {
+                return ResourceManager.GetString("DoNothingFixManually", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Don&apos;t do anything.
+        /// </summary>
+        public static string DontDoAnything {
+            get {
+                return ResourceManager.GetString("DontDoAnything", resourceCulture);
             }
         }
         
@@ -2320,6 +2374,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The game/edit mode could not be set to {0}..
+        /// </summary>
+        public static string FailedToSetGameEditModeToX {
+            get {
+                return ResourceManager.GetString("FailedToSetGameEditModeToX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Falling.
         /// </summary>
         public static string Falling {
@@ -2514,6 +2577,15 @@ namespace Localization {
         public static string FilesRemoveFromProjectButKeep {
             get {
                 return ResourceManager.GetString("FilesRemoveFromProjectButKeep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Types.
+        /// </summary>
+        public static string FileTypes {
+            get {
+                return ResourceManager.GetString("FileTypes", resourceCulture);
             }
         }
         
@@ -3103,6 +3175,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Glue found possible matches for the object {0} which expects the type {1}.
+        /// </summary>
+        public static string GlueFoundMatches {
+            get {
+                return ResourceManager.GetString("GlueFoundMatches", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Glue Group.
         /// </summary>
         public static string GlueGroup {
@@ -3144,6 +3225,33 @@ namespace Localization {
         public static string GlueWizardRun {
             get {
                 return ResourceManager.GetString("GlueWizardRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are conflicts in your GLUX file.  You will need to use a merging  tool or text editor to resolve these conflicts..
+        /// </summary>
+        public static string GluxConflictsFound {
+            get {
+                return ResourceManager.GetString("GluxConflictsFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error loading the .glux file.  What would you like to do?.
+        /// </summary>
+        public static string GluxErrorLoading {
+            get {
+                return ResourceManager.GetString("GluxErrorLoading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Subversion conflicts found in your GLUX..
+        /// </summary>
+        public static string GluxNoSubversionFound {
+            get {
+                return ResourceManager.GetString("GluxNoSubversionFound", resourceCulture);
             }
         }
         
@@ -4643,7 +4751,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make Absolute.
+        ///   Looks up a localized string similar to Make Absolute (c:\program.exe).
         /// </summary>
         public static string MakeAbsolute {
             get {
@@ -4652,7 +4760,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make Relative.
+        ///   Looks up a localized string similar to Make Relative (..\..\program.exe).
         /// </summary>
         public static string MakeRelative {
             get {
@@ -5057,6 +5165,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The new element will now fulfill the previously-broken reference for {0}.
+        /// </summary>
+        public static string NewElementFulfill {
+            get {
+                return ResourceManager.GetString("NewElementFulfill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New Folder.
         /// </summary>
         public static string NewFolder {
@@ -5129,6 +5246,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Nothing - game may not compile until this has been fixed.
+        /// </summary>
+        public static string NothingGameMayNotCompile {
+            get {
+                return ResourceManager.GetString("NothingGameMayNotCompile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nothing - Glue will abort loading the project..
+        /// </summary>
+        public static string NothingGluxAbort {
+            get {
+                return ResourceManager.GetString("NothingGluxAbort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Object:.
         /// </summary>
         public static string Object {
@@ -5192,6 +5327,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This object has type of {0} but the base object in {1} is untyped.  What would you like to do?.
+        /// </summary>
+        public static string ObjectHasBaseButUntyped {
+            get {
+                return ResourceManager.GetString("ObjectHasBaseButUntyped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The object {0} is already marked as IsContainer. Two objects in the same element cannot be marked as Iscontainer.
+        /// </summary>
+        public static string ObjectIsAlreadyIsContainer {
+            get {
+                return ResourceManager.GetString("ObjectIsAlreadyIsContainer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Object names can&apos;t have spaces.
         /// </summary>
         public static string ObjectNameCannotHaveSpace {
@@ -5219,6 +5372,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are no partitioning options available for this object..
+        /// </summary>
+        public static string ObjectNoPartitioning {
+            get {
+                return ResourceManager.GetString("ObjectNoPartitioning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is an object named {0} in the base Element but it is not Set By Derived..
         /// </summary>
         public static string ObjectNotSetInDerived {
@@ -5233,6 +5395,24 @@ namespace Localization {
         public static string ObjectNullSource {
             get {
                 return ResourceManager.GetString("ObjectNullSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The object is of type {0} but the container is of type {1}. What would you like to do?.
+        /// </summary>
+        public static string ObjectOfTypeXButContainerY {
+            get {
+                return ResourceManager.GetString("ObjectOfTypeXButContainerY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This object is of type {0} but the base object is of type {1}.
+        /// </summary>
+        public static string ObjectOfTypeXButSubTypeY {
+            get {
+                return ResourceManager.GetString("ObjectOfTypeXButSubTypeY", resourceCulture);
             }
         }
         
@@ -6605,6 +6785,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to See the Exception.
+        /// </summary>
+        public static string SeeException {
+            get {
+                return ResourceManager.GetString("SeeException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to On the selected file association I want to....
         /// </summary>
         public static string SelectedFileAssociation {
@@ -7397,6 +7586,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Try loading again.
+        /// </summary>
+        public static string TryLoadingAgain {
+            get {
+                return ResourceManager.GetString("TryLoadingAgain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tutorials.
         /// </summary>
         public static string Tutorials {
@@ -7523,6 +7721,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string UpdateReference {
+            get {
+                return ResourceManager.GetString("UpdateReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update to Input.
         /// </summary>
         public static string UpdateToInput {
@@ -7555,6 +7762,15 @@ namespace Localization {
         public static string UserFor {
             get {
                 return ResourceManager.GetString("UserFor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use {0}.
+        /// </summary>
+        public static string UseX {
+            get {
+                return ResourceManager.GetString("UseX", resourceCulture);
             }
         }
         
@@ -7595,6 +7811,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add a new variable with the same name and type to {0}.
+        /// </summary>
+        public static string VariableAddNewOfSame {
+            get {
+                return ResourceManager.GetString("VariableAddNewOfSame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adding variable {0} through UI.
         /// </summary>
         public static string VariableAddThroughUI {
@@ -7618,6 +7843,15 @@ namespace Localization {
         public static string VariableCreate {
             get {
                 return ResourceManager.GetString("VariableCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This entity has a &quot;Visible&quot; variable exposed.  This variable is no longer valid.  What would you like to do?.
+        /// </summary>
+        public static string VariableEntityExposed {
+            get {
+                return ResourceManager.GetString("VariableEntityExposed", resourceCulture);
             }
         }
         
@@ -7667,6 +7901,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Keep this as a non-functional Variable (it will no longer control the object&apos;s visibility).
+        /// </summary>
+        public static string VariableKeepNonFunctioning {
+            get {
+                return ResourceManager.GetString("VariableKeepNonFunctioning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You must select a variable on {0}.
         /// </summary>
         public static string VariableMustSelect {
@@ -7681,6 +7924,15 @@ namespace Localization {
         public static string VariableRemove {
             get {
                 return ResourceManager.GetString("VariableRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nothing - the variable will go away.
+        /// </summary>
+        public static string VariableRemoveDoingNothing {
+            get {
+                return ResourceManager.GetString("VariableRemoveDoingNothing", resourceCulture);
             }
         }
         
@@ -7744,6 +7996,15 @@ namespace Localization {
         public static string VariableTypeMustBeSelectedForNew {
             get {
                 return ResourceManager.GetString("VariableTypeMustBeSelectedForNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The variable &quot;{0}&quot; Is no longer part of the Entity.  What do you want to do?.
+        /// </summary>
+        public static string VariableXNoLongerOfEntity {
+            get {
+                return ResourceManager.GetString("VariableXNoLongerOfEntity", resourceCulture);
             }
         }
         
@@ -7987,6 +8248,24 @@ namespace Localization {
         public static string XFasterOnSlope {
             get {
                 return ResourceManager.GetString("XFasterOnSlope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has an object named {1} which references an Entity {2}. Could not find a matching Entity.  Your project may not run properly until this issue is resolved..
+        /// </summary>
+        public static string XHasObjectYReferenceZ {
+            get {
+                return ResourceManager.GetString("XHasObjectYReferenceZ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has a missing reference.  Use the new Entity {1}?.
+        /// </summary>
+        public static string XMissingReferenceUseEntity {
+            get {
+                return ResourceManager.GetString("XMissingReferenceUseEntity", resourceCulture);
             }
         }
         

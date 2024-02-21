@@ -76,8 +76,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             {
                 Settings.Add(
                     Localization.Texts.FileAssociations,
-                    () => new FileAssociationWindow().ShowDialog(GlueCommands.Self.DialogCommands.Win32Window));
-
+                    () => new FileAssociationWindow().ShowDialog());
                 Settings.Add(
                     Localization.Texts.FileBuildTools,
                     () => new FileBuildToolAssociationWindow(GlueState.Self.GlueSettingsSave.BuildToolAssociations).Show(GlueCommands.Self.DialogCommands.Win32Window));
@@ -102,8 +101,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             var Plugins = AddTopLevelMenuItem(Localization.Texts.Plugins, Localization.MenuIds.PluginId);
             {
-                Plugins.Add(Localization.Texts.PluginInstall, () => new InstallPluginWindow().Show(GlueCommands.Self.DialogCommands.Win32Window));
-                Plugins.Add(Localization.Texts.PluginUninstall, () => new UninstallPluginWindow().Show(GlueCommands.Self.DialogCommands.Win32Window));
+
+                Plugins.Add(Localization.Texts.PluginInstall, () => new InstallPluginWindow().ShowDialog());
+                Plugins.Add(Localization.Texts.PluginUninstall, () => new UninstallPluginWindow().Show(MainGlueWindow.Self));
                 Plugins.Add(Localization.Texts.PluginCreate, () => new CreatePluginWindow().ShowDialog());
                 Plugins.DropDownItems.Add(new ToolStripSeparator());
             }

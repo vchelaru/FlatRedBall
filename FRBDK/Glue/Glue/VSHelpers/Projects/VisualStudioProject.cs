@@ -18,6 +18,7 @@ using Container = EditorObjects.IoC.Container;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Reflection;
 using System.IO;
+using System.Text.RegularExpressions;
 using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
@@ -164,6 +165,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     }
                     else
                     {
+                        // replace all dots after the first. E.g. ''4.7.1'' becomes ''4.71''
+                        int pos = 1 + afterV.IndexOf('.');
+                        afterV = afterV.Substring(0, pos) + afterV.Substring(pos).Replace(".", String.Empty);
+                        
                         DotNetVersionNumber = Decimal.Parse(afterV);
                     }
                 }

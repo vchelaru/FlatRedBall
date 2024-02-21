@@ -2374,10 +2374,10 @@
     <value>Wählen Sie ein Element aus, um eine Beispielbefehlszeile anzuzeigen</value>
   </data>
   <data name="MakeRelative" xml:space="preserve">
-    <value>Relativ machen</value>
+	  <value>Relativ machen (..\..\program.exe)</value>
   </data>
   <data name="MakeAbsolute" xml:space="preserve">
-    <value>Absolut machen</value>
+	  <value>Absolut machen (c:\program.exe)</value>
   </data>
   <data name="SelectedFileAssociation" xml:space="preserve">
     <value>Für die ausgewählte Dateizuordnung möchte ich...</value>
@@ -2750,5 +2750,107 @@
   </data>
   <data name="FrbEditor" xml:space="preserve">
     <value>FlatRedBall-Editor</value>
+  </data>
+  <data name="ObjectHasBaseButUntyped" xml:space="preserve">
+	  <value>Dieses Objekt hat den Typ {0}, aber das Basisobjekt in {1} ist untypisiert. Was würdest du gern tun?</value>
+  </data>
+  <data name="FromTileClass" xml:space="preserve">
+	  <value>Aus der Fliesenklasse:</value>
+  </data>
+  <data name="ChangeAToBInC" xml:space="preserve">
+	  <value>Ändern Sie {0} in {1} in {2}</value>
+  </data>
+  <data name="DoNothingFixManually" xml:space="preserve">
+	  <value>Tun Sie nichts (Ihr Projekt wird wahrscheinlich nicht kompiliert, daher müssen Sie das Problem manuell beheben)</value>
+  </data>
+  <data name="ObjectOfTypeXButSubTypeY" xml:space="preserve">
+	  <value>Dieses Objekt ist vom Typ {0}, aber das Basisobjekt ist vom Typ {1}</value>
+  </data>
+  <data name="NothingGameMayNotCompile" xml:space="preserve">
+	  <value>Nichts – das Spiel kann möglicherweise nicht kompiliert werden, bis das Problem behoben wurde</value>
+  </data>
+  <data name="ContainerSetTypeToX" xml:space="preserve">
+	  <value>Legen Sie den Typ des Containers auf {0} fest.</value>
+  </data>
+  <data name="ContainerRevertToFalse" xml:space="preserve">
+	  <value>Setzen Sie „IsContainer“ wieder auf „false“.</value>
+  </data>
+  <data name="ObjectOfTypeXButContainerY" xml:space="preserve">
+	  <value>Das Objekt ist vom Typ {0}, aber der Container ist vom Typ {1}. Was würdest du gern tun?</value>
+  </data>
+  <data name="AddObject_ActivityCalledByBaseList" xml:space="preserve">
+	  <value>Für Elemente in dieser Liste wird bereits die Aktivität aufgerufen, wenn sie zu {0} hinzugefügt werden. Dies führt dazu, dass die Aktivität zweimal aufgerufen wird, was zu Fehlern führt.</value>
+  </data>
+  <data name="AddObject_ActivityCalledBySameList" xml:space="preserve">
+	  <value>Die Aktivität der Elemente in dieser Liste wird bereits von {0} aufgerufen.</value>
+  </data>
+  <data name="AddObject_ActivityListRecommended" xml:space="preserve">
+	  <value>Für diese Liste wird eine Aktivität empfohlen</value>
+  </data>
+  <data name="VariableKeepNonFunctioning" xml:space="preserve">
+	  <value>Behalten Sie dies als nicht funktionale Variable bei (sie steuert nicht mehr die Sichtbarkeit des Objekts).</value>
+  </data>
+  <data name="VariableEntityExposed" xml:space="preserve">
+	  <value>Für diese Entität ist die Variable „Visible“ verfügbar. Diese Variable ist nicht mehr gültig. Was würdest du gern tun?</value>
+  </data>
+  <data name="ConflictTest" xml:space="preserve">
+	  <value>Auf Konflikte testen</value>
+  </data>
+  <data name="TryLoadingAgain" xml:space="preserve">
+	  <value>Versuchen Sie es erneut</value>
+  </data>
+  <data name="TileClass" xml:space="preserve">
+	  <value>Fliesenklasse:</value>
+  </data>
+  <data name="SeeException" xml:space="preserve">
+	  <value>Siehe die Exception</value>
+  </data>
+  <data name="NothingGluxAbort" xml:space="preserve">
+	  <value>Nichts – Glue bricht das Laden des Projekts ab.</value>
+  </data>
+  <data name="GluxErrorLoading" xml:space="preserve">
+	  <value>Beim Laden der .glux-Datei ist ein Fehler aufgetreten. Was würdest du gern tun?</value>
+  </data>
+  <data name="GluxNoSubversionFound" xml:space="preserve">
+	  <value>In Ihrem GLUX wurden keine Subversion-Konflikte gefunden.</value>
+  </data>
+  <data name="GluxConflictsFound" xml:space="preserve">
+	  <value>Es gibt Konflikte in Ihrer GLUX-Datei. Um diese Konflikte zu lösen, müssen Sie ein Zusammenführungstool oder einen Texteditor verwenden.</value>
+  </data>
+  <data name="VariableRemoveDoingNothing" xml:space="preserve">
+	  <value>Nichts – die Variable wird verschwinden</value>
+  </data>
+  <data name="VariableAddNewOfSame" xml:space="preserve">
+	  <value>Sie haben eine neue Variable mit dem jeweiligen Namen und dem richtigen Typ bis zu {0}</value>
+  </data>
+  <data name="VariableXNoLongerOfEntity" xml:space="preserve">
+	  <value>Die Variable „{0}“ ist nicht mehr Teil der Entität. Was möchten Sie tun?</value>
+  </data>
+  <data name="ObjectIsAlreadyIsContainer" xml:space="preserve">
+	  <value>Das Objekt {0} ist bereits als IsContainer markiert. Zwei Objekte im selben Element können nicht als Iscontainer markiert werden</value>
+  </data>
+  <data name="FileTypes" xml:space="preserve">
+	  <value>Datentypen</value>
+  </data>
+  <data name="XHasObjectYReferenceZ" xml:space="preserve">
+	  <value>{0} hat ein Objekt namens {1}, das auf eine Entität {2} verweist. Es konnte keine passende Entität gefunden werden. Ihr Projekt wird möglicherweise nicht ordnungsgemäß ausgeführt, bis dieses Problem behoben ist.</value>
+  </data>
+  <data name="GlueFoundMatches" xml:space="preserve">
+	  <value>Glue hat mögliche Übereinstimmungen für das Objekt {0} gefunden, das den Typ {1} erwartet.</value>
+  </data>
+  <data name="UseX" xml:space="preserve">
+	  <value>Verwenden Sie {0}</value>
+  </data>
+  <data name="DontDoAnything" xml:space="preserve">
+	  <value>Tu nichts</value>
+  </data>
+  <data name="NewElementFulfill" xml:space="preserve">
+	  <value>Das neue Element erfüllt nun die zuvor unterbrochene Referenz für {0}</value>
+  </data>
+  <data name="XMissingReferenceUseEntity" xml:space="preserve">
+	  <value>{0} hat eine fehlende Referenz. Die neue Entität {1} verwenden?</value>
+  </data>
+  <data name="UpdateReference" xml:space="preserve">
+	  <value>Referenz aktualisieren?</value>
   </data>
 </root>

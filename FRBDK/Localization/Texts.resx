@@ -2372,10 +2372,10 @@ for {1}?</value>
     <value>Select an item to see an example command line</value>
   </data>
   <data name="MakeRelative" xml:space="preserve">
-    <value>Make Relative</value>
+	  <value>Make Relative (..\..\program.exe)</value>
   </data>
   <data name="MakeAbsolute" xml:space="preserve">
-    <value>Make Absolute</value>
+	  <value>Make Absolute (c:\program.exe)</value>
   </data>
   <data name="SelectedFileAssociation" xml:space="preserve">
     <value>On the selected file association I want to...</value>
@@ -2769,5 +2769,98 @@ for {1}?</value>
   </data>
   <data name="RestartOnFailedCommands" xml:space="preserve">
     <value>Restart on failed commands</value>
+  </data>
+  <data name="ObjectHasBaseButUntyped" xml:space="preserve">
+	  <value>This object has type of {0} but the base object in {1} is untyped.  What would you like to do?</value>
+  </data>
+  <data name="ChangeAToBInC" xml:space="preserve">
+	  <value>Change {0} to {1} in {2}</value>
+  </data>
+  <data name="FailedToSetGameEditModeToX" xml:space="preserve">
+	  <value>The game/edit mode could not be set to {0}.</value>
+  </data>
+  <data name="ObjectNoPartitioning" xml:space="preserve">
+	  <value>There are no partitioning options available for this object.</value>
+  </data>
+  <data name="DoNothingFixManually" xml:space="preserve">
+	  <value>Do nothing (your project will likely not compile so you will need to fix this manually)</value>
+  </data>
+  <data name="ObjectOfTypeXButSubTypeY" xml:space="preserve">
+	  <value>This object is of type {0} but the base object is of type {1}</value>
+  </data>
+  <data name="NothingGameMayNotCompile" xml:space="preserve">
+	  <value>Nothing - game may not compile until this has been fixed</value>
+  </data>
+  <data name="ContainerSetTypeToX" xml:space="preserve">
+	  <value>Set the container's type to {0}</value>
+  </data>
+  <data name="ContainerRevertToFalse" xml:space="preserve">
+	  <value>Set 'IsContainer' back to false</value>
+  </data>
+  <data name="ObjectOfTypeXButContainerY" xml:space="preserve">
+	  <value>The object is of type {0} but the container is of type {1}. What would you like to do?</value>
+  </data>
+  <data name="VariableKeepNonFunctioning" xml:space="preserve">
+	  <value>Keep this as a non-functional Variable (it will no longer control the object's visibility)</value>
+  </data>
+  <data name="VariableEntityExposed" xml:space="preserve">
+	  <value>This entity has a "Visible" variable exposed.  This variable is no longer valid.  What would you like to do?</value>
+  </data>
+  <data name="ConflictTest" xml:space="preserve">
+	  <value>Test for conflicts</value>
+  </data>
+  <data name="TryLoadingAgain" xml:space="preserve">
+	  <value>Try loading again</value>
+  </data>
+  <data name="SeeException" xml:space="preserve">
+	  <value>See the Exception</value>
+  </data>
+  <data name="NothingGluxAbort" xml:space="preserve">
+	  <value>Nothing - Glue will abort loading the project.</value>
+  </data>
+  <data name="GluxErrorLoading" xml:space="preserve">
+	  <value>There was an error loading the .glux file.  What would you like to do?</value>
+  </data>
+  <data name="GluxNoSubversionFound" xml:space="preserve">
+	  <value>No Subversion conflicts found in your GLUX.</value>
+  </data>
+  <data name="GluxConflictsFound" xml:space="preserve">
+	  <value>There are conflicts in your GLUX file.  You will need to use a merging  tool or text editor to resolve these conflicts.</value>
+  </data>
+  <data name="VariableRemoveDoingNothing" xml:space="preserve">
+	  <value>Nothing - the variable will go away</value>
+  </data>
+  <data name="VariableAddNewOfSame" xml:space="preserve">
+	  <value>Add a new variable with the same name and type to {0}</value>
+  </data>
+  <data name="VariableXNoLongerOfEntity" xml:space="preserve">
+	  <value>The variable "{0}" Is no longer part of the Entity.  What do you want to do?</value>
+  </data>
+  <data name="ObjectIsAlreadyIsContainer" xml:space="preserve">
+	  <value>The object {0} is already marked as IsContainer. Two objects in the same element cannot be marked as Iscontainer</value>
+  </data>
+  <data name="FileTypes" xml:space="preserve">
+	  <value>File Types</value>
+  </data>
+  <data name="XHasObjectYReferenceZ" xml:space="preserve">
+	  <value>{0} has an object named {1} which references an Entity {2}. Could not find a matching Entity.  Your project may not run properly until this issue is resolved.</value>
+  </data>
+  <data name="GlueFoundMatches" xml:space="preserve">
+	  <value>Glue found possible matches for the object {0} which expects the type {1}</value>
+  </data>
+  <data name="UseX" xml:space="preserve">
+	  <value>Use {0}</value>
+  </data>
+  <data name="DontDoAnything" xml:space="preserve">
+	  <value>Don't do anything</value>
+  </data>
+  <data name="NewElementFulfill" xml:space="preserve">
+	  <value>The new element will now fulfill the previously-broken reference for {0}</value>
+  </data>
+  <data name="XMissingReferenceUseEntity" xml:space="preserve">
+	  <value>{0} has a missing reference.  Use the new Entity {1}?</value>
+  </data>
+  <data name="UpdateReference" xml:space="preserve">
+	  <value>Update reference?</value>
   </data>
 </root>

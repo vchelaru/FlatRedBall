@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FlatRedBall.Glue.Controls;
 using System.IO;
 using FlatRedBall.Glue.AutomatedGlue;
@@ -11,17 +10,14 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using System.Windows.Forms;
 using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
-using FlatRedBall.Glue.ContentPipeline;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.VSHelpers;
 using FlatRedBall.Performance.Measurement;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using System.Threading.Tasks;
-using FlatRedBall.Glue.Data;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Reflection;
 using GlueSaveClasses;
@@ -583,15 +579,16 @@ namespace FlatRedBall.Glue.IO
             }
             catch (Exception e)
             {
-                var mbmb = new MultiButtonMessageBox();
-                mbmb.MessageText = "There was an error loading the .glux file.  What would you like to do?";
+                var mbmb = new MultiButtonMessageBoxWpf();
+                mbmb.MessageText = Texts.GluxErrorLoading;
 
-                mbmb.AddButton("Nothing - Glue will abort loading the project.", DialogResult.None);
-                mbmb.AddButton("See the Exception", DialogResult.OK);
-                mbmb.AddButton("Try loading again", DialogResult.Retry);
-                mbmb.AddButton("Test for conflicts", DialogResult.Yes);
+                mbmb.AddButton(Texts.NothingGluxAbort, DialogResult.None);
+                mbmb.AddButton(Texts.SeeException, DialogResult.OK);
+                mbmb.AddButton(Texts.TryLoadingAgain, DialogResult.Retry);
+                mbmb.AddButton(Texts.ConflictTest, DialogResult.Yes);
 
-                DialogResult result = mbmb.ShowDialog(GlueCommands.Self.DialogCommands.Win32Window);
+                var dialog = mbmb.ShowDialog();
+                var result = (DialogResult)mbmb.ClickedResult;
                 initializationWindow.Close();
 
                 switch (result)
@@ -611,12 +608,11 @@ namespace FlatRedBall.Glue.IO
 
                         if (text.Contains("<<<"))
                         {
-                            MessageBox.Show("There are conflicts in your GLUX file.  You will need to use a merging " +
-                                "tool or text editor to resolve these conflicts.");
+                            MessageBox.Show(Texts.GluxConflictsFound);
                         }
                         else
                         {
-                            MessageBox.Show("No Subversion conflicts found in your GLUX.");
+                            MessageBox.Show(Texts.GluxNoSubversionFound);
                         }
                         break;
                 }
