@@ -241,7 +241,7 @@ namespace GlueControl.Editing
 
         public static IEnumerable<PositionedObject> GetAvailableObjects(ElementEditingMode elementEditingMode)
         {
-            IEnumerable<PositionedObject> availableItems = null;
+            IEnumerable<PositionedObject> availableItems = new List<PositionedObject>();
 
             if (elementEditingMode == ElementEditingMode.EditingScreen)
             {
@@ -587,7 +587,7 @@ namespace GlueControl.Editing
             {
                 polygon = polygon ?? new PolygonFast();
 
-                polygon.Points = asPolygon.Points.ToList();
+                polygon.Points = asPolygon.Points?.ToList() ?? new List<FlatRedBall.Math.Geometry.Point>();
                 polygon.Position = asPolygon.Position;
                 polygon.RotationMatrix = asPolygon.RotationMatrix;
             }

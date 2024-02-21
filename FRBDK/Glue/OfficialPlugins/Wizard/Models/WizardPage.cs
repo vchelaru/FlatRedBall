@@ -43,7 +43,15 @@ namespace OfficialPluginsCore.Wizard.Models
         public StackOrFill StackOrFill { get; set; }
 
         public int? LabelFontSize { get; set; }
+        /// <summary>
+        /// The string value to display. This is only applied if LabelBinding is not set.
+        /// </summary>
         public string LabelText { get; set; }
+
+        /// <summary>
+        /// The property to bind to on the view model, allowing for labels to have dynamic text
+        /// </summary>
+        public string LabelBinding { get; set; }
         public object Value { get; set; }
 
         public string ViewModelProperty { get; set; }
@@ -133,6 +141,14 @@ namespace OfficialPluginsCore.Wizard.Models
         {
             var dataItem = new DataItem { LabelText = text };
             dataItem.VisibilityBinding = visibilityBinding;
+            Add(dataItem);
+        }
+
+        public void AddBoundText(string dataBinding)
+        {
+            var dataItem = new DataItem { LabelText = dataBinding };
+            dataItem.ViewType = ViewType.TextBlock;
+            dataItem.LabelBinding = dataBinding;
             Add(dataItem);
         }
 
@@ -333,12 +349,16 @@ namespace OfficialPluginsCore.Wizard.Models
                         innerStack.Children.Add(radioButton);
                     }
                     break;
-                //case ViewType.RadioButton:
-
-                //    break;
                 case ViewType.TextBlock:
                     var textBlock = new TextBlock();
-                    textBlock.Text = dataItem.LabelText;
+                    if (!string.IsNullOrEmpty(dataItem.LabelBinding))
+                    {
+                        textBlock.SetBinding(TextBlock.TextProperty, dataItem.LabelBinding);
+                    }
+                    else
+                    {
+                        textBlock.Text = dataItem.LabelText;
+                    }
                     textBlock.TextWrapping = TextWrapping.Wrap;
                     if (dataItem.LabelFontSize != null)
                     {

@@ -1045,8 +1045,7 @@ public class DragDropManager : Singleton<DragDropManager>
         {
             response.Fail(@"Can't drop this file here");
         }
-        else if (!string.IsNullOrEmpty(originalReferencedFileSave.SourceFile) ||
-            originalReferencedFileSave.SourceFileCache?.Count > 0)
+        else if (!string.IsNullOrEmpty(originalReferencedFileSave.SourceFile))
         {
             response.Fail("Can't move the file\n\n" + originalReferencedFileSave.Name + "\n\nbecause it has source-referencing files.  These sources will be broken " +
                 "if the file is moved.  You will need to manually move the file, modify the source references, remove this file, then add the newly-created file.");

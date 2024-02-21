@@ -13,7 +13,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 {
     public class EnumFileGenerator : Singleton<EnumFileGenerator>
     {
-        string RelativeFileLocation => "Platformer/Enums.Generated.cs";
+        public string RelativeFileLocation => "Platformer/Enums.Generated.cs";
+        public FilePath FileLocation => (GlueState.Self.CurrentGlueProjectDirectory + RelativeFileLocation);
 
         public void GenerateAndSave()
         {

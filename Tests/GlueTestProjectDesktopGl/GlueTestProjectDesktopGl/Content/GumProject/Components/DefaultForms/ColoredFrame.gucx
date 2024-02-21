@@ -213,6 +213,7 @@
   </State>
   <Category>
     <Name>ColorCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Gray</Name>
       <Variable>

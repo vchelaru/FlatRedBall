@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using OfficialPluginsCore.Wizard.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Xml.Serialization;
@@ -41,6 +42,39 @@ namespace OfficialPluginsCore.Wizard.Models
         _800x600,
         _1024x768,
         _1920x1080
+    }
+
+    public static class CameraResolutionExtensions
+    {
+        public static int ResolutionWidth(this CameraResolution cameraResolution)
+        {
+            switch (cameraResolution)
+            {
+                case CameraResolution._256x224: return 256;
+                case CameraResolution._360x240: return 360;
+                case CameraResolution._480x360: return 480;
+                case CameraResolution._640x480: return 640;
+                case CameraResolution._800x600: return 800;
+                case CameraResolution._1024x768: return 1024;
+                case CameraResolution._1920x1080: return 1920;
+            }
+            return 0;
+        }
+
+        public static int ResolutionHeight(this CameraResolution cameraResolution)
+        {
+            switch (cameraResolution)
+            {
+                case CameraResolution._256x224: return 224;
+                case CameraResolution._360x240: return 240;
+                case CameraResolution._480x360: return 360;
+                case CameraResolution._640x480: return 480;
+                case CameraResolution._800x600: return 600;
+                case CameraResolution._1024x768: return 768;
+                case CameraResolution._1920x1080: return 1080;
+            }
+            return 0;
+        }
     }
 
     #endregion
@@ -326,6 +360,10 @@ namespace OfficialPluginsCore.Wizard.Models
             get => Get<int>();
             set => Set(value);
         }
+
+        [DependsOn(nameof(SelectedCameraResolution))]
+        [DependsOn(nameof(ScalePercent))]
+        public string EffectiveCameraResolutionText => $"Game Display Size: {SelectedCameraResolution.ResolutionWidth() * ScalePercent/100}x{SelectedCameraResolution.ResolutionHeight() * ScalePercent/100}";
 
         #endregion
 

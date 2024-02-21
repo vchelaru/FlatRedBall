@@ -195,7 +195,7 @@ namespace FlatRedBall.TileCollisions
 
         ShapeCollection ICollidable.Collision => this.mShapes;
 
-#if ICollidableHasItemsCollidedAgainst
+#if ICollidableHasItemsCollidedAgainst || REFERENCES_FRB_SOURCE
 
 
         HashSet<string> ICollidable.ItemsCollidedAgainst => this.mShapes.ItemsCollidedAgainst;
@@ -204,7 +204,7 @@ namespace FlatRedBall.TileCollisions
 
 #endif
 
-#if ICollidableHasObjectsCollidedAgainst
+#if ICollidableHasObjectsCollidedAgainst|| REFERENCES_FRB_SOURCE
 
         HashSet<object> ICollidable.ObjectsCollidedAgainst => this.mShapes.ObjectsCollidedAgainst;
 

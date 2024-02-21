@@ -478,8 +478,6 @@ public static class RightClickHelper
 
     static GeneralToolStripMenuItem mFillValuesFromDefault;
 
-    static GeneralToolStripMenuItem mUseContentPipeline;
-
     static GeneralToolStripMenuItem mRemoveFromProjectQuick;
     static GeneralToolStripMenuItem mCreateNewFileForMissingFile;
 
@@ -852,13 +850,6 @@ public static class RightClickHelper
                 AddRemoveFromProjectItems();
             }
 
-            if (rfs.IsCreatedByWildcard == false)
-            {
-                AddItem(mUseContentPipeline);
-            }
-            //AddItem(form.openWithDEFAULTToolStripMenuItem);
-
-
             if (FileManager.GetExtension(rfs.Name) == "csv" || rfs.TreatAsCsv)
             {
                 AddSeparator();
@@ -866,13 +857,6 @@ public static class RightClickHelper
                 Add(L.Texts.CodeRegenerate, () => HandleReGenerateCodeClick(targetNode));
             }
 
-
-            if (!string.IsNullOrEmpty(rfs.SourceFile) || rfs.SourceFileCache?.Count > 0)
-            {
-                AddSeparator();
-                AddItem(mViewSourceInExplorer);
-                AddItem(mRebuildFile);
-            }
 
             AddItem(mCopyToBuildFolder);
 
@@ -1286,14 +1270,8 @@ public static class RightClickHelper
         mRemoveFromProjectQuick = new GeneralToolStripMenuItem(L.Texts.RemoveFromProjectQuick);
         mRemoveFromProjectQuick.Click += RemoveFromProjectQuick;
 
-        mUseContentPipeline = new GeneralToolStripMenuItem(L.Texts.PipelineContentToggle);
-        mUseContentPipeline.Click += mUseContentPipeline_Click;
-
         mCreateNewFileForMissingFile = new GeneralToolStripMenuItem(L.Texts.FileCreateForMissing);
         mCreateNewFileForMissingFile.Click += CreateNewFileForMissingFileClick;
-
-        mViewFileLoadOrder = new GeneralToolStripMenuItem(L.Texts.ViewFileOrder);
-        mViewFileLoadOrder.Click += ViewFileOrderClick;
 
         mCreateZipPackage = new GeneralToolStripMenuItem(L.Texts.ZipPackageCreate);
         mCreateZipPackage.Click += CreateZipPackageClick;
@@ -1542,12 +1520,6 @@ public static class RightClickHelper
         }
     }
 
-    static void mUseContentPipeline_Click(object sender, EventArgs e)
-    {
-        ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
-
-    }
-
     static void AddStateClick(object sender, EventArgs e)
     {
         GlueCommands.Self.DialogCommands.ShowAddNewStateDialog();
@@ -1728,7 +1700,18 @@ public static class RightClickHelper
 
                 if (askAreYouSure)
                 {
-                    var message = String.Format(L.Texts.DeleteQuestionX, currentObject);
+
+                    string message = string.Empty;
+                    if(currentObject is ReferencedFileSave)
+                    {
+                        // don't say "delete" because it's just being removed unless the user 
+                        // choses to delete on the subsequent dialog
+                        message = $"Are you sure you want to remove\n{currentObject}";
+                    }
+                    else
+                    {
+                        message = String.Format(L.Texts.DeleteQuestionX, currentObject);
+                    }
 
                     reallyRemoveResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message, "Remove?");
                 }

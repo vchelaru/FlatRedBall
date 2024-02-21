@@ -75,16 +75,27 @@ namespace FlatRedBall.Utilities
         }
 
         /// <summary>
-        /// Returns a random number within the specified range (inclusive).
+        /// Returns a random float within the specified range (inclusive). For example, calling Between(5,10) will return any number between 5 and 10, including 5 and 10.
         /// </summary>
         /// <param name="lowerBound">The inclusive lower bound.</param>
         /// <param name="upperBound">The inclusive upper bound</param>
         /// <returns>The random float between the bounds.</returns>
         public float Between(float lowerBound, float upperBound) => lowerBound + (float)NextDouble() * (upperBound - lowerBound);
 
+        /// <summary>
+        /// Returns a random double within the specified range (inclusive). For example, calling Between(5,10) will return any number between 5 and 10, including 5 and 10.
+        /// </summary>
+        /// <param name="lowerBound">The inclusive lower bound.</param>
+        /// <param name="upperBound">The inclusive upper bound.</param>
+        /// <returns>The random double between the bounds.</returns>
         public double Between(double lowerBound, double upperBound) => lowerBound + NextDouble() * (upperBound - lowerBound);
 
-
+        /// <summary>
+        /// Returns a random decimal within the specified range (inclusive). For example, calling Between(5,10) will return any number between 5 and 10, including 5 and 10.
+        /// </summary>
+        /// <param name="lowerBound">The inclusive lower bound.</param>
+        /// <param name="upperBound">The inclusive upper bound.</param>
+        /// <returns>A random decimal between the bounds.</returns>
         public decimal Between(decimal lowerBound, decimal upperBound) => lowerBound + (decimal)NextDouble() * (upperBound - lowerBound);
 
 
@@ -198,15 +209,21 @@ namespace FlatRedBall.Utilities
             public float CumulativeSize;
         }
 
+        /// <summary>
+        /// Returns a random point inside any of the shapes in the argument ShapeCollection.
+        /// </summary>
+        /// <param name="shapeCollection">The ShapeCollection containing the shapes to search.</param>
+        /// <returns>A random point in the shapes.</returns>
+        /// <exception cref="NotImplementedException">Currently circles and polygons are not supported. Please ask in discord if this is affecting you.</exception>
         public Vector2 PointIn(ShapeCollection shapeCollection)
         {
             if (shapeCollection.Circles.Count > 0)
             {
-                throw new NotImplementedException("PointIn with Circles not implemented - bug Vic");
+                throw new NotImplementedException("PointIn with Circles not implemented - please ask in discord if this is affecting you");
             }
             if(shapeCollection.Polygons.Count > 0)
             {
-                throw new NotImplementedException("PointIn with Polygons not implemented - bug Vic");
+                throw new NotImplementedException("PointIn with Polygons not implemented - please ask in discord if this is affecting you");
             }
 
             var rectangles = new List<CumulativeAreaRectangle>();

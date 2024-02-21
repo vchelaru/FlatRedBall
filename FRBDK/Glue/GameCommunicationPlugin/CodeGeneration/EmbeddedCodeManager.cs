@@ -23,12 +23,6 @@ namespace GameCommunicationPlugin.CodeGeneration
             }
         }
 
-        private static void RemoveEmbeddedFile(string relativePath)
-        {
-            FilePath absoluteFile = GlueState.Self.CurrentGlueProjectDirectory + "GlueControl/" + relativePath;
-
-            GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteFile);
-        }
 
         private static void SaveEmbeddedFile(string resourcePath)
         {

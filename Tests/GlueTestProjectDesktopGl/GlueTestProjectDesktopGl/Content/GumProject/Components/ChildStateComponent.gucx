@@ -140,6 +140,7 @@
   </State>
   <Category>
     <Name>TestCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>CategorizedState</Name>
     </State>

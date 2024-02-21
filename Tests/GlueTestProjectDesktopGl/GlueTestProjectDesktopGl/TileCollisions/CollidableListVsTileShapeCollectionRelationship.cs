@@ -1,6 +1,7 @@
 #define PreVersion
 #define HasFormsObject
 #define AddedGeneratedGame1
+#define REFERENCES_FRB_SOURCE
 
 
 using FlatRedBall.Math.Geometry;
@@ -34,8 +35,17 @@ namespace FlatRedBall.Math.Collision
 
         public CollidableListVsTileShapeCollectionRelationship(PositionedObjectList<FirstCollidableT> list, TileShapeCollection tileShapeCollection)
         {
-            data = new CollidableVsTileShapeCollectionData<FirstCollidableT>(tileShapeCollection);
+            SetTileShapeCollection(tileShapeCollection);
             this.list = list;
+        }
+
+        /// <summary>
+        /// Sets the TileShapeCollection used by this CollisionRelationship. This is automatically called by the constructor, so it should only be manually called to change the TileShapeCollection after this relationship has been created.
+        /// </summary>
+        /// <param name="tileShapeCollection"></param>
+        public void SetTileShapeCollection(TileShapeCollection tileShapeCollection)
+        {
+            data = new CollidableVsTileShapeCollectionData<FirstCollidableT>(tileShapeCollection);
         }
 
         public override bool DoCollisions()
@@ -86,8 +96,11 @@ namespace FlatRedBall.Math.Collision
                         didCollisionOccur = true;
                         CollisionOccurred?.Invoke(singleObject, data.TileShapeCollection);
 
-#if ICollidableHasItemsCollidedAgainst
+#if ICollidableHasItemsCollidedAgainst || REFERENCES_FRB_SOURCE
                         singleObject.ItemsCollidedAgainst.Add(data.TileShapeCollection.Name);
+#endif
+#if ICollidableHasObjectsCollidedAgainst || REFERENCES_FRB_SOURCE
+                        singleObject.ObjectsCollidedAgainst.Add(data.TileShapeCollection);
 #endif
                     }
                 }

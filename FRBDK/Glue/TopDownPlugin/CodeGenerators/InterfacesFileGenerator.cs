@@ -42,6 +42,8 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
         DataTypes.TopDownValues CurrentMovement {{ get; }}
         Entities.TopDownDirection DirectionFacing {{ get; }}
         System.Collections.Generic.List<TopDown.AnimationSet> AnimationSets {{ get; }}
+        FlatRedBall.Input.I2DInput MovementInput {{ get; set; }}
+        float MaxSpeed {{ get; }}
         
         float XVelocity {{ get; set; }}
         float YVelocity {{ get; set; }}

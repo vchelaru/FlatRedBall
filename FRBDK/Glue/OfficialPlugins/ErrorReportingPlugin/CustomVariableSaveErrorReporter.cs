@@ -58,8 +58,12 @@ namespace OfficialPlugins.ErrorReportingPlugin
                 // this check was added to catch missing CSV references
                 if (string.IsNullOrEmpty(baseDefiningVariable?.SourceObject))
                 {
-                    // it better be a CSV or state
-                    var found = variable.GetIsCsv() || variable.GetIsVariableState() || variable.GetIsBaseElementType();
+                    // it better be a CSV or state or Texture
+                    var found = 
+                        variable.Type == "Microsoft.Xna.Framework.Graphics.Texture2D" ||
+                        variable.GetIsCsv() || 
+                        variable.GetIsVariableState() || 
+                        variable.GetIsBaseElementType();
 
                     if (!found)
                     {

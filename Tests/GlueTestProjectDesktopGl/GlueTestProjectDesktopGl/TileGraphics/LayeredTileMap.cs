@@ -1,6 +1,7 @@
 #define PreVersion
 #define HasFormsObject
 #define AddedGeneratedGame1
+#define REFERENCES_FRB_SOURCE
 
 
 
@@ -417,9 +418,17 @@ namespace FlatRedBall.TileGraphics
 
             AddShapeCollections(toReturn, tms);
 
-            foreach (var layer in tms.MapLayers)
+            // February 28, 2023
+            // Tiled allows multiple layers with the same name.
+            // We can't do a foreach and find matching by name.
+            // Instead, we will loop through by index.
+            //foreach (var layer in tms.MapLayers)
+            //{
+            //    var matchingLayer = toReturn.MapLayers.FirstOrDefault(item => item.Name == layer.Name);
+            for (int i = 0; i < tms.MapLayers.Count; i++)
             {
-                var matchingLayer = toReturn.MapLayers.FirstOrDefault(item => item.Name == layer.Name);
+                AbstractMapLayer layer = tms.MapLayers[i];
+                var matchingLayer = toReturn.MapLayers[i];
 
 
                 if (matchingLayer != null)
@@ -840,8 +849,12 @@ namespace FlatRedBall.TileGraphics
                 out bool flipVertically,
                 out bool flipDiagonally);
 
+            // If we flip, it needs to be made clockwise, but if we flip 2x, it automatically reverts
+            // back to being clockwise
+            var shouldMakeClockwise = false;
             if (flipDiagonally)
             {
+                shouldMakeClockwise = !shouldMakeClockwise;
                 for (int i = 0; i < cloned.Points.Count; i++)
                 {
                     Point point = cloned.Points[i];
@@ -855,11 +868,17 @@ namespace FlatRedBall.TileGraphics
             }
             if (flipHorizontally)
             {
+                shouldMakeClockwise = !shouldMakeClockwise;
                 cloned.FlipRelativePointsHorizontally();
             }
             if (flipVertically)
             {
+                shouldMakeClockwise = !shouldMakeClockwise;
                 cloned.FlipRelativePointsVertically();
+            }
+            if (shouldMakeClockwise)
+            {
+                cloned.InvertPointOrder();
             }
         }
 
@@ -887,9 +906,10 @@ namespace FlatRedBall.TileGraphics
 
             var strippedId = tiles[i] & 0x0fffffff;
 
+            TiledMapSave.GetFlipBoolsFromGid(tiles[i], out bool flipHorizontally, out bool flipVertically, out bool flipDiagonally);
+
             if (strippedId == tilesetTileGid)
             {
-
                 float xIndex = i % layer.width;
                 // intentional int division
                 float yIndex = i / layer.width;
@@ -901,11 +921,37 @@ namespace FlatRedBall.TileGraphics
                 //cloned.Y = -(yIndex + .5f) * tileDimension;
                 // Actually use the X and Y to get the top left, then use the actual rectangle's X and Y values so that
                 // its offset applies:
-                cloned.X = rectangle.X + (xIndex) * tileDimension;
-                cloned.Y = rectangle.Y - (yIndex) * tileDimension;
+
+                var rectX = rectangle.X;
+                var rectY = rectangle.Y;
+                var width = rectangle.Width;
+                var height = rectangle.Height;
+
+
+                // diagonal flipping first
+                if (flipDiagonally)
+                {
+                    rectX = -rectangle.Y;
+                    rectY = -rectangle.X;
+                    width = rectangle.Height;
+                    height = rectangle.Width;
+                }
+                if (flipHorizontally)
+                {
+                    rectX = tileDimension - rectX;
+                }
+                if (flipVertically)
+                {
+                    rectY = -tileDimension - rectY;
+                }
+
+                cloned.X = rectX + (xIndex) * tileDimension;
+                cloned.Y = rectY - (yIndex) * tileDimension;
+
+                cloned.Width = width;
+                cloned.Height = height;
 
                 collectionForThisName.Rectangles.Add(cloned);
-
             }
         }
 
@@ -997,9 +1043,10 @@ namespace FlatRedBall.TileGraphics
             {
                 SpriteManager.AddPositionedObject(this);
             }
-            foreach (var item in this.mMapLists)
+            
+            for(int i = 0; i < mMapLists.Count; i++)
             {
-                item.AddToManagers(layer);
+                mMapLists[i].AddToManagers(layer);
             }
         }
 
@@ -1124,8 +1171,9 @@ namespace FlatRedBall.TileGraphics
             // Force execution now for performance reasons
             var filteredInfos = Properties.Values.Where(predicate).ToList();
 
-            foreach (var layer in map.MapLayers)
+            for(int i = 0; i < map.MapLayers.Count; i++)
             {
+                var layer = map.MapLayers[i];
                 RemoveTilesFromLayer(filteredInfos, layer);
             }
         }

@@ -1,3 +1,9 @@
+#define PreVersion
+#define HasFormsObject
+#define AddedGeneratedGame1
+#define REFERENCES_FRB_SOURCE
+
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +19,7 @@ using FlatRedBall.Input;
 using FlatRedBall.Debugging;
 using FlatRedBall.Math;
 using TMXGlueLib.DataTypes;
-
-#if TILEMAPS_ALPHA_AND_COLOR
 using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionTexture;
-#else
-using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionTexture;
-#endif
 
 namespace FlatRedBall.TileGraphics
 {
@@ -38,11 +39,17 @@ namespace FlatRedBall.TileGraphics
         #region Fields
         protected Tileset mTileset;
 
-        #region XML Docs
+#if RendererHasExternalEffectManager
         /// <summary>
-        /// The effect used to draw.  Shared by all instances for performance reasons
+        /// Use the custom shader instead of MG's default. This enables using 
+        /// color operations and linearization for gamma correction.
         /// </summary>
-        #endregion
+        public static bool UseCustomEffect { get; set; }
+#endif
+
+        /// <summary>
+        /// The effect used to draw. Shared by all instances for performance reasons
+        /// </summary>
         private static BasicEffect mBasicEffect;
         private static AlphaTestEffect mAlphaTestEffect;
 
@@ -71,10 +78,41 @@ namespace FlatRedBall.TileGraphics
 
         private int mCurrentNumberOfTiles = 0;
 
-        public float Red = 1;
-        public float Green = 1;
-        public float Blue = 1;
-        public float Alpha = 1;
+        float mRed = 1;
+        float mGreen = 1;
+        float mBlue = 1;
+        float mAlpha = 1;
+
+        public float Red
+        {
+            get { return mRed; }
+            set { mRed = value; }
+        }
+
+        public float Green
+        {
+            get { return mGreen; }
+            set { mGreen = value; }
+        }
+
+        public float Blue
+        {
+            get { return mBlue; }
+            set { mBlue = value; }
+        }
+
+        public float Alpha
+        {
+            get { return mAlpha; }
+            set { mAlpha = value; }
+        }
+
+        ColorOperation mColorOperation = ColorOperation.Modulate;
+        public ColorOperation ColorOperation
+        {
+            get { return mColorOperation; }
+            set { mColorOperation = value; }
+        }
 
         private SortAxis mSortAxis;
 
@@ -104,13 +142,11 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        #region XML Docs
         /// <summary>
-        /// Here we tell the engine if we want this batch
-        /// updated every frame.  Since we have no updating to
-        /// do though, we will set this to false
+        /// Whether this batch
+        /// updated every frame.  Since MapDrawableBatches do not
+        /// have any built-in update, this value defaults to false.
         /// </summary>
-        #endregion
         public bool UpdateEveryFrame
         {
             get { return true; }
@@ -156,7 +192,7 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        public VertexPositionTexture[] Vertices => mVertices;
+        public VertexType[] Vertices => mVertices;
 
         public Texture2D Texture
         {
@@ -198,8 +234,8 @@ namespace FlatRedBall.TileGraphics
         /// </summary>
         public float ParallaxMultiplierX
         {
-            get { return -_parallaxMultiplierX + 1; }
-            set { _parallaxMultiplierX = 1 - value; }
+            get => -_parallaxMultiplierX + 1;
+            set => _parallaxMultiplierX = 1 - value;
         }
 
         private float _parallaxMultiplierY;
@@ -219,7 +255,6 @@ namespace FlatRedBall.TileGraphics
 
         public TextureFilter? TextureFilter { get; set; } = null;
 
-
         #endregion
 
         #region Constructor / Initialization
@@ -227,7 +262,6 @@ namespace FlatRedBall.TileGraphics
         // this exists purely for Clone
         public MapDrawableBatch()
         {
-
         }
 
         public MapDrawableBatch(int numberOfTiles, Texture2D texture)
@@ -240,16 +274,19 @@ namespace FlatRedBall.TileGraphics
             InternalInitialize();
 
             mTexture = texture;
-            mVertices = new VertexPositionTexture[4 * numberOfTiles];
+            mVertices = new VertexType[4 * numberOfTiles];
             FlipFlagArray = new byte[numberOfTiles];
             mIndices = new int[6 * numberOfTiles];
         }
 
-        #region XML Docs
         /// <summary>
-        /// Create and initialize all assets
+        /// Create a new MapDrawableBatch with vertices to hold numberOfTiles. This creates a new Tileset which 
+        /// stores the argument texture which can be used to add or paint tiles.
         /// </summary>
-        #endregion
+        /// <remarks>
+        /// Although maps typically have fixed dimensions, this is not required. Tiles can be added anywhere so
+        /// no dimension parameters are required.
+        /// </remarks>
         public MapDrawableBatch(int numberOfTiles, int textureTileDimensionWidth, int textureTileDimensionHeight, Texture2D texture)
             : base()
         {
@@ -261,7 +298,7 @@ namespace FlatRedBall.TileGraphics
             InternalInitialize();
 
             mTexture = texture;
-            mVertices = new VertexPositionTexture[4 * numberOfTiles];
+            mVertices = new VertexType[4 * numberOfTiles];
             FlipFlagArray = new byte[numberOfTiles];
             mIndices = new int[6 * numberOfTiles];
 
@@ -343,8 +380,6 @@ namespace FlatRedBall.TileGraphics
             }
 
             RenderingScale = 1;
-
-
         }
 
         #endregion
@@ -542,13 +577,19 @@ namespace FlatRedBall.TileGraphics
 
                 // pad before doing any rotations/flipping
                 const bool pad = true;
+                float amountToAddX = .0000001f;
+                float amountToAddY = .0000001f;
+                if (texture != null)
+                {
+                    amountToAddX = .037f / texture.Width;
+                    amountToAddY = .037f / texture.Height;
+                }
                 if (pad)
                 {
-                    const float amountToAdd = .0000001f;
-                    textureValues.X += amountToAdd; // Left
-                    textureValues.Y -= amountToAdd; // Right
-                    textureValues.Z += amountToAdd; // Top
-                    textureValues.W -= amountToAdd; // Bottom
+                    textureValues.X += amountToAddX; // Left
+                    textureValues.Y -= amountToAddX; // Right
+                    textureValues.Z += amountToAddY; // Top
+                    textureValues.W -= amountToAddY; // Bottom
                 }
 
                 if ((quad.FlipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag)
@@ -872,6 +913,81 @@ namespace FlatRedBall.TileGraphics
             textureY = vector.Y;
         }
 
+        public float GetRotationZForOrderedTile(int orderedTileIndex)
+        {
+            // The order is:
+            // 3   2
+            //
+            // 0   1
+
+            // So that means 
+            // 3           2
+            // ^
+            // |
+            // Y
+            // |
+            // 0 ---X--->  1
+
+            // We can't use positions because for rotated tiles the positions stay the same, but the
+            // texture coordiantes do not. So we should use the texture coordiantes.
+            // A tile's texture coordiantes may look like this:
+            // (0, 0)       (1, 0)
+            //
+            //
+            //
+            //
+            // (0, 1)       (1, 1)
+            // 
+
+            // The X Axis is set by finding the pair of texture coordinates where
+            // the Y value is the same, and the X value is increasing
+            // There may be a more elegant way to do this (mathematically)
+            // but I'm not sure what that is so we'll just brute force it:
+            var startIndex = orderedTileIndex * 4;
+
+            var bottomLeft = mVertices[startIndex];
+            var bottomRight = mVertices[startIndex + 1];
+            var topRight = mVertices[startIndex + 2];
+            var topLeft = mVertices[startIndex + 3];
+
+            Vector3 xAxis = Vector3.UnitX;
+
+            if (bottomLeft.TextureCoordinate.Y == bottomRight.TextureCoordinate.Y)
+            {
+                if (bottomRight.TextureCoordinate.X > bottomLeft.TextureCoordinate.X)
+                {
+                    xAxis = bottomRight.Position - bottomLeft.Position;
+                }
+                else
+                {
+                    xAxis = bottomLeft.Position - bottomRight.Position;
+                }
+            }
+            else
+            {
+                // use top right and bottom right
+                if (topRight.TextureCoordinate.Y == bottomRight.TextureCoordinate.Y)
+                {
+                    if (topRight.TextureCoordinate.X > bottomRight.TextureCoordinate.X)
+                    {
+                        xAxis = topRight.Position - bottomRight.Position;
+                    }
+                    else
+                    {
+                        xAxis = bottomRight.Position - topRight.Position;
+                    }
+                }
+            }
+
+            var rotationZ = (float)System.Math.Atan2(xAxis.Y, xAxis.X);
+            if (rotationZ < 0)
+            {
+                rotationZ += MathHelper.TwoPi;
+            }
+
+            return rotationZ;
+        }
+
         public void GetBottomLeftWorldCoordinateForOrderedTile(int orderedTileIndex, out float x, out float y)
         {
             // The order is:
@@ -937,6 +1053,14 @@ namespace FlatRedBall.TileGraphics
         }
 
         /// <summary>
+        /// Most pixel distortion problems can be solved by snapping the camera position 
+        /// to the pixel using MathFunctions.RoundFloat or using the Camera Controlling Entity.
+        /// For stubborn distortions only happening on Tiled maps you can use this. It won't 
+        /// do anything unless set to something different to zero.
+        /// </summary>
+        public static float TileVertexOffset { get; set; }
+
+        /// <summary>
         /// Adds a tile to the tile map
         /// </summary>
         /// <param name="bottomLeftPosition"></param>
@@ -953,19 +1077,18 @@ namespace FlatRedBall.TileGraphics
 
             int currentIndex = mCurrentNumberOfTiles * 6; // 6 indices per tile (there are mVertices.Length/4 tiles)
 
-            float xOffset = bottomLeftPosition.X;
-            float yOffset = bottomLeftPosition.Y;
+            float xOffset = bottomLeftPosition.X + TileVertexOffset;
+            float yOffset = bottomLeftPosition.Y + TileVertexOffset;
             float zOffset = bottomLeftPosition.Z;
 
-            float width = dimensions.X;
-            float height = dimensions.Y;
-
+            float width = dimensions.X - (TileVertexOffset * 2f);
+            float height = dimensions.Y - (TileVertexOffset * 2f);
 
             // create vertices
-            mVertices[currentVertex + 0] = new VertexPositionTexture(new Vector3(xOffset + 0f, yOffset + 0f, zOffset), new Vector2(texture.X, texture.W));
-            mVertices[currentVertex + 1] = new VertexPositionTexture(new Vector3(xOffset + width, yOffset + 0f, zOffset), new Vector2(texture.Y, texture.W));
-            mVertices[currentVertex + 2] = new VertexPositionTexture(new Vector3(xOffset + width, yOffset + height, zOffset), new Vector2(texture.Y, texture.Z));
-            mVertices[currentVertex + 3] = new VertexPositionTexture(new Vector3(xOffset + 0f, yOffset + height, zOffset), new Vector2(texture.X, texture.Z));
+            mVertices[currentVertex + 0] = new VertexType(new Vector3(xOffset + 0f, yOffset + 0f, zOffset), new Vector2(texture.X, texture.W));
+            mVertices[currentVertex + 1] = new VertexType(new Vector3(xOffset + width, yOffset + 0f, zOffset), new Vector2(texture.Y, texture.W));
+            mVertices[currentVertex + 2] = new VertexType(new Vector3(xOffset + width, yOffset + height, zOffset), new Vector2(texture.Y, texture.Z));
+            mVertices[currentVertex + 3] = new VertexType(new Vector3(xOffset + 0f, yOffset + height, zOffset), new Vector2(texture.X, texture.Z));
 
             // create indices
             mIndices[currentIndex + 0] = currentVertex + 0;
@@ -1021,6 +1144,9 @@ namespace FlatRedBall.TileGraphics
             //////////////////End Early Out/////////////////
 
 
+            AdjustOffsetAndParallax(camera);
+
+            ForceUpdateDependencies();
 
             int firstVertIndex;
             int lastVertIndex;
@@ -1053,7 +1179,7 @@ namespace FlatRedBall.TileGraphics
                     // It could use DrawIndexedPrimitives instead for much faster performance,
                     // but to do that we'd have to keep VB's around and make sure to re-create them
                     // whenever the graphics device is lost.  
-                    FlatRedBallServices.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture>(
+                    FlatRedBallServices.GraphicsDevice.DrawUserIndexedPrimitives<VertexType>(
                         PrimitiveType.TriangleList,
                         mVertices,
                         firstVertIndex,
@@ -1090,7 +1216,7 @@ namespace FlatRedBall.TileGraphics
 #else
             FlatRedBall.Graphics.Renderer.BlendOperation = BlendOperation.Regular;
 #endif
-            Effect effectTouse = null;
+            Effect effectToUse = null;
 
             if (ZBuffered)
             {
@@ -1100,22 +1226,53 @@ namespace FlatRedBall.TileGraphics
                 mAlphaTestEffect.World = Matrix.CreateScale(RenderingScale) * base.TransformationMatrix;
                 mAlphaTestEffect.Texture = mTexture;
 
-                effectTouse = mAlphaTestEffect;
+                effectToUse = mAlphaTestEffect;
             }
             else
             {
-                camera.SetDeviceViewAndProjection(mBasicEffect, false);
+#if RendererHasExternalEffectManager && MONOGAME_381
+                if (UseCustomEffect)
+                {
+                    var effectManager = Renderer.ExternalEffectManager;
 
-                mBasicEffect.World = Matrix.CreateScale(RenderingScale) * base.TransformationMatrix;
-                mBasicEffect.Texture = mTexture;
+                    var world = Matrix.CreateScale(RenderingScale) * base.TransformationMatrix;
+                    var view = camera.GetLookAtMatrix(false);
+                    var projection = camera.GetProjectionMatrix();
+                    var worldView = Matrix.Identity;
+                    var worldViewProj = Matrix.Identity;
 
-                mBasicEffect.DiffuseColor = new Vector3(Red, Green, Blue);
-                mBasicEffect.Alpha = Alpha;
+                    Matrix.Multiply(ref world, ref view, out worldView);
+                    Matrix.Multiply(ref worldView, ref projection, out worldViewProj);
+
+                    effectManager.ParameterViewProj.SetValue(worldViewProj);
+                    effectManager.ParameterCurrentTexture.SetValue(mTexture);
+
+                    var color = CustomEffectManager.ProcessColorForColorOperation(mColorOperation, new Vector4(mRed, mGreen, mBlue, mAlpha));
+                    effectManager.ParameterColorModifier.SetValue(color);
+
+                    effectToUse = effectManager.Effect;
+
+                    var effectTechnique = effectManager.GetColorModifierTechniqueFromColorOperation(mColorOperation);
+
+                    if (effectToUse.CurrentTechnique != effectTechnique)
+                        effectToUse.CurrentTechnique = effectTechnique;
+                }
+                else
+#endif
+                {
+                    camera.SetDeviceViewAndProjection(mBasicEffect, false);
+
+                    mBasicEffect.World = Matrix.CreateScale(RenderingScale) * base.TransformationMatrix;
+                    mBasicEffect.Texture = mTexture;
+
+                    mBasicEffect.DiffuseColor = new Vector3(Red, Green, Blue);
+                    mBasicEffect.Alpha = Alpha;
 
 #if TILEMAPS_ALPHA_AND_COLOR
                 mBasicEffect.VertexColorEnabled = true;
 #endif
-                effectTouse = mBasicEffect;
+                    effectToUse = mBasicEffect;
+                }
             }
 
 
@@ -1128,7 +1285,7 @@ namespace FlatRedBall.TileGraphics
             oldTextureAddressMode = Renderer.TextureAddressMode;
             Renderer.TextureAddressMode = TextureAddressMode.Clamp;
 
-            return effectTouse;
+            return effectToUse;
         }
 
         private void GetRenderingIndexValues(Camera camera, out int firstVertIndex, out int lastVertIndex, out int indexStart, out int numberOfTriangles)
@@ -1172,7 +1329,7 @@ namespace FlatRedBall.TileGraphics
             numberOfTriangles = (indexEndExclusive - indexStart) / 3;
         }
 
-        public static int GetFirstAfterX(VertexPositionTexture[] list, float xGreaterThan)
+        public static int GetFirstAfterX(VertexType[] list, float xGreaterThan)
         {
             int min = 0;
             int originalMax = list.Length / 4;
@@ -1231,7 +1388,7 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        public static int GetFirstAfterY(VertexPositionTexture[] list, float yGreaterThan)
+        public static int GetFirstAfterY(VertexType[] list, float yGreaterThan)
         {
             int min = 0;
             int originalMax = list.Length / 4;
@@ -1349,23 +1506,10 @@ namespace FlatRedBall.TileGraphics
             return null;
         }
 
-
-        #region XML Docs
-        /// <summary>
-        /// Here we update our batch - but this batch doesn't
-        /// need to be updated
-        /// </summary>
-        #endregion
         public void Update()
         {
-            float leftView = Camera.Main.AbsoluteLeftXEdgeAt(0);
-            float topView = Camera.Main.AbsoluteTopYEdgeAt(0);
-
-            float cameraOffsetX = leftView - CameraOriginX;
-            float cameraOffsetY = topView - CameraOriginY;
-
-            this.RelativeX = cameraOffsetX * _parallaxMultiplierX;
-            this.RelativeY = cameraOffsetY * _parallaxMultiplierY;
+            var camera = Camera.Main;
+            AdjustOffsetAndParallax(camera);
 
             this.TimedActivity(TimeManager.SecondDifference, TimeManager.SecondDifferenceSquaredDividedByTwo, TimeManager.LastSecondDifference);
 
@@ -1377,6 +1521,37 @@ namespace FlatRedBall.TileGraphics
             // now and revisit this in case there's a problem in the future.
             this.UpdateDependencies(TimeManager.CurrentTime);
         }
+
+        private void AdjustOffsetAndParallax(Camera camera)
+        {
+            float leftView = NativeCameraWidth != null ? camera.X - NativeCameraWidth.Value / 2f : camera.AbsoluteLeftXEdgeAt(0);
+            float topView = NativeCameraHeight != null ? camera.Y + NativeCameraHeight.Value / 2.0f : camera.AbsoluteTopYEdgeAt(0);
+
+            float cameraOffsetX = leftView - CameraOriginX;
+            float cameraOffsetY = topView - CameraOriginY;
+
+            if (camera.Orthogonal)
+            {
+                var zoom = camera.DestinationRectangle.Height / camera.OrthogonalHeight;
+
+                var pixelRoundingValue = 1 / zoom;
+                pixelRoundingValue = System.Math.Min(1, pixelRoundingValue);
+
+                this.RelativeX = MathFunctions.RoundFloat(cameraOffsetX * _parallaxMultiplierX, pixelRoundingValue);
+                this.RelativeY = MathFunctions.RoundFloat(cameraOffsetY * _parallaxMultiplierY, pixelRoundingValue);
+
+
+            }
+
+            else
+            {
+                this.RelativeX = cameraOffsetX * _parallaxMultiplierX;
+                this.RelativeY = cameraOffsetY * _parallaxMultiplierY;
+            }
+        }
+
+        public static float? NativeCameraWidth;
+        public static float? NativeCameraHeight;
 
         // TODO: I would like to somehow make this a property on the LayeredTileMap, but right now it is easier to put them here
         public float CameraOriginY { get; set; }
@@ -1434,14 +1609,44 @@ namespace FlatRedBall.TileGraphics
 
         public void MergeOntoThis(IEnumerable<MapDrawableBatch> mapDrawableBatches)
         {
+            int quadsOnThis = QuadCount;
 
+            // If this is empty, then this will inherit the first MDB's texture
+
+            if (quadsOnThis == 0 && this.Texture == null)
+            {
+                var firstWithNonNullTexture = mapDrawableBatches.FirstOrDefault(item => item.Texture != null);
+
+                this.Texture = firstWithNonNullTexture?.Texture;
+            }
+
+
+#if DEBUG
+            var thisTexture = this.Texture;
+            foreach (var mdb in mapDrawableBatches)
+            {
+                if(mdb.Texture != thisTexture && mdb.QuadCount > 0)
+                {
+                    string thisTextureName = thisTexture?.Name ?? "<null>";
+                    string otherTexture = mdb.Texture?.Name ?? "<null>";
+
+                    throw new InvalidOperationException($"The MapDrawableBatch {mdb.Name} has the texture {otherTexture} which is different than this layer's texture {thisTextureName}");
+                }
+                if(mdb.Z < this.Z)
+                {
+                    throw new Exception(
+                        $"The layer {mdb.Name} has a lower Z {mdb.Z} than this layer's Z ({this.Name} {this.Z}). Merging has to be called on the bottom-most layer");
+
+                }
+            }
+#endif
 
             int quadsToAdd = 0;
-            int quadsOnThis = QuadCount;
             foreach (var mdb in mapDrawableBatches)
             {
                 quadsToAdd += mdb.QuadCount;
             }
+
 
 
             int totalNumberOfVerts = 4 * (this.QuadCount + quadsToAdd);
@@ -1613,8 +1818,11 @@ namespace FlatRedBall.TileGraphics
 
             mCurrentNumberOfTiles = totalNumberOfVerts / 4;
 
+            int newFlagFlipArraySize = 0;
             foreach (var layer in layers)
             {
+                newFlagFlipArraySize += layer.FlipFlagArray.Length;
+
                 var invertedLayerDictionary = new Dictionary<int, string>();
 
                 foreach (var kvp in layer.NamedTileOrderedIndexes)
@@ -1628,12 +1836,13 @@ namespace FlatRedBall.TileGraphics
                 invertedDictionaries.Add(invertedLayerDictionary);
             }
 
+            var newFlipFlagArray = new byte[newFlagFlipArraySize];
 
             while (true)
             {
                 float smallestY = float.PositiveInfinity;
                 //int smallestIndex = -1;
-                int toCopyFrom = -1;
+                int layerIndexToCopyFrom = -1;
 
                 for (int layerIndex = 0; layerIndex < currentVertIndex.Length; layerIndex++)
                 {
@@ -1644,44 +1853,50 @@ namespace FlatRedBall.TileGraphics
                         if (vertY < smallestY)
                         {
                             smallestY = vertY;
-                            toCopyFrom = layerIndex;
+                            layerIndexToCopyFrom = layerIndex;
                             //smallestIndex = currentVertIndex[layerIndex];
                         }
                     }
                 }
 
-                if (toCopyFrom == -1)
+                if (layerIndexToCopyFrom == -1)
                 {
                     break;
                 }
                 else
                 {
-                    var sourceVertIndex = currentVertIndex[toCopyFrom];
+                    var layerToCopyFrom = layers[layerIndexToCopyFrom];
+                    var sourceVertIndex = currentVertIndex[layerIndexToCopyFrom];
                     var sourceIndexIndex = (sourceVertIndex / 4) * 6;
+                    var sourceFlipIndex = (sourceVertIndex / 4);
 
-                    newVerts[destinationVertIndex] = layers[toCopyFrom].mVertices[sourceVertIndex];
-                    newVerts[destinationVertIndex + 1] = layers[toCopyFrom].mVertices[sourceVertIndex + 1];
-                    newVerts[destinationVertIndex + 2] = layers[toCopyFrom].mVertices[sourceVertIndex + 2];
-                    newVerts[destinationVertIndex + 3] = layers[toCopyFrom].mVertices[sourceVertIndex + 3];
+                    var destinationFlipIndex = destinationVertIndex / 4;
 
-                    var firstVert = layers[toCopyFrom].mIndices[sourceIndexIndex];
+                    newFlipFlagArray[destinationFlipIndex] = layerToCopyFrom.FlipFlagArray[sourceFlipIndex];
+
+                    newVerts[destinationVertIndex] = layerToCopyFrom.mVertices[sourceVertIndex];
+                    newVerts[destinationVertIndex + 1] = layerToCopyFrom.mVertices[sourceVertIndex + 1];
+                    newVerts[destinationVertIndex + 2] = layerToCopyFrom.mVertices[sourceVertIndex + 2];
+                    newVerts[destinationVertIndex + 3] = layerToCopyFrom.mVertices[sourceVertIndex + 3];
+
+                    var firstVert = layerToCopyFrom.mIndices[sourceIndexIndex];
 
                     newIndexes[destinationIndexIndex] =
-                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex];
+                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex];
                     newIndexes[destinationIndexIndex + 1] =
-                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 1];
+                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 1];
                     newIndexes[destinationIndexIndex + 2] =
-                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 2];
+                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 2];
                     newIndexes[destinationIndexIndex + 3] =
-                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 3];
+                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 3];
                     newIndexes[destinationIndexIndex + 4] =
-                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 4];
+                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 4];
                     newIndexes[destinationIndexIndex + 5] =
-                        destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 5];
+                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 5];
 
-                    if (invertedDictionaries[toCopyFrom].ContainsKey(sourceVertIndex / 4))
+                    if (invertedDictionaries[layerIndexToCopyFrom].ContainsKey(sourceVertIndex / 4))
                     {
-                        var newName = invertedDictionaries[toCopyFrom][sourceVertIndex / 4];
+                        var newName = invertedDictionaries[layerIndexToCopyFrom][sourceVertIndex / 4];
 
                         if (newNameIndexDictionary.ContainsKey(newName) == false)
                         {
@@ -1693,11 +1908,12 @@ namespace FlatRedBall.TileGraphics
 
                     destinationVertIndex += 4;
                     destinationIndexIndex += 6;
-                    currentVertIndex[toCopyFrom] += 4;
+                    currentVertIndex[layerIndexToCopyFrom] += 4;
                 }
             }
 
             this.mNamedTileOrderedIndexes = newNameIndexDictionary;
+            this.FlipFlagArray = newFlipFlagArray;
 
             this.mVertices = newVerts;
             this.mIndices = newIndexes;

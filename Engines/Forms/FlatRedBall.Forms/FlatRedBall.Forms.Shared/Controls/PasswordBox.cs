@@ -137,7 +137,7 @@ namespace FlatRedBall.Forms.Controls
                     // do nothing, handled with a backspace above
                     //    HandleBackspace();
                 }
-                else if (character == '\r')
+                else if (character == '\r' || character == '\n')
                 {
                     // no enter supported on passwords, do we send an event?
                 }

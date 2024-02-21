@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OfficialPlugins.ContentPreview.ViewModels
 {
-    internal class PngViewModel : ViewModel, ICameraZoomViewModel
+    public class PngViewModel : ViewModel, ICameraZoomViewModel
     {
         [DependsOn(nameof(CurrentZoomPercent))]
         public float CurrentZoomScale => CurrentZoomPercent / 100.0f;

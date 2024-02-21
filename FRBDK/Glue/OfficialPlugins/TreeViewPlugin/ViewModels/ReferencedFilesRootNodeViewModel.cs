@@ -97,7 +97,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     if (i != index)
                     {
                         nodeList.RemoveAt(index);
-                        nodeList.Insert(i, nodeForFile);
+                        if(nodeList.Count == 0)
+                        {
+                            nodeList.Add(nodeForFile);
+                        }
+                        else
+                        {
+                            nodeList.Insert(i, nodeForFile);
+                        }
                     }
 
                     string newText = FileManager.RemovePath(file.Name);

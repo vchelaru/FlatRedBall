@@ -1252,7 +1252,15 @@ public class ObjectFinder : IObjectFinder
                     }
                     else
                     {
-                        category = containingElement.GetStateCategoryRecursively(customVariable.Type);
+                        var typeToSearchFor = customVariable.Type;
+                        // this could be nullable since that's the type used in Variant codegen
+
+                        if(typeToSearchFor?.EndsWith("?") == true)
+                        {
+                            typeToSearchFor = typeToSearchFor.Substring(0, typeToSearchFor.Length - 1);
+                        }
+
+                        category = containingElement.GetStateCategoryRecursively(typeToSearchFor);
                         isState = category != null;
                     }
                 }

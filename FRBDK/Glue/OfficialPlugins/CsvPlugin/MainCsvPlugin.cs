@@ -81,7 +81,7 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
 
             if(!hasOdsAssociation)
             {
-                AddOdsAssociation();
+                AddOdsBuildToolAssociation();
             }
 
             if(!AvailableAssetTypes.Self.AllAssetTypes.Any(item => item.Extension == "ods"))
@@ -110,7 +110,7 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
             return OpenOfficeExecutablePath.Exists();
         }
 
-        private void AddOdsAssociation()
+        private void AddOdsBuildToolAssociation()
         {
             //<BuildToolAssociation>
             //  <BuildTool>C:/Program Files/LibreOffice/program/soffice.exe</BuildTool>

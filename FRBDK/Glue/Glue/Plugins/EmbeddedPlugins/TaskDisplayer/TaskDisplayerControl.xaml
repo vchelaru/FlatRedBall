@@ -10,6 +10,7 @@
         <CheckBox IsChecked="{Binding LogQueueChanges}" VerticalContentAlignment="Center">Log Queueing - if unchecked only processing is logged</CheckBox>
         <CheckBox IsChecked="{Binding LogPluginCalls}" VerticalContentAlignment="Center">Log Plugin Calls</CheckBox>
         <CheckBox IsChecked="{Binding LogFileWatch}" VerticalContentAlignment="Center">Log File Watch</CheckBox>
+        <CheckBox IsChecked="{Binding LogGameCommunication}" VerticalContentAlignment="Center">Log FRB->Game Commands</CheckBox>
 
         <Label Content="{Binding CurrentTaskText}"></Label>
     </StackPanel>

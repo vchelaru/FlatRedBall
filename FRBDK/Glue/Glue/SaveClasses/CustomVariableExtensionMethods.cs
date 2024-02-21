@@ -13,6 +13,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using Microsoft.Xna.Framework;
 using WpfDataUi.Controls;
 using FlatRedBall.Glue.Plugins;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -84,12 +85,17 @@ namespace FlatRedBall.Glue.SaveClasses
         public static bool GetIsBaseElementType(string type, out GlueElement element)
         {
             element = null;
-            if (!GlueState.CurrentGlueProject.SuppressBaseTypeGeneration && type.Contains("."))
+            var glueProject = GlueState.CurrentGlueProject;
+            if (!glueProject.SuppressBaseTypeGeneration && type.Contains("."))
             {
-                if (type.StartsWith("Entities.") && type.EndsWith("Type"))
+                string typeOrVariant = glueProject.FileVersion >= (int)GluxVersions.VariantsInsteadOfTypes
+                    ? "Variant"
+                    : "Type";
+
+                if (type.StartsWith("Entities.") && type.EndsWith(typeOrVariant))
                 {
                     // strip of Entities. and Type and see if there's an entity with a matching name:
-                    var entityName = type.Substring(0, type.Length - "Type".Length).Replace(".", "\\");
+                    var entityName = type.Substring(0, type.Length - typeOrVariant.Length).Replace(".", "\\");
 
                     element = GlueState.CurrentGlueProject.Entities.FirstOrDefault(item => item.Name == entityName);
 

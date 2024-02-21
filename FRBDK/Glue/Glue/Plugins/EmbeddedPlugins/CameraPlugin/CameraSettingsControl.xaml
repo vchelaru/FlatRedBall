@@ -120,11 +120,12 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="{x:Static localization:Texts.Scale}" />
-                            <Button Width="20" Margin="5" Click="ScaleMinusClicked">-</Button>
+                            <Button Width="20" Margin="5" Click="ScaleMinusClicked" IsEnabled="{Binding IsScaleUiEnabled}">-</Button>
                             <TextBox Width="40" Height="18" Text="{Binding Scale}" IsEnabled="{Binding IsScaleUiEnabled}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"></TextBox>
-                            <Button Width="20" Margin="5,5,0,5" Click="ScalePlusClicked">+</Button>
+                            <Button Width="20" Margin="5,5,0,5" Click="ScalePlusClicked" IsEnabled="{Binding IsScaleUiEnabled}">+</Button>
                             <Label>%</Label>
                         </StackPanel>
+                        <Label FontSize="10" Margin="8, -10, 0,0" Visibility="{Binding GameResolutionLabelVisibility}" Content="{Binding GameDisplayResolutionText}"></Label>
 
                         <GroupBox Margin="20,0,0,0" Background="LightYellow" Visibility="{Binding FullScreenScaleMessageVisibility}">
                             <StackPanel>

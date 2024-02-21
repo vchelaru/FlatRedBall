@@ -5,9 +5,27 @@
   <State>
     <Name>Default</Name>
     <Variable>
+      <Type>int</Type>
+      <Name>ColoredRectangleInstance.Blue</Name>
+      <Value xsi:type="xsd:int">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>int</Type>
+      <Name>ColoredRectangleInstance.Green</Name>
+      <Value xsi:type="xsd:int">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>ColoredRectangleInstance.Height</Name>
       <Value xsi:type="xsd:float">196</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>int</Type>
+      <Name>ColoredRectangleInstance.Red</Name>
+      <Value xsi:type="xsd:int">255</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -97,24 +115,6 @@
       <Type>PositionUnitType</Type>
       <Name>Y Units</Name>
       <Value xsi:type="xsd:int">7</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>int</Type>
-      <Name>ColoredRectangleInstance.Red</Name>
-      <Value xsi:type="xsd:int">255</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>int</Type>
-      <Name>ColoredRectangleInstance.Green</Name>
-      <Value xsi:type="xsd:int">0</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>int</Type>
-      <Name>ColoredRectangleInstance.Blue</Name>
-      <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
   </State>

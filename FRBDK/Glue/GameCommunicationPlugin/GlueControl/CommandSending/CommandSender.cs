@@ -51,6 +51,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
 
         public static CommandSender Self { get; private set; }
 
+
         #endregion
 
         static CommandSender()
@@ -113,6 +114,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
                 if(CompilerViewModel.IsShowParametersChecked && CompilerViewModel.CommandParameterCheckboxVisibility == System.Windows.Visibility.Visible)
                 {
                     PrintOutput(text);
+                    GlueCommands.Self.PrintOutput(text);
                     PrintOutput("------------------------------------------");
                 }
                 else
@@ -124,6 +126,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
                         prefix = text.Substring(0, indexOfColon);
                     }
                     PrintOutput(prefix);
+                    GlueCommands.Self.PrintOutput(prefix);
                 }
             }
 

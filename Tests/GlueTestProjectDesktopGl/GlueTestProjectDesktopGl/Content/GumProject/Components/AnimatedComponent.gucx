@@ -163,6 +163,7 @@
   </State>
   <Category>
     <Name>ColorCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>RedState</Name>
       <Variable>
@@ -187,6 +188,7 @@
   </Category>
   <Category>
     <Name>SizeCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>BigState</Name>
     </State>

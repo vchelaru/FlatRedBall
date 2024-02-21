@@ -961,6 +961,7 @@
   </State>
   <Category>
     <Name>StateCategory1</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>On</Name>
       <Variable>
@@ -1175,4 +1176,5 @@
     <BaseType>NineSliceButton</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
+  <Behaviors />
 </ScreenSave>

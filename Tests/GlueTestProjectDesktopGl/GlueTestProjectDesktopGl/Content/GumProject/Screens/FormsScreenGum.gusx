@@ -10,6 +10,30 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>string</Type>
+      <Name>CheckBoxInstance1.Parent</Name>
+      <Value xsi:type="xsd:string">ContainerInstance</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>CheckBoxInstance2.Parent</Name>
+      <Value xsi:type="xsd:string">ContainerInstance</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>CheckBoxInstance3.Parent</Name>
+      <Value xsi:type="xsd:string">ContainerInstance</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>CheckBoxInstance4.Parent</Name>
+      <Value xsi:type="xsd:string">ContainerInstance</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>ChildrenLayout</Type>
       <Name>ContainerInstance.Children Layout</Name>
       <Value xsi:type="xsd:int">1</Value>
@@ -117,30 +141,6 @@
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
-    <Variable>
-      <Type>string</Type>
-      <Name>CheckBoxInstance1.Parent</Name>
-      <Value xsi:type="xsd:string">ContainerInstance</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>string</Type>
-      <Name>CheckBoxInstance2.Parent</Name>
-      <Value xsi:type="xsd:string">ContainerInstance</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>string</Type>
-      <Name>CheckBoxInstance3.Parent</Name>
-      <Value xsi:type="xsd:string">ContainerInstance</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>string</Type>
-      <Name>CheckBoxInstance4.Parent</Name>
-      <Value xsi:type="xsd:string">ContainerInstance</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
   </State>
   <Instance>
     <Name>UserControlInstance</Name>
@@ -177,4 +177,5 @@
     <BaseType>DefaultForms/CheckBox</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
+  <Behaviors />
 </ScreenSave>

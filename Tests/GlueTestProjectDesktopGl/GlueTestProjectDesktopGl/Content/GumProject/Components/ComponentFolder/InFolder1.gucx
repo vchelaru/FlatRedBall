@@ -155,6 +155,7 @@
   </State>
   <Category>
     <Name>Category1</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Categorized1</Name>
       <Variable>

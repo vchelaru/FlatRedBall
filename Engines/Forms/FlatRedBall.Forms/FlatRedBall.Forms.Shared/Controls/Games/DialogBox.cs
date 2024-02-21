@@ -68,7 +68,8 @@ namespace FlatRedBall.Forms.Controls.Games
         }
 
         /// <summary>
-        /// The number of letters to show per second when printing out in "typewriter style". If null, 0, or negative, then the text will be shown immediately.
+        /// The number of letters to show per second when printing out in "typewriter style". 
+        /// If null, 0, or negative, then the text is shown immediately.
         /// </summary>
         public int? LettersPerSecond { get; set; } = 20;
 
@@ -132,6 +133,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
         #endregion
 
+        #region Show Methods
         /// <summary>
         /// Shows the dialog box (adds it to managers and sets IsVisible to true) and begins showing the text.
         /// </summary>
@@ -165,7 +167,12 @@ namespace FlatRedBall.Forms.Controls.Games
         /// </summary>
         /// <param name="text">The text to print out, either immediately or letter-by-letter according to LettersPerSecond.</param>
         /// <returns>A task which completes when the text has been displayed and the DialogBox has been dismissed.</returns>
-        public Task ShowAsync(string text) => ShowAsync(new string[] { text });
+        public Task ShowAsync(string text)
+        {
+            var pages = ConvertToPages(text);
+            return ShowAsync(pages);
+        }
+
 
         public async Task ShowAsync(IEnumerable<string> pages, FlatRedBall.Graphics.Layer frbLayer = null)
         {
@@ -322,19 +329,24 @@ namespace FlatRedBall.Forms.Controls.Games
             textComponent.SetProperty("Text", text);
 
 
+            var tags = BbCodeParser.Parse(text, CustomSetPropertyOnRenderable.Tags);
+            var strippedLength = BbCodeParser.RemoveTags(text, tags).Length;
+
             var shouldPrintCharacterByCharacter = LettersPerSecond > 0 && !forceImmediatePrint;
             if(shouldPrintCharacterByCharacter)
             {
                 coreTextObject.MaxLettersToShow = 0;
                 var allTextShownState = new global::Gum.DataTypes.Variables.StateSave();
+
+
                 allTextShownState.Variables.Add(new global::Gum.DataTypes.Variables.VariableSave
                 {
                     Name = "TextInstance.MaxLettersToShow",
-                    Value = text.Length,
+                    Value = strippedLength,
                     SetsValue = true
                 });
 
-                var duration = text.Length / (float)LettersPerSecond;
+                var duration = strippedLength / (float)LettersPerSecond;
 
                 showLetterTweener = this.Visual.InterpolateTo(NoTextShownState, allTextShownState, duration, InterpolationType.Linear, Easing.Out);
 
@@ -353,7 +365,7 @@ namespace FlatRedBall.Forms.Controls.Games
             }
             else
             {
-                coreTextObject.MaxLettersToShow = text.Length;
+                coreTextObject.MaxLettersToShow = strippedLength;
 
                 if (TakingInput && continueIndicatorInstance != null)
                 {
@@ -367,6 +379,84 @@ namespace FlatRedBall.Forms.Controls.Games
                 FinishedTypingPage?.Invoke(this, null);
             }
         }
+
+
+        private string[] ConvertToPages(string text)
+        {
+
+            var limitsLines = 
+                this.coreTextObject.MaxNumberOfLines != null || 
+                this.textComponent.HeightUnits != global::Gum.DataTypes.DimensionUnitType.RelativeToChildren;
+
+            if(!limitsLines)
+            {
+                // it can show any number of lines, it's up to the user to handle spillover
+                // by limiting the page length or by expanding the dialog box.
+                return new string[] { text };
+            }
+            else
+            {
+                // To remove the tags, we must keep newlines in since since that's how the tags are removed...
+                var foundTagsWithNewlines = BbCodeParser.Parse(text, CustomSetPropertyOnRenderable.Tags);
+                // ...but when we add the tags back in, we do it without counting newlines, so we need to remove newlines for 
+                // the tags that are added back in:
+                var foundTagsWithoutNewlines = BbCodeParser.Parse(text.Replace("\n", ""), CustomSetPropertyOnRenderable.Tags);
+                var withRemovedTags = BbCodeParser.RemoveTags(text, foundTagsWithNewlines);
+
+                var unlimitedLines = new List<string>();
+                var oldVerticalMode = this.coreTextObject.TextOverflowVerticalMode;
+                this.coreTextObject.TextOverflowVerticalMode = RenderingLibrary.Graphics.TextOverflowVerticalMode.SpillOver;
+                coreTextObject.RawText = withRemovedTags;
+                coreTextObject.UpdateLines(unlimitedLines);
+
+                this.coreTextObject.TextOverflowVerticalMode = oldVerticalMode;
+                this.textComponent.SetProperty("Text", withRemovedTags);
+
+                var limitedLines = coreTextObject.WrappedText;
+
+                if (unlimitedLines.Count == limitedLines.Count)
+                {
+                    // no need to break it up
+                    return new string[] { text };
+                }
+                else
+                {
+                    var pages = new List<string>();
+
+                    var absoluteLineNumber = 0;
+
+                    var currentPage = new StringBuilder();
+                    currentPage.Clear();
+
+                    StringBuilder stringBuilder = new StringBuilder();
+                    int strippedTextCount = 0;
+                    while(absoluteLineNumber < unlimitedLines.Count)
+                    {
+                        stringBuilder.Clear();
+
+                        for(int i = 0; i < limitedLines.Count && absoluteLineNumber < unlimitedLines.Count; i++)
+                        {
+                            var toAppend = unlimitedLines[absoluteLineNumber];
+                            var sizeBeforeTags = toAppend.Length;
+                            if(foundTagsWithoutNewlines.Count > 0)
+                            {
+                                toAppend = BbCodeParser.AddTags(toAppend, foundTagsWithoutNewlines, strippedTextCount);
+                            }
+                            strippedTextCount += sizeBeforeTags;
+                            stringBuilder.Append(toAppend + "\n");
+                            absoluteLineNumber++;
+                        }
+                        pages.Add(stringBuilder.ToString());
+                    }
+
+                    return pages.ToArray();
+                }
+            }
+
+
+        }
+
+        #endregion
 
         #region Event Handler Methods
 
@@ -403,7 +493,10 @@ namespace FlatRedBall.Forms.Controls.Games
                 return;
             }
             //////////////////End Early Out///////////////////
-            var hasMoreToType = coreTextObject.MaxLettersToShow < currentPageText?.Length;
+            //var hasMoreToType = coreTextObject.MaxLettersToShow < currentPageText?.Length;
+
+            // Use the raw text since that has stripped out the tags
+            var hasMoreToType = coreTextObject.MaxLettersToShow < coreTextObject.RawText.Length;
             if (hasMoreToType)
             {
                 showLetterTweener?.Stop();

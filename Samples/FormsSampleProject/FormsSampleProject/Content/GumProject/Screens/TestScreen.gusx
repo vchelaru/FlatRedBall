@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ScreenSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>TestScreen</Name>
+  <State>
+    <Name>Default</Name>
+    <Variable>
+      <Type>int</Type>
+      <Name>BlueRectangle.Blue</Name>
+      <Value xsi:type="xsd:int">255</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>int</Type>
+      <Name>BlueRectangle.Green</Name>
+      <Value xsi:type="xsd:int">16</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>int</Type>
+      <Name>BlueRectangle.Red</Name>
+      <Value xsi:type="xsd:int">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>BlueRectangle.X</Name>
+      <Value xsi:type="xsd:float">227</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>BlueRectangle.Y</Name>
+      <Value xsi:type="xsd:float">133</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>WhiteRectangle.X</Name>
+      <Value xsi:type="xsd:float">227</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>WhiteRectangle.Y</Name>
+      <Value xsi:type="xsd:float">38</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <VariableList xsi:type="VariableListSaveOfString">
+      <Type>string</Type>
+      <Name>WhiteRectangle.VariableReferences</Name>
+      <IsFile>false</IsFile>
+      <IsHiddenInPropertyGrid>false</IsHiddenInPropertyGrid>
+      <Value>
+        <string>X = Screens/TestScreen.BlueRectangle.X</string>
+      </Value>
+    </VariableList>
+  </State>
+  <Instance>
+    <Name>WhiteRectangle</Name>
+    <BaseType>ColoredRectangle</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>BlueRectangle</Name>
+    <BaseType>ColoredRectangle</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Behaviors />
+</ScreenSave>

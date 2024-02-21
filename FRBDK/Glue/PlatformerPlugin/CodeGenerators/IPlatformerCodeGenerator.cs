@@ -10,6 +10,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
     public class IPlatformerCodeGenerator : Singleton<IPlatformerCodeGenerator>
     {
         string RelativeFileLocation => "Platformer/IPlatformer.Generated.cs";
+        public FilePath FileLocation => GlueState.Self.CurrentGlueProjectDirectory + RelativeFileLocation;
 
         public void GenerateAndSave()
         {

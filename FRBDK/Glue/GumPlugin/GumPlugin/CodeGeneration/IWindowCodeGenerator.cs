@@ -1,6 +1,8 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Gui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,20 @@ namespace GumPlugin.CodeGeneration
             //{
             //    codeBlock.Line("FlatRedBall.Gum.GueIWindowWrapper " + GetWrapperNameFor(namedObject) + ";");
             //}
+
+            // Feb 21, 2024
+            // Some codegen is handled by IWindowTemplate.txt
+            // That's a yucky system because it doesn't (easily) 
+            // allow for conditional generation, and it breaks from
+            // how normal codegen is done. So I'll add these props here.
+            // IWindow is out of favor anyway due to Gum so...this may not
+            // be touched much in the future:
+            var isNewEnough = GlueState.Self.IsReferencingFrbSource;
+            if(element is EntitySave entitySave && entitySave.ImplementsIWindow && isNewEnough)
+            {
+                codeBlock.Line("public void CallRemovedAsPushedWindow() => RemovedAsPushedWindow?.Invoke(this);");
+                codeBlock.Line("public event WindowEvent RemovedAsPushedWindow;");
+    }
 
             return codeBlock;
         }

@@ -32,6 +32,13 @@
     </Variable>
     <Variable>
       <Type>bool</Type>
+      <Name>IgnoredByParentSize</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Parent</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
       <Name>IsXamarinFormsControl</Name>
       <Value xsi:type="xsd:boolean">false</Value>
       <SetsValue>true</SetsValue>
@@ -39,6 +46,7 @@
     <Variable>
       <Type>string</Type>
       <Name>Parent</Name>
+      <Category>Parent</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -137,5 +145,14 @@
         </Vector2>
       </Value>
     </VariableList>
+    <VariableList xsi:type="VariableListSaveOfString">
+      <Type>string</Type>
+      <Name>VariableReferences</Name>
+      <Category>References</Category>
+      <IsFile>false</IsFile>
+      <IsHiddenInPropertyGrid>false</IsHiddenInPropertyGrid>
+      <Value />
+    </VariableList>
   </State>
+  <Behaviors />
 </StandardElementSave>

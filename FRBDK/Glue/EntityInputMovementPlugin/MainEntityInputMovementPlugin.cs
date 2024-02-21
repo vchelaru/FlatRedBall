@@ -114,7 +114,14 @@ namespace EntityInputMovementPlugin
                 FlatRedBall.PlatformerPlugin.Generators.EnumFileGenerator.Self.GenerateAndSave();
                 FlatRedBall.PlatformerPlugin.Generators.IPlatformerCodeGenerator.Self.GenerateAndSave();
                 FlatRedBall.PlatformerPlugin.Generators.PlatformerAnimationControllerGenerator.Self.GenerateAndSave();
+            }
                 
+            else
+            {
+                // see if there are any references to files which do not exist. If so, let's remove them:
+                GlueCommands.Self.ProjectCommands.RemoveFromProjects(FlatRedBall.PlatformerPlugin.Generators.EnumFileGenerator.Self.FileLocation);
+                GlueCommands.Self.ProjectCommands.RemoveFromProjects(FlatRedBall.PlatformerPlugin.Generators.IPlatformerCodeGenerator.Self.FileLocation);
+                GlueCommands.Self.ProjectCommands.RemoveFromProjects(FlatRedBall.PlatformerPlugin.Generators.PlatformerAnimationControllerGenerator.Self.FileLocation);
             }
         }
 

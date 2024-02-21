@@ -334,6 +334,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             set => Set(value);
         }
 
+        [DependsOn(nameof(IsScaleUiEnabled))]
+        public Visibility GameResolutionLabelVisibility => IsScaleUiEnabled.ToVisibility();
+
+        [DependsOn(nameof(Scale))]
+        [DependsOn(nameof(ResolutionWidth))]
+        [DependsOn(nameof(ResolutionHeight))]
+        public string GameDisplayResolutionText => $"Game Display Resolution: {ResolutionWidth*Scale/100}x{ResolutionHeight*Scale/100}";
+
         [DependsOn(nameof(RunInFullScreen))]
         public bool IsScaleUiEnabled => RunInFullScreen == false;
 

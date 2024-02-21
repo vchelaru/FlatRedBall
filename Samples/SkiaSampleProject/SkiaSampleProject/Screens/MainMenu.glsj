@@ -1,0 +1,16 @@
+{
+  "Tags": [
+    "GLUE"
+  ],
+  "Source": "GLUE",
+  "ReferencedFiles": [
+    {
+      "Name": "GumProject/Screens/MainMenuGum.gusx",
+      "IsSharedStatic": true,
+      "RuntimeType": "SkiaSampleProject.GumRuntimes.MainMenuGumRuntime",
+      "ProjectsToExcludeFrom": []
+    }
+  ],
+  "Name": "Screens\\MainMenu",
+  "CustomClassesForExport": []
+}

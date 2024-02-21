@@ -6,9 +6,6 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Content;
 
-using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
-
-
 using EditorObjects.Parsing;
 using FlatRedBall.Glue.Errors;
 using System.Windows.Forms;
@@ -118,17 +115,23 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        public static bool IsFileSourceForThis(this ReferencedFileSave instance, FilePath filePath)
+        {
+            if (!string.IsNullOrEmpty(instance.SourceFile) &&
+                 new FilePath(ObjectFinder.Self.MakeAbsoluteContent(instance.SourceFile)) == filePath)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public static bool IsFileSourceForThis(this ReferencedFileSave instance, string fileName)
         {
             if (!string.IsNullOrEmpty(instance.SourceFile) &&
                  FileManager.RemoveDotDotSlash( ObjectFinder.Self.MakeAbsoluteContent(instance.SourceFile)).Equals(fileName, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
-            }
-
-            if(instance.SourceFileCache != null)
-            {
-                return instance.SourceFileCache.Any(srf => String.Equals(srf.SourceFile, fileName, StringComparison.OrdinalIgnoreCase));
             }
 
             return false;

@@ -18,6 +18,8 @@ using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
 using RenderingLibrary.Graphics;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
+using Gum.Wireframe;
 
 namespace GumPlugin.Managers
 {
@@ -266,6 +268,16 @@ namespace GumPlugin.Managers
 
         }
 
+        static HashSet<string> fontTags = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            "font",
+            "fontsize",
+            "outlinethickness",
+            "isitalic",
+            "isbold",
+            "usefontsmoothing",
+        };
+
         private static void TryGetFontReferences(TopLevelOrRecursive topLevelOrRecursive, List<string> listToFill, Gum.DataTypes.Variables.StateSave state, bool includeReferenceInfo)
         {
 
@@ -284,15 +296,22 @@ namespace GumPlugin.Managers
             }
 
             var fontVariables = state.Variables.Where(item =>
-                (item.GetRootName() == "Font" ||
-                    item.GetRootName() == "FontSize" ||
-                    item.GetRootName() == "OutlineThickness" ||
-                    item.GetRootName() == "IsItalic" ||
-                    item.GetRootName() == "IsBold" ||
-                    item.GetRootName() == "UseFontSmoothing"
-                    )
-                && item.Value != null
-                );
+            {
+                if(item.Value == null)
+                {
+                    return false;
+                }
+                var rootName = item.GetRootName();
+
+                var toReturn = rootName == "Font" ||
+                    rootName == "FontSize" ||
+                    rootName == "OutlineThickness" ||
+                    rootName == "IsItalic" ||
+                    rootName == "IsBold" ||
+                    rootName == "UseFontSmoothing";
+
+                return toReturn;
+            });
 
             foreach (var variable in fontVariables)
             {
@@ -368,6 +387,59 @@ namespace GumPlugin.Managers
                         TryAddFontFromSizeAndName(topLevelOrRecursive, listToFill, fontSizeValue, fontNameValue, outlineThickness, useFontSmoothing, isBold, isItalic, additionalInfo);
                     }
                 }
+            }
+
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumTextSupportsBbCode)
+            {
+                var textVariables = state.Variables.Where(item => (item.Value as string)?.Contains("[") == true && item.GetRootName() == "Text");
+                foreach(var variable in textVariables)
+                {
+                    var prefix = String.Empty;
+                    var isTextObject = false;
+
+                    if (variable.Name.Contains('.'))
+                    {
+                        var instanceName = FileManager.RemoveExtension(variable.Name);
+
+                        prefix = FileManager.RemoveExtension(variable.Name) + ".";
+
+                        var instance = state.ParentContainer.GetInstance(instanceName);
+
+                        if (instance != null)
+                        {
+                            var basicElement = ObjectFinder.Self.GetRootStandardElementSave(instance.GetBaseElementSave());
+
+                            isTextObject = basicElement?.Name == "Text";
+                        }
+                        else
+                        {
+                            // This code is used to
+                            // determine whether a referenced
+                            // file is necessary in the project.
+                            // Since the instance doesn't exist, we
+                            // won't actually use the variable for the
+                            // instance, so we don't want to track the file.
+                            // We can do this by marking isTextObject as false.
+                            isTextObject = false;
+                        }
+                    }
+                    else
+                    {
+                        isTextObject = isParentElementText;
+                    }
+
+                    var foundTags = BbCodeParser.Parse(variable.Value as string, fontTags);
+
+                    if(foundTags.Count > 0)
+                    {
+                        foreach(var tag in foundTags)
+                        {
+                            // todo - Vic says - this is complicated and I'm not going to worry about it yet. Maybe in the future when someone reports it.
+                        }
+                    }
+
+                }
+
             }
         }
 

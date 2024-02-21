@@ -11,7 +11,7 @@ The FlatRedBall Game Engine is designed to boost your productivity as a game dev
 
 ![image](https://github.com/vchelaru/FlatRedBall/assets/729631/8fc4fbcb-93d7-4d26-9cbb-9b48329d6c36)
 
-The FlatRedBall Engine utilizes the C# programming language, operating on the full version of .NET for uncompromised access to modern C# features and all NuGet packages. Games can be launched effortlessly via the FlatRedBall Editor or directly from Visual Studio, streamlining the development process.
+The FlatRedBall Engine utilizes the C# programming language, operating on the full version of .NET for uncompromised access to modern language features and all NuGet packages. Games can be launched effortlessly via the FlatRedBall Editor or directly from Visual Studio (or any other IDE), streamlining the development process.
 
 FlatRedBall is mature and continually improving. Reported issues are resolved or commented soon after they are created. We actively watch PRs and keep them from piling up. Commits are being made almost daily - [check the commit history to see the activity for yourself.](https://github.com/vchelaru/FlatRedBall/commits/NetStandard)
 

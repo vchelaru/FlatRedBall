@@ -16,6 +16,7 @@ using FlatRedBall.Glue.Plugins;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Linq;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -169,54 +170,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (customVariable.DefaultValue != null)
             {
-                // July 24, 2023
-                // Why not use GetRightSide?
-                // That is 
                 if (!IsTypeFromCsv(customVariable, element))
                 {
-                    //variableAssignment =
-                    //    CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
-
-                    //// If this is a file, we don't want to assign it here
-                    //if (customVariable.GetIsFile())
-                    //{
-                    //    variableAssignment = null;
-                    //}
-
-                    //if (customVariable.Type == "Color")
-                    //{
-                    //    variableAssignment = "Color." + variableAssignment.Replace("\"", "");
-
-                    //}
-                    //else if (customVariable.Type != "string" && variableAssignment == "\"\"")
-                    //{
-                    //    variableAssignment = null;
-                    //}
-                    //else
-                    //{
-                    //    if (customVariable.DefaultValue != null)
-                    //    {
-                    //        (bool isState, StateSaveCategory category) =
-                    //            customVariable.GetIsVariableStateAndCategory(element as GlueElement);
-                    //        if (isState)
-                    //        {
-                    //            var type = customVariable.Type;
-                    //            if (category != null)
-                    //            {
-                    //                var categoryElement = ObjectFinder.Self.GetElementContaining(category);
-
-                    //                if (categoryElement != null)
-                    //                {
-                    //                    type = $"{categoryElement.Name.Replace("\\", ".")}.{category.Name}";
-
-                    //                }
-
-                    //            }
-                    //            variableAssignment = type + "." + customVariable.DefaultValue;
-                    //        }
-
-                    //    }
-                    //}
                     var variableAssignmentValue = GetRightSideOfEquals(customVariable, element);
 
                     if (variableAssignmentValue != null)
@@ -722,7 +677,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     rightSide = rightSide.Replace("\"", "").Replace("-", "_");
 
-                    if (rightSide == "<NONE>")
+                    if (rightSide == "<NONE>" || string.IsNullOrEmpty(rightSide))
                     {
                         rightSide = "null";
                     }
@@ -1644,8 +1599,10 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         internal static bool IsTypeFromCsv(CustomVariable customVariable, GlueElement glueElement = null)
         {
-            if(customVariable != null && customVariable.Type != null &&
+            if(customVariable != null && 
+                customVariable.Type != null &&
                 customVariable.GetIsVariableState(glueElement) == false &&
+                !IsQualifiedGumState(customVariable.Type) &&
                 customVariable.GetIsBaseElementType() == false &&
                 customVariable.Type.Contains(".") &&
                 customVariable.GetRuntimeType() == null)
@@ -1669,6 +1626,14 @@ namespace FlatRedBall.Glue.CodeGeneration
                 return isCsv;
             }
             return false;
+        }
+
+        private static bool IsQualifiedGumState(string type)
+        {
+            // For the sake of speed, we're going to just look at the prefix and guess based on that. A full
+            // implementation would do a browsing of Gum files and look for states but....that's not easy because
+            // all of that code is in a plugin, and we can approximate it here:
+            return type.StartsWith($"{GlueState.Self.ProjectNamespace}.GumRuntimes");
         }
     }
 }
