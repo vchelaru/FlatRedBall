@@ -199,9 +199,7 @@ namespace FlatRedBall.Glue.SetVariable
                     mbmb.MessageText = L.Texts.VariableEntityExposed;
                     mbmb.AddButton(L.Texts.VariableRemove, DialogResult.Yes);
                     mbmb.AddButton(L.Texts.VariableKeepNonFunctioning, DialogResult.No);
-
                     var result = mbmb.ShowDialog();
-
                     if ((DialogResult)mbmb.ClickedResult == DialogResult.Yes)
                     {
                         GlueCommands.Self.GluxCommands.RemoveCustomVariable(variableToRemove, throwawayList);

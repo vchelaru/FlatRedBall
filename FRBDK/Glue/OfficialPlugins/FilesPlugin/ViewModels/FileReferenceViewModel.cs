@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Glue;
+using GlueFormsCore.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -68,7 +69,7 @@ namespace OfficialPlugins.FilesPlugin.ViewModels
 
                        .OrderBy(item => item.FullPath);
 
-                   MainGlueWindow.Self.Invoke(() =>
+                   MainPanelControl.Self.Invoke(() =>
                    {
                        foreach (var file in files)
                        {

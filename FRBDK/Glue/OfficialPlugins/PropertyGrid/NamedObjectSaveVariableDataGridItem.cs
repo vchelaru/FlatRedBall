@@ -345,7 +345,7 @@ namespace OfficialPlugins.PropertyGrid
 
                         GlueCommands.Self.DoOnUiThread(() =>
                         {
-                            MainGlueWindow.Self.PropertyGrid.Refresh();
+                            GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
                             PropertyGridHelper.UpdateNamedObjectDisplay();
                             if (DisplayName == "Name")
                             {
@@ -430,7 +430,7 @@ namespace OfficialPlugins.PropertyGrid
 
                 GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
-                MainGlueWindow.Self.PropertyGrid.Refresh();
+                GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
 
 
                 PluginManager.ReactToChangedProperty(memberName, oldValue, element, new PluginManager.NamedObjectSavePropertyChange

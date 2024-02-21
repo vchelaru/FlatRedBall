@@ -360,7 +360,7 @@ namespace OfficialPlugins.GameHost.Views
         // get solved, too high and the user sees long delays between the flickers.
         const int msDelayBetweenResizes = 5;
 
-        int lastWidth;
+        double lastWidth;
 
         private async void BottomStatusBar_ZoomMinusClick()
         {
@@ -395,7 +395,7 @@ namespace OfficialPlugins.GameHost.Views
             }
         }
 
-        int lastHeight;
+        double lastHeight;
         public async void ReactToMainWindowResizeEnd()
         {
             await ForceRefreshGameArea();
@@ -410,7 +410,7 @@ namespace OfficialPlugins.GameHost.Views
         /// <returns>An awaitable task</returns>
         public async Task ForceRefreshGameArea(bool force = false)
         {
-            var window = MainGlueWindow.Self;
+            var window = MainPanelControl.Self;
             var areSame = window.Width == lastWidth && window.Height == lastHeight;
             var are0 = lastWidth == 0 && lastHeight == 0;
 

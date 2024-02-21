@@ -87,6 +87,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
         bool IsReferencingFrbSource { get; }
 
+        /// <summary>
+        /// Whether an unrecoverable or unknown error has occurred, suggesting that the
+        /// user should restart Glue.
+        /// </summary>
+        bool HasErrorOccurred { get; }
+
         #endregion
 
         List<ProjectBase> GetProjects();
@@ -96,6 +102,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
     public class GlueStateSnapshot : IGlueState
     {
+        public bool HasErrorOccurred { get; set; }
+
         public GlueElement CurrentElement
         {
             get;
@@ -209,6 +217,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
         public void SetFrom(IGlueState glueState)
         {
+            this.HasErrorOccurred = glueState.HasErrorOccurred;
+
             this.CurrentElement = glueState.CurrentElement;
 
             this.CurrentTreeNode = glueState.CurrentTreeNode;

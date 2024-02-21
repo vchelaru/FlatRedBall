@@ -8,6 +8,7 @@ using FlatRedBall.Glue.SaveClasses;
 using Glue;
 using GlueFormsCore.ViewModels;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -23,7 +24,7 @@ namespace GlueFormsCore.Controls
         #region Fields/Properties
 
         //public static string AppTheme = "Dark";
-        public static string AppTheme = "Light";
+        //public static string AppTheme = "Light";
         public static ResourceDictionary ResourceDictionary { get; private set; }
         public static bool IsExiting { get; private set; }
 
@@ -140,13 +141,13 @@ namespace GlueFormsCore.Controls
 
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                if (MainGlueWindow.Self.PropertyGrid != null)
+                if (GlueCommands.Self.DialogCommands.PropertyGrid != null)
                 {
-                    MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
+                    GlueCommands.Self.DialogCommands.PropertyGrid.SelectedObject = null;
                 }
             });
 
-            GlueCommands.Self.DoOnUiThread(() => MainGlueWindow.Self.Text = Localization.Texts.FrbEditor);
+            GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.DialogCommands.SetTitle(Localization.Texts.FrbEditor));
             ProjectManager.WantsToCloseProject = false;
             TaskManager.Self.RecordTaskHistory($"--Ending Close Project Command --");
 
@@ -261,17 +262,17 @@ namespace GlueFormsCore.Controls
 
         private void InitializeThemes()
         {
-            this.Resources.MergedDictionaries[0].Source =
-                new Uri($"/Themes/{AppTheme}.xaml", UriKind.Relative);
+            //this.Resources.MergedDictionaries[0].Source =
+            //    new Uri($"/Themes/{AppTheme}.xaml", UriKind.Relative);
 
 
-            Style style = this.TryFindResource("UserControlStyle") as Style;
-            if (style != null)
-            {
-                this.Style = style;
-            }
+            //Style style = this.TryFindResource("UserControlStyle") as Style;
+            //if (style != null)
+            //{
+            //    this.Style = style;
+            //}
 
-            ResourceDictionary = Resources;
+            //ResourceDictionary = Resources;
         }
 
         private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -326,5 +327,124 @@ namespace GlueFormsCore.Controls
             }
 
         }
+
+        public void Invoke(Action action)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+
+            this.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    if (wasInTask)
+                    {
+                        RunOnUiThreadTasked(action);
+                    }
+                    else
+                    {
+                        action();
+                    }
+                }
+                catch (Exception)
+                {
+                    if (!GlueCommands.Self.DialogCommands.IsMainWindowDisposed() && !ProjectManager.WantsToCloseProject)
+                    {
+                        throw;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+        }
+
+        public T Invoke<T>(Func<T> func)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+
+            base.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    if (wasInTask)
+                    {
+                        RunOnUiThreadTasked(func);
+                    }
+                    else
+                    {
+                        func();
+                    }
+                }
+                catch (Exception)
+                {
+                    if (!GlueCommands.Self.DialogCommands.IsMainWindowDisposed())
+                    {
+                        throw;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return default;
+        }
+
+        public Task Invoke(Func<Task> func)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+            Task toReturn = Task.CompletedTask;
+
+            var asyncResult = base.Dispatcher.BeginInvoke(() =>
+            {
+                try
+                {
+                    toReturn = wasInTask ? RunOnUiThreadTasked(func) : func();
+                }
+                catch (Exception)
+                {
+                    if (!GlueCommands.Self.DialogCommands.IsMainWindowDisposed())
+                    {
+                        throw;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return asyncResult.Task;
+        }
+
+        public Task<T> Invoke<T>(Func<Task<T>> func)
+        {
+            var wasInTask = TaskManager.Self.IsInTask();
+            Task<T> toReturn = Task.FromResult(default(T));
+
+            base.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    if (wasInTask)
+                    {
+                        toReturn = RunOnUiThreadTasked(func);
+                    }
+                    else
+                    {
+                        toReturn = func();
+                    }
+                }
+                catch (Exception)
+                {
+                    if (!GlueCommands.Self.DialogCommands.IsMainWindowDisposed())
+                    {
+                        throw;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return toReturn;
+        }
+
+        public void BeginInvoke(Action action) => Dispatcher.BeginInvoke(action);
+
+        private void RunOnUiThreadTasked(Action action) => action();
+        private T RunOnUiThreadTasked<T>(Func<T> action) => action();
+        private Task<T> RunOnUiThreadTasked<T>(Func<Task<T>> action) => action();
     }
 }

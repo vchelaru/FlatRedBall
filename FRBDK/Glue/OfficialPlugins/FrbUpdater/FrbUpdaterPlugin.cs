@@ -43,10 +43,9 @@ namespace OfficialPlugins.FrbUpdater
                 try
                 {
                     var window = new UpdateWindow(this);
-                    GlueCommands.DialogCommands.SetFormOwner(window);
                     if (window.Owner == null)
                         window.TopMost = true;
-                    window.Show();
+                    window.Show(GlueCommands.DialogCommands.Win32Window);
                 }
                 catch (Exception e)
                 {

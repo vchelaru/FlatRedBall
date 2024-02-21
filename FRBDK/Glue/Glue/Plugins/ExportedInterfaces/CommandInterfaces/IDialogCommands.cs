@@ -70,6 +70,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
+        // Not sure where this belongs, but doing this so it's not part of the main window:
+        System.Windows.Forms.PropertyGrid PropertyGrid { get; set; }
+        int ManagedThreadId { get; set; }
+        Action<string> SetTitle { get; set; }
+        Action CloseMainWindow { get; set; }
+
+        Func<bool> IsMainWindowDisposed { get; set; }
+        IWin32Window Win32Window { get; set; }
+
         void FocusTab(string dialogTitle);
 
 
@@ -78,10 +87,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             string tunneledVariableName = "", GlueElement container = null);
 
 
-        void SetFormOwner(System.Windows.Forms.Form form);
         void FocusOnTreeView();
         void MoveToCursor(System.Windows.Window window);
 
         void GoToDefinitionOfSelection();
+
+
     }
 }

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:controls="clr-namespace:FlatRedBall.Glue.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
@@ -10,9 +11,13 @@
              MouseDown="UserControl_MouseDown">
     <UserControl.Resources>
         <ResourceDictionary>
+
             <ResourceDictionary.MergedDictionaries>
+                <!--<ui:ThemeResources />-->
+                <!--<ui:XamlControlsResources />-->
                 <!--<ResourceDictionary Source="/Themes/Dark.xaml" />-->
-                <ResourceDictionary Source="/Themes/Light.xaml" />
+                <!--<ResourceDictionary Source="/Themes/Light.xaml" />-->
+                
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
