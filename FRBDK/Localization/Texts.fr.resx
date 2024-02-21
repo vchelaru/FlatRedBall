@@ -241,7 +241,7 @@
     <value>Pour ce projet uniquement</value>
   </data>
   <data name="NewContentCSV" xml:space="preserve">
-    <value>Nouveau contenu (fichier CSV)...</value>
+	  <value>Nouveau contenu (fichier CSV)...</value>
   </data>
   <data name="ViewNewFileTemplateFolder" xml:space="preserve">
     <value>Afficher le dossier du nouveau modèle de fichier</value>
@@ -2374,10 +2374,10 @@
     <value>Sélectionnez un élément pour voir un exemple de ligne de commande</value>
   </data>
   <data name="MakeRelative" xml:space="preserve">
-    <value>Rendre relatif</value>
+	  <value>Rendre relatif (..\..\program.exe)</value>
   </data>
   <data name="MakeAbsolute" xml:space="preserve">
-    <value>Rendre absolu</value>
+	  <value>Rendre absolu (c:\program.exe)</value>
   </data>
   <data name="SelectedFileAssociation" xml:space="preserve">
     <value>Sur l'association de fichiers sélectionnée, je souhaite...</value>
@@ -2828,5 +2828,29 @@
   </data>
   <data name="ObjectIsAlreadyIsContainer" xml:space="preserve">
 	  <value>L'objet {0} est déjà marqué comme IsContainer. Deux objets dans le même élément ne peuvent pas être marqués comme Iscontainer</value>
+  </data>
+  <data name="FileTypes" xml:space="preserve">
+	  <value>Types de fichier</value>
+  </data>
+  <data name="XHasObjectYReferenceZ" xml:space="preserve">
+	  <value>{0} a un objet nommé {1} qui fait référence à une entité {2}. Impossible de trouver une entité correspondante. Votre projet risque de ne pas fonctionner correctement tant que ce problème n'est pas résolu.</value>
+  </data>
+  <data name="GlueFoundMatches" xml:space="preserve">
+	  <value>Glue a trouvé des correspondances possibles pour l'objet {0} qui attend le type {1}</value>
+  </data>
+  <data name="UseX" xml:space="preserve">
+	  <value>Utilisez {0}</value>
+  </data>
+  <data name="DontDoAnything" xml:space="preserve">
+	  <value>Ne fais rien</value>
+  </data>
+  <data name="NewElementFulfill" xml:space="preserve">
+	  <value>Le nouvel élément remplira désormais la référence précédemment interrompue pour {0}</value>
+  </data>
+  <data name="XMissingReferenceUseEntity" xml:space="preserve">
+	  <value>{0} a une référence manquante. Utiliser la nouvelle entité {1} ?</value>
+  </data>
+  <data name="UpdateReference" xml:space="preserve">
+	  <value>Mettre à jour la référence ?</value>
   </data>
 </root>

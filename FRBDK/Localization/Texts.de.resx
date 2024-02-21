@@ -2374,10 +2374,10 @@
     <value>Wählen Sie ein Element aus, um eine Beispielbefehlszeile anzuzeigen</value>
   </data>
   <data name="MakeRelative" xml:space="preserve">
-    <value>Relativ machen</value>
+	  <value>Relativ machen (..\..\program.exe)</value>
   </data>
   <data name="MakeAbsolute" xml:space="preserve">
-    <value>Absolut machen</value>
+	  <value>Absolut machen (c:\program.exe)</value>
   </data>
   <data name="SelectedFileAssociation" xml:space="preserve">
     <value>Für die ausgewählte Dateizuordnung möchte ich...</value>
@@ -2828,5 +2828,29 @@
   </data>
   <data name="ObjectIsAlreadyIsContainer" xml:space="preserve">
 	  <value>Das Objekt {0} ist bereits als IsContainer markiert. Zwei Objekte im selben Element können nicht als Iscontainer markiert werden</value>
+  </data>
+  <data name="FileTypes" xml:space="preserve">
+	  <value>Datentypen</value>
+  </data>
+  <data name="XHasObjectYReferenceZ" xml:space="preserve">
+	  <value>{0} hat ein Objekt namens {1}, das auf eine Entität {2} verweist. Es konnte keine passende Entität gefunden werden. Ihr Projekt wird möglicherweise nicht ordnungsgemäß ausgeführt, bis dieses Problem behoben ist.</value>
+  </data>
+  <data name="GlueFoundMatches" xml:space="preserve">
+	  <value>Glue hat mögliche Übereinstimmungen für das Objekt {0} gefunden, das den Typ {1} erwartet.</value>
+  </data>
+  <data name="UseX" xml:space="preserve">
+	  <value>Verwenden Sie {0}</value>
+  </data>
+  <data name="DontDoAnything" xml:space="preserve">
+	  <value>Tu nichts</value>
+  </data>
+  <data name="NewElementFulfill" xml:space="preserve">
+	  <value>Das neue Element erfüllt nun die zuvor unterbrochene Referenz für {0}</value>
+  </data>
+  <data name="XMissingReferenceUseEntity" xml:space="preserve">
+	  <value>{0} hat eine fehlende Referenz. Die neue Entität {1} verwenden?</value>
+  </data>
+  <data name="UpdateReference" xml:space="preserve">
+	  <value>Referenz aktualisieren?</value>
   </data>
 </root>

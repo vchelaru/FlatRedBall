@@ -1,34 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FlatRedBall.Glue.Settings;
+﻿using FlatRedBall.Glue.Settings;
 using FlatRedBall.Glue.GuiDisplay.Facades;
-using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue
 {
 	public static class EditorData
 	{
-		static FileAssociationSettings mFileAssociationSettings = new FileAssociationSettings();
-        static PreferenceSettings mPreferenceSettings = new PreferenceSettings();
-        private static GlueLayoutSettings mGlueLayoutSettings = new GlueLayoutSettings();
+		static FileAssociationSettings mFileAssociationSettings = new();
+        static PreferenceSettings mPreferenceSettings = new();
+        private static GlueLayoutSettings mGlueLayoutSettings = new();
 
-		public static FileAssociationSettings FileAssociationSettings
-		{
-			get { return mFileAssociationSettings; }
-		}
-
-        public static PreferenceSettings PreferenceSettings
-        {
-            get { return mPreferenceSettings; }
-        }
-
-        public static GlueLayoutSettings GlueLayoutSettings
-        {
-            get { return mGlueLayoutSettings; }
-        }
+		public static FileAssociationSettings FileAssociationSettings => mFileAssociationSettings;
+        public static PreferenceSettings PreferenceSettings => mPreferenceSettings;
+        public static GlueLayoutSettings GlueLayoutSettings => mGlueLayoutSettings;
 
         public static void LoadPreferenceSettings()
         {
@@ -40,13 +23,10 @@ namespace FlatRedBall.Glue
             mGlueLayoutSettings = GlueLayoutSettings.LoadSettings();
         }
 
-
         static EditorData()
         {
             FacadeContainer.Self.ApplicationSettings = FileAssociationSettings;
             FacadeContainer.Self.GlueState = FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self;
-            //FacadeContainer.Self.ObjectFinder = ObjectFinder.Self;
-
         }
 	}
 }

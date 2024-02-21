@@ -76,7 +76,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             {
                 Settings.Add(
                     Localization.Texts.FileAssociations,
-                    () => new FileAssociationWindow().ShowDialog(MainGlueWindow.Self));
+                    () => new FileAssociationWindow().ShowDialog());
 
                 Settings.Add(
                     Localization.Texts.FileBuildTools,

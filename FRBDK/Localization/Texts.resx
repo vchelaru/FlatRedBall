@@ -2372,10 +2372,10 @@ for {1}?</value>
     <value>Select an item to see an example command line</value>
   </data>
   <data name="MakeRelative" xml:space="preserve">
-    <value>Make Relative</value>
+	  <value>Make Relative (..\..\program.exe)</value>
   </data>
   <data name="MakeAbsolute" xml:space="preserve">
-    <value>Make Absolute</value>
+	  <value>Make Absolute (c:\program.exe)</value>
   </data>
   <data name="SelectedFileAssociation" xml:space="preserve">
     <value>On the selected file association I want to...</value>
@@ -2838,5 +2838,29 @@ for {1}?</value>
   </data>
   <data name="ObjectIsAlreadyIsContainer" xml:space="preserve">
 	  <value>The object {0} is already marked as IsContainer. Two objects in the same element cannot be marked as Iscontainer</value>
+  </data>
+  <data name="FileTypes" xml:space="preserve">
+	  <value>File Types</value>
+  </data>
+  <data name="XHasObjectYReferenceZ" xml:space="preserve">
+	  <value>{0} has an object named {1} which references an Entity {2}. Could not find a matching Entity.  Your project may not run properly until this issue is resolved.</value>
+  </data>
+  <data name="GlueFoundMatches" xml:space="preserve">
+	  <value>Glue found possible matches for the object {0} which expects the type {1}</value>
+  </data>
+  <data name="UseX" xml:space="preserve">
+	  <value>Use {0}</value>
+  </data>
+  <data name="DontDoAnything" xml:space="preserve">
+	  <value>Don't do anything</value>
+  </data>
+  <data name="NewElementFulfill" xml:space="preserve">
+	  <value>The new element will now fulfill the previously-broken reference for {0}</value>
+  </data>
+  <data name="XMissingReferenceUseEntity" xml:space="preserve">
+	  <value>{0} has a missing reference.  Use the new Entity {1}?</value>
+  </data>
+  <data name="UpdateReference" xml:space="preserve">
+	  <value>Update reference?</value>
   </data>
 </root>

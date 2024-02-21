@@ -47,11 +47,14 @@ namespace FlatRedBall.Glue.Settings
 	{
 		#region Fields
 
-		Dictionary<string, string> mExtensionApplicationAssociations = new Dictionary<string, string>();
+		Dictionary<string, string> mExtensionApplicationAssociations = new();
 
 		List<string> mAvailableApplications;
 
-		#endregion
+        #endregion
+
+        [Browsable(false)]
+        public Dictionary<string, string> ExtensionApplicationAssociations => mExtensionApplicationAssociations;
 
         [Browsable(false)]
         public List<string> AvailableBuildTools
@@ -85,37 +88,34 @@ namespace FlatRedBall.Glue.Settings
 		{
 			AddDefaults();
 
-			mAvailableApplications = new List<string>();
-			mAvailableApplications.Add("<DEFAULT>");
-		}
+			mAvailableApplications = new List<string> { "<DEFAULT>" };
+        }
 
 		private void AddDefaults()
-		{
-			List<string> extensions = new List<string>();
-			extensions.Add("achx");
-            extensions.Add("bmp");
-            extensions.Add("csv");
-            extensions.Add("emix");
-            extensions.Add("mp3");
-            extensions.Add("nntx");
-            extensions.Add("ogg");
-            extensions.Add("png");
-            extensions.Add("scnx");
-			extensions.Add("shcx");
-			extensions.Add("splx");
-            extensions.Add("txt");
-            extensions.Add("wav");
-            extensions.Add("xml");
+        {
+            List<string> extensions = new List<string>
+            {
+                "achx",
+                "bmp",
+                "csv",
+                "emix",
+                "shcx",
+                "mp3",
+                "wav",
+                "splx",
+                "scnx",
+                "png",
+                "ogg",
+                "nntx",
+                "txt",
+                "xml"
+            };
 
-
-            for (int i = 0; i < extensions.Count; i++)
-			{
-				if (!mExtensionApplicationAssociations.ContainsKey(extensions[i]))
-				{
-					mExtensionApplicationAssociations.Add(extensions[i], "<DEFAULT>");
-				}
-			}
-		}
+            foreach (var t in extensions)
+            {
+                mExtensionApplicationAssociations.TryAdd(t, "<DEFAULT>");
+            }
+        }
 
 		public void LoadSettings()
 		{

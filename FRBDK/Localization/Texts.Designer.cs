@@ -1447,6 +1447,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Don&apos;t do anything.
+        /// </summary>
+        public static string DontDoAnything {
+            get {
+                return ResourceManager.GetString("DontDoAnything", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download and Overwrite?.
         /// </summary>
         public static string DownloadAndOverwrite {
@@ -2572,6 +2581,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File Types.
+        /// </summary>
+        public static string FileTypes {
+            get {
+                return ResourceManager.GetString("FileTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file already exist {0}. Overwrite?.
         /// </summary>
         public static string FileXExistsOverwrite {
@@ -3153,6 +3171,15 @@ namespace Localization {
         public static string GlueFileAssociation {
             get {
                 return ResourceManager.GetString("GlueFileAssociation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Glue found possible matches for the object {0} which expects the type {1}.
+        /// </summary>
+        public static string GlueFoundMatches {
+            get {
+                return ResourceManager.GetString("GlueFoundMatches", resourceCulture);
             }
         }
         
@@ -4724,7 +4751,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make Absolute.
+        ///   Looks up a localized string similar to Make Absolute (c:\program.exe).
         /// </summary>
         public static string MakeAbsolute {
             get {
@@ -4733,7 +4760,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make Relative.
+        ///   Looks up a localized string similar to Make Relative (..\..\program.exe).
         /// </summary>
         public static string MakeRelative {
             get {
@@ -5138,6 +5165,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The new element will now fulfill the previously-broken reference for {0}.
+        /// </summary>
+        public static string NewElementFulfill {
+            get {
+                return ResourceManager.GetString("NewElementFulfill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New Folder.
         /// </summary>
         public static string NewFolder {
@@ -5300,7 +5336,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to The object {0} is already marked as IsContainer. Two objects in the same element cannot be marked as Iscontainer.
         /// </summary>
         public static string ObjectIsAlreadyIsContainer {
             get {
@@ -7685,6 +7721,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string UpdateReference {
+            get {
+                return ResourceManager.GetString("UpdateReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update to Input.
         /// </summary>
         public static string UpdateToInput {
@@ -7717,6 +7762,15 @@ namespace Localization {
         public static string UserFor {
             get {
                 return ResourceManager.GetString("UserFor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use {0}.
+        /// </summary>
+        public static string UseX {
+            get {
+                return ResourceManager.GetString("UseX", resourceCulture);
             }
         }
         
@@ -8194,6 +8248,24 @@ namespace Localization {
         public static string XFasterOnSlope {
             get {
                 return ResourceManager.GetString("XFasterOnSlope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has an object named {1} which references an Entity {2}. Could not find a matching Entity.  Your project may not run properly until this issue is resolved..
+        /// </summary>
+        public static string XHasObjectYReferenceZ {
+            get {
+                return ResourceManager.GetString("XHasObjectYReferenceZ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has a missing reference.  Use the new Entity {1}?.
+        /// </summary>
+        public static string XMissingReferenceUseEntity {
+            get {
+                return ResourceManager.GetString("XMissingReferenceUseEntity", resourceCulture);
             }
         }
         

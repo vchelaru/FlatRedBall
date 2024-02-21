@@ -2374,10 +2374,10 @@
     <value>Selecteer een item om een voorbeeld van een opdrachtregel te zien</value>
   </data>
   <data name="MakeRelative" xml:space="preserve">
-    <value>Maak relatief</value>
+	  <value>Maak relatief (..\..\program.exe)</value>
   </data>
   <data name="MakeAbsolute" xml:space="preserve">
-    <value>Maak absoluut</value>
+	  <value>Maak absoluut (c:\program.exe)</value>
   </data>
   <data name="SelectedFileAssociation" xml:space="preserve">
     <value>Op de geselecteerde bestandskoppeling wil ik...</value>
@@ -2831,5 +2831,29 @@
   </data>
   <data name="ObjectIsAlreadyIsContainer" xml:space="preserve">
 	  <value>Het object {0} is al gemarkeerd als IsContainer. Twee objecten in hetzelfde element kunnen niet als Iscontainer worden gemarkeerd</value>
+  </data>
+  <data name="FileTypes" xml:space="preserve">
+	  <value>Bestandstypes</value>
+  </data>
+  <data name="XHasObjectYReferenceZ" xml:space="preserve">
+	  <value>{0} heeft een object met de naam {1} dat verwijst naar een entiteit {2}. Kan geen overeenkomende entiteit vinden. Uw project werkt mogelijk niet correct totdat dit probleem is opgelost.</value>
+  </data>
+  <data name="GlueFoundMatches" xml:space="preserve">
+	  <value>Glue heeft mogelijke overeenkomsten gevonden voor het object {0} dat het type {1} verwacht</value>
+  </data>
+  <data name="UseX" xml:space="preserve">
+	  <value>Gebruik {0}</value>
+  </data>
+  <data name="DontDoAnything" xml:space="preserve">
+	  <value>Doe niets</value>
+  </data>
+  <data name="NewElementFulfill" xml:space="preserve">
+	  <value>Het nieuwe element voldoet nu aan de eerder verbroken referentie voor {0}</value>
+  </data>
+  <data name="XMissingReferenceUseEntity" xml:space="preserve">
+	  <value>{0} heeft een ontbrekende referentie. De nieuwe entiteit {1} gebruiken?</value>
+  </data>
+  <data name="UpdateReference" xml:space="preserve">
+	  <value>Referentie bijwerken?</value>
   </data>
 </root>
