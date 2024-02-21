@@ -2754,4 +2754,82 @@
   <data name="FrbEditor" xml:space="preserve">
     <value>FlatRedBall-Editor</value>
   </data>
+  <data name="ObjectHasBaseButUntyped" xml:space="preserve">
+	  <value>Dit object heeft het type {0}, maar het basisobject in {1} heeft geen type. Wat zou u willen doen?</value>
+  </data>
+  <data name="FromTileClass" xml:space="preserve">
+	  <value>Van Tile class:</value>
+  </data>
+  <data name="ChangeAToBInC" xml:space="preserve">
+	  <value>Wijzig {0} naar {1} in {2}</value>
+  </data>
+  <data name="DoNothingFixManually" xml:space="preserve">
+	  <value>Niets doen (uw project zal waarschijnlijk niet compileren, dus u moet dit handmatig oplossen)</value>
+  </data>
+  <data name="ObjectOfTypeXButSubTypeY" xml:space="preserve">
+	  <value>Dit object is van het type {0}, maar het basisobject is van het type {1}</value>
+  </data>
+  <data name="NothingGameMayNotCompile" xml:space="preserve">
+	  <value>Niets - het spel wordt mogelijk niet gecompileerd totdat dit is opgelost</value>
+  </data>
+  <data name="ContainerSetTypeToX" xml:space="preserve">
+	  <value>Stel het containertype in op {0}</value>
+  </data>
+  <data name="ContainerRevertToFalse" xml:space="preserve">
+	  <value>Zet 'IsContainer' terug op false</value>
+  </data>
+  <data name="ObjectOfTypeXButContainerY" xml:space="preserve">
+	  <value>Het object is van het type {0}, maar de container is van het type {1}. Wat zou je willen doen?</value>
+  </data>
+  <data name="AddObject_ActivityCalledByBaseList" xml:space="preserve">
+	  <value>Voor items in deze lijst wordt de activiteit al aangeroepen als ze worden toegevoegd aan {0}. Dit zal ertoe leiden dat de activiteit tweemaal wordt aangeroepen, wat fouten veroorzaakt.</value>
+  </data>
+  <data name="AddObject_ActivityCalledBySameList" xml:space="preserve">
+	  <value>Voor items in deze lijst wordt de activiteit al aangeroepen door {0}.</value>
+  </data>
+  <data name="AddObject_ActivityListRecommended" xml:space="preserve">
+	  <value>Voor deze lijst wordt een activiteit aanbevolen</value>
+  </data>
+  <data name="VariableKeepNonFunctioning" xml:space="preserve">
+	  <value>Bewaar dit als een niet-functionele variabele (deze bepaalt niet langer de zichtbaarheid van het object)</value>
+  </data>
+  <data name="VariableEntityExposed" xml:space="preserve">
+	  <value>Voor deze entiteit is een variabele 'Visible' zichtbaar. Deze variabele is niet langer geldig. Wat zou u willen doen?</value>
+  </data>
+  <data name="ConflictTest" xml:space="preserve">
+	  <value>Test op conflicten</value>
+  </data>
+  <data name="TryLoadingAgain" xml:space="preserve">
+	  <value>Probeer opnieuw te laden</value>
+  </data>
+  <data name="TileClass" xml:space="preserve">
+	  <value>Tegeltype:</value>
+  </data>
+  <data name="SeeException" xml:space="preserve">
+	  <value>Exception inzien</value>
+  </data>
+  <data name="NothingGluxAbort" xml:space="preserve">
+	  <value>Niets - Glue zal het laden van het project afbreken.</value>
+  </data>
+  <data name="GluxErrorLoading" xml:space="preserve">
+	  <value>Er is een fout opgetreden bij het laden van het .glux-bestand. Wat zou u willen doen?</value>
+  </data>
+  <data name="GluxNoSubversionFound" xml:space="preserve">
+	  <value>Geen Subversion-conflicten gevonden in uw GLUX.</value>
+  </data>
+  <data name="GluxConflictsFound" xml:space="preserve">
+	  <value>Er zijn conflicten in uw GLUX-bestand. U zult een samenvoegtool of teksteditor nodig hebben om deze conflicten op te lossen.</value>
+  </data>
+  <data name="VariableRemoveDoingNothing" xml:space="preserve">
+	  <value>Niets - de variabele verdwijnt</value>
+  </data>
+  <data name="VariableAddNewOfSame" xml:space="preserve">
+	  <value>Voeg een nieuwe variabele met dezelfde naam en hetzelfde type toe als {0}</value>
+  </data>
+  <data name="VariableXNoLongerOfEntity" xml:space="preserve">
+	  <value>De variabele "{0}" maakt geen deel meer uit van de entiteit. Wat wilt udoen?</value>
+  </data>
+  <data name="ObjectIsAlreadyIsContainer" xml:space="preserve">
+	  <value>Het object {0} is al gemarkeerd als IsContainer. Twee objecten in hetzelfde element kunnen niet als Iscontainer worden gemarkeerd</value>
+  </data>
 </root>

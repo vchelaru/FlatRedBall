@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Forms;
+using Localization;
 using CheckResult = FlatRedBall.Glue.ProjectManager.CheckResult;
 
 namespace GlueFormsCore.Managers
@@ -281,17 +282,17 @@ namespace GlueFormsCore.Managers
             {
                 if (entitySave.GetCustomVariableRecursively(oldVariable.Name) == null)
                 {
-                    MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
-                    string message = "The variable\n\n" + oldVariable.ToString() + "\n\nIs no longer part of the Entity.  What do you want to do?";
+                    var mbmb = new MultiButtonMessageBoxWpf
+                    {
+                        MessageText = String.Format(Texts.VariableXNoLongerOfEntity, oldVariable)
+                    };
 
-                    mbmb.MessageText = message;
+                    mbmb.AddButton(String.Format(Texts.VariableAddNewOfSame, entitySave.Name), DialogResult.Yes);
+                    mbmb.AddButton(Texts.VariableRemoveDoingNothing, DialogResult.No);
 
-                    mbmb.AddButton("Add a new variable with the same name and type to " + entitySave.Name, DialogResult.Yes);
-                    mbmb.AddButton("Nothing - the variable will go away", DialogResult.No);
+                    var result = mbmb.ShowDialog();
 
-                    DialogResult result = mbmb.ShowDialog();
-
-                    if (result == DialogResult.Yes)
+                    if ((DialogResult)mbmb.ClickedResult == DialogResult.Yes)
                     {
                         CustomVariable newVariable = new CustomVariable();
                         newVariable.Type = oldVariable.Type;

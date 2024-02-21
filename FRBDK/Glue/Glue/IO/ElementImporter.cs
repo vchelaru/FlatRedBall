@@ -508,20 +508,20 @@ class ElementImporter
                     }
                     else
                     {
-                        MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                        var mbmb = new MultiButtonMessageBoxWpf();
                         mbmb.MessageText = "Glue found possible matches for the object " + nos.InstanceName + " which expects the type " + nos.SourceClassType;
 
                         foreach(IElement candidate in candidates)
                         {
-                            mbmb.AddButton("Use " + candidate.ToString(), DialogResult.OK, candidate);
+                            mbmb.AddButton("Use " + candidate.ToString(), DialogResult.OK);
                         }
                         mbmb.AddButton("Don't do anything", DialogResult.Cancel);
 
-                        DialogResult result = mbmb.ShowDialog();
+                        var result = mbmb.ShowDialog();
 
-                        if (result == DialogResult.OK)
+                        if (result == true)
                         {
-                            IElement referenceToSet = (IElement) mbmb.ClickedTag;
+                            IElement referenceToSet = (IElement) mbmb.ClickedResult;
 
                             nos.SourceClassType = referenceToSet.Name;
                             nos.UpdateCustomProperties();

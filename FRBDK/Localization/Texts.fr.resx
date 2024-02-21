@@ -2751,4 +2751,82 @@
   <data name="FrbEditor" xml:space="preserve">
     <value>Éditeur de FlatRedBall</value>
   </data>
+  <data name="ObjectHasBaseButUntyped" xml:space="preserve">
+	  <value>Cet objet a le type {0} mais l'objet de base dans {1} n'est pas typé. Qu'est-ce que tu aimerais faire?</value>
+  </data>
+  <data name="FromTileClass" xml:space="preserve">
+	  <value>De la classe de tuiles :</value>
+  </data>
+  <data name="ChangeAToBInC" xml:space="preserve">
+	  <value>Remplacez {0} par {1} dans {2}</value>
+  </data>
+  <data name="DoNothingFixManually" xml:space="preserve">
+	  <value>Ne faites rien (votre projet ne sera probablement pas compilé, vous devrez donc résoudre ce problème manuellement)</value>
+  </data>
+  <data name="ObjectOfTypeXButSubTypeY" xml:space="preserve">
+	  <value>Cet objet est de type {0} mais l'objet de base est de type {1}</value>
+  </data>
+  <data name="NothingGameMayNotCompile" xml:space="preserve">
+	  <value>Rien - le jeu ne peut pas être compilé tant que ce problème n'a pas été corrigé</value>
+  </data>
+  <data name="ContainerSetTypeToX" xml:space="preserve">
+	  <value>Définissez le type du conteneur sur {0}</value>
+  </data>
+  <data name="ContainerRevertToFalse" xml:space="preserve">
+	  <value>Remettre 'IsContainer' sur false</value>
+  </data>
+  <data name="ObjectOfTypeXButContainerY" xml:space="preserve">
+	  <value>L'objet est de type {0} mais le conteneur est de type {1}. Qu'est-ce que tu aimerais faire?</value>
+  </data>
+  <data name="AddObject_ActivityCalledByBaseList" xml:space="preserve">
+	  <value>Les éléments de cette liste verront déjà leur activité appelée s'ils sont ajoutés à {0}. Cela entraînera l'appel de l'activité deux fois, provoquant des erreurs.</value>
+  </data>
+  <data name="AddObject_ActivityCalledBySameList" xml:space="preserve">
+	  <value>Les éléments de cette liste verront déjà leur activité appelée par {0}.</value>
+  </data>
+  <data name="AddObject_ActivityListRecommended" xml:space="preserve">
+	  <value>Une activité est recommandée pour cette liste</value>
+  </data>
+  <data name="VariableKeepNonFunctioning" xml:space="preserve">
+	  <value>Conservez-la comme variable non fonctionnelle (elle ne contrôlera plus la visibilité de l'objet)</value>
+  </data>
+  <data name="VariableEntityExposed" xml:space="preserve">
+	  <value>Cette entité a une variable "Visible" exposée. Cette variable n'est plus valide. Qu'est-ce que tu aimerais faire?</value>
+  </data>
+  <data name="ConflictTest" xml:space="preserve">
+	  <value>Tester les conflits</value>
+  </data>
+  <data name="TryLoadingAgain" xml:space="preserve">
+	  <value>Essayez à nouveau de charger</value>
+  </data>
+  <data name="TileClass" xml:space="preserve">
+	  <value>Classe de tuile :</value>
+  </data>
+  <data name="SeeException" xml:space="preserve">
+	  <value>Voir l'exception</value>
+  </data>
+  <data name="NothingGluxAbort" xml:space="preserve">
+	  <value>Rien - Glue abandonnera le chargement du projet.</value>
+  </data>
+  <data name="GluxErrorLoading" xml:space="preserve">
+	  <value>Une erreur s'est produite lors du chargement du fichier .glux. Qu'est-ce que tu aimerais faire?</value>
+  </data>
+  <data name="GluxNoSubversionFound" xml:space="preserve">
+	  <value>Aucun conflit Subversion trouvé dans votre GLUX.</value>
+  </data>
+  <data name="GluxConflictsFound" xml:space="preserve">
+	  <value>Il y a des conflits dans votre fichier GLUX. Vous devrez utiliser un outil de fusion ou un éditeur de texte pour résoudre ces conflits.</value>
+  </data>
+  <data name="VariableRemoveDoingNothing" xml:space="preserve">
+	  <value>Rien - la variable disparaîtra</value>
+  </data>
+  <data name="VariableAddNewOfSame" xml:space="preserve">
+	  <value>Voeg une nouvelle variable avec ce nom et ce type d'orteil à {0}</value>
+  </data>
+  <data name="VariableXNoLongerOfEntity" xml:space="preserve">
+	  <value>La variable "{0}" ne fait plus partie de l'entité. Qu'est-ce que vous voulez faire?</value>
+  </data>
+  <data name="ObjectIsAlreadyIsContainer" xml:space="preserve">
+	  <value>L'objet {0} est déjà marqué comme IsContainer. Deux objets dans le même élément ne peuvent pas être marqués comme Iscontainer</value>
+  </data>
 </root>
