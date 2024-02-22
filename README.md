@@ -26,7 +26,7 @@ For instructions on how to download FlatRedBall (both prebuilt and how to build 
 
 Direct link to FlatRedBall Editor: https://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/FRBDK.zip
 
-## What kind of Features does FlatRedBall Have?
+## What kind of Features does FlatRedBall Offer?
 
 Too many to list here! If you want to see a list with images and animations, check out the Features Page: https://docs.flatredball.com/flatredball/flatredball-features
 
