@@ -1,5 +1,119 @@
 {
   "UserEvents": {
-    "vchel": []
+    "vchel": [],
+    "Owner": [
+      {
+        "NewName": "TestScreen.TextInstance2",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-22T12:53:54.2734881Z"
+      },
+      {
+        "NewName": "TestScreen.TextWrappingWithNewlines",
+        "OldName": "TestScreen.TextInstance2",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-22T13:00:55.2892962Z"
+      },
+      {
+        "NewName": "TestScreen.TextWrappingWithNewlines",
+        "OldName": "TestScreen.TextInstance2",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-22T13:00:55.2902975Z"
+      },
+      {
+        "NewName": "TestScreen.TextWrappingWithNewlines",
+        "OldName": "TestScreen.TextInstance2",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-22T13:00:55.3018377Z"
+      },
+      {
+        "NewName": "TestScreen.TextWrappingWithNewlines1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-22T13:11:18.2194504Z"
+      },
+      {
+        "NewName": "TestScreen.TextWithStyling",
+        "OldName": "TestScreen.TextWrappingWithNewlines1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-22T13:11:31.7087432Z"
+      },
+      {
+        "NewName": "TestScreen.TextWithStyling",
+        "OldName": "TestScreen.TextWrappingWithNewlines1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-22T13:11:31.7097473Z"
+      },
+      {
+        "NewName": "TestScreen.TextWithStyling",
+        "OldName": "TestScreen.TextWrappingWithNewlines1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-22T13:11:31.7097473Z"
+      },
+      {
+        "NewName": "DefaultForms/DialogBox",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 0,
+        "TimestampUtc": "2024-02-22T13:34:00.4326238Z"
+      },
+      {
+        "NewName": "DefaultForms/DialogBox (Container).TextWrappingWithNewlines",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-22T13:34:31.6064419Z"
+      },
+      {
+        "NewName": "DefaultForms/DialogBox (Container).TextInstance",
+        "OldName": "DefaultForms/DialogBox (Container).TextWrappingWithNewlines",
+        "ElementType": "Components",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-22T13:35:04.5971099Z"
+      },
+      {
+        "NewName": "TestScreen.DialogBoxInstance",
+        "OldName": "TestScreen.TextWithStyling",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-22T13:42:14.8845553Z"
+      },
+      {
+        "NewName": "TestScreen.DialogBoxInstance",
+        "OldName": "TestScreen.TextWithStyling",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-22T13:42:14.8845553Z"
+      },
+      {
+        "NewName": "TestScreen.DialogBoxInstance",
+        "OldName": "TestScreen.TextWithStyling",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-22T13:42:14.8860641Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "TestScreen.DefaultForms/DialogBox DialogBoxInstance in TestScreen",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2024-02-22T13:42:37.1235092Z"
+      },
+      {
+        "NewName": "FormsScreenGum.DialogBoxInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-22T13:43:30.8861668Z"
+      }
+    ]
   }
 }

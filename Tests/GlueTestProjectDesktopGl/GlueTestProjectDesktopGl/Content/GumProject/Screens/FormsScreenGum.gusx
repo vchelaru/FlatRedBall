@@ -107,6 +107,18 @@
     </Variable>
     <Variable>
       <Type>float</Type>
+      <Name>DialogBoxInstance.X</Name>
+      <Value xsi:type="xsd:float">12</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>DialogBoxInstance.Y</Name>
+      <Value xsi:type="xsd:float">17</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
       <Name>UserControlInstance.X</Name>
       <Value xsi:type="xsd:float">0</Value>
       <SetsValue>true</SetsValue>
@@ -175,6 +187,11 @@
   <Instance>
     <Name>CheckBoxInstance4</Name>
     <BaseType>DefaultForms/CheckBox</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>DialogBoxInstance</Name>
+    <BaseType>DefaultForms/DialogBox</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />

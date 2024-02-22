@@ -882,6 +882,7 @@
     <Compile Include="GumRuntimes\Behaviors\IButtonBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\ICheckBoxBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IComboBoxBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IDialogBoxBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IListBoxBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IListBoxItemBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IRadioButtonBehavior.Generated.cs" />
@@ -941,6 +942,10 @@
     <Compile Include="GumRuntimes\DefaultForms\ComboBoxRuntime.cs" />
     <Compile Include="GumRuntimes\DefaultForms\ComboBoxRuntime.Generated.cs">
       <DependentUpon>ComboBoxRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\DefaultForms\DialogBoxRuntime.cs" />
+    <Compile Include="GumRuntimes\DefaultForms\DialogBoxRuntime.Generated.cs">
+      <DependentUpon>DialogBoxRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\DefaultForms\ListBoxItemRuntime.cs" />
     <Compile Include="GumRuntimes\DefaultForms\ListBoxItemRuntime.Generated.cs">
@@ -1394,10 +1399,6 @@
     <Compile Include="TopDown\TopDownAiTargetLogic.Generated.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FlatRedBall.Forms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\DesktopGl\Debug\FlatRedBall.Forms.dll</HintPath>
-    </Reference>
     <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\DesktopGl\Debug\MonoGame.Framework.dll</HintPath>
@@ -1932,6 +1933,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>combobox</Name>
     </None>
+    <None Include="content\gumproject\components\defaultforms\dialogbox.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>dialogbox</Name>
+    </None>
     <None Include="content\gumproject\components\defaultforms\listbox.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>listbox</Name>
@@ -2043,6 +2048,14 @@
     <None Include="content\gumproject\components\usedtoinheritfromtextcomponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>usedtoinheritfromtextcomponent</Name>
+    </None>
+    <None Include="content\gumproject\fontcache\font14arial.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>font14arial</Name>
+    </None>
+    <None Include="content\gumproject\fontcache\font14arial_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>font14arial_0</Name>
     </None>
     <None Include="content\gumproject\fontcache\font18arial.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -2586,6 +2599,10 @@
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallDesktopGL.csproj">
       <Project>{10bda06c-7269-4cce-ae2a-d445f414520a}</Project>
       <Name>FlatRedBallDesktopGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.csproj">
+      <Project>{aa2297a1-6bb4-4165-89a6-c099f687085f}</Project>
+      <Name>FlatRedBall.Forms.DesktopGL</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.DesktopGL.csproj">
       <Project>{f0bdee46-0374-4278-b1c3-f91a76fe3a8d}</Project>

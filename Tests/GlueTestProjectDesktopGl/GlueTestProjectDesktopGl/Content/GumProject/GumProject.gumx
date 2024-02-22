@@ -147,6 +147,11 @@
     <LinkType>ReferenceOriginal</LinkType>
   </ComponentReference>
   <ComponentReference>
+    <Name>DefaultForms/DialogBox</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>DefaultForms/ListBox</Name>
     <ElementType>Component</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
@@ -334,6 +339,9 @@
   </BehaviorReference>
   <BehaviorReference>
     <Name>ComboBoxBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
+    <Name>DialogBoxBehavior</Name>
   </BehaviorReference>
   <BehaviorReference>
     <Name>ListBoxBehavior</Name>

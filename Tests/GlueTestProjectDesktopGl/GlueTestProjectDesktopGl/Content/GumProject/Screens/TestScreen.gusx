@@ -827,6 +827,42 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>int</Type>
+      <Name>TextWrappingWithNewlines.FontSize</Name>
+      <Value xsi:type="xsd:int">14</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TextWrappingWithNewlines.Height</Name>
+      <Value xsi:type="xsd:float">43</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>TextWrappingWithNewlines.Text</Name>
+      <Value xsi:type="xsd:string">Set me in code...</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TextWrappingWithNewlines.Width</Name>
+      <Value xsi:type="xsd:float">240</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TextWrappingWithNewlines.X</Name>
+      <Value xsi:type="xsd:float">390</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TextWrappingWithNewlines.Y</Name>
+      <Value xsi:type="xsd:float">643</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>TopButton.Y</Name>
       <Value xsi:type="xsd:float">42</Value>
@@ -1174,6 +1210,11 @@
   <Instance>
     <Name>NineSliceButtonInstance4</Name>
     <BaseType>NineSliceButton</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>TextWrappingWithNewlines</Name>
+    <BaseType>Text</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />

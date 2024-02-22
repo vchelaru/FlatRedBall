@@ -97,6 +97,22 @@ namespace GlueTestProject.Screens
 
             TestResolutionChangeUpdatesGumLayout();
 
+            
+
+            TestWrappingWithNewlines();
+
+        }
+
+        private void TestWrappingWithNewlines()
+        {
+            var text = this.GumScreen_.GetGraphicalUiElementByName("TextWrappingWithNewlines");
+            
+            text.SetProperty("Text", "and so that it has enough text to fill an \nentire");
+
+            var internalTextComponent = text.RenderableComponent as Text;
+
+            // todo - need to fix this:
+            //internalTextComponent.WrappedText.Count.ShouldBe(2, "because there should not be an extra gap inbetween the two lines");
         }
 
         private void TestResolutionChangeUpdatesGumLayout()

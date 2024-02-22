@@ -15,6 +15,8 @@ using GlueTestProject.Forms.Controls;
 using FlatRedBall.Forms.Controls;
 using GlueTestProject.TestFramework;
 using FlatRedBall.Forms.MVVM;
+using FlatRedBall.Screens;
+using System.Net.NetworkInformation;
 
 namespace GlueTestProject.Screens
 {
@@ -70,17 +72,31 @@ namespace GlueTestProject.Screens
             control.Visual.AddToManagers();
 
             TestRadioButtonSelected();
-
             TestListBoxSelected();
-
             TestRemovalOfBinding();
 
-		}
+            TestDialogBoxPaging();
+        }
+
+        private void TestDialogBoxPaging()
+        {
+            var dialogBox = Forms.DialogBoxInstance;
+
+            var styledString =
+                "This is [Color= Orange]some really[/ Color] long[Color = Pink] text[/ Color]. [Color= Purple]We[/ Color] want to show long text so that it line wraps[Color = Cyan]and[/ Color] so that it has[Color = Green]enough[/ Color] text to fill an[Color = Yellow]entire page[/ Color]. The DialogBox control should automatically detect if the text is too long for a single page and it should break it up into multiple pages.You can advance this dialog by clicking on it with the[Color = Blue]mouse[/ Color] or by pressing the[Color = Gold]space bar[/ Color] on the keyboard.";
+
+            dialogBox.Show(styledString);
+
+            var gumObject = dialogBox.Visual;
+            var textRenderable = gumObject.GetGraphicalUiElementByName("TextInstance").Component as RenderingLibrary.Graphics.Text;
+
+            textRenderable.WrappedText.Count.ShouldBe(6);
+
+        }
 
         private void TestRemovalOfBinding()
         {
             int timesCalled = 0;
-
             var vm = new TestViewModel();
             vm.PropertyChanged += (not, used) =>
             {

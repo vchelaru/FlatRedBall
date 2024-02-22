@@ -16,6 +16,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateInterpolation.DesktopG
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "StateInterpolationShared", "..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.shproj", "{D00D287D-385B-42FB-BF5F-04401E7D37D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.Forms.DesktopGL", "..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.csproj", "{AA2297A1-6BB4-4165-89A6-C099F687085F}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBall.Forms.Shared", "..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.shproj", "{728151F0-03E0-4253-94FE-46B9C77EDEA6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +129,30 @@ Global
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.Release|x64.Build.0 = Release|Any CPU
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.Release|x86.ActiveCfg = Release|Any CPU
 		{F0BDEE46-0374-4278-B1C3-F91A76FE3A8D}.Release|x86.Build.0 = Release|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Debug|x64.Build.0 = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Debug|x86.Build.0 = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Debug2|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Debug2|Any CPU.Build.0 = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Debug2|x64.ActiveCfg = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Debug2|x64.Build.0 = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Debug2|x86.ActiveCfg = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Debug2|x86.Build.0 = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.DebugWindows|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.DebugWindows|Any CPU.Build.0 = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.DebugWindows|x64.ActiveCfg = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.DebugWindows|x64.Build.0 = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.DebugWindows|x86.ActiveCfg = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.DebugWindows|x86.Build.0 = Debug|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Release|x64.ActiveCfg = Release|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Release|x64.Build.0 = Release|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Release|x86.ActiveCfg = Release|Any CPU
+		{AA2297A1-6BB4-4165-89A6-C099F687085F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -135,6 +163,8 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{10bda06c-7269-4cce-ae2a-d445f414520a}*SharedItemsImports = 4
+		..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{728151f0-03e0-4253-94fe-46b9c77edea6}*SharedItemsImports = 13
+		..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{aa2297a1-6bb4-4165-89a6-c099f687085f}*SharedItemsImports = 4
 		..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{d00d287d-385b-42fb-bf5f-04401e7d37d0}*SharedItemsImports = 13
 		..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{f0bdee46-0374-4278-b1c3-f91a76fe3a8d}*SharedItemsImports = 4
 		..\..\..\Gum\GumCoreShared.projitems*{f919c045-eac7-4806-9a1f-ce421f923e97}*SharedItemsImports = 13
