@@ -57,7 +57,7 @@ namespace GumPluginCore.CodeGeneration
                 
                 var rfs = GumPluginCodeGenerator.GetGumScreenRfs(element);
 
-                if (hasForms && rfs?.RuntimeType != "FlatRedBall.Gum.GumIdb")
+                if (hasForms && rfs?.RuntimeType != "FlatRedBall.Gum.GumIdb" && rfs?.RuntimeType != "Gum.Wireframe.GraphicalUiElement")
                 {
                     var rfsName = rfs.GetInstanceName();
                     var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +

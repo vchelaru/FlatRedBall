@@ -1418,12 +1418,14 @@ namespace FlatRedBall.Glue.CodeGeneration
                         rootElementForVariable = ObjectFinder.Self.GetElement(referencedNamedObject.SourceClassType);
                         rootVariable = customVariable.SourceObjectProperty;
 
-                        customVariable = rootElementForVariable.GetCustomVariable(customVariable.SourceObjectProperty);
+                        customVariable = rootElementForVariable.GetCustomVariable(customVariable.SourceObjectProperty) 
+                            // If one wasn't found, stick with this one:
+                            ?? customVariable;
                     }
                     else
                     {
                         var nosAti = referencedNamedObject?.GetAssetTypeInfo();
-                        var nosAtiVariableDefinition = nosAti.VariableDefinitions?.FirstOrDefault(item => item.Name == customVariable.SourceObjectProperty);
+                        var nosAtiVariableDefinition = nosAti?.VariableDefinitions?.FirstOrDefault(item => item.Name == customVariable.SourceObjectProperty);
 
                         if (nosAtiVariableDefinition?.CustomGenerationFunc != null)
                         {
