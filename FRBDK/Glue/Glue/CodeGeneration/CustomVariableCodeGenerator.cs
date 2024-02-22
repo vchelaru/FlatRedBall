@@ -727,6 +727,18 @@ namespace FlatRedBall.Glue.CodeGeneration
                     rightSide = "Microsoft.Xna.Framework.Color." + rightSide.Replace("\"", "");
 
                 }
+                else if(IsQualifiedGumState(customVariable?.Type))
+                {
+                    if(!string.IsNullOrEmpty(rightSide))
+                    {
+                        var type = customVariable.Type;
+                        if(type.EndsWith("?"))
+                        {
+                            type = type.Substring(0, type.Length - 1);
+                        }
+                        rightSide = type + "." + rightSide.Replace("\"", "");
+                    }
+                }
                  //This code was setting the variable to "null" but if it's explicitly "", then we should leave it as that because that's what is used
                  //for instructions. We want instructions and variables to work the same way, I think, but I'm leaving this here incase it does cause complications
                  // Update May 23, 2023 - this is important because values of types like `decimal?` can be nullable, and so they should assign null
@@ -1640,7 +1652,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // For the sake of speed, we're going to just look at the prefix and guess based on that. A full
             // implementation would do a browsing of Gum files and look for states but....that's not easy because
             // all of that code is in a plugin, and we can approximate it here:
-            return type.StartsWith($"{GlueState.Self.ProjectNamespace}.GumRuntimes");
+            return type?.StartsWith($"{GlueState.Self.ProjectNamespace}.GumRuntimes") == true;
         }
     }
 }
