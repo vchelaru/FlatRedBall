@@ -1680,7 +1680,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                         ReferencedFileSave rfsReferenced = GetReferencedFileSaveReferencedByNamedObject(nos, element, ref throwAway);
 
 
-                        bool wrappInIf = nos.SetByDerived || nos.SetByContainer;
+                        bool wrappInIf = nos.SetByDerived || nos.SetByContainer ||
+                            // This could be not instantiated here, and the order of PostInitialize may make this null
+                            nos.DefinedByBase;
                         // This may be a SetByDerived NOS, so it could be null
                         if (wrappInIf)
                         {
