@@ -2599,7 +2599,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 
                 if(namedObject.SourceType != SourceType.Entity)
                 {
-                    AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+                    ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
                 }
 
                 if (ati != null && ati.IsInstantiatedInAddToManagers)

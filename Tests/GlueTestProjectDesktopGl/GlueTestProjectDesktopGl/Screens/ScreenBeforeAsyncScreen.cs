@@ -36,7 +36,9 @@ namespace GlueTestProject.Screens
             if (AsyncLoadingState == FlatRedBall.Screens.AsyncLoadingState.NotStarted &&
                 !firstTimeCalled)
             {
-                StartAsyncLoad(typeof(ScreenToLoadAsync).FullName);
+                // FRB monogame does not support async loading:
+                //StartAsyncLoad(typeof(ScreenToLoadAsync).FullName);
+                MoveToScreen(typeof(ScreenToLoadAsync).FullName);
 
             }
             else if (AsyncLoadingState == FlatRedBall.Screens.AsyncLoadingState.Done)
