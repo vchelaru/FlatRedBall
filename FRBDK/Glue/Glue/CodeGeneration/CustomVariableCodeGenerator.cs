@@ -91,7 +91,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     shouldGenerateDueToExposed = shouldGenerateDueToExposed || forceGenerateExposed;
                     if (shouldGenerateDueToExposed)
                     {
-                        CreateNewVariableMember(codeBlock, customVariable, isExposedExistingMember, saveObject);
+                        CreateNewVariableMember(codeBlock, customVariable, isExposedExistingMember, saveObject, forceGenerateExposed);
                     }
                 }
                 #endregion
@@ -164,7 +164,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void CreateNewVariableMember(ICodeBlock codeBlock, CustomVariable customVariable, bool isExposing, GlueElement element)
+        private static void CreateNewVariableMember(ICodeBlock codeBlock, CustomVariable customVariable, bool isExposing, GlueElement element, bool forceGenerate = false)
         {
             string variableAssignment = "";
 
@@ -377,6 +377,13 @@ namespace FlatRedBall.Glue.CodeGeneration
                         //+ variableAssignment 
                         codeBlock.Line(line);
                         
+                    }
+                    else if(forceGenerate)
+                    {
+                        var line = customVariable.Scope.ToString().ToLowerInvariant() + " " +
+                            StringHelper.Modifiers(Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name) + ";";
+
+                        codeBlock.Line(line);
                     }
                 }
             }
