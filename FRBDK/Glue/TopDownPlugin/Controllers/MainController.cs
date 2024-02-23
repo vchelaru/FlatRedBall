@@ -52,7 +52,7 @@ namespace TopDownPlugin.Controllers
             if (viewModel == null)
             {
                 viewModel = new TopDownEntityViewModel();
-                viewModel.PropertyChanged += HandleViewModelPropertyChange;
+                viewModel.PropertyChanged += HandleViewModelPropertyChanged;
             }
 
             return viewModel;
@@ -76,7 +76,7 @@ namespace TopDownPlugin.Controllers
             // property. But we'll just codegen that for now.
         }
 
-        private async void HandleViewModelPropertyChange(object sender, PropertyChangedEventArgs e)
+        private async void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             /////////// early out ///////////
             if (ignoresPropertyChanges)
@@ -158,6 +158,7 @@ namespace TopDownPlugin.Controllers
                             AiTargetLogicCodeGenerator.Self.GenerateAndSave();
                             AnimationCodeGenerator.Self.GenerateAndSave();
                         }
+                        TopDownAnimationControllerGenerator.Self.GenerateAndSave();
                     }, "Generating all top-down code");
             }
 

@@ -1397,6 +1397,7 @@
     <Compile Include="TopDown\Interfaces.Generated.cs" />
     <Compile Include="TopDown\TopDownAiInput.Generated.cs" />
     <Compile Include="TopDown\TopDownAiTargetLogic.Generated.cs" />
+    <Compile Include="TopDown\TopDownAnimationControllerGenerator.Generated.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">

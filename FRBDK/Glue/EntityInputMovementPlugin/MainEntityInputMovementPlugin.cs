@@ -155,6 +155,16 @@ namespace EntityInputMovementPlugin
                 await topDownController.GenerateAndAddCsv(
                     firstTopDownEntity,
                     viewModel);
+
+                TopDownPlugin.CodeGenerators.TopDownAnimationControllerGenerator.Self.GenerateAndSave();
+
+            }
+            else
+            {
+                // Platformer removes here. Should we also remove top-down?
+
+                GlueCommands.Self.ProjectCommands.RemoveFromProjects(TopDownPlugin.CodeGenerators.TopDownAnimationControllerGenerator.Self.FileLocation);
+
             }
 
             // remove requirement for the old top-down plugin otherwise projects will get a message forever about it:
