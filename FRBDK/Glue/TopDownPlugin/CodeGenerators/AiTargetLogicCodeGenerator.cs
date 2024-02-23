@@ -28,7 +28,7 @@ namespace TopDownPluginCore.CodeGenerators
         {
             var byteArray = FileManager.GetByteArrayFromEmbeddedResource(
                 typeof(AiTargetLogicCodeGenerator).Assembly,
-                "TopDownPluginCore.Embedded.TopDownAiTargetLogic.Generated.cs");
+                "TopDownPlugin.Embedded.TopDownAiTargetLogic.Generated.cs");
 
             string toReturn = System.Text.Encoding.UTF8.GetString(byteArray);
 

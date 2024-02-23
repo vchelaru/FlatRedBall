@@ -106,7 +106,7 @@ namespace TopDownPlugin.Controllers
                     break;
                 // already handled in a dedicated method
                 case nameof(TopDownEntityViewModel.TopDownValues):
-                    RefreshAnimationValues(entity);
+                    //RefreshAnimationValues(entity);
                     break;
             }
 
@@ -156,7 +156,6 @@ namespace TopDownPlugin.Controllers
                         {
                             AiCodeGenerator.Self.GenerateAndSave();
                             AiTargetLogicCodeGenerator.Self.GenerateAndSave();
-                            AnimationCodeGenerator.Self.GenerateAndSave();
                         }
                         TopDownAnimationControllerGenerator.Self.GenerateAndSave();
                     }, "Generating all top-down code");
@@ -313,6 +312,8 @@ namespace TopDownPlugin.Controllers
 
         #region Update To / Refresh From Model
 
+        public static bool IsTopDown(EntitySave entitySave) => entitySave.Properties.GetValue<bool>(nameof(TopDownEntityViewModel.IsTopDown));
+
         public bool GetIfInheritsFromTopDown(EntitySave entitySave) =>
             ObjectFinder.Self
                 .GetAllBaseElementsRecursively(entitySave)
@@ -324,8 +325,15 @@ namespace TopDownPlugin.Controllers
 
             UpdateViewModelTo(currentEntitySave);
 
-            // must be called after refreshing the top down values
-            RefreshAnimationValues(currentEntitySave);
+
+            if(IsTopDown(currentEntitySave))
+            {
+                if (TopDownPlugin.Controllers.AnimationController.TopDownViewModel == null)
+                {
+                    TopDownPlugin.Controllers.AnimationController.TopDownViewModel = GetViewModel();
+                }
+                TopDownPlugin.Controllers.AnimationController.LoadAnimationFilesFromDisk(currentEntitySave);
+            }
 
             ignoresPropertyChanges = false;
         }
@@ -339,51 +347,6 @@ namespace TopDownPlugin.Controllers
 
 
             RefreshTopDownValues(currentEntitySave);
-        }
-
-        private void RefreshAnimationValues(EntitySave currentEntitySave)
-        {
-            ////////////////////early out/////////////////////////////
-            if(viewModel.IsTopDown == false && GetIfInheritsFromTopDown(currentEntitySave) == false)
-            {
-                return;
-            }
-            ///////////////End Early Out/////////////////////////////
-            LoadAnimationData(currentEntitySave);
-
-            AddNecessaryAnimationMovementValuesFor(currentEntitySave, viewModel.TopDownValues);
-            RemoveUnneededAnimationMovementValues(currentEntitySave, viewModel.TopDownValues);
-
-            viewModel.AnimationRows.Clear();
-
-            foreach (var animationValues in topDownAnimationData.Animations)
-            {
-                var row = new AnimationRowViewModel();
-                row.AnimationRowName = animationValues.MovementValuesName;
-                foreach (var setModel in animationValues.AnimationSets)
-                {
-                    var setViewModel = new AnimationSetViewModel();
-                    setViewModel.AnimationSetName = setModel.AnimationSetName;
-
-                    setViewModel.UpLeftAnimation = setModel.UpLeftAnimation;
-                    setViewModel.UpAnimation = setModel.UpAnimation;
-                    setViewModel.UpRightAnimation = setModel.UpRightAnimation;
-
-                    setViewModel.LeftAnimation = setModel.LeftAnimation;
-                    setViewModel.RightAnimation = setModel.RightAnimation;
-
-                    setViewModel.DownLeftAnimation = setModel.DownLeftAnimation;
-                    setViewModel.DownAnimation = setModel.DownAnimation;
-                    setViewModel.DownRightAnimation = setModel.DownRightAnimation;
-
-                    setViewModel.PropertyChanged += HandleSetViewModelPropertyChanged;
-
-                    setViewModel.BackingData = setModel;
-
-                    row.Animations.Add(setViewModel);
-                }
-                viewModel.AnimationRows.Add(row);
-            }
         }
 
         private void RemoveUnneededAnimationMovementValues(EntitySave currentEntitySave,

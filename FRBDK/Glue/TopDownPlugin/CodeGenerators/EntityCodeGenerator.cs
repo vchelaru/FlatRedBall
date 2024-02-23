@@ -128,9 +128,6 @@ namespace TopDownPlugin.CodeGenerators
             codeBlock.Line("/// </summary>");
             codeBlock.AutoProperty("public bool", "InputEnabled");
 
-            codeBlock.Line("TopDown.DirectionBasedAnimationLayer mTopDownAnimationLayer;");
-
-
             codeBlock.Line("#endregion");
         }
 
@@ -249,9 +246,6 @@ namespace TopDownPlugin.CodeGenerators
                 ifBlock.Line("mCurrentMovement = TopDownValues.Values.FirstOrDefault();");
             }
             codeBlock.Line("PossibleDirections = PossibleDirections.FourWay;");
-
-            codeBlock.Line("mTopDownAnimationLayer = new TopDown.DirectionBasedAnimationLayer();");
-            codeBlock.Line("mTopDownAnimationLayer.TopDownEntity = this;");
 
             return codeBlock;
         }

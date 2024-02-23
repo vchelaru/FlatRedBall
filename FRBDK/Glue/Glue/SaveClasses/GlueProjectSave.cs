@@ -138,15 +138,18 @@ namespace FlatRedBall.Glue.SaveClasses
             DamageDealingToggles = 52,
 
             VariantsInsteadOfTypes = 53,
-
+            
+            // February 23, 2023
+            ITopDownEntity = 54,
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
+            // and LatestVersion down below
         }
 
         #endregion
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.VariantsInsteadOfTypes;
+        public const int LatestVersion = (int)GluxVersions.ITopDownEntity;
 
         public int FileVersion { get; set; }
 

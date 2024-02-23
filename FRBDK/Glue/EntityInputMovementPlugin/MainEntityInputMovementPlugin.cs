@@ -43,6 +43,7 @@ namespace EntityInputMovementPlugin
             base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new PlatformerPluginCore.CodeGenerators.EntityPlatformerAnimationCodeGenerator());
+            base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityTopDownAnimationCodeGenerator());
             base.RegisterCodeGenerator(new CodeGenerators.EntityCodeGenerator());
             AssignEvents();
         }
@@ -142,13 +143,15 @@ namespace EntityInputMovementPlugin
                 TopDownPlugin.CodeGenerators.InterfacesFileGenerator.Self.GenerateAndSave();
                 TopDownPlugin.CodeGenerators.AiCodeGenerator.Self.GenerateAndSave();
                 TopDownPluginCore.CodeGenerators.AiTargetLogicCodeGenerator.Self.GenerateAndSave();
-                TopDownPlugin.CodeGenerators.AnimationCodeGenerator.Self.GenerateAndSave();
 
                 var topDownController = TopDownPlugin.Controllers.MainController.Self;
 
                 // This guarantees a instance exists in the controller and returns it...
                 var viewModel =
                     TopDownPlugin.Controllers.MainController.Self.GetViewModel();
+
+
+
                 // ...updating to the argument entity will update the view model that was returned in the last call.
                 TopDownPlugin.Controllers.MainController.Self.UpdateTo(firstTopDownEntity);
                 
@@ -217,6 +220,7 @@ namespace EntityInputMovementPlugin
             var topDownViewModel = TopDownPlugin.Controllers.MainController.Self.GetViewModel();
             mainViewModel.TopDownViewModel = topDownViewModel;
             mainView.TopDownView.DataContext = topDownViewModel;
+            TopDownPlugin.Controllers.AnimationController.TopDownViewModel = topDownViewModel;
             #endregion
 
             #region Platformer

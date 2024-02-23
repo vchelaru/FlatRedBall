@@ -35,9 +35,12 @@ namespace TopDownPlugin.CodeGenerators
 
         protected override string GenerateFileContents()
         {
+            var nameInAssembly =
+                "TopDownPlugin.Embedded.TopDownAiInput.Generated.cs";
+
             var byteArray = FileManager.GetByteArrayFromEmbeddedResource(
                 typeof(AiCodeGenerator).Assembly,
-                "TopDownPluginCore.Embedded.TopDownAiInput.Generated.cs");
+                nameInAssembly);
 
             string toReturn = System.Text.Encoding.UTF8.GetString(byteArray);
 

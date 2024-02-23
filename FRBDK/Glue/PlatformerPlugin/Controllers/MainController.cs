@@ -317,12 +317,6 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             ignoresPropertyChanges = true;
 
             UpdateViewModelTo(currentEntitySave, viewModel);
-            
-            // now that they've all been set, += their property change
-            foreach (var platformerValuesViewModel in viewModel.PlatformerValues)
-            {
-                platformerValuesViewModel.PropertyChanged += HandlePlatformerValuesChanged;
-            }
 
             // must be called after refreshing the platformer values...at least that's what the top down controller suggests, so I'm following that here.
             if(IsPlatformer(currentEntitySave))
@@ -422,19 +416,6 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
         }
 
-        private void HandlePlatformerValuesChanged(object sender, PropertyChangedEventArgs e)
-        {
-
-        }
-
-
-
-        static bool GetIfIsPlatformer(IElement element)
-        {
-            return element.Properties
-                .GetValue<bool>(nameof(PlatformerEntityViewModel.IsPlatformer));
-        }
-
         static bool GetIfInheritsFromPlatformer(IElement element)
         {
             if (string.IsNullOrEmpty(element.BaseElement))
@@ -442,9 +423,11 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                 return false;
             }
 
-            var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(element as GlueElement);
+            var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(element as GlueElement)
+                .Where(item => item is EntitySave)
+                .Select(item => item as EntitySave);
 
-            return allBase.Any(GetIfIsPlatformer);
+            return allBase.Any(IsPlatformer);
         }
     }
 }

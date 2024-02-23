@@ -1,43 +1,41 @@
-﻿using FlatRedBall.Content.AnimationChain;
-using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.GuiDisplay;
-using FlatRedBall.Glue.Managers;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.IO;
-using FlatRedBall.PlatformerPlugin.ViewModels;
-using Newtonsoft.Json;
-using PlatformerPluginCore.SaveClasses;
-using PlatformerPluginCore.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using WpfDataUi;
-using WpfDataUi.Controls;
+using TopDownPlugin.ViewModels;
 using WpfDataUi.DataTypes;
+using WpfDataUi;
+using FlatRedBall.Glue.SaveClasses;
+using Newtonsoft.Json;
+using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.GuiDisplay;
+using FlatRedBall.IO;
+using System.ComponentModel;
+using WpfDataUi.Controls;
+using System.Windows;
+using TopDownPlugin.Models;
 
-namespace PlatformerPluginCore.Controllers;
+namespace TopDownPlugin.Controllers;
 
 public static class AnimationController
 {
     #region Fields/properties
 
-    static PlatformerEntityViewModel platformerViewModel;
-    public static PlatformerEntityViewModel PlatformerViewModel
+    static TopDownEntityViewModel topDownViewModel;
+    public static TopDownEntityViewModel TopDownViewModel
     {
-        get => platformerViewModel;
+        get { return topDownViewModel; }
         set
         {
-            if (value != platformerViewModel)
+            if(value != topDownViewModel)
             {
-                platformerViewModel = value;
-                if(platformerViewModel != null)
+                topDownViewModel = value;
+                if(topDownViewModel != null)
                 {
-                    platformerViewModel.PropertyChanged += HandlePlatformerViewModelPropertyChanged;
+                    topDownViewModel.PropertyChanged += HandleTopDownViewModelPropertyChanged;
                 }
             }
         }
@@ -71,6 +69,7 @@ public static class AnimationController
         }
     }
 
+
     private static void InitializeInstanceMembers(DataUiGrid dataUiGrid, AnimationRowViewModel viewModel, TypeMemberDisplayProperties properties)
     {
         dataUiGrid.Categories.First(item => item.Name == "Uncategorized").Width = 250;
@@ -81,26 +80,21 @@ public static class AnimationController
             instanceMember.PropertiesToSetOnDisplayer[(nameof(MultiLineTextBoxDisplay.IsAboveBelowLayout))] = true;
         }
 
-        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinXVelocityAbsolute), Localization.Texts.Velocity);
-        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxXVelocityAbsolute), Localization.Texts.Velocity);
+        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinVelocityAbsolute), Localization.Texts.Velocity);
+        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxVelocityAbsolute), Localization.Texts.Velocity);
 
-        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinYVelocity), Localization.Texts.Velocity);
-        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxYVelocity), Localization.Texts.Velocity);
-
-        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinHorizontalInputAbsolute), "Input");
-        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxHorizontalInputAbsolute), "Input");
+        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinMovementInputAbsolute), "Input");
+        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxMovementInputAbsolute), "Input");
 
         var velocityFirstGridLength = new GridLength(150);
-        dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MinXVelocityAbsolute)).FirstGridLength = velocityFirstGridLength;
-        dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MaxXVelocityAbsolute)).FirstGridLength = velocityFirstGridLength;
-        dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MinYVelocity)).FirstGridLength = velocityFirstGridLength;
-        dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MaxYVelocity)).FirstGridLength = velocityFirstGridLength;
+        dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MinVelocityAbsolute)).FirstGridLength = velocityFirstGridLength;
+        dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MaxVelocityAbsolute)).FirstGridLength = velocityFirstGridLength;
 
-        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.AnimationSpeedAssignment),Localization.Texts.AnimationSpeed);
+        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.AnimationSpeedAssignment), Localization.Texts.AnimationSpeed);
 
         {
             var prop = new InstanceMemberDisplayProperties();
-            prop.Name = nameof(AnimationRowViewModel.AbsoluteXVelocityAnimationSpeedMultiplier);
+            prop.Name = nameof(AnimationRowViewModel.AbsoluteVelocityAnimationSpeedMultiplier);
             prop.Category = Localization.Texts.AnimationSpeed;
             prop.IsHiddenDelegate = (member) => viewModel.AnimationSpeedAssignment != AnimationSpeedAssignment.BasedOnVelocityMultiplier;
             properties.DisplayProperties.Add(prop);
@@ -108,21 +102,7 @@ public static class AnimationController
 
         {
             var prop = new InstanceMemberDisplayProperties();
-            prop.Name = nameof(AnimationRowViewModel.AbsoluteYVelocityAnimationSpeedMultiplier);
-            prop.Category = Localization.Texts.AnimationSpeed;
-            prop.IsHiddenDelegate = (member) => viewModel.AnimationSpeedAssignment != AnimationSpeedAssignment.BasedOnVelocityMultiplier;
-            properties.DisplayProperties.Add(prop);
-        }
-        {
-            var prop = new InstanceMemberDisplayProperties();
-            prop.Name = nameof(AnimationRowViewModel.MaxSpeedXRatioMultiplier);
-            prop.Category = Localization.Texts.AnimationSpeed;
-            prop.IsHiddenDelegate = (member) => viewModel.AnimationSpeedAssignment != AnimationSpeedAssignment.BasedOnMaxSpeedRatioMultiplier;
-            properties.DisplayProperties.Add(prop);
-        }
-        {
-            var prop = new InstanceMemberDisplayProperties();
-            prop.Name = nameof(AnimationRowViewModel.MaxSpeedYRatioMultiplier);
+            prop.Name = nameof(AnimationRowViewModel.MaxSpeedRatioMultiplier);
             prop.Category = Localization.Texts.AnimationSpeed;
             prop.IsHiddenDelegate = (member) => viewModel.AnimationSpeedAssignment != AnimationSpeedAssignment.BasedOnMaxSpeedRatioMultiplier;
             properties.DisplayProperties.Add(prop);
@@ -130,13 +110,7 @@ public static class AnimationController
 
         dataUiGrid.Apply(properties);
 
-        dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.OnGroundRequirement), Localization.Texts.MovementType);
-        var member = dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.OnGroundRequirement));
-        member.PropertiesToSetOnDisplayer[nameof(NullableBoolDisplay.TrueText)] = "Ground Only";
-        member.PropertiesToSetOnDisplayer[nameof(NullableBoolDisplay.FalseText)] = "Air Only";
-        member.PropertiesToSetOnDisplayer[nameof(NullableBoolDisplay.NullText)] = "Either";
-
-        foreach(var category in dataUiGrid.Categories)
+        foreach (var category in dataUiGrid.Categories)
         {
             category.CategoryBorderThickness = 0;
             category.Members.RemoveAll(item => item.PropertyType == typeof(System.Windows.Input.ICommand));
@@ -147,12 +121,13 @@ public static class AnimationController
         dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.CustomCondition), Localization.Texts.MovementType);
     }
 
+
     public static void LoadAnimationFilesFromDisk(GlueElement currentElement)
     {
-        var location = PlatformerAnimationsFileLocationFor(currentElement);
+        var location = TopDownAnimationsFileLocationFor(currentElement);
 
 
-        AllPlatformerAnimationValues allAnimationValues = null;
+        AllTopDownAnimationValues allAnimationValues = null;
 
         if (location.Exists())
         {
@@ -161,7 +136,7 @@ public static class AnimationController
             {
                 var text = System.IO.File.ReadAllText(location.FullPath);
 
-                allAnimationValues = JsonConvert.DeserializeObject<AllPlatformerAnimationValues>(text);
+                allAnimationValues = JsonConvert.DeserializeObject<AllTopDownAnimationValues>(text);
             }
             catch
             {
@@ -169,21 +144,21 @@ public static class AnimationController
             }
         }
 
-        if(allAnimationValues == null)
+        if (allAnimationValues == null)
         {
-            allAnimationValues = new AllPlatformerAnimationValues();
+            allAnimationValues = new AllTopDownAnimationValues();
         }
 
         IsLoadingFromDisk = true;
 
-        platformerViewModel.AnimationRows.Clear();
-        foreach(var item in allAnimationValues.Values)
+        topDownViewModel.AnimationRows.Clear();
+        foreach (var item in allAnimationValues.Values)
         {
             var rowVm = new AnimationRowViewModel();
-            platformerViewModel.AssignAnimationRowEvents(rowVm);
+            topDownViewModel.AssignAnimationRowEvents(rowVm);
 
             rowVm.SetFrom(item);
-            platformerViewModel.AnimationRows.Add(rowVm);
+            topDownViewModel.AnimationRows.Add(rowVm);
         }
 
         IsLoadingFromDisk = false;
@@ -196,28 +171,28 @@ public static class AnimationController
 
         ////////////////////Early Outs///////////////
         var entity = GlueState.Self.CurrentEntitySave;
-        if(entity == null)
+        if (entity == null)
         {
             return;
         }
         var nosSprite = entity.AllNamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite);
-        if(nosSprite == null)
+        if (nosSprite == null)
         {
             return;
         }
 
         var achxName = ObjectFinder.Self.GetValueRecursively(nosSprite, entity, nameof(FlatRedBall.Sprite.AnimationChains)) as string;
-        if(string.IsNullOrEmpty(achxName))
+        if (string.IsNullOrEmpty(achxName))
         {
             return;
         }
         var rfs = entity.GetReferencedFileSaveByInstanceNameRecursively(achxName);
-        if(rfs == null)
+        if (rfs == null)
         {
             return;
         }
         FilePath absoluteFile = GlueCommands.Self.GetAbsoluteFilePath(rfs);
-        if(!absoluteFile.Exists())
+        if (!absoluteFile.Exists())
         {
             return;
         }
@@ -230,36 +205,60 @@ public static class AnimationController
         {
             // do nothing?
         }
-        if(acls == null)
+        if (acls == null)
         {
             return;
         }
         /////////////////End Early Outs////////////////
 
-        bool onlyIncludeWithAppendedLeftRight = viewModel.HasLeftAndRight;
+        bool onlyIncludeWithAppendedDirection = viewModel.IsDirectionFacingAppended;
 
-        if(onlyIncludeWithAppendedLeftRight)
+        if (onlyIncludeWithAppendedDirection)
         {
             var names = new HashSet<string>();
-            foreach (var animation in acls.AnimationChains.OrderBy(item => item.Name)) 
+            foreach (var animation in acls.AnimationChains.OrderBy(item => item.Name))
             {
-                if(animation.Name.ToLowerInvariant().EndsWith("left"))
+                if (animation.Name.ToLowerInvariant().EndsWith("left"))
                 {
                     names.Add(animation.Name.Substring(0, animation.Name.Length - "left".Length));
                 }
-                else if(animation.Name.ToLowerInvariant().EndsWith("right"))
+                else if (animation.Name.ToLowerInvariant().EndsWith("right"))
                 {
                     names.Add(animation.Name.Substring(0, animation.Name.Length - "right".Length));
                 }
+                else if (animation.Name.ToLowerInvariant().EndsWith("up"))
+                {
+                    names.Add(animation.Name.Substring(0, animation.Name.Length - "up".Length));
+                }
+                else if (animation.Name.ToLowerInvariant().EndsWith("down"))
+                {
+                    names.Add(animation.Name.Substring(0, animation.Name.Length - "down".Length));
+                }
+                else if (animation.Name.ToLowerInvariant().EndsWith("upright"))
+                {
+                    names.Add(animation.Name.Substring(0, animation.Name.Length - "upright".Length));
+                }
+                else if (animation.Name.ToLowerInvariant().EndsWith("upleft"))
+                {
+                    names.Add(animation.Name.Substring(0, animation.Name.Length - "upleft".Length));
+                }
+                else if (animation.Name.ToLowerInvariant().EndsWith("downright"))
+                {
+                    names.Add(animation.Name.Substring(0, animation.Name.Length - "downright".Length));
+                }
+                else if (animation.Name.ToLowerInvariant().EndsWith("downleft"))
+                {
+                    names.Add(animation.Name.Substring(0, animation.Name.Length - "downleft".Length));
+                }
             }
-            foreach(var name in names)
+            foreach (var name in names)
             {
                 member.CustomOptions.Add(name);
             }
         }
         else
         {
-            foreach(var animation in acls.AnimationChains)
+            foreach (var animation in acls.AnimationChains)
             {
                 member.CustomOptions.Add(animation.Name);
             }
@@ -269,7 +268,7 @@ public static class AnimationController
     private static void RefreshMovementValueNames(DataUiGrid dataUiGrid)
     {
         var entity = GlueState.Self.CurrentEntitySave;
-        List<string> options = GetOptionsForEntityRecursively(entity, listToAddTo:null, includeNull:true);
+        List<string> options = GetOptionsForEntityRecursively(entity, listToAddTo: null, includeNull: true);
 
         if (options != null)
         {
@@ -282,21 +281,21 @@ public static class AnimationController
 
     private static List<string> GetOptionsForEntityRecursively(EntitySave entity, List<string> listToAddTo, bool includeNull)
     {
-        ReferencedFileSave platformerValuesRfs = null;
+        ReferencedFileSave topDownValuesRfs = null;
         FilePath csvFilePath = null;
         List<string> options = null;
 
-        platformerValuesRfs = entity?.GetAllReferencedFileSavesRecursively().FirstOrDefault(item =>
-            item.Name.EndsWith("PlatformerValuesStatic.csv") ||
+        topDownValuesRfs = entity?.GetAllReferencedFileSavesRecursively().FirstOrDefault(item =>
+            item.Name.EndsWith("TopDownValuesStatic.csv") ||
             // old name:
-            item.Name.EndsWith("PlatformerValues.csv"));
-        if (platformerValuesRfs != null)
+            item.Name.EndsWith("TopDownValues.csv"));
+        if (topDownValuesRfs != null)
         {
-            csvFilePath = GlueCommands.Self.GetAbsoluteFilePath(platformerValuesRfs);
+            csvFilePath = GlueCommands.Self.GetAbsoluteFilePath(topDownValuesRfs);
         }
         if (csvFilePath?.Exists() == true)
         {
-            if(listToAddTo == null)
+            if (listToAddTo == null)
             {
                 options = AvailableSpreadsheetValueTypeConverter.GetAvailableValues(csvFilePath, false, includeNull);
             }
@@ -309,28 +308,29 @@ public static class AnimationController
 
         var baseEntity = ObjectFinder.Self.GetBaseElement(entity) as EntitySave;
 
-        if(baseEntity != null)
+        if (baseEntity != null)
         {
-            GetOptionsForEntityRecursively(baseEntity, options, includeNull:false);
+            GetOptionsForEntityRecursively(baseEntity, options, includeNull: false);
         }
 
         return options;
     }
 
+
     #endregion
 
     #region Handle Changes
 
-    private static void HandlePlatformerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+    private static void HandleTopDownViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        
-        switch(e.PropertyName)
+
+        switch (e.PropertyName)
         {
-            case (nameof(PlatformerEntityViewModel.AnimationRows)):
-                if(!IsLoadingFromDisk)
+            case (nameof(TopDownEntityViewModel.AnimationRows)):
+                if (!IsLoadingFromDisk)
                 {
                     SaveOrDeleteViewModelFileFor(GlueState.Self.CurrentElement);
-                    if(GlueState.Self.CurrentElement != null)
+                    if (GlueState.Self.CurrentElement != null)
                     {
                         GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                     }
@@ -343,7 +343,7 @@ public static class AnimationController
     {
         switch (propertyName)
         {
-            case nameof(AnimationRowViewModel.HasLeftAndRight):
+            case nameof(AnimationRowViewModel.IsDirectionFacingAppended):
                 RefreshAnimationNames(dataUiGrid, viewModel);
                 dataUiGrid.Refresh();
 
@@ -363,21 +363,21 @@ public static class AnimationController
 
     #endregion
 
-    public static FilePath PlatformerAnimationsFileLocationFor(GlueElement element) =>
-            GlueCommands.Self.GetAbsoluteFilePath(element).RemoveExtension() + ".PlatformerAnimations.json";
+    public static FilePath TopDownAnimationsFileLocationFor(GlueElement element) =>
+        GlueCommands.Self.GetAbsoluteFilePath(element).RemoveExtension() + ".TopDownAnimations.json";
 
 
     private static void SaveOrDeleteViewModelFileFor(GlueElement currentElement)
     {
-        var whereToSave = PlatformerAnimationsFileLocationFor(currentElement);
+        var whereToSave = TopDownAnimationsFileLocationFor(currentElement);
 
-        if(PlatformerViewModel.AnimationRows.Count > 0)
+        if (TopDownViewModel.AnimationRows.Count > 0)
         {
-            var model = new AllPlatformerAnimationValues();
+            var model = new AllTopDownAnimationValues();
 
-            foreach(var animationVm in PlatformerViewModel.AnimationRows)
+            foreach (var animationVm in TopDownViewModel.AnimationRows)
             {
-                var individualModel = new IndividualPlatformerAnimationValues();
+                var individualModel = new IndividualTopDownAnimationValues();
                 animationVm.ApplyTo(individualModel);
                 model.Values.Add(individualModel);
             }
@@ -390,7 +390,7 @@ public static class AnimationController
             {
                 GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(whereToSave.FullPath, whatToSave));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 GlueCommands.Self.PrintError(e.ToString());
             }
@@ -398,17 +398,18 @@ public static class AnimationController
         else
         {
             // delete the file if it exists
-            if(whereToSave.Exists())
+            if (whereToSave.Exists())
             {
                 try
                 {
                     GlueCommands.Self.TryMultipleTimes(() => System.IO.File.Delete(whereToSave.FullPath));
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     GlueCommands.Self.PrintError(e.ToString());
                 }
             }
         }
     }
+
 }
