@@ -104,6 +104,8 @@ namespace GlueTestProject.Screens
 
             textRenderable.WrappedText.Count.ShouldBe(5);
 
+            var areAnyBlank = textRenderable.WrappedText.Any(item => string.IsNullOrEmpty(item));
+            areAnyBlank.ShouldNotBe(true, "because paging should not result in any blank lines");
         }
 
         private void TestRemovalOfBinding()
