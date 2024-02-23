@@ -141,9 +141,8 @@ namespace FlatRedBall.Forms.Controls.Games
         /// <param name="frbLayer">The FlatRedBall Layer to add the DialogBox to. If null, the dialog box will not be layered. This will attempt to use a Gum layer matching the FRB layer. This will automatically work if the Layer has been added through the FlatRedBall Editor.</param>
         public void Show(string text, FlatRedBall.Graphics.Layer frbLayer = null)
         {
-            base.Show(frbLayer);
-            showNextPageOnDismissedPage = true;
-            ShowInternal(text, forceImmediatePrint:false);
+            var pages = ConvertToPages(text);
+            Show(pages, frbLayer);
         }
 
         public void Show(IEnumerable<string> pages, FlatRedBall.Graphics.Layer frbLayer = null)
@@ -206,7 +205,7 @@ namespace FlatRedBall.Forms.Controls.Games
         // have ShowDialog? Is it
         // to match the ShowDialog 
         // from the base FrameworkElement?
-        // If so, what's the poinnt because
+        // If so, what's the point because
         // this doesn't override the base parameters.
         // It requires pages. 
         [Obsolete("Use ShowAsync")]
@@ -404,13 +403,15 @@ namespace FlatRedBall.Forms.Controls.Games
                 var withRemovedTags = BbCodeParser.RemoveTags(text, foundTagsWithNewlines);
 
                 var unlimitedLines = new List<string>();
-                var oldVerticalMode = this.coreTextObject.TextOverflowVerticalMode;
-                this.coreTextObject.TextOverflowVerticalMode = RenderingLibrary.Graphics.TextOverflowVerticalMode.SpillOver;
+                var oldVerticalMode = this.textComponent.TextOverflowVerticalMode;
+                this.textComponent.TextOverflowVerticalMode = RenderingLibrary.Graphics.TextOverflowVerticalMode.SpillOver;
                 coreTextObject.RawText = withRemovedTags;
                 coreTextObject.UpdateLines(unlimitedLines);
 
-                this.coreTextObject.TextOverflowVerticalMode = oldVerticalMode;
+                this.textComponent.TextOverflowVerticalMode = RenderingLibrary.Graphics.TextOverflowVerticalMode.TruncateLine;
+
                 this.textComponent.SetProperty("Text", withRemovedTags);
+                this.textComponent.TextOverflowVerticalMode = oldVerticalMode;
 
                 var limitedLines = coreTextObject.WrappedText;
 
