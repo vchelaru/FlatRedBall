@@ -443,8 +443,13 @@ namespace FlatRedBall.Forms.Controls.Games
                             {
                                 toAppend = BbCodeParser.AddTags(toAppend, foundTagsWithoutNewlines, strippedTextCount);
                             }
+
                             strippedTextCount += sizeBeforeTags;
-                            stringBuilder.Append(toAppend);
+                            if(toAppend?.EndsWith(" ") == true)
+                            {
+                                toAppend = toAppend.Substring(0, toAppend.Length - 1);
+                            }
+                            stringBuilder.Append(toAppend + "\n");
                             absoluteLineNumber++;
                         }
                         pages.Add(stringBuilder.ToString());
@@ -532,6 +537,7 @@ namespace FlatRedBall.Forms.Controls.Games
             LastTimeDismissed = TimeManager.CurrentTime;
             PageAdvanced?.Invoke(this, null);
             FinishedShowing?.Invoke(this, null);
+            this.Pages.Clear();
             IsFocused = false;
         }
 
