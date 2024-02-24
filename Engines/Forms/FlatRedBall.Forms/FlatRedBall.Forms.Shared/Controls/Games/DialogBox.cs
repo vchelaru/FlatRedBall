@@ -444,7 +444,7 @@ namespace FlatRedBall.Forms.Controls.Games
                                 toAppend = BbCodeParser.AddTags(toAppend, foundTagsWithoutNewlines, strippedTextCount);
                             }
                             strippedTextCount += sizeBeforeTags;
-                            stringBuilder.Append(toAppend + "\n");
+                            stringBuilder.Append(toAppend);
                             absoluteLineNumber++;
                         }
                         pages.Add(stringBuilder.ToString());
