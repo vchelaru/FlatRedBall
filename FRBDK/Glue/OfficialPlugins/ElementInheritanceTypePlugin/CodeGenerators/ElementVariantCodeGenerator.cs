@@ -15,7 +15,7 @@ using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 {
-    internal class ElementInheritanceTypeCodeGenerator : ElementComponentCodeGenerator
+    internal class ElementVariantCodeGenerator : ElementComponentCodeGenerator
     {
         public override void GenerateAdditionalClasses(ICodeBlock codeBlock, IElement element)
         {
@@ -194,6 +194,9 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
                 {
                     // We want this to not be a property, and to not have any source class type so that it generates
                     // as a simple field
+                    // In other words, we intentionally do NOT copy over the source object and source object property:
+                    //tempVariable.SourceObject = variable.SourceObject;
+                    //tempVariable.SourceObjectProperty = variable.SourceObjectProperty;
                     tempVariable.Name = variable.Name;
 
                     if(IsTypeFileType(variable.Type))
@@ -202,7 +205,16 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
                     }
                     else
                     {
-                        tempVariable.Type = CustomVariableCodeGenerator.GetMemberTypeFor(variable, element);
+                        // But since we aren't copying over the objects, we may need to explicitly
+                        // set the type if it does have a source object and source object property
+                        if(!string.IsNullOrEmpty(variable.SourceObject) && !string.IsNullOrEmpty(variable.SourceObjectProperty))
+                        {
+                            tempVariable.Type = CustomVariableCodeGenerator.GetMemberTypeFor(variable, element);
+                        }
+                        else
+                        {
+                            tempVariable.Type = variable.Type;
+                        }
                     }
                     tempVariable.DefaultValue = variable.DefaultValue;
                     tempVariable.OverridingPropertyType = variable.OverridingPropertyType;
