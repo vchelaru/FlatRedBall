@@ -13,6 +13,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.FormHelpers;
 using System.Threading.Tasks;
 using PlatformerPluginCore.Views;
+using FlatRedBall.IO;
 
 namespace EntityInputMovementPlugin
 {
@@ -165,10 +166,14 @@ namespace EntityInputMovementPlugin
             else
             {
                 // Platformer removes here. Should we also remove top-down?
-
                 GlueCommands.Self.ProjectCommands.RemoveFromProjects(TopDownPlugin.CodeGenerators.TopDownAnimationControllerGenerator.Self.FileLocation);
-
             }
+
+            // Remove old files no longer needed:
+            var projectLocation = GlueState.Self.CurrentGlueProjectDirectory;
+            GlueCommands.Self.ProjectCommands.RemoveFromProjects(new FilePath( projectLocation + "TopDown\\AnimationSet.Generated.cs"));
+            GlueCommands.Self.ProjectCommands.RemoveFromProjects(new FilePath( projectLocation + "TopDown\\DirectionBasedAnimationLayer.Generated.cs"));
+
 
             // remove requirement for the old top-down plugin otherwise projects will get a message forever about it:
             var didChangeGlux = GlueCommands.Self.GluxCommands.SetPluginRequirement(

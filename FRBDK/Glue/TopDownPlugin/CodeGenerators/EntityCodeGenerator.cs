@@ -76,8 +76,6 @@ namespace TopDownPlugin.CodeGenerators
             // Made a Vector3 to make assignment and usage easier.
             codeBlock.Line("public Microsoft.Xna.Framework.Vector3 GroundVelocity;");
 
-            WriteAnimationFields(element, codeBlock);
-
             codeBlock.Line("DataTypes.TopDownValues mCurrentMovement;");
             codeBlock.Line("public float TopDownSpeedMultiplier { get; set; } = 1;");
 
@@ -131,100 +129,6 @@ namespace TopDownPlugin.CodeGenerators
             codeBlock.Line("#endregion");
         }
 
-        private static void WriteAnimationFields(IElement element, ICodeBlock codeBlock)
-        {
-            string ToQuotedSetName(string setValue)
-            {
-                if(setValue == null)
-                {
-                    return "null";
-                }
-                else
-                {
-                    return $"\"{setValue}\"";
-                }
-            }
-
-            TopDownAnimationData animationData = null;
-            var animationFilePath = MainController.GetAnimationFilePathFor(element as EntitySave);
-            if (animationFilePath.Exists())
-            {
-                try
-                {
-                    var contents = System.IO.File.ReadAllText(animationFilePath.FullPath);
-                    animationData = JsonConvert.DeserializeObject<TopDownAnimationData>(contents);
-                }
-                catch
-                {
-                    // do nothing, codegen will skip this
-                }
-            }
-
-            var hasAnimationSets =
-                animationData?.Animations.Count > 0;
-
-            if(!hasAnimationSets)
-            {
-                codeBlock.Line("public List<TopDown.AnimationSet> AnimationSets { get; set; } = new List<TopDown.AnimationSet>();");
-
-            }
-            else
-            {
-                codeBlock.Line("public List<TopDown.AnimationSet> AnimationSets { get; set; } = new List<TopDown.AnimationSet>");
-
-                var listBlock = codeBlock.Block();
-                (listBlock.PostCodeLines[0] as CodeLine).Value += ";";
-
-                foreach(var movementValueAnimation in animationData.Animations)
-                {
-
-                    string prefix = movementValueAnimation.MovementValuesName + "_";
-
-                    foreach(var set in movementValueAnimation.AnimationSets)
-                    {
-
-                        var hasAnimations =
-                            set.UpLeftAnimation != null ||
-                            set.UpAnimation != null ||
-                            set.UpRightAnimation != null ||
-                            set.LeftAnimation != null ||
-                            set.RightAnimation != null ||
-                            set.DownLeftAnimation != null ||
-                            set.DownAnimation != null ||
-                            set.DownRightAnimation != null;
-
-                        if(hasAnimations)
-                        {
-                            listBlock.Line($"new TopDown.AnimationSet()");
-                            var assignmentBlock = listBlock.Block();
-                            (assignmentBlock.PostCodeLines[0] as CodeLine).Value += ",";
-
-                            string minSpeed =
-                                set.AnimationSetName == "Idle" ? "0f" : ".1f";
-
-                            assignmentBlock.Line($"MinSpeed = {minSpeed},");
-
-                            assignmentBlock.Line($"MovementValueName = \"{movementValueAnimation.MovementValuesName}\",");
-
-
-
-                            assignmentBlock.Line($"UpLeftAnimationName = {ToQuotedSetName(set.UpLeftAnimation)},");
-                            assignmentBlock.Line($"UpAnimationName = {ToQuotedSetName(set.UpAnimation)},");
-                            assignmentBlock.Line($"UpRightAnimationName = {ToQuotedSetName(set.UpRightAnimation)},");
-
-                            assignmentBlock.Line($"LeftAnimationName = {ToQuotedSetName(set.LeftAnimation)},");
-                            assignmentBlock.Line($"RightAnimationName = {ToQuotedSetName(set.RightAnimation)},");
-
-                            assignmentBlock.Line($"DownLeftAnimationName = {ToQuotedSetName(set.DownLeftAnimation)},");
-                            assignmentBlock.Line($"DownAnimationName = {ToQuotedSetName(set.DownAnimation)},");
-                            assignmentBlock.Line($"DownRightAnimationName = {ToQuotedSetName(set.DownRightAnimation)}");
-
-                        }
-                    }
-                }
-            }
-
-        }
 
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
         {

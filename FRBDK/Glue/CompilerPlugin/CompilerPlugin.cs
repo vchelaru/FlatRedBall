@@ -49,7 +49,7 @@ namespace CompilerPlugin
                 ReactToPluginEvent("Compiler_Output_Error", output);
             };
 
-            CreateBuildControl();
+            CreateBuildTab();
         }
 
         private void HandleGluxLoaded()
@@ -115,7 +115,7 @@ namespace CompilerPlugin
             }
         }
 
-        private void CreateBuildControl()
+        private void CreateBuildTab()
         {
             MainControl = new BuildTabView();
             MainControl.DataContext = _compilerViewModel;
