@@ -59,7 +59,7 @@ namespace FlatRedBall
         #region Fields
 
         /// <summary>
-        /// Whether the Sprite should be rotated to always face the camera.
+        /// Whether the Sprite should be rotated to always face the camera. If true, the Sprite will always face the camera. This is typically only used in 3D games with a camera that can rotate.
         /// </summary>
         public bool IsBillboarded;
 
@@ -72,8 +72,9 @@ namespace FlatRedBall
         protected internal ColorOperation mColorOperation;
         protected internal BlendOperation mBlendOperation;
 
-        // This used to only be on MonoDroid and WP7, but we need it on PC for premult alpha when using ColorOperation.Color.
-        // Protected internal to skip the property and speed things up a little.
+        // Individual color values used to only be on MonoDroid and WP7, but we need
+        // them on PC for premult alpha when using ColorOperation.Color.
+        // They are "protected internal" to skip property access and speed things up a little.
         protected internal float mRed;
         protected internal float mGreen;
         protected internal float mBlue;
@@ -1280,6 +1281,7 @@ namespace FlatRedBall
         }
 
         #region ICursorSelectable
+        [Obsolete("This property exists to support (old) .scnx files. This should not be used in modern FRB projects.")]
         public bool CursorSelectable
         {
             get { return mCursorSelectable; }
