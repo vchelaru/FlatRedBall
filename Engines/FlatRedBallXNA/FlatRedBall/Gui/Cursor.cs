@@ -1021,7 +1021,6 @@ namespace FlatRedBall.Gui
         }
 
 
-        #region XML Docs
         /// <summary>
         /// Returns the Sprite the cursor is over giving preference to the closest Sprite to the Camera.
         /// </summary>
@@ -1031,7 +1030,6 @@ namespace FlatRedBall.Gui
         /// </remarks>
         /// <param name="spriteArray">The SpriteArray to search through.</param>
         /// <returns>The Sprite that is found, or null if the cursor is not over any Sprites.</returns>
-        #endregion
         public T GetSpriteOver<T>(IList<T> spriteArray) where T : ICursorSelectable, IAttachable
         {
             return GetSpriteOver(spriteArray, false);
@@ -1043,7 +1041,6 @@ namespace FlatRedBall.Gui
             return GetSpriteOver(spriteArray, considerInactives, false);
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the Sprite the cursor is over giving preference to the closest Sprite to the Camera.
         /// </summary>
@@ -1051,7 +1048,6 @@ namespace FlatRedBall.Gui
         /// <param name="considerInactives">Whether inactive Sprites (Sprites with the .active variable set to false) are considered.</param>
         /// <param name="skipFirst"></param>
         /// <returns>The Sprite that is found, or null if the cursor is not over any Sprites.</returns>
-        #endregion
         public T GetSpriteOver<T>(IList<T> spriteArray, bool considerInactives, bool skipFirst) where T : ICursorSelectable, IAttachable
         {
             double closestDistance = -1;

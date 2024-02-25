@@ -177,7 +177,7 @@ namespace FlatRedBall
         #region IColorable
 
         /// <summary>
-        /// Controls the Sprite's transparency.
+        /// Controls the Sprite's transparency. A value of 1 is fully opaque, a value of 0 is fully transprent.
         /// </summary>
         /// <remarks>
         /// Alpha controls a Sprite's transparency.   A completely opaque Sprite has an
