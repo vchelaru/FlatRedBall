@@ -59,6 +59,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>dialogbox</Name>
     </None>
+    <None Include="content\gumproject\components\controls\inputdeviceselectionitem.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>inputdeviceselectionitem</Name>
+    </None>
+    <None Include="content\gumproject\components\controls\inputdeviceselector.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>inputdeviceselector</Name>
+    </None>
     <None Include="content\gumproject\components\controls\keyboard.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>keyboard</Name>
@@ -243,6 +251,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>GumProject</Name>
     </None>
+    <None Include="content\gumproject\screens\inputjoinscreengum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>InputJoinScreenGum</Name>
+    </None>
     <None Include="content\gumproject\screens\mainmenugum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>MainMenuGum</Name>
@@ -295,6 +307,7 @@
   <ItemGroup>
     <Compile Include="DataTypes\TileMapInfo.Generated.cs" />
     <Compile Include="FileAliases.Generated.cs" />
+    <Compile Include="Forms\Screens\InputJoinScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\MainMenuGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\TestScreenForms.Generated.cs" />
     <Compile Include="Game1.cs" />
@@ -367,6 +380,14 @@
     <Compile Include="GumRuntimes\Controls\DialogBoxRuntime.cs" />
     <Compile Include="GumRuntimes\Controls\DialogBoxRuntime.Generated.cs">
       <DependentUpon>DialogBoxRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\Controls\InputDeviceSelectionItemRuntime.cs" />
+    <Compile Include="GumRuntimes\Controls\InputDeviceSelectionItemRuntime.Generated.cs">
+      <DependentUpon>InputDeviceSelectionItemRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\Controls\InputDeviceSelectorRuntime.cs" />
+    <Compile Include="GumRuntimes\Controls\InputDeviceSelectorRuntime.Generated.cs">
+      <DependentUpon>InputDeviceSelectorRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\Controls\KeyboardKeyRuntime.cs" />
     <Compile Include="GumRuntimes\Controls\KeyboardKeyRuntime.Generated.cs">
@@ -477,6 +498,10 @@
       <DependentUpon>VerticalLinesRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\GumIdb.Generated.cs" />
+    <Compile Include="GumRuntimes\InputJoinScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\InputJoinScreenGumRuntime.Generated.cs">
+      <DependentUpon>InputJoinScreenGumRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\MainMenuGumRuntime.cs" />
     <Compile Include="GumRuntimes\MainMenuGumRuntime.Generated.cs">
       <DependentUpon>MainMenuGumRuntime.cs</DependentUpon>
@@ -493,6 +518,10 @@
     <Compile Include="Performance\IEntityFactory.Generated.cs" />
     <Compile Include="Performance\PoolList.Generated.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Screens\InputJoinScreen.cs" />
+    <Compile Include="Screens\InputJoinScreen.Generated.cs">
+      <DependentUpon>InputJoinScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Screens\MainMenu.cs" />
     <Compile Include="Screens\MainMenu.Generated.cs">
       <DependentUpon>MainMenu.cs</DependentUpon>

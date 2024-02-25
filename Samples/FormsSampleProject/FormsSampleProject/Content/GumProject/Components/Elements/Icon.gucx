@@ -132,6 +132,13 @@
     <State>
       <Name>None</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -164,6 +171,13 @@
     </State>
     <State>
       <Name>ArrowUpDown</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -198,6 +212,13 @@
     <State>
       <Name>Arrow1</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -230,6 +251,13 @@
     </State>
     <State>
       <Name>Arrow2</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -264,6 +292,13 @@
     <State>
       <Name>Arrow3</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -297,6 +332,13 @@
     <State>
       <Name>Basket</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -328,7 +370,61 @@
       </Variable>
     </State>
     <State>
+      <Name>ButtonBottom</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>IconSprite.Texture Height</Name>
+        <Value xsi:type="xsd:int">32</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>IconSprite.Texture Left</Name>
+        <Value xsi:type="xsd:int">480</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>IconSprite.Texture Top</Name>
+        <Value xsi:type="xsd:int">224</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>int</Type>
+        <Name>IconSprite.Texture Width</Name>
+        <Value xsi:type="xsd:int">32</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>bool</Type>
+        <Name>IconSprite.Visible</Name>
+        <Value xsi:type="xsd:boolean">true</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <VariableList xsi:type="VariableListSaveOfString">
+        <Type>string</Type>
+        <Name>IconSprite.AnimationFrames</Name>
+        <IsFile>false</IsFile>
+        <IsHiddenInPropertyGrid>false</IsHiddenInPropertyGrid>
+        <Value />
+      </VariableList>
+    </State>
+    <State>
       <Name>Battery</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -363,6 +459,13 @@
     <State>
       <Name>Check</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -395,6 +498,13 @@
     </State>
     <State>
       <Name>CheckeredFlag</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -429,6 +539,13 @@
     <State>
       <Name>Circle1</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -461,6 +578,13 @@
     </State>
     <State>
       <Name>Circle2</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -495,6 +619,13 @@
     <State>
       <Name>Close</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -527,6 +658,13 @@
     </State>
     <State>
       <Name>Crosshairs</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -561,6 +699,13 @@
     <State>
       <Name>Currency</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -593,6 +738,13 @@
     </State>
     <State>
       <Name>Cursor</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -627,6 +779,13 @@
     <State>
       <Name>CursorText</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -659,6 +818,13 @@
     </State>
     <State>
       <Name>Delete</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -693,6 +859,13 @@
     <State>
       <Name>Enter</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -725,6 +898,13 @@
     </State>
     <State>
       <Name>Expand</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -759,6 +939,13 @@
     <State>
       <Name>Gamepad</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -791,6 +978,13 @@
     </State>
     <State>
       <Name>GamepadNES</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -825,6 +1019,13 @@
     <State>
       <Name>GamepadSNES</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -857,6 +1058,13 @@
     </State>
     <State>
       <Name>GamepadNintendo64</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -891,6 +1099,13 @@
     <State>
       <Name>GamepadGamecube</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -923,6 +1138,13 @@
     </State>
     <State>
       <Name>GamepadSwitchPro</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -957,6 +1179,13 @@
     <State>
       <Name>GamepadXbox</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -989,6 +1218,13 @@
     </State>
     <State>
       <Name>GamepadPlaystationDualShock</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1023,6 +1259,13 @@
     <State>
       <Name>GamepadSegaGenesis</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1055,6 +1298,13 @@
     </State>
     <State>
       <Name>Gear</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1089,6 +1339,13 @@
     <State>
       <Name>FastForward</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1121,6 +1378,13 @@
     </State>
     <State>
       <Name>FastForwardBar</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1155,6 +1419,13 @@
     <State>
       <Name>FitToScreen</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1187,6 +1458,13 @@
     </State>
     <State>
       <Name>Flame1</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1221,6 +1499,13 @@
     <State>
       <Name>Flame2</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1253,6 +1538,13 @@
     </State>
     <State>
       <Name>Heart</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1287,6 +1579,13 @@
     <State>
       <Name>Info</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1319,6 +1618,13 @@
     </State>
     <State>
       <Name>Keyboard</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1353,6 +1659,13 @@
     <State>
       <Name>Leaf</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1385,6 +1698,13 @@
     </State>
     <State>
       <Name>Lightning</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1419,6 +1739,13 @@
     <State>
       <Name>Minimize</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1451,6 +1778,13 @@
     </State>
     <State>
       <Name>Monitor</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1485,6 +1819,13 @@
     <State>
       <Name>Mouse</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1517,6 +1858,13 @@
     </State>
     <State>
       <Name>Music</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1551,6 +1899,13 @@
     <State>
       <Name>Pause</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1583,6 +1938,13 @@
     </State>
     <State>
       <Name>Pencil</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1617,6 +1979,13 @@
     <State>
       <Name>Play</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1649,6 +2018,13 @@
     </State>
     <State>
       <Name>PlayBar</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1683,6 +2059,13 @@
     <State>
       <Name>Power</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1715,6 +2098,13 @@
     </State>
     <State>
       <Name>Radiation</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1749,6 +2139,13 @@
     <State>
       <Name>Reduce</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1781,6 +2178,13 @@
     </State>
     <State>
       <Name>Shield</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1815,6 +2219,13 @@
     <State>
       <Name>Shot</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1847,6 +2258,13 @@
     </State>
     <State>
       <Name>Skull</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1881,6 +2299,13 @@
     <State>
       <Name>Sliders</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1913,6 +2338,13 @@
     </State>
     <State>
       <Name>SoundMaximum</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -1947,6 +2379,13 @@
     <State>
       <Name>SoundMinimum</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -1979,6 +2418,13 @@
     </State>
     <State>
       <Name>Speech</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -2013,6 +2459,13 @@
     <State>
       <Name>Star</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -2045,6 +2498,13 @@
     </State>
     <State>
       <Name>Stop</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -2079,6 +2539,13 @@
     <State>
       <Name>Temperature</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -2111,6 +2578,13 @@
     </State>
     <State>
       <Name>Touch</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -2145,6 +2619,13 @@
     <State>
       <Name>Trash</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -2177,6 +2658,13 @@
     </State>
     <State>
       <Name>Trophy</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -2211,6 +2699,13 @@
     <State>
       <Name>User</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -2243,6 +2738,13 @@
     </State>
     <State>
       <Name>UserAdd</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -2277,6 +2779,13 @@
     <State>
       <Name>UserDelete</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -2309,6 +2818,13 @@
     </State>
     <State>
       <Name>UserGear</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -2343,6 +2859,13 @@
     <State>
       <Name>UserMulti</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -2375,6 +2898,13 @@
     </State>
     <State>
       <Name>UserRemove</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
@@ -2409,6 +2939,13 @@
     <State>
       <Name>Warning</Name>
       <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>
         <Value xsi:type="xsd:int">32</Value>
@@ -2441,6 +2978,13 @@
     </State>
     <State>
       <Name>Wrench</Name>
+      <Variable>
+        <IsFile>true</IsFile>
+        <Type>string</Type>
+        <Name>IconSprite.SourceFile</Name>
+        <Value xsi:type="xsd:string">UISpriteSheet.png</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
       <Variable>
         <Type>int</Type>
         <Name>IconSprite.Texture Height</Name>

@@ -14,6 +14,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ComboBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ContextMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\DialogBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\InputDeviceSelectionItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)controls\games\InputDeviceSelector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\OnScreenKeyboard.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\PlayerJoinView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\PlayerJoinViewItem.cs" />

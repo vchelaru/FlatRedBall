@@ -22,7 +22,13 @@ namespace GumPluginCore.CodeGeneration
 
         public override void GenerateInitializeEarly(ICodeBlock codeBlock)
         {
-            if(hasSkia && GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasGame1GenerateEarly)
+            var fileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
+            if (fileVersion >= (int)GluxVersions.HasFrameworkElementManager)
+            {
+                codeBlock.Line("FlatRedBall.FlatRedBallServices.AddManager(FlatRedBall.Forms.Managers.FrameworkElementManager.Self);");
+            }
+
+            if (hasSkia && fileVersion >= (int)GluxVersions.HasGame1GenerateEarly)
             {
                 codeBlock.Line("SkiaMonoGameRendering.SkiaGlManager.Initialize(GraphicsDevice);");
             }

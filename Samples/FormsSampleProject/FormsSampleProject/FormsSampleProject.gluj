@@ -54,7 +54,7 @@
   ],
   "GlobalContentSettingsSave": {},
   "SyncedProjects": [],
-  "StartUpScreen": "Screens\\MainMenu",
+  "StartUpScreen": "Screens\\InputJoinScreen",
   "ResolutionPresets": [],
   "PerformanceSettingsSave": {},
   "IgnoredDirectories": [],
@@ -81,6 +81,9 @@
   "ExternallyBuiltFileDirectory": "../../",
   "FileVersion": 53,
   "ScreenReferences": [
+    {
+      "Name": "Screens\\InputJoinScreen"
+    },
     {
       "Name": "Screens\\MainMenu"
     }

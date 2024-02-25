@@ -1,0 +1,16 @@
+{
+  "Tags": [
+    "GLUE"
+  ],
+  "Source": "GLUE",
+  "ReferencedFiles": [
+    {
+      "Name": "gumproject/Screens/InputJoinScreenGum.gusx",
+      "IsSharedStatic": true,
+      "RuntimeType": "FormsSampleProject.GumRuntimes.InputJoinScreenGumRuntime",
+      "ProjectsToExcludeFrom": []
+    }
+  ],
+  "Name": "Screens\\InputJoinScreen",
+  "CustomClassesForExport": []
+}
