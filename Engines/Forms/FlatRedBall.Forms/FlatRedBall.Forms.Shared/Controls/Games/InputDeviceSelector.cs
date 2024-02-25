@@ -76,8 +76,27 @@ namespace FlatRedBall.Forms.Controls.Games
 
         #endregion
 
+        List<IInputDevice> devicesUnjoinedThisFrame = new List<IInputDevice>();
+
         public override void Activity()
         {
+            devicesUnjoinedThisFrame.Clear();
+
+            bool DidUnjoin(IInputDevice inputDevice) =>
+                inputDevice.DefaultCancelInput.WasJustPressed|| inputDevice.DefaultBackInput.WasJustPressed;
+
+            foreach (var item in InputDeviceSelectionItemsInternal)
+            {
+                if(item.InputDevice == null)
+                {
+                    continue;
+                }
+                if(item.InputDevice.DefaultCancelInput.WasJustPressed == true || item.InputDevice.DefaultBackInput.WasJustPressed == true)
+                {
+                    devicesUnjoinedThisFrame.Add(item.InputDevice);
+                    item.InputDevice = null;
+                }
+            }
 
             foreach(var inputDevice in AllConnectedInputDevices)
             {
@@ -85,7 +104,12 @@ namespace FlatRedBall.Forms.Controls.Games
                 {
                     HandleJoin(inputDevice);
                 }
+                if(DidUnjoin(inputDevice))
+                {
+                    // cancel pressed = handle...
+                }
             }
+
 
             base.Activity();
         }
