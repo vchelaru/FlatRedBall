@@ -1391,8 +1391,6 @@
     <Compile Include="TileGraphics\TileNodeNetworkCreator.cs" />
     <Compile Include="TileGraphics\Tileset.cs" />
     <Compile Include="TileGraphics\TilesetExtensionMethods.cs" />
-    <Compile Include="TopDown\AnimationSet.Generated.cs" />
-    <Compile Include="TopDown\DirectionBasedAnimationLayer.Generated.cs" />
     <Compile Include="TopDown\Enums.Generated.cs" />
     <Compile Include="TopDown\Interfaces.Generated.cs" />
     <Compile Include="TopDown\TopDownAiInput.Generated.cs" />
