@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0" orientation="orthogonal" width="32" height="32" tilewidth="16" tileheight="16" infinite="0">
+  <tileset tilecount="0" columns="0" source="../../StandardTileset.tsx" firstgid="1">
+    <wangsets />
+  </tileset>
+  <layer name="GameplayLayer" id="0" tintcolor="#ffffff" opacity="1" visible="1" parallaxx="1" parallaxy="1" offsetx="0" offsety="0" width="32" height="32">
+    <properties />
+    <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACuzXwQkAAAhCUd1/6bbIyws8B1H5bZKOtSr9zd/+uT//x//lP/wXf+Av/Im/5Q/56zN/LnUAAAD//wMAQZZTxQAQAAA=
+<length>1024</length></data>
+  </layer>
+</map>
