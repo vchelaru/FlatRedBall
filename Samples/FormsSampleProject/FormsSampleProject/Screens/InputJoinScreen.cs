@@ -33,9 +33,14 @@ namespace FormsSampleProject.Screens
             var inputDeviceSelector = new FlatRedBall.Forms.Controls.Games.InputDeviceSelector(
                 GumScreen.InputDeviceSelectorInstance);
 
-            inputDeviceSelector.MaxPlayers = 3;
+            //inputDeviceSelector.MaxPlayers = 3;
 
             FrameworkElementManager.Self.AddFrameworkElement(inputDeviceSelector);
+
+            // give it the defaults:
+            inputDeviceSelector.JoinedInputDevices[0] = InputManager.Xbox360GamePads[0];        
+            inputDeviceSelector.JoinedInputDevices[1] = InputManager.Keyboard;
+            inputDeviceSelector.JoinedInputDevices[2] = InputManager.Xbox360GamePads[1];
         }
 
         void CustomActivity(bool firstTimeCalled)

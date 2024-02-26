@@ -84,7 +84,7 @@
     <Variable>
       <Type>float</Type>
       <Name>Height</Name>
-      <Value xsi:type="xsd:float">212</Value>
+      <Value xsi:type="xsd:float">216</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -151,6 +151,30 @@
       <Type>PositionUnitType</Type>
       <Name>InputDeviceContainerInstance.Y Units</Name>
       <Value xsi:type="xsd:int">5</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>InputDeviceSelectionItemInstance.Parent</Name>
+      <Value xsi:type="xsd:string">InputDeviceContainerInstance</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>InputDeviceSelectionItemInstance1.Parent</Name>
+      <Value xsi:type="xsd:string">InputDeviceContainerInstance</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>InputDeviceSelectionItemInstance2.Parent</Name>
+      <Value xsi:type="xsd:string">InputDeviceContainerInstance</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>InputDeviceSelectionItemInstance3.Parent</Name>
+      <Value xsi:type="xsd:string">InputDeviceContainerInstance</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -234,7 +258,7 @@
     <Variable>
       <Type>float</Type>
       <Name>Width</Name>
-      <Value xsi:type="xsd:float">520</Value>
+      <Value xsi:type="xsd:float">660</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -292,6 +316,26 @@
   <Instance>
     <Name>InputDeviceContainerInstance</Name>
     <BaseType>Container</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>InputDeviceSelectionItemInstance</Name>
+    <BaseType>Controls/InputDeviceSelectionItem</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>InputDeviceSelectionItemInstance1</Name>
+    <BaseType>Controls/InputDeviceSelectionItem</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>InputDeviceSelectionItemInstance2</Name>
+    <BaseType>Controls/InputDeviceSelectionItem</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>InputDeviceSelectionItemInstance3</Name>
+    <BaseType>Controls/InputDeviceSelectionItem</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />
