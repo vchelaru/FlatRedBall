@@ -92,6 +92,16 @@
     <LinkType>ReferenceOriginal</LinkType>
   </ComponentReference>
   <ComponentReference>
+    <Name>Controls/InputDeviceSelectionItem</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>Controls/InputDeviceSelector</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>Controls/Keyboard</Name>
     <ElementType>Component</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
@@ -277,6 +287,12 @@
   </BehaviorReference>
   <BehaviorReference>
     <Name>DialogBoxBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
+    <Name>InputDeviceSelectionItemBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
+    <Name>InputDeviceSelectorBehavior</Name>
   </BehaviorReference>
   <BehaviorReference>
     <Name>LabelBehavior</Name>

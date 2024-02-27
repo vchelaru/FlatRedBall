@@ -29,6 +29,10 @@ namespace GumPlugin.DataGeneration
 
             Add("DialogBoxBehavior", "FlatRedBall.Forms.Controls.Games.DialogBox");
 
+            Add("InputDeviceSelector", "FlatRedBall.Forms.Controls.Games.InputDeviceSelector");
+            Add("InputDeviceSelectionItem", "FlatRedBall.Forms.Controls.Games.InputDeviceSelectionItem");
+
+
             Add("LabelBehavior", "Label");
 
             Add("ListBoxBehavior", "ListBox");
