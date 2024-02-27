@@ -1,14 +1,18 @@
+using FlatRedBall.Forms.Managers;
 using FlatRedBall.Input;
 using Gum.Wireframe;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 
 namespace FlatRedBall.Forms.Controls.Games
 {
     public class InputDeviceSelector : FrameworkElement
     {
+        #region Fields/Properties
+
         GraphicalUiElement InputDeviceContainerInstance;
 
         public List<IInputDevice> AllConnectedInputDevices { get; private set; }
@@ -28,6 +32,8 @@ namespace FlatRedBall.Forms.Controls.Games
         }
 
         List<InputDeviceSelectionItem> InputDeviceSelectionItemsInternal = new List<InputDeviceSelectionItem>();
+
+        #endregion
 
         #region Initialize
 
@@ -59,6 +65,12 @@ namespace FlatRedBall.Forms.Controls.Games
         protected override void ReactToVisualChanged()
         {
             InputDeviceContainerInstance = this.Visual.GetGraphicalUiElementByName("InputDeviceContainerInstance");
+            // If using the built-in instantiation from the runtime,
+            // the Form association is made before variables are assigned.
+            // This means that InputDeviceContainerInstance.Children may not
+            // yet be populated, and will be populated after - when the "initial state"
+            // is set. Therefore, to handle this case there is also an if-check in Activity
+            // to make sure there isn't a mismatch.
             InputDeviceContainerInstance.Children.Clear();
 
             if (!hasAssignedMaxPlayers)
@@ -71,7 +83,16 @@ namespace FlatRedBall.Forms.Controls.Games
                 UpdateInputDeviceSelectionItemsCount();
             }
 
+            FrameworkElementManager.Self.AddFrameworkElement(this);
+            Visual.RemovedFromGuiManager += HandleRemovedFromGuiManager;
+
+
             base.ReactToVisualChanged();
+        }
+
+        private void HandleRemovedFromGuiManager(object sender, EventArgs e)
+        {
+            FrameworkElementManager.Self.RemoveFrameworkElement(this);
         }
 
         #endregion
@@ -128,15 +149,32 @@ namespace FlatRedBall.Forms.Controls.Games
                 InputDeviceSelectionItemsInternal.Remove(lastItem);
                 InputDeviceContainerInstance.Children.Remove(lastItem.Visual);
             }
+            // This can happen if an item is directly added to children (such as loaded from .gumx)
+            while(InputDeviceContainerInstance.Children.Count > InputDeviceSelectionItemsInternal.Count)
+            {
+                for(int i = 0; i < InputDeviceContainerInstance.Children.Count; i++)
+                {
+                    GraphicalUiElement child = (GraphicalUiElement)InputDeviceContainerInstance.Children[i];
+                    if(!InputDeviceSelectionItemsInternal.Any(item => item.Visual == child))
+                    {
+                        InputDeviceContainerInstance.Children.Remove(child);
+                    }
+                }
+            }
         }
 
 
         #endregion
 
         List<IInputDevice> devicesUnjoinedThisFrame = new List<IInputDevice>();
-
         public override void Activity()
         {
+            // See ReactToVisualChanged for why this is necessary
+            if(InputDeviceSelectionItemsInternal.Count != MaxPlayers ||
+                InputDeviceContainerInstance.Children.Count != MaxPlayers)
+            {
+                UpdateInputDeviceSelectionItemsCount();
+            }
             devicesUnjoinedThisFrame.Clear();
 
             bool DidUnjoin(IInputDevice inputDevice) =>
@@ -196,6 +234,8 @@ namespace FlatRedBall.Forms.Controls.Games
         }
     }
 
+    #region ObservableArray Class 
+
     public class ObservableArrayIndexChangeArgs
     {
         public int Index { get; private set; }
@@ -234,4 +274,6 @@ namespace FlatRedBall.Forms.Controls.Games
             CollectionChanged?.Invoke(this, new ObservableArrayIndexChangeArgs(index));
         }
     }
+
+    #endregion
 }

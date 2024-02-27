@@ -14,6 +14,11 @@ namespace GumPlugin.DataGeneration
         public string BehaviorName;
         public string ControlName;
 
+        public override string ToString()
+        {
+            return $"{BehaviorName} -> {ControlName}";
+        }
+
         static FormsControlInfo()
         {
             List<FormsControlInfo> tempList = new List<FormsControlInfo>();
@@ -29,8 +34,8 @@ namespace GumPlugin.DataGeneration
 
             Add("DialogBoxBehavior", "FlatRedBall.Forms.Controls.Games.DialogBox");
 
-            Add("InputDeviceSelector", "FlatRedBall.Forms.Controls.Games.InputDeviceSelector");
-            Add("InputDeviceSelectionItem", "FlatRedBall.Forms.Controls.Games.InputDeviceSelectionItem");
+            Add("InputDeviceSelectorBehavior", "FlatRedBall.Forms.Controls.Games.InputDeviceSelector");
+            Add("InputDeviceSelectionItemBehavior", "FlatRedBall.Forms.Controls.Games.InputDeviceSelectionItem");
 
 
             Add("LabelBehavior", "Label");
