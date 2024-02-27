@@ -10,6 +10,11 @@ namespace FlatRedBall.Forms.Controls.Games
     {
         GraphicalUiElement TextElement;
 
+        /// <summary>
+        /// Event raised when the input device is removed by this item. This can happen through a UI button click.
+        /// </summary>
+        public event EventHandler InputDeviceRemoved;
+
         IInputDevice inputDevice;
         public virtual IInputDevice InputDevice 
         { 
@@ -23,11 +28,20 @@ namespace FlatRedBall.Forms.Controls.Games
         }
 
         public InputDeviceSelectionItem() : base() { UpdateToInputDevice(); }
+
         public InputDeviceSelectionItem(GraphicalUiElement visual) : base(visual) { UpdateToInputDevice(); }
 
         protected override void ReactToVisualChanged()
         {
             TextElement = this.Visual.GetGraphicalUiElementByName("TextInstance");
+
+            // This is optional:
+            var removeDeviceButton = this.Visual.GetGraphicalUiElementByName("RemoveDeviceButtonInstance");
+            if(removeDeviceButton != null)
+            {
+                removeDeviceButton.Click += (unused) => InputDeviceRemoved?.Invoke(this, null);
+            }
+
             base.ReactToVisualChanged();
 
             UpdateToInputDevice();

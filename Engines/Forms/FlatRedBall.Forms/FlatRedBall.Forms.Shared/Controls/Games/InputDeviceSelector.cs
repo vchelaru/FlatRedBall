@@ -113,6 +113,11 @@ namespace FlatRedBall.Forms.Controls.Games
             while(InputDeviceSelectionItemsInternal.Count < JoinedInputDevices.Length)
             {
                 var newItem = new InputDeviceSelectionItem();
+                newItem.InputDeviceRemoved += (sender, args) =>
+                {
+                    int index = InputDeviceSelectionItemsInternal.IndexOf(newItem);
+                    JoinedInputDevices[index] = null;
+                };
                 InputDeviceSelectionItemsInternal.Add(newItem);
                 InputDeviceContainerInstance.Children.Add(newItem.Visual);
                 newItem.InputDevice = JoinedInputDevices[InputDeviceSelectionItemsInternal.Count-1];

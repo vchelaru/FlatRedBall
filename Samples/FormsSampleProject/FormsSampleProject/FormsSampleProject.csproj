@@ -307,6 +307,8 @@
   <ItemGroup>
     <Compile Include="DataTypes\TileMapInfo.Generated.cs" />
     <Compile Include="FileAliases.Generated.cs" />
+    <Compile Include="Forms\Components\Controls\InputDeviceSelectionItemForms.Generated.cs" />
+    <Compile Include="Forms\Components\Controls\InputDeviceSelectorForms.Generated.cs" />
     <Compile Include="Forms\Screens\InputJoinScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\MainMenuGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\TestScreenForms.Generated.cs" />
