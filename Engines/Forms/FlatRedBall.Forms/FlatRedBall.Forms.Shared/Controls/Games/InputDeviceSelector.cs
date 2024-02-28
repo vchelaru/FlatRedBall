@@ -31,7 +31,11 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
+        public int MinPlayers { get; set; } = 1;
+
         List<InputDeviceSelectionItem> InputDeviceSelectionItemsInternal = new List<InputDeviceSelectionItem>();
+
+        public event EventHandler ConfirmedJoinedInput;
 
         #endregion
 
@@ -195,7 +199,10 @@ namespace FlatRedBall.Forms.Controls.Games
 
             foreach(var inputDevice in AllConnectedInputDevices)
             {
-                if(inputDevice.DefaultJoinInput.WasJustPressed)
+                // We use the primary action (such as A or Space) to join,
+                // then the Join input (such as Enter or Start) as the "hard"
+                // proceed input.
+                if(inputDevice.DefaultPrimaryActionInput.WasJustPressed)
                 {
                     HandleJoin(inputDevice);
                 }
@@ -205,31 +212,49 @@ namespace FlatRedBall.Forms.Controls.Games
                 }
             }
 
+            int joinedInputDeviceCount = 0;
+            for(int i = 0; i < JoinedInputDevices.Length; i++)
+            {
+                if (JoinedInputDevices[i] != null )
+                {
+                    joinedInputDeviceCount++;
+                }
+            }
+
+            if(joinedInputDeviceCount >= MinPlayers)
+            {
+                for(int i = 0; i < JoinedInputDevices.Length; i++)
+                {
+                    if (JoinedInputDevices[i] != null && JoinedInputDevices[i].DefaultJoinInput.WasJustPressed)
+                    {
+                        ConfirmedJoinedInput?.Invoke(this, null);
+                        break;
+                    }
+                }
+            }
 
             base.Activity();
         }
 
         private void HandleJoin(IInputDevice inputDevice)
         {
-            var isInputDeviceAlreadyShownInItem = false;
-            foreach(var item in InputDeviceSelectionItemsInternal)
+            int? firstEmpty = null;
+            for(int i = 0; i < JoinedInputDevices.Length; i++)
             {
-                if(item.InputDevice == inputDevice)
+                if (JoinedInputDevices[i] == inputDevice)
                 {
-                    // user just pressed join, no biggie
-                    isInputDeviceAlreadyShownInItem = true;
+                    return;
+                }
+                else if(firstEmpty == null && JoinedInputDevices[i] == null)
+                {
+                    firstEmpty = i;
                 }
             }
 
-            if(!isInputDeviceAlreadyShownInItem)
+            // If we got here, it's not already joined:
+            if(firstEmpty != null)
             {
-                // find the first empty
-                var firstEmpty = InputDeviceSelectionItemsInternal.Find(item => item.InputDevice == null);
-
-                if(firstEmpty != null)
-                {
-                    firstEmpty.InputDevice = inputDevice;
-                }
+                JoinedInputDevices[firstEmpty.Value] = inputDevice;
             }
         }
     }
