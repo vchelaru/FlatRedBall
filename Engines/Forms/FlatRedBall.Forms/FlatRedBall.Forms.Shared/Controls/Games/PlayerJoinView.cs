@@ -308,7 +308,19 @@ namespace FlatRedBall.Forms.Controls.Games
         {
             var keyboard = InputManager.Keyboard;
 
-            if (joinItem.ConnectedJoinedState == ConnectedJoinedState.Connected)
+            if (joinItem.ConnectedJoinedState == ConnectedJoinedState.NotConnected)
+            {
+                foreach (var key in JoinKeys)
+                {
+                    if (keyboard.KeyPushed(key))
+                    {
+                        joinItem.ConnectedJoinedState = ConnectedJoinedState.Connected;
+                        // do we need to raise an event when connecting?
+                        break;
+                    }
+                }
+            }
+            else if (joinItem.ConnectedJoinedState == ConnectedJoinedState.Connected)
             {
                 foreach (var key in JoinKeys)
                 {

@@ -132,7 +132,11 @@ namespace FlatRedBall.Forms.Controls.Games
 
         protected override void UpdateState()
         {
-            if(this.ConnectedJoinedState == ConnectedJoinedState.NotConnected && IsUsingKeyboardAsBackup)
+            if(InputDevice != null)
+            {
+                ControllerDisplayName = PlayerJoinView.KeyboardName;
+            }
+            else if(this.ConnectedJoinedState == ConnectedJoinedState.NotConnected && IsUsingKeyboardAsBackup)
             {
                 ConnectedJoinedState = ConnectedJoinedState.Connected;
                 ControllerDisplayName = PlayerJoinView.KeyboardName;
