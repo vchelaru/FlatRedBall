@@ -9,6 +9,23 @@ using System.Linq;
 
 namespace FlatRedBall.Forms.Controls.Games
 {
+    public enum ConfirmJoinedResult
+    {
+        Succeeded,
+        NotEnoughPlayers,
+        InputDeviceNotJoined
+    }
+
+    public class ConfirmJoinedEventArgs : EventArgs
+    {
+        public ConfirmJoinedResult Result { get; private set; }
+
+        public ConfirmJoinedEventArgs(ConfirmJoinedResult result)
+        {
+            Result = result;
+        }
+    }
+
     public class InputDeviceSelector : FrameworkElement
     {
         #region Fields/Properties
@@ -35,7 +52,8 @@ namespace FlatRedBall.Forms.Controls.Games
 
         List<InputDeviceSelectionItem> InputDeviceSelectionItemsInternal = new List<InputDeviceSelectionItem>();
 
-        public event EventHandler ConfirmedJoinedInput;
+        public event Action<object, ConfirmJoinedEventArgs> ConfirmedJoinedInput;
+
 
         #endregion
 
@@ -221,15 +239,23 @@ namespace FlatRedBall.Forms.Controls.Games
                 }
             }
 
-            if(joinedInputDeviceCount >= MinPlayers)
+            for(int i = 0; i < AllConnectedInputDevices.Count; i++)
             {
-                for(int i = 0; i < JoinedInputDevices.Length; i++)
+                // In this context, "Join" means to confirm the selection and advance
+                if(AllConnectedInputDevices[i].DefaultJoinInput.WasJustPressed)
                 {
-                    if (JoinedInputDevices[i] != null && JoinedInputDevices[i].DefaultJoinInput.WasJustPressed)
+                    ConfirmJoinedResult result = ConfirmJoinedResult.Succeeded;
+                    if (JoinedInputDevices.Contains(AllConnectedInputDevices[i]) == false)
                     {
-                        ConfirmedJoinedInput?.Invoke(this, null);
-                        break;
+                        result = ConfirmJoinedResult.InputDeviceNotJoined;
                     }
+                    else if(joinedInputDeviceCount < MinPlayers)
+                    {
+                        result = ConfirmJoinedResult.NotEnoughPlayers;
+                    }
+                    var args = new ConfirmJoinedEventArgs(result);
+                    ConfirmedJoinedInput?.Invoke(this, args);
+                    break;
                 }
             }
 
@@ -292,6 +318,11 @@ namespace FlatRedBall.Forms.Controls.Games
                 _array[index] = value;
                 OnIndexChanged(oldItem, index);
             }
+        }
+
+        public bool Contains(T item)
+        {
+            return _array.Contains(item);
         }
 
         void OnIndexChanged(T oldItem, int index)
