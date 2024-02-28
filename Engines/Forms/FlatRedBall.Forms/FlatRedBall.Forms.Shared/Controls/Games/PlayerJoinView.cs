@@ -10,6 +10,11 @@ using System.Text;
 
 namespace FlatRedBall.Forms.Controls.Games
 {
+    public enum JoinStyle
+    {
+        AnyConnectedInput,
+        ExplicitlyAssignedInput
+    }
     public class PlayerJoinView : FrameworkElement
     {
         #region Fields/Properties
@@ -54,6 +59,8 @@ namespace FlatRedBall.Forms.Controls.Games
         public static string KeyboardName { get; set; } = "Keyboard";
 
         public bool IsSubscribedToGamepadEvents { get; private set; }
+
+        public JoinStyle JoinStyle { get; set; } = JoinStyle.AnyConnectedInput;
 
         #endregion
 
@@ -246,27 +253,41 @@ namespace FlatRedBall.Forms.Controls.Games
 
         #region Join/Unjoin
 
+
         public override void Activity()
         {
-            var gamepads = InputManager.Xbox360GamePads;
-
-            for(int i = 0; i < gamepads.Length; i++)
+            if(JoinStyle == JoinStyle.AnyConnectedInput)
             {
-                var gamepad = gamepads[i];
+                var gamepads = InputManager.Xbox360GamePads;
 
-                if(gamepad.IsConnected && i < PlayerJoinViewItemsInternal.Count && 
-                    // Keyboard is handled down below
-                    PlayerJoinViewItemsInternal[i].GamepadLayout != GamepadLayout.Keyboard)
+                for(int i = 0; i < gamepads.Length; i++)
                 {
-                    TestJoinUnjoin(gamepad, i);
+                    var gamepad = gamepads[i];
+
+                    if(gamepad.IsConnected && i < PlayerJoinViewItemsInternal.Count && 
+                        // Keyboard is handled down below
+                        PlayerJoinViewItemsInternal[i].GamepadLayout != GamepadLayout.Keyboard)
+                    {
+                        TestJoinUnjoin(gamepad, i);
+                    }
                 }
             }
 
-            foreach(var item in PlayerJoinViewItemsInternal)
+            for (int i = 0; i < PlayerJoinViewItemsInternal.Count; i++)
             {
-                if(item.GamepadLayout == GamepadLayout.Keyboard)
+                PlayerJoinViewItem item = PlayerJoinViewItemsInternal[i];
+                if (item.InputDevice != null)
                 {
-                    TestJoinUnjoinWithKeyboard(item);
+                    if(item.InputDevice is FlatRedBall.Input.Keyboard)
+                    {
+                        TestJoinUnjoinWithKeyboard(item);
+                    }
+                    else if(item.InputDevice is Xbox360GamePad gamepad)
+                    {
+                        TestJoinUnjoin(gamepad, i);
+
+                    }
+
                 }
             }
 
