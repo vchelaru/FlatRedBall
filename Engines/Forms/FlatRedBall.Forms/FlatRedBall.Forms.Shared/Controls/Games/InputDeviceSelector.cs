@@ -19,10 +19,12 @@ namespace FlatRedBall.Forms.Controls.Games
     public class ConfirmJoinedEventArgs : EventArgs
     {
         public ConfirmJoinedResult Result { get; private set; }
+        public IInputDevice InputDevice { get; private set; }
 
-        public ConfirmJoinedEventArgs(ConfirmJoinedResult result)
+        public ConfirmJoinedEventArgs(ConfirmJoinedResult result, IInputDevice inputDevice)
         {
             Result = result;
+            InputDevice = inputDevice;
         }
     }
 
@@ -241,11 +243,12 @@ namespace FlatRedBall.Forms.Controls.Games
 
             for(int i = 0; i < AllConnectedInputDevices.Count; i++)
             {
+                var inputDevice = AllConnectedInputDevices[i];
                 // In this context, "Join" means to confirm the selection and advance
-                if(AllConnectedInputDevices[i].DefaultJoinInput.WasJustPressed)
+                if(inputDevice.DefaultJoinInput.WasJustPressed)
                 {
                     ConfirmJoinedResult result = ConfirmJoinedResult.Succeeded;
-                    if (JoinedInputDevices.Contains(AllConnectedInputDevices[i]) == false)
+                    if (JoinedInputDevices.Contains(inputDevice) == false)
                     {
                         result = ConfirmJoinedResult.InputDeviceNotJoined;
                     }
@@ -253,7 +256,7 @@ namespace FlatRedBall.Forms.Controls.Games
                     {
                         result = ConfirmJoinedResult.NotEnoughPlayers;
                     }
-                    var args = new ConfirmJoinedEventArgs(result);
+                    var args = new ConfirmJoinedEventArgs(result, inputDevice);
                     ConfirmedJoinedInput?.Invoke(this, args);
                     break;
                 }
