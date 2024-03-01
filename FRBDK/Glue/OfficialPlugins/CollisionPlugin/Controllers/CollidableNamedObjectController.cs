@@ -368,11 +368,18 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 // these options. If they are, then we want
                 // them always enabled. 
                 async Task SetProp(string propertyName) =>
-                    await GlueCommands.Self.GluxCommands.SetPropertyOnAsync(newNos, propertyName, true, false, true);
+                    await GlueCommands.Self.GluxCommands.SetPropertyOnAsync(newNos, propertyName, 
+                    value: true, 
+                    performSaveAndGenerateCode: false,
+                    recordUndo:true);
 
                 await SetProp(nameof(CollisionRelationshipViewModel.IsDealDamageChecked));
-                await SetProp(nameof(CollisionRelationshipViewModel.IsDestroyFirstOnDamageChecked));
-                await SetProp(nameof(CollisionRelationshipViewModel.IsDestroySecondOnDamageChecked));
+
+                // March 1, 2024
+                // NO NO! This used to be true, but we don't want that because it results in the player
+                // being destroyed right away. This causes so much confusion that it's best to leave it unchecked.
+                //await SetProp(nameof(CollisionRelationshipViewModel.IsDestroyFirstOnDamageChecked));
+                //await SetProp(nameof(CollisionRelationshipViewModel.IsDestroySecondOnDamageChecked));
 
 
                 RefreshViewModelTo(container, firstNos, ViewModel);

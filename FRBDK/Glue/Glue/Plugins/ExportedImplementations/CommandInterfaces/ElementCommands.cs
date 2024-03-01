@@ -807,8 +807,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             if (collisionRelationshipNos != null)
             {
                 collisionRelationshipNos.SetProperty("IsDealDamageChecked", true);
-                collisionRelationshipNos.SetProperty("IsDestroyFirstOnDamageChecked", true);
-                collisionRelationshipNos.SetProperty("IsDestroySecondOnDamageChecked", true);
+
+                // These can cause objects to disapppear (like the player) unexpectedly. Let's
+                // set these to false and let tutorials explain how to turn this on.
+                //collisionRelationshipNos.SetProperty("IsDestroyFirstOnDamageChecked", true);
+                //collisionRelationshipNos.SetProperty("IsDestroySecondOnDamageChecked", true);
             }
         }
     }

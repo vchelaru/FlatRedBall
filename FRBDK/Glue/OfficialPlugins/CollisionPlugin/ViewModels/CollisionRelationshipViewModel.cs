@@ -777,6 +777,45 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             set => SetAndPersist(value);
         }
 
+        public string DamageInGeneratedCodeCheckboxText
+        {
+            get
+            {
+                var nos = GlueObject as NamedObjectSave;
+
+                var firstType = AssetTypeInfoManager.GetFirstGenericType(
+                    nos, out bool isFirstList);
+                var secondType = AssetTypeInfoManager.GetSecondGenericType(
+                    nos, out bool isSecondList);
+
+                string firstName = "first";
+                string secondName = "second";
+
+                if(firstType?.StartsWith("Entities.") == true)
+                {
+                    firstName = firstType.Substring("Entities.".Length);
+                }
+                if(secondType?.StartsWith("Entities.") == true)
+                {
+                    secondName = secondType.Substring("Entities.".Length);
+                }
+
+                if(IsFirstDamageable && !IsSecondDamageable)
+                {
+                    return $"Deal Damage to {firstName} in Generated Code";
+
+                }
+                else if(IsSecondDamageable && !IsFirstDamageable)
+                {
+                    return $"Deal Damage to {secondName} in Generated Code";
+
+                }
+                else // both are damageable
+                {
+                    return $"Deal Damage to both {firstName} and {secondName} in generated code";
+                }
+            }
+        }
 
         [DependsOn(nameof(IsFirstDamageArea))]
         [DependsOn(nameof(IsSecondDamageArea))]
