@@ -117,6 +117,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin
             secondsBetweenDamage.Name = nameof(IDamageArea.SecondsBetweenDamage);
             secondsBetweenDamage.DefaultValue = 0.0;
             secondsBetweenDamage.Type = "double";
+            secondsBetweenDamage.Summary = "The number of seconds between dealing damage to the same object. 0 means every frame.";
             secondsBetweenDamage.CreatesProperty = true;
             secondsBetweenDamage.SetByDerived = true;
 
