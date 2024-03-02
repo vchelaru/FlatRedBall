@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Entities;
+using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Glue.GuiDisplay;
@@ -81,7 +82,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin
 
         }
 
-        static CustomVariable GetTeamIndex(bool isV2)
+        static CustomVariable GetTeamIndex(int version)
         {
             var variable = new CustomVariable();
             variable.Name = nameof(IDamageable.TeamIndex);
@@ -89,12 +90,12 @@ namespace OfficialPluginsCore.DamageDealingPlugin
             variable.Type = "int";
             variable.CreatesProperty = true;
             variable.SetByDerived = true;
-            //variableDefinition.Category = "Damage Dealing";
+            // Not sure which category to put this in, because it can be in either Damageable or Damage Dealing
             return variable;
         }
-        static CustomVariable GetMaxHealth(bool isV2)
+        static CustomVariable GetMaxHealth(int version)
         {
-            if(isV2)
+            if(version >= 2)
             {
                 var variable = new CustomVariable();
                 variable.Name = nameof(IDamageable.MaxHealth);
@@ -102,7 +103,8 @@ namespace OfficialPluginsCore.DamageDealingPlugin
                 variable.Type = "decimal";
                 variable.CreatesProperty = true;
                 variable.SetByDerived = true;
-                // why no category?
+                variable.Category = "Damageable";
+
                 return variable;
             }
             else
@@ -111,7 +113,27 @@ namespace OfficialPluginsCore.DamageDealingPlugin
             }
         }
 
-        static CustomVariable GetSecondsBetweenDamage(bool isV2)
+        static CustomVariable GetInvulnerabilityTimeAfterDamage(int version)
+        {
+            if(version >= 3)
+            {
+                var variable = new CustomVariable();
+                variable.Name = nameof(IDamageable.InvulnerabilityTimeAfterDamage);
+                variable.DefaultValue = 0.0;
+                variable.Type = "double";
+                variable.CreatesProperty = true;
+                variable.SetByDerived = true;
+                variable.Category = "Damageable";
+
+                return variable;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        static CustomVariable GetSecondsBetweenDamage(int version)
         {
             var secondsBetweenDamage = new CustomVariable();
             secondsBetweenDamage.Name = nameof(IDamageArea.SecondsBetweenDamage);
@@ -119,14 +141,14 @@ namespace OfficialPluginsCore.DamageDealingPlugin
             secondsBetweenDamage.Type = "double";
             secondsBetweenDamage.CreatesProperty = true;
             secondsBetweenDamage.SetByDerived = true;
+            secondsBetweenDamage.Category = "Damage Dealing";
 
-            //secondsBetweenDamage.Category = "Damage Dealing";
             return secondsBetweenDamage;
         }
 
-        static CustomVariable GetDamageToDeal(bool isV2)
+        static CustomVariable GetDamageToDeal(int version)
         {
-            if(isV2)
+            if(version >= 2)
             {
                 var variable = new CustomVariable();
                 variable.Name = nameof(IDamageArea.DamageToDeal);
@@ -134,7 +156,8 @@ namespace OfficialPluginsCore.DamageDealingPlugin
                 variable.Type = "decimal";
                 variable.CreatesProperty = true;
                 variable.SetByDerived = true;
-                // why no category?
+                variable.Category = "Damage Dealing";
+
                 return variable;
             }
             else
@@ -143,16 +166,17 @@ namespace OfficialPluginsCore.DamageDealingPlugin
             }
         }
 
-        List<Func<bool, CustomVariable>> IDamageAreaVariables = new List<Func<bool, CustomVariable>>
+        List<Func<int, CustomVariable>> IDamageAreaVariables = new List<Func<int, CustomVariable>>
         {
             GetTeamIndex,
             GetSecondsBetweenDamage,
             GetDamageToDeal
         };
-        List<Func<bool, CustomVariable>> IDamageableVariables = new List<Func<bool, CustomVariable>>
+        List<Func<int, CustomVariable>> IDamageableVariables = new List<Func<int, CustomVariable>>
         {
             GetTeamIndex,
-            GetMaxHealth
+            GetMaxHealth,
+            GetInvulnerabilityTimeAfterDamage
         };
 
 
@@ -169,17 +193,19 @@ namespace OfficialPluginsCore.DamageDealingPlugin
                 var secondsBetweenDamage = currentEntity.GetCustomVariable(nameof(IDamageArea.SecondsBetweenDamage));
 
                 var isV2 = DamageDealingCodeGenerator.UsesDamageV2;
+                var isV3 = DamageDealingCodeGenerator.UsesDamageV3;
+                int version = isV3 ? 3 : isV2 ? 2 : 1;
 
                 if (changedMember == ImplementsIDamageArea)
                 {
-                    List<CustomVariable> variables = IDamageAreaVariables.Select(item => item(isV2)).ToList();
+                    List<CustomVariable> variables = IDamageAreaVariables.Select(item => item(version)).ToList();
                     var implements = DamageDealingCodeGenerator.ImplementsIDamageArea(currentEntity);
 
                     wereVariablesAddedOrRemoved = RespondToImplementationChanged(currentEntity, variables, implements);
                 }
                 else if(changedMember == ImplementsIDamageable)
                 {
-                    var variables = IDamageableVariables.Select(item => item(isV2)).ToList();
+                    var variables = IDamageableVariables.Select(item => item(version)).ToList();
                     var implements = DamageDealingCodeGenerator.ImplementsIDamageable(currentEntity);
 
                     wereVariablesAddedOrRemoved = RespondToImplementationChanged(currentEntity, variables, implements);
