@@ -79,6 +79,8 @@ namespace GumPluginCore.CodeGeneration
                 if(hasCommon)
                 {
                     foreachBlock.Line("var sprite = this.RenderableComponent as RenderingLibrary.Graphics.Sprite;");
+
+                    foreachBlock.Line("sprite.Animate = true;");
                     foreachBlock.Line("sprite.CurrentChainName = animation;");
                     foreachBlock.Line("sprite.TimeIntoAnimation = 0;");
                     foreachBlock.Line("sprite.CurrentFrameIndex = 0;");
