@@ -56,7 +56,13 @@ namespace FlatRedBall.Forms.Controls.Games
                 var text = string.Empty;
                 if(inputDevice is Xbox360GamePad gamepad)
                 {
+#if MONOGAME_381
+
                     text = gamepad.Capabilities.DisplayName ?? "Gamepad";
+#else
+                    text = "Xbox360GamePad";
+
+#endif
                 }
                 else if(inputDevice is Keyboard)
                 {
