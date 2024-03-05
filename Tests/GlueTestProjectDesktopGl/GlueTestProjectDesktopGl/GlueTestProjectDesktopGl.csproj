@@ -829,6 +829,7 @@
     <Compile Include="Forms\Screens\FormsScreenGumForms.Generated.cs">
       <DependentUpon>FormsScreenGumForms.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Screens\GameScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\GumScreenLayeredGumForms.cs" />
     <Compile Include="Forms\Screens\GumScreenLayeredGumForms.Generated.cs">
       <DependentUpon>GumScreenLayeredGumForms.cs</DependentUpon>
@@ -841,6 +842,7 @@
     <Compile Include="Forms\Screens\InputScreenGumForms.Generated.cs">
       <DependentUpon>InputScreenGumForms.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Screens\Level1GumForms.Generated.cs" />
     <Compile Include="Forms\Screens\RenderTargetScreenGumForms.cs" />
     <Compile Include="Forms\Screens\RenderTargetScreenGumForms.Generated.cs">
       <DependentUpon>RenderTargetScreenGumForms.cs</DependentUpon>
@@ -1011,6 +1013,10 @@
     <Compile Include="GumRuntimes\FormsScreenGumRuntime.Generated.cs">
       <DependentUpon>FormsScreenGumRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\GameScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\GameScreenGumRuntime.Generated.cs">
+      <DependentUpon>GameScreenGumRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\GumIdb.Generated.cs" />
     <Compile Include="GumRuntimes\GumScreenLayeredGumRuntime.cs" />
     <Compile Include="GumRuntimes\GumScreenLayeredGumRuntime.Generated.cs">
@@ -1027,6 +1033,10 @@
     <Compile Include="GumRuntimes\InputScreenGumRuntime.cs" />
     <Compile Include="GumRuntimes\InputScreenGumRuntime.Generated.cs">
       <DependentUpon>InputScreenGumRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\Level1GumRuntime.cs" />
+    <Compile Include="GumRuntimes\Level1GumRuntime.Generated.cs">
+      <DependentUpon>Level1GumRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.cs" />
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.Generated.cs">
@@ -1218,6 +1228,10 @@
     <Compile Include="Screens\FormsScreen.Generated.cs">
       <DependentUpon>FormsScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Screens\GameScreen.cs" />
+    <Compile Include="Screens\GameScreen.Generated.cs">
+      <DependentUpon>GameScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Screens\GlobalContentScreen.cs" />
     <Compile Include="Screens\GlobalContentScreen.Generated.cs">
       <DependentUpon>GlobalContentScreen.cs</DependentUpon>
@@ -1257,6 +1271,10 @@
     <Compile Include="Screens\LayerScreen.cs" />
     <Compile Include="Screens\LayerScreen.Generated.cs">
       <DependentUpon>LayerScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Level1.cs" />
+    <Compile Include="Screens\Level1.Generated.cs">
+      <DependentUpon>Level1.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\ListScreen.cs" />
     <Compile Include="Screens\ListScreen.Generated.cs">
@@ -1391,12 +1409,11 @@
     <Compile Include="TileGraphics\TileNodeNetworkCreator.cs" />
     <Compile Include="TileGraphics\Tileset.cs" />
     <Compile Include="TileGraphics\TilesetExtensionMethods.cs" />
-    <Compile Include="TopDown\AnimationSet.Generated.cs" />
-    <Compile Include="TopDown\DirectionBasedAnimationLayer.Generated.cs" />
     <Compile Include="TopDown\Enums.Generated.cs" />
     <Compile Include="TopDown\Interfaces.Generated.cs" />
     <Compile Include="TopDown\TopDownAiInput.Generated.cs" />
     <Compile Include="TopDown\TopDownAiTargetLogic.Generated.cs" />
+    <Compile Include="TopDown\TopDownAnimationControllerGenerator.Generated.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
@@ -2109,6 +2126,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>FormsScreenGum</Name>
     </None>
+    <None Include="content\gumproject\screens\gamescreengum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>GameScreenGum</Name>
+    </None>
     <None Include="content\gumproject\screens\gumscreenlayeredgum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>gumscreenlayeredgum</Name>
@@ -2120,6 +2141,10 @@
     <None Include="content\gumproject\screens\inputscreengum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>inputscreengum</Name>
+    </None>
+    <None Include="content\gumproject\screens\level1gum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Level1Gum</Name>
     </None>
     <None Include="content\gumproject\screens\rendertargetscreengum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -2364,6 +2389,10 @@
     <None Include="content\screens\layerscreen\scenefile.scnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>SceneFile</Name>
+    </None>
+    <None Include="content\screens\level1\level1map.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Level1Map</Name>
     </None>
     <None Include="content\screens\localizationscreen\scenefile.scnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

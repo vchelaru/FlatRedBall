@@ -83,15 +83,29 @@ namespace GlueTestProject.Screens
             var dialogBox = Forms.DialogBoxInstance;
 
             var styledString =
-                "This is [Color= Orange]some really[/ Color] long[Color = Pink] text[/ Color]. [Color= Purple]We[/ Color] want to show long text so that it line wraps[Color = Cyan]and[/ Color] so that it has[Color = Green]enough[/ Color] text to fill an[Color = Yellow]entire page[/ Color]. The DialogBox control should automatically detect if the text is too long for a single page and it should break it up into multiple pages.You can advance this dialog by clicking on it with the[Color = Blue]mouse[/ Color] or by pressing the[Color = Gold]space bar[/ Color] on the keyboard.";
-
-            dialogBox.Show(styledString);
+                "This is [Color=Orange]some really[/Color] long[Color=Pink] text[/Color]. " +
+                "[Color=Purple]We[/Color] want to show long text so that it line wraps[Color=Cyan] " +
+                "and[/Color] so that it has [Color=Green]enough[/Color] text to fill an " +
+                "[Color=Yellow]entire page[/Color]. The DialogBox control should automatically " +
+                "detect if the text is too long for a single page and it should break it up into " +
+                "multiple pages.You can advance this dialog by clicking on it with the " +
+                "[Color=Blue]mouse[/Color] or by pressing the [Color=Gold]space bar[/Color] " +
+                "on the keyboard.";
+            dialogBox.LettersPerSecond = null;
 
             var gumObject = dialogBox.Visual;
-            var textRenderable = gumObject.GetGraphicalUiElementByName("TextInstance").Component as RenderingLibrary.Graphics.Text;
+            var gue = gumObject.GetGraphicalUiElementByName("TextInstance");
+            gue.TextOverflowVerticalMode = RenderingLibrary.Graphics.TextOverflowVerticalMode.TruncateLine;
+            dialogBox.Show(styledString);
 
-            textRenderable.WrappedText.Count.ShouldBe(6);
+            // As of Feb 22, 2024 this is an old .glux so it doesn't codegen the height limit:
 
+            var textRenderable = gue.Component as RenderingLibrary.Graphics.Text;
+
+            textRenderable.WrappedText.Count.ShouldBe(5);
+
+            var areAnyBlank = textRenderable.WrappedText.Any(item => string.IsNullOrEmpty(item));
+            areAnyBlank.ShouldNotBe(true, "because paging should not result in any blank lines");
         }
 
         private void TestRemovalOfBinding()
@@ -187,7 +201,7 @@ namespace GlueTestProject.Screens
 		{
             IsActivityFinished = true;
 
-		}
+        }
 
 		void CustomDestroy()
 		{

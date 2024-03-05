@@ -163,10 +163,14 @@ namespace FlatRedBall.Glue.Elements
         public string AddManuallyUpdatedMethod;
         /// <summary>
         /// A string used to generate every-frame activity. The string replaces "this" with the object 
-        /// name, and automatically adds a semicolon at the end.
+        /// name, and automatically adds a semicolon at the end. Note that this does not get called if an
+        /// object comes from-file. The reason for this is to prevent double-calls if the file itself has an
+        /// activity method.
         /// </summary>
         /// <example>"this?.AnimateSelf()"</example>
         public string ActivityMethod;
+
+
         public string AfterCustomActivityMethod;
 
         /// <summary>

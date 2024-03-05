@@ -314,7 +314,7 @@ namespace FlatRedBall.IO
 
 #endregion
 
-#region Public Methods
+        #region Public Methods
 
         #region Caching Methods
         public static void CacheObject(object objectToCache, string fileName)
@@ -419,7 +419,6 @@ namespace FlatRedBall.IO
         }
 
 
-#region XML Docs
         /// <summary>
         /// Returns whether the file exists considering the relative directory.
         /// </summary>
@@ -430,7 +429,6 @@ namespace FlatRedBall.IO
         /// a project's content. Therefore this internally will use the preferred way of checking for files per platform.
         /// iOS and Android use the TitleContainer.OpenStream method.
         /// </remarks>
-#endregion
         public static bool FileExists(string fileName)
         {
             if (IsRelative(fileName))
@@ -507,7 +505,6 @@ namespace FlatRedBall.IO
         }
         
 
-#if !WINDOWS_8
         /// <summary>
         /// Searches the passed directory and all subdirectories for the passed file.
         /// </summary>
@@ -539,18 +536,15 @@ namespace FlatRedBall.IO
             return "";
         }
 
-#region XML Docs
         /// <summary>
         /// Searches the executable's director and all subdirectories for the passed file.
         /// </summary>
         /// <param name="fileToFind">The name of the file which may or may not include an extension.</param>
         /// <returns>The full path of the first file found matching the name, or an empty string if none is found</returns>
-#endregion
         public static string FindFileInDirectory(string fileToFind)
         {
             return FindFileInDirectory(FileManager.RelativeDirectory);
         }
-#endif
 
 
         
@@ -668,7 +662,6 @@ namespace FlatRedBall.IO
             return buffer;
         }
 
-#region XML Docs
         /// <summary>
         /// Returns the extension in a filename.
         /// </summary>
@@ -684,7 +677,6 @@ namespace FlatRedBall.IO
         /// </remarks>
         /// <param name="fileName">The filename.</param>
         /// <returns>Returns the extension or an empty string if no period is found in the filename.</returns>
-#endregion
         public static string GetExtension(string fileName)
         {
             if (fileName == null)
@@ -806,7 +798,7 @@ namespace FlatRedBall.IO
         }
 
 
-#region GetAllFilesInDirectory
+        #region GetAllFilesInDirectory
 
 
         /// <summary>
@@ -1035,7 +1027,6 @@ namespace FlatRedBall.IO
         
 
 
-#region XML Docs
         /// <summary>
         /// Determines whether a particular file is a graphical file that can be loaded by the FRB Engine.
         /// </summary>
@@ -1045,7 +1036,6 @@ namespace FlatRedBall.IO
         /// </remarks>
         /// <param name="fileToTest">The file name to test.</param>
         /// <returns>Whether the file is a graphic file.</returns>
-#endregion
         public static bool IsGraphicFile(string fileToTest)
         {
 
@@ -1149,7 +1139,7 @@ namespace FlatRedBall.IO
         }
 
 
-#region Make Absolute/Make Relative
+        #region Make Absolute/Make Relative
 
         public static string MakeAbsolute(string pathToMakeAbsolute)
         {
@@ -1243,7 +1233,7 @@ namespace FlatRedBall.IO
 
         }
 
-#endregion
+        #endregion
 
 
         /// <summary>
@@ -1750,7 +1740,7 @@ namespace FlatRedBall.IO
         }
 
 
-#region XML Methods
+        #region XML Methods
 
         public static T XmlDeserialize<T>(string fileName)
         {
@@ -2180,9 +2170,9 @@ namespace FlatRedBall.IO
 			return new XElement(xmlDocument.Name.LocalName, xmlDocument.Elements().Select(el => RemoveAllNamespaces(el)));
 		}
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
         #region Internal Methods
 

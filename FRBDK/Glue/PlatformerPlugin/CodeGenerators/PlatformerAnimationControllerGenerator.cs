@@ -6,50 +6,50 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FlatRedBall.PlatformerPlugin.Generators
+namespace FlatRedBall.PlatformerPlugin.Generators;
+
+public class PlatformerAnimationControllerGenerator : Singleton<PlatformerAnimationControllerGenerator>
 {
-    public class PlatformerAnimationControllerGenerator : Singleton<PlatformerAnimationControllerGenerator>
+    string RelativeFileLocation => "Platformer/PlatformerAnimationController.Generated.cs";
+    public FilePath FileLocation => GlueState.Self.CurrentGlueProjectDirectory + RelativeFileLocation;
+
+
+    public void GenerateAndSave()
     {
-        string RelativeFileLocation => "Platformer/PlatformerAnimationController.Generated.cs";
-        public FilePath FileLocation => GlueState.Self.CurrentGlueProjectDirectory + RelativeFileLocation;
 
-
-        public void GenerateAndSave()
+        TaskManager.Self.Add(() =>
         {
+            var contents = GenerateFileContents();
 
-            TaskManager.Self.Add(() =>
+            var relativeDirectory = RelativeFileLocation;
+
+            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeDirectory);
+
+            var glueProjectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
+
+            if (!string.IsNullOrEmpty(glueProjectDirectory))
             {
-                var contents = GenerateFileContents();
+                var fullFile = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
 
-                var relativeDirectory = RelativeFileLocation;
-
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeDirectory);
-
-                var glueProjectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
-
-                if (!string.IsNullOrEmpty(glueProjectDirectory))
+                try
                 {
-                    var fullFile = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
-
-                    try
-                    {
-                        GlueCommands.Self.TryMultipleTimes(() =>
-                            System.IO.File.WriteAllText(fullFile, contents));
-                    }
-                    catch (Exception e)
-                    {
-                        GlueCommands.Self.PrintError(e.ToString());
-                    }
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                        System.IO.File.WriteAllText(fullFile, contents));
                 }
+                catch (Exception e)
+                {
+                    GlueCommands.Self.PrintError(e.ToString());
+                }
+            }
 
-            }, "Adding PlatformerAnimationConfiguration.Generated.cs to the project");
+        }, "Adding PlatformerAnimationConfiguration.Generated.cs to the project");
 
 
-        }
+    }
 
-        private string GenerateFileContents()
-        {
-            var toReturn =
+    private string GenerateFileContents()
+    {
+        var toReturn =
 @"
 using System.Linq;
 
@@ -127,17 +127,17 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
 
 ";
 
-            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AnimationLayerHasName)
-            {
-                toReturn +=
-                    @"
+        if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AnimationLayerHasName)
+        {
+            toReturn +=
+                @"
             layer.Name = configuration.AnimationName;
 ";
 
-            }
+        }
 
-            toReturn +=
-                @"
+        toReturn +=
+            @"
             layer.EveryFrameAction = () =>
             {
                 if(!IsActive)
@@ -264,7 +264,6 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
 }
 
 ";
-            return toReturn;
-        }
+        return toReturn;
     }
 }

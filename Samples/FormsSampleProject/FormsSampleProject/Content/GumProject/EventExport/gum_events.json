@@ -161,6 +161,202 @@
         "ElementType": "Screens",
         "EventType": 7,
         "TimestampUtc": "2024-02-12T13:42:41.0259382Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 0,
+        "TimestampUtc": "2024-02-25T19:17:38.433605Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).ContainerInstance",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:20:32.4639418Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).IconInstance",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:21:29.5996579Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).IconInstance1",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:22:12.8564286Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).IconInstance2",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:22:13.2055741Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).IconInstance3",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:22:13.4208975Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).IconInstance4",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:22:13.6135859Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).IconInstance5",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:22:45.9173244Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).TextInstance",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:23:39.623729Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).ContainerInstance1",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:24:56.4939904Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).IconInstance6",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:25:31.1045722Z"
+      },
+      {
+        "NewName": "ButtonBottom",
+        "OldName": "BasketCopy",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2024-02-25T19:27:34.5506662Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).ContainerInstance2",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:37:36.1404334Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelectionItem",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 0,
+        "TimestampUtc": "2024-02-25T19:40:05.1270088Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelectionItem (Container).TextInstance",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:45:06.6778473Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelectionItem (Container).IconInstance",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:45:32.4539407Z"
+      },
+      {
+        "NewName": "HasInputDevice",
+        "OldName": "NoInputDeviceCopy",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2024-02-25T19:51:34.5535347Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).InputDeviceSelectionItemInstance",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:53:49.5887488Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).InputDeviceSelectionItemInstance1",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:54:19.4943881Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).InputDeviceSelectionItemInstance2",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:54:20.3002084Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).InputDeviceSelectionItemInstance3",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:54:21.4446808Z"
+      },
+      {
+        "NewName": "InputJoinScreenGum.InputDeviceSelectorInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-02-25T19:56:58.7191343Z"
+      },
+      {
+        "NewName": "Controls/InputDeviceSelector (Container).InputDeviceContainerInstance",
+        "OldName": "Controls/InputDeviceSelector (Container).ContainerInstance2",
+        "ElementType": "Components",
+        "EventType": 7,
+        "TimestampUtc": "2024-02-25T20:18:05.5169035Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "Controls/InputDeviceSelector (Container).Controls/InputDeviceSelectionItem InputDeviceSelectionItemInstance in Controls/InputDeviceSelector (Container)",
+        "ElementType": "Components",
+        "EventType": 6,
+        "TimestampUtc": "2024-02-25T21:03:20.3408223Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "Controls/InputDeviceSelector (Container).Controls/InputDeviceSelectionItem InputDeviceSelectionItemInstance1 in Controls/InputDeviceSelector (Container)",
+        "ElementType": "Components",
+        "EventType": 6,
+        "TimestampUtc": "2024-02-25T21:03:23.1957901Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "Controls/InputDeviceSelector (Container).Controls/InputDeviceSelectionItem InputDeviceSelectionItemInstance2 in Controls/InputDeviceSelector (Container)",
+        "ElementType": "Components",
+        "EventType": 6,
+        "TimestampUtc": "2024-02-25T21:03:26.0611606Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "Controls/InputDeviceSelector (Container).Controls/InputDeviceSelectionItem InputDeviceSelectionItemInstance3 in Controls/InputDeviceSelector (Container)",
+        "ElementType": "Components",
+        "EventType": 6,
+        "TimestampUtc": "2024-02-25T21:03:28.8619691Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "Controls/InputDeviceSelector (Container).Elements/Icon IconInstance6 in Controls/InputDeviceSelector (Container)",
+        "ElementType": "Components",
+        "EventType": 6,
+        "TimestampUtc": "2024-02-25T21:35:56.0370013Z"
       }
     ],
     "Owner": [

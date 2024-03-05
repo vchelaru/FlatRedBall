@@ -5,7 +5,7 @@
   <Version>1</Version>
   <DefaultCanvasWidth>800</DefaultCanvasWidth>
   <DefaultCanvasHeight>600</DefaultCanvasHeight>
-  <ShowOutlines>false</ShowOutlines>
+  <ShowOutlines>true</ShowOutlines>
   <ShowCanvasOutline>true</ShowCanvasOutline>
   <ShowRuler>true</ShowRuler>
   <ShowCheckerBackground>true</ShowCheckerBackground>
@@ -16,6 +16,11 @@
   <ParentProjectRoot>../</ParentProjectRoot>
   <ShowLocalizationInGum>true</ShowLocalizationInGum>
   <CurrentLanguageIndex>0</CurrentLanguageIndex>
+  <ScreenReference>
+    <Name>InputJoinScreenGum</Name>
+    <ElementType>Screen</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ScreenReference>
   <ScreenReference>
     <Name>MainMenuGum</Name>
     <ElementType>Screen</ElementType>
@@ -73,6 +78,16 @@
   </ComponentReference>
   <ComponentReference>
     <Name>Controls/DialogBox</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>Controls/InputDeviceSelectionItem</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>Controls/InputDeviceSelector</Name>
     <ElementType>Component</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
   </ComponentReference>

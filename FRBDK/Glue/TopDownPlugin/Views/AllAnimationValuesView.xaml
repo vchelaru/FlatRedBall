@@ -6,13 +6,21 @@
              xmlns:local="clr-namespace:TopDownPlugin.Views"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="300">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <ItemsControl ItemsSource="{Binding AnimationRows}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <local:AnimationRow Margin="0, 0, 0, 5"></local:AnimationRow>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </ScrollViewer>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="0">
+            <ItemsControl ItemsSource="{Binding AnimationRows}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:AnimationRow Margin="0, 0, 0, 5"></local:AnimationRow>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <Button Grid.Row="1" Click="AddAnimationEntryButtonClicked">Add Animation Entry</Button>
+    </Grid>
 </UserControl>

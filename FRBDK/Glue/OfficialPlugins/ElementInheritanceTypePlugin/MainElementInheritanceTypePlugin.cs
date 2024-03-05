@@ -24,7 +24,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin
 
         public override void StartUp()
         {
-            this.RegisterCodeGenerator(new ElementInheritanceTypeCodeGenerator());
+            this.RegisterCodeGenerator(new ElementVariantCodeGenerator());
         }
     }
 }

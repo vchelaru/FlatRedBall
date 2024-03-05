@@ -15,6 +15,7 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 using FlatRedBall.Glue.Parsing;
 using Gum.DataTypes.Variables;
+using NAudio.SoundFont;
 
 namespace GumPlugin.Managers
 {
@@ -706,19 +707,22 @@ namespace GumPlugin.Managers
 
                 newAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos, qualifiedName);
 
-                var version =
-                    GlueState.Self.CurrentGlueProject?.FileVersion;
-
-                var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
-                    GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
-                if (hasCommon)
-                {
-                    newAti.ActivityMethod = "this?.AnimateSelf(FlatRedBall.TimeManager.SecondDifference)";
-                }
-                else if (version >= (int)GlueProjectSave.GluxVersions.GumSupportsAchxAnimation)
-                {
-                    newAti.ActivityMethod = "this?.AnimateSelf()";
-                }
+                // March 3, 2024
+                // If this is not
+                // a screen, it may
+                // be a component that
+                // is part of a FRB Entity.
+                // In that case, it should still
+                // have its Activity called, so this
+                // is being moved out of the if-statement.
+                //if (hasCommon)
+                //{
+                //    newAti.ActivityMethod = "this?.AnimateSelf(FlatRedBall.TimeManager.SecondDifference)";
+                //}
+                //else if (version >= (int)GlueProjectSave.GluxVersions.GumSupportsAchxAnimation)
+                //{
+                //    newAti.ActivityMethod = "this?.AnimateSelf()";
+                //}
 
 
                 newAti.AddToManagersMethod.Clear();
@@ -728,6 +732,24 @@ namespace GumPlugin.Managers
                 newAti.DestroyFunc = screenAti.DestroyFunc;
                 newAti.DestroyMethod = screenAti.DestroyMethod;
             }
+
+            var version =
+                GlueState.Self.CurrentGlueProject?.FileVersion;
+
+            var hasCommon = version >= (int)GluxVersions.GumCommonCodeReferencing ||
+                GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+
+
+            if (hasCommon)
+            {
+                newAti.ActivityMethod = "this?.AnimateSelf(FlatRedBall.TimeManager.SecondDifference)";
+            }
+            else if (version >= (int)GlueProjectSave.GluxVersions.GumSupportsAchxAnimation)
+            {
+                newAti.ActivityMethod = "this?.AnimateSelf()";
+            }
+
+
             string unqualifiedName = element.Name + "Runtime";
             newAti.FriendlyName = unqualifiedName;
             newAti.ConstructorFunc = GetGumElementConstructorFunct;

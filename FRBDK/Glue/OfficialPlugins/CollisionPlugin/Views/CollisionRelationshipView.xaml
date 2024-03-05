@@ -199,7 +199,7 @@
 
             <GroupBox Header="{x:Static localization:Texts.Damage}" Visibility="{Binding DamageValuesVisibility}" Margin="0,8,0,0">
                 <StackPanel>
-                    <CheckBox Visibility="{Binding DealDamageCheckBoxVisibility}" IsChecked="{Binding IsDealDamageChecked}" Content="{x:Static localization:Texts.DamageInGeneratedCode}" />
+                    <CheckBox Visibility="{Binding DealDamageCheckBoxVisibility}" IsChecked="{Binding IsDealDamageChecked}" Content="{Binding DamageInGeneratedCodeCheckboxText, FallbackValue='Deal Damage to X in Generated Code'}" />
                     <CheckBox Visibility="{Binding DestroyFirstOnDamageVisibility}" Margin="0,5,0,0"
                               IsChecked="{Binding IsDestroyFirstOnDamageChecked}" Content="{Binding DestroyFirstOnDamageText, FallbackValue=Destroy First on Damage}"></CheckBox>
                     <GroupBox Header="{x:Static localization:Texts.Destruction}" Visibility="{Binding FirstDestructionOptionsVisibility}">

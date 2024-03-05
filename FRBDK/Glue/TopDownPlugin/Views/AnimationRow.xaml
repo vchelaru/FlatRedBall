@@ -3,39 +3,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
+
              xmlns:local="clr-namespace:TopDownPlugin.Views"
              mc:Ignorable="d" 
-             Height="Auto" d:DesignWidth="800">
-    <Border CornerRadius="4" BorderThickness="1" BorderBrush="DarkGray">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
-            <TextBlock 
-            Text="{Binding AnimationRowName}" 
-            Margin="20 0 0 0"
-            Grid.Row="0"
-            >
-        </TextBlock>
-        <ScrollViewer Margin="2,2"
-            HorizontalScrollBarVisibility="Auto" 
-            VerticalScrollBarVisibility="Hidden"
-            Grid.Row="1"
-            Height="Auto">
-            <ItemsControl ItemsSource="{Binding Animations}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <local:EightWayAnimationControl Margin="7,3"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </ScrollViewer>
+             d:DesignHeight="250" d:DesignWidth="200">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <wpfdataui:DataUiGrid CategoriesOrientation="Horizontal" x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
+        <StackPanel Grid.Column="1">
+            <Button x:Name="CloseButton" Command="{Binding RemoveCommand}">X</Button>
+            <Button x:Name="MoveUpButton" Command="{Binding MoveUpCommand}" Margin="0,5,0,0">^</Button>
+            <Button x:Name="MoveDownButton" Command="{Binding MoveDownCommand}" Width="22">v</Button>
+            <Button x:Name="DuplicateButton" Command="{Binding DuplicateCommand}" Width="22" Margin="0,5,0,0">
+                <Image Source="/TopDownPluginCore;component/Content/Icons/icon_duplicate.png" ></Image>
+                <Button.ToolTip>
+                    <Label Content="{x:Static localization:Texts.HintCreateDuplicateAnimationLayer}" />
+                </Button.ToolTip>
+            </Button>
+        </StackPanel>
     </Grid>
-    </Border>
 </UserControl>

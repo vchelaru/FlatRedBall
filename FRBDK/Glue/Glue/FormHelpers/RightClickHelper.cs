@@ -481,8 +481,6 @@ public static class RightClickHelper
     static GeneralToolStripMenuItem mRemoveFromProjectQuick;
     static GeneralToolStripMenuItem mCreateNewFileForMissingFile;
 
-    static GeneralToolStripMenuItem mViewFileLoadOrder;
-
     static GeneralToolStripMenuItem mCreateZipPackage;
     static GeneralToolStripMenuItem mExportElement;
 
@@ -716,8 +714,6 @@ public static class RightClickHelper
             Add(L.Texts.CodeRegenerate, () => HandleReGenerateCodeClick(targetNode));
 
             Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode));
-
-            AddItem(mViewFileLoadOrder);
         }
         #endregion
 

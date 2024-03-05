@@ -1267,15 +1267,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Deal Damage in Generated Code.
-        /// </summary>
-        public static string DamageInGeneratedCode {
-            get {
-                return ResourceManager.GetString("DamageInGeneratedCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Default Air Control.
         /// </summary>
         public static string DefaultAirControl {

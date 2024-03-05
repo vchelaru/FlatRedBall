@@ -580,11 +580,21 @@ namespace FlatRedBall
             return Screens.ScreenManager.CurrentScreen.PauseAdjustedSecondsSince(time);
         }
 
+        /// <summary>
+        /// Returns a task which completes after the argument timespan has passed in screen time. This considers slow-motion and pausing.
+        /// </summary>
+        /// <param name="timeSpan">The amount of time to wait.</param>
+        /// <returns>A task which will complete when the arugment time passes.</returns>
         public static Task Delay(TimeSpan timeSpan)
         {
             return DelaySeconds(timeSpan.TotalSeconds);
         }
 
+        /// <summary>
+        /// Returns a task which completes after the argument seconds have passed in screen time. This considers slow-motion and pausing.
+        /// </summary>
+        /// <param name="seconds">The number of seconds to wait.</param>
+        /// <returns>The task which will complete when the argument time passes.</returns>
         public static Task DelaySeconds(double seconds)
         {
             if(seconds <= 0)
@@ -609,6 +619,11 @@ namespace FlatRedBall
             return taskSource.Task;
         }
 
+        /// <summary>
+        /// Returns a task which completes once the argument predicate is fulfilled. This is checked once per frame.
+        /// </summary>
+        /// <param name="predicate">The predicate to check for completion.</param>
+        /// <returns>The task which will complete when the predicate returns true.</returns>
         public static Task DelayUntil(Func<bool> predicate)
         {
             if(predicate())
@@ -620,6 +635,11 @@ namespace FlatRedBall
             return taskSource.Task;
         }
 
+        /// <summary>
+        /// Returns a task which completes after the argument number of frames have passed.
+        /// </summary>
+        /// <param name="frameCount">The number of frames to wait.</param>
+        /// <returns>That task which completes once the argument number of rames have passed.</returns>
         public static Task DelayFrames(int frameCount)
         {
             if(frameCount <= 0)

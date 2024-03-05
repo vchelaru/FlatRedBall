@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using TopDownPlugin.Models;
 
 namespace TopDownPlugin.ViewModels
 {
@@ -112,5 +113,44 @@ namespace TopDownPlugin.ViewModels
         {
             base.NotifyPropertyChanged(nameof(this.TopDownValues));
         }
+
+        public void AssignAnimationRowEvents(AnimationRowViewModel viewModel)
+        {
+            viewModel.MoveUp += () =>
+            {
+                var index = this.AnimationRows.IndexOf(viewModel);
+                if (index > 0)
+                {
+                    this.AnimationRows.Move(index, index - 1);
+                }
+            };
+
+            viewModel.MoveDown += () =>
+            {
+                var index = this.AnimationRows.IndexOf(viewModel);
+                if (index < this.AnimationRows.Count - 1)
+                {
+                    this.AnimationRows.Move(index, index + 1);
+                }
+            };
+
+            viewModel.Remove += () =>
+            {
+                this.AnimationRows.Remove(viewModel);
+            };
+
+            viewModel.Duplicate += () =>
+            {
+                var values = new IndividualTopDownAnimationValues();
+                viewModel.ApplyTo(values);
+
+                var newVm = new AnimationRowViewModel();
+                newVm.SetFrom(values);
+                AssignAnimationRowEvents(newVm);
+                var newIndex = this.AnimationRows.IndexOf(viewModel) + 1;
+                this.AnimationRows.Insert(newIndex, newVm);
+            };
+        }
+
     }
 }

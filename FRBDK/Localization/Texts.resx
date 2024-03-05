@@ -1543,9 +1543,6 @@ for {1}?</value>
   <data name="CollisionApplyPhysics" xml:space="preserve">
     <value>Automatically Apply Physics On Collision</value>
   </data>
-  <data name="DamageInGeneratedCode" xml:space="preserve">
-    <value>Deal Damage in Generated Code</value>
-  </data>
   <data name="Always" xml:space="preserve">
     <value>Always</value>
   </data>

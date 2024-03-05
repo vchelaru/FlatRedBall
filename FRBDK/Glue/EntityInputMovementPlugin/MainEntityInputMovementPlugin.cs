@@ -13,6 +13,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.FormHelpers;
 using System.Threading.Tasks;
 using PlatformerPluginCore.Views;
+using FlatRedBall.IO;
 
 namespace EntityInputMovementPlugin
 {
@@ -43,6 +44,7 @@ namespace EntityInputMovementPlugin
             base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new PlatformerPluginCore.CodeGenerators.EntityPlatformerAnimationCodeGenerator());
+            base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityTopDownAnimationCodeGenerator());
             base.RegisterCodeGenerator(new CodeGenerators.EntityCodeGenerator());
             AssignEvents();
         }
@@ -142,20 +144,36 @@ namespace EntityInputMovementPlugin
                 TopDownPlugin.CodeGenerators.InterfacesFileGenerator.Self.GenerateAndSave();
                 TopDownPlugin.CodeGenerators.AiCodeGenerator.Self.GenerateAndSave();
                 TopDownPluginCore.CodeGenerators.AiTargetLogicCodeGenerator.Self.GenerateAndSave();
-                TopDownPlugin.CodeGenerators.AnimationCodeGenerator.Self.GenerateAndSave();
 
                 var topDownController = TopDownPlugin.Controllers.MainController.Self;
 
                 // This guarantees a instance exists in the controller and returns it...
                 var viewModel =
                     TopDownPlugin.Controllers.MainController.Self.GetViewModel();
+
+
+
                 // ...updating to the argument entity will update the view model that was returned in the last call.
                 TopDownPlugin.Controllers.MainController.Self.UpdateTo(firstTopDownEntity);
                 
                 await topDownController.GenerateAndAddCsv(
                     firstTopDownEntity,
                     viewModel);
+
+                TopDownPlugin.CodeGenerators.TopDownAnimationControllerGenerator.Self.GenerateAndSave();
+
             }
+            else
+            {
+                // Platformer removes here. Should we also remove top-down?
+                GlueCommands.Self.ProjectCommands.RemoveFromProjects(TopDownPlugin.CodeGenerators.TopDownAnimationControllerGenerator.Self.FileLocation);
+            }
+
+            // Remove old files no longer needed:
+            var projectLocation = GlueState.Self.CurrentGlueProjectDirectory;
+            GlueCommands.Self.ProjectCommands.RemoveFromProjects(new FilePath( projectLocation + "TopDown\\AnimationSet.Generated.cs"));
+            GlueCommands.Self.ProjectCommands.RemoveFromProjects(new FilePath( projectLocation + "TopDown\\DirectionBasedAnimationLayer.Generated.cs"));
+
 
             // remove requirement for the old top-down plugin otherwise projects will get a message forever about it:
             var didChangeGlux = GlueCommands.Self.GluxCommands.SetPluginRequirement(
@@ -207,6 +225,7 @@ namespace EntityInputMovementPlugin
             var topDownViewModel = TopDownPlugin.Controllers.MainController.Self.GetViewModel();
             mainViewModel.TopDownViewModel = topDownViewModel;
             mainView.TopDownView.DataContext = topDownViewModel;
+            TopDownPlugin.Controllers.AnimationController.TopDownViewModel = topDownViewModel;
             #endregion
 
             #region Platformer
