@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using System.Security.Cryptography.X509Certificates;
+
 
 #if FRB_MDX
 #elif SILVERLIGHT
@@ -21,7 +23,7 @@ namespace FlatRedBall.Utilities
     {
         #region Fields
 
-        static char[] sValidNumericalChars = { '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ',' };
+        static HashSet<char> sValidNumericalChars = new HashSet<char> { '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ',' };
 
 
         #endregion
@@ -260,15 +262,7 @@ namespace FlatRedBall.Utilities
 
                     for (int i = startOfNumber; i < endOfNumber; i++)
                     {
-                        bool found = false;
-                        for (int indexInArray = 0; indexInArray < sValidNumericalChars.Length; indexInArray++)
-                        {
-                            if (whereToSearch[i] == sValidNumericalChars[indexInArray])
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
+                        bool found = sValidNumericalChars.Contains(whereToSearch[i]);
 
                         if (!found)
                         {
@@ -353,71 +347,94 @@ namespace FlatRedBall.Utilities
         {
             int startOfNumber = -1;
             int endOfNumber = -1;
-            int enterAt = -1;
-            int carriageReturn = -1;
-            string substring = "uninitialized";
+            string substring = string.Empty;
 
             try
             {
                 int indexOf = whereToSearch.IndexOf(stringToSearchFor, startIndex);
+
                 if (indexOf != -1)
                 {
                     startOfNumber = indexOf + stringToSearchFor.Length;
-                    endOfNumber = whereToSearch.IndexOf(' ', startOfNumber);
-                    enterAt = whereToSearch.IndexOf('\n', startOfNumber);
+                    endOfNumber = startIndex;
 
-                    carriageReturn = whereToSearch.IndexOf('\r', startOfNumber);
-                    if ( carriageReturn != -1 && carriageReturn < enterAt)
-                        enterAt = whereToSearch.IndexOf('\r', startOfNumber);
-
-                    if (endOfNumber == -1)
-                        endOfNumber = whereToSearch.Length;
-
-                    for (int i = startOfNumber; i < endOfNumber; i++)
+                    for(int i = startOfNumber; i < whereToSearch.Length; i++)
                     {
-                        bool found = false;
-                        for (int indexInArray = 0; indexInArray < sValidNumericalChars.Length; indexInArray++)
+                        if (!sValidNumericalChars.Contains(whereToSearch[i]))
                         {
-                            if (whereToSearch[i] == sValidNumericalChars[indexInArray])
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if (!found)
-                        {
-                            // if we got here, then the character is not valid, so end the string
-                            endOfNumber = i;
                             break;
                         }
-
+                        else
+                        {
+                            endOfNumber = i+1;
+                        }
                     }
 
+                    if(endOfNumber != startOfNumber)
+                    {
+                        substring = whereToSearch.Substring(startOfNumber,
+                            endOfNumber - startOfNumber);
 
-                    if (endOfNumber == -1 || (enterAt != -1 && enterAt < endOfNumber))
-                        endOfNumber = enterAt;
-                    if (endOfNumber == -1)
-                        endOfNumber = whereToSearch.Length;
-
-                    substring = whereToSearch.Substring(startOfNumber,
-                        endOfNumber - startOfNumber);
-
-                    // this method is called when reading from a file.  
-                    // usually, files use the . rather than other numerical formats, so if this fails, just use the regular . format
-                    int toReturn = int.Parse(substring);
-                    return toReturn;
-
+                        // this method is called when reading from a file.  
+                        // usually, files use the . rather than other numerical formats, so if this fails, just use the regular . format
+                        int toReturn = int.Parse(substring);
+                        return toReturn;
+                    }
                 }
             }
             catch (System.FormatException)
             {
                 return int.Parse(substring, System.Globalization.NumberFormatInfo.InvariantInfo);
-
             }
-
             return 0;
+        }
 
+        public static int GetIntAfter(string stringToSearchFor, string whereToSearch, ref int startIndex)
+        {
+            int startOfNumber = -1;
+            int endOfNumber = -1;
+            string substring = string.Empty;
+
+            try
+            {
+                int indexOf = whereToSearch.IndexOf(stringToSearchFor, startIndex);
+
+                if (indexOf != -1)
+                {
+                    startOfNumber = indexOf + stringToSearchFor.Length;
+                    endOfNumber = startIndex;
+
+                    startIndex = startOfNumber;
+                    for (int i = startOfNumber; i < whereToSearch.Length; i++)
+                    {
+                        startIndex = i + 1;
+                        if (!sValidNumericalChars.Contains(whereToSearch[i]))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            endOfNumber = i + 1;
+                        }
+                    }
+
+                    if (endOfNumber > startOfNumber)
+                    {
+                        substring = whereToSearch.Substring(startOfNumber,
+                            endOfNumber - startOfNumber);
+
+                        // this method is called when reading from a file.  
+                        // usually, files use the . rather than other numerical formats, so if this fails, just use the regular . format
+                        int toReturn = int.Parse(substring);
+                        return toReturn;
+                    }
+                }
+            }
+            catch (System.FormatException)
+            {
+                return int.Parse(substring, System.Globalization.NumberFormatInfo.InvariantInfo);
+            }
+            return 0;
         }
 
         static char[] WhitespaceChars = new char[] { ' ', '\n', '\t', '\r' };

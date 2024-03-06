@@ -68,7 +68,7 @@ namespace FlatRedBall.Graphics
         public int PageNumber;
 
 
-        public Dictionary<int, int> SecondLetterKearning = new Dictionary<int, int>();
+        public Dictionary<int, int> SecondLetterKearning;
 
         #endregion
 
