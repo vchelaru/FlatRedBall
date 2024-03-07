@@ -18,7 +18,7 @@ namespace GlueFormsCore.Extensions
         {
             window.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
 
-            if(double.IsNaN(window.Width) || double.IsNaN(window.Height))
+            if (double.IsNaN(window.Width) || double.IsNaN(window.Height))
                 try { window.UpdateLayout(); } catch { } //Can this throw exception? I don't know...
 
             double width = window.Width;
@@ -46,7 +46,7 @@ namespace GlueFormsCore.Extensions
             window.Left = System.Math.Max(0, mousePositionX - width / 2);
             window.Top = mousePositionY - height / 2;
 
-            window.ShiftWindowOntoScreen();
+            window.ShiftWindowOntoScreen(source);
         }
 
         public static void MoveToMainWindowCenterAndSize(this Window window, System.Windows.Forms.Form MainWindow, float WidthAmount = 0.75f, float HeightAmount = 0.75f)
@@ -54,14 +54,17 @@ namespace GlueFormsCore.Extensions
             const float MinSize = 400f;
 
             var mw = MainWindow;
-            if(mw != null) {
+            if (mw != null)
+            {
                 window.Width = mw.Width * WidthAmount;
                 window.Height = mw.Height * HeightAmount;
                 window.Left = mw.Left + ((mw.Width - window.Width) / 2);
                 window.Top = mw.Top + ((mw.Height - window.Height) / 4);
-                if(window.Width < MinSize) window.Width = MinSize;
-                if(window.Height < MinSize) window.Height = MinSize;
-            } else {
+                if (window.Width < MinSize) window.Width = MinSize;
+                if (window.Height < MinSize) window.Height = MinSize;
+            }
+            else
+            {
                 window.Width = MinSize;
                 window.Height = MinSize;
             }
@@ -74,9 +77,9 @@ namespace GlueFormsCore.Extensions
         ///     - Shift the window onto the visible screen.
         ///     - Shift the window away from overlapping the task bar.
         /// </summary>
-        public static void ShiftWindowOntoScreen(this Window window)
+        public static void ShiftWindowOntoScreen(this Window window, PresentationSource source = null)
         {
-            if(double.IsNaN(window.Height))
+            if (double.IsNaN(window.Height))
                 try { window.UpdateLayout(); } catch { } //Can this throw exception? I don't know...
 
             var heightToUse = window.Height;
@@ -86,6 +89,26 @@ namespace GlueFormsCore.Extensions
             }
             var screen = Screen.FromPoint(Cursor.Position);
             var bounds = screen.WorkingArea;
+
+            if (
+                // we have zoom info...
+                source != null &&
+                // screen isn't the primary screen...
+                screen != Screen.PrimaryScreen &&
+                // zoom isn't 1
+                source.CompositionTarget.TransformToDevice.M11 != 1
+                )
+            {
+                // There's a bug in winforms (or I just don't understand it)
+                // where the 2nd screen's values are multiplied by the transformation matrix. Let's divide
+                bounds = new Rectangle(
+                    (int)(bounds.X / source.CompositionTarget.TransformToDevice.M11),
+                    (int)(bounds.Y / source.CompositionTarget.TransformToDevice.M22),
+                    (int)(bounds.Width / source.CompositionTarget.TransformToDevice.M11),
+                    (int)(bounds.Height / source.CompositionTarget.TransformToDevice.M22)
+                                                                                                                   );
+            }
+
             // Note that "window.BringIntoView()" does not work.                            
             if (window.Top < bounds.Top)
             {
