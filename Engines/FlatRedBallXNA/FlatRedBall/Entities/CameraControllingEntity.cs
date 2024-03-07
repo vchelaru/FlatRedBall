@@ -39,6 +39,9 @@ namespace FlatRedBall.Entities
     {
         #region Fields/Properties
 
+        /// <summary>
+        /// The camera controlled by this instance.
+        /// </summary>
         public Camera Camera { get; set; }
 
         bool hasActivityBeenCalled = false;
@@ -114,9 +117,6 @@ namespace FlatRedBall.Entities
         /// </summary>
         public float ExtraMapPadding { get; set; }
 
-        /// <summary>
-        /// Whether to smoothly approach the target location. If false, the camera follows the entity without any smoothing.
-        /// </summary>
         [Obsolete("This variable is incorrectly named. Lerp means linear interpolation. While this is technically doing a liner interpolation every frame," +
             "the effect is not linear in the end, so this can be confusing. Use TargetApproachStyle instead.")]
         public bool LerpSmooth
@@ -199,7 +199,7 @@ namespace FlatRedBall.Entities
         /// <remarks>
         /// If TargetApproachStyle is Smooth, this is the velocity value per pixel offset from the target. For example, if this value is 5, and the target is 20 pixels away,
         /// then the velocity of the camera will be 20*5 = 100. 
-        /// If TargetApproachStyle is ConstantSpeed, this is the speed of the camera in pixels per second. regardless of the distance to the target.
+        /// If TargetApproachStyle is ConstantSpeed, this is the speed of the camera in pixels per second regardless of the distance to the target.
         /// </remarks>
         public float TargetApproachCoefficient { get; set; } = 5;
 
@@ -269,10 +269,20 @@ namespace FlatRedBall.Entities
             }
         }
 
+        /// <summary>
+        /// The offset to use when positioning the camera relative to this instance's position. By default this is 0, but setting
+        /// a non-zero results in the camera always being positioned by an offset.
+        /// </summary>
+        /// <example>
+        /// Setting this value to have a positive Y results in the Camera's center being above this instance's Y.
+        /// </example>
         public Vector3 CameraOffset;
 
         #endregion
 
+        /// <summary>
+        /// Instantiates a new CameraControllingEntity which follows the main Camear (Camera.Main).
+        /// </summary>
         public CameraControllingEntity()
         {
             Camera = Camera.Main;
@@ -293,6 +303,11 @@ namespace FlatRedBall.Entities
             this.furthestZoom = furthestZoom;
         }
 
+        /// <summary>
+        /// Performs every frame activity which updates this instance's position according to its targets and interpolation/zoom values.
+        /// This is typically called in generated code if the CameraControllingEntity is part of a Screen in the FRB Editor.
+        /// </summary>
+        /// <seealso cref="IsActive"/>
         public void Activity()
         {
             ///////////////////Early Out/////////////////////
@@ -612,6 +627,10 @@ namespace FlatRedBall.Entities
             return max - min;
         }
 
+        /// <summary>
+        /// Immediately gets the destination position according to the current targets and sets this instance's position to that destination.
+        /// This can be called to snap to the target position without any smoothing.
+        /// </summary>
         public void ForceToTarget()
         {
             var target = GetTarget();
@@ -720,6 +739,13 @@ namespace FlatRedBall.Entities
         }
 
         const float individualShakeDurationInSeconds = .05f;
+
+        /// <summary>
+        /// Shakes the screen for a certain duration. This can be used to create a screen shake effect.
+        /// </summary>
+        /// <param name="shakeRadius">The shake radius - a larger value creates more shaking.</param>
+        /// <param name="durationInSeconds">How long to perofrm shaking in seconds.</param>
+        /// <returns>A task which is completed when the shaking finishes.</returns>
         public async Task ShakeScreen(float shakeRadius, float durationInSeconds)
         {
 
@@ -739,6 +765,11 @@ namespace FlatRedBall.Entities
             CameraOffset.Y = 0;
         }
 
+        /// <summary>
+        /// Shakes the camera until the taskToAwait is completed. This can be used to shake the camera until a certain event occurs.
+        /// </summary>
+        /// <param name="shakeRadius">The shake radius - a larger value creates more shaking.</param>
+        /// <param name="taskToAwait">The task to await before shaking stops.</param>
         public async void ShakeScreenUntil(float shakeRadius, Task taskToAwait)
         {
             var random = FlatRedBallServices.Random;
