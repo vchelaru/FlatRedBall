@@ -150,13 +150,11 @@ namespace FlatRedBall.IO.Csv
 
     #endregion
 
-    #region XML Docs
     /// <summary>
     /// Represents the raw data loaded from a csv file.  This is
     /// used if the data must be processed or converted by hand to
     /// other object types.
     /// </summary>
-    #endregion
     public class RuntimeCsvRepresentation
     {
         #region Fields
@@ -231,6 +229,12 @@ namespace FlatRedBall.IO.Csv
             }
         }
 
+        /// <summary>
+        /// Converts the argument IList to a RuntimeCsvRepresentation.
+        /// </summary>
+        /// <typeparam name="T">The generic type of the list.</typeparam>
+        /// <param name="items">The list of items to conver to csv.</param>
+        /// <returns>The resulting RuntimeCsvRepresentation.</returns>
         public static RuntimeCsvRepresentation FromList<T>(IList<T> items)
         {
             RuntimeCsvRepresentation rcrToReturn = new RuntimeCsvRepresentation();
