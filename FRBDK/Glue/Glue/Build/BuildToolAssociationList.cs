@@ -51,7 +51,7 @@ namespace EditorObjects.SaveClasses
         public void SaveCsv(string fileName)
         {
 
-            RuntimeCsvRepresentation rcr = RuntimeCsvRepresentation.FromList<BuildToolAssociation>(this.BuildToolList);
+            var rcr = RuntimeCsvRepresentation.FromList(BuildToolList);
             CsvFileManager.Serialize(rcr, fileName);
 
         }
