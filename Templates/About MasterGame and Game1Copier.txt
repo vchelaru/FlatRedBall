@@ -1,3 +1,4 @@
 At some point in the late 2010's, the Game1.cs file was unified across all FRB templates. 
 Rather than manually maintaining all files, we have a MasterGame.cs file which contains all of the common code. 
-Whenever it is changed, Game1Copier.exe should be executed to copy files. But where is Game1Coper.exe source for when we add new templates? Hmm....
+Whenever it is changed, Game1Copier.exe should be executed to copy files.
+To add a new template, open Game1Copier/Game1Copier.sln and modify the project

@@ -27,12 +27,12 @@ namespace Game1Copier
                 Namespace = "FlatRedBallDesktopGlNet6Template"
             },
             new TemplateInformation {
-                DestinationGameFile = "FlatRedBalliOSTemplate/FlatRedBalliOSTemplate/Game1.cs",
-                Namespace = "FlatRedBalliOSTemplate"
+                DestinationGameFile = "FlatRedBalliOSMonoGameTemplate/FlatRedBalliOSMonoGameTemplate/Game1.cs",
+                Namespace = "FlatRedBalliOSMonoGameTemplate"
             },
             new TemplateInformation {
-                DestinationGameFile = "FlatRedBallUwpTemplate/FlatRedBallUwpTemplate/Game1.cs",
-                Namespace = "FlatRedBallUwpTemplate"
+                DestinationGameFile = "FlatRedBallDesktopFnaTemplate/FlatRedBallDesktopFnaTemplate/Game1.cs",
+                Namespace = "FlatRedBallDesktopFnaTemplate"
             },
             new TemplateInformation {
                 DestinationGameFile = "FlatRedBallXna4Template/FlatRedBallXna4Template/FlatRedBallXna4Template/Game1.cs",

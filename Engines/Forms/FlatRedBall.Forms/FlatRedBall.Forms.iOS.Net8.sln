@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{F649B263-C76E-439E-AD3D-1A685871193B}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBalliOS", "..\..\FlatRedBallXNA\FlatRedBalliOS\FlatRedBalliOS.csproj", "{988B0672-8A1B-4A36-912D-91BC8BF4BE8D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{988B0672-8A1B-4A36-912D-91BC8BF4BE8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{988B0672-8A1B-4A36-912D-91BC8BF4BE8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{988B0672-8A1B-4A36-912D-91BC8BF4BE8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{988B0672-8A1B-4A36-912D-91BC8BF4BE8D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0BB8CBE3-8503-46C1-9272-D98E153A230E} = {F649B263-C76E-439E-AD3D-1A685871193B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F29E3999-836A-4A12-A760-2BD6418FE592}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
+		..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{988b0672-8a1b-4a36-912d-91bc8bf4be8d}*SharedItemsImports = 5
+	EndGlobalSection
+EndGlobal

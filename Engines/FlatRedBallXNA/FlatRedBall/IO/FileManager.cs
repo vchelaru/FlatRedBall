@@ -1926,7 +1926,7 @@ namespace FlatRedBall.IO
 #endif
 
 
-#if WINDOWS_PHONE || XBOX360 || SILVERLIGHT || MONODROID
+#if MONODROID
 
             var store = mIsolatedStorageFile;
 
@@ -1934,7 +1934,7 @@ namespace FlatRedBall.IO
             {
                 throw new NotImplementedException();
             }
-#elif WINDOWS_8 || UWP || FNA
+#elif WINDOWS_8 || UWP || FNA || IOS
             throw new NotImplementedException();
 #else
             using (FileStream stream = System.IO.File.OpenRead(fileName))
@@ -2025,7 +2025,7 @@ namespace FlatRedBall.IO
 
             try
             {
-#if UWP || FNA
+#if UWP || FNA || IOS
                 throw new NotImplementedException();
 #else
 

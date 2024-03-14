@@ -654,7 +654,7 @@ namespace FlatRedBall.Content
 
 					if (assetName.EndsWith("gif"))
 					{
-#if UWP || DESKTOP_GL || STANDARD
+#if UWP || DESKTOP_GL || STANDARD || IOS
                         throw new NotImplementedException();
 #else
 						AnimationChainList acl = new AnimationChainList();

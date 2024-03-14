@@ -762,6 +762,7 @@ namespace FlatRedBall
             Renderer.Effect = mResourceContentManager.Load<Effect>("FlatRedBallShader");
 #endif
 
+            // eventually we can look into this on iOS
 #if MONOGAME_381
 
             // We'll make a content manager that is never disposed. At this
@@ -774,8 +775,11 @@ namespace FlatRedBall
             // MonoGame 3.7 (pre-release) has at least one bug related to shaders
             // which impact rendering. That is, point filtering isn't working.
             // So I'm going to revert monogame back to the old way for now
+            //using Stream testStream = TitleContainer.OpenStream("Content/shader.xnb");
+
             var preInitGlobalContent = new Microsoft.Xna.Framework.Content.ContentManager(mServices);
-            Renderer.Effect = preInitGlobalContent.Load<Effect>("Content/shader");
+                Renderer.Effect = preInitGlobalContent.Load<Effect>("Content/shader");
+
 
             // We need two separate instances of the custom effect so we need another 
             // pre initialization content manager.

@@ -116,6 +116,7 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
+    <BundleResource Include="content\shader.xnb" />
     <None Include="Info.plist" />
   </ItemGroup>
   <ItemGroup>
