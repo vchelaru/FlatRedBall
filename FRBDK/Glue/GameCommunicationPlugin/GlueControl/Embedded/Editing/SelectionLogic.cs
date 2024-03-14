@@ -74,6 +74,7 @@ namespace GlueControl.Editing
             }
 
             IEnumerable<PositionedObject> availableItems = null;
+            IEnumerable<NamedObjectSave> allNamedObjects = null;
 
             if (objectOver == null)
             {
@@ -81,6 +82,7 @@ namespace GlueControl.Editing
 
                 if (availableItems != null)
                 {
+                    allNamedObjects = GlueState.Self.CurrentElement.GetAllNamedObjectsRecurisvely();
                     // here we sort every frame. This could be slow if we have a lot of objects so we may need to cache this somehow
                     foreach (var objectAtI in availableItems.OrderByDescending(item => item.Z))
                     {
@@ -88,26 +90,31 @@ namespace GlueControl.Editing
                         {
                             if (IsRayIntersecting(objectAtI, ray))
                             {
-                                var allNamedObjects = GlueState.Self.CurrentElement.GetAllNamedObjectsRecurisvely();
                                 var nos = allNamedObjects.FirstOrDefault(item => item.InstanceName == objectAtI.Name);
 
-                                // don't select it if it is locked
-                                var isLocked = nos?.IsEditingLocked == true;
-
-                                var isEditingLocked = nos != null &&
-                                    ObjectFinder.Self.GetPropertyValueRecursively<bool>(
-                                        nos, nameof(nos.IsEditingLocked));
-                                if (!isEditingLocked)
+                                // why do we allow selecting if there is no NOS? It can't be edited...
+                                // and this allows the selection of items inside an entity.
+                                if(nos != null)
                                 {
-                                    if (punchThrough)
+                                    // don't select it if it is locked
+                                    var isLocked = nos?.IsEditingLocked == true;
+
+                                    var isEditingLocked = nos != null &&
+                                        ObjectFinder.Self.GetPropertyValueRecursively<bool>(
+                                            nos, nameof(nos.IsEditingLocked));
+                                    if (!isEditingLocked)
                                     {
-                                        tempPunchThroughList.Add(objectAtI);
+                                        if (punchThrough)
+                                        {
+                                            tempPunchThroughList.Add(objectAtI);
+                                        }
+                                        else
+                                        {
+                                            objectOver = objectAtI;
+                                            break;
+                                        }
                                     }
-                                    else
-                                    {
-                                        objectOver = objectAtI;
-                                        break;
-                                    }
+
                                 }
                             }
                         }
@@ -146,11 +153,15 @@ namespace GlueControl.Editing
 
             if (PerformedRectangleSelection && availableItems != null)
             {
-                foreach (var item in availableItems)
+                foreach (var positionedObject in availableItems)
                 {
-                    if (IsSelectable(item) && IsRectangleSelectionOver(item))
+                    if (IsSelectable(positionedObject) && IsRectangleSelectionOver(positionedObject))
                     {
-                        itemsOverToFill.Add(item);
+                        var nos = allNamedObjects.FirstOrDefault(item => item.InstanceName == positionedObject.Name);
+                        if(nos?.IsEditingLocked == false)
+                        {
+                            itemsOverToFill.Add(positionedObject);
+                        }
                     }
                 }
             }
