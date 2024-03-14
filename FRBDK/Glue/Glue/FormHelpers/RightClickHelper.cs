@@ -1155,7 +1155,7 @@ public static class RightClickHelper
 
             ccw.SelectFile(GlueState.Self.CurrentReferencedFileSave);
 
-            ccw.ShowDialog(MainGlueWindow.Self);
+            ccw.ShowDialog(GlueCommands.Self.DialogCommands.Win32Window);
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
             GluxCommands.Self.SaveProjectAndElements();
@@ -1191,7 +1191,7 @@ public static class RightClickHelper
             var nos = GlueState.Self.CurrentNamedObjectSave;
 
             VariablesToResetWindow vtrw = new VariablesToResetWindow(nos.VariablesToReset);
-            DialogResult result = vtrw.ShowDialog(MainGlueWindow.Self);
+            DialogResult result = vtrw.ShowDialog(GlueCommands.Self.DialogCommands.Win32Window);
 
             if (result == DialogResult.OK)
             {
@@ -1448,7 +1448,7 @@ public static class RightClickHelper
     {
         // view file order, viewfileorder, view files, viewfiles, viewfilelist, view file list
         ReferencedFileFlatListWindow rfflw = new ReferencedFileFlatListWindow();
-        rfflw.Show(MainGlueWindow.Self);
+        rfflw.Show(GlueCommands.Self.DialogCommands.Win32Window);
         if (GlueState.Self.CurrentGlueProject != null)
         {
             rfflw.PopulateFrom(ProjectManager.GlueProjectSave.GlobalFiles);
@@ -1508,7 +1508,7 @@ public static class RightClickHelper
                 stateSave.SetValue(cv.Name, cv.DefaultValue);
             }
 
-            MainGlueWindow.Self.PropertyGrid.Refresh();
+            GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
@@ -2012,7 +2012,7 @@ public static class RightClickHelper
         tiw.Message = L.Texts.NewFolderEnter;
         tiw.Text = L.Texts.NewFolder;
 
-        var result = tiw.ShowDialog(MainGlueWindow.Self);
+        var result = tiw.ShowDialog(GlueCommands.Self.DialogCommands.Win32Window);
 
         if (result == DialogResult.OK)
         {

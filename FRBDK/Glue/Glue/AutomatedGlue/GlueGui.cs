@@ -57,31 +57,20 @@ namespace FlatRedBall.Glue.AutomatedGlue
             {
                 GlueCommands.Self.DoOnUiThread(() =>
                 {
-                    MessageBox.Show(MainGlueWindow.Self, text, caption);
+                    // todo when we convert over:
+                    //System.Windows.MessageBox.Show(MainWpfWindow, text, caption);
+                    MessageBox.Show(GlueCommands.Self.DialogCommands.Win32Window, text, caption);
                 });
             }
         }
 
-        public static void ShowMessageBox(string text)
-        {
-            if (ShowGui)
-            {
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
-                    MessageBox.Show(MainGlueWindow.Self, text);
-                });
-            }
-        }
+        public static void ShowMessageBox(string text) => ShowMessageBox(text, string.Empty);
 
         public static void ShowException(string text, string caption, Exception ex)
         {
             if (ShowGui)
             {
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
-                    // We want to show the exception here so we can diagnose it better.
-                    MessageBox.Show(MainGlueWindow.Self, text + "\n\n\nDetails:\n\n" + ex, caption);
-                });
+                ShowMessageBox(text + "\n\n\nDetails:\n\n" + ex, caption);
             }
             else
             {

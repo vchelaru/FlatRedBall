@@ -47,8 +47,7 @@ namespace OfficialPlugins.FrbUpdater
             if(mForm.Disposing || mForm.IsDisposed)
                 mForm = new FrbUpdaterPluginForm(this);
 
-            GlueCommands.DialogCommands.SetFormOwner(mForm);
-            mForm.Show();
+            mForm.Show(GlueCommands.DialogCommands.Win32Window);
         }
 
         public void HandleEvent(string eventName, string payload)

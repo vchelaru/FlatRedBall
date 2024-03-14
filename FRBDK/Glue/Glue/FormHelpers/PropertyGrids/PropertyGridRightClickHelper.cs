@@ -40,7 +40,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
         public static void ReactToRightClick()
         {
             #region Get the context menu
-            System.Windows.Forms.PropertyGrid propertyGrid = MainGlueWindow.Self.PropertyGrid;
+            System.Windows.Forms.PropertyGrid propertyGrid = GlueCommands.Self.DialogCommands.PropertyGrid;
             mHighlightedCustomVariable = null;
 
             if (propertyGrid.ContextMenuStrip == null)
@@ -160,7 +160,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             {
                 StateSave stateSave = GlueState.Self.CurrentStateSave;
 
-                string valueToChange = MainGlueWindow.Self.PropertyGrid.SelectedGridItem.Label;
+                string valueToChange = GlueCommands.Self.DialogCommands.PropertyGrid.SelectedGridItem.Label;
                 if (valueToChange.Contains(" set"))
                 {
                     valueToChange = valueToChange.Substring(0, valueToChange.IndexOf(" set"));
@@ -183,7 +183,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             {
                 NamedObjectSave currentNamedObject = GlueState.Self.CurrentNamedObjectSave;
 
-                string variableToSet = MainGlueWindow.Self.PropertyGrid.SelectedGridItem.Label;
+                string variableToSet = GlueCommands.Self.DialogCommands.PropertyGrid.SelectedGridItem.Label;
 
                 SetVariableToDefault(currentNamedObject, variableToSet);
             }
@@ -192,7 +192,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             GluxCommands.Self.SaveProjectAndElements();
 
-            MainGlueWindow.Self.PropertyGrid.Refresh();
+            GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
         }
 
         public static void SetVariableToDefault(NamedObjectSave currentNamedObject, string variableToSet)
@@ -237,7 +237,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
         private static void ExposeVariableClick(object sender, EventArgs e)
         {
-            System.Windows.Forms.PropertyGrid propertyGrid = MainGlueWindow.Self.PropertyGrid;
+            System.Windows.Forms.PropertyGrid propertyGrid = GlueCommands.Self.DialogCommands.PropertyGrid;
 
             string label = propertyGrid.SelectedGridItem.Label;
 
@@ -271,7 +271,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             GluxCommands.Self.SaveProjectAndElements();
-            MainGlueWindow.Self.PropertyGrid.Refresh();
+            GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
         }
 
         private static void UseFullScreenClick(object sender, EventArgs e)
@@ -280,7 +280,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             GluxCommands.Self.SaveProjectAndElements();
-            MainGlueWindow.Self.PropertyGrid.Refresh();
+            GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
         }
 
 

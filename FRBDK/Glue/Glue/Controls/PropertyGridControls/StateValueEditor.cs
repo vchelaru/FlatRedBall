@@ -25,43 +25,10 @@ namespace FlatRedBall.Glue.Controls.PropertyGridControls
         const string CantInterpolateFile = @"Content\Icons\CantInterpolate.bmp";
         const string NeedsInterpolationVariable = @"Content\Icons\NeedsInterpolateVariable.bmp";
 
-        Image mCanInterpolate;
-        Image mCantInterpolate;
-        Image mNeedsVelocityVariable;
+        Image mCanInterpolate = Resources.Resource1.CanInterpolate;
+        Image mCantInterpolate = Resources.Resource1.CantInterpolate;
+        Image mNeedsVelocityVariable = Resources.Resource1.NeedsInterpolateVariable;
 
-        public StateValueEditor()
-            : base()
-        {
-
-            mCanInterpolate = Resources.Resource1.CanInterpolate;
-
-            mCantInterpolate = Resources.Resource1.CantInterpolate;
-
-            mNeedsVelocityVariable = Resources.Resource1.NeedsInterpolateVariable;
-        }
-
-        
-
-        //public override UITypeEditorEditStyle GetEditStyle(System.ComponentModel.ITypeDescriptorContext context)
-        //{
-        //    if (context == null)
-        //    {
-        //        return UITypeEditorEditStyle.None;
-        //    }
-        //    else
-        //    {
-        //        TypeConverter typeConverter = context.PropertyDescriptor.Converter;
-        //        if (typeConverter is StringConverter)
-        //        {
-        //            return UITypeEditorEditStyle.None;
-        //        }
-        //        else
-        //        {
-        //            return UITypeEditorEditStyle.Modal;
-        //        }
-        //    }
-        //}
-        
         public override object EditValue(
             ITypeDescriptorContext context,
             IServiceProvider provider,
@@ -96,14 +63,6 @@ namespace FlatRedBall.Glue.Controls.PropertyGridControls
 
                 }
                 editorService.DropDownControl(listBox);
-        //        LightShapeSelectionControl selectionControl =
-        //            new LightShapeSelectionControl(
-        //            (MarqueeLightShape)value,
-        //            editorService);
-
-        //        editorService.DropDownControl(selectionControl);
-
-        //        value = selectionControl.LightShape;
             }
 
             return value;

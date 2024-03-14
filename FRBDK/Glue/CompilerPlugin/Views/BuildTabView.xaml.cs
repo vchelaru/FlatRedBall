@@ -1,5 +1,6 @@
 ﻿using CompilerPlugin.Managers;
 using FlatRedBall.Math.Geometry;
+using GlueFormsCore.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,7 +77,7 @@ namespace CompilerPlugin.Views
 
             try
             {
-                Glue.MainGlueWindow.Self.Invoke(() =>
+                MainPanelControl.Self.Invoke(() =>
                 {
                     var paragraph = TextBox.Document.Blocks.LastOrDefault() as Paragraph;
                     if(paragraph == null)
@@ -117,7 +118,7 @@ namespace CompilerPlugin.Views
 
             try
             {
-                Glue.MainGlueWindow.Self.Invoke(() =>
+                MainPanelControl.Self.Invoke(() =>
                 {
                     var paragraph = TextBox.Document.Blocks.LastOrDefault() as Paragraph;
                     if (paragraph == null)

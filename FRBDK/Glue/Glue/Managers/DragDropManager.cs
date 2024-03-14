@@ -127,7 +127,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 succeeded = true;
                 var layerBefore = movingNos.LayerOn;
                 movingNos.LayerOn = targetNos.InstanceName;
-                MainGlueWindow.Self.PropertyGrid.Refresh();
+                GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
 
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 

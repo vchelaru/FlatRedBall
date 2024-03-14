@@ -673,7 +673,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         {
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                MainGlueWindow.Self.PropertyGrid.Refresh();
+                GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
 
                 if(hasInheritance)
                 {

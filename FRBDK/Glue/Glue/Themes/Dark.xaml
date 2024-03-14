@@ -99,6 +99,15 @@
         <Setter Property="BorderBrush" Value="{StaticResource BlackBrush}"/>
     </Style>
 
+    <Style TargetType="{x:Type RepeatButton}">
+        <Setter Property="Background" Value="{StaticResource BlackBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BlackBrush}"/>
+    </Style>
+
+    <Style TargetType="{x:Type Thumb}">
+        <Setter Property="Background" Value="{StaticResource BlackBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BlackBrush}"/>
+    </Style>
 
     <Style TargetType="{x:Type TabControl}">
         <Setter Property="Background" Value="{StaticResource BlackBrush}"/>
@@ -271,11 +280,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-
-
-
-
-
-
 </ResourceDictionary>

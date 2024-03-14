@@ -61,12 +61,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         
         public void DoOnUiThread(Action action)
         {
-            MainGlueWindow.Self.Invoke(action);
+            MainPanelControl.Self.Invoke(action);
         }
 
-        public Task DoOnUiThread(Func<Task> func) => MainGlueWindow.Self.Invoke(func);
+        public Task DoOnUiThread(Func<Task> func) => MainPanelControl.Self.Invoke(func);
 
-        public T DoOnUiThread<T>(Func<T> func) => MainGlueWindow.Self.Invoke(func);
+        public T DoOnUiThread<T>(Func<T> func) => MainPanelControl.Self.Invoke(func);
 
         public void CloseGlueProject(bool shouldSave = true, bool isExiting = false, GlueFormsCore.Controls.InitializationWindowWpf initWindow = null)
         {
@@ -76,7 +76,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public void CloseGlue()
         {
-            MainGlueWindow.Self.Close();
+            DialogCommands.CloseMainWindow();
             Process.GetCurrentProcess().Kill();
         }
 
@@ -249,7 +249,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             //save.WindowTop = this.Top;
             //save.WindowHeight = this.Height;
             //save.WindowWidth = this.Width;
-            save.StoredRecentFiles = MainGlueWindow.Self.NumberOfStoredRecentFiles;
 
             List<List<string>> AllTabs = new List<List<string>>
             {

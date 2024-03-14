@@ -77,7 +77,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                mNosDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
+                mNosDisplayer.PropertyGrid = GlueCommands.Self.DialogCommands.PropertyGrid;
 
                 // It seems as if the PropertyGrid will scroll to properties when they're added.
                 // That is, the PropertyGrid selects the last property added (I think).
@@ -101,14 +101,14 @@ namespace FlatRedBall.Glue.FormHelpers
 
             mStateSaveDisplayer.Instance = GlueState.Self.CurrentStateSave;
 
-            mStateSaveDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
+            mStateSaveDisplayer.PropertyGrid = GlueCommands.Self.DialogCommands.PropertyGrid;
         }
 
         public static void UpdateStateCategorySave()
         {
 
             mStateSaveCategoryDisplayer.Instance = GlueState.Self.CurrentStateSaveCategory;
-            mStateSaveCategoryDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
+            mStateSaveCategoryDisplayer.PropertyGrid = GlueCommands.Self.DialogCommands.PropertyGrid;
         }
         
         internal static void UpdateCustomVariableDisplay()
@@ -118,7 +118,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             mCustomVariableDisplayer.Instance = GlueState.Self.CurrentCustomVariable;
 
-            mCustomVariableDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
+            mCustomVariableDisplayer.PropertyGrid = GlueCommands.Self.DialogCommands.PropertyGrid;
         }
 
         internal static void UpdateEntitySaveDisplay()
@@ -126,7 +126,7 @@ namespace FlatRedBall.Glue.FormHelpers
             mEntitySaveDisplayer.Instance = GlueState.Self.CurrentEntitySave;
             PluginManager.AdjustDisplayedEntity(GlueState.Self.CurrentEntitySave, mEntitySaveDisplayer);
 
-            mEntitySaveDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
+            mEntitySaveDisplayer.PropertyGrid = GlueCommands.Self.DialogCommands.PropertyGrid;
 
         }
 
@@ -135,7 +135,7 @@ namespace FlatRedBall.Glue.FormHelpers
             mScreenSaveDisplayer.Instance = GlueState.Self.CurrentScreenSave;
             PluginManager.AdjustDisplayedScreen(GlueState.Self.CurrentScreenSave, mScreenSaveDisplayer);
 
-            mScreenSaveDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
+            mScreenSaveDisplayer.PropertyGrid = GlueCommands.Self.DialogCommands.PropertyGrid;
 
         }
 
@@ -143,7 +143,7 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             mReferencedFileSaveDisplay.Instance = GlueState.Self.CurrentReferencedFileSave;
             PluginManager.AdjustDisplayedReferencedFile(GlueState.Self.CurrentReferencedFileSave, mReferencedFileSaveDisplay);
-            mReferencedFileSaveDisplay.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
+            mReferencedFileSaveDisplay.PropertyGrid = GlueCommands.Self.DialogCommands.PropertyGrid;
         }
 
         internal static void UpdateEventResponseSaveDisplayer()
@@ -151,7 +151,7 @@ namespace FlatRedBall.Glue.FormHelpers
             mEventResponseSaveDisplayer.CurrentElement = GlueState.Self.CurrentElement;
             mEventResponseSaveDisplayer.Instance = GlueState.Self.CurrentEventResponseSave;
 
-            mEventResponseSaveDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
+            mEventResponseSaveDisplayer.PropertyGrid = GlueCommands.Self.DialogCommands.PropertyGrid;
         }
 
     }

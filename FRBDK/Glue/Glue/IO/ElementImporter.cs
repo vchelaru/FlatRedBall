@@ -503,29 +503,30 @@ class ElementImporter
 
                     if (candidates.Count == 0)
                     {
-                        MessageBox.Show(newElement.ToString() + " has an object named " + nos.InstanceName + " which references an Entity " + nos.SourceClassType + "\n\n" +
-                                        "Could not find a matching Entity.  Your project may not run properly until this issue is resolved.");
+                        MessageBox.Show(
+                            String.Format(L.Texts.XHasObjectYReferenceZ, newElement, nos.InstanceName, nos.SourceClassType));
                     }
                     else
                     {
-                        MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
-                        mbmb.MessageText = "Glue found possible matches for the object " + nos.InstanceName + " which expects the type " + nos.SourceClassType;
+                        var mbmb = new MultiButtonMessageBoxWpf
+                        {
+                            MessageText = String.Format(L.Texts.GlueFoundMatches, nos.InstanceName, nos.SourceClassType)
+                        };
 
                         foreach(IElement candidate in candidates)
                         {
-                            mbmb.AddButton("Use " + candidate.ToString(), DialogResult.OK, candidate);
+                            mbmb.AddButton(String.Format(L.Texts.UseX, candidate), DialogResult.OK);
                         }
-                        mbmb.AddButton("Don't do anything", DialogResult.Cancel);
+                        mbmb.AddButton(L.Texts.DontDoAnything, DialogResult.Cancel);
 
-                        DialogResult result = mbmb.ShowDialog();
+                        var result = mbmb.ShowDialog();
 
-                        if (result == DialogResult.OK)
+                        if (result == true)
                         {
-                            IElement referenceToSet = (IElement) mbmb.ClickedTag;
+                            IElement referenceToSet = (IElement) mbmb.ClickedResult;
 
                             nos.SourceClassType = referenceToSet.Name;
                             nos.UpdateCustomProperties();
-
 
                             // The nos type has changed, so we should try to resolve enums
                             nos.FixEnumerationTypes();
@@ -579,20 +580,20 @@ class ElementImporter
                     if (unqualifiedName == newElementUnqualifiedName)
                     {
                         // This new element may fulfill the requirements.  Let's ask the user if we should do that
-                        DialogResult change = MessageBox.Show(nos.ToString() + " has a missing reference.  Use the new Entity " + newElement.ToString() + "?",
-                            "Update reference?", MessageBoxButtons.YesNo);
+                        DialogResult change = MessageBox.Show(
+                            string.Format(L.Texts.XMissingReferenceUseEntity, nos, newElement),
+                            L.Texts.UpdateReference, MessageBoxButtons.YesNo);
 
                         if (change == DialogResult.Yes)
                         {
                             nos.SourceClassType = newElement.Name;
                             nos.UpdateCustomProperties();
-
                         }
                     }
                 }
                 else if (fulfillingIElement == newElement)
                 {
-                    MessageBox.Show("The new element will now fulfill the previously-broken reference for " + nos.ToString());
+                    MessageBox.Show(String.Format(L.Texts.NewElementFulfill, nos));
 
                     // Setting the value to itself will cause the properties to be refreshed
                     nos.SourceClassType = newElement.Name;

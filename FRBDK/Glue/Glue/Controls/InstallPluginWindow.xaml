@@ -1,0 +1,40 @@
+﻿<Window x:Class="FlatRedBall.Glue.Controls.InstallPluginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:localization="clr-namespace:Localization;assembly=Localization"
+        mc:Ignorable="d"
+        Title="{x:Static localization:Texts.PluginInstall}" 
+        ResizeMode="NoResize"
+        Height="200" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="40"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Column="0" Grid.Row="0" Content="{x:Static localization:Texts.TypeInstall}" Margin="10" TabIndex="1"/>
+        <ComboBox Grid.ColumnSpan="2" 
+                  Grid.Column="1" 
+                  Grid.Row="0" 
+                  Margin="10" 
+                  TabIndex="2" 
+                  Name="InstallTypeComboBox"/>
+
+        <Label Grid.Column="0" Grid.Row="1" Content="{x:Static localization:Texts.Path}" Margin="10" TabIndex="3"/>
+        <TextBox IsReadOnly="true" Grid.Row="1" Grid.Column="1" Margin="10,0,10,0" Name="pathTextBox" TabIndex="4" Height="32" VerticalAlignment="Center" />
+        <Button  Click="BtnPath_Click" Grid.Row="1" Grid.Column="2" Margin="5, 10, 10, 10" Name="PathButton" TabIndex="5" Content="..."></Button>
+
+        <DockPanel Margin="10,0,10,10" Height="28" Grid.Row="2" Grid.ColumnSpan="3">
+            <Button Click="BtnOk_Click" HorizontalAlignment="Left" Content="{x:Static localization:Texts.Ok}" Padding="32, 0" TabIndex="5" />
+            <Button Click="BtnCancel_Click" HorizontalAlignment="Right" Content="{x:Static localization:Texts.Cancel}" Padding="32, 0" TabIndex="6" />
+        </DockPanel>
+    </Grid>
+</Window>

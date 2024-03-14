@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System;
 using System.Drawing;
 using System.Linq;
 using System.Net;
@@ -65,10 +66,9 @@ namespace OfficialPlugins.FrbUpdater
 
             var window = new UpdateWindow(_plugin);
 
-            _plugin.GlueCommands.DialogCommands.SetFormOwner(window);
             if (window.Owner == null)
                 window.TopMost = true;
-            window.Show();
+            window.Show(GlueCommands.Self.DialogCommands.Win32Window);
             Close();
         }
 

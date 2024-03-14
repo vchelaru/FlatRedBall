@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Managers;
+using GlueFormsCore.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,7 +65,7 @@ namespace FlatRedBall.Glue.Tasks
         {
             if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
             {
-                global::Glue.MainGlueWindow.Self.Invoke(Action);
+                MainPanelControl.Self.Invoke(Action);
             }
             else
             {
@@ -83,7 +84,7 @@ namespace FlatRedBall.Glue.Tasks
         {
             if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
             {
-                Result =  global::Glue.MainGlueWindow.Self.Invoke(() => Result = Func());
+                Result = MainPanelControl.Self.Invoke(() => Result = Func());
             }
             else
             {
@@ -103,7 +104,7 @@ namespace FlatRedBall.Glue.Tasks
         {
             if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
             {
-                await global::Glue.MainGlueWindow.Self.Invoke(() => Func());
+                await MainPanelControl.Self.Invoke(() => Func());
             }
             else
             {
@@ -121,7 +122,7 @@ namespace FlatRedBall.Glue.Tasks
         {
             if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
             {
-                Result = await global::Glue.MainGlueWindow.Self.Invoke(() => Func());
+                Result = MainPanelControl.Self.Invoke(() => Func());
             }
             else
             {

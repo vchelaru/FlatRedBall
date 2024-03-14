@@ -86,7 +86,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             pluginForm.GlueCommands = GlueCommands;
             pluginForm.RefreshElements();
 
-            pluginForm.ShowDialog(MainGlueWindow.Self);
+            pluginForm.ShowDialog(GlueCommands.DialogCommands.Win32Window);
 
         }
 

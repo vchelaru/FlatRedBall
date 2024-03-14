@@ -8,6 +8,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using Glue;
+using GlueFormsCore.Controls;
 
 namespace FlatRedBall.Glue.Navigation
 {
@@ -47,13 +48,13 @@ namespace FlatRedBall.Glue.Navigation
                 // the select will have added, so pop it off immediately
                 // We invoke it here instead of using the commands because we need to pop right after the select
                 mIgnoreNextForwardClear = true;
-                MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate
+                MainPanelControl.Self.Invoke(() =>
                 {
                     // Call the normal selection which will push to bck
                     //GlueState.Self.SetCurrentTreeNode(toGoTo, recordState: false);
                     GlueState.Self.CurrentTreeNode = toGoTo;
 
-                }));
+                });
             }
         }
 
@@ -68,10 +69,10 @@ namespace FlatRedBall.Glue.Navigation
                 // We invoke it here instead of using the commands because we need to pop right after the select
                 mIgnoreNextForwardClear = true;
 
-                MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate 
+                MainPanelControl.Self.Invoke(() =>
                 {
                     GlueState.Self.SetCurrentTreeNode(toGoTo, recordState: false);
-                }));
+                });
             }
         }
     }

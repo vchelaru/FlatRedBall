@@ -78,6 +78,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
     public class GlueState : IGlueState
     {
+        public bool HasErrorOccurred { get; set; }
+
         #region Current Selection Properties
 
         public ITreeNode CurrentTreeNode

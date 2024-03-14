@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FlatRedBall.Glue.FormHelpers;
 using System.Windows.Forms;
 using FlatRedBall.Glue.Elements;
@@ -11,7 +10,6 @@ using FlatRedBall.Utilities;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Controls;
-using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.SaveClasses;
@@ -19,9 +17,8 @@ using Glue.IO;
 using Microsoft.Xna.Framework.Graphics;
 using GlueFormsCore.Managers;
 using GlueFormsCore.SetVariable.NamedObjectSaves;
-using FlatRedBall.Glue.Managers;
 using System.Threading.Tasks;
-using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using L = Localization;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -475,17 +472,14 @@ namespace FlatRedBall.Glue.SetVariable
                 if (existingContainer != null)
                 {
                     succeeded = false;
-
-                    MessageBox.Show("The object " + existingContainer + " is already marked as IsContainer. " +
-                        "Two objects in the same element cannot be marked as Iscontainer");
-
+                    MessageBox.Show(String.Format(L.Texts.ObjectIsAlreadyIsContainer, existingContainer));
                 }
 
                 if (succeeded)
                 {
-                    string nosType = nos.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType;
+                    var nosType = nos.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType;
 
-                    if(string.IsNullOrEmpty(nosType))
+                    if(String.IsNullOrEmpty(nosType))
                     {
                         nosType = nos.SourceClassType;
                     }
@@ -495,23 +489,24 @@ namespace FlatRedBall.Glue.SetVariable
 
                     if (!doesBaseMatch)
                     {
-                        MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                        var mbmb = new MultiButtonMessageBoxWpf();
 
                         string containerType = element.BaseElement;
-                        if (string.IsNullOrEmpty(containerType))
+                        if (string.IsNullOrWhiteSpace(containerType))
                         {
-                            containerType = "<NONE>";
+                            containerType = $"<{L.Texts.None}>";
                         }
 
 
-                        mbmb.MessageText = "The object is of type " + nosType + " but the container is of type " + containerType + "\n\n" +
-                            "What would you like to do?";
+                        mbmb.MessageText = String.Format(L.Texts.ObjectOfTypeXButContainerY, nosType, containerType);
 
-                        mbmb.AddButton("Set the container's type to " + nosType, DialogResult.Yes);
-                        mbmb.AddButton("Nothing - game may not compile until this has been fixed", DialogResult.No);
-                        mbmb.AddButton("Set 'IsContainer' back to false", DialogResult.Cancel);
+                        mbmb.AddButton(String.Format(L.Texts.ContainerSetTypeToX, nosType), DialogResult.Yes);
+                        mbmb.AddButton(L.Texts.NothingGameMayNotCompile, DialogResult.No);
+                        mbmb.AddButton(L.Texts.ContainerRevertToFalse, DialogResult.Cancel);
 
-                        var dialogResult = mbmb.ShowDialog();
+                        var result = mbmb.ShowDialog();
+
+                        var dialogResult = (DialogResult)mbmb.ClickedResult;
                         if (dialogResult == DialogResult.Yes)
                         {
                             element.BaseObject = nosType;
@@ -555,24 +550,24 @@ namespace FlatRedBall.Glue.SetVariable
                         // and the new AssetTypeInfo which will resolve issues like unqualified vs qualified types
                         namedObjectInBase.GetAssetTypeInfo() != null &&
                         namedObjectInBase.GetAssetTypeInfo() != namedObjectSave.GetAssetTypeInfo();
+
                     if (doDiffer)
                     {
                         if (string.IsNullOrEmpty(namedObjectInBase.InstanceType))
                         {
-                            string message = "This object has type of " + namedObjectSave.InstanceType +
-                                " but the base object in " + baseElement.ToString() + " is untyped.  What would you like to do?";
+                            var message =
+                                String.Format(L.Texts.ObjectHasBaseButUntyped, namedObjectSave.InstanceType, baseElement);
 
-                            MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                            var mbmb = new MultiButtonMessageBoxWpf();
                             mbmb.MessageText = message;
 
-                            mbmb.AddButton("Change " + namedObjectInBase.InstanceName + " to " +
-                                namedObjectSave.InstanceType + " in " + baseElement.ToString(), DialogResult.Yes);
+                            mbmb.AddButton(String.Format(L.Texts.ChangeAToBInC, namedObjectInBase.InstanceName, namedObjectSave.InstanceType, baseElement), DialogResult.Yes);
 
-                            mbmb.AddButton("Do nothing (your project will likely not compile so you will need to fix this manually)", DialogResult.No);
+                            mbmb.AddButton(L.Texts.DoNothingFixManually, DialogResult.No);
 
-                            DialogResult result = mbmb.ShowDialog();
+                            var result = mbmb.ShowDialog();
 
-                            if (result == DialogResult.Yes)
+                            if ((DialogResult)mbmb.ClickedResult == DialogResult.Yes)
                             {
                                 switch (namedObjectInBase.SourceType)
                                 {
@@ -599,8 +594,7 @@ namespace FlatRedBall.Glue.SetVariable
                         }
                         else
                         {
-                            string message = "This object is of type " + namedObjectSave.InstanceType + " but the base " +
-                                "object is of type " + namedObjectInBase.InstanceType + "";
+                            var message = string.Format(L.Texts.ObjectOfTypeXButSubTypeY, namedObjectSave.InstanceType, namedObjectInBase.InstanceType);
 
                             MessageBox.Show(message);
 
@@ -928,14 +922,14 @@ namespace FlatRedBall.Glue.SetVariable
                             {
                                 whatIsWrong += "\nWhat would you like to do?";
 
-                                var mbmb = new MultiButtonMessageBox();
+                                var mbmb = new MultiButtonMessageBoxWpf();
                                 mbmb.MessageText = whatIsWrong;
                                 mbmb.AddButton("Undo the change", DialogResult.Cancel);
                                 mbmb.AddButton("Keep the change (May cause runtime crashes)", DialogResult.Yes);
 
                                 var result = mbmb.ShowDialog();
 
-                                if(result == DialogResult.Cancel)
+                                if((DialogResult)mbmb.ClickedResult == DialogResult.Cancel)
                                 {
                                     addressModeVariable.Value = oldValue;
                                 }

@@ -42,6 +42,8 @@ using CompilerLibrary.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using System.Security.Permissions;
 using Microsoft.Xna.Framework.Graphics;
+using GlueFormsCore.Controls;
+using System.Windows.Threading;
 
 namespace GameCommunicationPlugin.GlueControl
 {
@@ -90,7 +92,7 @@ namespace GameCommunicationPlugin.GlueControl
 
         bool ignoreViewModelChanges = false;
 
-        Timer dragDropTimer;
+        DispatcherTimer dragDropTimer;
 
         System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1, 1);
 
@@ -562,9 +564,9 @@ namespace GameCommunicationPlugin.GlueControl
 
             // This was 250 but it wasn't fast enough to feel responsive
             var dragDropTimerFrequency = 100; // ms
-            dragDropTimer = new Timer(dragDropTimerFrequency);
-            dragDropTimer.Elapsed += (not, used) => _dragDropManagerGameWindow.HandleDragDropTimerElapsed(gameHostView);
-            dragDropTimer.SynchronizingObject = MainGlueWindow.Self;
+            dragDropTimer = new DispatcherTimer();
+            dragDropTimer.Interval = TimeSpan.FromMilliseconds(dragDropTimerFrequency);
+            dragDropTimer.Tick += (not, used) => _dragDropManagerGameWindow.HandleDragDropTimerElapsed(gameHostView);
             dragDropTimer.Start();
 
             #endregion
@@ -1163,5 +1165,7 @@ namespace GameCommunicationPlugin.GlueControl
         #endregion
 
     }
+
+
 
 }

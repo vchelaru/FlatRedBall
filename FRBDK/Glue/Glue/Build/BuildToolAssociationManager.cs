@@ -137,7 +137,7 @@ public class BuildToolAssociationManager
         nfw.ResultName = FileManager.RemoveExtension(FileManager.RemovePath(fileName));
         DialogResult result = DialogResult.Cancel;
         
-        GlueCommands.Self.DoOnUiThread(() => result = nfw.ShowDialog(MainGlueWindow.Self));
+        GlueCommands.Self.DoOnUiThread(() => result = nfw.ShowDialog(GlueCommands.Self.DialogCommands.Win32Window));
         //result = nfw.ShowDialog();
         extraCommandLineArguments = "";
 

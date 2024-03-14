@@ -54,7 +54,7 @@ namespace FlatRedBall.Glue.SetVariable
         public async void ReactToPropertyChanged(string variableNameAsDisplayed, object oldValue, 
             string variableName, string parentGridItemName = null)
         {
-            var mPropertyGrid = MainGlueWindow.Self.PropertyGrid;
+            var mPropertyGrid = GlueCommands.Self.DialogCommands.PropertyGrid;
 
             var element = GlueState.Self.CurrentElement;
 

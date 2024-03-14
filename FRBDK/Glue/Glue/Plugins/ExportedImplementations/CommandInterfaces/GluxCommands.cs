@@ -296,7 +296,7 @@ public class GluxCommands : IGluxCommands
         if (ProjectManager.GlueProjectSave != null)
         {
 
-            if (MainGlueWindow.Self.HasErrorOccurred)
+            if (GlueState.Self.HasErrorOccurred)
             {
                 var projectName = GlueState.Self.GlueProjectFileName.NoPathNoExtension;
 
@@ -404,10 +404,10 @@ public class GluxCommands : IGluxCommands
                         PluginManager.ReceiveError("Error saving glux:\n\n" + e.ToString());
                     });
 
-                    MainGlueWindow.Self.HasErrorOccurred = true;
+                    GlueState.Self.HasErrorOccurred = true;
                 }
 
-                if (!MainGlueWindow.Self.HasErrorOccurred)
+                if (!GlueState.Self.HasErrorOccurred)
                 {
                     List<FilePath> fileChangesToIgnore = GlueState.Self.CurrentGlueProject.GetAllSerializedFiles(GlueState.Self.GlueProjectFileName);
                     foreach (var fileToIgnore in fileChangesToIgnore)
@@ -1585,7 +1585,7 @@ public class GluxCommands : IGluxCommands
             {
                 GlueCommands.Self.DoOnUiThread(() =>
                 {
-                    MainGlueWindow.Self.PropertyGrid.Refresh();
+                    GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
                     PropertyGridHelper.UpdateNamedObjectDisplay();
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
@@ -2371,7 +2371,7 @@ public class GluxCommands : IGluxCommands
         {
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                MainGlueWindow.Self.PropertyGrid.Refresh();
+                GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
                 GlueCommands.Self.RefreshCommands.RefreshVariables();
                 PropertyGridHelper.UpdateNamedObjectDisplay();
             });
@@ -2536,7 +2536,7 @@ public class GluxCommands : IGluxCommands
                 GlueCommands.Self.DoOnUiThread(() =>
                 {
 
-                    MainGlueWindow.Self.PropertyGrid.Refresh();
+                    GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
                     GlueCommands.Self.RefreshCommands.RefreshVariables();
 
 
@@ -2585,7 +2585,7 @@ public class GluxCommands : IGluxCommands
         {
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                MainGlueWindow.Self.PropertyGrid.Refresh();
+                GlueCommands.Self.DialogCommands.PropertyGrid.Refresh();
                 PropertyGridHelper.UpdateNamedObjectDisplay();
 
                 // If the user enters text in a text box (such as the X or Y value on
