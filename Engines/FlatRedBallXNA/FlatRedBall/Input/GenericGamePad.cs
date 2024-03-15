@@ -320,13 +320,13 @@ namespace FlatRedBall.Input
         {
             switch(xboxButton)
             {
-                case Button.X:
+                case Xbox360GamePad.Button.X:
                     return ButtonPushed(InputDeviceMap.XboxX);
-                case Button.Y:
+                case Xbox360GamePad.Button.Y:
                     return ButtonPushed(InputDeviceMap.XboxY);
-                case Button.A:
+                case Xbox360GamePad.Button.A:
                     return ButtonPushed(InputDeviceMap.XboxA);
-                case Button.B:
+                case Xbox360GamePad.Button.B:
                     return ButtonPushed(InputDeviceMap.XboxB);
             }
             return false;
@@ -336,13 +336,13 @@ namespace FlatRedBall.Input
         {
             switch (xboxButton)
             {
-                case Button.X:
+                case Xbox360GamePad.Button.X:
                     return ButtonReleased(InputDeviceMap.XboxX);
-                case Button.Y:
+                case Xbox360GamePad.Button.Y:
                     return ButtonReleased(InputDeviceMap.XboxY);
-                case Button.A:
+                case Xbox360GamePad.Button.A:
                     return ButtonReleased(InputDeviceMap.XboxA);
-                case Button.B:
+                case Xbox360GamePad.Button.B:
                     return ButtonReleased(InputDeviceMap.XboxB);
             }
             return false;

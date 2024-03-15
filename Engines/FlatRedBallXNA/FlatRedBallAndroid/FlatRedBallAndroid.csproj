@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-android</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>$(DefineConstants);FRB_XNA;ANDROID;MONOGAME;XNA4;MONOGAME_381</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DefineConstants>$(DefineConstants);FRB_XNA;ANDROID;MONOGAME;XNA4;MONOGAME_381</DefineConstants>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\FlatRedBall\Input\Keyboard.Android.cs" Link="Input\Keyboard.Android.cs" />
+    <Compile Include="..\FlatRedBall\IO\FileManager.IsolatedStorage.cs" Link="IO\FileManager.IsolatedStorage.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="IO\" />
+    <Folder Include="Input\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.Android" Version="3.8.1.303" />
+  </ItemGroup>
+
+  <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
+
+</Project>
