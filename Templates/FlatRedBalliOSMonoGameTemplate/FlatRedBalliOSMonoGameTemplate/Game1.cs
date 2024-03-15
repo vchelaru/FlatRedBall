@@ -66,9 +66,6 @@ namespace FlatRedBalliOSMonoGameTemplate
 
             GeneratedInitialize();
 
-            var circle = ShapeManager.AddCircle();
-            circle.Radius = 16;
-
             base.Initialize();
         }
 
