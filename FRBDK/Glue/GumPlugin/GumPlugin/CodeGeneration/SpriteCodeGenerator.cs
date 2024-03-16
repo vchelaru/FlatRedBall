@@ -29,8 +29,19 @@ namespace GumPluginCore.CodeGeneration
                 if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.TimeManagerHasDelaySeconds)
                 {
                     GeneratePlayAnimationsAsync(classBodyBlock);
+
+                    GenerateTimeIntoAnimation(classBodyBlock);
                 }
             }
+        }
+
+        private void GenerateTimeIntoAnimation(ICodeBlock classBodyBlock)
+        {
+            classBodyBlock.Line("public double TimeIntoAnimation");
+            classBodyBlock.Line("{");
+            classBodyBlock.Line("    get => ContainedSprite.TimeIntoAnimation;");
+            classBodyBlock.Line("    set => ContainedSprite.TimeIntoAnimation = value;");
+            classBodyBlock.Line("}");
         }
 
         private void GenerateCurrentChainNameProperty(ICodeBlock classBodyBlock)
