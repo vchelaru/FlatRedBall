@@ -303,6 +303,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SpriteSelectionOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringFunctions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\TaskHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Gui\Behaviors\" />
