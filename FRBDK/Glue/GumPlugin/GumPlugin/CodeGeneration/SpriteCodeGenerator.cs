@@ -29,8 +29,19 @@ namespace GumPluginCore.CodeGeneration
                 if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.TimeManagerHasDelaySeconds)
                 {
                     GeneratePlayAnimationsAsync(classBodyBlock);
+
+                    GenerateTimeIntoAnimation(classBodyBlock);
                 }
             }
+        }
+
+        private void GenerateTimeIntoAnimation(ICodeBlock classBodyBlock)
+        {
+            classBodyBlock.Line("public double TimeIntoAnimation");
+            classBodyBlock.Line("{");
+            classBodyBlock.Line("    get => ContainedSprite.TimeIntoAnimation;");
+            classBodyBlock.Line("    set => ContainedSprite.TimeIntoAnimation = value;");
+            classBodyBlock.Line("}");
         }
 
         private void GenerateCurrentChainNameProperty(ICodeBlock classBodyBlock)
@@ -85,6 +96,10 @@ namespace GumPluginCore.CodeGeneration
                     foreachBlock.Line("sprite.TimeIntoAnimation = 0;");
                     foreachBlock.Line("sprite.CurrentFrameIndex = 0;");
                     foreachBlock.Line("sprite.UpdateToCurrentAnimationFrame();");
+
+                    foreachBlock.If("sprite.CurrentChain == null")
+                        .Line("throw new System.InvalidOperationException($\"Could not find the animation {animation}\");");
+
                     foreachBlock.Line("// subtract second difference to prevent it from looping once if it happens to fall mid-frame");
                     foreachBlock.Line("// Due to frame order, we need to delay one frame less, and multiply by 1.1 to fix possible accuracy issues");
                     foreachBlock.Line("await FlatRedBall.TimeManager.DelaySeconds(sprite.CurrentChain.TotalLength - FlatRedBall.TimeManager.SecondDifference * 1.1f);");

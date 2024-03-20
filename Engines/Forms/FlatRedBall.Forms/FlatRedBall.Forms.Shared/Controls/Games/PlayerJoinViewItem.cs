@@ -134,7 +134,17 @@ namespace FlatRedBall.Forms.Controls.Games
         {
             if(InputDevice != null)
             {
-                ControllerDisplayName = PlayerJoinView.KeyboardName;
+                if(InputDevice is Keyboard)
+                {
+                    ControllerDisplayName = PlayerJoinView.KeyboardName;
+                }
+                else if(InputDevice is Xbox360GamePad gamepad)
+                {
+#if !UWP && !XNA4_OLD && !FNA
+
+                    ControllerDisplayName = gamepad.Capabilities.DisplayName;
+#endif
+                }
             }
             else if(this.ConnectedJoinedState == ConnectedJoinedState.NotConnected && IsUsingKeyboardAsBackup)
             {

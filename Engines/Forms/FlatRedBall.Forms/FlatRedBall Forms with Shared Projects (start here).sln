@@ -7,25 +7,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{F649B2
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBalliOS", "..\..\FlatRedBallXNA\FlatRedBalliOS\FlatRedBalliOS.csproj", "{988B0672-8A1B-4A36-912D-91BC8BF4BE8D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GumCore", "GumCore", "{3757E7DC-EDBA-4A7C-9846-DBBFDBB9DD12}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StateInterpolation", "StateInterpolation", "{27F64810-F98D-4965-8800-1BEFD8BADE25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateInterpolation.iOSMonoGame", "StateInterpolation\StateInterpolation.iOSMonoGame\StateInterpolation.iOSMonoGame.csproj", "{25D8F0AD-BC12-43D1-94CD-4B1F98DD91E6}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "StateInterpolationShared", "..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.shproj", "{D00D287D-385B-42FB-BF5F-04401E7D37D0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GumCoreiOS", "..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCoreiOS\GumCoreiOS.csproj", "{D36F5561-18B2-44C5-98BA-0D54D395FC25}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GumCoreShared", "..\..\..\..\Gum\GumCoreShared.shproj", "{F919C045-EAC7-4806-9A1F-CE421F923E97}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GumCoreShared.FlatRedBall", "..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.shproj", "{0EE8A96C-A754-453D-9E65-19A24E9A5E76}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBall.Forms.Shared", "FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.shproj", "{728151F0-03E0-4253-94FE-46B9C77EDEA6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.Forms.iOSMonoGame", "FlatRedBall.Forms.iOSMonoGame\FlatRedBall.Forms.iOSMonoGame.csproj", "{48D1BF33-C315-41D0-A127-D0FEF2C7FFFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

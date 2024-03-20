@@ -2,7 +2,7 @@
 #define USE_ISOLATED_STORAGE
 #endif
 
-#if  MONODROID || IOS || UWP
+#if  MONODROID || IOS || UWP || ANDROID
 #define USES_DOT_SLASH_ABOLUTE_FILES
 #endif
 
@@ -222,14 +222,11 @@ namespace FlatRedBall.IO
             }
         }
 
-#if !UWP && !MONODROID && !WINDOWS_8
-
-
         public static string StartupPath
         {
             get
             {
-#if IOS
+#if IOS || ANDROID
 				return "./";
 #elif FRB_RAW || DESKTOP_GL || STANDARD
                 return System.IO.Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ) + "/";
@@ -299,7 +296,6 @@ namespace FlatRedBall.IO
             }
         }
 
-#endif
 #endregion
 
         #region Methods
@@ -1511,7 +1507,7 @@ namespace FlatRedBall.IO
 
             fileName = FileManager.GetIsolatedStorageFileName(fileName);
 
-#if WINDOWS_8 || IOS || UWP
+#if WINDOWS_8 || IOS || UWP || ANDROID
             throw new NotImplementedException();
 #else
             IsolatedStorageFileStream isfs = null;
@@ -1852,7 +1848,7 @@ namespace FlatRedBall.IO
                 fileName = fileName.Substring(2);
             }
             Stream stream = null;
-#if USES_DOT_SLASH_ABOLUTE_FILES && !IOS
+#if USES_DOT_SLASH_ABOLUTE_FILES && !IOS && !ANDROID
             // Silverlight and 360 don't like ./ at the start of the file name, but that's what we use to identify an absolute path
             if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
                 fileName = fileName.Substring(2);
@@ -1919,22 +1915,7 @@ namespace FlatRedBall.IO
 
             ThrowExceptionIfFileDoesntExist(fileName);
 
-#if MONODROID
-            // Cute, the 360 doesn't like ./ at the start of the file name.
-            if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
-                fileName = fileName.Substring(2);
-#endif
-
-
-#if MONODROID
-
-            var store = mIsolatedStorageFile;
-
-            using (var stream = GetStreamForFile(fileName))
-            {
-                throw new NotImplementedException();
-            }
-#elif WINDOWS_8 || UWP || FNA || IOS
+#if WINDOWS_8 || UWP || FNA || IOS || ANDROID
             throw new NotImplementedException();
 #else
             using (FileStream stream = System.IO.File.OpenRead(fileName))
@@ -1957,14 +1938,6 @@ namespace FlatRedBall.IO
 
 
             ThrowExceptionIfFileDoesntExist(fileName);
-
-#if XBOX360
-            // Cute, the 360 doesn't like ./ at the start of the file name.
-            if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
-                fileName = fileName.Substring(2);
-            
-#endif
-
 
             using (Stream stream = GetStreamForFile(fileName))
             {
@@ -1994,25 +1967,6 @@ namespace FlatRedBall.IO
             if (FileManager.IsRelative(fileName))
                 fileName = FileManager.RelativeDirectory + fileName;
 
-#if SILVERLIGHT || WINDOWS_PHONE || MONODROID
-            var store = mIsolatedStorageFile;
-
-            string directory = FileManager.GetDirectory(fileName);
-            if (!string.IsNullOrEmpty(directory) && !store.DirectoryExists(directory))
-            {
-                if (directory.EndsWith("/"))
-                {
-                    // the trailing slash causes an exception to be thrown
-                    directory = directory.Substring(0, directory.Length - 1);
-                }
-
-                store.CreateDirectory(directory);
-            }
-
-            fs = GetStreamForFile(fileName, FileMode.OpenOrCreate);
-
-#endif
-#if !MONODROID
             string directory = FileManager.GetDirectory(fileName);
 
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(FileManager.GetDirectory(fileName)))
@@ -2020,12 +1974,11 @@ namespace FlatRedBall.IO
                 Directory.CreateDirectory(FileManager.GetDirectory(fileName));
             }
 
-#endif
 
 
             try
             {
-#if UWP || FNA || IOS
+#if UWP || FNA || IOS || ANDROID
                 throw new NotImplementedException();
 #else
 

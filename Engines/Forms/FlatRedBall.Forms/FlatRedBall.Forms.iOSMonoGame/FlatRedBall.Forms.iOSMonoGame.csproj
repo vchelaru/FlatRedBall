@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-ios</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\FlatRedBall.Forms.iOS\Clipboard\ClipboardImplementation.iOS.cs" Link="Clipboard\ClipboardImplementation.iOS.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Clipboard\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCoreiOS\GumCoreiOS.csproj" />
+    <ProjectReference Include="..\..\..\FlatRedBallXNA\FlatRedBalliOS\FlatRedBalliOS.csproj" />
+    <ProjectReference Include="..\StateInterpolation\StateInterpolation.iOSMonoGame\StateInterpolation.iOSMonoGame.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
+
+</Project>

@@ -149,6 +149,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             var namedObject = new NamedObjectSave();
             namedObject.SetDefaults();
             var targetList = GlueState.Self.CurrentNamedObjectSave;
+            var targetElement = GlueState.Self.CurrentElement;
             if(!targetList.IsList)
             {
                 targetList = GlueState.Self.CurrentElement.NamedObjects
@@ -185,8 +186,8 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
                 namedObject.UpdateCustomProperties();
             }
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
             PluginManager.ReactToNewObject(namedObject);
             if(targetList != null)
             {
@@ -194,6 +195,8 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             }
 
             GlueState.Self.CurrentNamedObjectSave = namedObject;
+
+            GlueCommands.Self.GluxCommands.SaveElementAsync(targetElement);
 
             AnyButtonClicked();
         }

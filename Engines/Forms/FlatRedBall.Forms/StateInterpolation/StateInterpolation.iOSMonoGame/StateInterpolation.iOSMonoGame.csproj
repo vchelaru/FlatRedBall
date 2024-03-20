@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-ios</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\FlatRedBallXNA\FlatRedBalliOS\FlatRedBalliOS.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\..\..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems" Label="Shared" />
+
+</Project>

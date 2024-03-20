@@ -6,6 +6,12 @@
     <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Content\shader.xnb" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Content\shader.xnb" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Framework.iOS" Version="3.8.1.303" />
   </ItemGroup>

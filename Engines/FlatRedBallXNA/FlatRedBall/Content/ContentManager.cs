@@ -654,14 +654,14 @@ namespace FlatRedBall.Content
 
 					if (assetName.EndsWith("gif"))
 					{
-#if UWP || DESKTOP_GL || STANDARD || IOS
                         throw new NotImplementedException();
-#else
-						AnimationChainList acl = new AnimationChainList();
-						acl.Add(FlatRedBall.Graphics.Animation.AnimationChain.FromGif(assetName, this.mName));
-						acl[0].ParentGifFileName = assetName;
-						loadedAsset = acl;
-#endif
+
+						// We used to support gif => AnimationChain but this is being
+						// dropped. It could be added in the future if needed.
+						//AnimationChainList acl = new AnimationChainList();
+						//acl.Add(FlatRedBall.Graphics.Animation.AnimationChain.FromGif(assetName, this.mName));
+						//acl[0].ParentGifFileName = assetName;
+						//loadedAsset = acl;
 					}
 					else
 					{
