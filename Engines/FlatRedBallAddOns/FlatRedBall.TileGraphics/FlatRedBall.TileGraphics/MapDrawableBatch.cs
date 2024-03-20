@@ -97,6 +97,9 @@ namespace FlatRedBall.TileGraphics
             set { mBlue = value; }
         }
 
+        /// <summary>
+        /// Modifies the transparency of the map. By default this value equals 1 which means it is drawn at full opacity. A value of 0 makes the map fully transparent.
+        /// </summary>
         public float Alpha
         {
             get { return mAlpha; }

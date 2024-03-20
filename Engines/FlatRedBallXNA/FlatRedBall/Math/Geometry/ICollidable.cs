@@ -13,10 +13,22 @@ namespace FlatRedBall.Math.Geometry
     {
         ShapeCollection Collision { get; }
 
+        /// <summary>
+        /// Contains all of the names of the objects that this collided against this frame.
+        /// </summary>
         HashSet<string> ItemsCollidedAgainst { get; }
+        /// <summary>
+        /// Contains all of the names of the objects that this collided against last frame.
+        /// </summary>
         HashSet<string> LastFrameItemsCollidedAgainst { get; } 
 
+        /// <summary>
+        /// Contains references to the objects that this collided against this frame.
+        /// </summary>
         HashSet<object> ObjectsCollidedAgainst { get; }
+        /// <summary>
+        /// Contains references to the objects that this collided against last frame.
+        /// </summary>
         HashSet<object> LastFrameObjectsCollidedAgainst { get; }
     }
 
