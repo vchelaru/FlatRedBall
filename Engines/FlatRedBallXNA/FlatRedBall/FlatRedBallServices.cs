@@ -777,8 +777,14 @@ namespace FlatRedBall
             // So I'm going to revert monogame back to the old way for now
             //using Stream testStream = TitleContainer.OpenStream("Content/shader.xnb");
 
+
+            var shaderFileName =
+                "Content/shader";
+#if ANDROID
+            shaderFileName = shaderFileName.ToLower();
+#endif
             var preInitGlobalContent = new Microsoft.Xna.Framework.Content.ContentManager(mServices);
-                Renderer.Effect = preInitGlobalContent.Load<Effect>("Content/shader");
+                Renderer.Effect = preInitGlobalContent.Load<Effect>(shaderFileName);
 
 
             // We need two separate instances of the custom effect so we need another 
