@@ -6,7 +6,23 @@
     <ApplicationId>com.companyname.FlatRedBallAndroidMonoGameTemplate</ApplicationId>
     <ApplicationVersion>1</ApplicationVersion>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants);ANDROID</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants);ANDROID</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="content\defaultfonttexture.png" />
+    <None Remove="content\Shader.xnb" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="content\defaultfonttexture.png" />
+    <AndroidAsset Include="content\Shader.xnb" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Framework.Android" Version="3.8.1.303" />

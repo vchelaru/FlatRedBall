@@ -235,7 +235,7 @@ Additional Info:
         {
             public string Preprocessor;
             public Func<ProjectBase> Func;
-            public Version MinVersion;
+            public Version MinDotNetVersion;
 
             public PreprocessorAndFunc(string preprocessor, Func<ProjectBase> func)
             {
@@ -243,11 +243,11 @@ Additional Info:
                 Func = func;
             }
 
-            public PreprocessorAndFunc(string preprocessor, Version minVersion, Func<ProjectBase> func)
+            public PreprocessorAndFunc(string preprocessor, Version minDotNetVersion, Func<ProjectBase> func)
             {
                 Preprocessor = preprocessor;
                 Func = func;
-                MinVersion = minVersion;
+                MinDotNetVersion = minDotNetVersion;
             }
         }
 
@@ -257,13 +257,13 @@ Additional Info:
             string preProcessorConstants = GetPreProcessorConstantsFromProject(coreVisualStudioProject);
             var frameworkProperty = coreVisualStudioProject.AllEvaluatedProperties.FirstOrDefault(item => item.Name == "TargetFrameworkVersion");
             var dotNetVersionString = frameworkProperty?.EvaluatedValue;
-            Version version = null;
+            Version dotNetVersion = null;
             if (dotNetVersionString?.StartsWith("v") == true)
             {
                 var afterV = dotNetVersionString.Substring(1);
                 try
                 {
-                    version = new Version(afterV);
+                    dotNetVersion = new Version(afterV);
                 }
                 catch
                 {
@@ -293,6 +293,7 @@ Additional Info:
             {
                 List<PreprocessorAndFunc> loadCalls = new List<PreprocessorAndFunc>();
 
+                loadCalls.Add(new PreprocessorAndFunc("ANDROID", new Version(8,0), () => new AndroidMonoGameNet8Project(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("ANDROID", () => new AndroidProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("IOS", () => new IosMonogameProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("UWP", () => new UwpProject(coreVisualStudioProject)));
@@ -313,7 +314,7 @@ Additional Info:
                     var matchesPreprocessor =
                         preProcessorConstants?.Contains(call.Preprocessor) == true;
 
-                    var matchesOrExceedsVersion = call.MinVersion == null || version >= call.MinVersion;
+                    var matchesOrExceedsVersion = call.MinDotNetVersion == null || dotNetVersion >= call.MinDotNetVersion;
 
                     if (matchesPreprocessor && matchesOrExceedsVersion)
                     {
@@ -346,9 +347,9 @@ Additional Info:
                         message += 
                             $"\n\nThe following are preprocessor directives to determine project type:";
 
-                        foreach(var preprocessor in loadCalls)
+                        foreach(var preprocessorAndFunc in loadCalls)
                         {
-                            message += "\n" + preprocessor.Preprocessor;
+                            message += "\n" + preprocessorAndFunc.Preprocessor;
                         }
                     }
                 }
