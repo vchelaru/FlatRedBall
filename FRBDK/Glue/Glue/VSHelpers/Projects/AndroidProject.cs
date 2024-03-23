@@ -76,19 +76,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override string ContentDirectory => "Assets/content/";
 
-        public override List<string> LibraryDlls
-        {
-            get
-            {
-                return new List<string>
-                           {
-                               @"Android\FlatRedBall.dll",
-                               @"Android\Lidgren.Network.Android.dll",
-                               @"Android\MonoGame.Framework.dll"
-                           };
-            }
-        }
-
         public override List<string> GetErrors()
         {
             List<string> toReturn = new List<string>();

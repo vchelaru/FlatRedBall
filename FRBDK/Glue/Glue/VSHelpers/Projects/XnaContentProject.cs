@@ -14,11 +14,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override string PrecompilerDirective { get { throw new NotImplementedException(); } }
 
-        public override List<string> LibraryDlls
-        {
-            get { return new List<string>();}
-        }
-
         public override string FolderName
         {
             get { return "XnaContent"; }

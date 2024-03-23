@@ -295,6 +295,7 @@ Additional Info:
 
                 loadCalls.Add(new PreprocessorAndFunc("ANDROID", new Version(8,0), () => new AndroidMonoGameNet8Project(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("ANDROID", () => new AndroidProject(coreVisualStudioProject)));
+                loadCalls.Add(new PreprocessorAndFunc("IOS", new Version(8, 0), () => new IosMonoGameNet8Project(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("IOS", () => new IosMonogameProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("UWP", () => new UwpProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("DESKTOP_GL", new Version(6,0), () => new MonoGameDesktopGlNetCoreProject(coreVisualStudioProject)));

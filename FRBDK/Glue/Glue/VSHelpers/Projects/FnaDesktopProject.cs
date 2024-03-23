@@ -13,17 +13,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public override string PrecompilerDirective { get { return "FNA"; } }
         public override bool AllowContentCompile => false;
 
-        public override List<string> LibraryDlls
-        {
-            get
-            {
-                return new List<string>
-                {
-                    "FlatRedBall.FNA.dll"
-                };
-            }
-        }
-
         public override string ContentDirectory => "Content/";
 
         public override string FolderName => "FNA";

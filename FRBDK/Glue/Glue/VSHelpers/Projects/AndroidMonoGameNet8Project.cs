@@ -5,119 +5,67 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlatRedBall.Glue.VSHelpers.Projects
+namespace FlatRedBall.Glue.VSHelpers.Projects;
+
+public class AndroidMonoGameNet8Project : CombinedEmbeddedContentProject
 {
-    public class AndroidMonoGameNet8Project : CombinedEmbeddedContentProject
+    public AndroidMonoGameNet8Project(Project project) : base(project) {  }
+
+    public override string FolderName => "Android"; 
+
+    public override string ProjectId => "Android"; 
+
+    public override bool AllowContentCompile => false; 
+    public override string DefaultContentAction => "AndroidAsset"; 
+    public override BuildItemMembershipType DefaultContentBuildType => BuildItemMembershipType.AndroidAsset;
+
+    protected override bool NeedCopyToOutput => false;
+
+    public override string NeededVisualStudioVersion => "17.8"; 
+
+    public override string PrecompilerDirective => "ANDROID";
+
+    public override string ProcessLink(string path)
     {
-        public AndroidMonoGameNet8Project(Project project) : base(project)
+        var returnValue = base.ProcessLink(path);
+        if (returnValue != null)
         {
-        }
 
-        public override string FolderName
-        {
-            get { return "Android"; }
-        }
+            // Android is case-sensitive
+            // v55 handles this
+            //returnValue = returnValue.ToLowerInvariant();
 
-        public override string ProjectId { get { return "Android"; } }
+            //if (returnValue.StartsWith("assets/", StringComparison.OrdinalIgnoreCase) || returnValue.StartsWith(@"assets\", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    // Assets folder is capitalized in FRB Android projects:
+            //    returnValue = "A" + returnValue[1..];
+            //}
 
-        public override bool AllowContentCompile { get { return false; } }
-        public override string DefaultContentAction { get { return "AndroidAsset"; } }
-        public override BuildItemMembershipType DefaultContentBuildType
-        {
-            get
+            if (returnValue.Contains("/", StringComparison.OrdinalIgnoreCase))
             {
-                return BuildItemMembershipType.AndroidAsset;
+                returnValue = returnValue.Replace("/", @"\");
             }
         }
 
-        protected override bool NeedCopyToOutput => false;
+        return returnValue;
+    }
 
-        public override string NeededVisualStudioVersion
+
+    public override string ContentDirectory => "content/";
+
+    public override List<string> GetErrors()
+    {
+        List<string> toReturn = new List<string>();
+
+        foreach (var buildItem in EvaluatedItems)
         {
-            get { return "17.8"; }
-        }
+            var link = buildItem.GetLink();
 
-        public override string PrecompilerDirective => "ANDROID";
-
-        public override string ProcessInclude(string path)
-        {
-            var returnValue = base.ProcessInclude(path);
-
-            if (returnValue != null)
+            if (link != null && link.Contains("..\\"))
             {
-                // March 23, 2024
-                // For now we will continue
-                // to ToLower files just like
-                // old Android/iOS.
-                // actually no, adding v55 to handle this
-                //returnValue = returnValue.ToLowerInvariant();
-
-            }
-                // I think we need to replace and consider slashes as this could be part of a file name
-                // like assets.png
-                // March 21, 2024
-                // Vic asks - are these needed for .NET 8 projects? I don't think they are...
-                //if (returnValue.StartsWith("assets\\") || returnValue.Contains("assets/"))
-                //{
-                //    returnValue = "Assets\\" + returnValue.Substring("assets/".Length);
-                //}
-                return returnValue;
-        }
-
-        public override string ProcessLink(string path)
-        {
-            var returnValue = base.ProcessLink(path);
-            if (returnValue != null)
-            {
-
-                // Android is case-sensitive
-                // v55 handles this
-                //returnValue = returnValue.ToLowerInvariant();
-
-                //if (returnValue.StartsWith("assets/", StringComparison.OrdinalIgnoreCase) || returnValue.StartsWith(@"assets\", StringComparison.OrdinalIgnoreCase))
-                //{
-                //    // Assets folder is capitalized in FRB Android projects:
-                //    returnValue = "A" + returnValue[1..];
-                //}
-
-                if (returnValue.Contains("/", StringComparison.OrdinalIgnoreCase))
-                {
-                    returnValue = returnValue.Replace("/", @"\");
-                }
-            }
-
-            return returnValue;
-        }
-
-
-        public override string ContentDirectory => "content/";
-
-        public override List<string> LibraryDlls
-        {
-            get
-            {
-                return new List<string>
-                           {
-                               @"Android\FlatRedBallAndroid.dll",
-                           };
+                toReturn.Add("The item " + buildItem.UnevaluatedInclude + " has a link " + link + ".  Android projects do not support ..\\ in the link.");
             }
         }
-
-
-        public override List<string> GetErrors()
-        {
-            List<string> toReturn = new List<string>();
-
-            foreach (var buildItem in EvaluatedItems)
-            {
-                var link = buildItem.GetLink();
-
-                if (link != null && link.Contains("..\\"))
-                {
-                    toReturn.Add("The item " + buildItem.UnevaluatedInclude + " has a link " + link + ".  Android projects do not support ..\\ in the link.");
-                }
-            }
-            return toReturn;
-        }
+        return toReturn;
     }
 }

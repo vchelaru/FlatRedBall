@@ -171,6 +171,26 @@ internal static class AddSourceManager
         new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreiOS.csproj", ProjectRootType = FrbOrGum.Gum},
     };
 
+    public static List<ProjectReference> IosNet8 = new List<ProjectReference>
+    {
+        new ProjectReference(){ RelativeProjectFilePath =
+            $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.iOSMonoGame\\StateInterpolation.iOSMonoGame.csproj",
+            ProjectRootType = FrbOrGum.Frb},
+
+        new ProjectReference(){ RelativeProjectFilePath =
+            $"Engines\\FlatRedBallXNA\\FlatRedBalliOS\\FlatRedBalliOS.csproj",
+            ProjectRootType = FrbOrGum.Frb},
+
+        new ProjectReference(){ RelativeProjectFilePath =
+            $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.iOSMonoGame\\FlatRedBall.Forms.iOSMonoGame.csproj",
+            ProjectRootType = FrbOrGum.Frb},
+
+        new ProjectReference(){ RelativeProjectFilePath =
+            $"GumCore\\GumCoreXnaPc\\GumCoreiOS\\GumCoreiOS.csproj",
+            ProjectRootType = FrbOrGum.Gum},
+    };
+
+
     #endregion
 
     public static List<ProjectReference> XnaNet4 = new List<ProjectReference>
@@ -324,6 +344,10 @@ internal static class AddSourceManager
         if(GlueState.Self.CurrentMainProject is AndroidMonoGameNet8Project)
         {
             return AndroidNet8.Concat(SharedShprojReferences).ToList();
+        }
+        else if(GlueState.Self.CurrentMainProject is IosMonoGameNet8Project)
+        {
+            return IosNet8.Concat(SharedShprojReferences).ToList();
         }
         else if (GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6) {
             // When we support Android/iOS .NET 6, we need to handle those here:

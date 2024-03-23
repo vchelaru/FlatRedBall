@@ -11,7 +11,7 @@
     <None Remove="Content\shader.xnb" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Content\shader.xnb" />
+    <BundleResource Include="Content\Shader.xnb" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game1.cs" />

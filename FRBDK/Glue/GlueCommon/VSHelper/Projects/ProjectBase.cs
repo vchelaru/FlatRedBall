@@ -124,8 +124,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             get { return Directory + ContentDirectory; }
         }
 
-        public abstract List<string> LibraryDlls { get; } 
-
         #endregion
 
         #region Events

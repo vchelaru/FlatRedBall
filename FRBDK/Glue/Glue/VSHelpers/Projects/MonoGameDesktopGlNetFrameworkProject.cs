@@ -12,17 +12,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         const string FlatRedBallDll = "FlatRedBallDesktopGL.dll";
 
-        public override List<string> LibraryDlls
-        {
-            get
-            {
-                return new List<string>
-                {
-                    FlatRedBallDll
-                };
-            }
-        }
-
         public override string NeededVisualStudioVersion
         {
             get { return "14.0"; }

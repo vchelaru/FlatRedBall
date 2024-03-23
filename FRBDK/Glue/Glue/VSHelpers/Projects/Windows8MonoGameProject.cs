@@ -23,20 +23,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             get { return "Windows8 MonoGame"; }
         }
 
-        public override List<string> LibraryDlls
-        {
-            get 
-            {
-                return new List<string>
-                {
-                    "FlatRedBallWindows8.dll",
-                    "MonoGame.Framework.Windows8.dll"
-                };
-
-            
-            }
-        }
-
         public override string FolderName
         {
             get 

@@ -105,6 +105,10 @@ namespace OfficialPlugins.ContentPreview.Views
                 case nameof(ViewModel.SelectedAnimationChain):
 
                     TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
+                    RefreshTexture(achxFilePath, ViewModel.SelectedAnimationChain);
+
+
+
                     RefreshAnimationPreview();
 
                     TopGumCanvas.InvalidateVisual();
