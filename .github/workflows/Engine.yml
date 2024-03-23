@@ -45,7 +45,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Build FlatRedBall Android .NET 8
-      run: dotnet build -c ${{ matrix.configuration }} '\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
+      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
     - name: Package FlatRedBall Android .NET 8
       uses: actions/upload-artifact@v3
       with:
