@@ -44,6 +44,14 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
 
+    - name: Build FlatRedBall Android .NET 8
+      run: dotnet build -c ${{ matrix.configuration }} '\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
+    - name: Package FlatRedBall Android .NET 8
+      uses: actions/upload-artifact@v3
+      with:
+        name: AndroidMonoGameNet8${{ matrix.configuration }}
+        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\${{ matrix.configuration }}\net8.0-android\
+
     - name: Build FlatRedBall FNA .NET 7
       run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
     - name: Package FlatRedBall FNA .NET 7
