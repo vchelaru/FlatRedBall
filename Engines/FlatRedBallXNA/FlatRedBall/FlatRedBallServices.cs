@@ -117,7 +117,7 @@ namespace FlatRedBall
         public int Version;
     }
 
-    [SyntaxVersion(Version=54)]
+    [SyntaxVersion(Version=55)]
     public static partial class FlatRedBallServices
     {
         internal static SingleThreadSynchronizationContext singleThreadSynchronizationContext;
@@ -779,10 +779,8 @@ namespace FlatRedBall
 
 
             var shaderFileName =
-                "Content/shader";
-#if ANDROID
-            shaderFileName = shaderFileName.ToLower();
-#endif
+                "Content/Shader";
+
             var preInitGlobalContent = new Microsoft.Xna.Framework.Content.ContentManager(mServices);
                 Renderer.Effect = preInitGlobalContent.Load<Effect>(shaderFileName);
 

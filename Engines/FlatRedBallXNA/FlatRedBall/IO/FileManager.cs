@@ -449,7 +449,9 @@ namespace FlatRedBall.IO
 
 
                     // I think we can make this to-lower on iOS and Android so we don't have to spread to-lowers everywhere else:
+#if !NET8_0_OR_GREATER
                     fileName = fileName.ToLowerInvariant();
+#endif
 
 #if ANDROID
                     // We may be checking for a file outside of the title container
@@ -468,17 +470,16 @@ namespace FlatRedBall.IO
                     {
                         stream = TitleContainer.OpenStream(fileName);
                     }
-#if MONODROID
-                    catch (Java.IO.FileNotFoundException fnfe)
-                    {
-                        return false;
-                    }
-#else
-                    catch (FileNotFoundException fnfe)
+#if MONODROID || ANDROID
+                    catch (Java.IO.FileNotFoundException)
                     {
                         return false;
                     }
 #endif
+                    catch (FileNotFoundException fnfe)
+                    {
+                        return false;
+                    }
 
                     if (stream != null)
                     {
@@ -491,8 +492,8 @@ namespace FlatRedBall.IO
                     }
                 }
 #else
-                
-				if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
+
+                    if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
 					fileName = fileName.Substring(2);
 
                 return System.IO.File.Exists(fileName);
@@ -1838,7 +1839,7 @@ namespace FlatRedBall.IO
                 fileName = FileManager.RelativeDirectory + fileName;
             }
 
-#if IOS || ANDROID
+#if (IOS || ANDROID) && !NET8_0_OR_GREATER
             fileName = fileName.ToLowerInvariant();
 #endif
 
@@ -1848,8 +1849,7 @@ namespace FlatRedBall.IO
                 fileName = fileName.Substring(2);
             }
             Stream stream = null;
-#if USES_DOT_SLASH_ABOLUTE_FILES && !IOS && !ANDROID
-            // Silverlight and 360 don't like ./ at the start of the file name, but that's what we use to identify an absolute path
+#if USES_DOT_SLASH_ABOLUTE_FILES
             if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
                 fileName = fileName.Substring(2);
 
@@ -1859,19 +1859,15 @@ namespace FlatRedBall.IO
             {
                 fileName = GetIsolatedStorageFileName(fileName);
 
-#if WINDOWS_8 || UWP
-                throw new NotImplementedException();
-#else
                 IsolatedStorageFileStream isfs = new IsolatedStorageFileStream(fileName, mode, mIsolatedStorageFile);
 
                 stream = isfs;
-#endif
             }
             else
             {
 
 
-#if ANDROID || WINDOWS_8 || IOS || UWP
+#if ANDROID || IOS 
                 stream = TitleContainer.OpenStream(fileName);
 #else
 

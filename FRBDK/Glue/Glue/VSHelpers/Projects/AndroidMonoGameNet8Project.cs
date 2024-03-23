@@ -43,18 +43,52 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             var returnValue = base.ProcessInclude(path);
 
+            if (returnValue != null)
+            {
+                // March 23, 2024
+                // For now we will continue
+                // to ToLower files just like
+                // old Android/iOS.
+                // actually no, adding v55 to handle this
+                //returnValue = returnValue.ToLowerInvariant();
 
-            // I think we need to replace and consider slashes as this could be part of a file name
-            // like assets.png
-            // March 21, 2024
-            // Vic asks - are these needed for .NET 8 projects? I don't think they are...
-            //returnValue = returnValue.ToLowerInvariant();
-            //if (returnValue.StartsWith("assets\\") || returnValue.Contains("assets/"))
-            //{
-            //    returnValue = "Assets\\" + returnValue.Substring("assets/".Length);
-            //}
+            }
+                // I think we need to replace and consider slashes as this could be part of a file name
+                // like assets.png
+                // March 21, 2024
+                // Vic asks - are these needed for .NET 8 projects? I don't think they are...
+                //if (returnValue.StartsWith("assets\\") || returnValue.Contains("assets/"))
+                //{
+                //    returnValue = "Assets\\" + returnValue.Substring("assets/".Length);
+                //}
+                return returnValue;
+        }
+
+        public override string ProcessLink(string path)
+        {
+            var returnValue = base.ProcessLink(path);
+            if (returnValue != null)
+            {
+
+                // Android is case-sensitive
+                // v55 handles this
+                //returnValue = returnValue.ToLowerInvariant();
+
+                //if (returnValue.StartsWith("assets/", StringComparison.OrdinalIgnoreCase) || returnValue.StartsWith(@"assets\", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    // Assets folder is capitalized in FRB Android projects:
+                //    returnValue = "A" + returnValue[1..];
+                //}
+
+                if (returnValue.Contains("/", StringComparison.OrdinalIgnoreCase))
+                {
+                    returnValue = returnValue.Replace("/", @"\");
+                }
+            }
+
             return returnValue;
         }
+
 
         public override string ContentDirectory => "content/";
 

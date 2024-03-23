@@ -112,7 +112,14 @@ namespace FlatRedBall.Content
             try
             {
 
-                using (var stream = androidAssetManager.Open("content/defaultfonttexture.png"))
+				var fileName = "Content/defaultfonttexture.png";
+
+#if !NET8_0
+				fileName = "content/defaultfonttexture.png";
+
+#endif
+
+                using (var stream = androidAssetManager.Open(fileName))
                 {
                     texture = Texture2D.FromStream(graphicsDevice, stream);
                 }
@@ -125,7 +132,7 @@ namespace FlatRedBall.Content
 #else
 
 
-            var colors = DefaultFontDataColors.GetColorArray();
+				var colors = DefaultFontDataColors.GetColorArray();
 
             Texture2D texture = new Texture2D(graphicsDevice, 256, 128);
 

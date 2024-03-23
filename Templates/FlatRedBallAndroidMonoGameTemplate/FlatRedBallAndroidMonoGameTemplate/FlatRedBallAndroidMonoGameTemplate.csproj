@@ -16,12 +16,12 @@
     <DefineConstants>$(DefineConstants);ANDROID</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="content\defaultfonttexture.png" />
-    <None Remove="content\Shader.xnb" />
+    <None Remove="Content\defaultfonttexture.png" />
+    <None Remove="Content\Shader.xnb" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="content\defaultfonttexture.png" />
-    <AndroidAsset Include="content\shader.xnb" />
+    <AndroidAsset Include="Content\defaultfonttexture.png" />
+    <AndroidAsset Include="Content\Shader.xnb" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activity1.cs" />
