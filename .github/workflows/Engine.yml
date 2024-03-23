@@ -46,10 +46,19 @@ jobs:
     - name: Build
       run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
 
-
-
     - name: Package
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.configuration }}
+        name: DesktopGlNet6${{ matrix.configuration }}
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/${{ matrix.configuration }}/net6.0/
+
+    - name: Build
+      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
+  
+    - name: Package
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlNet4${{ matrix.configuration }}
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/${{ matrix.configuration }}/
+
+
