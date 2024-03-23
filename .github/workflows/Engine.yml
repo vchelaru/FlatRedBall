@@ -44,6 +44,14 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
 
+    - name: Build FlatRedBall FNA .NET 7
+      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
+    - name: Package FlatRedBall FNA .NET 7
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlFnaNet7${{ matrix.configuration }}
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/${{ matrix.configuration }}/net7.0/
+
     - name: Build FlatRedBall .NET 6
       run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
     - name: Package FlatRedBall .NET 6
@@ -59,11 +67,3 @@ jobs:
       with:
         name: DesktopGlNet4${{ matrix.configuration }}
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/${{ matrix.configuration }}/
-
-    - name: Build FlatRedBall FNA .NET 7
-      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
-    - name: Package FlatRedBall FNA .NET 7
-      uses: actions/upload-artifact@v3
-      with:
-        name: DesktopGlNet4${{ matrix.configuration }}
-        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/${{ matrix.configuration }}/net7.0/
