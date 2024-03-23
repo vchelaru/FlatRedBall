@@ -30,19 +30,20 @@ namespace OfficialPlugins.ContentPreview.Views
 
         AchxViewModel ViewModel => DataContext as AchxViewModel;
 
-        FilePath textureFilePath;
-        FilePath TextureFilePath
-        {
-            get => textureFilePath;
-            set
-            {
-                if (value != textureFilePath)
-                {
-                    ForceRefreshMainSpriteTexture(value);
-                    ForceRefreshMainAnimationSpriteTexture(value);
-                }
-            }
-        }
+
+        //FilePath textureFilePath;
+        //FilePath TextureFilePath
+        //{
+        //    get => textureFilePath;
+        //    set
+        //    {
+        //        if (value != textureFilePath)
+        //        {
+        //            ForceRefreshMainSpriteTexture(value);
+        //            ForceRefreshMainAnimationSpriteTexture(value);
+        //        }
+        //    }
+        //}
 
         FilePath achxFilePath;
         public FilePath AchxFilePath
@@ -58,22 +59,21 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
-        public SKBitmap Texture => MainSprite?.Texture;
+        public SKBitmap Texture => TopWindowManager.Texture;
 
-        SpriteRuntime MainSprite;
         SpriteRuntime MainAnimationSprite;
-        List<PolygonRuntime> Outlines = new List<PolygonRuntime>();
         List<SkiaShapeRuntime> AnimationShapes = new List<SkiaShapeRuntime>();
 
         // todo - Vic says - let's move all the bototm grid stuff into its own class:
         PolygonRuntime BottomWindowHorizontalGuide;
         PolygonRuntime BottomWindowVerticalGuide;
 
-        SolidRectangleRuntime GumBackground { get; set; }
         SolidRectangleRuntime GumAnimationBackground { get; set; }
 
         CameraLogic CameraLogic;
         CameraLogic CameraLogicAnimation;
+
+        TopWindowManager TopWindowManager;
 
         #endregion
 
@@ -87,6 +87,7 @@ namespace OfficialPlugins.ContentPreview.Views
             //MemberCategoryManager.SetMemberCategories(PropertyGrid);
 
             PropertyGridManager.Initialize(PropertyGrid);
+
         }
 
         private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -103,7 +104,7 @@ namespace OfficialPlugins.ContentPreview.Views
             {
                 case nameof(ViewModel.SelectedAnimationChain):
 
-                    RefreshTopCanvasOutlines();
+                    TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
                     RefreshAnimationPreview();
 
                     TopGumCanvas.InvalidateVisual();
@@ -130,10 +131,6 @@ namespace OfficialPlugins.ContentPreview.Views
                 var previouslySelected = ViewModel.SelectedAnimationChain;
 
                 achxFilePath = achxFilePath ?? this.AchxFilePath;
-                foreach (var outline in Outlines)
-                {
-                    TopGumCanvas.Children.Remove(outline);
-                }
 
                 AnimationChainListSave animationChain = null;
                 if (achxFilePath?.Exists() == true)
@@ -141,9 +138,10 @@ namespace OfficialPlugins.ContentPreview.Views
                     animationChain = AnimationChainListSave.FromFile(achxFilePath.FullPath);
                 }
                 ViewModel.BackgingData = animationChain;
-                RefreshTexture(achxFilePath, animationChain);
+                
+                RefreshTexture(achxFilePath, ViewModel.SelectedAnimationChain);
 
-                RefreshTopCanvasOutlines();
+                TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
 
                 RefreshTreeView(animationChain);
 
@@ -153,7 +151,6 @@ namespace OfficialPlugins.ContentPreview.Views
                         .FirstOrDefault(item => item.Name == previouslySelected.Name);
                 }
 
-                TopGumCanvas.InvalidateVisual();
             });
         }
 
@@ -175,7 +172,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
         private void HandleFrameUpdated()
         {
-            RefreshTopCanvasOutlines();
+            TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
             TopGumCanvas.InvalidateVisual();
             RefreshAnimationPreview();
             BottomGumCanvas.InvalidateVisual();
@@ -199,67 +196,25 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
-        private void RefreshTexture(FilePath value, AnimationChainListSave animationChain)
+        private void RefreshTexture(FilePath achxFilePath, AnimationChainViewModel animationChainViewModel)
         {
+            var animationChain = animationChainViewModel?.BackingModel;
+
             if (animationChain == null)
             {
-                ForceRefreshMainSpriteTexture(null);
+                TopWindowManager.ForceRefreshMainSpriteTexture(null);
             }
             else
             {
 
-                var firstAnimation = animationChain.AnimationChains.FirstOrDefault(item => item.Frames.Count > 0);
-                if (firstAnimation != null)
-                {
-                    var firstFrame = firstAnimation.Frames.FirstOrDefault();
+                var firstFrame = animationChain.Frames.FirstOrDefault();
 
-                    var textureName = firstFrame.TextureName;
+                var textureName = firstFrame.TextureName;
 
-                    var textureAbsolute = value.GetDirectoryContainingThis() + textureName;
+                var textureAbsolute = achxFilePath.GetDirectoryContainingThis() + textureName;
 
-                    ForceRefreshMainSpriteTexture(textureAbsolute);
-                    ForceRefreshMainAnimationSpriteTexture(textureAbsolute);
-                }
-            }
-        }
-
-        private void RefreshTopCanvasOutlines()
-        {
-            foreach(var outline in Outlines)
-            {
-                TopGumCanvas.Children.Remove(outline);
-            }
-            Outlines.Clear();
-            var texture = MainSprite.Texture;
-            if (texture != null && ViewModel != null)
-            {
-                if(ViewModel.SelectedAnimationFrame != null)
-                {
-                    CreatePolygonFor(ViewModel.SelectedAnimationFrame.BackingModel);
-                }
-                else if(ViewModel.SelectedAnimationChain != null)
-                {
-                    CreatePolygonsFor(ViewModel.SelectedAnimationChain.BackingModel);
-                }
-                else if(ViewModel.SelectedShape != null)
-                {
-                    //Do Nothing
-                }
-                else //if(ViewModel.SelectedAnimationChain == null)
-                {
-                    foreach (var animationVm in ViewModel.VisibleRoot)
-                    {
-                        CreatePolygonsFor(animationVm.BackingModel);
-                    }
-                }
-            }
-
-            void CreatePolygonsFor(AnimationChainSave animation)
-            {
-                foreach (var frame in animation.Frames)
-                {
-                    CreatePolygonFor(frame);
-                }
+                TopWindowManager.ForceRefreshMainSpriteTexture(textureAbsolute);
+                ForceRefreshMainAnimationSpriteTexture(textureAbsolute);
             }
         }
 
@@ -451,63 +406,6 @@ namespace OfficialPlugins.ContentPreview.Views
 
         }
 
-        private void CreatePolygonFor(AnimationFrameSave frame)
-        {
-            PolygonRuntime outline = CreateOutlinePolygon(frame);
-            Outlines.Add(outline);
-            TopGumCanvas.Children.Add(outline);
-        }
-
-        private static PolygonRuntime CreateOutlinePolygon(AnimationFrameSave frame)
-        {
-            var left = frame.LeftCoordinate;
-            var right = frame.RightCoordinate;
-            var top = frame.TopCoordinate;
-            var bottom = frame.BottomCoordinate;
-
-            var outline = new PolygonRuntime();
-            outline.Color = SKColors.White;
-            outline.Name = "Frame Outline";
-            outline.IsFilled = false;
-            outline.Points = new List<SKPoint>
-                            {
-                                new SKPoint(left, top),
-                                new SKPoint(right, top),
-                                new SKPoint(right, bottom),
-                                new SKPoint(left, bottom),
-                                new SKPoint(left, top),
-                            };
-            return outline;
-        }
-
-        public void ForceRefreshMainSpriteTexture(FilePath value)
-        {
-            if (value == null || value.Exists() == false)
-            {
-                MainSprite.Texture = null;
-                TopGumCanvas.InvalidateVisual();
-            }
-            else
-            {
-                try
-                {
-                    using (var stream = System.IO.File.OpenRead(value.FullPath))
-                    {
-                        // cache?
-                        MainSprite.Texture = SKBitmap.Decode(stream);
-                        TopGumCanvas.InvalidateVisual();
-
-                    }
-                }
-                catch
-                {
-                    // do we do anything?
-                }
-            }
-
-            textureFilePath = value;
-        }
-
         public void ForceRefreshMainAnimationSpriteTexture(FilePath value)
         {
             if (value == null || value.Exists() == false)
@@ -532,13 +430,11 @@ namespace OfficialPlugins.ContentPreview.Views
                     // do we do anything?
                 }
             }
-
-            textureFilePath = value;
         }
 
         private void HandleLoaded(object sender, RoutedEventArgs e)
         {
-            FillSpriteToView();
+            TopWindowManager.FillSpriteToView(ViewModel);
         }
 
         public void Initialize(CameraLogic cameraLogic, CameraLogic cameraLogicAnimation)
@@ -547,17 +443,19 @@ namespace OfficialPlugins.ContentPreview.Views
             this.CameraLogicAnimation = cameraLogicAnimation;
 
             CreateBackground();
-            CreateMainSprite();
+            CreateAnimatedSprite();
 
             CreateBottomGuideLines();
 
             // do this after creating the background so that it can be passed here:
-            CameraLogic.Initialize(this, (this.DataContext as AchxViewModel)?.WholeZoom, this.TopGumCanvas, this.GumBackground);
             CameraLogicAnimation.Initialize(this, (this.DataContext as AchxViewModel)?.SingleZoom, this.BottomGumCanvas, this.GumAnimationBackground);
 
             _animationTimer.Elapsed += (sender, args) => RunAnimation();
             _animationTimer.Interval = 1;
             _animationTimer.Start();
+
+            TopWindowManager = new TopWindowManager(TopGumCanvas, this, cameraLogic, ViewModel.WholeZoom);
+
         }
 
         private void CreateBottomGuideLines()
@@ -584,15 +482,8 @@ namespace OfficialPlugins.ContentPreview.Views
             this.BottomGumCanvas.Children.Add(BottomWindowVerticalGuide);
         }
 
-        private void CreateMainSprite()
+        private void CreateAnimatedSprite()
         {
-            MainSprite = new SpriteRuntime();
-            MainSprite.Width = 100;
-            MainSprite.Height = 100;
-            MainSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-            MainSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-            this.TopGumCanvas.Children.Add(MainSprite);
-
             MainAnimationSprite = new SpriteRuntime();
             MainAnimationSprite.Visible = false;
             MainAnimationSprite.XOrigin = RenderingLibrary.Graphics.HorizontalAlignment.Center;
@@ -650,13 +541,6 @@ namespace OfficialPlugins.ContentPreview.Views
 
         private void CreateBackground()
         {
-            GumBackground = new SolidRectangleRuntime();
-            GumBackground.Color = new SKColor(68, 34, 136);
-            GumBackground.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
-            GumBackground.Width = 100;
-            GumBackground.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
-            GumBackground.Height = 100;
-            this.TopGumCanvas.Children.Add(GumBackground);
 
             GumAnimationBackground = new SolidRectangleRuntime();
             GumAnimationBackground.Color = new SKColor(68, 34, 136);
@@ -667,38 +551,10 @@ namespace OfficialPlugins.ContentPreview.Views
             this.BottomGumCanvas.Children.Add(GumAnimationBackground);
         }
 
-        internal void ResetCamera()
-        {
-            TopGumCanvas.SystemManagers.Renderer.Camera.X = 0;
-            TopGumCanvas.SystemManagers.Renderer.Camera.Y = 0;
-            GumBackground.X = 0;
-            GumBackground.Y = 0;
 
-            FillSpriteToView();
-
-        }
+        public void ResetCamera() => TopWindowManager.ResetCamera(ViewModel);
 
 
-        private void FillSpriteToView()
-        {
-            if (MainSprite.Texture == null || TopGumCanvas.ActualWidth == 0 || TopGumCanvas.ActualHeight == 0)
-            {
-                ViewModel.WholeZoom.CurrentZoomPercent = 100;
-            }
-            else
-            {
-                var zoomToFitWidth = TopGumCanvas.ActualWidth / MainSprite.Texture.Width;
-                var zoomToFitHeight = TopGumCanvas.ActualHeight / MainSprite.Texture.Height;
-
-                var minZoom = Math.Min(zoomToFitWidth, zoomToFitHeight);
-
-                ViewModel.WholeZoom.CurrentZoomPercent = (float)minZoom * 100;
-            }
-
-
-
-            CameraLogic.RefreshCameraZoomToViewModel();
-        }
 
         private void FillAnimationSpriteToView()
         {
