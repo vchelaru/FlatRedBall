@@ -18,8 +18,9 @@ jobs:
     - name: Checkout FRB
       uses: actions/checkout@v4
       with:
-        fetch-depth: 2
+        fetch-depth: 1
         path: 'FlatRedBall'
+        submodules: recursive
 
     - name: Checkout Gum
       uses: actions/checkout@v4
