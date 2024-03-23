@@ -19,7 +19,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
-        path: 'FRB'
+        path: 'FlatRedBall'
 
     - name: Checkout Gum
       uses: actions/checkout@v4
@@ -44,7 +44,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Build
-      run: dotnet build -c ${{ matrix.configuration }} 'FRB\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
+      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
 
 
 
@@ -52,4 +52,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.configuration }}
-        path: FRB/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/${{ matrix.configuration }}/net6.0/
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/${{ matrix.configuration }}/net6.0/
