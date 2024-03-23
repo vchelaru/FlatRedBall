@@ -790,7 +790,7 @@ namespace FlatRedBall
             // We need two separate instances of the custom effect so we need another 
             // pre initialization content manager.
             var anotherPreInitGlobalContent = new Microsoft.Xna.Framework.Content.ContentManager(mServices);
-            Renderer.ExternalEffect = anotherPreInitGlobalContent.Load<Effect>("Content/shader");
+            Renderer.ExternalEffect = anotherPreInitGlobalContent.Load<Effect>(shaderFileName);
 #endif
         }
 

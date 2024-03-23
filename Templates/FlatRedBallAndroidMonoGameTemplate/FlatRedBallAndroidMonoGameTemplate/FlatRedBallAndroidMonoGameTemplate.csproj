@@ -21,7 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="content\defaultfonttexture.png" />
-    <AndroidAsset Include="content\Shader.xnb" />
+    <AndroidAsset Include="content\shader.xnb" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activity1.cs" />
