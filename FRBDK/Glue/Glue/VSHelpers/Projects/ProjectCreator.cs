@@ -249,6 +249,18 @@ Additional Info:
                 Func = func;
                 MinDotNetVersion = minDotNetVersion;
             }
+
+            public override string ToString()
+            {
+                if(MinDotNetVersion != null)
+                {
+                    return $"{Preprocessor} .NET {MinDotNetVersion}";
+                }
+                else
+                {
+                    return Preprocessor;
+                }
+            }
         }
 
 

@@ -7,6 +7,12 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants);IOS</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants);IOS</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <None Remove="Content\shader.xnb" />
   </ItemGroup>
