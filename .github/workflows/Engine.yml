@@ -44,6 +44,14 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
 
+    - name: Build FlatRedBall iOS .NET 8
+      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
+    - name: Package FlatRedBall iOS .NET 8
+      uses: actions/upload-artifact@v3
+      with:
+        name: iOSMonoGameNet8${{ matrix.configuration }}
+        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\${{ matrix.configuration }}\net8.0-ios\
+
     - name: Build FlatRedBall Android .NET 8
       run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
     - name: Package FlatRedBall Android .NET 8
