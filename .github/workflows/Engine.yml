@@ -83,3 +83,17 @@ jobs:
       with:
         name: DesktopGlNet4${{ matrix.configuration }}
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/${{ matrix.configuration }}/
+
+  gatekeeper:
+    needs: [build]
+    runs-on: windows-latest
+    steps:
+      - name: Trigger next jobs
+        run: echo "All build jobs completed successfully."
+
+  copyBuildsToTemplates:
+    needs: [gatekeeper]
+    runs-on: windows-latest
+    steps:
+      - name: Copy built dlls to templates
+        run: echo "test"
