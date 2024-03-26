@@ -83,6 +83,9 @@ jobs:
       with:
         name: DesktopGlNet4${{ matrix.configuration }}
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/${{ matrix.configuration }}/
+    - name: Directory listing
+      run: |
+        Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
 
   gatekeeper:
     needs: [build]
