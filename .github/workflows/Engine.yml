@@ -93,7 +93,12 @@ jobs:
 
   copyBuildsToTemplates:
     needs: [gatekeeper]
+    env:
+      TEMPLATES: FlatRedBall\Templates
+      FORMS: FlatRedBall\Engines\Forms\FlatRedBall.Forms
     runs-on: windows-latest
     steps:
-      - name: Copy built dlls to templates
-        run: echo "test"
+      - name: Copy libs
+        run: |
+          xcopy /E /I ${{ FORMS }}\FlatRedBall.Forms\bin\DesktopGL\Debug\* ${{ env.DESTINATION_PATH }}\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Debug
+          xcopy /E /I ${{ FORMS }}\FlatRedBall.Forms\bin\DesktopGL\Release\* ${{ env.DESTINATION_PATH }}\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Release
