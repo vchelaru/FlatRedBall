@@ -98,6 +98,9 @@ jobs:
       FORMS: FlatRedBall\Engines\Forms\FlatRedBall.Forms
     runs-on: windows-latest
     steps:
+      - name: Directory listing
+        run: |
+          dir /s
       - name: Copy libs
         run: |
           xcopy /E /I "${{ env.FORMS }}\FlatRedBall.Forms\bin\DesktopGL\Debug\*" ${{ env.TEMPLATES }}\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Debug
