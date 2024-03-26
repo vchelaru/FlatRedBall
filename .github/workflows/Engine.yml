@@ -100,5 +100,5 @@ jobs:
     steps:
       - name: Copy libs
         run: |
-          xcopy /E /I ${{ env.FORMS }}\FlatRedBall.Forms\bin\DesktopGL\Debug\* ${{ env.TEMPLATES }}\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Debug
-          xcopy /E /I ${{ env.FORMS }}\FlatRedBall.Forms\bin\DesktopGL\Release\* ${{ env.TEMPLATES }}\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Release
+          xcopy /E /I "${{ env.FORMS }}\FlatRedBall.Forms\bin\DesktopGL\Debug\*" ${{ env.TEMPLATES }}\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Debug
+          xcopy /E /I "${{ env.FORMS }}\FlatRedBall.Forms\bin\DesktopGL\Release\*" ${{ env.TEMPLATES }}\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Release
