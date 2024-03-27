@@ -116,6 +116,11 @@ jobs:
           } else {
               Write-Host "Directory does not exist at $FolderPath2"
           }
+          $currentDirectory = $PWD.Path
+          Write-Host "Current directory: $currentDirectory"
+          if (Test-Path -Path $FolderPath2) {
+              Write-Host "Current directory exists - wouldn't you know it?"
+          }
         shell: pwsh
       # - name: Directory listing
       #   run: |
