@@ -126,6 +126,9 @@ jobs:
 
 
         shell: pwsh
+      - name: Use the output
+        run: |
+          echo "Files: ${{ steps.list_files.outputs.files }}"
       # - name: Directory listing
       #   run: |
       #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
