@@ -121,7 +121,10 @@ jobs:
           if (Test-Path -Path $env:GITHUB_WORKSPACE) {
               Write-Host "Current directory exists - wouldnt you know it?"
           }
-          if (Test-Path -Path "$($env:GITHUB_WORKSPACE)\FlatRedBall\") {
+
+          $path1 = "$($env:GITHUB_WORKSPACE)\FlatRedBall\"
+          Write-Host "Testing $path1"
+          if (Test-Path -Path $path1) {
               Write-Host "2it exists"
           }
           if (Test-Path -Path "$($env:GITHUB_WORKSPACE)\FlatRedBall\FlatRedBall.Forms") {
