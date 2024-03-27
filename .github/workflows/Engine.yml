@@ -118,11 +118,14 @@ jobs:
           }
           $currentDirectory = $PWD.Path
           Write-Host "Current directory: $currentDirectory"
-          if (Test-Path -Path $PWD.Path) {
+          if (Test-Path -Path $env:GITHUB_WORKSPACE) {
               Write-Host "Current directory exists - wouldnt you know it?"
           }
+          if (Test-Path -Path "$env:GITHUB_WORKSPACE") {
+              Write-Host "1it exists"
+          }
           if (Test-Path -Path "$env:GITHUB_WORKSPACE\FlatRedBall\") {
-              Write-Host "it exists"
+              Write-Host "2it exists"
           }
           if (Test-Path -Path "$env:GITHUB_WORKSPACE\FlatRedBall\FlatRedBall.Forms") {
               Write-Host "3 exists"
