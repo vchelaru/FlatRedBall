@@ -101,9 +101,25 @@ jobs:
       FORMS: FlatRedBall\Engines\Forms\FlatRedBall.Forms
     runs-on: windows-latest
     steps:
-      - name: Directory listing
+
+      - name: Check if directory exists
         run: |
-          Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
+          $FolderPath = '.\FlatRedBall\Engines\Forms\FlatRedBall.Forms'
+          if (Test-Path -Path $FolderPath) {
+              Write-Host "Directory exists at $FolderPath"
+          } else {
+              Write-Host "Directory does not exist at $FolderPath"
+          }
+          $FolderPath2 = 'FlatRedBall\Engines\Forms\FlatRedBall.Forms'
+          if (Test-Path -Path $FolderPath2) {
+              Write-Host "Directory exists at $FolderPath2"
+          } else {
+              Write-Host "Directory does not exist at $FolderPath2"
+          }
+        shell: pwsh
+      # - name: Directory listing
+      #   run: |
+      #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
       - name: Copy libs
         run: |
           xcopy /E /I "${{ env.FORMS }}\FlatRedBall.Forms\bin\DesktopGL\Debug\*" ${{ env.TEMPLATES }}\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Debug
