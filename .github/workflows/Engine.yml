@@ -122,7 +122,7 @@ jobs:
               Write-Host "Current directory exists - wouldnt you know it?"
           }
 
-          $path1 = "$($env:GITHUB_WORKSPACE)\FlatRedBall\"
+          $path1 = "$($env:GITHUB_WORKSPACE)\FlatRedBall"
           Write-Host "Testing $path1"
           if (Test-Path -Path $path1) {
               Write-Host "2it exists"
