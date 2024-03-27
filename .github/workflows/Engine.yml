@@ -44,37 +44,37 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Build FlatRedBall iOS .NET 8
-      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
-    - name: Package FlatRedBall iOS .NET 8
-      uses: actions/upload-artifact@v3
-      with:
-        name: iOSMonoGameNet8${{ matrix.configuration }}
-        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\${{ matrix.configuration }}\net8.0-ios\
+    # - name: Build FlatRedBall iOS .NET 8
+    #   run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
+    # - name: Package FlatRedBall iOS .NET 8
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: iOSMonoGameNet8${{ matrix.configuration }}
+    #     path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\${{ matrix.configuration }}\net8.0-ios\
 
-    - name: Build FlatRedBall Android .NET 8
-      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
-    - name: Package FlatRedBall Android .NET 8
-      uses: actions/upload-artifact@v3
-      with:
-        name: AndroidMonoGameNet8${{ matrix.configuration }}
-        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\${{ matrix.configuration }}\net8.0-android\
+    # - name: Build FlatRedBall Android .NET 8
+    #   run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
+    # - name: Package FlatRedBall Android .NET 8
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: AndroidMonoGameNet8${{ matrix.configuration }}
+    #     path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\${{ matrix.configuration }}\net8.0-android\
 
-    - name: Build FlatRedBall FNA .NET 7
-      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
-    - name: Package FlatRedBall FNA .NET 7
-      uses: actions/upload-artifact@v3
-      with:
-        name: DesktopGlFnaNet7${{ matrix.configuration }}
-        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/${{ matrix.configuration }}/net7.0/
+    # - name: Build FlatRedBall FNA .NET 7
+    #   run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
+    # - name: Package FlatRedBall FNA .NET 7
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: DesktopGlFnaNet7${{ matrix.configuration }}
+    #     path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/${{ matrix.configuration }}/net7.0/
 
-    - name: Build FlatRedBall .NET 6
-      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
-    - name: Package FlatRedBall .NET 6
-      uses: actions/upload-artifact@v3
-      with:
-        name: DesktopGlNet6${{ matrix.configuration }}
-        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/${{ matrix.configuration }}/net6.0/
+    # - name: Build FlatRedBall .NET 6
+    #   run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
+    # - name: Package FlatRedBall .NET 6
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: DesktopGlNet6${{ matrix.configuration }}
+    #     path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/${{ matrix.configuration }}/net6.0/
 
     - name: Build FlatRedBall .NET 4
       run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
@@ -83,9 +83,9 @@ jobs:
       with:
         name: DesktopGlNet4${{ matrix.configuration }}
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/${{ matrix.configuration }}/
-    - name: Directory listing
-      run: |
-        Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
+    # - name: Directory listing
+    #   run: |
+    #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
 
   gatekeeper:
     needs: [build]
