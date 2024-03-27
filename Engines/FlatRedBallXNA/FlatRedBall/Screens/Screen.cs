@@ -807,9 +807,13 @@ namespace FlatRedBall.Screens
         /// and move to the screen with the matching (fully qualified) name.
         /// This method is usually used to move between screens or levels.
         /// </summary>
-        /// <param>Fully Qualified Type of the screen to move to</param>
+        /// <param>Fully Qualified Type of the screen to move to. If this value is null or empty then an exception is thrown.</param>
         public void MoveToScreen(string screenClass)
         {
+            if(string.IsNullOrEmpty(screenClass))
+            {
+                throw new ArgumentException("screenClass must not be null or empty");
+            }
             IsActivityFinished = true;
             NextScreen = screenClass;
         }
