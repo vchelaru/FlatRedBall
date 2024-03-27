@@ -8,9 +8,6 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
 
     runs-on: windows-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
@@ -77,62 +74,49 @@ jobs:
     #     path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/${{ matrix.configuration }}/net6.0/
 
     - name: Build FlatRedBall .NET 4
-      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
+      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
     - name: Package FlatRedBall .NET 4
       uses: actions/upload-artifact@v3
       with:
-        name: DesktopGlNet4${{ matrix.configuration }}
-        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/${{ matrix.configuration }}/
+        name: DesktopGlNet4Debug
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/Debug/
     # - name: Directory listing
     #   run: |
     #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
 
-  gatekeeper:
-    needs: [build]
-    runs-on: windows-latest
-    steps:
-      - name: Trigger next jobs
-        run: echo "All build jobs completed successfully."
+    - name: Check if directory exists
+      run: |
+        $FolderPath = '.\FlatRedBall\Engines\Forms\FlatRedBall.Forms'
+        if (Test-Path -Path $FolderPath) {
+            Write-Host "Directory exists at $FolderPath"
+        } else {
+            Write-Host "Directory does not exist at $FolderPath"
+        }
+        $FolderPath2 = 'FlatRedBall\Engines\Forms\FlatRedBall.Forms'
+        if (Test-Path -Path $FolderPath2) {
+            Write-Host "Directory exists at $FolderPath2"
+        } else {
+            Write-Host "Directory does not exist at $FolderPath2"
+        }
+        $currentDirectory = $PWD.Path
+        Write-Host "Current directory: $currentDirectory"
+        if (Test-Path -Path $env:GITHUB_WORKSPACE) {
+            Write-Host "Current directory exists - wouldnt you know it?"
+        }
 
-  copyBuildsToTemplates:
-    needs: [gatekeeper]
-    env:
-      TEMPLATES: FlatRedBall\Templates
-      FORMS: FlatRedBall\Engines\Forms\FlatRedBall.Forms
-    runs-on: windows-latest
-    steps:
+        $path1 = "$($env:GITHUB_WORKSPACE)\FlatRedBall"
+        Write-Host "Testing $path1"
+        if (Test-Path -Path $path1) {
+            Write-Host "2it exists"
+        }
+        if (Test-Path -Path "$($env:GITHUB_WORKSPACE)\FlatRedBall\FlatRedBall.Forms") {
+            Write-Host "3 exists"
+        }
 
-      - name: Check if directory exists
-        run: |
-          $FolderPath = '.\FlatRedBall\Engines\Forms\FlatRedBall.Forms'
-          if (Test-Path -Path $FolderPath) {
-              Write-Host "Directory exists at $FolderPath"
-          } else {
-              Write-Host "Directory does not exist at $FolderPath"
-          }
-          $FolderPath2 = 'FlatRedBall\Engines\Forms\FlatRedBall.Forms'
-          if (Test-Path -Path $FolderPath2) {
-              Write-Host "Directory exists at $FolderPath2"
-          } else {
-              Write-Host "Directory does not exist at $FolderPath2"
-          }
-          $currentDirectory = $PWD.Path
-          Write-Host "Current directory: $currentDirectory"
-          if (Test-Path -Path $env:GITHUB_WORKSPACE) {
-              Write-Host "Current directory exists - wouldnt you know it?"
-          }
-          if (Test-Path -Path $env:GITHUB_WORKSPACE + "\FlatRedBall\") {
-              Write-Host "2it exists"
-          }
-          if (Test-Path -Path $env:GITHUB_WORKSPACE + "\FlatRedBall\FlatRedBall.Forms") {
-              Write-Host "3 exists"
-          }
-
-        shell: pwsh
-      # - name: Directory listing
-      #   run: |
-      #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
-      - name: Copy libs
-        run: |
-          xcopy /E /I "${{ env.FORMS }}\FlatRedBall.Forms\bin\DesktopGL\Debug\*" ${{ env.TEMPLATES }}\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Debug
-          xcopy /E /I "${{ env.FORMS }}\FlatRedBall.Forms\bin\DesktopGL\Release\*" ${{ env.TEMPLATES }}\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Release
+      shell: pwsh
+    # - name: Directory listing
+    #   run: |
+    #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
+    - name: Copy libs
+      run: |
+        xcopy "FlatRedBall\Engines\Forms\FlatRedBall.Forms\bin\DesktopGL\Debug\*" "FlatRedBall\Templates\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Debug" /E /I 
