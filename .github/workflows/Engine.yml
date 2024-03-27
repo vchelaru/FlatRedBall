@@ -119,4 +119,4 @@ jobs:
     #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
     - name: Copy libs
       run: |
-        xcopy /E /I "$($env:GITHUB_WORKSPACE)\FlatRedBall\Engines\FlatRedBall.Forms\bin\DesktopGL\Debug\*" "$($env:GITHUB_WORKSPACE)\FlatRedBall\Templates\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Debug"
+        xcopy "FlatRedBall\Engines\FlatRedBall.Forms\bin\DesktopGL\Debug\*" "FlatRedBall\Templates\FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate\Libraries\DesktopGl\Debug" /E /I 
