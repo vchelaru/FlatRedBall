@@ -121,6 +121,13 @@ jobs:
           if (Test-Path -Path $PWD.Path) {
               Write-Host "Current directory exists - wouldn't you know it?"
           }
+          if (Test-Path -Path "${{ PWD.Path }}\FlatRedBall\) {
+              Write-Host "2 exists - wouldn't you know it?"
+          }
+          if (Test-Path -Path "${{ PWD.Path }}\FlatRedBall\FlatRedBall.Forms) {
+              Write-Host "3 exists"
+          }
+
           $files = Get-ChildItem -Path $currentDirectory | ForEach-Object { $_.FullName }
           Write-Output "::set-output name=files::$($files -join ',')"
 
