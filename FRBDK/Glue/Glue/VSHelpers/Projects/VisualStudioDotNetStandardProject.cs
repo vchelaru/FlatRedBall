@@ -22,11 +22,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             set { }// do nothing
         }
 
-        public override List<string> LibraryDlls => new List<string>
-        {
-            "FlatRedBallDesktopGL.dll"
-        };
-
         public override string FolderName => "Standard";
 
         public override string ProjectId => "Standard";

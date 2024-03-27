@@ -15,6 +15,10 @@ namespace FlatRedBall.Forms.Controls
 
         RenderingLibrary.Graphics.Text coreTextObject;
 
+        /// <summary>
+        /// Text displayed by the button. This property requires that the TextInstance instance be present in the Gum component.
+        /// If the TextInstance instance is not present, an exception will be thrown in DEBUG mode
+        /// </summary>
         public string Text
         {
             get
@@ -30,10 +34,14 @@ namespace FlatRedBall.Forms.Controls
                 ReportMissingTextInstance();
 #endif
                 // go through the component instead of the core text object to force a layout refresh if necessary
-                textComponent.SetProperty("Text", value);
+                textComponent?.SetProperty("Text", value);
             }
         }
 
+        /// <summary>
+        /// Whether the button is enabled or not. When disabled, the button will not respond to user input, and will display
+        /// a disabled state.
+        /// </summary>
         public override bool IsEnabled
         {
             get

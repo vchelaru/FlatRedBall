@@ -8,6 +8,7 @@ namespace BuildServerUploaderConsole.Data
 {
     public class EngineData
     {
+        public string Name { get; set; }
         public List<EngineFileData> Files { get; set; } = new List<EngineFileData>();
 
         /// <summary>

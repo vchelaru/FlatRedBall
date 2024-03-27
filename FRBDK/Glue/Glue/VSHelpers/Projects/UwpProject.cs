@@ -25,17 +25,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             get { return "UWP MonoGame"; }
         }
 
-        public override List<string> LibraryDlls
-        {
-            get
-            {
-                return new List<string>
-                {
-                    "FlatRedBallUwp.dll"
-                };
-            }
-        }
-
         public override string FolderName
         {
             get

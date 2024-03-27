@@ -393,7 +393,7 @@ namespace FlatRedBall.Audio
 					}
 					else
 					{
-						throw e;
+						throw;
 					}
 				}
 #else

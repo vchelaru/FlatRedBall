@@ -12,19 +12,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 {
     public class MonoGameDesktopGlNetCoreProject : MonoGameDesktopGlBaseProject
     {
-
         const string FlatRedBallDll = "FlatRedBallDesktopGL.dll";
-
-        public override List<string> LibraryDlls
-        {
-            get
-            {
-                return new List<string>
-                {
-                    FlatRedBallDll
-                };
-            }
-        }
 
         public override string NeededVisualStudioVersion
         {

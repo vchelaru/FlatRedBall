@@ -141,6 +141,10 @@ namespace FlatRedBall.Glue.SaveClasses
             
             // February 23, 2023
             ITopDownEntity = 54,
+
+            // March 23, 2024
+            CaseSensitiveLoading = 55,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
         }
@@ -149,7 +153,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.ITopDownEntity;
+        public const int LatestVersion = (int)GluxVersions.CaseSensitiveLoading;
 
         public int FileVersion { get; set; }
 

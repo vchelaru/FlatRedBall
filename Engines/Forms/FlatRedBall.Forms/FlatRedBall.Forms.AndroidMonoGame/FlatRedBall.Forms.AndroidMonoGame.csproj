@@ -20,4 +20,6 @@
     <ProjectReference Include="..\StateInterpolation\StateInterpolation.AndroidMonoGame\StateInterpolation.AndroidMonoGame.csproj" />
   </ItemGroup>
 
+  <Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
+
 </Project>

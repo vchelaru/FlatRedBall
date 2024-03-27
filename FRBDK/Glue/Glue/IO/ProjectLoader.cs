@@ -487,6 +487,8 @@ namespace FlatRedBall.Glue.IO
 
                 // Fix before doing any generation
                 GlueState.Self.CurrentGlueProject.FixAllTypesPostLoad();
+                ReferencedFileSaveCodeGenerator.GenerateCaseSensitive = 
+                    GlueState.Self.CurrentGlueProject.FileVersion >= (int)SaveClasses.GlueProjectSave.GluxVersions.CaseSensitiveLoading;
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 Section.EndContextAndTime();
 

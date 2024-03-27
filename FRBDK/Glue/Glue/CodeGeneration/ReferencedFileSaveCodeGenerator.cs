@@ -36,6 +36,9 @@ namespace FlatRedBall.Glue.CodeGeneration
         public static Dictionary<string, ReferencedFileSave> GlobalContentFilesDictionary = 
             new Dictionary<string, ReferencedFileSave>();
 
+        // See GluxVersions 55: https://docs.flatredball.com/flatredball/glue-reference/glujglux
+        // This is set when projects are loaded if using case sensitive versions 
+        public static bool GenerateCaseSensitive { get; set; } = false;
 
         public static void RefreshGlobalContentDictionary()
         {
@@ -835,14 +838,29 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static string GetFileToLoadForRfs(ReferencedFileSave referencedFile, AssetTypeInfo ati = null)
         {
-            var referencedFileName = "content/" +  referencedFile.Name;
             ati ??= referencedFile.GetAssetTypeInfo();
-            if (ati?.MustBeAddedToContentPipeline == true || referencedFile.UseContentPipeline)
+            if(GenerateCaseSensitive)
             {
-                referencedFileName = FileManager.RemoveExtension(referencedFileName);
-            }
+                var referencedFileName = "Content/" +  referencedFile.Name;
+                if (ati?.MustBeAddedToContentPipeline == true || referencedFile.UseContentPipeline)
+                {
+                    referencedFileName = FileManager.RemoveExtension(referencedFileName);
+                }
             
-            return referencedFileName.ToLowerInvariant();
+                return referencedFileName;
+
+            }
+            else
+            {
+                var referencedFileName = "content/" + referencedFile.Name;
+                if (ati?.MustBeAddedToContentPipeline == true || referencedFile.UseContentPipeline)
+                {
+                    referencedFileName = FileManager.RemoveExtension(referencedFileName);
+                }
+
+                return referencedFileName.ToLowerInvariant();
+
+            }
         }
 
         public static void AppendAddUnloadMethod(ICodeBlock codeBlock, IElement element)

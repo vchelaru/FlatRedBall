@@ -13,11 +13,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             get { return "10"; }
         }
 
-        public override List<string> LibraryDlls
-        {
-            get { return new List<string>(); }
-        }
-
         public override string FolderName
         {
             get { return "Libraries"; }

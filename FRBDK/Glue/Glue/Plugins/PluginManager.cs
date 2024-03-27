@@ -1520,22 +1520,9 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToVariableRemoved(CustomVariable removedVariable)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToVariableRemoved != null);
-
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginCommand(() =>
-                        {
-                            plugin.ReactToVariableRemoved(removedVariable);
-                        }, container, "Failed in ReactToVariableRemoved");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToVariableRemoved(removedVariable),
+                plugin => plugin.ReactToVariableRemoved != null);
         }
 
         /// <summary>

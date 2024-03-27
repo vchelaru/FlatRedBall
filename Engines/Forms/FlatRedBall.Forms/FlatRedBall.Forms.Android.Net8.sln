@@ -19,13 +19,13 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GumCoreShared.FlatRedBall",
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBall.Forms.Shared", "FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.shproj", "{728151F0-03E0-4253-94FE-46B9C77EDEA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallAndroid", "..\..\FlatRedBallXNA\FlatRedBallAndroid\FlatRedBallAndroid.csproj", "{594596DD-C64C-43EA-A432-8DD6C430D859}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallAndroid", "..\..\FlatRedBallXNA\FlatRedBallAndroid\FlatRedBallAndroid.csproj", "{594596DD-C64C-43EA-A432-8DD6C430D859}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateInterpolation.AndroidMonoGame", "StateInterpolation\StateInterpolation.AndroidMonoGame\StateInterpolation.AndroidMonoGame.csproj", "{540DA8C6-7B84-41FB-9593-CD6C8F4FF666}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StateInterpolation.AndroidMonoGame", "StateInterpolation\StateInterpolation.AndroidMonoGame\StateInterpolation.AndroidMonoGame.csproj", "{540DA8C6-7B84-41FB-9593-CD6C8F4FF666}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GumCoreAndroid", "..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCoreAndroid\GumCoreAndroid.csproj", "{48B2E98B-6B22-44ED-9EA3-7863D63C51CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GumCoreAndroid", "..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCoreAndroid\GumCoreAndroid.csproj", "{48B2E98B-6B22-44ED-9EA3-7863D63C51CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.Forms.AndroidMonoGame", "FlatRedBall.Forms.AndroidMonoGame\FlatRedBall.Forms.AndroidMonoGame.csproj", "{4C499EED-90CE-4BA9-ACC4-7C690E5B0578}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBall.Forms.AndroidMonoGame", "FlatRedBall.Forms.AndroidMonoGame\FlatRedBall.Forms.AndroidMonoGame.csproj", "{4C499EED-90CE-4BA9-ACC4-7C690E5B0578}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,6 +70,7 @@ Global
 		..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{0ee8a96c-a754-453d-9e65-19a24e9a5e76}*SharedItemsImports = 13
 		..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{48b2e98b-6b22-44ed-9ea3-7863d63c51ce}*SharedItemsImports = 5
 		..\..\..\..\Gum\GumCoreShared.projitems*{48b2e98b-6b22-44ed-9ea3-7863d63c51ce}*SharedItemsImports = 5
+		FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{4c499eed-90ce-4ba9-acc4-7c690e5b0578}*SharedItemsImports = 5
 		..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{540da8c6-7b84-41fb-9593-cd6c8f4ff666}*SharedItemsImports = 5
 		..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{594596dd-c64c-43ea-a432-8dd6c430d859}*SharedItemsImports = 5
 		FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{728151f0-03e0-4253-94fe-46b9c77edea6}*SharedItemsImports = 13

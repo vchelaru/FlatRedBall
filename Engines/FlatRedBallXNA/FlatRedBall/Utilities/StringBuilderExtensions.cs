@@ -24,7 +24,7 @@ namespace FlatRedBall.Utilities
         /// Get index of a char
         /// </summary>
         /// <param name="sb"></param>
-        /// <param name="c"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
         public static int IndexOf(this StringBuilder sb, char value)
         {
@@ -35,7 +35,7 @@ namespace FlatRedBall.Utilities
         /// Get index of a char starting from a given index
         /// </summary>
         /// <param name="sb"></param>
-        /// <param name="c"></param>
+        /// <param name="value"></param>
         /// <param name="startIndex"></param>
         /// <returns></returns>
         public static int IndexOf(this StringBuilder sb, char value, int startIndex)
@@ -69,7 +69,7 @@ namespace FlatRedBall.Utilities
         /// Get index of a string
         /// </summary>
         /// <param name="sb"></param>
-        /// <param name="text"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
         public static int IndexOf(this StringBuilder sb, string value)
         {
@@ -80,7 +80,7 @@ namespace FlatRedBall.Utilities
         /// Get index of a string from a given index
         /// </summary>
         /// <param name="sb"></param>
-        /// <param name="text"></param>
+        /// <param name="value"></param>
         /// <param name="startIndex"></param>
         /// <returns></returns>
         public static int IndexOf(this StringBuilder sb, string value, int startIndex)
@@ -92,7 +92,7 @@ namespace FlatRedBall.Utilities
         /// Get index of a string with case option
         /// </summary>
         /// <param name="sb"></param>
-        /// <param name="text"></param>
+        /// <param name="value"></param>
         /// <param name="ignoreCase"></param>
         /// <returns></returns>
         public static int IndexOf(this StringBuilder sb, string value, bool ignoreCase)
@@ -104,7 +104,7 @@ namespace FlatRedBall.Utilities
         /// Get index of a string from a given index with case option
         /// </summary>
         /// <param name="sb"></param>
-        /// <param name="text"></param>
+        /// <param name="value"></param>
         /// <param name="startIndex"></param>
         /// <param name="ignoreCase"></param>
         /// <returns></returns>

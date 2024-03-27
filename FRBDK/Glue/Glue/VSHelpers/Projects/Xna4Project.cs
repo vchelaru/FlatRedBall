@@ -15,18 +15,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override string PrecompilerDirective { get { return "XNA4_WINDOWS"; } }
 
-        public override List<string> LibraryDlls
-        {
-            get
-            {
-                return new List<string>
-                           {
-                               @"Xna4Pc\FlatRedBall.Content.dll",
-                               @"Xna4Pc\FlatRedBall.dll"
-                           };
-            }
-        }
-
         public override string FolderName
         {
             get { return "Xna4"; }
