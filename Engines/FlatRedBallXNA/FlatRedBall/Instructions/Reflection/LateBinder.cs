@@ -34,7 +34,6 @@ namespace FlatRedBall.Instructions.Reflection
 
         }
 
-        public static object GetValueStatic(object target, string name)
         /// <summary>
         /// Returns the value of the variable obtained by name. This named "Static"
         /// because it is a static version of the GetValue variable on LateBinderinstances.
@@ -43,6 +42,7 @@ namespace FlatRedBall.Instructions.Reflection
         /// <param name="target">The object from which to get a value.</param>
         /// <param name="name">The variable name.</param>
         /// <returns></returns>
+        public static object GetValueStatic(object target, string name)
         {
             return GetInstance(target.GetType()).GetValue(target, name);
         }

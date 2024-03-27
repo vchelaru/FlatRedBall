@@ -10,19 +10,11 @@ namespace BuildServerUploaderConsole.Processes
 
         private static readonly List<CopyInformation> mCopyInformation = new List<CopyInformation>();
 
-        static void Add(string file, string destination)
+        static void Add(string file, string destination, string engineName)
         {
-            mCopyInformation.Add(CopyInformation.CreateTemplateCopy(file, destination));
-        }
-
-        static void AddFrbdk(string file, string destination)
-        {
-            mCopyInformation.Add(CopyInformation.CreateFrbdkTemplateCopy(file, destination));
-        }
-
-        static void AddDirectory(string fileName, string destination)
-        {
-            mCopyInformation.AddRange(CopyInformation.CopyDirectory(fileName, destination));
+            var copyInformation = CopyInformation.CreateTemplateCopy(file, destination);
+            copyInformation.DebugInformation = $"for engine {engineName}";
+            mCopyInformation.Add(copyInformation);
         }
 
         public static List<CopyInformation> CopyInformationList
@@ -38,14 +30,14 @@ namespace BuildServerUploaderConsole.Processes
 
                         foreach(var file in engine.DebugFiles)
                         {
-                            Add(file, targetDirectory);
+                            Add(file, targetDirectory, engine.Name);
                         }
 
                         targetDirectory = engine.TemplateCsProjFolder + @"Libraries\" + engine.RelativeToLibrariesReleaseFolder;
 
                         foreach (var file in engine.ReleaseFiles)
                         {
-                            Add(file, targetDirectory);
+                            Add(file, targetDirectory, engine.Name);
                         }
                     }
                 }

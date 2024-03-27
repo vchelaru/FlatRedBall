@@ -26,6 +26,8 @@ namespace BuildServerUploaderConsole.Processes
             set;
         }
 
+        public string DebugInformation { get; set; }
+
         public static CopyInformation CreateEngineCopy(string engineFileToCopy, string targetDirectory)
         {
             var toReturn = new CopyInformation();
@@ -123,7 +125,7 @@ namespace BuildServerUploaderConsole.Processes
             }
             catch (System.Exception e)
             {
-                errorMessage = $"Error copying {SourceFile} to {DestinationFile}" +
+                errorMessage = $"Error copying {SourceFile} to {DestinationFile} {DebugInformation}\n" +
                     e;
                 System.Console.WriteLine(errorMessage);
                 succeeded = false;
