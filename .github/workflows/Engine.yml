@@ -121,21 +121,14 @@ jobs:
           if (Test-Path -Path $PWD.Path) {
               Write-Host "Current directory exists - wouldn't you know it?"
           }
-          if (Test-Path -Path "${{ PWD.Path }}\FlatRedBall\) {
+          if (Test-Path -Path "$env:GITHUB_WORKSPACE\FlatRedBall\) {
               Write-Host "2 exists - wouldn't you know it?"
           }
-          if (Test-Path -Path "${{ PWD.Path }}\FlatRedBall\FlatRedBall.Forms) {
+          if (Test-Path -Path "$env:GITHUB_WORKSPACE\FlatRedBall\FlatRedBall.Forms) {
               Write-Host "3 exists"
           }
 
-          $files = Get-ChildItem -Path $currentDirectory | ForEach-Object { $_.FullName }
-          Write-Output "::set-output name=files::$($files -join ',')"
-
-
         shell: pwsh
-      - name: Use the output
-        run: |
-          echo "Files: ${{ steps.list_files.outputs.files }}"
       # - name: Directory listing
       #   run: |
       #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
