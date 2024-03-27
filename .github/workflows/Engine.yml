@@ -118,9 +118,13 @@ jobs:
           }
           $currentDirectory = $PWD.Path
           Write-Host "Current directory: $currentDirectory"
-          if (Test-Path -Path $FolderPath2) {
+          if (Test-Path -Path $PWD.Path) {
               Write-Host "Current directory exists - wouldn't you know it?"
           }
+          $files = Get-ChildItem -Path $currentDirectory | ForEach-Object { $_.FullName }
+          Write-Output "::set-output name=files::$($files -join ',')"
+
+
         shell: pwsh
       # - name: Directory listing
       #   run: |
