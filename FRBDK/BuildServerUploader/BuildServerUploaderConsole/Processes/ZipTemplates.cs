@@ -46,12 +46,6 @@ namespace BuildServerUploaderConsole.Processes
                 zips.Add(zipProcess);
             }
 
-            zips.Add(new ZipProcess
-            {
-                ZipDirectory = "GluePluginTemplate",
-                ZipFileName = "GluePluginTemplate"
-            });
-
 
             foreach (var zipProcess in zips)
             {

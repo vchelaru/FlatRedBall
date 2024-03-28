@@ -146,6 +146,9 @@ jobs:
 
     - name: Copy dlls to templates
       run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe copytotemplates
+      
+    - name: Zip and upload templates
+      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe zipanduploadtemplates username password
 
     #     $FolderPath2 = 'FlatRedBall\Engines\Forms\FlatRedBall.Forms'
     #     if (Test-Path -Path $FolderPath2) {

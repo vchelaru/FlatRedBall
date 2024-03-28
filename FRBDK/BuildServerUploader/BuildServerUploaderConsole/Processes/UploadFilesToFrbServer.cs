@@ -13,9 +13,8 @@ namespace BuildServerUploaderConsole.Processes
 
     public enum UploadType
     {
-        DailyBuild,
-        Monthly,
-        Weekly
+        Entire,
+        TemplatesOnly
     }
 
     #endregion
@@ -25,6 +24,8 @@ namespace BuildServerUploaderConsole.Processes
         #region Fields/Properties
 
         static string absolutePath = @"C:\FlatRedBallProjects\UploadInfo.txt";
+
+        UploadType uploadType;
 
         static string cachedPassword = null;
         public static string Password
@@ -101,80 +102,24 @@ namespace BuildServerUploaderConsole.Processes
 
         #endregion
 
-        public UploadFilesToFrbServer(IResults results, UploadType uploadType)
+        public UploadFilesToFrbServer(IResults results, UploadType uploadType, string username, string password)
             : base(
             @"Upload files to daily build location", results)
         {
+            cachedUsername = username; 
+            cachedPassword = password;
             //string fileName = "build_" + DateTime.Now.ToString("yyyy") + "_" + DateTime.Now.ToString("MM") + "_" +
             //    DateTime.Now.ToString("dd") + "_";
 
-            switch (uploadType)
-            {
-                case UploadType.Monthly:
-                    _deleteBeforeDate = DateTime.MinValue;
-                    _ftpFolder += "MonthlyBackups/";
-                    _backupFolder += "MonthlyBackups/";
-                    break;
-                case UploadType.Weekly:
-                    _deleteBeforeDate = DateTime.Now.AddMonths(-1);
-                    _ftpFolder += "WeeklyBackups/";
-                    _backupFolder += "WeeklyBackups/";
-                    break;
-                default:
-                    _deleteBeforeDate = DateTime.Now.AddDays(-7);
-                    _ftpFolder += "DailyBuild/";
-                    _backupFolder += "DailyBuild/";
-                    //_ftpCopyToFolder = "files.flatredball.com/content/FrbXnaTemplates/DailyBuild/";
-                    break;
-            }
+            this.uploadType = uploadType;
+
+            _deleteBeforeDate = DateTime.Now.AddDays(-7);
+            _ftpFolder += "DailyBuild/";
+            _backupFolder += "DailyBuild/";
+            //_ftpCopyToFolder = "files.flatredball.com/content/FrbXnaTemplates/DailyBuild/";
 
 
-        }
 
-        private bool FolderExists(string fileName)
-        {
-            var files = SftpManager.GetList(host, _backupFolder, Username, Password);
-
-            return files.Any(fileStruct => "sftp://files.flatredball.com/" + _backupFolder + fileStruct.Name == fileName);
-        }
-
-        private void CleanUpBackups()
-        {
-            //Get files in folder
-            var files = SftpManager.GetList(host, _backupFolder, Username, Password);
-
-            //Filename structure
-            var exp = new Regex(@"^build_\d\d\d\d_\d\d_\d\d_\d\d$");
-
-            //Loop through directory
-            foreach (var fileStruct in files)
-            {
-                //If a directory and matches filename structure
-                if (fileStruct.IsDirectory && exp.IsMatch(fileStruct.Name))
-                {
-                    //Get year
-                    var year = int.Parse(fileStruct.Name.Substring(6, 4));
-
-                    //Get month
-                    var month = int.Parse(fileStruct.Name.Substring(11, 2));
-
-                    //Get day
-                    var day = int.Parse(fileStruct.Name.Substring(14, 2));
-
-                    //Get version
-                    var version = int.Parse(fileStruct.Name.Substring(17, 2));
-
-                    //Get date from file name
-                    var date = new DateTime(year, month, day);
-
-                    //If past expiration date
-                    if (date < _deleteBeforeDate)
-                    {
-                        //Remove file from server
-                        DeleteDirectory(_backupFolder + fileStruct.Name);
-                    }
-                }
-            }
         }
 
         private void DeleteDirectory(string relativeDirectory)
@@ -201,23 +146,13 @@ namespace BuildServerUploaderConsole.Processes
 
         public override void ExecuteStep()
         {
-            UploadGumFiles();
-            UploadFrbdkFiles();
-            UploadEngineFiles();
-            UploadTemplateFiles();
-
-            //Check to see if files need to be copied to another folder
-            //if (_ftpCopyToFolder != null)
-            //{
-            //    _ftpFolder = _ftpCopyToFolder;
-            //    UploadGumFiles();
-            //    UploadFrbdkFiles();
-            //    UploadEngineFiles();
-            //    UploadTemplateFiles();
-
-            //}
-            // this times out, and not sure we really need it anyway...
-            //BuildBackupFile();
+            if(uploadType == UploadType.Entire)
+            {
+                UploadGumFiles();
+                UploadFrbdkFiles();
+                UploadEngineFiles();
+            }
+            UploadTemplateFiles(_ftpFolder, Results);
         }
 
         private void UploadGumFiles()
@@ -279,7 +214,7 @@ namespace BuildServerUploaderConsole.Processes
             }
         }
 
-        private void UploadTemplateFiles()
+        private static void UploadTemplateFiles(string _ftpFolder, IResults Results)
         {
             string templateDirectory = DirectoryHelper.ReleaseDirectory + @"ZippedTemplates/";
 
