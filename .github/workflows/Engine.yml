@@ -41,45 +41,93 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
 
-    # - name: Build FlatRedBall iOS .NET 8
-    #   run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
-    # - name: Package FlatRedBall iOS .NET 8
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: iOSMonoGameNet8${{ matrix.configuration }}
-    #     path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\${{ matrix.configuration }}\net8.0-ios\
 
-    # - name: Build FlatRedBall Android .NET 8
-    #   run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
-    # - name: Package FlatRedBall Android .NET 8
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: AndroidMonoGameNet8${{ matrix.configuration }}
-    #     path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\${{ matrix.configuration }}\net8.0-android\
+    - name: Build FlatRedBall iOS .NET 8 Debug
+      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
+    - name: Package FlatRedBall iOS .NET 8
+      uses: actions/upload-artifact@v3
+      with:
+        name: iOSMonoGameNet8Debug
+        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Debug\net8.0-ios\
 
-    # - name: Build FlatRedBall FNA .NET 7
-    #   run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
-    # - name: Package FlatRedBall FNA .NET 7
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: DesktopGlFnaNet7${{ matrix.configuration }}
-    #     path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/${{ matrix.configuration }}/net7.0/
 
-    # - name: Build FlatRedBall .NET 6
-    #   run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
-    # - name: Package FlatRedBall .NET 6
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: DesktopGlNet6${{ matrix.configuration }}
-    #     path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/${{ matrix.configuration }}/net6.0/
+    - name: Build FlatRedBall iOS .NET 8 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
+    - name: Package FlatRedBall iOS .NET 8
+      uses: actions/upload-artifact@v3
+      with:
+        name: iOSMonoGameNet8Release
+        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Release\net8.0-ios\
 
-    - name: Build FlatRedBall .NET 4
+
+
+    - name: Build FlatRedBall Android .NET 8 Debug
+      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
+    - name: Package FlatRedBall Android .NET 8
+      uses: actions/upload-artifact@v3
+      with:
+        name: AndroidMonoGameNet8Debug
+        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Debug\net8.0-android\
+
+    - name: Build FlatRedBall Android .NET 8 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
+    - name: Package FlatRedBall Android .NET 8
+      uses: actions/upload-artifact@v3
+      with:
+        name: AndroidMonoGameNet8Release
+        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Release\net8.0-android\
+
+
+
+    - name: Build FlatRedBall FNA .NET 7 Debug
+      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
+    - name: Package FlatRedBall FNA .NET 7
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlFnaNet7Debug
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Debug/net7.0/
+
+    - name: Build FlatRedBall FNA .NET 7 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
+    - name: Package FlatRedBall FNA .NET 7
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlFnaNet7Release
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Release/net7.0/
+
+    - name: Build FlatRedBall .NET 6 Debug
+      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
+    - name: Package FlatRedBall .NET 6
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlNet6Debug
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Debug/net6.0/
+
+    - name: Build FlatRedBall .NET 6 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
+    - name: Package FlatRedBall .NET 6
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlNet6Release
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Release/net6.0/
+
+
+    - name: Build FlatRedBall .NET 4 Debug
       run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
     - name: Package FlatRedBall .NET 4
       uses: actions/upload-artifact@v3
       with:
         name: DesktopGlNet4Debug
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/Debug/
+
+    - name: Build FlatRedBall .NET 4 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
+    - name: Package FlatRedBall .NET 4
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlNet4Release
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/Release/
+
     # - name: Directory listing
     #   run: |
     #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
@@ -95,6 +143,10 @@ jobs:
         } else {
             Write-Host "Directory does not exist at $FolderPath"
         }
+
+    - name: Copy dlls to templates
+      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe copytotemplates
+
     #     $FolderPath2 = 'FlatRedBall\Engines\Forms\FlatRedBall.Forms'
     #     if (Test-Path -Path $FolderPath2) {
     #         Write-Host "Directory exists at $FolderPath2"
