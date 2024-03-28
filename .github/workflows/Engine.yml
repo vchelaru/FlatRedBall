@@ -151,7 +151,7 @@ jobs:
       env: # Or as an environment variable
         username: ${{ secrets.FTPUSERNAME }}
         password: ${{ secrets.FTPPASSWORD }}
-      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe zipanduploadtemplates ${{ env.username }} ${{ env.password }}
+      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe zipanduploadtemplates "${{ env.username }}" "${{ env.password }}"
 
     #     $FolderPath2 = 'FlatRedBall\Engines\Forms\FlatRedBall.Forms'
     #     if (Test-Path -Path $FolderPath2) {
