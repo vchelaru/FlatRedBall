@@ -78,6 +78,8 @@ namespace BuildServerUploaderConsole
 
         private static void CreateZipAndUploadTemplates(string[] args)
         {
+            ProcessSteps.Add(new CopyBuiltEnginesToReleaseFolder(Results));
+
             ProcessSteps.Add(new ZipTemplates(Results));
 
             if(args.Length < 3)
