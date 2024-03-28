@@ -122,27 +122,6 @@ namespace BuildServerUploaderConsole.Processes
 
         }
 
-        private void DeleteDirectory(string relativeDirectory)
-        {
-            //Get files
-            var files = SftpManager.GetList(host, relativeDirectory, Username, Password);
-
-            //Loop through files
-            foreach (var fileStruct in files)
-            {
-                //If directory, need to delete sub directories
-                if (fileStruct.IsDirectory)
-                {
-                    DeleteDirectory(relativeDirectory + "/" + fileStruct.Name);
-                }
-                else
-                {
-                    SftpManager.DeleteRemoteFile(host, fileStruct.Name, Username, Password);
-                }
-            }
-
-            SftpManager.DeleteRemoteDirectory(host, relativeDirectory, Username, Password);
-        }
 
         public override void ExecuteStep()
         {
