@@ -43,6 +43,16 @@ jobs:
     - name: Build
       run: dotnet build -c ${{ matrix.configuration }} 'FRB\FRBDK\Glue\Glue with All.sln'
 
+    - name: Build BuildServerUploader
+      run: dotnet build -c Debug 'FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploader.sln'
+
+      
+    - name: Zip and upload templates
+      env: # Or as an environment variable
+        username: ${{ secrets.FTPUSERNAME }}
+        password: ${{ secrets.FTPPASSWORD }}
+      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe zipanduploadfrbdk "${{ env.username }}" "${{ env.password }}"
+
     - name: Package
       uses: actions/upload-artifact@v3
       with:
