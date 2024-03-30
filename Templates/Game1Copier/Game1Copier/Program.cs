@@ -15,10 +15,6 @@ namespace Game1Copier
         static List<TemplateInformation> templates = new List<TemplateInformation>
         {
             new TemplateInformation {
-                DestinationGameFile = "FlatRedBallAndroidTemplate/FlatRedBallAndroidTemplate/Game1.cs",
-                Namespace = "FlatRedBallAndroidTemplate"
-            },
-            new TemplateInformation {
                 DestinationGameFile = "FlatRedBallDesktopGLTemplate/FlatRedBallDesktopGLTemplate/Game1.cs",
                 Namespace = "FlatRedBallDesktopGlTemplate"
             },
@@ -27,20 +23,20 @@ namespace Game1Copier
                 Namespace = "FlatRedBallDesktopGlNet6Template"
             },
             new TemplateInformation {
-                DestinationGameFile = "FlatRedBalliOSTemplate/FlatRedBalliOSTemplate/Game1.cs",
-                Namespace = "FlatRedBalliOSTemplate"
+                DestinationGameFile = "FlatRedBalliOSMonoGameTemplate/FlatRedBalliOSMonoGameTemplate/Game1.cs",
+                Namespace = "FlatRedBalliOSMonoGameTemplate"
             },
             new TemplateInformation {
-                DestinationGameFile = "FlatRedBallUwpTemplate/FlatRedBallUwpTemplate/Game1.cs",
-                Namespace = "FlatRedBallUwpTemplate"
+                DestinationGameFile = "FlatRedBallDesktopFnaTemplate/FlatRedBallDesktopFnaTemplate/Game1.cs",
+                Namespace = "FlatRedBallDesktopFnaTemplate"
             },
             new TemplateInformation {
                 DestinationGameFile = "FlatRedBallXna4Template/FlatRedBallXna4Template/FlatRedBallXna4Template/Game1.cs",
                 Namespace = "FlatRedBallXna4Template"
             },
             new TemplateInformation {
-                DestinationGameFile = "Windows8Template/Windows8Template/Game1.cs",
-                Namespace = "Windows8Template"
+                DestinationGameFile = "FlatRedBallAndroidMonoGameTemplate/FlatRedBallAndroidMonoGameTemplate/Game1.cs",
+                Namespace = "FlatRedBallAndroidMonoGameTemplate"
             },
         };
         static void Main(string[] args)

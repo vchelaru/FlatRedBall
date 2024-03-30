@@ -199,6 +199,16 @@ namespace FlatRedBall.IO.Csv
             return runtimeCsvRepresentation;
         }
 
+        /// <summary>
+        /// Serializes a RuntimeCsvRepresentation to the argument fileName.
+        /// </summary>
+        /// <example>
+        /// Typically CSVs are used to save lists of objects. Lists can be converted to
+        /// RuntimeCsvRepresentation instances using RuntimeCsvRepresentation.FromList.
+        /// </example>
+        /// <param name="rcr">The RuntimeCsvRepresentation</param>
+        /// <param name="fileName">The file name where to save the CSV contents.</param>
+        /// <exception cref="ArgumentNullException">Thrown if the RuntimeCsvRepresentation is null.</exception>
         public static void Serialize(RuntimeCsvRepresentation rcr, string fileName)
         {
             if (rcr == null)

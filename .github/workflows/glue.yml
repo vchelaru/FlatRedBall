@@ -1,4 +1,4 @@
-name: FlatRedBall
+name: FlatRedBall Editor
 
 on:
   push:

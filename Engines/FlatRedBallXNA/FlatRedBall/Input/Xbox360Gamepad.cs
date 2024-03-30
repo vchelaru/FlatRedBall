@@ -1852,7 +1852,9 @@ namespace FlatRedBall.Input
 
         internal void Update()
         {
-            GamePadState gamepadState;
+            GamePadState gamepadState = new GamePadState();
+
+#if !IOS
 
 #if MONOGAME_381
             // Using PlayerIndex gives us only Xbox controllers. Using int indexes gives us all:
@@ -1880,14 +1882,15 @@ namespace FlatRedBall.Input
 
             mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities(mPlayerIndex);
 #endif
+#endif
 
             Update(gamepadState);
         }
 
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
         #region IInputDevice Explicit Implementation
 

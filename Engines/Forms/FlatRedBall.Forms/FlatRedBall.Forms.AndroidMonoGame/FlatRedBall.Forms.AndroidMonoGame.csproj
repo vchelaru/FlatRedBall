@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-android</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\FlatRedBall.Forms\Clipboard\ClipboardImplementation.Android.cs" Link="Clipboard\ClipboardImplementation.Android.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Clipboard\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCoreAndroid\GumCoreAndroid.csproj" />
+    <ProjectReference Include="..\..\..\FlatRedBallXNA\FlatRedBallAndroid\FlatRedBallAndroid.csproj" />
+    <ProjectReference Include="..\StateInterpolation\StateInterpolation.AndroidMonoGame\StateInterpolation.AndroidMonoGame.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
+
+</Project>

@@ -86,31 +86,6 @@ internal static class AddSourceManager
 
     };
 
-    public static List<ProjectReference> AndroidXamarin = new List<ProjectReference>
-    {
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.Android.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallAndroidv2.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.Android.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreAndroid.csproj", ProjectRootType = FrbOrGum.Gum},
-    };
-
-    public static List<ProjectReference> IosXamarin = new List<ProjectReference>
-    {
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.iOS.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBalliOS.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.iOS\\FlatRedBall.Forms.iOS.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreiOS.csproj", ProjectRootType = FrbOrGum.Gum},
-    };
-
-    public static List<ProjectReference> XnaNet4 = new List<ProjectReference>
-    {
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallXna4.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreXnaPc.csproj", ProjectRootType = FrbOrGum.Gum},
-    };
-
-
     #endregion
 
     #region DesktopGlNet6 Projects
@@ -154,6 +129,77 @@ internal static class AddSourceManager
     };
 
     #endregion
+
+    #region Android Projects
+    public static List<ProjectReference> AndroidXamarin = new List<ProjectReference>
+    {
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.Android.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallAndroidv2.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.Android.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreAndroid.csproj", ProjectRootType = FrbOrGum.Gum},
+    };
+
+    public static List<ProjectReference> AndroidNet8 = new List<ProjectReference>
+    {
+        new ProjectReference(){ RelativeProjectFilePath = 
+            $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.AndroidMonoGame\\StateInterpolation.AndroidMonoGame.csproj", 
+            ProjectRootType = FrbOrGum.Frb},
+
+        new ProjectReference(){ RelativeProjectFilePath = 
+            $"Engines\\FlatRedBallXNA\\FlatRedBallAndroid\\FlatRedBallAndroid.csproj", 
+            ProjectRootType = FrbOrGum.Frb},
+
+        new ProjectReference(){ RelativeProjectFilePath = 
+            $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.AndroidMonoGame\\FlatRedBall.Forms.AndroidMonoGame.csproj", 
+            ProjectRootType = FrbOrGum.Frb},
+
+        new ProjectReference(){ RelativeProjectFilePath = 
+            $"GumCore\\GumCoreXnaPc\\GumCoreAndroid\\GumCoreAndroid.csproj", 
+            ProjectRootType = FrbOrGum.Gum},
+    };
+
+
+    #endregion
+
+    #region iOS
+
+    public static List<ProjectReference> IosXamarin = new List<ProjectReference>
+    {
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.iOS.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBalliOS.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.iOS\\FlatRedBall.Forms.iOS.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreiOS.csproj", ProjectRootType = FrbOrGum.Gum},
+    };
+
+    public static List<ProjectReference> IosNet8 = new List<ProjectReference>
+    {
+        new ProjectReference(){ RelativeProjectFilePath =
+            $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.iOSMonoGame\\StateInterpolation.iOSMonoGame.csproj",
+            ProjectRootType = FrbOrGum.Frb},
+
+        new ProjectReference(){ RelativeProjectFilePath =
+            $"Engines\\FlatRedBallXNA\\FlatRedBalliOS\\FlatRedBalliOS.csproj",
+            ProjectRootType = FrbOrGum.Frb},
+
+        new ProjectReference(){ RelativeProjectFilePath =
+            $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.iOSMonoGame\\FlatRedBall.Forms.iOSMonoGame.csproj",
+            ProjectRootType = FrbOrGum.Frb},
+
+        new ProjectReference(){ RelativeProjectFilePath =
+            $"GumCore\\GumCoreXnaPc\\GumCoreiOS\\GumCoreiOS.csproj",
+            ProjectRootType = FrbOrGum.Gum},
+    };
+
+
+    #endregion
+
+    public static List<ProjectReference> XnaNet4 = new List<ProjectReference>
+    {
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallXna4.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreXnaPc.csproj", ProjectRootType = FrbOrGum.Gum},
+    };
 
     public static async Task HandleLinkToSourceClicked(AddFrbSourceViewModel viewModel)
     {
@@ -295,7 +341,15 @@ internal static class AddSourceManager
 
     private static List<ProjectReference> GetNecessaryProjectReferencesForCurrentProject()
     {
-        if (GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6) {
+        if(GlueState.Self.CurrentMainProject is AndroidMonoGameNet8Project)
+        {
+            return AndroidNet8.Concat(SharedShprojReferences).ToList();
+        }
+        else if(GlueState.Self.CurrentMainProject is IosMonoGameNet8Project)
+        {
+            return IosNet8.Concat(SharedShprojReferences).ToList();
+        }
+        else if (GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6) {
             // When we support Android/iOS .NET 6, we need to handle those here:
             return GlueState.Self.CurrentMainProject is FnaDesktopProject
                 ? DesktopFNA.Concat(SharedShprojReferences).ToList()

@@ -766,7 +766,7 @@ namespace GumPlugin.Managers
             // with a NullReferenceException.
             // I'm going to wrap this in if-s to be sure it's safe.
             // 7/19/2018
-            // Turns out this can crash if the lement's DefaultState is null
+            // Turns out this can crash if the element's DefaultState is null
             // This happens if the backing file (like gutx) is not on disk. 
             // Let's put a warning
             if (element != null && element.DefaultState == null)

@@ -1,0 +1,80 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{F649B263-C76E-439E-AD3D-1A685871193B}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBalliOS", "..\..\FlatRedBallXNA\FlatRedBalliOS\FlatRedBalliOS.csproj", "{988B0672-8A1B-4A36-912D-91BC8BF4BE8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GumCore", "GumCore", "{3757E7DC-EDBA-4A7C-9846-DBBFDBB9DD12}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StateInterpolation", "StateInterpolation", "{27F64810-F98D-4965-8800-1BEFD8BADE25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateInterpolation.iOSMonoGame", "StateInterpolation\StateInterpolation.iOSMonoGame\StateInterpolation.iOSMonoGame.csproj", "{25D8F0AD-BC12-43D1-94CD-4B1F98DD91E6}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "StateInterpolationShared", "..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.shproj", "{D00D287D-385B-42FB-BF5F-04401E7D37D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GumCoreiOS", "..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCoreiOS\GumCoreiOS.csproj", "{D36F5561-18B2-44C5-98BA-0D54D395FC25}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GumCoreShared", "..\..\..\..\Gum\GumCoreShared.shproj", "{F919C045-EAC7-4806-9A1F-CE421F923E97}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GumCoreShared.FlatRedBall", "..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.shproj", "{0EE8A96C-A754-453D-9E65-19A24E9A5E76}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBall.Forms.Shared", "FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.shproj", "{728151F0-03E0-4253-94FE-46B9C77EDEA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.Forms.iOSMonoGame", "FlatRedBall.Forms.iOSMonoGame\FlatRedBall.Forms.iOSMonoGame.csproj", "{48D1BF33-C315-41D0-A127-D0FEF2C7FFFC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{988B0672-8A1B-4A36-912D-91BC8BF4BE8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{988B0672-8A1B-4A36-912D-91BC8BF4BE8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{988B0672-8A1B-4A36-912D-91BC8BF4BE8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{988B0672-8A1B-4A36-912D-91BC8BF4BE8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25D8F0AD-BC12-43D1-94CD-4B1F98DD91E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25D8F0AD-BC12-43D1-94CD-4B1F98DD91E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25D8F0AD-BC12-43D1-94CD-4B1F98DD91E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25D8F0AD-BC12-43D1-94CD-4B1F98DD91E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D36F5561-18B2-44C5-98BA-0D54D395FC25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D36F5561-18B2-44C5-98BA-0D54D395FC25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D36F5561-18B2-44C5-98BA-0D54D395FC25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D36F5561-18B2-44C5-98BA-0D54D395FC25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48D1BF33-C315-41D0-A127-D0FEF2C7FFFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48D1BF33-C315-41D0-A127-D0FEF2C7FFFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48D1BF33-C315-41D0-A127-D0FEF2C7FFFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48D1BF33-C315-41D0-A127-D0FEF2C7FFFC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0BB8CBE3-8503-46C1-9272-D98E153A230E} = {F649B263-C76E-439E-AD3D-1A685871193B}
+		{988B0672-8A1B-4A36-912D-91BC8BF4BE8D} = {F649B263-C76E-439E-AD3D-1A685871193B}
+		{25D8F0AD-BC12-43D1-94CD-4B1F98DD91E6} = {27F64810-F98D-4965-8800-1BEFD8BADE25}
+		{D00D287D-385B-42FB-BF5F-04401E7D37D0} = {27F64810-F98D-4965-8800-1BEFD8BADE25}
+		{D36F5561-18B2-44C5-98BA-0D54D395FC25} = {3757E7DC-EDBA-4A7C-9846-DBBFDBB9DD12}
+		{F919C045-EAC7-4806-9A1F-CE421F923E97} = {3757E7DC-EDBA-4A7C-9846-DBBFDBB9DD12}
+		{0EE8A96C-A754-453D-9E65-19A24E9A5E76} = {3757E7DC-EDBA-4A7C-9846-DBBFDBB9DD12}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F29E3999-836A-4A12-A760-2BD6418FE592}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
+		..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{0ee8a96c-a754-453d-9e65-19a24e9a5e76}*SharedItemsImports = 13
+		..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{25d8f0ad-bc12-43d1-94cd-4b1f98dd91e6}*SharedItemsImports = 5
+		FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{48d1bf33-c315-41d0-a127-d0fef2c7fffc}*SharedItemsImports = 5
+		FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{728151f0-03e0-4253-94fe-46b9c77edea6}*SharedItemsImports = 13
+		..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{988b0672-8a1b-4a36-912d-91bc8bf4be8d}*SharedItemsImports = 5
+		..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{d00d287d-385b-42fb-bf5f-04401e7d37d0}*SharedItemsImports = 13
+		..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{d36f5561-18b2-44c5-98ba-0d54d395fc25}*SharedItemsImports = 5
+		..\..\..\..\Gum\GumCoreShared.projitems*{d36f5561-18b2-44c5-98ba-0d54d395fc25}*SharedItemsImports = 5
+		..\..\..\..\Gum\GumCoreShared.projitems*{f919c045-eac7-4806-9a1f-ce421f923e97}*SharedItemsImports = 13
+	EndGlobalSection
+EndGlobal

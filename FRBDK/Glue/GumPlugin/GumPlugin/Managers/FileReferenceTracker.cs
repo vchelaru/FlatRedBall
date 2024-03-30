@@ -719,7 +719,7 @@ namespace GumPlugin.Managers
                     }
                     if(Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
                     {
-                        ObjectFinder.Self.EnableCache();
+                        ObjectFinder.Self.ForceResetCache();
                     }
                     InitializeElements();
                 }

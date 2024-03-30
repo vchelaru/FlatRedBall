@@ -91,6 +91,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\IDamageArea.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\IEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ITiledTileMetadata.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\EnumerableExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\FloatExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\PointExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector2ExtensionMethods.cs" />
@@ -303,6 +304,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SpriteSelectionOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringFunctions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\TaskHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Gui\Behaviors\" />

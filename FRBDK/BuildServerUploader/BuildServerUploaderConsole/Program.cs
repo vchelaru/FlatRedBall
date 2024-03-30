@@ -9,6 +9,7 @@ namespace BuildServerUploaderConsole
     public static class CommandLineCommands
     {
         public const string Upload = "upload";
+        public const string ZipAndUploadTemplates = "zipanduploadtemplates";
         public const string ChangeVersion = "changeversion";
         public const string CopyToFrbdkInstallerTool = "copytoinstaller";
         public const string CopyDllsToTemplates = "copytotemplates";
@@ -44,13 +45,15 @@ namespace BuildServerUploaderConsole
                         CreateCopyToTemplatesSteps();
                         break;
                     case CommandLineCommands.Upload:
-                        // The build type will be "Monthly", "Weekly" or the default of daily build (null)
-                        CreateUploadProcessSteps(args[1]);
+                        CreateUploadProcessSteps();
+                        break;
+                    case CommandLineCommands.ZipAndUploadTemplates:
+                        CreateZipAndUploadTemplates(args);
                         break;
                     case "":
                         break;
                     default:
-                        CreateUploadProcessSteps("DailyBuild");
+                        CreateUploadProcessSteps();
                         break;
                 }
 
@@ -73,6 +76,22 @@ namespace BuildServerUploaderConsole
             
         }
 
+        private static void CreateZipAndUploadTemplates(string[] args)
+        {
+            ProcessSteps.Add(new CopyBuiltEnginesToReleaseFolder(Results));
+
+            ProcessSteps.Add(new ZipTemplates(Results));
+
+            if(args.Length < 3)
+            {
+                throw new Exception("Expected 3 arguments: {operation} {username} {password}, but only got " + args.Length + "arguments");
+            }
+
+            ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.EngineAndTemplatesOnly, args[1], args[2]));
+
+
+        }
+
         private static void CreateCopyToTemplatesSteps()
         {
             ProcessSteps.Add(new CopyBuiltEnginesToTemplateFolder(Results));
@@ -83,7 +102,7 @@ namespace BuildServerUploaderConsole
             ProcessSteps.Add(new UpdateAssemblyVersions(Results));
         }
 
-        private static void CreateUploadProcessSteps(string buildType)
+        private static void CreateUploadProcessSteps()
         {
             // I don't think we need publish....
             // Users still need VS 2022 for msbuild
@@ -102,21 +121,7 @@ namespace BuildServerUploaderConsole
             //ProcessSteps.Add(new ZipEngine(Results));
             ProcessSteps.Add(new ZipTemplates(Results));
 
-            UploadType type;
-            switch (buildType)
-            {
-                case "Monthly":
-                    type = UploadType.Monthly;
-                    break;
-                case "Weekly":
-                    type = UploadType.Weekly;
-                    break;
-                default:
-                    type = UploadType.DailyBuild;
-                    break;
-            }
-
-            ProcessSteps.Add(new UploadFilesToFrbServer(Results, type));
+            ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.Entire, null, null));
         }
 
         private static void ExecuteSteps()

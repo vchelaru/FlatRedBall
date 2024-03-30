@@ -1,0 +1,180 @@
+name: Build Engine DLLs
+
+on:
+  push:
+    branches: [ "NetStandard" ]
+  pull_request:
+    branches: [ "NetStandard" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest  # For a list of available runner types, refer to
+                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    steps:
+    - name: Checkout FRB
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+        path: 'FlatRedBall'
+        submodules: recursive
+
+    - name: Checkout Gum
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.repository_owner }}/Gum
+        fetch-depth: 1
+        path: 'Gum'
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.0.2
+
+
+    - name: Build FlatRedBall iOS .NET 8 Debug
+      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
+    - name: Package FlatRedBall iOS .NET 8
+      uses: actions/upload-artifact@v3
+      with:
+        name: iOSMonoGameNet8Debug
+        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Debug\net8.0-ios\
+
+
+    - name: Build FlatRedBall iOS .NET 8 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
+    - name: Package FlatRedBall iOS .NET 8
+      uses: actions/upload-artifact@v3
+      with:
+        name: iOSMonoGameNet8Release
+        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Release\net8.0-ios\
+
+
+
+    - name: Build FlatRedBall Android .NET 8 Debug
+      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
+    - name: Package FlatRedBall Android .NET 8
+      uses: actions/upload-artifact@v3
+      with:
+        name: AndroidMonoGameNet8Debug
+        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Debug\net8.0-android\
+
+    - name: Build FlatRedBall Android .NET 8 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
+    - name: Package FlatRedBall Android .NET 8
+      uses: actions/upload-artifact@v3
+      with:
+        name: AndroidMonoGameNet8Release
+        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Release\net8.0-android\
+
+
+
+    - name: Build FlatRedBall FNA .NET 7 Debug
+      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
+    - name: Package FlatRedBall FNA .NET 7
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlFnaNet7Debug
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Debug/net7.0/
+
+    - name: Build FlatRedBall FNA .NET 7 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
+    - name: Package FlatRedBall FNA .NET 7
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlFnaNet7Release
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Release/net7.0/
+
+    - name: Build FlatRedBall .NET 6 Debug
+      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
+    - name: Package FlatRedBall .NET 6
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlNet6Debug
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Debug/net6.0/
+
+    - name: Build FlatRedBall .NET 6 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
+    - name: Package FlatRedBall .NET 6
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlNet6Release
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Release/net6.0/
+
+
+    - name: Build FlatRedBall .NET 4 Debug
+      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
+    - name: Package FlatRedBall .NET 4
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlNet4Debug
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/Debug/
+
+    - name: Build FlatRedBall .NET 4 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
+    - name: Package FlatRedBall .NET 4
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlNet4Release
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/Release/
+
+    # - name: Directory listing
+    #   run: |
+    #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
+
+    - name: Build BuildServerUploader
+      run: dotnet build -c Debug 'FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploader.sln'
+
+    - name: Check if directory exists
+      run: |
+        $FolderPath = '.\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe'
+        if (Test-Path -Path $FolderPath) {
+            Write-Host "Directory exists at $FolderPath"
+        } else {
+            Write-Host "Directory does not exist at $FolderPath"
+        }
+
+    - name: Copy dlls to templates
+      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe copytotemplates
+      
+    - name: Zip and upload templates
+      env: # Or as an environment variable
+        username: ${{ secrets.FTPUSERNAME }}
+        password: ${{ secrets.FTPPASSWORD }}
+      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe zipanduploadtemplates "${{ env.username }}" "${{ env.password }}"
+
+    #     $FolderPath2 = 'FlatRedBall\Engines\Forms\FlatRedBall.Forms'
+    #     if (Test-Path -Path $FolderPath2) {
+    #         Write-Host "Directory exists at $FolderPath2"
+    #     } else {
+    #         Write-Host "Directory does not exist at $FolderPath2"
+    #     }
+    #     $currentDirectory = $PWD.Path
+    #     Write-Host "Current directory: $currentDirectory"
+    #     if (Test-Path -Path $env:GITHUB_WORKSPACE) {
+    #         Write-Host "Current directory exists - wouldnt you know it?"
+    #     }
+
+    #     $path1 = "$($env:GITHUB_WORKSPACE)\FlatRedBall"
+    #     Write-Host "Testing $path1"
+    #     if (Test-Path -Path $path1) {
+    #         Write-Host "2it exists"
+    #     }
+    #     if (Test-Path -Path "$($env:GITHUB_WORKSPACE)\FlatRedBall\FlatRedBall.Forms") {
+    #         Write-Host "3 exists"
+    #     }
+
+    #   shell: pwsh
+    # - name: Directory listing
+    #   run: |
+    #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force

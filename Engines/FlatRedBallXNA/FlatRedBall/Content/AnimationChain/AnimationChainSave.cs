@@ -97,36 +97,36 @@ namespace FlatRedBall.Content.AnimationChain
         {
             if (!string.IsNullOrEmpty(ParentFile))
             {
-#if !UWP && !DESKTOP_GL && !STANDARD
-                FlatRedBall.Graphics.Animation.AnimationChain animationChain =
-                    FlatRedBall.Graphics.Animation.AnimationChain.FromGif(
-                        ParentFile, contentManagerName);
+                // This code was written long ago to support GIF->AnimationChain.  It's not used anymore
+                // but maybe it could be in the future.  For now, we'll just throw an exception.
 
-                animationChain.Name = Name;
+                //FlatRedBall.Graphics.Animation.AnimationChain animationChain =
+                //    FlatRedBall.Graphics.Animation.AnimationChain.FromGif(
+                //        ParentFile, contentManagerName);
 
-                animationChain.ParentGifFileName = ParentFile;
+                //animationChain.Name = Name;
 
-                if (animationChain.Count == this.Frames.Count)
-                {
-                    for (int i = 0; i < animationChain.Count; i++)
-                    {
-                        animationChain[i].FlipHorizontal = Frames[i].FlipHorizontal;
-                        animationChain[i].FlipVertical = Frames[i].FlipVertical;
-                        animationChain[i].FrameLength = Frames[i].FrameLength;
-                        animationChain[i].RelativeX = Frames[i].RelativeX;
-                        animationChain[i].RelativeY = Frames[i].RelativeY;
+                //animationChain.ParentGifFileName = ParentFile;
 
-                        animationChain[i].TopCoordinate = Frames[i].TopCoordinate;
-                        animationChain[i].BottomCoordinate = Frames[i].BottomCoordinate;
-                        animationChain[i].LeftCoordinate = Frames[i].LeftCoordinate;
-                        animationChain[i].RightCoordinate = Frames[i].RightCoordinate;
-                    }
-                }
+                //if (animationChain.Count == this.Frames.Count)
+                //{
+                //    for (int i = 0; i < animationChain.Count; i++)
+                //    {
+                //        animationChain[i].FlipHorizontal = Frames[i].FlipHorizontal;
+                //        animationChain[i].FlipVertical = Frames[i].FlipVertical;
+                //        animationChain[i].FrameLength = Frames[i].FrameLength;
+                //        animationChain[i].RelativeX = Frames[i].RelativeX;
+                //        animationChain[i].RelativeY = Frames[i].RelativeY;
 
-                return animationChain;
-#else
+                //        animationChain[i].TopCoordinate = Frames[i].TopCoordinate;
+                //        animationChain[i].BottomCoordinate = Frames[i].BottomCoordinate;
+                //        animationChain[i].LeftCoordinate = Frames[i].LeftCoordinate;
+                //        animationChain[i].RightCoordinate = Frames[i].RightCoordinate;
+                //    }
+                //}
+
+                //return animationChain;
                 throw new NotImplementedException();
-#endif
             }
             else
             {

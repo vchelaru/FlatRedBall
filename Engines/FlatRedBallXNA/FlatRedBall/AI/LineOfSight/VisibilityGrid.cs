@@ -1181,7 +1181,7 @@ namespace FlatRedBall.AI.LineOfSight
                 {
                     calculatedValue = distance / radiusAsIntSquared;
  
-                    calculatedValue = MathHelper.Max(0, MathHelper.Min( (calculatedValue /** calculatedValue*/), 1.0f));
+                    calculatedValue = MathHelper.Max(0, MathHelper.Min( (calculatedValue), 1.0f));
                     shadeValue = (byte)((1.0f-calculatedValue) * 127);
                     alpha = (byte)MathHelper.Min(MathHelper.Max(alpha, shadeValue), 127);
                 }

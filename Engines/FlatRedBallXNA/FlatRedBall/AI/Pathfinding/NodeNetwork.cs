@@ -1078,8 +1078,8 @@ namespace FlatRedBall.AI.Pathfinding
             {
                 Link currentLink = currentNode.mLinks[i];
 
-                ///Links can be turned off, and when they are in that 
-                ///state they should be ignored by pathfinding calls. 
+                //Links can be turned off, and when they are in that 
+                //state they should be ignored by pathfinding calls. 
                 if (!currentLink.Active)
                 {
                     continue; 
@@ -1104,9 +1104,9 @@ namespace FlatRedBall.AI.Pathfinding
                             if (nodeLinkingTo == endNode)
                             {
                                 mShortestPath = nodeLinkingTo.mCostToGetHere;
-                                /// September 6th, 2012 - Jesse Crafts-Finch
-                                /// Removed the break because it prevents the currentNode from checking
-                                ///  alternative links which may end up creating a cheaper path to the endNode.                                
+                                // September 6th, 2012 - Jesse Crafts-Finch
+                                // Removed the break because it prevents the currentNode from checking
+                                //  alternative links which may end up creating a cheaper path to the endNode.                                
                                 //break;
                             }
 

@@ -320,74 +320,11 @@ namespace FlatRedBall.Input
 
         #region Constructor/Initialize
 #if FRB_MDX
-        internal Mouse(System.Windows.Forms.Control owner, bool useWindowsCursor)
-        {
-            // This is needed to hide and show the Windows cursor
-            mOwner = owner;
 
-
-
-            mLastClickTime = new double[NumberOfButtons];
-            mLastPushTime = new double[NumberOfButtons];
-            mDoubleClick = new bool[NumberOfButtons];
-            mDoublePush = new bool[NumberOfButtons];
-
-            mMouseButtonClicked = new bool[NumberOfButtons];
-            mMouseButtonPushed = new bool[NumberOfButtons];
-
-            mMouseOffset = new MouseOffset[NumberOfButtons];
-
-            mMouseOffset[(int)MouseButtons.LeftButton] = MouseOffset.Button0;
-            mMouseOffset[(int)MouseButtons.RightButton] = MouseOffset.Button1;
-            mMouseOffset[(int)MouseButtons.MiddleButton] = MouseOffset.Button2;
-            mMouseOffset[(int)MouseButtons.XButton1] = MouseOffset.Button3;
-            mMouseOffset[(int)MouseButtons.XButton2] = MouseOffset.Button4;
-
-            mMouseDevice = new Device(SystemGuid.Mouse);
-            mMouseDevice.SetDataFormat(DeviceDataFormat.Mouse);
-
-            if (useWindowsCursor)
-            {
-                mWindowsCursorVisible = true;
-                mMouseDevice.SetCooperativeLevel(owner, CooperativeLevelFlags.Foreground |
-                    CooperativeLevelFlags.NonExclusive);
-            }
-            else
-            {
-                mWindowsCursorVisible = false;
-                mMouseDevice.SetCooperativeLevel(owner, CooperativeLevelFlags.Foreground |
-                    CooperativeLevelFlags.Exclusive);
-            }
-
-            try
-            { mMouseDevice.Acquire(); }
-            catch (InputLostException)
-            {
-                //				return;
-            }
-            catch (OtherApplicationHasPriorityException)
-            {
-                //				return;
-            }
-            catch (System.ArgumentException)
-            {
-            }
-
-            // i don't know why this doesn't work, but input still works without it.
-            mMouseDevice.Properties.BufferSize = 5;
-
-
-        }
 #else
         internal Mouse(IntPtr windowHandle)
         {
-#if SILVERLIGHT
-            //SilverArcade.SilverSprite.Input.Mouse.WindowHandle = windowHandle;
-            mLastFrameMouseState = new MouseState();
-            mMouseState = new MouseState();
-
-            Microsoft.Xna.Framework.Input.Mouse.CreatesNewState = false;
-#elif !MONOGAME
+#if !MONOGAME
             Microsoft.Xna.Framework.Input.Mouse.WindowHandle = windowHandle;
 #endif
             mLastClickTime = new double[NumberOfButtons];
@@ -620,35 +557,6 @@ namespace FlatRedBall.Input
 
             }
 
-
-
-
-#if FRB_MDX
-            Vector3 forward = Vector3.Normalize(orbitCenter - positionedObject.Position);
-
-            Matrix matrix = positionedObject.RotationMatrix;
-            matrix.M31 = forward.X;
-            matrix.M32 = forward.Y;
-            matrix.M33 = forward.Z;
-
-            Vector3 right = Vector3.Normalize(Vector3.Cross(upVector, forward));
-
-            matrix.M11 = right.X;
-            matrix.M12 = right.Y;
-            matrix.M13 = right.Z;
-
-            Vector3 up = Vector3.Normalize(Vector3.Cross(forward, right));
-
-            matrix.M21 = up.X;
-            matrix.M22 = up.Y;
-            matrix.M23 = up.Z;
-
-            positionedObject.UpdateRotationValuesAccordingToMatrix(matrix);
-
-            // to fix accumulation and weird math issues:
-            positionedObject.RotationZ = positionedObject.RotationZ;
-
-#else
             Vector3 relativePositionForView = orbitCenter - positionedObject.Position;
 
             // Vic says:  Why do we invert?  Well, because the CreateLookAt matrix method creates
@@ -658,88 +566,26 @@ namespace FlatRedBall.Input
             // FlatRedBall will take care of the actual inverting when it goes to draw the world.
             positionedObject.RotationMatrix = Matrix.Invert(Matrix.CreateLookAt(new Vector3(), relativePositionForView, upVector));
 
-            
-#endif
-
-#if !SILVERLIGHT
             if (this.ScrollWheelChange != 0)
             {
                 float scrollCoefficient = (positionedObject.Position - orbitCenter).Length() * .125f;
 
-#if FRB_MDX
-                positionedObject.Position += scrollCoefficient *
-                    this.ScrollWheelChange * positionedObject.RotationMatrix.Forward();
-#else
                 positionedObject.Position += scrollCoefficient *
                     this.ScrollWheelChange * positionedObject.RotationMatrix.Forward;
-#endif
-
             }
-#endif
 
         }
 
         public Ray GetMouseRay(Camera camera)
         {
-#if FRB_MDX
-            // Not sure if this works for non-default Cameras
-            return MathFunctions.GetRay(this.mXAt100Units, this.mYAt100Units, camera);
-#else
             return MathFunctions.GetRay(X, Y, 1, camera);
-
-            //if (InputManager.Keyboard.KeyPushed(Keys.D))
-            //{
-            //    int m = 3;
-            //}
-
-            //int screenX = X;
-            //int screenY = Y;
-
-            //Matrix matrix = Matrix.Invert(camera.TransformationMatrix);
-
-            //Matrix transformationMatrix = Matrix.CreateTranslation(camera.Position);
-
-
-            //Vector3 absoluteRayEnd = Renderer.GraphicsDevice.Viewport.Unproject(new Vector3(screenX, screenY, 1),
-            //    camera.GetProjectionMatrix(), camera.GetLookAtMatrix(false), Matrix.Identity);
-
-            //Vector3 directionRay = absoluteRayEnd;
-            ////Vector3 directionRay = absoluteRayEnd - camera.Position;
-            //directionRay.Normalize();
-
-            //return new Ray(camera.Position, directionRay);
-#endif
-
         }
 
-        public void HideNativeWindowsCursor()
-        {
-#if FRB_MDX
-            if (mWindowsCursorVisible)
-            {
-                System.Windows.Forms.Cursor.Hide();
-                mWindowsCursorVisible = false;
-                try
-                {
-                    mMouseDevice.Unacquire();
-                    mMouseDevice.SetCooperativeLevel(mOwner, CooperativeLevelFlags.Foreground |
-                        CooperativeLevelFlags.Exclusive);
-                    mMouseDevice.Acquire();
-
-                }
-                catch (Exception)
-                {
-                }
-            }
-#endif
-        }
-        #region XML Docs
         /// <summary>
         /// Returns whether the Mouse is over the argument Circle.
         /// </summary>
         /// <param name="circle">The Circle to check.</param>
         /// <returns>Whether the mouse is over the argument Circle.</returns>
-        #endregion
         public bool IsOn(Circle circle)
         {
             return circle.IsPointInside(WorldXAt(0), WorldYAt(0));

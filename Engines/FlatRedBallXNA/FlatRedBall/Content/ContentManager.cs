@@ -112,7 +112,14 @@ namespace FlatRedBall.Content
             try
             {
 
-                using (var stream = androidAssetManager.Open("content/defaultfonttexture.png"))
+				var fileName = "Content/defaultfonttexture.png";
+
+#if !NET8_0
+				fileName = "content/defaultfonttexture.png";
+
+#endif
+
+                using (var stream = androidAssetManager.Open(fileName))
                 {
                     texture = Texture2D.FromStream(graphicsDevice, stream);
                 }
@@ -125,7 +132,7 @@ namespace FlatRedBall.Content
 #else
 
 
-            var colors = DefaultFontDataColors.GetColorArray();
+				var colors = DefaultFontDataColors.GetColorArray();
 
             Texture2D texture = new Texture2D(graphicsDevice, 256, 128);
 
@@ -654,14 +661,14 @@ namespace FlatRedBall.Content
 
 					if (assetName.EndsWith("gif"))
 					{
-#if UWP || DESKTOP_GL || STANDARD
                         throw new NotImplementedException();
-#else
-						AnimationChainList acl = new AnimationChainList();
-						acl.Add(FlatRedBall.Graphics.Animation.AnimationChain.FromGif(assetName, this.mName));
-						acl[0].ParentGifFileName = assetName;
-						loadedAsset = acl;
-#endif
+
+						// We used to support gif => AnimationChain but this is being
+						// dropped. It could be added in the future if needed.
+						//AnimationChainList acl = new AnimationChainList();
+						//acl.Add(FlatRedBall.Graphics.Animation.AnimationChain.FromGif(assetName, this.mName));
+						//acl[0].ParentGifFileName = assetName;
+						//loadedAsset = acl;
 					}
 					else
 					{

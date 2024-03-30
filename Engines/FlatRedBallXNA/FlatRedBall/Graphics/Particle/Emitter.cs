@@ -59,12 +59,11 @@ namespace FlatRedBall.Graphics.Particle
 
     #endregion
 
-    #region XML Docs
     /// <summary>
     /// An emitter is an invisible object which can create one or more Sprites at a specific 
     /// rate or on a method call.
     /// </summary>
-    #endregion
+    [Obsolete("Emitters are no longer being maintained. This class is being kept around for old projects, but new FRB projects should create manual emitters or look for an alternative approach.")]
     public class Emitter : PositionedObject, IEquatable<Emitter>, IReadOnlyScalable
     {
         #region Enums

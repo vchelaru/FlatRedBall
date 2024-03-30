@@ -60,7 +60,19 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public bool IsSubscribedToGamepadEvents { get; private set; }
 
-        public JoinStyle JoinStyle { get; set; } = JoinStyle.AnyConnectedInput;
+        JoinStyle joinStyle = JoinStyle.AnyConnectedInput;
+        public JoinStyle JoinStyle 
+        {
+            get => joinStyle;
+            set
+            {
+                joinStyle = value;
+                for (int i = 0; i < PlayerJoinViewItems.Count; i++)
+                {
+                    UpdateConnectedJoinedStateForIndex(i, true);
+                }
+            }
+        }
 
         #endregion
 
@@ -197,33 +209,62 @@ namespace FlatRedBall.Forms.Controls.Games
             {
                 var item = PlayerJoinViewItemsInternal[index];
 
-                var isConnected = index <= InputManager.Xbox360GamePads.Length &&
-                    InputManager.Xbox360GamePads[index].IsConnected;
+                var isConnected = false;
 
-                if(isConnected)
+                if(JoinStyle == JoinStyle.ExplicitlyAssignedInput)
                 {
-                    var gamepad = InputManager.Xbox360GamePads[index];
-                    item.InputDevice = gamepad;
+                    isConnected = item.InputDevice != null;
+
+                    if(item.InputDevice is Xbox360GamePad gamepad)
+                    {
+                        isConnected = gamepad.IsConnected;
 #if !UWP && !XNA4_OLD && !FNA
-                    item.ControllerDisplayName = gamepad.Capabilities.DisplayName;
-#endif
-                    item.ConnectedJoinedState = ConnectedJoinedState.Connected;
-                    item.GamepadLayout = gamepad.GamepadLayout;
-                }
-                else if(item.IsUsingKeyboardAsBackup)
-                {
-                    item.ConnectedJoinedState = ConnectedJoinedState.Connected;
-                    item.InputDevice = InputManager.Keyboard;
-                    item.ControllerDisplayName = KeyboardName; // should it be something else? Localized? Need to think about this...
 
-                    item.GamepadLayout = GamepadLayout.Keyboard;
+                        item.ControllerDisplayName = gamepad.Capabilities.DisplayName;
+#endif
+                        item.GamepadLayout = gamepad.GamepadLayout;
+
+                    }
+                    else if(item.InputDevice is FlatRedBall.Input.Keyboard)
+                    {
+                        isConnected = true;
+                        item.ControllerDisplayName = KeyboardName;
+                        item.GamepadLayout = GamepadLayout.Keyboard;
+                    }
+
                 }
                 else
                 {
-                    item.ConnectedJoinedState = ConnectedJoinedState.NotConnected;
-                    item.InputDevice = null;
-                    item.GamepadLayout = GamepadLayout.Unknown;
+                    isConnected = index <= InputManager.Xbox360GamePads.Length &&
+                        InputManager.Xbox360GamePads[index].IsConnected;
+
+                    if(isConnected)
+                    {
+                        var gamepad = InputManager.Xbox360GamePads[index];
+                        item.InputDevice = gamepad;
+    #if !UWP && !XNA4_OLD && !FNA
+                        item.ControllerDisplayName = gamepad.Capabilities.DisplayName;
+    #endif
+                        item.ConnectedJoinedState = ConnectedJoinedState.Connected;
+                        item.GamepadLayout = gamepad.GamepadLayout;
+                    }
+                    else if(item.IsUsingKeyboardAsBackup)
+                    {
+                        item.ConnectedJoinedState = ConnectedJoinedState.Connected;
+                        item.InputDevice = InputManager.Keyboard;
+                        item.ControllerDisplayName = KeyboardName; // should it be something else? Localized? Need to think about this...
+
+                        item.GamepadLayout = GamepadLayout.Keyboard;
+                    }
+                    else
+                    {
+                        item.ConnectedJoinedState = ConnectedJoinedState.NotConnected;
+                        item.InputDevice = null;
+                        item.GamepadLayout = GamepadLayout.Unknown;
+                    }
                 }
+
+
 
 
                 if (force)
