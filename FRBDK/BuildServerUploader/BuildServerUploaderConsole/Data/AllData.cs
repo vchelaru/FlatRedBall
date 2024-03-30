@@ -93,6 +93,8 @@ namespace BuildServerUploaderConsole.Data
                 var engine = new EngineData();
                 engine.Name = "Android .NET 8.0";
 
+                engine.EngineCSProjLocation = @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallAndroid\FlatRedBallAndroid.csproj";
+
                 engine.RelativeToLibrariesDebugFolder = @"Android\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"Android\Release";
                 engine.TemplateCsProjFolder = @"FlatRedBallAndroidMonoGameTemplate\FlatRedBallAndroidMonoGameTemplate\";
@@ -166,6 +168,8 @@ namespace BuildServerUploaderConsole.Data
             {
                 var engine = new EngineData();
                 engine.Name = "iOS .NET 8.0";
+
+                engine.EngineCSProjLocation = @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBalliOS\FlatRedBalliOS.csproj";
 
                 engine.RelativeToLibrariesDebugFolder = @"iOS\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"iOS\Release";
