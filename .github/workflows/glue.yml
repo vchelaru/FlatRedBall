@@ -40,12 +40,14 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Build
-      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\FRBDK\Glue\Glue with All.sln'
-
     - name: Build BuildServerUploader
       run: dotnet build -c Debug 'FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploader.sln'
+     
+    - name: Change version numbers
+      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe changefrbdkversion
 
+    - name: Build
+      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\FRBDK\Glue\Glue with All.sln'
       
     - name: Zip and upload templates
       env: # Or as an environment variable

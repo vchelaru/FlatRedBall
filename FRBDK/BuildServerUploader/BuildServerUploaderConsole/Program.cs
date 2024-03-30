@@ -13,6 +13,8 @@ namespace BuildServerUploaderConsole
         public const string ChangeVersion = "changeversion";
         public const string CopyDllsToTemplates = "copytotemplates";
         public const string ZipAndUploadFrbdk = "zipanduploadfrbdk";
+        public const string ChangeEngineVersion = "changeengineversion";
+        public const string ChangeFrbdkVersion = "changefrbdkversion";
     }
 
 
@@ -53,6 +55,12 @@ namespace BuildServerUploaderConsole
                     case CommandLineCommands.ZipAndUploadFrbdk:
                         CreateZipAndUploadFrbdk(args);
                         break;
+                    case CommandLineCommands.ChangeEngineVersion:
+                        CreateChangeEngineVersion();
+                        break;
+                    case CommandLineCommands.ChangeFrbdkVersion:
+                        CreateChangeFrbdkVersion();
+                        break;
                     case "":
                         break;
                     default:
@@ -60,7 +68,7 @@ namespace BuildServerUploaderConsole
                         break;
                 }
 
-                
+
             }
             else // I think this is used for debugging only
             {
@@ -76,7 +84,17 @@ namespace BuildServerUploaderConsole
             }
 
             ExecuteSteps();
-            
+
+        }
+
+        private static void CreateChangeEngineVersion()
+        {
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.Engine));
+        }
+
+        private static void CreateChangeFrbdkVersion()
+        {
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.FRBDK));
         }
 
         private static void CreateZipAndUploadTemplates(string[] args)
@@ -85,7 +103,7 @@ namespace BuildServerUploaderConsole
 
             ProcessSteps.Add(new ZipTemplates(Results));
 
-            if(args.Length < 3)
+            if (args.Length < 3)
             {
                 throw new Exception("Expected 3 arguments: {operation} {username} {password}, but only got " + args.Length + "arguments");
             }
@@ -144,7 +162,7 @@ namespace BuildServerUploaderConsole
 
         private static void ExecuteSteps()
         {
-            for(int i = 0; i < ProcessSteps.Count; i++)
+            for (int i = 0; i < ProcessSteps.Count; i++)
             {
                 int step1Based = i + 1;
                 Results.WriteMessage($"Processing {step1Based}/{ProcessSteps.Count} : {ProcessSteps[i].Message}");
@@ -157,6 +175,6 @@ namespace BuildServerUploaderConsole
             get { return _defaultDirectory; }
         }
 
-        
+
     }
 }
