@@ -126,6 +126,7 @@ namespace BuildServerUploaderConsole.Processes
 
         public override void ExecuteStep()
         {
+            Results.WriteMessage($"Uploading {uploadType}");
             if(uploadType == UploadType.Entire)
             {
                 UploadGumFiles();
@@ -208,12 +209,17 @@ namespace BuildServerUploaderConsole.Processes
         {
             string templateDirectory = DirectoryHelper.ReleaseDirectory + @"ZippedTemplates/";
 
+
+            var zippedTemplateFiles = Directory.GetFiles(templateDirectory, "*.zip").ToArray();
+
+            Results.WriteMessage($"Found {zippedTemplateFiles.Length} files to upload");
+
             using (var client = SftpManager.GetClient(host, Username, Password))
             {
                 client.Connect();
 
 
-                foreach (var file in Directory.GetFiles(templateDirectory, "*.zip"))
+                foreach (var file in zippedTemplateFiles)
                 {
                     var fileName = FileManager.RemovePath(file);
 
