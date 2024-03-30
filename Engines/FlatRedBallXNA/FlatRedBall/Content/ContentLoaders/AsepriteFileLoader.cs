@@ -1,4 +1,5 @@
-﻿
+﻿#if NET6_0_OR_GREATER
+
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.IO;
 using AsepriteDotNet.Processors;
@@ -28,3 +29,4 @@ namespace FlatRedBall.Content.ContentLoaders
         }
     }
 }
+#endif

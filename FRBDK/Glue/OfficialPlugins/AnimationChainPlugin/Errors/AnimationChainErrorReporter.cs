@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Content.Aseprite;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -41,16 +42,25 @@ namespace OfficialPlugins.AnimationChainPlugin.Errors
 
                                 if(rfs != null)
                                 {
-                                    var fullFile = GlueCommands.Self.GetAbsoluteFileName(rfs);
+                                    var filePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
 
-                                    if(System.IO.File.Exists( fullFile))
+                                    if(filePath.Exists())
                                     {
-                                        AnimationChainListSave achSave = AnimationChainListSave.FromFile(fullFile);
+                                        AnimationChainListSave achSave = null;
+
+                                        if(filePath.Extension == "aseprite")
+                                        {
+                                            achSave = AsepriteAnimationChainLoader.ToAnimationChainListSave(filePath);
+                                        }
+                                        else
+                                        {
+                                            achSave = AnimationChainListSave.FromFile(filePath.FullPath);
+                                        }
 
                                         if(achSave.AnimationChains.Any(item => item.Name == animationChainName) == false)
                                         {
                                             var error = new AnimationReferenceErrorViewModel(
-                                                fullFile, namedObject, animationChainName);
+                                                filePath.FullPath, namedObject, animationChainName);
 
                                             errors.Add(error);
                                         }

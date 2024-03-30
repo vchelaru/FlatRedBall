@@ -50,7 +50,10 @@ using Color = Microsoft.Xna.Framework.Color;
 using FlatRedBall.Content.ContentLoaders;
 using FlatRedBall.Performance.Measurement;
 using FlatRedBall.IO;
+
+#if NET6_0_OR_GREATER
 using FlatRedBall.Content.Aseprite;
+#endif
 
 namespace FlatRedBall.Content
 {
@@ -672,13 +675,13 @@ namespace FlatRedBall.Content
 						//loadedAsset = acl;
 					}
 #if NET6_0_OR_GREATER
-					else if(assetName.EndsWith("aseprite"))
+                    else if(assetName.EndsWith("aseprite") || assetName.EndsWith("ase"))
 					{
 						loadedAsset = AsepriteFileLoader.Load(assetName).ToAnimationChainList();
 					}
 #endif
-					else
-					{
+                    else
+                    {
 						loadedAsset =
 							AnimationChainListSave.FromFile(assetName).ToAnimationChainList(mName);
 
