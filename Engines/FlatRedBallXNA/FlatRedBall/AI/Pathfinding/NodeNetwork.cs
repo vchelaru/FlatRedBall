@@ -1036,6 +1036,24 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
+        public void SetNodeColor(PositionedNode node, Color color)
+        {
+            int index = mNodes.IndexOf(node);
+
+            if (index < 0)
+                throw new ArgumentException("Node does not belong to this NodeNetwork");
+
+            mNodeVisibleRepresentation[index].Color = color;
+        }
+
+        public void SetAllNodesColor(Color color)
+        {
+            mNodeColor = color;
+
+            for (int i = 0; i < mNodeVisibleRepresentation.Count; i++)
+                mNodeVisibleRepresentation[i].Color = color;
+        }
+
         protected virtual void AdjustLinkRepresentation(PositionedNode sourceNode, Link link, Line line)
         {
 
