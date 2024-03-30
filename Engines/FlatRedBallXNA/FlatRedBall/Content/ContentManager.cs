@@ -50,6 +50,7 @@ using Color = Microsoft.Xna.Framework.Color;
 using FlatRedBall.Content.ContentLoaders;
 using FlatRedBall.Performance.Measurement;
 using FlatRedBall.IO;
+using FlatRedBall.Content.Aseprite;
 
 namespace FlatRedBall.Content
 {
@@ -670,6 +671,12 @@ namespace FlatRedBall.Content
 						//acl[0].ParentGifFileName = assetName;
 						//loadedAsset = acl;
 					}
+#if NET6_0_OR_GREATER
+					else if(assetName.EndsWith("aseprite"))
+					{
+						loadedAsset = AsepriteFileLoader.Load(assetName).ToAnimationChainList();
+					}
+#endif
 					else
 					{
 						loadedAsset =
