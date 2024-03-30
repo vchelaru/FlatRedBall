@@ -14,7 +14,8 @@ namespace BuildServerUploaderConsole.Processes
     public enum UploadType
     {
         Entire,
-        EngineAndTemplatesOnly
+        EngineAndTemplatesOnly,
+        FrbdkOnly
     }
 
     #endregion
@@ -130,8 +131,18 @@ namespace BuildServerUploaderConsole.Processes
                 UploadGumFiles();
                 UploadFrbdkFiles();
             }
-            UploadEngineFiles();
-            UploadTemplateFiles(_ftpFolder, Results);
+            else if(uploadType == UploadType.Entire)
+            {
+                UploadGumFiles();
+                UploadFrbdkFiles();
+                UploadEngineFiles();
+                UploadTemplateFiles(_ftpFolder, Results);
+            }
+            else if(uploadType == UploadType.FrbdkOnly)
+            {
+                
+                UploadFrbdkFiles();
+            }
         }
 
         private void UploadGumFiles()

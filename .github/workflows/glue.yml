@@ -10,7 +10,9 @@ jobs:
   build:
     strategy:
       matrix:
-        configuration: [Debug, Release]
+        # configuration: [Debug, Release]
+        # for now, let's just do debug...
+        configuration: [Debug]
 
     runs-on: windows-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on

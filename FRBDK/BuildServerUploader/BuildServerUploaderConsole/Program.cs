@@ -11,8 +11,8 @@ namespace BuildServerUploaderConsole
         public const string Upload = "upload";
         public const string ZipAndUploadTemplates = "zipanduploadtemplates";
         public const string ChangeVersion = "changeversion";
-        public const string CopyToFrbdkInstallerTool = "copytoinstaller";
         public const string CopyDllsToTemplates = "copytotemplates";
+        public const string ZipAndUploadFrbdk = "zipanduploadfrbdk";
     }
 
 
@@ -49,6 +49,9 @@ namespace BuildServerUploaderConsole
                         break;
                     case CommandLineCommands.ZipAndUploadTemplates:
                         CreateZipAndUploadTemplates(args);
+                        break;
+                    case CommandLineCommands.ZipAndUploadFrbdk:
+                        CreateZipAndUploadFrbdk(args);
                         break;
                     case "":
                         break;
@@ -88,8 +91,22 @@ namespace BuildServerUploaderConsole
             }
 
             ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.EngineAndTemplatesOnly, args[1], args[2]));
+        }
 
+        private static void CreateZipAndUploadFrbdk(string[] args)
+        {
+            ProcessSteps.Add(new CopyFrbdkAndPluginsToReleaseFolder(Results));
+            ProcessSteps.Add(new ZipFrbdk(Results));
 
+            //??
+            //ProcessSteps.Add(new ZipGum(Results));
+
+            if (args.Length < 3)
+            {
+                throw new Exception("Expected 3 arguments: {operation} {username} {password}, but only got " + args.Length + "arguments");
+            }
+
+            ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.FrbdkOnly, args[1], args[2]));
         }
 
         private static void CreateCopyToTemplatesSteps()

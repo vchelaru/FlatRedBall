@@ -44,7 +44,7 @@ namespace BuildServerUploaderConsole.Processes
 
         public CopyFrbdkAndPluginsToReleaseFolder(IResults results)
             : base(
-                @"Copy all FRBDK .exe files, EditorObjects.dll, and the engine to ReleaseFiles\FRBDK For Zip\ (Auto)", results)
+                @"Copy all FRBDK files to ReleaseFiles\FRBDK For Zip\ (Auto)", results)
         {
 
             _excludedDirs = new List<string>();
@@ -71,7 +71,11 @@ namespace BuildServerUploaderConsole.Processes
                 CopyDirectory(DirectoryHelper.FrbdkDirectory + extraTool, "Copied" + extraTool, subdirectoryName:extraTool);
             }
 
-            CopyDirectory(DirectoryHelper.GumBuildDirectory, "Copied Gum", "Gum");
+            if(Directory.Exists(DirectoryHelper.GumBuildDirectory))
+            {
+                // todo - this doesn't exist on github actions
+                CopyDirectory(DirectoryHelper.GumBuildDirectory, "Copied Gum", "Gum");
+            }
 
 
 
