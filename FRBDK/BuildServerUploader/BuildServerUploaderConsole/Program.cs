@@ -116,7 +116,8 @@ namespace BuildServerUploaderConsole
 
         private static void CreateChangeVersionProcessSteps()
         {
-            ProcessSteps.Add(new UpdateAssemblyVersions(Results));
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.Engine));
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.FRBDK));
         }
 
         private static void CreateUploadProcessSteps()
