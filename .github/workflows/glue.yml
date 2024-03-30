@@ -21,7 +21,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
-        path: 'FRB'
+        path: 'FlatRedBall'
 
     - name: Checkout Gum
       uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Build
-      run: dotnet build -c ${{ matrix.configuration }} 'FRB\FRBDK\Glue\Glue with All.sln'
+      run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\FRBDK\Glue\Glue with All.sln'
 
     - name: Build BuildServerUploader
       run: dotnet build -c Debug 'FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploader.sln'
