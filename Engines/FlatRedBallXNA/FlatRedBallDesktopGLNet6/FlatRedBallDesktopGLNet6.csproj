@@ -12,7 +12,7 @@
   <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
 
   <ItemGroup>
-    <PackageReference Include="AsepriteDotNet" Version="1.6.0" PrivateAssets="All" />
+    <PackageReference Include="AsepriteDotNet" Version="1.6.0" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
   </ItemGroup>
 </Project>
