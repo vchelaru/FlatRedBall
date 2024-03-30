@@ -61,6 +61,8 @@ namespace BuildServerUploaderConsole.Processes
                         {
                             var csProjAbsolute = DirectoryHelper.CheckoutDirectory + engine.EngineCSProjLocation;
                             ModifyCsprojAssemblyInfoVersion(csProjAbsolute, VersionString);
+                            Results.WriteMessage("Modified " + csProjAbsolute + " to " + VersionString);
+
                         }
                     }
 
