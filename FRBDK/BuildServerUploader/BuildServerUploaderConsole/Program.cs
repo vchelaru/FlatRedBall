@@ -11,8 +11,10 @@ namespace BuildServerUploaderConsole
         public const string Upload = "upload";
         public const string ZipAndUploadTemplates = "zipanduploadtemplates";
         public const string ChangeVersion = "changeversion";
-        public const string CopyToFrbdkInstallerTool = "copytoinstaller";
         public const string CopyDllsToTemplates = "copytotemplates";
+        public const string ZipAndUploadFrbdk = "zipanduploadfrbdk";
+        public const string ChangeEngineVersion = "changeengineversion";
+        public const string ChangeFrbdkVersion = "changefrbdkversion";
     }
 
 
@@ -50,6 +52,15 @@ namespace BuildServerUploaderConsole
                     case CommandLineCommands.ZipAndUploadTemplates:
                         CreateZipAndUploadTemplates(args);
                         break;
+                    case CommandLineCommands.ZipAndUploadFrbdk:
+                        CreateZipAndUploadFrbdk(args);
+                        break;
+                    case CommandLineCommands.ChangeEngineVersion:
+                        CreateChangeEngineVersion();
+                        break;
+                    case CommandLineCommands.ChangeFrbdkVersion:
+                        CreateChangeFrbdkVersion();
+                        break;
                     case "":
                         break;
                     default:
@@ -57,7 +68,7 @@ namespace BuildServerUploaderConsole
                         break;
                 }
 
-                
+
             }
             else // I think this is used for debugging only
             {
@@ -73,24 +84,47 @@ namespace BuildServerUploaderConsole
             }
 
             ExecuteSteps();
-            
+
+        }
+
+        private static void CreateChangeEngineVersion()
+        {
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.Engine));
+        }
+
+        private static void CreateChangeFrbdkVersion()
+        {
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.FRBDK));
         }
 
         private static void CreateZipAndUploadTemplates(string[] args)
         {
+            ProcessSteps.Add(new CopyBuiltEnginesToReleaseFolder(Results));
+
             ProcessSteps.Add(new ZipTemplates(Results));
 
-            string username = null;
-            string password = null;
-
-            if(args.Length < 3)
+            if (args.Length < 3)
             {
                 throw new Exception("Expected 3 arguments: {operation} {username} {password}, but only got " + args.Length + "arguments");
             }
 
-            ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.TemplatesOnly, args[1], args[2]));
+            ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.EngineAndTemplatesOnly, args[1], args[2]));
+        }
 
+        private static void CreateZipAndUploadFrbdk(string[] args)
+        {
+            ProcessSteps.Add(new CopyFrbdkAndPluginsToReleaseFolder(Results));
+            ProcessSteps.Add(new ZipFrbdk(Results));
 
+            //??
+            //ProcessSteps.Add(new ZipGum(Results));
+
+            if (args.Length < 3)
+            {
+                throw new Exception("Expected 3 arguments: {operation} {username} {password}, but only got " + args.Length + "arguments");
+            }
+
+            ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.FrbdkOnly, args[1], args[2]));
         }
 
         private static void CreateCopyToTemplatesSteps()
@@ -100,7 +134,8 @@ namespace BuildServerUploaderConsole
 
         private static void CreateChangeVersionProcessSteps()
         {
-            ProcessSteps.Add(new UpdateAssemblyVersions(Results));
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.Engine));
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.FRBDK));
         }
 
         private static void CreateUploadProcessSteps()
@@ -127,7 +162,7 @@ namespace BuildServerUploaderConsole
 
         private static void ExecuteSteps()
         {
-            for(int i = 0; i < ProcessSteps.Count; i++)
+            for (int i = 0; i < ProcessSteps.Count; i++)
             {
                 int step1Based = i + 1;
                 Results.WriteMessage($"Processing {step1Based}/{ProcessSteps.Count} : {ProcessSteps[i].Message}");
@@ -140,6 +175,6 @@ namespace BuildServerUploaderConsole
             get { return _defaultDirectory; }
         }
 
-        
+
     }
 }

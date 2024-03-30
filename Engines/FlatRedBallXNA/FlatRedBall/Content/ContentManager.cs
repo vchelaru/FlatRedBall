@@ -633,7 +633,7 @@ namespace FlatRedBall.Content
 				}
 				#endregion
 
-#region ShapeCollection
+				#region ShapeCollection
 
 				else if (typeof(T) == typeof(ShapeCollection))
 				{
@@ -644,7 +644,7 @@ namespace FlatRedBall.Content
 
 					return (T)((object)shapeCollection);
 				}
-#endregion
+				#endregion
 
 #region PositionedObjectList<Polygon>
 
@@ -658,7 +658,7 @@ namespace FlatRedBall.Content
 
 #endregion
 
-#region AnimationChainList
+				#region AnimationChainList
 
 				else if (typeof(T) == typeof(AnimationChainList))
 				{
@@ -691,7 +691,7 @@ namespace FlatRedBall.Content
 					mNonDisposableDictionary.Add(fullNameWithType, loadedAsset);
 				}
 
-#endregion
+				#endregion
 
 				else if(typeof(T) == typeof(Song))
 				{
