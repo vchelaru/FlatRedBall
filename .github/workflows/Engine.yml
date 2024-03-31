@@ -116,8 +116,12 @@ jobs:
       with:
         name: DesktopGlNet6Release
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Release/net6.0/
-
-
+    - name: Publish NuGet package
+      run: |
+        for file in FlatRedBall/Engines/FlatRedBallXNA/FlatRedBallDesktopGLNet6/bin/Debug/*.nupkg; do
+          dotnet nuget push $file --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
+        done
+        
     - name: Build FlatRedBall .NET 4 Debug
       run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
     - name: Package FlatRedBall .NET 4
