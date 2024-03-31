@@ -46,16 +46,16 @@ namespace BuildServerUploaderConsole.Processes
                     }
 
                 }
-                results.WriteMessage(" Finished adding files to zip");
+                results.WriteMessage($" Finished adding {containedObjects} files to zip");
 
                 zip.Save(fullZipFileName);
 
-                results.WriteMessage(" Finished saving zip file");
+                results.WriteMessage($" Finished saving zip file to {fullZipFileName}");
 
 
                 Directory.CreateDirectory(destinationDirectory);
 
-                results.WriteMessage(" Starting to copy zip file");
+                results.WriteMessage($" Starting to copy zip file {sourceDirectory} to {zipFileNameNoExtension}.zip");
 
                 File.Copy(fullZipFileName, destinationDirectory + zipFileNameNoExtension + ".zip", true);
 
