@@ -127,10 +127,10 @@ namespace BuildServerUploaderConsole.Processes
         public override void ExecuteStep()
         {
             Results.WriteMessage($"Uploading {uploadType}");
-            if(uploadType == UploadType.Entire)
+            if(uploadType == UploadType.EngineAndTemplatesOnly)
             {
-                UploadGumFiles();
-                UploadFrbdkFiles();
+                UploadEngineFiles();
+                UploadTemplateFiles(_ftpFolder, Results);
             }
             else if(uploadType == UploadType.Entire)
             {
