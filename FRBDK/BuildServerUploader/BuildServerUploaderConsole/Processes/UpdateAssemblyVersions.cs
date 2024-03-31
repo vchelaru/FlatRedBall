@@ -16,8 +16,7 @@ namespace BuildServerUploaderConsole.Processes
     class UpdateAssemblyVersions : ProcessStep
     {
         public static readonly string VersionString =
-            DateTime.Today.Date.ToString("d", CultureInfo.CreateSpecificCulture("ja-JP")).Replace("/", ".") + "." +
-            (int) DateTime.Now.TimeOfDay.TotalMinutes;
+            DateTime.Now.ToString("yyyy.M.d") + "." + (int)DateTime.Now.TimeOfDay.TotalMinutes;
 
         UpdateType UpdateType { get; set; }
 
