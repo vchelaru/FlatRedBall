@@ -1395,7 +1395,11 @@ public class DragDropManager : Singleton<DragDropManager>
             }
             else
             {
-                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
+                _= TaskManager.Self.AddAsync(() =>
+                {
+                    GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
+
+                }, "Generating global content code");
             }
 
 
