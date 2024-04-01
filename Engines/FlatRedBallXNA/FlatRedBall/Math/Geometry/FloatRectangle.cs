@@ -93,6 +93,11 @@ namespace FlatRedBall.Math.Geometry
             Bottom -= verticalAmount;
         }
 
+        public bool IsPointInside(float x, float y)
+        {
+            return x >= Left && x <= Right && y <= Top && y >= Bottom;
+        }
+
         public override string ToString()
         {
             return "Top:" + Top + " Left:" + Left + " Bottom:" + Bottom + " Right:" + Right;
