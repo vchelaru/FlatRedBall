@@ -122,6 +122,8 @@ namespace BuildServerUploaderConsole.Processes
             string zipFilePath = Path.Combine(targetDirectory, "Gum.zip");
             string unzipDirectory = targetDirectory;
 
+            Results.WriteMessage($"Downloading Gum from {url}");
+
             if(!System.IO.Directory.Exists(targetDirectory))
             {
                 Directory.CreateDirectory(targetDirectory);
@@ -141,11 +143,15 @@ namespace BuildServerUploaderConsole.Processes
                     }
                 }
 
+                Results.WriteMessage($"Unzipping Gum from {zipFilePath}");
+
                 // Unzip the file
                 System.IO.Compression.ZipFile.ExtractToDirectory(zipFilePath, unzipDirectory);
 
                 // delete the zip - we don't need it anymore and it bloats the ultimate file:
                 System.IO.File.Delete(zipFilePath);
+
+                Results.WriteMessage($"Gum unzipped to {unzipDirectory}");
             }
         }
 
