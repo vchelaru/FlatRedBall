@@ -15,7 +15,8 @@ namespace BuildServerUploaderConsole.Processes
     {
         Entire,
         EngineAndTemplatesOnly,
-        FrbdkOnly
+        FrbdkOnly,
+        GumOnly,
     }
 
     #endregion
@@ -144,17 +145,35 @@ namespace BuildServerUploaderConsole.Processes
                 
                 UploadFrbdkFiles();
             }
+            else if(uploadType == UploadType.GumOnly)
+            {
+                UploadGumFiles();
+            }
         }
 
         private void UploadGumFiles()
         {
             string localFile = FileManager.GetDirectory(DirectoryHelper.GumBuildDirectory) + "Gum.zip";
-
+            if(!System.IO.File.Exists(localFile))
+            {
+                throw new Exception($"{localFile} file doesn't exist for upload");
+            }
             string targetFile = gumFolder + FileManager.RemovePath(localFile);
+            Results.WriteMessage("Uploading " + localFile + " to " + targetFile);
             SftpManager.UploadFile(
-                localFile, host, targetFile, Username, Password);
+                localFile, host, targetFile, Username, Password, PrintOutput);
 
             Results.WriteMessage(localFile + " uploaded to " + targetFile);
+        }
+
+        DateTime lastWrite = DateTime.Now;
+        void PrintOutput(ulong amount)
+        {
+            if(DateTime.Now - lastWrite > TimeSpan.FromSeconds(1))
+            {
+                Results.WriteMessage("Uploaded " + (amount / 1024).ToString("N0") + " kbytes");
+                lastWrite = DateTime.Now;
+            }
         }
 
         private void UploadFrbdkFiles()
@@ -164,7 +183,7 @@ namespace BuildServerUploaderConsole.Processes
             string targetFile = _ftpFolder + FileManager.RemovePath(localFile);
 
             SftpManager.UploadFile(
-                localFile, host, targetFile, Username, Password);
+                localFile, host, targetFile, Username, Password, PrintOutput);
 
             Results.WriteMessage(localFile + " uploaded to " + targetFile);
 
@@ -196,7 +215,7 @@ namespace BuildServerUploaderConsole.Processes
                     string destination = _ftpFolder + "SingleDlls/" + fileName;
 
                     SftpManager.UploadFileWithOpenConnection(
-                        localFile, destination, client);
+                        localFile, destination, client, PrintOutput);
 
 
                     Results.WriteMessage(engineFiles[i].DestinationFile + " uploaded to " + destination);
@@ -205,7 +224,7 @@ namespace BuildServerUploaderConsole.Processes
             }
         }
 
-        private static void UploadTemplateFiles(string _ftpFolder, IResults Results)
+        private void UploadTemplateFiles(string _ftpFolder, IResults Results)
         {
             string templateDirectory = DirectoryHelper.ReleaseDirectory + @"ZippedTemplates/";
 
@@ -226,7 +245,7 @@ namespace BuildServerUploaderConsole.Processes
                     string localFile = templateDirectory + fileName;
                     string destination = _ftpFolder + "ZippedTemplates/" + fileName;
                     SftpManager.UploadFileWithOpenConnection(
-                        localFile, destination, client);
+                        localFile, destination, client, PrintOutput);
 
 
                     Results.WriteMessage(file + " uploaded to " + destination);

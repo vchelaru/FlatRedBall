@@ -46,7 +46,7 @@ namespace BuildServerUploaderConsole.Processes
                     }
 
                 }
-                results.WriteMessage($" Finished adding {containedObjects} files to zip");
+                results.WriteMessage($" Finished adding {containedObjects.Count} files to zip");
 
                 zip.Save(fullZipFileName);
 

@@ -76,11 +76,23 @@ namespace BuildServerUploaderConsole.Processes
 
         public static string FrbdkDirectory => FlatRedBallDirectory + "FRBDK/";
 
+        static string GithubFilePath =>
+            System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "GitHub");
+
         public static string GumRootDirectory
         {
             get
             {
-                return FileManager.MakeAbsolute("../../../../../../../Gum/");
+                string defaultGumFilePath = System.IO.Path.Combine(GithubFilePath, "Gum\\");    
+                if(System.IO.Directory.Exists(defaultGumFilePath))
+                {
+                    // This makes the BuildServerUploader portable
+                    return defaultGumFilePath;
+                }
+                else
+                {
+                    return FileManager.MakeAbsolute("../../../../../../../Gum/");
+                }
             }
         }
 
