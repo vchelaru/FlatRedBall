@@ -552,6 +552,10 @@ namespace FlatRedBall.Glue.SaveClasses
         public void SetNameNoCall(string newName)
         {
             mName = newName;
+
+            // still do these or else the FilePath and CachedInstanceName will be wrong
+            FilePath = null;
+            CachedInstanceName = null;
         }
 
         public override string ToString()

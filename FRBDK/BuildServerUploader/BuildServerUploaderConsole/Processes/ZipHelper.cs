@@ -7,18 +7,18 @@ namespace BuildServerUploaderConsole.Processes
 {
     public class ZipHelper
     {
-        public static void CreateZip(IResults results, string destinationDirectory, string directoryWithContentsToZip, string zipFileNameNoExtension)
+        public static void CreateZip(IResults results, string destinationDirectory, string sourceDirectory, string zipFileNameNoExtension)
         {
             var containedObjects = new List<string>();
 
-            string fullZipFileName = directoryWithContentsToZip + zipFileNameNoExtension + ".zip";
+            string fullZipFileName = sourceDirectory + zipFileNameNoExtension + ".zip";
 
             if (File.Exists(fullZipFileName))
             {
                 File.Delete(fullZipFileName);
             }
 
-            var directories = Directory.GetDirectories(directoryWithContentsToZip, "*", SearchOption.TopDirectoryOnly);
+            var directories = Directory.GetDirectories(sourceDirectory, "*", SearchOption.TopDirectoryOnly);
 
             containedObjects.AddRange(directories);
 
@@ -28,7 +28,7 @@ namespace BuildServerUploaderConsole.Processes
             }
 
 
-            containedObjects.AddRange(Directory.GetFiles(directoryWithContentsToZip, "*", SearchOption.TopDirectoryOnly));
+            containedObjects.AddRange(Directory.GetFiles(sourceDirectory, "*", SearchOption.TopDirectoryOnly));
 
             using (var zip = new ZipFile())
             {
@@ -37,7 +37,7 @@ namespace BuildServerUploaderConsole.Processes
 
                     if (containedObject.EndsWith("\\"))
                     {
-                        string relativeDirectory = FileManager.MakeRelative(containedObject, directoryWithContentsToZip);
+                        string relativeDirectory = FileManager.MakeRelative(containedObject, sourceDirectory);
                         zip.AddDirectory(containedObject, relativeDirectory);
                     }
                     else
@@ -46,23 +46,23 @@ namespace BuildServerUploaderConsole.Processes
                     }
 
                 }
-                results.WriteMessage(" Finished adding files to zip");
+                results.WriteMessage($" Finished adding {containedObjects.Count} files to zip");
 
                 zip.Save(fullZipFileName);
 
-                results.WriteMessage(" Finished saving zip file");
+                results.WriteMessage($" Finished saving zip file to {fullZipFileName}");
 
 
                 Directory.CreateDirectory(destinationDirectory);
 
-                results.WriteMessage(" Starting to copy zip file");
+                results.WriteMessage($" Starting to copy zip file {sourceDirectory} to {zipFileNameNoExtension}.zip");
 
                 File.Copy(fullZipFileName, destinationDirectory + zipFileNameNoExtension + ".zip", true);
 
 
             }
 
-            results.WriteMessage("Zipped directory " + directoryWithContentsToZip + " into " + zipFileNameNoExtension);
+            results.WriteMessage("Zipped directory " + sourceDirectory + " into " + zipFileNameNoExtension);
         }
     }
 }

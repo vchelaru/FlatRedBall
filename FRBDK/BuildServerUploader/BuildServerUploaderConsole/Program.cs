@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using BuildServerUploaderConsole.Processes;
 using FlatRedBall.IO;
 
@@ -11,8 +12,11 @@ namespace BuildServerUploaderConsole
         public const string Upload = "upload";
         public const string ZipAndUploadTemplates = "zipanduploadtemplates";
         public const string ChangeVersion = "changeversion";
-        public const string CopyToFrbdkInstallerTool = "copytoinstaller";
         public const string CopyDllsToTemplates = "copytotemplates";
+        public const string ZipAndUploadFrbdk = "zipanduploadfrbdk";
+        public const string ChangeEngineVersion = "changeengineversion";
+        public const string ChangeFrbdkVersion = "changefrbdkversion";
+        public const string ZipAndUploadGum = "zipanduploadgum";
     }
 
 
@@ -22,7 +26,7 @@ namespace BuildServerUploaderConsole
         private static readonly List<ProcessStep> ProcessSteps = new List<ProcessStep>();
         private static readonly IResults Results = new TraceResults();
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             FileManager.PreserveCase = true;
 
@@ -50,6 +54,19 @@ namespace BuildServerUploaderConsole
                     case CommandLineCommands.ZipAndUploadTemplates:
                         CreateZipAndUploadTemplates(args);
                         break;
+                    case CommandLineCommands.ZipAndUploadFrbdk:
+                        CreateZipAndUploadFrbdk(args);
+                        break;
+                    case CommandLineCommands.ChangeEngineVersion:
+                        CreateChangeEngineVersion();
+                        break;
+                    case CommandLineCommands.ChangeFrbdkVersion:
+                        CreateChangeFrbdkVersion();
+                        break;
+                    case CommandLineCommands.ZipAndUploadGum:
+                        ProcessSteps.Add(new ZipGum(Results));
+                        ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.GumOnly, null, null));
+                        break;
                     case "":
                         break;
                     default:
@@ -57,7 +74,7 @@ namespace BuildServerUploaderConsole
                         break;
                 }
 
-                
+
             }
             else // I think this is used for debugging only
             {
@@ -72,8 +89,18 @@ namespace BuildServerUploaderConsole
                 //CreateCopyToInstallerSteps(true);
             }
 
-            ExecuteSteps();
-            
+            await ExecuteSteps();
+
+        }
+
+        private static void CreateChangeEngineVersion()
+        {
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.Engine));
+        }
+
+        private static void CreateChangeFrbdkVersion()
+        {
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.FRBDK));
         }
 
         private static void CreateZipAndUploadTemplates(string[] args)
@@ -82,14 +109,30 @@ namespace BuildServerUploaderConsole
 
             ProcessSteps.Add(new ZipTemplates(Results));
 
-            if(args.Length < 3)
+            if (args.Length < 3)
             {
                 throw new Exception("Expected 3 arguments: {operation} {username} {password}, but only got " + args.Length + "arguments");
             }
 
             ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.EngineAndTemplatesOnly, args[1], args[2]));
+        }
 
+        private static void CreateZipAndUploadFrbdk(string[] args)
+        {
+            ProcessSteps.Add(new CopyFrbdkAndPluginsToReleaseFolder(Results));
+            ProcessSteps.Add(new ZipFrbdk(Results));
 
+            //??
+            //ProcessSteps.Add(new ZipGum(Results));
+
+            if (args.Length < 3)
+            {
+                ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.FrbdkOnly, null, null));
+            }
+            else
+            {
+                ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.FrbdkOnly, args[1], args[2]));
+            }
         }
 
         private static void CreateCopyToTemplatesSteps()
@@ -99,7 +142,8 @@ namespace BuildServerUploaderConsole
 
         private static void CreateChangeVersionProcessSteps()
         {
-            ProcessSteps.Add(new UpdateAssemblyVersions(Results));
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.Engine));
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.FRBDK));
         }
 
         private static void CreateUploadProcessSteps()
@@ -124,13 +168,14 @@ namespace BuildServerUploaderConsole
             ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.Entire, null, null));
         }
 
-        private static void ExecuteSteps()
+        private static async Task ExecuteSteps()
         {
-            for(int i = 0; i < ProcessSteps.Count; i++)
+            for (int i = 0; i < ProcessSteps.Count; i++)
             {
                 int step1Based = i + 1;
                 Results.WriteMessage($"Processing {step1Based}/{ProcessSteps.Count} : {ProcessSteps[i].Message}");
                 ProcessSteps[i].ExecuteStep();
+                await ProcessSteps[i].ExecuteStepAsync();
             }
         }
 
@@ -139,6 +184,6 @@ namespace BuildServerUploaderConsole
             get { return _defaultDirectory; }
         }
 
-        
+
     }
 }

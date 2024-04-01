@@ -7,61 +7,82 @@ using System.Linq;
 
 namespace BuildServerUploaderConsole.Processes
 {
+    public enum UpdateType
+    {
+        Engine,
+        FRBDK
+    }
+
     class UpdateAssemblyVersions : ProcessStep
     {
         public static readonly string VersionString =
-            DateTime.Today.Date.ToString("d", CultureInfo.CreateSpecificCulture("ja-JP")).Replace("/", ".") + "." +
-            (int) DateTime.Now.TimeOfDay.TotalMinutes;
+            DateTime.Now.ToString("yyyy.M.d") + "." + (int)DateTime.Now.TimeOfDay.TotalMinutes;
 
-        public UpdateAssemblyVersions(IResults results) : base("Updates the AssemblyVersion in all FlatRedBall projects.", results)
+        UpdateType UpdateType { get; set; }
+
+        public UpdateAssemblyVersions(IResults results, UpdateType updateType) : base("Updates the AssemblyVersion in all FlatRedBall projects.", results)
         {
+            this.UpdateType = updateType;
         }
 
         public override void ExecuteStep()
         {
-            string engineDirectory = DirectoryHelper.EngineDirectory;
 
-            List<string> engineFolders = new List<string>();
-            engineFolders.Add(engineDirectory + @"FlatRedBallXNA\");
-            engineFolders.Add(engineDirectory + @"FlatRedBallMDX\");
+            switch(UpdateType)
+            {
+                case UpdateType.Engine:
+
+                    string engineDirectory = DirectoryHelper.EngineDirectory;
+
+                    List<string> engineFolders = new List<string>();
+                    engineFolders.Add(engineDirectory + @"FlatRedBallXNA\");
+                    engineFolders.Add(engineDirectory + @"FlatRedBallMDX\");
+
+                    foreach (string folder in engineFolders)
+                    {
+                        List<string> files = FileManager.GetAllFilesInDirectory(folder, "cs");
+
+                        foreach (string file in files)
+                        {
+                            if (file.ToLower().EndsWith("assemblyinfo.cs"))
+                            {
+                                ModifyAssemblyInfoVersion(file, VersionString);
+                                Results.WriteMessage("Modified " + file + " to " + VersionString);
+                            }
+                        }
+                    }
             
 
-
-            foreach (string folder in engineFolders)
-            {
-                List<string> files = FileManager.GetAllFilesInDirectory(folder, "cs");
-
-                foreach (string file in files)
-                {
-                    if (file.ToLower().EndsWith("assemblyinfo.cs"))
+                    // If we list a csproj, then update that:
+                    foreach(var engine in AllData.Engines)
                     {
-                        ModifyAssemblyInfoVersion(file, VersionString);
-                        Results.WriteMessage("Modified " + file + " to " + VersionString);
+                        if(!string.IsNullOrEmpty(engine.EngineCSProjLocation))
+                        {
+                            var csProjAbsolute = DirectoryHelper.CheckoutDirectory + engine.EngineCSProjLocation;
+                            ModifyCsprojAssemblyInfoVersion(csProjAbsolute, VersionString);
+                            Results.WriteMessage("Modified " + csProjAbsolute + " to " + VersionString);
+
+                        }
                     }
-                }
+
+                    var net6Engine = AllData.Engines.First(item => item.EngineCSProjLocation?.Contains("FlatRedBallDesktopGLNet6.csproj") == true);
+                    var templateLocation = net6Engine.TemplateCsProjFolder + "FlatRedBallDesktopGlNet6Template.csproj";
+                    ModifyNugetVersionInAssembly(DirectoryHelper.TemplateDirectory + templateLocation, VersionString);
+
+                    Results.WriteMessage("Glue assembly versions updated to " + VersionString);
+
+
+                    break;
+                case UpdateType.FRBDK:
+
+                    //ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"\Glue\Glue\Properties\AssemblyInfo.cs", VersionString);
+                    ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\Glue\GlueFormsCore.csproj", VersionString);
+                    ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\GlueSaveClasses\Properties\AssemblyInfo.cs", VersionString);
+
+                    ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"AnimationEditor\PreviewProject\AnimationEditor.csproj", VersionString);
+                    break;
             }
 
-            // If we list a csproj, then update that:
-            foreach(var engine in AllData.Engines)
-            {
-                if(!string.IsNullOrEmpty(engine.EngineCSProjLocation))
-                {
-                    var csProjAbsolute = DirectoryHelper.CheckoutDirectory + engine.EngineCSProjLocation;
-                    ModifyCsprojAssemblyInfoVersion(csProjAbsolute, VersionString);
-                }
-            }
-
-            //ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"\Glue\Glue\Properties\AssemblyInfo.cs", VersionString);
-            ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\Glue\GlueFormsCore.csproj", VersionString);
-            ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\GlueSaveClasses\Properties\AssemblyInfo.cs", VersionString);
-
-            ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"AnimationEditor\PreviewProject\AnimationEditor.csproj", VersionString);
-
-            var net6Engine = AllData.Engines.First(item => item.EngineCSProjLocation?.Contains("FlatRedBallDesktopGLNet6.csproj") == true);
-            var templateLocation = net6Engine.TemplateCsProjFolder + "FlatRedBallDesktopGlNet6Template.csproj";
-            ModifyNugetVersionInAssembly(DirectoryHelper.TemplateDirectory + templateLocation, VersionString);
-
-            Results.WriteMessage("Glue assembly versions updated to " + VersionString);
 
 
 

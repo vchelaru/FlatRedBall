@@ -1,10 +1,7 @@
 name: Build Engine DLLs
 
 on:
-  push:
-    branches: [ "NetStandard" ]
-  pull_request:
-    branches: [ "NetStandard" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -40,6 +37,12 @@ jobs:
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Build BuildServerUploader
+      run: dotnet build -c Debug 'FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploader.sln'
+     
+    - name: Change version numbers
+      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe changeengineversion
 
 
     - name: Build FlatRedBall iOS .NET 8 Debug
@@ -110,7 +113,12 @@ jobs:
       with:
         name: DesktopGlNet6Release
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Release/net6.0/
-
+    - name: Publish NuGet package
+      run: |
+        $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\bin\Debug\*.nupkg'
+        foreach ($file in $files) {
+          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
+        }
 
     - name: Build FlatRedBall .NET 4 Debug
       run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
@@ -131,9 +139,6 @@ jobs:
     # - name: Directory listing
     #   run: |
     #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
-
-    - name: Build BuildServerUploader
-      run: dotnet build -c Debug 'FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploader.sln'
 
     - name: Check if directory exists
       run: |
