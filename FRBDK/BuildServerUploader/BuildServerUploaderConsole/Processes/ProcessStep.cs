@@ -1,4 +1,6 @@
-﻿namespace BuildServerUploaderConsole.Processes
+﻿using System.Threading.Tasks;
+
+namespace BuildServerUploaderConsole.Processes
 {
     public class ProcessStep
     {
@@ -32,6 +34,7 @@
         }
 
         public virtual void ExecuteStep() { }
+        public virtual Task ExecuteStepAsync() { return Task.CompletedTask; }
         #endregion
     }
 }

@@ -1,10 +1,7 @@
 name: Build Engine DLLs
 
 on:
-  push:
-    branches: [ "NetStandard" ]
-  pull_request:
-    branches: [ "NetStandard" ]
+  workflow_dispatch:
 
 jobs:
   build:
