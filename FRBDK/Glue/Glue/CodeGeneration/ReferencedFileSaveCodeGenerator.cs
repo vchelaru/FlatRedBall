@@ -12,6 +12,7 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins.Performance;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System.Security.RightsManagement;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -232,6 +233,36 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
 
             return codeBlock;
+        }
+
+        public override void GeneratePauseIgnoringActivity(ICodeBlock codeBlock, GlueElement element)
+        {
+            // April 2, 2024
+            // Experimental:
+            // If there's an object that uses this as its entire file, then we can generate activity.
+            // This could be tricky because what about objects that don't use the entire file? Then they
+            // won't be animated. But for now we're going to try this out for Gum screens to see how it goes:
+            for(int i = 0; i < element.ReferencedFiles.Count; i++)
+            {
+                var rfs = element.ReferencedFiles[i];
+
+                bool hasIgnoredPausingEntireFile = false;
+                for(int j = 0; j < element.NamedObjects.Count; j++)
+                {
+                    var nos = element.NamedObjects[j];
+                    if(nos.IgnoresPausing && nos.SourceType == SourceType.File && 
+                        nos.SourceFile?.Equals(rfs.Name, StringComparison.InvariantCultureIgnoreCase) == true && 
+                        nos.SourceName.StartsWith("Entire File "))
+                    {
+                        hasIgnoredPausingEntireFile = true;
+                        break;
+                    }
+                }
+                if(hasIgnoredPausingEntireFile)
+                {
+                    codeBlock.InsertBlock(GetActivityForReferencedFile(rfs, element));
+                }
+            }
         }
 
         public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock,  SaveClasses.IElement element)

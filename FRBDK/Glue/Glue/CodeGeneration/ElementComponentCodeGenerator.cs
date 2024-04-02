@@ -91,8 +91,10 @@ namespace FlatRedBall.Glue.CodeGeneration
         public virtual ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
         {
             return codeBlock;
-
         }
+
+        public virtual void GeneratePauseIgnoringActivity(ICodeBlock codeBlock, GlueElement element) { }
+
         public virtual ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
         {
             return codeBlock;
