@@ -353,7 +353,24 @@ namespace TileGraphicsPlugin
             //toReturn.FindByNameSyntax = $"Collisions.First(item => item.Name == \"OBJECTNAME\");";
 
             toReturn.GetObjectFromFileFunc = GetTileNodeNetworkObjectFromFileFunc;
-            toReturn.VariableDefinitions.Add(new VariableDefinition() { Name = "Visible", DefaultValue = "false", Type = "bool" });
+
+            var visibleVariableDefinition = new VariableDefinition() { Name = "Visible", DefaultValue = "false", Type = "bool" };
+            visibleVariableDefinition.UsesCustomCodeGeneration = true;
+            visibleVariableDefinition.CustomGenerationFunc = (element, nos, rfs, layer) =>
+            {
+                var isVisible = (nos.GetCustomVariable("Visible")?.Value as bool?) == true;
+                var visibleText = isVisible ? "true" : "false";
+                return @$"
+{{
+    var wasSuppressedForNodeNetwork = FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue;
+    FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = false;
+    {nos.InstanceName}.Visible = {visibleText};
+    FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = wasSuppressedForNodeNetwork;
+}}
+";
+            };
+
+            toReturn.VariableDefinitions.Add(visibleVariableDefinition);
             toReturn.ConstructorFunc = GenerateTileNodeNetworkConstructionFunc;
             return toReturn;
         }
