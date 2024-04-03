@@ -17,7 +17,6 @@ namespace BuildServerUploaderConsole
         public const string ChangeEngineVersion = "changeengineversion";
         public const string ChangeFrbdkVersion = "changefrbdkversion";
         public const string ZipAndUploadGum = "zipanduploadgum";
-        public const string InjectFnaNuGet = "injectfnanuget";
     }
 
 
@@ -68,9 +67,6 @@ namespace BuildServerUploaderConsole
                         ProcessSteps.Add(new ZipGum(Results));
                         ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.GumOnly, null, null));
                         break;
-                    case CommandLineCommands.InjectFnaNuGet:
-                        ProcessSteps.Add(new InectFnaNugetAndVersion(Results));
-                        break;
                     case "":
                         break;
                     default:
@@ -99,7 +95,9 @@ namespace BuildServerUploaderConsole
 
         private static void CreateChangeEngineVersion()
         {
+            ProcessSteps.Add(new InjectFnaNugetAndVersion(Results));
             ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.Engine));
+
         }
 
         private static void CreateChangeFrbdkVersion()

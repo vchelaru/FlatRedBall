@@ -53,7 +53,7 @@ namespace BuildServerUploaderConsole.Processes
                 var githubPath = GithubFilePath;
                 if(System.IO.Directory.Exists(githubPath))
                 {
-                    return githubPath;
+                    return githubPath + "\\"; 
                 }
                 else
                 {

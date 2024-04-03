@@ -40,6 +40,11 @@ jobs:
 
     - name: Build BuildServerUploader
       run: dotnet build -c Debug 'FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploader.sln'
+
+     
+    - name: Inject NuGet Publish in FNA.Core.csproj
+      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe injectfnanuget
+
      
     - name: Change version numbers
       run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe changeengineversion
@@ -111,6 +116,15 @@ jobs:
         name: DesktopGlFnaNet7Release
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Release/net7.0/
     
+        
+    - name: Publish NuGet package FNA .NET 7
+      run: |
+        $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\3rd Party Libraries\FNA\bin\x64\Debug\*.nupkg'
+        foreach ($file in $files) {
+          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
+        }        
+        
+
     - name: Publish NuGet package FNA .NET 7
       run: |
         $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.FNA\bin\Debug\*.nupkg'
