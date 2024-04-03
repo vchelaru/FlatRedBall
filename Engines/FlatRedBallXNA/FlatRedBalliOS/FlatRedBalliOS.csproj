@@ -5,7 +5,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
+  <PropertyGroup>
+	<Title>FlatRedBall (.NET 8 iOS)</Title>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>FlatRedBall Game Engine</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>$(DefineConstants);FRB_XNA;IOS;MONOGAME;XNA4;MONOGAME_381;USE_ISOLATED_STORAGE</DefineConstants>
   </PropertyGroup>
