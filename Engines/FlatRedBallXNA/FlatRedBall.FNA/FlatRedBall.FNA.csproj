@@ -19,7 +19,4 @@
     </ItemGroup>
 
     <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
-
-    
-
 </Project>
