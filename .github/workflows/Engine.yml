@@ -40,11 +40,6 @@ jobs:
 
     - name: Build BuildServerUploader
       run: dotnet build -c Debug 'FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploader.sln'
-
-     
-    - name: Inject NuGet Publish in FNA.Core.csproj
-      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe injectfnanuget
-
      
     - name: Change version numbers
       run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe changeengineversion
