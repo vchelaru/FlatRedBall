@@ -14,9 +14,22 @@
         <Version>1.0.0</Version>
     </PropertyGroup>
 
-    <ItemGroup>
-		<ProjectReference Include="..\3rd Party Libraries\FNA\FNA.Core.csproj"/>
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\3rd Party Libraries\FNA\FNA.Core.csproj">
+			<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+			<IncludeAssets>FNA.Core.dll</IncludeAssets>
+		</ProjectReference>
+	</ItemGroup>
 
-    <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
+	<Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+		<ItemGroup>
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))"/>
+		</ItemGroup>
+	</Target>
+
+	<PropertyGroup>
+		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+	</PropertyGroup>
+
+	<Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
 </Project>

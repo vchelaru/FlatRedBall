@@ -95,7 +95,7 @@ namespace BuildServerUploaderConsole
 
         private static void CreateChangeEngineVersion()
         {
-            ProcessSteps.Add(new InjectFnaNugetAndVersion(Results));
+            //ProcessSteps.Add(new InjectFnaNugetAndVersion(Results));
             ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.Engine));
 
         }
