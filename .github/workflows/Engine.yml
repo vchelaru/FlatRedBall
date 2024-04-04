@@ -116,8 +116,7 @@ jobs:
         name: DesktopGlFnaNet7Release
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Release/net7.0/
     
-        
-    - name: Publish NuGet package FNA .NET 7
+    - name: Publish NuGet package FNA
       run: |
         $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\3rd Party Libraries\FNA\bin\x64\Debug\*.nupkg'
         foreach ($file in $files) {
@@ -125,7 +124,7 @@ jobs:
         }        
         
 
-    - name: Publish NuGet package FNA .NET 7
+    - name: Publish NuGet package FRB FNA .NET 7
       run: |
         $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.FNA\bin\Debug\*.nupkg'
         foreach ($file in $files) {
