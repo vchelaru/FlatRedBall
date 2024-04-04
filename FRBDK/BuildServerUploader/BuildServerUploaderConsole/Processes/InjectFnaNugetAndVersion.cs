@@ -23,6 +23,7 @@ namespace BuildServerUploaderConsole.Processes
             var index = contents.IndexOf("</PropertyGroup>");
 
             var whatToInject = $@"
+        <PackageId>FNA_for_FlatRedBall</PackageId>
 		<Title>FNA (for FlatRedBall.FNA)</Title>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Description>FNA Core Nuget package created for FlatRedBall. This is NOT an official NuGet package from the FNA team, although you are free to use it in any FNA project.</Description>
