@@ -97,6 +97,10 @@ namespace BuildServerUploaderConsole.Processes
             UpdateTemplateNuget(engineName, templateName);
 
             UpdateTemplateNuget("FlatRedBall.FNA", "FlatRedBallDesktopFnaTemplate");
+
+            UpdateTemplateNuget("FlatRedBallAndroid", "FlatRedBallAndroidMonoGameTemplate");
+
+            UpdateTemplateNuget("FlatRedBalliOS", "FlatRedBalliOSMonoGameTemplate");
         }
 
         private void UpdateTemplateNuget(string engineName, string templateName)
