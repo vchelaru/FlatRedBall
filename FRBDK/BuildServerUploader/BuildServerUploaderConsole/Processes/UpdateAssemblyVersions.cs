@@ -102,7 +102,7 @@ namespace BuildServerUploaderConsole.Processes
         private void UpdateTemplateNuget(string engineName, string templateName)
         {
             var matchingEngine = AllData.Engines.First(item => item.EngineCSProjLocation?.Contains($"{engineName}.csproj") == true);
-            var templateLocation = matchingEngine.TemplateCsProjFolder + templateName + "csproj";
+            var templateLocation = matchingEngine.TemplateCsProjFolder + templateName + ".csproj";
             ModifyNugetVersionInAssembly(DirectoryHelper.TemplateDirectory + templateLocation, engineName, VersionString);
         }
 
