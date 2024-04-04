@@ -29,17 +29,12 @@
     <EmbeddedResource Include="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FlatRedBall.FNA" Version="2024.4.4.693" />
     <PackageReference Include="SkiaSharp" Version="2.88.6" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FlatRedBall.FNA">
-      <HintPath>Libraries\FNA\Debug\FlatRedBall.FNA.dll</HintPath>
-    </Reference>
     <Reference Include="FlatRedBall.Forms.FNA">
       <HintPath>Libraries\FNA\Debug\FlatRedBall.Forms.FNA.dll</HintPath>
-    </Reference>
-    <Reference Include="FNA">
-      <HintPath>Libraries\FNA\Debug\FNA.dll</HintPath>
     </Reference>
     <Reference Include="GumCore.FNA">
       <HintPath>Libraries\FNA\Debug\GumCore.FNA.dll</HintPath>

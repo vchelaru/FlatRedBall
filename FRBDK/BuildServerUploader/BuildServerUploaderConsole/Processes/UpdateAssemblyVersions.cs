@@ -92,8 +92,17 @@ namespace BuildServerUploaderConsole.Processes
         private void UpdateTemplateNugets()
         {
             var engineName = "FlatRedBallDesktopGLNet6";
-            var net6Engine = AllData.Engines.First(item => item.EngineCSProjLocation?.Contains($"{engineName}.csproj") == true);
-            var templateLocation = net6Engine.TemplateCsProjFolder + "FlatRedBallDesktopGlNet6Template.csproj";
+            var templateName = "FlatRedBallDesktopGLNet6Template";
+
+            UpdateTemplateNuget(engineName, templateName);
+
+            UpdateTemplateNuget("FlatRedBall.FNA", "FlatRedBallDesktopFnaTemplate");
+        }
+
+        private void UpdateTemplateNuget(string engineName, string templateName)
+        {
+            var matchingEngine = AllData.Engines.First(item => item.EngineCSProjLocation?.Contains($"{engineName}.csproj") == true);
+            var templateLocation = matchingEngine.TemplateCsProjFolder + templateName + "csproj";
             ModifyNugetVersionInAssembly(DirectoryHelper.TemplateDirectory + templateLocation, engineName, VersionString);
         }
 
