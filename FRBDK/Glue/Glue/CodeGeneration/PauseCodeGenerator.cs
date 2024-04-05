@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Elements;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -86,8 +87,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
 
 
+                    var ati = nos.GetAssetTypeInfo();
 
-                    if (nos.GetAssetTypeInfo() != null && nos.GetAssetTypeInfo().CanIgnorePausing)
+                    var canIgnorePausing = ati != null && ati.CanIgnorePausing &&
+                        (ati.IsPositionedObject || nos.IsList || ati == AvailableAssetTypes.CommonAtis.ShapeCollection);
+
+                    if (canIgnorePausing)
                     {
                         codeBlock.Line("FlatRedBall.Instructions.InstructionManager.IgnorePausingFor(" + nos.InstanceName + ");");
                     }
