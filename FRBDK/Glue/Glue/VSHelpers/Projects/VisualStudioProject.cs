@@ -40,7 +40,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         #region Properties
 
         protected Dictionary<string, ProjectItem> mBuildItemDictionaries =
-            new Dictionary<string, ProjectItem>();
+            new Dictionary<string, ProjectItem>(StringComparer.OrdinalIgnoreCase);
 
         public IEnumerable<ProjectItem> EvaluatedItems
         {
@@ -289,7 +289,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 {
                     // The items in the dictionary must be to-lower on some
                     // platforms, and ProcessPath takes care of this.
-                    mBuildItemDictionaries.Add(itemInclude.ToLowerInvariant(), buildItem);
+                    mBuildItemDictionaries.Add(itemInclude, buildItem);
                 }
                 catch
                 {
@@ -586,7 +586,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 ProjectItem buildItem = mProject.AllEvaluatedItems.ElementAt(i);
 
-                string includeToLower = buildItem.EvaluatedInclude.ToLowerInvariant();
+                string evaluatedInclude = buildItem.EvaluatedInclude;
 
                 if (buildItem.IsImported)
                 {
@@ -598,10 +598,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     // sure why, but if we check for the isIncluded flag it seems to fix it, and isIncluded doesn't seem to be true 
                     // on things added by Glue - and that's ultimately what we want to check duplicates on.
                 }
-                else if (mBuildItemDictionaries.ContainsKey(includeToLower))
+                else if (mBuildItemDictionaries.ContainsKey(evaluatedInclude))
                 {
                     // do the two have the same 
-                    var areSameItemType = buildItem.ItemType == mBuildItemDictionaries[includeToLower].ItemType;
+                    var areSameItemType = buildItem.ItemType == mBuildItemDictionaries[evaluatedInclude].ItemType;
 
                     if(areSameItemType)
                     {
@@ -614,7 +614,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 else
                 {
                     mBuildItemDictionaries.Add(
-                        buildItem.UnevaluatedInclude.ToLowerInvariant(),
+                        buildItem.UnevaluatedInclude,
                         buildItem);
                 }
             }
@@ -725,7 +725,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
             else
             {
-                itemName = itemName.Replace("/", "\\").ToLowerInvariant();
+                itemName = itemName.Replace("/", "\\");
             }
             if (!mBuildItemDictionaries.ContainsKey(itemName))
             {
@@ -977,13 +977,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     fileName = FileManager.MakeRelative(fileName, this.Directory);
                 }
 
-                string fileNameToLower = fileName.Replace('/', '\\').ToLowerInvariant();
+                string fleNameFixedSlashes = fileName.Replace('/', '\\');
 
 
 
-                if (mBuildItemDictionaries.ContainsKey(fileNameToLower))
+                if (mBuildItemDictionaries.ContainsKey(fleNameFixedSlashes))
                 {
-                    return mBuildItemDictionaries[fileNameToLower];
+                    return mBuildItemDictionaries[fleNameFixedSlashes];
                 }
 
 
@@ -1010,7 +1010,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
 
 
-                mBuildItemDictionaries.Add(fileNameToLower, item);
+                mBuildItemDictionaries.Add(fleNameFixedSlashes, item);
 
                 return item;
             }
@@ -1030,9 +1030,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public bool HasPackage(string packageName, out string existingVersionNumber)
         {
-            var packageNameToLower = packageName.ToLowerInvariant();
-
-            if (mBuildItemDictionaries.TryGetValue(packageNameToLower, out var buildItem))
+            if (mBuildItemDictionaries.TryGetValue(packageName, out var buildItem))
             {
                 if (buildItem.ItemType == "PackageReference" && buildItem.HasMetadata("Version"))
                 {
@@ -1087,14 +1085,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 ProjectItem projectItem = this.Project.AddItem("PackageReference", packageName).First();
                 projectItem.SetMetadataValue("Version", versionNumber);
-                mBuildItemDictionaries.Add(packageName.ToLowerInvariant(), projectItem);
+                mBuildItemDictionaries.Add(packageName, projectItem);
                 Project.ReevaluateIfNecessary();
             }
         }
 
         public bool RemoveItem(ProjectItem buildItem)
         {
-            string itemName = buildItem.EvaluatedInclude.Replace("/", "\\").ToLowerInvariant();
+            string itemName = buildItem.EvaluatedInclude.Replace("/", "\\");
 
             return RemoveItem(itemName);
         }
@@ -1119,7 +1117,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             ProjectItem itemToRemove = null;
 
-            itemName = itemName.Replace("/", "\\").ToLowerInvariant();
+            itemName = itemName.Replace("/", "\\");
             bool removed = false;
             if (mBuildItemDictionaries.TryGetValue(itemName, out var buildItem))
             {
@@ -1133,11 +1131,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public void RenameInDictionary(string oldName, string newName, ProjectItem item)
         {
-            mBuildItemDictionaries.Remove(oldName.Replace("/", "\\").ToLowerInvariant());
+            mBuildItemDictionaries.Remove(oldName.Replace("/", "\\"));
 
-            if (!mBuildItemDictionaries.ContainsKey(newName.Replace("/", "\\").ToLowerInvariant()))
+            if (!mBuildItemDictionaries.ContainsKey(newName.Replace("/", "\\")))
             {
-                mBuildItemDictionaries.Add(newName.Replace("/", "\\").ToLowerInvariant(), item);
+                mBuildItemDictionaries.Add(newName.Replace("/", "\\"), item);
             }
         }
 
@@ -1161,8 +1159,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         private ProjectItem GetNugetPackageReference(string packageName)
         {
-            var packageNameToLower = packageName.ToLowerInvariant();
-            if (!mBuildItemDictionaries.TryGetValue(packageNameToLower, out var item))
+            if (!mBuildItemDictionaries.TryGetValue(packageName, out var item))
             {
                 return null;
             }
