@@ -61,8 +61,14 @@ jobs:
       with:
         name: iOSMonoGameNet8Release
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Release\net8.0-ios\
-
-
+    
+    - name: Publish NuGet package iOS .NET 8
+      run: |
+        $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBalliOS\bin\Debug\*.nupkg'
+        foreach ($file in $files) {
+          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
+        }     
+        
 
     - name: Build FlatRedBall Android .NET 8 Debug
       run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
@@ -79,6 +85,13 @@ jobs:
       with:
         name: AndroidMonoGameNet8Release
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Release\net8.0-android\
+    
+    - name: Publish NuGet package Android .NET 8
+      run: |
+        $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallAndroid\bin\Debug\*.nupkg'
+        foreach ($file in $files) {
+          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
+        }        
 
 
 
@@ -97,8 +110,23 @@ jobs:
       with:
         name: DesktopGlFnaNet7Release
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Release/net7.0/
+    
+    - name: Publish NuGet package FNA
+      run: |
+        $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\3rd Party Libraries\FNA\bin\x64\Debug\*.nupkg'
+        foreach ($file in $files) {
+          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
+        }        
+        
 
-    - name: Build FlatRedBall .NET 6 Debug
+    - name: Publish NuGet package FRB FNA .NET 7
+      run: |
+        $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.FNA\bin\Debug\*.nupkg'
+        foreach ($file in $files) {
+          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
+        }        
+
+    - name: Build FlatRedBall DesktopGL .NET 6 Debug
       run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
     - name: Package FlatRedBall .NET 6
       uses: actions/upload-artifact@v3
@@ -106,14 +134,14 @@ jobs:
         name: DesktopGlNet6Debug
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Debug/net6.0/
 
-    - name: Build FlatRedBall .NET 6 Release
+    - name: Build FlatRedBall DesktopGL .NET 6 Release
       run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
     - name: Package FlatRedBall .NET 6
       uses: actions/upload-artifact@v3
       with:
         name: DesktopGlNet6Release
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Release/net6.0/
-    - name: Publish NuGet package
+    - name: Publish NuGet package DesktopGL .NET 6
       run: |
         $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\bin\Debug\*.nupkg'
         foreach ($file in $files) {

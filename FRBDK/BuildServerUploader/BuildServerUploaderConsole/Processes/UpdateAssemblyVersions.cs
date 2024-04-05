@@ -51,12 +51,12 @@ namespace BuildServerUploaderConsole.Processes
                             }
                         }
                     }
-            
+
 
                     // If we list a csproj, then update that:
-                    foreach(var engine in AllData.Engines)
+                    foreach (var engine in AllData.Engines)
                     {
-                        if(!string.IsNullOrEmpty(engine.EngineCSProjLocation))
+                        if (!string.IsNullOrEmpty(engine.EngineCSProjLocation))
                         {
                             var csProjAbsolute = DirectoryHelper.CheckoutDirectory + engine.EngineCSProjLocation;
                             ModifyCsprojAssemblyInfoVersion(csProjAbsolute, VersionString);
@@ -65,9 +65,7 @@ namespace BuildServerUploaderConsole.Processes
                         }
                     }
 
-                    var net6Engine = AllData.Engines.First(item => item.EngineCSProjLocation?.Contains("FlatRedBallDesktopGLNet6.csproj") == true);
-                    var templateLocation = net6Engine.TemplateCsProjFolder + "FlatRedBallDesktopGlNet6Template.csproj";
-                    ModifyNugetVersionInAssembly(DirectoryHelper.TemplateDirectory + templateLocation, VersionString);
+                    UpdateTemplateNugets();
 
                     Results.WriteMessage("Glue assembly versions updated to " + VersionString);
 
@@ -89,6 +87,27 @@ namespace BuildServerUploaderConsole.Processes
             //Save Version String for uploading
             FileManager.SaveText(VersionString, DirectoryHelper.ReleaseDirectory + @"\SingleDlls\VersionInfo.txt");
             Results.WriteMessage("VersionInfo file created.");
+        }
+
+        private void UpdateTemplateNugets()
+        {
+            var engineName = "FlatRedBallDesktopGLNet6";
+            var templateName = "FlatRedBallDesktopGLNet6Template";
+
+            UpdateTemplateNuget(engineName, templateName);
+
+            UpdateTemplateNuget("FlatRedBall.FNA", "FlatRedBallDesktopFnaTemplate");
+
+            UpdateTemplateNuget("FlatRedBallAndroid", "FlatRedBallAndroidMonoGameTemplate");
+
+            UpdateTemplateNuget("FlatRedBalliOS", "FlatRedBalliOSMonoGameTemplate");
+        }
+
+        private void UpdateTemplateNuget(string engineName, string templateName)
+        {
+            var matchingEngine = AllData.Engines.First(item => item.EngineCSProjLocation?.Contains($"{engineName}.csproj") == true);
+            var templateLocation = matchingEngine.TemplateCsProjFolder + templateName + ".csproj";
+            ModifyNugetVersionInAssembly(DirectoryHelper.TemplateDirectory + templateLocation, engineName, VersionString);
         }
 
         private static void ModifyAssemblyInfoVersion(string assemblyInfoLocation, string versionString)
@@ -121,7 +140,7 @@ namespace BuildServerUploaderConsole.Processes
 
         }
 
-        private void ModifyNugetVersionInAssembly(string csprojLocation, string versionString)
+        private void ModifyNugetVersionInAssembly(string csprojLocation, string packageName, string versionString)
         {
             if (System.IO.File.Exists(csprojLocation) == false)
             {
@@ -131,8 +150,8 @@ namespace BuildServerUploaderConsole.Processes
             string csprojText = FileManager.FromFileText(csprojLocation);
 
             csprojText = System.Text.RegularExpressions.Regex.Replace(csprojText,
-                        "<PackageReference Include=\"FlatRedBallDesktopGLNet6\" Version=\"[0-9]*.[0-9]*.[0-9]*.[0-9]*\" />",
-                        $"<PackageReference Include=\"FlatRedBallDesktopGLNet6\" Version=\"{versionString}\" />");
+                        $"<PackageReference Include=\"{packageName}\" Version=\"[0-9]*.[0-9]*.[0-9]*.[0-9]*\" />",
+                        $"<PackageReference Include=\"{packageName}\" Version=\"{versionString}\" />");
 
             Results.WriteMessage("Modified " + csprojLocation + $" to have FlatRedBall Nuget package {VersionString}");
 

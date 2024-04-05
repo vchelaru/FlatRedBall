@@ -50,8 +50,15 @@ namespace BuildServerUploaderConsole.Processes
         {
             get
             {
-                return FileManager.MakeAbsolute("../../../../../../../");
-
+                var githubPath = GithubFilePath;
+                if(System.IO.Directory.Exists(githubPath))
+                {
+                    return githubPath + "\\"; 
+                }
+                else
+                {
+                    return FileManager.MakeAbsolute("../../../../../../../");
+                }
             }
         }
 

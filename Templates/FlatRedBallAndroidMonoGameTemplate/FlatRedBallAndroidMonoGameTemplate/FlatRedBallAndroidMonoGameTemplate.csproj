@@ -28,6 +28,7 @@
     <Compile Include="Game1.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FlatRedBallAndroid" Version="2024.4.3.751" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Framework.Android" Version="3.8.1.303" />
   </ItemGroup>
@@ -35,8 +36,14 @@
     <Folder Include="Libraries\Android\Debug\" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FlatRedBallAndroid">
-      <HintPath>Libraries\Android\Debug\FlatRedBallAndroid.dll</HintPath>
+    <Reference Include="FlatRedBall.Forms.AndroidMonoGame">
+      <HintPath>Libraries\Android\Debug\FlatRedBall.Forms.AndroidMonoGame.dll</HintPath>
+    </Reference>
+    <Reference Include="GumCoreAndroid">
+      <HintPath>Libraries\Android\Debug\GumCoreAndroid.dll</HintPath>
+    </Reference>
+    <Reference Include="StateInterpolation.AndroidMonoGame">
+      <HintPath>Libraries\Android\Debug\StateInterpolation.AndroidMonoGame.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
