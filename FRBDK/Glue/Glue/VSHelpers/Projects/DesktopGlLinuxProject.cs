@@ -21,14 +21,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             var returnValue = base.ProcessInclude(path);
 
-            return returnValue.ToLowerInvariant();
+            return returnValue;
         }
 
         public override string ProcessLink(string path)
         {
             var returnValue = base.ProcessLink(path);
             // Linux is case-sensitive
-            return returnValue.ToLowerInvariant();
+            return returnValue;
         }
     }
 }

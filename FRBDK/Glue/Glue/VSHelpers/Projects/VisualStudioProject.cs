@@ -40,7 +40,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         #region Properties
 
         protected Dictionary<string, ProjectItem> mBuildItemDictionaries =
-            new Dictionary<string, ProjectItem>();
+            new Dictionary<string, ProjectItem>(StringComparer.OrdinalIgnoreCase);
 
         public IEnumerable<ProjectItem> EvaluatedItems
         {
