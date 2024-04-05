@@ -896,20 +896,20 @@ namespace FlatRedBall.Utilities
 
         public static void RemoveDuplicates(List<string> strings, bool ignoreCase)
         {
-            Dictionary<string, int> uniqueStore = new Dictionary<string, int>();
+            Dictionary<string, int> uniqueStore;
+            if(ignoreCase)
+            {
+                uniqueStore = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+            }
+            else
+            {
+                uniqueStore = new Dictionary<string, int>();
+            }
             List<string> finalList = new List<string>();
 
             foreach (string currValueUncasted in strings)
             {
-                string currValue;
-                if (ignoreCase)
-                {
-                    currValue = currValueUncasted.ToLowerInvariant();
-                }
-                else
-                {
-                    currValue = currValueUncasted;
-                }
+                string currValue=currValueUncasted;
 
                 if (!uniqueStore.ContainsKey(currValue))
                 {

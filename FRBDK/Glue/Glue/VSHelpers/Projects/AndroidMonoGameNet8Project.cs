@@ -50,9 +50,6 @@ public class AndroidMonoGameNet8Project : CombinedEmbeddedContentProject
         return returnValue;
     }
 
-
-    public override string ContentDirectory => "content/";
-
     public override List<string> GetErrors()
     {
         List<string> toReturn = new List<string>();

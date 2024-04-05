@@ -564,7 +564,7 @@ namespace GumPlugin.Managers
 
             List<string> stringListToFill = new List<string>();
 
-            var respnse = GetReferencesInProjectOrDisk(filePath.Standardized,
+            var respnse = GetReferencesInProjectOrDisk(filePath,
                 stringListToFill, projectOrDisk);
 
             listToFill.AddRange(stringListToFill
@@ -573,13 +573,15 @@ namespace GumPlugin.Managers
             return respnse;
         }
 
-        private GeneralResponse GetReferencesInProjectOrDisk(string fileName, List<string> listToFill, ProjectOrDisk projectOrDisk)
+        private GeneralResponse GetReferencesInProjectOrDisk(FilePath filePath, List<string> listToFill, ProjectOrDisk projectOrDisk)
         {
             GeneralResponse generalResponse = GeneralResponse.SuccessfulResponse;
 
+            var fileName = filePath.StandardizedCaseSensitive;
+
             if (CanTrackDependenciesOn(fileName))
             {
-                string extension = FileManager.GetExtension(fileName);
+                string extension = filePath.Extension;
 
                 string oldRelative = FileManager.RelativeDirectory;
 
@@ -737,7 +739,7 @@ namespace GumPlugin.Managers
         private static string GetGumProjectFile(string gumxDirectory)
         {
             var files = System.IO.Directory.GetFiles(gumxDirectory)
-                .Where(item => item.ToLowerInvariant().EndsWith(".gumx"))
+                .Where(item => item.EndsWith(".gumx", StringComparison.InvariantCultureIgnoreCase))
                 .ToArray();
 
             bool multipleGumxFilesExist = files.Length > 1;
@@ -747,11 +749,11 @@ namespace GumPlugin.Managers
             if(files.Length > 1)
             {
                 // Let's limit it to any files in the project.
-                var gumxInProject = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Where(item => item.Name.ToLowerInvariant().EndsWith("gumx"));
+                var gumxInProject = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Where(item => item.Name.EndsWith("gumx", StringComparison.InvariantCultureIgnoreCase));
 
-                var absoluteFiles = gumxInProject.Select(item => GlueCommands.Self.GetAbsoluteFileName(item).ToLowerInvariant());
+                var absoluteFiles = gumxInProject.Select(item => GlueCommands.Self.GetAbsoluteFileName(item));
 
-                toReturn = files.FirstOrDefault(item => absoluteFiles.Contains(item.ToLowerInvariant()));
+                toReturn = files.FirstOrDefault(item => absoluteFiles.Contains(item, StringComparer.InvariantCultureIgnoreCase));
             }
             else
             {
@@ -946,7 +948,7 @@ namespace GumPlugin.Managers
             try
             {
                 referencedGumFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(gumProject.FullFileName, TopLevelOrRecursive.Recursive)
-                    .Select(item=>FileManager.Standardize(item.FullPath).ToLowerInvariant())
+                    .Select(item=>FileManager.Standardize(item.FullPath))
                     .Distinct()
                     .ToArray();
             }
@@ -1000,7 +1002,7 @@ namespace GumPlugin.Managers
 
         private static bool GetIfShouldRemoveGumRelativeFile(GumProjectSave gumProject, ProjectItem buildItem, string glueContentFolder, string[] referencedGumFiles)
         {
-            string contentFullFileName = FileManager.Standardize(glueContentFolder + buildItem.UnevaluatedInclude).ToLowerInvariant();
+            string contentFullFileName = FileManager.Standardize(glueContentFolder + buildItem.UnevaluatedInclude);
 
             string gumFolder = FileManager.GetDirectory(gumProject.FullFileName);
 
@@ -1028,7 +1030,7 @@ namespace GumPlugin.Managers
 
             if(isFontCacheFile)
             {
-                var invariant = FileManager.Standardize(contentFullFileName).ToLowerInvariant();
+                var invariant = FileManager.Standardize(contentFullFileName);
 
                 bool isReferenced = fileReferencedByGumx.Contains(invariant);
 
@@ -1052,7 +1054,7 @@ namespace GumPlugin.Managers
                 string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, standardFolder))
                     .Replace("/", "\\");
 
-                bool exists = gumProject.StandardElements.Any(item => item.Name.Replace("/", "\\").ToLowerInvariant() == elementName.ToLowerInvariant());
+                bool exists = gumProject.StandardElements.Any(item => item.Name.Replace("/", "\\").Equals(elementName, StringComparison.InvariantCultureIgnoreCase));
 
                 if (!exists)
                 {
@@ -1076,7 +1078,7 @@ namespace GumPlugin.Managers
                 string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, componentFolder))
                     .Replace("/", "\\");
 
-                bool exists = gumProject.Components.Any(item => item.Name.Replace("/", "\\").ToLowerInvariant() == elementName.ToLowerInvariant());
+                bool exists = gumProject.Components.Any(item => item.Name.Replace("/", "\\").Equals(elementName, StringComparison.InvariantCultureIgnoreCase));
 
                 if (!exists)
                 {
@@ -1100,7 +1102,7 @@ namespace GumPlugin.Managers
                 string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, screenFolder))
                     .Replace("/", "\\");
 
-                bool exists = gumProject.Screens.Any(item => item.Name.ToLowerInvariant() == elementName.ToLowerInvariant());
+                bool exists = gumProject.Screens.Any(item => item.Name.Equals(elementName, StringComparison.InvariantCultureIgnoreCase));
 
                 shouldRemove = !exists;
 

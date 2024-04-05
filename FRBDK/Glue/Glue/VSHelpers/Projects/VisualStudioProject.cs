@@ -186,6 +186,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         #endregion
 
+        #region Add Items
+
         /// <summary>
         /// Adds the argument absoluteFile to the project. This method will not first check
         /// if the file is already part of the project or not. See IsFilePartOfProject for
@@ -379,6 +381,119 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 newProjectPathRelative,
                 metadata);
         }
+
+        public virtual ProjectItem AddCodeBuildItem(string fileName)
+        {
+            return AddCodeBuildItem(fileName, false, "");
+        }
+
+        protected virtual void AddCodeBuildItems(ProjectBase sourceProjectBase)
+        {
+
+            var sourceCodeFiles = ((VisualStudioProject)sourceProjectBase).EvaluatedItems
+                .Where(item => item.UnevaluatedInclude.EndsWith(".cs") && !ShouldIgnoreFile(item.UnevaluatedInclude))
+                .ToList();
+
+            foreach (var bi in sourceCodeFiles)
+            {
+                string fileName;
+
+                if (SaveAsAbsoluteSyncedProject)
+                {
+                    fileName = sourceProjectBase.FullFileName.GetDirectoryContainingThis().FullPath + bi.UnevaluatedInclude;
+                }
+                else if (SaveAsRelativeSyncedProject)
+                {
+                    fileName = FileManager.MakeRelative(
+                        sourceProjectBase.FullFileName.GetDirectoryContainingThis().FullPath,
+                        FullFileName.GetDirectoryContainingThis().FullPath) + bi.UnevaluatedInclude;
+                }
+                else
+                {
+                    fileName = bi.UnevaluatedInclude;
+                }
+
+
+                if (!IsFilePartOfProject(fileName, BuildItemMembershipType.CompileOrContentPipeline) &&
+                    !IsFilePartOfProject(bi.UnevaluatedInclude, BuildItemMembershipType.CompileOrContentPipeline))
+                {
+                    if (SaveAsAbsoluteSyncedProject)
+                    {
+                        AddCodeBuildItem(fileName, true, bi.UnevaluatedInclude);
+                    }
+                    else if (SaveAsRelativeSyncedProject)
+                    {
+                        AddCodeBuildItem(fileName, true, bi.UnevaluatedInclude);
+                    }
+                    else
+                    {
+                        AddCodeBuildItem(bi.UnevaluatedInclude);
+                    }
+                }
+            }
+
+        }
+
+        public void AddNugetPackage(string packageName, string versionNumber)
+        {
+            lock (this)
+            {
+                ProjectItem projectItem = this.Project.AddItem("PackageReference", packageName).First();
+                projectItem.SetMetadataValue("Version", versionNumber);
+                mBuildItemDictionaries.Add(packageName, projectItem);
+                Project.ReevaluateIfNecessary();
+            }
+        }
+
+        protected ProjectItem AddCodeBuildItem(string fileName, bool isSyncedProject, string nameRelativeToThisProject)
+        {
+            lock (this)
+            {
+                if (!FileManager.IsRelative(fileName))
+                {
+                    fileName = FileManager.MakeRelative(fileName, this.Directory);
+                }
+
+                string fleNameFixedSlashes = fileName.Replace('/', '\\');
+
+
+
+                if (mBuildItemDictionaries.ContainsKey(fleNameFixedSlashes))
+                {
+                    return mBuildItemDictionaries[fleNameFixedSlashes];
+                }
+
+
+                if (!FileManager.IsRelative(fileName) && !isSyncedProject)
+                {
+                    fileName = FileManager.MakeRelative(fileName,
+                                                        FileManager.GetDirectory(this.FullFileName.FullPath));
+                }
+
+                fileName = fileName.Replace('/', '\\');
+                ProjectItem item;
+                item = this.Project.AddItem("Compile", fileName).First();
+                Project.ReevaluateIfNecessary();
+                item.UnevaluatedInclude = fileName;
+                if (isSyncedProject)
+                {
+                    item.SetMetadataValue("Link", nameRelativeToThisProject);
+
+                    if (nameRelativeToThisProject.Contains("Generated"))
+                    {
+                        var parent = FileManager.RemovePath(fileName).Replace(".Generated", "");
+                        MakeBuildItemNested(item, parent);
+                    }
+                }
+
+
+                mBuildItemDictionaries.Add(fleNameFixedSlashes, item);
+
+                return item;
+            }
+        }
+
+        #endregion
 
         public bool IsCodeItem(ProjectItem buildItem)
         {
@@ -777,10 +892,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         }
 
-        public virtual ProjectItem AddCodeBuildItem(string fileName)
-        {
-            return AddCodeBuildItem(fileName, false, "");
-        }
 
         public override void UpdateContentFile(string sourceFileName)
         {
@@ -848,54 +959,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-        protected virtual void AddCodeBuildItems(ProjectBase sourceProjectBase)
-        {
-
-            var sourceCodeFiles = ((VisualStudioProject)sourceProjectBase).EvaluatedItems
-                .Where(item => item.UnevaluatedInclude.EndsWith(".cs") && !ShouldIgnoreFile(item.UnevaluatedInclude))
-                .ToList();
-
-            foreach (var bi in sourceCodeFiles)
-            {
-                string fileName;
-
-                if (SaveAsAbsoluteSyncedProject)
-                {
-                    fileName = sourceProjectBase.FullFileName.GetDirectoryContainingThis().FullPath + bi.UnevaluatedInclude;
-                }
-                else if (SaveAsRelativeSyncedProject)
-                {
-                    fileName = FileManager.MakeRelative(
-                        sourceProjectBase.FullFileName.GetDirectoryContainingThis().FullPath,
-                        FullFileName.GetDirectoryContainingThis().FullPath) + bi.UnevaluatedInclude;
-                }
-                else
-                {
-                    fileName = bi.UnevaluatedInclude;
-                }
-
-
-                if (!IsFilePartOfProject(fileName, BuildItemMembershipType.CompileOrContentPipeline) &&
-                    !IsFilePartOfProject(bi.UnevaluatedInclude, BuildItemMembershipType.CompileOrContentPipeline))
-                {
-                    if (SaveAsAbsoluteSyncedProject)
-                    {
-                        AddCodeBuildItem(fileName, true, bi.UnevaluatedInclude);
-                    }
-                    else if (SaveAsRelativeSyncedProject)
-                    {
-                        AddCodeBuildItem(fileName, true, bi.UnevaluatedInclude);
-                    }
-                    else
-                    {
-                        AddCodeBuildItem(bi.UnevaluatedInclude);
-                    }
-                }
-            }
-
-        }
-
-
         public override void Save(string fileName)
         {
             // this used to save a backup, but doing so
@@ -948,7 +1011,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             return mName;
         }
 
-
         protected virtual bool NeedToSaveContentProject { get { return true; } }
 
         public override void SyncTo(ProjectBase projectBase, bool performTranslation)
@@ -968,53 +1030,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             Save(FullFileName.FullPath);
         }
 
-        protected ProjectItem AddCodeBuildItem(string fileName, bool isSyncedProject, string nameRelativeToThisProject)
-        {
-            lock (this)
-            {
-                if (!FileManager.IsRelative(fileName))
-                {
-                    fileName = FileManager.MakeRelative(fileName, this.Directory);
-                }
-
-                string fleNameFixedSlashes = fileName.Replace('/', '\\');
-
-
-
-                if (mBuildItemDictionaries.ContainsKey(fleNameFixedSlashes))
-                {
-                    return mBuildItemDictionaries[fleNameFixedSlashes];
-                }
-
-
-                if (!FileManager.IsRelative(fileName) && !isSyncedProject)
-                {
-                    fileName = FileManager.MakeRelative(fileName,
-                                                        FileManager.GetDirectory(this.FullFileName.FullPath));
-                }
-
-                fileName = fileName.Replace('/', '\\');
-                ProjectItem item;
-                item = this.Project.AddItem("Compile", fileName).First();
-                Project.ReevaluateIfNecessary();
-                item.UnevaluatedInclude = fileName;
-                if (isSyncedProject)
-                {
-                    item.SetMetadataValue("Link", nameRelativeToThisProject);
-
-                    if (nameRelativeToThisProject.Contains("Generated"))
-                    {
-                        var parent = FileManager.RemovePath(fileName).Replace(".Generated", "");
-                        MakeBuildItemNested(item, parent);
-                    }
-                }
-
-
-                mBuildItemDictionaries.Add(fleNameFixedSlashes, item);
-
-                return item;
-            }
-        }
 
         public bool HasPackage(string packageName)
         {
@@ -1079,16 +1094,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 .Any();
         }
 
-        public void AddNugetPackage(string packageName, string versionNumber)
-        {
-            lock (this)
-            {
-                ProjectItem projectItem = this.Project.AddItem("PackageReference", packageName).First();
-                projectItem.SetMetadataValue("Version", versionNumber);
-                mBuildItemDictionaries.Add(packageName, projectItem);
-                Project.ReevaluateIfNecessary();
-            }
-        }
 
         public bool RemoveItem(ProjectItem buildItem)
         {

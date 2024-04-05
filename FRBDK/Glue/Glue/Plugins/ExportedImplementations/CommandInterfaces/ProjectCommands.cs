@@ -164,7 +164,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 var isExcludedFromProject = referencedFileSave.ProjectsToExcludeFrom.Contains(projectName);
                 if(!isExcludedFromProject)
                 {
-                    wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave), useContentPipeline, false, fileRfs: referencedFileSave);
+                    var absoluteFilePath = GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave);
+                    wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, absoluteFilePath, useContentPipeline, false, fileRfs: referencedFileSave);
                 }
 
                 foreach (ProjectSpecificFile projectSpecificFile in referencedFileSave.ProjectSpecificFiles)
@@ -297,7 +298,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 var inner = new List<FilePath>();
                 FileReferenceManager.Self.GetFilesReferencedBy(fileToAddAbsolute, TopLevelOrRecursive.TopLevel, inner);
-                listOfReferencedFiles.AddRange(inner.Select(item => item.Standardized));
+                listOfReferencedFiles.AddRange(inner.Select(item => item.StandardizedCaseSensitive));
                 if (alreadyReferencedFiles != null)
                 {
                     listOfReferencedFiles = listOfReferencedFiles.Except(alreadyReferencedFiles).ToList();
