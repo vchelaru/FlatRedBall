@@ -99,8 +99,13 @@ namespace FlatRedBall.Screens
         {
             get;
             private set;
-        } 
+        }
 
+        /// <summary>
+        /// [Deprecated] Whether the Screen's Layer should be removed when the Screen is destroyed.
+        /// This will be removed in future versions of FlatRedBall.
+        /// </summary>
+        [Obsolete("Marked Deprecated on April 6, 2024. This property will be removed in future versions of FlatRedBall")]
         public bool ShouldRemoveLayer
         {
             get;
@@ -180,10 +185,17 @@ namespace FlatRedBall.Screens
             private set;
         }
 
+        [Obsolete("Use DefaultLayer instead of Layer")]
         public Layer Layer
         {
-            get { return mLayer; }
-            set { mLayer = value; }
+            get => DefaultLayer; 
+            set => DefaultLayer = value; 
+        }
+
+        public Layer DefaultLayer
+        {
+            get => mLayer;
+            set => mLayer = value;
         }
 
         public bool ManageSpriteGrids
