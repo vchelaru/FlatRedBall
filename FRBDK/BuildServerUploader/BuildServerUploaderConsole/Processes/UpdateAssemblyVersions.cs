@@ -51,13 +51,16 @@ namespace BuildServerUploaderConsole.Processes
                     engineFolders.Add(engineDirectory + @"FlatRedBallXNA\");
                     engineFolders.Add(engineDirectory + @"FlatRedBallMDX\");
 
-                    foreach (string folder in engineFolders)
+                    // betas are only for nugets, which have the version right in the .csproj. Therefore, we don't
+                    // need to look at AssemblyInfo.cs files for betas
+                    if(!IsBeta)
                     {
-                        List<string> files = FileManager.GetAllFilesInDirectory(folder, "cs");
-
-                        foreach (string file in files)
+                        foreach (string folder in engineFolders)
                         {
-                            if (file.ToLower().EndsWith("assemblyinfo.cs"))
+                            var files = FileManager.GetAllFilesInDirectory(folder, "cs")
+                                .Where(item => item.ToLower().EndsWith("assemblyinfo.cs")).ToArray();
+
+                            foreach (string file in files)
                             {
                                 ModifyAssemblyInfoVersion(file, GetVersionString(IsBeta));
                                 Results.WriteMessage("Modified " + file + " to " + GetVersionString(IsBeta));
@@ -65,17 +68,15 @@ namespace BuildServerUploaderConsole.Processes
                         }
                     }
 
-
+                    var enginesWithCSProjLocation = AllData.Engines
+                        .Where(item => !string.IsNullOrEmpty(item.EngineCSProjLocation))
+                        .ToArray();
                     // If we list a csproj, then update that:
-                    foreach (var engine in AllData.Engines)
+                    foreach (var engine in enginesWithCSProjLocation)
                     {
-                        if (!string.IsNullOrEmpty(engine.EngineCSProjLocation))
-                        {
-                            var csProjAbsolute = DirectoryHelper.CheckoutDirectory + engine.EngineCSProjLocation;
-                            ModifyCsprojAssemblyInfoVersion(csProjAbsolute, GetVersionString(IsBeta));
-                            Results.WriteMessage("Modified " + csProjAbsolute + " to " + GetVersionString(IsBeta));
-
-                        }
+                        var csProjAbsolute = DirectoryHelper.CheckoutDirectory + engine.EngineCSProjLocation;
+                        ModifyCsprojAssemblyInfoVersion(csProjAbsolute, GetVersionString(IsBeta));
+                        Results.WriteMessage("Modified " + csProjAbsolute + " to " + GetVersionString(IsBeta));
                     }
 
                     UpdateTemplateNugets();
@@ -109,10 +110,7 @@ namespace BuildServerUploaderConsole.Processes
 
         private void UpdateTemplateNugets()
         {
-            var engineName = "FlatRedBallDesktopGLNet6";
-            var templateName = "FlatRedBallDesktopGLNet6Template";
-
-            UpdateTemplateNuget(engineName, templateName);
+            UpdateTemplateNuget("FlatRedBallDesktopGLNet6", "FlatRedBallDesktopGLNet6Template");
 
             UpdateTemplateNuget("FlatRedBall.FNA", "FlatRedBallDesktopFnaTemplate");
 

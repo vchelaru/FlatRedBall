@@ -27,6 +27,7 @@ namespace BuildServerUploaderConsole.Processes
 
         static string absolutePath = @"C:\FlatRedBallProjects\UploadInfo.txt";
 
+
         UploadType uploadType;
 
         static string cachedPassword = null;
