@@ -150,6 +150,11 @@ namespace FlatRedBall.TileGraphics
             get { return true; }
         }
 
+        /// <summary>
+        /// Mulitplier value used to scale the rendering of the map. 
+        /// A value of 1 (default) means the map is rendered at its original size.
+        /// A value of 2 would render the map at twice its size.
+        /// </summary>
         public float RenderingScale
         {
             get;
