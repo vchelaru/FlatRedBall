@@ -96,9 +96,12 @@ namespace TMXGlueLib.DataTypes
             var layers = new List<AbstractMapLayer>();
             layers.AddRange(tiledMapSave.MapLayers);
 
-            foreach (var group in tiledMapSave.Group)
+            if(tiledMapSave.Group != null)
             {
-                GetAllMapLayers(group, layers);
+                foreach (var group in tiledMapSave.Group)
+                {
+                    GetAllMapLayers(group, layers);
+                }
             }
 
             return layers;
@@ -107,9 +110,13 @@ namespace TMXGlueLib.DataTypes
         static void GetAllMapLayers(LayerGroup layerGroup, List<AbstractMapLayer> layers)
         {
             layers.AddRange(layerGroup.MapLayers);
-            foreach (var group in layerGroup.Group)
+
+            if (layerGroup.Group != null)
             {
-                GetAllMapLayers(group, layers);
+                foreach (var group in layerGroup.Group)
+                {
+                    GetAllMapLayers(group, layers);
+                }
             }
         }
 

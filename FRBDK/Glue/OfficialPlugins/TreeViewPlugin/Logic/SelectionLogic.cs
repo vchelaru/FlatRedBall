@@ -86,7 +86,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
         {
             IsUpdatingThisSelectionOnGlueEvent = false;
 
-            var newTag = nodeViewModel.Tag;
+            var newTag = nodeViewModel?.Tag;
 
             bool didSelectionChange;
             if (currentNodes?.Contains(nodeViewModel) == true)

@@ -47,11 +47,6 @@ namespace FlatRedBall.Gum
 
         public T LoadContent<T>(string contentName)
         {
-#if ANDROID || IOS
-			contentName = contentName.ToLowerInvariant();
-#endif
-            // alwasy prefer global content first:
-
             return FlatRedBall.FlatRedBallServices.Load<T>(contentName, ContentManagerName);
         }
     }

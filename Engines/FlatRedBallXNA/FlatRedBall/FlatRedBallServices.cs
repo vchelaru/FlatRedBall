@@ -426,7 +426,6 @@ namespace FlatRedBall
 
             }
         }
-#if !MONODROID
         public static void InitializeCommandLine()
         {
             InitializeCommandLine(null);
@@ -440,11 +439,8 @@ namespace FlatRedBall
         #endregion
         public static void InitializeCommandLine(Game game)
         {
-#if UWP
-                mPrimaryThreadId = Environment.CurrentManagedThreadId;
-#else
+
             mPrimaryThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-#endif
 
 
             mIsCommandLine = true;
@@ -478,7 +474,6 @@ namespace FlatRedBall
 
             mIsInitialized = true;
         }
-#endif
 
         #region XML Docs
         /// <summary>

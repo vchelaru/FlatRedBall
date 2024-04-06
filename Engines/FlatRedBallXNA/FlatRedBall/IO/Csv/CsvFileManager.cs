@@ -88,9 +88,6 @@ namespace FlatRedBall.IO.Csv
                 fileName = FileManager.MakeAbsolute(fileName);
             }
 
-#if ANDROID || IOS
-			fileName = fileName.ToLowerInvariant();
-#endif
 
             FileManager.ThrowExceptionIfFileDoesntExist(fileName);
 

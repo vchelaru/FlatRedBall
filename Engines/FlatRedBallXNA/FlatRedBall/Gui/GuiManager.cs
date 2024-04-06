@@ -489,7 +489,6 @@ namespace FlatRedBall.Gui
             }
         }
 
-#if !MONODROID
         static public Cursor GetCursorNum(int index)
         {
             if (index > -1 && index < mCursors.Count)
@@ -497,7 +496,6 @@ namespace FlatRedBall.Gui
             else
                 return null;
         }
-#endif
 
 
         [Obsolete("Use AddDominantWindow instead, even if the window has already been added. This method will go away soon")]

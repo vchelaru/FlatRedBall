@@ -30,14 +30,14 @@ public class IosMonogameProject : CombinedEmbeddedContentProject
     {
         var returnValue = base.ProcessInclude(path);
 
-        return returnValue.ToLowerInvariant();
+        return returnValue;
     }
 
     public override string ProcessLink(string path)
     {
         var returnValue = base.ProcessLink(path);
         // iOS is case-sensitive
-        return returnValue.ToLowerInvariant();
+        return returnValue;
     }
     // Is this valid?
     public override string NeededVisualStudioVersion => "10.0"; 

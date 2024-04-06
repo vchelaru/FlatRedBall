@@ -23,7 +23,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-#if !WINDOWS_PHONE && !XBOX360 && !MONODROID && !MONOGAME
+#if !MONOGAME
 using System.Data;
 
 #endif
@@ -34,7 +34,7 @@ using System.Globalization;
 using System.IO;
 
 
-#if !MONODROID && !MONOGAME
+#if !MONOGAME
 using System.Data.Common;
 #endif
 

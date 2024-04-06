@@ -29,23 +29,12 @@ namespace FlatRedBallXna4Template
         {
             graphics = new GraphicsDeviceManager(this);
 
-#if WINDOWS_PHONE || ANDROID || IOS
-
-            // Frame rate is 30 fps by default for Windows Phone,
-            // so let's keep that for other phones too
-            TargetElapsedTime = TimeSpan.FromTicks(333333);
+#if  ANDROID || IOS
             graphics.IsFullScreen = true;
 #elif WINDOWS || DESKTOP_GL
             graphics.PreferredBackBufferWidth = 800;
             graphics.PreferredBackBufferHeight = 600;
 #endif
-
-
-#if WINDOWS_8
-            FlatRedBall.Instructions.Reflection.PropertyValuePair.TopLevelAssembly = 
-            this.GetType().GetTypeInfo().Assembly;
-#endif
-
         }
 
         protected override void Initialize()

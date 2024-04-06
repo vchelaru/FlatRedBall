@@ -228,7 +228,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public string StandardizeItemName(string itemName)
         {
-            itemName = itemName.ToLowerInvariant().Replace("/", "\\");
+            itemName = itemName.Replace("/", "\\");
 
             if (!FileManager.IsRelative(itemName))
             {

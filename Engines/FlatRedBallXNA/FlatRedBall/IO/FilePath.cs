@@ -87,6 +87,10 @@ namespace FlatRedBall.IO
         }
 
         string standardizedCache;
+        /// <summary>
+        /// Returns the file with all slashes as forward slashes, and with the relative directory prepended if the file is relative, and lower-case. Use
+        /// StandardizedCaseSensitive to preserve case.
+        /// </summary>
         public string Standardized
         {
             get
