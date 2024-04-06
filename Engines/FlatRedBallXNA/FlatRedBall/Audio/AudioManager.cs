@@ -94,7 +94,7 @@ namespace FlatRedBall.Audio
         static SongPlaylist Playlist;
 
         static int playlistIndex = 0;
-#if MONODROID
+#if ANDROID
         //This is for a performance issue with SoundPool
         private static SoundEffect _droidLoop;
         private static DateTime _lastPlay = DateTime.Now;
@@ -623,7 +623,7 @@ namespace FlatRedBall.Audio
 
             if (shouldPlay)
             {
-#if MONODROID
+#if ANDROID
                 _lastPlay = DateTime.Now;
 #endif
 
@@ -765,23 +765,6 @@ namespace FlatRedBall.Audio
                     TimeManager.LastSecondDifference);
             }
 #endif
-
-            // TODO [msmith] Get this working again once we add the data into the asset folder.
-            /* TODO MDS_TEMP
-#if MONODROID
-            if ((DateTime.Now - _lastPlay).Milliseconds > 200)
-            {
-                if (_droidLoop != null)
-                {
-                    _droidLoop.Play(0, 0, 0);
-                    _lastPlay = DateTime.Now;
-                }else
-                {
-                    _droidLoop = FlatRedBallServices.Load<SoundEffect>(@"performanceloop");
-                }
-            }
-#endif
-			*/
         }
 
 

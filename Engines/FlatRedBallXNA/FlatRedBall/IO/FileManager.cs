@@ -1,8 +1,8 @@
-#if WINDOWS_8 || MONODROID || UWP
+#if  ANDROID || IOS
 #define USE_ISOLATED_STORAGE
 #endif
 
-#if  MONODROID || IOS || UWP || ANDROID
+#if IOS || ANDROID
 #define USES_DOT_SLASH_ABOLUTE_FILES
 #endif
 
@@ -470,7 +470,7 @@ namespace FlatRedBall.IO
                     {
                         stream = TitleContainer.OpenStream(fileName);
                     }
-#if MONODROID || ANDROID
+#if ANDROID
                     catch (Java.IO.FileNotFoundException)
                     {
                         return false;
@@ -1363,14 +1363,9 @@ namespace FlatRedBall.IO
                 }
                 else
                 {
-#if MONODROID
 
                     throw new FileNotFoundException("Could not find the " +
-                        "file " + fileName + " or the directory " + directory);
-#else
-                    throw new FileNotFoundException("Could not find the " +
                         "file " + fileName + " or the directory " + directory, fileName);
-#endif
                 }
 
 #endif
@@ -1618,7 +1613,6 @@ namespace FlatRedBall.IO
                 //#endif
             }
 
-#if !XBOX360
             fileNameToFix = RemoveDotDotSlash(fileNameToFix);
  
             if (fileNameToFix.StartsWith("..") && makeAbsolute)
@@ -1626,11 +1620,10 @@ namespace FlatRedBall.IO
                 throw new InvalidOperationException("Tried to remove all ../ but ended up with this: " + fileNameToFix);
             }
 
-#endif
             // It's possible that there will be double forward slashes.
             fileNameToFix = fileNameToFix.Replace("//", "/");
 
-#if !MONODROID && !IOS
+#if !ANDROID && !IOS
             if (!PreserveCase)
             {
                 fileNameToFix = fileNameToFix.ToLowerInvariant();
@@ -1743,7 +1736,7 @@ namespace FlatRedBall.IO
         {
             T objectToReturn = default(T);
 
-#if MONODROID
+#if ANDROID || IOS
             if (fileName.Contains(FileManager.IsolatedStoragePrefix) && mHasUserFolderBeenInitialized == false)
             {
                 throw new InvalidOperationException("The user folder hasn't been initialized.  Call FileManager.InitializeUserFolder first");

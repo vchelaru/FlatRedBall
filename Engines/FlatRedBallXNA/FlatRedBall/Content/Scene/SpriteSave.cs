@@ -55,13 +55,12 @@ namespace FlatRedBall.Content.Scene
 
         #region Fields
 
-#if !MONODROID
         [ExternalInstance]
         internal Texture2D mTextureInstance;
 
         [ExternalInstance]
         internal AnimationChainList mAnimationChainListInstance;
-#endif
+
 
         [XmlIgnore]
         public AnimationChainListSave AnimationChains;
@@ -464,14 +463,12 @@ namespace FlatRedBall.Content.Scene
             // overrides it if it's different.
             if (setTextures)
             {
-#if !MONODROID
                 if (mTextureInstance != null)
                 {
                     sprite.Texture = mTextureInstance;
                 }
 
                 else
-#endif
                     // Sprites can have NULL textures as of April 18, 2009    
                     if (!string.IsNullOrEmpty(Texture))
                     {
@@ -522,11 +519,9 @@ namespace FlatRedBall.Content.Scene
             if (setTextures)
             {
                 SetRuntimeAnimationChain(contentManagerName, sprite,
-#if !MONODROID
+
  mAnimationChainListInstance,
-#else
-                null,
-#endif
+
  CurrentChain,
                     AnimationChains, AnimationChainsFile
 

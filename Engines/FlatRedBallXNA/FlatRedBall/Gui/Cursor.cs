@@ -692,7 +692,7 @@ namespace FlatRedBall.Gui
         /// <param name="cameraToUse">The camera that the cursor will belong to.</param>
         public Cursor(Camera cameraToUse)
         {
-#if MONODROID || IOS
+#if ANDROID || IOS
             SupportedInputDevices = Gui.InputDevice.TouchScreen;
 #else
             SupportedInputDevices = Gui.InputDevice.Mouse;
@@ -1792,7 +1792,6 @@ namespace FlatRedBall.Gui
 
         #endregion
 
-#if !SILVERLIGHT
 
         #region XML Docs
         /// <summary>
@@ -1806,7 +1805,7 @@ namespace FlatRedBall.Gui
         }
 
 
-#if !MONODROID && !MONOGAME && !FNA
+#if !MONOGAME && !FNA
         public bool IsInWindow(System.Windows.Forms.Control control)
         {
             if (!mUsingWindowsCursor)
@@ -1961,7 +1960,6 @@ namespace FlatRedBall.Gui
 
         }
 
-#endif
         /// <summary>
         /// Returns the X world coordinate of the cursor at the argument Z position. 
         /// This method requires a Z value to properly work with perspective cameras.
@@ -2056,7 +2054,7 @@ namespace FlatRedBall.Gui
 
         float WorldXChangeAt(float zPosition, bool orthogonal, float orthogonalWidth)
         {
-#if MONODROID || IOS
+#if ANDROID || IOS
             if(PrimaryPush || InputManager.TouchScreen.NumberOfTouchesChanged)
             {
                 return 0;
@@ -2142,7 +2140,7 @@ namespace FlatRedBall.Gui
 
         float WorldYChangeAt(float zPosition, bool orthogonal, float orthogonalHeight)
         {
-#if MONODROID || IOS
+#if ANDROID || IOS
             if (PrimaryPush || InputManager.TouchScreen.NumberOfTouchesChanged)
             {
                 return 0;
@@ -2522,7 +2520,7 @@ namespace FlatRedBall.Gui
                     {
                         UpdatePositionToMouse();
 
-#if MONODROID || IOS
+#if ANDROID || IOS
                         float xVelocity;
                         float yVelocity;
                         MathFunctions.ScreenToAbsoluteDistance(

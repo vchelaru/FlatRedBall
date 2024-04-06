@@ -268,7 +268,7 @@ namespace FlatRedBall.Input
         {
             int padNumber;
 
-#if !MONODROID
+#if !ANDROID
             padNumber = 4;
 #else
             padNumber = 1;
@@ -480,7 +480,7 @@ namespace FlatRedBall.Input
     #if SUPPORTS_XBOX_GAMEPADS
 
                 mXbox360GamePads[0].Update();
-    #if !MONODROID
+    #if !ANDROID
                 mXbox360GamePads[1].Update();
                 mXbox360GamePads[2].Update();
                 mXbox360GamePads[3].Update();

@@ -9,9 +9,7 @@ using System.Threading;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-#if MONODROID
-using OpenTK.Graphics.ES11;
-#endif
+
 using ShapeManager = FlatRedBall.Math.Geometry.ShapeManager;
 using FlatRedBall.Math;
 using FlatRedBall.Graphics;
@@ -29,11 +27,7 @@ using Microsoft.Xna.Framework.Content;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Performance.Measurement;
 
-#if UWP
-using Windows.System.Threading;
-#else
 
-#endif
 
 
 namespace FlatRedBall.Graphics
