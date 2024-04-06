@@ -114,8 +114,7 @@ namespace BuildServerUploaderConsole
             {
                 throw new Exception("Expected 3 arguments: {operation} {username} {password}, but only got " + args.Length + "arguments");
             }
-            var isBeta = args.Any(item => item.ToLower() == "beta");
-            ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.EngineAndTemplatesOnly, args[1], args[2], isBeta));
+            ProcessSteps.Add(new UploadFilesToFrbServer(Results, UploadType.EngineAndTemplatesOnly, args[1], args[2]));
         }
 
         private static void CreateZipAndUploadFrbdk(string[] args)
