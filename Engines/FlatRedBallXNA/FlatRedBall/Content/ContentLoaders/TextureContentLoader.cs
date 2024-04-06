@@ -143,13 +143,6 @@ namespace FlatRedBall.Content.ContentLoaders
 
                 Texture2D file = null;
 
-#if NET8_0_OR_GREATER && (ANDROID || IOS)
-                if(loc.StartsWith("./"))
-                {
-                    loc = loc.Substring(2);
-                }
-#endif
-
                 using (Stream titleStream = FileManager.GetStreamForFile(loc))
                 {
                     file = Texture2D.FromStream(Renderer.GraphicsDevice, titleStream);
