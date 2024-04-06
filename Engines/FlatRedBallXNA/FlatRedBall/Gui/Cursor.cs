@@ -44,7 +44,6 @@ namespace FlatRedBall.Gui
 
         IWindow mWindowPushed;
 
-        #region XML Docs
         /// <summary>
         /// The window that the cursor was over when the mouse button was pressed.
         /// </summary>
@@ -59,10 +58,8 @@ namespace FlatRedBall.Gui
         /// pushed and without accidentally clicking on other Buttons.  This is also used
         /// with ToggleButtons to control when they are pressed and unpressed.
         /// </remarks>
-        #endregion
         public IWindow mWindowSecondaryPushed;
 
-        #region XML Docs
         /// <summary>
         /// If this value is true, the Cursor will not move in response to the mouse or gamepad.
         /// </summary>
@@ -71,12 +68,10 @@ namespace FlatRedBall.Gui
         /// The staticPosition value is only used by the engine when over the button on an UpDown.  When pushing down
         /// on an UpDown button, the staticPosition is set to true, and set to false when releasing the mouse button.
         /// </remarks>
-        #endregion
         public bool StaticPosition;
 
         private IWindow mLastWindowOver;
 
-        #region XML Docs
         /// <summary>
         /// The window that the cursor has grabbed.
         /// </summary>
@@ -86,7 +81,6 @@ namespace FlatRedBall.Gui
         /// not recognize which types of Windows can be dragged, so windows must be grabbed through the Cursor.GrabWindow
         /// method.  The windowGrabbed's onDrag event is fired every frame.
         /// </remarks>
-        #endregion
         public IWindow WindowGrabbed;
 
         internal Sides mSidesGrabbed = Sides.None;
@@ -113,7 +107,6 @@ namespace FlatRedBall.Gui
 
         Ray mLastRay;
 
-        #region XML Docs
         /// <summary>
         /// Storage for reference to a grabbed object.
         /// </summary>
@@ -125,10 +118,8 @@ namespace FlatRedBall.Gui
         /// "snapping" its center to the Cursor's tip.
         /// <seealso cref="FlatRedBall.Gui.Cursor.SetObjectRelativePosition"/>
         /// </remarks>
-        #endregion
         IStaticPositionable mObjectGrabbed;
 
-        #region XML Docs
         /// <summary>
         /// The relative x position of a grabbed object from the center of the cursor.
         /// </summary>
@@ -138,10 +129,8 @@ namespace FlatRedBall.Gui
         ///  <seealso cref="FlatRedBall.Gui.Cursor.GetCursorPositionForSprite(ref float, ref float, float)"/>
         ///  <seealso cref="FlatRedBall.Gui.Cursor.SetObjectRelativePosition"/>
         /// </remarks>
-        #endregion
         public float ObjectGrabbedRelativeX;
 
-        #region XML Docs
         /// <summary>
         /// The relative y position of a grabbed object from the center of the cursor.
         /// </summary>
@@ -151,7 +140,6 @@ namespace FlatRedBall.Gui
         ///  <seealso cref="FlatRedBall.Gui.Cursor.GetCursorPositionForSprite(ref float, ref float, float)"/>
         ///  <seealso cref="FlatRedBall.Gui.Cursor.SetObjectRelativePosition"/>
         /// </remarks>
-        #endregion
         public float ObjectGrabbedRelativeY;
 
         /// <summary>
@@ -161,11 +149,9 @@ namespace FlatRedBall.Gui
 
         public bool PrimaryDoublePush;
 
-        #region XML Docs
         /// <summary>
         /// Determines whether the primary button is down this frame.
         /// </summary>
-        #endregion
         public bool PrimaryDown;
 
         /// <summary>
@@ -173,11 +159,9 @@ namespace FlatRedBall.Gui
         /// </summary>
         public bool PrimaryClick;
 
-        #region XML Docs
         /// <summary>
         /// Determines whether the primary button was double clicked this frame.
         /// </summary>
-        #endregion
         public bool PrimaryDoubleClick;
 
 
@@ -187,32 +171,24 @@ namespace FlatRedBall.Gui
         double mLastTimePrimaryClick;
         double mLastTimePrimaryPush;
 
-        #region XML Docs
         /// <summary>
         /// Determines whether the secondary button was pushed this frame.
         /// </summary>
-        #endregion
         public bool SecondaryPush;
 
-        #region XML Docs
         /// <summary>
         /// Determines whether the secondary button is down this frame.
         /// </summary>
-        #endregion
         public bool SecondaryDown;
 
-        #region XML Docs
         /// <summary>
         /// Determines whether the secondary button was clicked (released) this frame.
         /// </summary>
-        #endregion
         public bool SecondaryClick;
 
-        #region XML Docs
         /// <summary>
         /// Determines whether the secondary button was double clicked this frame.
         /// </summary>
-        #endregion
         public bool SecondaryDoubleClick;
 
 
@@ -369,7 +345,6 @@ namespace FlatRedBall.Gui
         }
 
         bool active = true;
-        #region XML Docs
         /// <summary>
         /// Sets whether the cursor is active.
         /// </summary>
@@ -388,7 +363,6 @@ namespace FlatRedBall.Gui
         /// <para>secondaryPush</para>
         /// 
         /// </remarks>
-        #endregion
         public bool Active
         {
             set
@@ -665,13 +639,11 @@ namespace FlatRedBall.Gui
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Assigns the ObjectGrabbed and calculates the relative position of the
         /// grabbed object.  After this method is called, UpdateObjectGrabbedPosition can be called
         /// every frame to position the grabbed object.
         /// </summary>
-        #endregion
         public IStaticPositionable ObjectGrabbed
         {
             get { return mObjectGrabbed; }
