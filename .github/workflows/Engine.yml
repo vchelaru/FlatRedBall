@@ -2,6 +2,12 @@ name: Build Engine DLLs
 
 on:
   workflow_dispatch:
+    inputs:
+      IsBeta:
+        description: 'Set to true for a beta release'
+        required: true
+        default: true
+        type: boolean
 
 jobs:
   build:

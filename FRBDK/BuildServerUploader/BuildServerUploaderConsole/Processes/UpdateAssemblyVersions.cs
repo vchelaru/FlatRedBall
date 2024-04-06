@@ -15,13 +15,26 @@ namespace BuildServerUploaderConsole.Processes
 
     class UpdateAssemblyVersions : ProcessStep
     {
-        public static readonly string VersionString =
+        public static readonly string VersionStringForThisRun =
             DateTime.Now.ToString("yyyy.M.d") + "." + (int)DateTime.Now.TimeOfDay.TotalMinutes;
+
+        public static string GetVersionString(bool isBeta)
+        {
+            var toReturn = VersionStringForThisRun;
+            if(isBeta)
+            {
+                toReturn += "-beta";
+            }
+            return toReturn;
+        }
 
         UpdateType UpdateType { get; set; }
 
-        public UpdateAssemblyVersions(IResults results, UpdateType updateType) : base("Updates the AssemblyVersion in all FlatRedBall projects.", results)
+        bool IsBeta { get; set; }
+
+        public UpdateAssemblyVersions(IResults results, UpdateType updateType, bool isBeta) : base("Updates the AssemblyVersion in all FlatRedBall projects.", results)
         {
+            IsBeta = isBeta;
             this.UpdateType = updateType;
         }
 
@@ -46,8 +59,8 @@ namespace BuildServerUploaderConsole.Processes
                         {
                             if (file.ToLower().EndsWith("assemblyinfo.cs"))
                             {
-                                ModifyAssemblyInfoVersion(file, VersionString);
-                                Results.WriteMessage("Modified " + file + " to " + VersionString);
+                                ModifyAssemblyInfoVersion(file, GetVersionString(IsBeta));
+                                Results.WriteMessage("Modified " + file + " to " + GetVersionString(IsBeta));
                             }
                         }
                     }
@@ -59,25 +72,25 @@ namespace BuildServerUploaderConsole.Processes
                         if (!string.IsNullOrEmpty(engine.EngineCSProjLocation))
                         {
                             var csProjAbsolute = DirectoryHelper.CheckoutDirectory + engine.EngineCSProjLocation;
-                            ModifyCsprojAssemblyInfoVersion(csProjAbsolute, VersionString);
-                            Results.WriteMessage("Modified " + csProjAbsolute + " to " + VersionString);
+                            ModifyCsprojAssemblyInfoVersion(csProjAbsolute, GetVersionString(IsBeta));
+                            Results.WriteMessage("Modified " + csProjAbsolute + " to " + GetVersionString(IsBeta));
 
                         }
                     }
 
                     UpdateTemplateNugets();
 
-                    Results.WriteMessage("Glue assembly versions updated to " + VersionString);
+                    Results.WriteMessage("Engine and Template assembly versions updated to " + GetVersionString(IsBeta));
 
 
                     break;
                 case UpdateType.FRBDK:
 
                     //ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"\Glue\Glue\Properties\AssemblyInfo.cs", VersionString);
-                    ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\Glue\GlueFormsCore.csproj", VersionString);
-                    ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\GlueSaveClasses\Properties\AssemblyInfo.cs", VersionString);
+                    ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\Glue\GlueFormsCore.csproj", GetVersionString(IsBeta));
+                    ModifyAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"Glue\GlueSaveClasses\Properties\AssemblyInfo.cs", GetVersionString(IsBeta));
 
-                    ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"AnimationEditor\PreviewProject\AnimationEditor.csproj", VersionString);
+                    ModifyCsprojAssemblyInfoVersion(DirectoryHelper.FrbdkDirectory + @"AnimationEditor\PreviewProject\AnimationEditor.csproj", GetVersionString(IsBeta));
                     break;
             }
 
@@ -85,7 +98,12 @@ namespace BuildServerUploaderConsole.Processes
 
 
             //Save Version String for uploading
-            FileManager.SaveText(VersionString, DirectoryHelper.ReleaseDirectory + @"\SingleDlls\VersionInfo.txt");
+            var destination = DirectoryHelper.ReleaseDirectory + @"\SingleDlls\VersionInfo.txt";
+            if(IsBeta)
+            {
+                destination = DirectoryHelper.ReleaseDirectory + @"\SingleDlls\VersionInfo-beta.txt";
+            }
+            FileManager.SaveText(GetVersionString(IsBeta), DirectoryHelper.ReleaseDirectory + destination);
             Results.WriteMessage("VersionInfo file created.");
         }
 
@@ -107,7 +125,7 @@ namespace BuildServerUploaderConsole.Processes
         {
             var matchingEngine = AllData.Engines.First(item => item.EngineCSProjLocation?.Contains($"{engineName}.csproj") == true);
             var templateLocation = matchingEngine.TemplateCsProjFolder + templateName + ".csproj";
-            ModifyNugetVersionInAssembly(DirectoryHelper.TemplateDirectory + templateLocation, engineName, VersionString);
+            ModifyNugetVersionInAssembly(DirectoryHelper.TemplateDirectory + templateLocation, engineName, GetVersionString(IsBeta));
         }
 
         private static void ModifyAssemblyInfoVersion(string assemblyInfoLocation, string versionString)
@@ -153,7 +171,7 @@ namespace BuildServerUploaderConsole.Processes
                         $"<PackageReference Include=\"{packageName}\" Version=\"[0-9]*.[0-9]*.[0-9]*.[0-9]*\" />",
                         $"<PackageReference Include=\"{packageName}\" Version=\"{versionString}\" />");
 
-            Results.WriteMessage("Modified " + csprojLocation + $" to have FlatRedBall Nuget package {VersionString}");
+            Results.WriteMessage("Modified " + csprojLocation + $" to have FlatRedBall Nuget package {versionString}");
 
 
             FileManager.SaveText(csprojText, csprojLocation);

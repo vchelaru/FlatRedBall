@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using BuildServerUploaderConsole.Processes;
 using FlatRedBall.IO;
@@ -11,7 +12,6 @@ namespace BuildServerUploaderConsole
     {
         public const string Upload = "upload";
         public const string ZipAndUploadTemplates = "zipanduploadtemplates";
-        public const string ChangeVersion = "changeversion";
         public const string CopyDllsToTemplates = "copytotemplates";
         public const string ZipAndUploadFrbdk = "zipanduploadfrbdk";
         public const string ChangeEngineVersion = "changeengineversion";
@@ -42,9 +42,6 @@ namespace BuildServerUploaderConsole
             {
                 switch (args[0])
                 {
-                    case CommandLineCommands.ChangeVersion:
-                        CreateChangeVersionProcessSteps();
-                        break;
                     case CommandLineCommands.CopyDllsToTemplates:
                         CreateCopyToTemplatesSteps();
                         break;
@@ -58,7 +55,7 @@ namespace BuildServerUploaderConsole
                         CreateZipAndUploadFrbdk(args);
                         break;
                     case CommandLineCommands.ChangeEngineVersion:
-                        CreateChangeEngineVersion();
+                        CreateChangeEngineVersion(args);
                         break;
                     case CommandLineCommands.ChangeFrbdkVersion:
                         CreateChangeFrbdkVersion();
@@ -93,16 +90,18 @@ namespace BuildServerUploaderConsole
 
         }
 
-        private static void CreateChangeEngineVersion()
+        private static void CreateChangeEngineVersion(string[] args)
         {
+            var isBeta = args.Any(item => item.ToLower() == "beta");
+
             //ProcessSteps.Add(new InjectFnaNugetAndVersion(Results));
-            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.Engine));
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.Engine, isBeta));
 
         }
 
         private static void CreateChangeFrbdkVersion()
         {
-            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.FRBDK));
+            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.FRBDK, isBeta:false));
         }
 
         private static void CreateZipAndUploadTemplates(string[] args)
@@ -140,12 +139,6 @@ namespace BuildServerUploaderConsole
         private static void CreateCopyToTemplatesSteps()
         {
             ProcessSteps.Add(new CopyBuiltEnginesToTemplateFolder(Results));
-        }
-
-        private static void CreateChangeVersionProcessSteps()
-        {
-            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.Engine));
-            ProcessSteps.Add(new UpdateAssemblyVersions(Results, UpdateType.FRBDK));
         }
 
         private static void CreateUploadProcessSteps()

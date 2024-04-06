@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Instructions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,8 +10,10 @@ namespace BuildServerUploaderConsole.Processes
 {
     internal class InjectFnaNugetAndVersion : ProcessStep
     {
-        public InjectFnaNugetAndVersion(IResults results) : base("Injects the FNA NuGet package and updates the version number.", results)
+        public bool IsBeta { get; set; }
+        public InjectFnaNugetAndVersion(IResults results, bool isBeta) : base("Injects the FNA NuGet package and updates the version number.", results)
         {
+            IsBeta = isBeta;
         }
 
         public override void ExecuteStep()
@@ -28,7 +31,7 @@ namespace BuildServerUploaderConsole.Processes
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Description>FNA Core Nuget package created for FlatRedBall. This is NOT an official NuGet package from the FNA team, although you are free to use it in any FNA project.</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>{UpdateAssemblyVersions.VersionString}</Version>
+		<Version>{UpdateAssemblyVersions.GetVersionString(IsBeta)}</Version>
     ";
 
             contents = contents.Insert(index, whatToInject);
