@@ -166,11 +166,7 @@ namespace FlatRedBall.Content.AnimationChain
                 // I think we should tolarte frames with a null Texture
                 else if (!string.IsNullOrEmpty(TextureName))
                 {
-					#if IOS || ANDROID
-					frame.Texture = FlatRedBallServices.Load<Texture2D>(TextureName.ToLowerInvariant(), contentManagerName);
-					#else
 					frame.Texture = FlatRedBallServices.Load<Texture2D>(TextureName, contentManagerName);
-					#endif
                     
                 }
                 //frame.Texture = FlatRedBallServices.Load<Texture2D>(TextureName, contentManagerName);

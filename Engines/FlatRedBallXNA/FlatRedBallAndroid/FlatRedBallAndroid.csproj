@@ -23,13 +23,14 @@
 	</PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\FlatRedBall\Input\AndroidGamePad.cs" Link="Input\AndroidGamePad.cs" />
+    <Compile Include="..\FlatRedBall\Input\InputManager.Android.cs" Link="Input\InputManager.Android.cs" />
     <Compile Include="..\FlatRedBall\Input\Keyboard.Android.cs" Link="Input\Keyboard.Android.cs" />
     <Compile Include="..\FlatRedBall\IO\FileManager.IsolatedStorage.cs" Link="IO\FileManager.IsolatedStorage.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="IO\" />
-    <Folder Include="Input\" />
   </ItemGroup>
 
   <ItemGroup>

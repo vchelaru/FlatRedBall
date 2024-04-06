@@ -1835,7 +1835,7 @@ namespace FlatRedBall.IO
 #if (IOS || ANDROID) && !NET8_0_OR_GREATER
             fileName = fileName.ToLowerInvariant();
 #endif
-
+            fileName = RemoveDotDotSlash(fileName);
 
             if (fileName.StartsWith("./"))
             {
