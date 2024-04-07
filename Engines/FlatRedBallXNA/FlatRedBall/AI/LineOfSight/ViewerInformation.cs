@@ -27,7 +27,9 @@ namespace FlatRedBall.AI.LineOfSight
             set;
         }
 
-
+        /// <summary>
+        /// The visibility grid that the viewer is in.
+        /// </summary>
         public VisibilityGrid LocalVisibilityGrid
         {
             get;

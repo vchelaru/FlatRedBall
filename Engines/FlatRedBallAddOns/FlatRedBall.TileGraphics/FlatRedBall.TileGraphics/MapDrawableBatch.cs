@@ -969,6 +969,7 @@ namespace FlatRedBall.TileGraphics
 
         /// <summary>
         /// Returns the quad index at the argument worldX and worldY. Returns null if no quad is found at this index.
+        /// If the map has a SortAxis of X or Y, then this funcion uses the sorting to find the quad more quickly.
         /// </summary>
         /// <param name="worldX">The absolute world X position.</param>
         /// <param name="worldY">The absolute world Y position.</param>

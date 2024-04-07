@@ -11,6 +11,12 @@ using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.SpriteFrame;
 using GluePropertyGridClasses.StringConverters;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using AsepriteDotNet.Aseprite;
+using AsepriteDotNet.Processors;
+using System.Formats.Asn1;
+using FlatRedBall.IO;
+using AsepriteDotNet.IO;
+using FlatRedBall.Glue.Content.Aseprite;
 
 namespace FlatRedBall.Glue.GuiDisplay
 {
@@ -216,12 +222,19 @@ namespace FlatRedBall.Glue.GuiDisplay
 
             if (rfs != null)
             {
-                string fullFileName = GlueState.Self.ContentDirectory + rfs.Name;
+                FilePath filePath = GlueState.Self.ContentDirectory + rfs.Name;
 
-                if (System.IO.File.Exists(fullFileName))
+                if (filePath.Exists())
                 {
-                    acls = AnimationChainListSave.FromFile(
-                        fullFileName);
+                    var extension = filePath.Extension;
+                    if(extension == "aseprite")
+                    {
+                        acls = AsepriteAnimationChainLoader.ToAnimationChainListSave(filePath);
+                    }
+                    else
+                    {
+                        acls = AnimationChainListSave.FromFile(filePath.FullPath);
+                    }
                 }
             }
             return acls;
@@ -279,6 +292,12 @@ namespace FlatRedBall.Glue.GuiDisplay
             StandardValuesCollection svc = new StandardValuesCollection(mAvailableChains);
 
 			return svc;
-		} 
+		}
+
+
+
+
+
+
     }
 }

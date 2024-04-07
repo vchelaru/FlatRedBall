@@ -46,9 +46,14 @@ jobs:
 
     - name: Build BuildServerUploader
       run: dotnet build -c Debug 'FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploader.sln'
-     
-    - name: Change version numbers
-      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe changeengineversion
+    
+    - name: Change version numbers for beta release
+      if: ${{ github.event.inputs.IsBeta == 'true' }}
+      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe changeengineversion beta
+
+    - name: Change version numbers for non-beta release
+      if: ${{ github.event.inputs.IsBeta == 'false' }}
+      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe changeengineversion      
 
 
     - name: Build FlatRedBall iOS .NET 8 Debug
@@ -115,15 +120,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: DesktopGlFnaNet7Release
-        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Release/net7.0/
-    
-    - name: Publish NuGet package FNA
-      run: |
-        $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\3rd Party Libraries\FNA\bin\x64\Debug\*.nupkg'
-        foreach ($file in $files) {
-          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
-        }        
-        
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Release/net7.0/    
 
     - name: Publish NuGet package FRB FNA .NET 7
       run: |
@@ -155,16 +152,20 @@ jobs:
         }
 
     - name: Build FlatRedBall .NET 4 Debug
+      if: ${{ github.event.inputs.IsBeta == 'false' }}
       run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
     - name: Package FlatRedBall .NET 4
+      if: ${{ github.event.inputs.IsBeta == 'false' }}
       uses: actions/upload-artifact@v3
       with:
         name: DesktopGlNet4Debug
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/Debug/
 
     - name: Build FlatRedBall .NET 4 Release
+      if: ${{ github.event.inputs.IsBeta == 'false' }}
       run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
     - name: Package FlatRedBall .NET 4
+      if: ${{ github.event.inputs.IsBeta == 'false' }}
       uses: actions/upload-artifact@v3
       with:
         name: DesktopGlNet4Release
@@ -174,19 +175,21 @@ jobs:
     #   run: |
     #     Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue -Force
 
-    - name: Check if directory exists
-      run: |
-        $FolderPath = '.\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe'
-        if (Test-Path -Path $FolderPath) {
-            Write-Host "Directory exists at $FolderPath"
-        } else {
-            Write-Host "Directory does not exist at $FolderPath"
-        }
+    # - name: Check if directory exists
+    #   run: |
+    #     $FolderPath = '.\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe'
+    #     if (Test-Path -Path $FolderPath) {
+    #         Write-Host "Directory exists at $FolderPath"
+    #     } else {
+    #         Write-Host "Directory does not exist at $FolderPath"
+    #     }
 
     - name: Copy dlls to templates
+      if: ${{ github.event.inputs.IsBeta == 'false' }}
       run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe copytotemplates
       
     - name: Zip and upload templates
+      if: ${{ github.event.inputs.IsBeta == 'false' }}
       env: # Or as an environment variable
         username: ${{ secrets.FTPUSERNAME }}
         password: ${{ secrets.FTPPASSWORD }}
