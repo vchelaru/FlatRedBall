@@ -99,13 +99,16 @@ namespace BuildServerUploaderConsole.Processes
 
 
             //Save Version String for uploading
-            var destination = DirectoryHelper.ReleaseDirectory + @"\SingleDlls\VersionInfo.txt";
-            if(IsBeta)
+            if(!IsBeta)
             {
-                destination = DirectoryHelper.ReleaseDirectory + @"\SingleDlls\VersionInfo-beta.txt";
+                var destination = DirectoryHelper.ReleaseDirectory + @"\SingleDlls\VersionInfo.txt";
+                FileManager.SaveText(GetVersionString(IsBeta), DirectoryHelper.ReleaseDirectory + destination);
+                Results.WriteMessage("VersionInfo file created.");
             }
-            FileManager.SaveText(GetVersionString(IsBeta), DirectoryHelper.ReleaseDirectory + destination);
-            Results.WriteMessage("VersionInfo file created.");
+            else
+            {
+                Results.WriteMessage("VersionInfo file skipped, not needed for beta.");
+            }
         }
 
         private void UpdateTemplateNugets()
