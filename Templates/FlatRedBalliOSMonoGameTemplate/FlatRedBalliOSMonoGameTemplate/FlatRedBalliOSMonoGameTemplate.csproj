@@ -24,6 +24,7 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FlatRedBalliOS" Version="2024.4.6.803" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Framework.iOS" Version="3.8.1.303" />
   </ItemGroup>
@@ -31,8 +32,14 @@
     <Folder Include="Libraries\iOS\Debug\" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FlatRedBalliOS">
-      <HintPath>Libraries\iOS\Debug\FlatRedBalliOS.dll</HintPath>
+    <Reference Include="FlatRedBall.Forms.iOSMonoGame">
+      <HintPath>Libraries\iOS\Debug\FlatRedBall.Forms.iOSMonoGame.dll</HintPath>
+    </Reference>
+    <Reference Include="GumCoreiOS">
+      <HintPath>Libraries\iOS\Debug\GumCoreiOS.dll</HintPath>
+    </Reference>
+    <Reference Include="StateInterpolation.iOSMonoGame">
+      <HintPath>Libraries\iOS\Debug\StateInterpolation.iOSMonoGame.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">

@@ -50,6 +50,10 @@ namespace FlatRedBall.Gui
 
         private void GetPushDownClickFromTouchScreen()
         {
+            if(InputManager.TouchScreen.ScreenDown)
+            {
+                int m = 3;
+            }
             PrimaryClick |= InputManager.TouchScreen.ScreenReleased && ignoreNextFrameInput == false;
             PrimaryPush |= InputManager.TouchScreen.ScreenPushed;
 

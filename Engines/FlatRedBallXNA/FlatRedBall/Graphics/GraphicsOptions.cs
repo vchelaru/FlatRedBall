@@ -329,7 +329,7 @@ namespace FlatRedBall.Graphics
             if (game != null)
             {
 
-#if IOS || UWP || DESKTOP_GL
+#if IOS || DESKTOP_GL
                 // For UWP and WindowsGL projects the game.Window.ClientBounds is not accurate until after initialize, as explained here:
                 // http://community.monogame.net/t/graphicsdevice-viewport-doesnt-return-the-real-size-of-uwp-game-window/7314/5
                 ResolutionWidth = graphics.PreferredBackBufferWidth;

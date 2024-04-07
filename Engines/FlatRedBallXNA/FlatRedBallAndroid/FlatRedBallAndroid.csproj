@@ -6,6 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<Title>FlatRedBall (.NET 8 Android)</Title>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Description>FlatRedBall Game Engine</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Version>1.0.0</Version>
+	</PropertyGroup>
+	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DefineConstants>$(DefineConstants);ANDROID;FRB_XNA;MONOGAME;MONOGAME_381;XNA4;USE_ISOLATED_STORAGE</DefineConstants>
 	</PropertyGroup>
@@ -15,13 +23,14 @@
 	</PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\FlatRedBall\Input\AndroidGamePad.cs" Link="Input\AndroidGamePad.cs" />
+    <Compile Include="..\FlatRedBall\Input\InputManager.Android.cs" Link="Input\InputManager.Android.cs" />
     <Compile Include="..\FlatRedBall\Input\Keyboard.Android.cs" Link="Input\Keyboard.Android.cs" />
     <Compile Include="..\FlatRedBall\IO\FileManager.IsolatedStorage.cs" Link="IO\FileManager.IsolatedStorage.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="IO\" />
-    <Folder Include="Input\" />
   </ItemGroup>
 
   <ItemGroup>

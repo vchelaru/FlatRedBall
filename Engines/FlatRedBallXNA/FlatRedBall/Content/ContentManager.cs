@@ -71,7 +71,7 @@ namespace FlatRedBall.Content
 		internal Dictionary<string, IDisposable> mDisposableDictionary = new Dictionary<string, IDisposable>(StringComparer.OrdinalIgnoreCase);
 		Dictionary<string, object> mNonDisposableDictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-		Dictionary<string, Action> mUnloadMethods = new Dictionary<string, Action>();
+		Dictionary<string, Action> mUnloadMethods = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// If true FlatRedBall will look for cached content in the Global content manager even if

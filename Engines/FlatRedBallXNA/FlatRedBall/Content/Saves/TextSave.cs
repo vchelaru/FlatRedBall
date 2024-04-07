@@ -140,7 +140,6 @@ namespace FlatRedBall.Content.Saves
 
             text.CursorSelectable = CursorSelectable;
 
-#if !SILVERLIGHT
 
 #if !MONODROID
             if (this.mFontTextureInstance != null)
@@ -175,7 +174,6 @@ namespace FlatRedBall.Content.Saves
             {
                 text.Font = TextManager.DefaultFont;
             }
-#endif
 
 
             //sprite.Alpha = (255 - Fade) / valueToDivideBy;

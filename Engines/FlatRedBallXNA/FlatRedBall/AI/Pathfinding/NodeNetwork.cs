@@ -180,6 +180,7 @@ namespace FlatRedBall.AI.Pathfinding
                 if (mVisible != value)
                 {
                     mVisible = value;
+
                     UpdateShapes();
                 }
 
@@ -936,7 +937,9 @@ namespace FlatRedBall.AI.Pathfinding
                 #region Create nodes to match how many nodes are in the network
                 while (mNodes.Count > mNodeVisibleRepresentation.Count)
                 {
-                    Polygon newPolygon = Polygon.CreateEquilateral(4, 1, MathHelper.PiOver4);
+                    Polygon newPolygon = Polygon.CreateEquilateral(4, 
+                        4, // radius
+                        MathHelper.PiOver4);
                     newPolygon.Name = "NodeNetwork Polygon";
 
                     const bool makeAutomaticallyUpdated = false;
@@ -971,7 +974,8 @@ namespace FlatRedBall.AI.Pathfinding
                     mNodeVisibleRepresentation[i].ScaleBy(
                         GetVisibleNodeRadius(SpriteManager.Camera, i) /
                         mNodeVisibleRepresentation[i].BoundingRadius);
-                    mNodeVisibleRepresentation[i].UpdateDependencies(-1, true);
+
+                    mNodeVisibleRepresentation[i].ForceUpdateDependencies();
              
                     foreach (Link link in mNodes[i].mLinks)
                     {

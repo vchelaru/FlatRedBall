@@ -718,7 +718,7 @@ namespace FlatRedBall.Glue.Plugins
 
 
             CallMethodOnPluginNotUiThread(
-                delegate(PluginBase plugin)
+                plugin =>
                 {
                     if (plugin.CanFileReferenceContent != null)
                     {
@@ -740,7 +740,7 @@ namespace FlatRedBall.Glue.Plugins
             SaveRelativeDirectory();
 
             CallMethodOnPluginNotUiThread(
-                delegate(PluginBase plugin)
+                plugin =>
                 {
                     if(plugin.FillWithReferencedFiles != null)
                     {
@@ -763,7 +763,7 @@ namespace FlatRedBall.Glue.Plugins
         {
             SaveRelativeDirectory();
             CallMethodOnPluginNotUiThread(
-                delegate (PluginBase plugin)
+                plugin =>
                 {
                     if (plugin.GetFilesNeededOnDiskBy != null)
                     {

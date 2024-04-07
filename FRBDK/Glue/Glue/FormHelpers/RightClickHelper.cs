@@ -646,7 +646,8 @@ public static class RightClickHelper
             Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode), image: FolderImage);
             AddSeparator();
             Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode));
-            AddEvent(L.Texts.CopyPathClipboard, (_, _) => HandleCopyToClipboardClick(targetNode));
+            Add(L.Texts.CopyPathClipboard, () => HandleCopyToClipboardClick(targetNode));
+
             AddSeparator();
             if (targetNode.IsFolderInFilesContainerNode())
             {
@@ -833,11 +834,18 @@ public static class RightClickHelper
             Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode));
             Add(L.Texts.Open, () => HandleOpen(targetNode));
             AddItem(mFindAllReferences);
-            AddEvent(L.Texts.CopyPathClipboard, (_,_) => HandleCopyToClipboardClick(targetNode));
+            Add(L.Texts.CopyPathClipboard, () => HandleCopyToClipboardClick(targetNode));
+            var rfs = targetNode.Tag as ReferencedFileSave;
+            var name = rfs.GetInstanceName();
+            Add($"Copy Code Instance Name ({name})", () =>
+            {
+                Clipboard.SetText(name);
+
+
+            });
             AddSeparator();
 
             AddItem(mCreateZipPackage);
-            var rfs = (ReferencedFileSave)targetNode.Tag;
 
             AddSeparator();
 
@@ -917,7 +925,7 @@ public static class RightClickHelper
             {
                 Add("View code folder", () => ViewCodeFolderInExplorerClick(targetNode));
             }
-            AddEvent(L.Texts.CopyPathClipboard, (_, _) => HandleCopyToClipboardClick(targetNode));
+            Add(L.Texts.CopyPathClipboard, () => HandleCopyToClipboardClick(targetNode));
 
             AddSeparator();
 

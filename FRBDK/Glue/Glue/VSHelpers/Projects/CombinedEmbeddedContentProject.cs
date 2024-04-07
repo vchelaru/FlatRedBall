@@ -14,24 +14,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
     /// </summary>
     public abstract class CombinedEmbeddedContentProject : VisualStudioProject
     {
-        public CombinedEmbeddedContentProject(Project project)
-            : base(project)
+        public CombinedEmbeddedContentProject(Project project) : base(project)
         {
-
-
         }
 
-        protected override bool NeedToSaveContentProject { get { return false; } }
-        public override bool ContentCopiedToOutput { get { return false; } }
-
-        public override string ContentDirectory
-        {
-            get { return "Content/"; }
-        }
-
-
-        public override string DefaultContentAction { get { return "Content"; } }
-
-
+        protected override bool NeedToSaveContentProject => false; 
+        public override bool ContentCopiedToOutput => false;
+        public override string ContentDirectory => "Content/";
+        public override string DefaultContentAction => "Content";
     }
 }

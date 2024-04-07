@@ -44,7 +44,7 @@ namespace FlatRedBallAndroidMonoGameTemplate
             if ((e.Event.Source & InputSourceType.Gamepad) == InputSourceType.Gamepad ||
                 (e.Event.Source & InputSourceType.Joystick) == InputSourceType.Joystick)
             {
-                //FlatRedBallAndroid.Input.AndroidGamePadManager.OnGenericMotionEvent(e.Event);
+                FlatRedBallAndroid.Input.AndroidGamePadManager.OnGenericMotionEvent(e.Event);
             }
         }
 
@@ -59,12 +59,12 @@ namespace FlatRedBallAndroidMonoGameTemplate
             {
                 if (e.Event.Action == KeyEventActions.Down)
                 {
-                    //FlatRedBallAndroid.Input.AndroidGamePadManager.OnKeyDown(e.KeyCode, e.Event);
+                    FlatRedBallAndroid.Input.AndroidGamePadManager.OnKeyDown(e.KeyCode, e.Event);
                     handled = true;
                 }
                 if (e.Event.Action == KeyEventActions.Up)
                 {
-                    //FlatRedBallAndroid.Input.AndroidGamePadManager.OnKeyUp(e.KeyCode, e.Event);
+                    FlatRedBallAndroid.Input.AndroidGamePadManager.OnKeyUp(e.KeyCode, e.Event);
                     handled = true;
                 }
             }

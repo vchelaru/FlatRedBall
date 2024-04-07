@@ -749,6 +749,7 @@ namespace GumPlugin.Managers
                 newAti.ActivityMethod = "this?.AnimateSelf()";
             }
 
+            newAti.CanIgnorePausing = true;
 
             string unqualifiedName = element.Name + "Runtime";
             newAti.FriendlyName = unqualifiedName;

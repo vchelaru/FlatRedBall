@@ -1,5 +1,5 @@
 
-#if MONODROID || IOS
+#if ANDROID || IOS
 #define USE_TOUCH
 #endif
 
@@ -91,7 +91,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-#if WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS
+#if WINDOWS_PHONE || ANDROID || WINDOWS_8 || IOS
                 return mCurrentFrameAverageTouchPoints;
 
 #else
@@ -104,7 +104,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-#if WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS
+#if WINDOWS_PHONE || ANDROID || WINDOWS_8 || IOS
                 if (CurrentNumberOfTouches != mLastFrameNumberOfTouches)
                 {
                     return new Point();
@@ -220,7 +220,7 @@ namespace FlatRedBall.Input
             get
             {
                 int axisThreshold = GuiManager.Cursor.ClickNoSlideThreshold;
-#if WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS
+#if ANDROID || IOS
                 return ScreenReleased &&
                         System.Math.Abs(X - mPushedPoint.X) < axisThreshold &&
                         System.Math.Abs(Y - mPushedPoint.Y) < axisThreshold;
@@ -250,7 +250,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-#if WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS
+#if ANDROID || IOS
                 return mCurrentFrameAverageTouchPoints.X; 
 #else
                 return 0;
@@ -262,7 +262,7 @@ namespace FlatRedBall.Input
         {
             get 
             { 
-#if WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS
+#if ANDROID || IOS
                 return mCurrentFrameAverageTouchPoints.Y;
 #else
                 return 0;

@@ -1357,7 +1357,7 @@ namespace FlatRedBallAddOns.Entities
         }
         #endregion
 
-        if (saveObject is ScreenSave)
+        if (saveObject is ScreenSave screenSave)
         {
 
 
@@ -1373,7 +1373,7 @@ namespace FlatRedBallAddOns.Entities
             currentBlock = currentBlock
                 .Else();
 
-            GeneratePauseIgnoringActivity(currentBlock, saveObject);
+            GeneratePauseIgnoringActivity(currentBlock, screenSave);
 
             currentBlock = currentBlock
                 .End();
@@ -2447,8 +2447,13 @@ namespace FlatRedBallAddOns.Entities
 
     }
 
-    static void GeneratePauseIgnoringActivity(ICodeBlock codeBlock, IElement saveObject)
+    static void GeneratePauseIgnoringActivity(ICodeBlock codeBlock, GlueElement saveObject)
     {
+        foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators)
+        {
+            codeGenerator.GeneratePauseIgnoringActivity(codeBlock, saveObject);
+        }
+
         for (int i = 0; i < saveObject.NamedObjects.Count; i++)
         {
             if (saveObject.NamedObjects[i].IgnoresPausing)

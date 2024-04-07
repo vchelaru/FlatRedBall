@@ -39,11 +39,13 @@ namespace FlatRedBall.Glue.CodeGeneration
         public static void GenerateActivity(IElement saveObject, ICodeBlock codeBlock)
         {
             codeBlock.Line("#if DEBUG");
-            
+
             // in codeblock, write code to check if the mLastTimeCalledActivity is equal to the current time. If so, throw an exception
             // 9/2/2023 - activity gets called 2x at the beginning. I'm not sure if this is desirable, but until I figure this out, I'm going
-            // to tolerate double calls on frame 0
-            codeBlock.Line("if(mLastTimeCalledActivity > 0 && mLastTimeCalledActivity == FlatRedBall.TimeManager.CurrentScreenTime)")
+            // to tolerate double calls on frame 0.
+            // Miguel 02/04/2024 - Setting TimeFactor = 0 causes time to not advance causing this exception, but I think it should be a valid
+            // setting the user can choose.
+            codeBlock.Line("if(TimeManager.TimeFactor > 0 && mLastTimeCalledActivity > 0 && mLastTimeCalledActivity == FlatRedBall.TimeManager.CurrentScreenTime)")
                 .Line("{")
                 .Line("    throw new System.Exception(\"Activity was called twice in the same frame. This can cause objects to move 2x as fast.\");")
                 .Line("}")

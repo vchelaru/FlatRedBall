@@ -1,10 +1,7 @@
 name: FlatRedBall Editor
 
 on:
-  push:
-    branches: [ "NetStandard" ]
-  pull_request:
-    branches: [ "NetStandard" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -49,7 +46,7 @@ jobs:
     - name: Build
       run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\FRBDK\Glue\Glue with All.sln'
       
-    - name: Zip and upload templates
+    - name: Zip and upload FRBDK
       env: # Or as an environment variable
         username: ${{ secrets.FTPUSERNAME }}
         password: ${{ secrets.FTPPASSWORD }}

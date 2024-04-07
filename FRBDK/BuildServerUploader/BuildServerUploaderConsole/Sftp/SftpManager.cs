@@ -37,19 +37,19 @@ namespace BuildServerUploaderConsole.Sftp
             return new SftpClient(host, userName, password);
 
         }
-        public static void UploadFile(string localFileToUpload, string host, string targetFile, string userName, string password)
+        public static void UploadFile(string localFileToUpload, string host, string targetFile, string userName, string password, Action<ulong> uploadCallback)
         {
             using (var sftp = new SftpClient(host, userName, password))
             {
                 sftp.OperationTimeout = new TimeSpan(0, 0, seconds: 40);
                 sftp.Connect();
-                UploadFileWithOpenConnection(localFileToUpload, targetFile, sftp);
+                UploadFileWithOpenConnection(localFileToUpload, targetFile, sftp, uploadCallback);
 
                 sftp.Disconnect();
             }
         }
 
-        public static void UploadFileWithOpenConnection(string localFileToUpload, string targetFile, SftpClient sftp)
+        public static void UploadFileWithOpenConnection(string localFileToUpload, string targetFile, SftpClient sftp, Action<ulong> uploadCallback)
         {
             var directory = FlatRedBall.IO.FileManager.GetDirectory(targetFile, FlatRedBall.IO.RelativeType.Relative);
 
@@ -57,7 +57,7 @@ namespace BuildServerUploaderConsole.Sftp
 
             using (var file = File.OpenRead(localFileToUpload))
             {
-                sftp.UploadFile(file, targetFile, canOverride: true);
+                sftp.UploadFile(file, targetFile, canOverride: true, uploadCallback);
             }
         }
 
