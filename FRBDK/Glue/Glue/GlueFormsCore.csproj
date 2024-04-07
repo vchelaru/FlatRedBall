@@ -164,7 +164,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AsepriteDotNet" Version="1.6.0" />
+		<PackageReference Include="AsepriteDotNet" Version="1.7.4" />
 		<PackageReference Include="CompareNETObjects" Version="4.72.0" />
 		<PackageReference Include="DotNetZip" Version="1.16.0" />
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />
