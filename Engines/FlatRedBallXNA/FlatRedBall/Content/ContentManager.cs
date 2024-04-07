@@ -51,6 +51,10 @@ using FlatRedBall.Content.ContentLoaders;
 using FlatRedBall.Performance.Measurement;
 using FlatRedBall.IO;
 
+#if NET6_0_OR_GREATER
+using FlatRedBall.Content.Aseprite;
+#endif
+
 namespace FlatRedBall.Content
 {
     //public delegate void UnloadMethod();
@@ -670,8 +674,14 @@ namespace FlatRedBall.Content
 						//acl[0].ParentGifFileName = assetName;
 						//loadedAsset = acl;
 					}
-					else
+#if NET6_0_OR_GREATER
+                    else if(assetName.EndsWith("aseprite") || assetName.EndsWith("ase"))
 					{
+						loadedAsset = AsepriteFileLoader.Load(assetName).ToAnimationChainList();
+					}
+#endif
+                    else
+                    {
 						loadedAsset =
 							AnimationChainListSave.FromFile(assetName).ToAnimationChainList(mName);
 

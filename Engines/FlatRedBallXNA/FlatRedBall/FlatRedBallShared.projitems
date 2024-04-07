@@ -36,6 +36,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\AnimationChainListSave.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\AnimationChainSave.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\AnimationFrameSave.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Content\Aseprite\AsepriteFile.Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Content\ContentLoaders\AsepriteFileLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentLoaders\SongLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentLoaders\TextureContentLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentManager.cs" />

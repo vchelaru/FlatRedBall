@@ -46,7 +46,6 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             this.AddErrorReporter(new AnimationChainErrorReporter());
 
             AchxManager.Initialize(this);
-
         }
 
         private void AssignEvents()
@@ -56,7 +55,22 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             this.ReactToNamedObjectChangedValue += NamedObjectVariableChangeLogic.HandleNamedObjectChangedValue;
             this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
             this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
+            this.ReactToLoadedGluxEarly += HandleLoadedGluxEarly;
+            this.ReactToUnloadedGlux += HandleUnloadedGlux;
+        }
 
+        private void HandleLoadedGluxEarly()
+        {
+            var ati = AssetTypeInfoManager.Self.TryGetAsepriteAti();
+            if(ati != null)
+            {
+                base.AddAssetTypeInfo(ati);
+            }
+        }
+
+        private void HandleUnloadedGlux()
+        {
+            base.UnregisterAssetTypeInfos();
         }
 
         private bool TryHandleDoubleClick(ITreeNode tree)
