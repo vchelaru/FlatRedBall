@@ -7,7 +7,7 @@ using FlatRedBall.Math;
 namespace FlatRedBall.AI.LineOfSight
 {
     /// <summary>
-    /// A viiewer in a VisibilityGrid.  This typically is a unit which removes fog of war around it.
+    /// A viewer in a VisibilityGrid.  This typically is a unit which removes fog of war around it.
     /// </summary>
     public interface IViewer : IStaticPositionable
     {

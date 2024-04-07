@@ -515,6 +515,12 @@ namespace FlatRedBall.AI.LineOfSight
 
         }
 
+        /// <summary>
+        /// Reveals a circle around the argument indexes using a given tile radius
+        /// </summary>
+        /// <param name="xIndex">The x index on the grid</param>
+        /// <param name="yIndex">The y index on the grid</param>
+        /// <param name="tileRadius">The radius of the revealed circle in tiles.</param>
         public void RevealCircle(int xIndex, int yIndex, int tileRadius)
         {
             int f = 1 - tileRadius;
