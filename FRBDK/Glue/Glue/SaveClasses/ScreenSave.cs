@@ -44,6 +44,8 @@ namespace FlatRedBall.Glue.SaveClasses
 //        }
 
         [DefaultValue(false)]
+        [Obsolete("Don't use this anymore. As of April 2024 - this is very old and is likely not used anymore in modern projects." +
+            " We now use explicit layers.")]
         public bool IsOnOwnLayer
         {
             get;
