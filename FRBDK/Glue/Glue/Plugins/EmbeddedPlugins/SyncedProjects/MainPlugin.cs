@@ -107,20 +107,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             control.DataContext = viewModel;
 
             tab = CreateAndAddTab(control, "Projects", TabLocation.Left);
-            this.ReactToLoadedGlux += delegate
+            this.ReactToLoadedGlux += ()=>
             {
-                viewModel.CurrentProject = GlueState.Self.CurrentMainProject;
-                viewModel.SyncedProjects = GlueState.Self.SyncedProjects;
-
-                viewModel.Refresh();
+                RefreshViewModelProjects(viewModel);
             };
-            this.ReactToLoadedSyncedProject += delegate
+            this.ReactToLoadedSyncedProject += _ =>
             {
-                viewModel.CurrentProject = GlueState.Self.CurrentMainProject;
-                viewModel.SyncedProjects = GlueState.Self.SyncedProjects;
-
-
-                viewModel.Refresh();
+                RefreshViewModelProjects(viewModel);
             };
             this.ReactToUnloadedGlux += delegate
             {
@@ -130,6 +123,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
                 viewModel.Refresh();
             };
+        }
+
+        private static void RefreshViewModelProjects(SyncedProjectsViewModel viewModel)
+        {
+            viewModel.CurrentProject = GlueState.Self.CurrentMainProject;
+            viewModel.SyncedProjects = GlueState.Self.SyncedProjects;
+
+            viewModel.Refresh();
         }
 
         private void HandleSyncedProjectsClick(object sender, EventArgs e)

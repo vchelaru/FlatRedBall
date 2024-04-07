@@ -22,7 +22,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
         private void AddNewProjectClick(object sender, RoutedEventArgs e)
         {
-            NewProjectHelper.CreateNewSyncedProject();
+            var newProjectVm = NewProjectHelper.CreateNewSyncedProject();
+
+            if (newProjectVm != null)
+            {
+                ViewModel.CurrentProject = GlueState.Self.CurrentMainProject;
+                ViewModel.SyncedProjects = GlueState.Self.SyncedProjects;
+                ViewModel.Refresh();
+            }
         }
 
         private void AddProjectClick(object sender, RoutedEventArgs e)

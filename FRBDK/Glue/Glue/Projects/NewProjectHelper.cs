@@ -129,12 +129,12 @@ public static class NewProjectHelper
         }
     }
 
-    public static void CreateNewSyncedProject()
+    public static NewProjectViewModel CreateNewSyncedProject()
     {
         if(ProjectManager.ProjectBase == null)
         {
             MessageBox.Show(L.Texts.CouldNotCreateSyncedProject);
-            return;
+            return null;
         }
 
         // Gotta find the .sln of this project so we can put the synced project in there
@@ -181,5 +181,7 @@ public static class NewProjectHelper
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
         }
+
+        return viewModel;
     }
 }
