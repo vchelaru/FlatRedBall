@@ -60,8 +60,17 @@ namespace Gum.Wireframe
         [Obsolete("Use RollOn, RollOff, or RollOver")]
         public event WindowEvent DragOver;
 
+        /// <summary>
+        /// Event raised when the cursor first moves over this object.
+        /// </summary>
         public event WindowEvent RollOn;
+        /// <summary>
+        /// Event when the cursor first leaves this object.
+        /// </summary>
         public event WindowEvent RollOff;
+        /// <summary>
+        /// Event raised every frame the cursor is over this object.
+        /// </summary>
         public event WindowEvent RollOver;
         public event WindowEvent EnabledChange;
 
