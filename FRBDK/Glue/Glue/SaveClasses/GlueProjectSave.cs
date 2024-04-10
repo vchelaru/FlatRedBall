@@ -145,6 +145,9 @@ namespace FlatRedBall.Glue.SaveClasses
             // March 23, 2024
             CaseSensitiveLoading = 55,
 
+            // April 8, 2024
+            ScreensHaveDefaultLayer = 56,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
         }
@@ -153,7 +156,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.CaseSensitiveLoading;
+        public const int LatestVersion = (int)GluxVersions.ScreensHaveDefaultLayer;
 
         public int FileVersion { get; set; }
 

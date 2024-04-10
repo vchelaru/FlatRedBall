@@ -106,7 +106,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             return codeBlock;
         }
 
-        private static void GetEntitiesToInstantiateFactoriesFor(IElement element, out List<NamedObjectSave> entityLists, out List<EntitySave> entitiesToInitializeFactoriesFor)
+        private static void GetEntitiesToInstantiateFactoriesFor(IElement element, out List<NamedObjectSave> entityLists, out HashSet<EntitySave> entitiesToInitializeFactoriesFor)
         {
             entityLists = element.NamedObjects
                 .Where(nos => !nos.InstantiatedByBase &&
@@ -139,7 +139,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
                 }
             }
 
-            entitiesToInitializeFactoriesFor = entitiesToInitializeFactoriesForHash.ToList();
+            entitiesToInitializeFactoriesFor = entitiesToInitializeFactoriesForHash;
         }
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
@@ -149,7 +149,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             if (element is ScreenSave)
             {
                 List<NamedObjectSave> entityLists;
-                List<EntitySave> entityFactoriesToDestroy;
+                HashSet<EntitySave> entityFactoriesToDestroy;
                 GetEntitiesToInstantiateFactoriesFor(element, out entityLists, out entityFactoriesToDestroy);
 
 
@@ -177,15 +177,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
                     }
                 }
 
-                entityFactoriesToDestroy = entityFactoriesToDestroy.Distinct().ToList();
+                var shouldNullLayer = DoScreensSupportDefaultLayer;
 
                 foreach (var entityFactory in entityFactoriesToDestroy)
                 {
                     string entityClassName = FileManager.RemovePath(entityFactory.Name);
                     string line = $"Factories.{entityClassName}Factory.Destroy();";
-
                     codeBlock.Line(line);
-
+                    if(shouldNullLayer)
+                    {
+                        codeBlock.Line($"Factories.{entityClassName}Factory.DefaultLayer = null;");
+                    }
                 }
             }
             else if(element is EntitySave entitySave && entitySave.PooledByFactory && entitySave.CreatedByOtherEntities)
@@ -203,6 +205,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             return codeBlock;
         }
 
+        bool DoScreensSupportDefaultLayer =>
+            GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ScreensHaveDefaultLayer;
+
+
         private void GenerateInitializeFactoriesAndSorting(ICodeBlock codeBlock, GlueElement element)
         {
 
@@ -215,7 +221,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
 
 
             List<NamedObjectSave> entityLists;
-            List<EntitySave> entitiesToInitializeFactoriesFor;
+            HashSet<EntitySave> entitiesToInitializeFactoriesFor;
             GetEntitiesToInstantiateFactoriesFor(element, out entityLists, out entitiesToInitializeFactoriesFor);
 
             foreach (var entity in entitiesToInitializeFactoriesFor)
@@ -224,6 +230,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
                 string entityClassName = FileManager.RemovePath(entity.Name);
                 string factoryName = $"Factories.{entityClassName}Factory";
                 codeBlock.Line(factoryName + ".Initialize(ContentManagerName);");
+
+                if(DoScreensSupportDefaultLayer && element is ScreenSave)
+                {
+                    codeBlock.Line(factoryName + ".DefaultLayer = this.DefaultLayer;");
+                }
             }
 
             var allEntitiesWithFactories = GlueState.Self.CurrentGlueProject.Entities

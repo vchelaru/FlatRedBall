@@ -146,6 +146,20 @@ namespace FlatRedBall.Glue.SaveClasses
                     converter.RemovePathAndExtension = true;
                     typeConverter = converter;
                 }
+
+                if(typeConverter == null)
+                {
+                    var ati = containingElementAsIElement.GetAssetTypeInfo();
+                    if(ati != null)
+                    {
+                        var variableDef = ati.VariableDefinitions.Find(item => item.Name == customVariable.Name);
+                        // todo...
+                        if(variableDef != null)
+                        {
+                            typeConverter = TypeConverterLogic.GetTypeConverter(null, containingElement, customVariable.Name, runtimeType, null, variableDef);
+                        }
+                    }
+                }
             }
 
 

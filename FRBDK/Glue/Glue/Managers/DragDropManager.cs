@@ -477,7 +477,7 @@ public class DragDropManager : Singleton<DragDropManager>
         GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
 
         // run after generated code so plugins like level editor work off latest code
-        PluginManager.ReactToNewObject(newNamedObject);
+        PluginManager.ReactToNewObjectListAsync(new List<NamedObjectSave>() { newNamedObject });
 
     }
 
@@ -886,7 +886,7 @@ public class DragDropManager : Singleton<DragDropManager>
             throw new ArgumentNullException($"{nameof(blueprintEntity)} cannot be null");
         }
 
-        if (elementToCreateIn is EntitySave && ((EntitySave)elementToCreateIn).ImplementsIVisible && !blueprintEntity.ImplementsIVisible)
+        if (elementToCreateIn is EntitySave entityToCreateIn && entityToCreateIn.ImplementsIVisible && !blueprintEntity.ImplementsIVisible)
         {
             var mbmb = new MultiButtonMessageBoxWpf();
             mbmb.MessageText = "The Entity\n\n" + blueprintEntity +
@@ -949,7 +949,7 @@ public class DragDropManager : Singleton<DragDropManager>
         #endregion
 
         return await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectViewModel,
-            elementToCreateIn as GlueElement, null);
+            elementToCreateIn);
     }
 
     private static string IncrementNumberAtEndOfNewObject(IElement elementToCreateIn, string objectName)

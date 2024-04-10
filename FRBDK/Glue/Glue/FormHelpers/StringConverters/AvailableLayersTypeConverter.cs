@@ -44,13 +44,20 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
 
         public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            stringsToReturn.Clear();
+            var availableLayers = GetAvailableLayers(CurrentElement as GlueElement);
+            return new StandardValuesCollection(availableLayers);
+        }
+
+        public static List<string> GetAvailableLayers(GlueElement element)
+        {
+            List<string> stringsToReturn = new List<string>();
             stringsToReturn.Add("<NONE>");
             stringsToReturn.Add(UnderEverythingLayerName);
 
-            if (CurrentElement != null)
+            if (element != null)
             {
-                foreach (NamedObjectSave namedObjectSave in CurrentElement.NamedObjects)
+                // what about layers defined in base?
+                foreach (NamedObjectSave namedObjectSave in element.NamedObjects)
                 {
                     if (namedObjectSave.IsLayer)
                     {
@@ -59,11 +66,9 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
                 }
 
                 stringsToReturn.Add(TopLayerName);
-
-                return new StandardValuesCollection(stringsToReturn);
             }
 
-            return base.GetStandardValues(context);
+            return stringsToReturn;
         }
     }
 }

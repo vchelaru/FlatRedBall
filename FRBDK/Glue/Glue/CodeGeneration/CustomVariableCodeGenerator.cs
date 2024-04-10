@@ -34,6 +34,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                 var nosAti = owner.GetAssetTypeInfo();
                 variableDefinition = nosAti?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
             }
+            else
+            {
+                var elementAti = saveObject.GetAssetTypeInfo();
+                variableDefinition = elementAti?.VariableDefinitions.Find(item => item.Name == customVariable.Name);
+            }
 
             // Regarding customVariable.IsTunneling -
             // If a variable is tunneling, then we want to generate code for DefinedByBase - this means
@@ -634,13 +639,14 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Assignment
 
-        public static string GetRightSideOfEquals(CustomVariable customVariable, GlueElement glueElement, object forcedValue = null, string forcedType = null)
+        public static string GetRightSideOfEquals(CustomVariable customVariable, GlueElement customVariableOwner, object forcedValue = null, string forcedType = null)
         {
             string rightSide = "";
 
             CustomVariable variableConsideringDefinedByBase = customVariable?.GetDefiningCustomVariable();
 
             var alternative = ObjectFinder.Self.GetBaseCustomVariable(customVariable);
+
 
             IElement containerOfState = null;
 
@@ -660,9 +666,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // and if the type is unqualified, and if glueElement is not null, let's try by passing the container:
                 containerOfState = GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase);
 
-                if(containerOfState == null && glueElement != null && customVariable.Type?.Contains(".") == false)
+                if(containerOfState == null && customVariableOwner != null && customVariable.Type?.Contains(".") == false)
                 {
-                    containerOfState = GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase, glueElement);
+                    containerOfState = GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase, customVariableOwner);
                 }   
             }
 
@@ -677,7 +683,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // AssetTypeInfo and see if it's a polygon...
                 rightSide =
                     CodeParser.ConvertValueToCodeString(forcedValue ?? customVariable.DefaultValue, overridingType);
-                NamedObjectSave namedObject = glueElement.GetNamedObjectRecursively(variableConsideringDefinedByBase?.SourceObject);
+                NamedObjectSave namedObject = customVariableOwner.GetNamedObjectRecursively(variableConsideringDefinedByBase?.SourceObject);
 
 
                 if ((!string.IsNullOrEmpty(forcedType) && CustomVariableExtensionMethods.GetIsFile(forcedType)) || variableConsideringDefinedByBase?.GetIsFile() == true)
@@ -693,7 +699,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     if (ShouldAssignToCsv(variableConsideringDefinedByBase, rightSide))
                     {
-                        rightSide = GetAssignmentToCsvItem(customVariable, glueElement, rightSide);
+                        rightSide = GetAssignmentToCsvItem(customVariable, customVariableOwner, rightSide);
                     }
                     else
                     {
@@ -739,9 +745,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                         rightSide = type + "." + rightSide.Replace("\"", "");
                     }
                 }
-                 //This code was setting the variable to "null" but if it's explicitly "", then we should leave it as that because that's what is used
-                 //for instructions. We want instructions and variables to work the same way, I think, but I'm leaving this here incase it does cause complications
-                 // Update May 23, 2023 - this is important because values of types like `decimal?` can be nullable, and so they should assign null
+                    //This code was setting the variable to "null" but if it's explicitly "", then we should leave it as that because that's what is used
+                    //for instructions. We want instructions and variables to work the same way, I think, but I'm leaving this here incase it does cause complications
+                    // Update May 23, 2023 - this is important because values of types like `decimal?` can be nullable, and so they should assign null
                 else if ( (variableConsideringDefinedByBase?.Type != "string" || (forcedType != null && forcedType != "string")) && rightSide == "\"\"")
                 {
                     rightSide = null;
@@ -805,9 +811,16 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         // Note - this code is very similar to StateCodeGenerator.cs's GetRightSideAssignmentValueAsString
         // Unify?
-        public static ICodeBlock AppendAssignmentForCustomVariableInElement(ICodeBlock codeBlock, CustomVariable customVariable, IElement saveObject)
+        public static ICodeBlock AppendAssignmentForCustomVariableInElement(ICodeBlock codeBlock, CustomVariable customVariable, GlueElement saveObject)
         {
             var glueElement = saveObject as GlueElement;
+
+            var ati = saveObject.GetAssetTypeInfo();
+            var variableDefinition = ati?.VariableDefinitions.Find(item => item.Name == customVariable.Name);
+            if(variableDefinition?.CustomGenerationFunc != null)
+            {
+                codeBlock.Line(variableDefinition.CustomGenerationFunc(saveObject, null, null, customVariable.Name));
+            }
 
             // Victor Chelaru
             // December 17, 2014
@@ -819,7 +832,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // will always get assigned first, then the derived
             // can override it.
             //if (!customVariable.SetByDerived && 
-            if (customVariable.DefaultValue != null && // if it's null the user doesn't want to change what is set in the file or in the source object
+            else if (customVariable.DefaultValue != null && // if it's null the user doesn't want to change what is set in the file or in the source object
                 !customVariable.IsShared && // no need to handle statics here because they're always defined in class scope
                 !IsVariableTunnelingToDisabledObject(customVariable, glueElement)
                 )
@@ -1396,18 +1409,18 @@ namespace FlatRedBall.Glue.CodeGeneration
             else if (usesStandardCodeGen)
             {
                 CustomVariable customVariable = null;
-                EntitySave entitySave = null;
+                EntitySave nosSourceEntity = null;
                 if (namedObject.SourceType == SourceType.Entity && !string.IsNullOrEmpty(namedObject.SourceClassType))
                 {
-                    entitySave = ObjectFinder.Self.GetEntitySave(namedObject.SourceClassType);
-                    if (entitySave != null)
+                    nosSourceEntity = ObjectFinder.Self.GetEntitySave(namedObject.SourceClassType);
+                    if (nosSourceEntity != null)
                     {
-                        customVariable = entitySave.GetCustomVariable(instructionSave.Member);
+                        customVariable = nosSourceEntity.GetCustomVariable(instructionSave.Member);
                     }
                 }
 
 
-                IElement rootElementForVariable = entitySave;
+                GlueElement rootElementForVariable = nosSourceEntity;
                 string rootVariable = instructionSave.Member;
                 var handledByTunneledCustomCodeGeneration = false;
                 while (customVariable != null && customVariable.IsTunneling)
@@ -1443,12 +1456,17 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 // We do a check up top to see if we should skip generation, but that's based on null values.
                 // This check requires a little more context.
-                bool shouldSkipGeneration = customVariable?.GetIsVariableState(entitySave) == true &&
+                bool shouldSkipGeneration = customVariable?.GetIsVariableState(nosSourceEntity) == true &&
                     (instructionSave.Value as string) == "<NONE>";
 
                 if(!shouldSkipGeneration && !handledByTunneledCustomCodeGeneration)
                 {
-                    AppendCustomVariableInInstanceStandard(namedObject, codeBlock, instructionSave, ati, entitySave, customVariable, rootVariable);
+                    GlueElement customVariableOwner = nosSourceEntity;
+                    if(customVariable?.SourceObject == null)
+                    {
+                        customVariableOwner = nosOwner;
+                    }
+                    AppendCustomVariableInInstanceStandard(namedObject, codeBlock, instructionSave, ati, customVariableOwner, customVariable, rootVariable);
 
                 }
             }
@@ -1461,7 +1479,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         private static void AppendCustomVariableInInstanceStandard(NamedObjectSave namedObject, ICodeBlock codeBlock, 
-            InstructionSave instructionSave, AssetTypeInfo ati, IElement entitySave, CustomVariable customVariable, string rootVariable)
+            InstructionSave instructionSave, AssetTypeInfo ati, GlueElement customVariableOwner, CustomVariable customVariable, string rootVariable)
         {
             // old code - this is replaced by GetRightSideOfEquals, but leaving this here in case anyone reports codegen errors
             //object objectToParse = instructionSave.Value;
@@ -1510,7 +1528,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
 
-            var rightSide = GetRightSideOfEquals(customVariable, entitySave as GlueElement, instructionSave.Value, instructionSave.Type);
+            var rightSide = GetRightSideOfEquals(customVariable, customVariableOwner, instructionSave.Value, instructionSave.Type);
 
             //if(value != rightSide)
             //{

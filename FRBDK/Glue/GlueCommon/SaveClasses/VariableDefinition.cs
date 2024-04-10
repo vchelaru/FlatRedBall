@@ -35,11 +35,11 @@ namespace FlatRedBall.Glue.Elements
         public bool UsesCustomCodeGeneration { get; set; }
 
         /// <summary>
-        /// Func returning the assignment for a variable.
+        /// Func returning the assignment for a variable. Variables are: The owning element, 
+        /// the NamedObjectSave, the ReferencedFileSave, and the name of the variable which may be a tunneled variable.
         /// </summary>
         [XmlIgnore]
         [JsonIgnore]
-        // The second to last string is the name of the variable, which may be a tunneled variable
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> CustomGenerationFunc;
 
         /// <summary>

@@ -150,6 +150,13 @@ public static class IElementExtensionMethods
         }
     }
 
+    /// <summary>
+    /// Gets the value of the argument variable recurisvely, checking "this" first, then the base elements. If this variable
+    /// is on a NamedObjectSave, this searches the NamedObjectSave source type recursively too.
+    /// </summary>
+    /// <param name="element">The element owning the variable.</param>
+    /// <param name="variableName">The variable name.</param>
+    /// <returns>The value found recursively.</returns>
     public static object GetVariableValueRecursively(this GlueElement element, string variableName)
     {
         //////////////////////Early Out///////////////////////////////////
@@ -612,7 +619,7 @@ public static class IElementExtensionMethods
     {
         if (element is ScreenSave)
         {
-            return null;
+            return AvailableAssetTypes.CommonAtis.Screen;
         }
         else if (!string.IsNullOrEmpty(element.BaseElement))
         {

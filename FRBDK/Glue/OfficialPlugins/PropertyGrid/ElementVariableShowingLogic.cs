@@ -19,6 +19,7 @@ using WpfDataUi.Controls;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Controls;
+using OfficialPlugins.PropertyGrid;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -27,6 +28,12 @@ namespace OfficialPlugins.VariableDisplay
 
         private static DataGridItem CreateInstanceMemberForVariable(GlueElement element, CustomVariable variable)
         {
+            AssetTypeInfo elementAti = null;
+            if(element is ScreenSave)
+            {
+                elementAti = AvailableAssetTypes.CommonAtis.Screen;
+            }
+
             Type type = variable.GetRuntimeType();
             if (type == null)
             {
@@ -227,7 +234,7 @@ namespace OfficialPlugins.VariableDisplay
 
             List<MemberCategory> categories = new List<MemberCategory>();
 
-            CreateAndAddCategory(categories, Localization.Texts.Variables);
+            CreateAndAddDefaultCategory(categories, Localization.Texts.Variables);
             CreateInstanceMembersForVariables(element, categories);
 
             AddAlternatingColors(grid, categories);
@@ -256,7 +263,7 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static MemberCategory CreateAndAddCategory(List<MemberCategory> categories, string categoryLabel)
+        private static MemberCategory CreateAndAddDefaultCategory(List<MemberCategory> categories, string categoryLabel)
         {
             var defaultCategory = new MemberCategory(categoryLabel);
             defaultCategory.FontSize = 14;
@@ -266,7 +273,15 @@ namespace OfficialPlugins.VariableDisplay
 
         private static void CreateInstanceMembersForVariables(GlueElement element, List<MemberCategory> categories)
         {
-            var variableDefinitions = PluginManager.GetVariableDefinitionsFor(element);
+            List<VariableDefinition> variableDefinitions = new List<VariableDefinition>();
+
+            if(element is ScreenSave)
+            {
+                var screenAti = AvailableAssetTypes.CommonAtis.Screen;
+                variableDefinitions.AddRange(screenAti.VariableDefinitions);
+            }
+
+            variableDefinitions.AddRange(PluginManager.GetVariableDefinitionsFor(element));
             foreach (var variableDefinition in variableDefinitions)
             {
                 var customVariable = element.GetCustomVariable(variableDefinition.Name);
@@ -277,7 +292,13 @@ namespace OfficialPlugins.VariableDisplay
                     customVariable.DefaultValue = variableDefinition.DefaultValue;
                     customVariable.Name = variableDefinition.Name;
                     customVariable.Type = variableDefinition.Type;
+                    if(variableDefinition.CustomGetForcedOptionFunc != null)
+                    {
+                        customVariable.CustomGetForcedOptionsFunc = element => variableDefinition.CustomGetForcedOptionFunc(element, null, null);
+
+                    }
                     // category?
+                    customVariable.Category = variableDefinition.Category;
 
                     element.CustomVariables.Add(customVariable);
 
@@ -297,73 +318,79 @@ namespace OfficialPlugins.VariableDisplay
 
                 if (category == null)
                 {
-                    category = CreateAndAddCategory(categories, categoryName);
+                    category = CreateAndAddDefaultCategory(categories, categoryName);
                 }
 
                 category.Members.Add(instanceMember);
             }
 
+            // April 24, 2024
+            // What does this code
+            // do? It seems to create
+            // isntances, but never adds 
+            // them. Does it need to be here?
+            //foreach (var variable in variableDefinitions)
+            //{
+            //    var type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variable.Type);
 
-            foreach (var variable in variableDefinitions)
-            {
-                var type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variable.Type);
+            //    if (type == null)
+            //    {
+            //        type = typeof(string);
+            //    }
 
-                if (type == null)
-                {
-                    type = typeof(string);
-                }
+            //    string name = variable.Name;
 
-                string name = variable.Name;
+            //    var instanceMember = new DataGridItem();
+            //    instanceMember.CustomGetTypeEvent += (throwaway) => type;
+            //    string displayName = StringFunctions.InsertSpacesInCamelCaseString(name);
 
-                var instanceMember = new DataGridItem();
-                instanceMember.CustomGetTypeEvent += (throwaway) => type;
-                string displayName = StringFunctions.InsertSpacesInCamelCaseString(name);
+            //    // Currently this only works on TextBox variables - eventually will expand
+            //    // we don't have this on variable definitions
+            //    //instanceMember.DetailText = variable.Summary;
 
-                // Currently this only works on TextBox variables - eventually will expand
-                // we don't have this on variable definitions
-                //instanceMember.DetailText = variable.Summary;
+            //    instanceMember.DisplayName = displayName;
+            //    instanceMember.UnmodifiedVariableName = name;
 
-                instanceMember.DisplayName = displayName;
-                instanceMember.UnmodifiedVariableName = name;
+            //    // todo - figure out type converters?
+            //    //TypeConverter converter = variable.GetTypeConverter(element);
+            //    //instanceMember.TypeConverter = converter;
 
-                // todo - figure out type converters?
-                //TypeConverter converter = variable.GetTypeConverter(element);
-                //instanceMember.TypeConverter = converter;
+            //    instanceMember.CustomSetPropertyEvent += (intance, args) =>
+            //    {
+            //        var value = args.Value;
+            //        instanceMember.IsDefault = false;
 
-                instanceMember.CustomSetPropertyEvent += (intance, args) =>
-                {
-                    var value = args.Value;
-                    instanceMember.IsDefault = false;
+            //        RefreshLogic.IgnoreNextRefresh();
 
-                    RefreshLogic.IgnoreNextRefresh();
+            //        var customVariable = element.GetCustomVariable(name);
+            //        var oldValue = customVariable?.DefaultValue;
+            //        if (customVariable == null)
+            //        {
+            //            element.CustomVariables.Add(new CustomVariable() { Name = name });
+            //        }
+            //        element.Properties.SetValue(name, value);
 
-                    var customVariable = element.GetCustomVariable(name);
-                    var oldValue = customVariable?.DefaultValue;
-                    if(customVariable == null)
-                    {
-                        element.CustomVariables.Add(new CustomVariable() { Name = name });
-                    }
-                    element.Properties.SetValue(name, value);
-
-                    // todo - do we need this?
-                    //EditorObjects.IoC.Container.Get<CustomVariableSaveSetVariableLogic>().ReactToCustomVariableChangedValue(
-                    //        "DefaultValue", variable, oldValue);
+            //        // todo - do we need this?
+            //        //EditorObjects.IoC.Container.Get<CustomVariableSaveSetVariableLogic>().ReactToCustomVariableChangedValue(
+            //        //        "DefaultValue", variable, oldValue);
 
 
 
-                    var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
+            //        var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
 
-                    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+            //        GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                };
+            //        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+            //    };
 
-                instanceMember.CustomGetEvent += (instance) =>
-                {
-                    var foundVariable = element.GetCustomVariableRecursively(name);
-                    return foundVariable?.DefaultValue;
-                };
-            }
+            //    instanceMember.CustomGetEvent += (instance) =>
+            //    {
+            //        var foundVariable = element.GetCustomVariableRecursively(name);
+            //        return foundVariable?.DefaultValue;
+            //    };
+
+            //    instanceMember.TypeConverter = TypeConverterLogic.GetTypeConverter(null, element, name, type, null, variable);
+            //}
         }
     }
 }

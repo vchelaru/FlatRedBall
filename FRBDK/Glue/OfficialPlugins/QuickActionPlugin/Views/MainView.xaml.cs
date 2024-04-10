@@ -6,6 +6,7 @@ using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.ViewModels;
 using GlueFormsCore.Managers;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -144,7 +145,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             AnyButtonClicked();
         }
 
-        private void AddObjectToListButton_Clicked(object sender, RoutedEventArgs e)
+        private async void AddObjectToListButton_Clicked(object sender, RoutedEventArgs e)
         {
             var namedObject = new NamedObjectSave();
             namedObject.SetDefaults();
@@ -188,15 +189,17 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
-            PluginManager.ReactToNewObject(namedObject);
-            if(targetList != null)
+            //PluginManager.ReactToNewObject(namedObject);
+            await PluginManager.ReactToNewObjectListAsync(new List<NamedObjectSave>() { namedObject });
+
+            if (targetList != null)
             {
-                PluginManager.ReactToObjectContainerChanged(namedObject, targetList);
+                await PluginManager.ReactToObjectContainerChanged(namedObject, targetList);
             }
 
             GlueState.Self.CurrentNamedObjectSave = namedObject;
 
-            GlueCommands.Self.GluxCommands.SaveElementAsync(targetElement);
+            await GlueCommands.Self.GluxCommands.SaveElementAsync(targetElement);
 
             AnyButtonClicked();
         }

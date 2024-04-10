@@ -1001,11 +1001,21 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToScreenRemoved != null);
         }
 
-        internal static void ReactToElementVariableChange(IElement element, CustomVariable variable)
+        internal static void ReactToElementVariableChange(GlueElement element, CustomVariable variable, object oldValue)
         {
             CallMethodOnPlugin(
-                plugin => plugin.ReactToElementVariableChange(element, variable),
-                plugin => plugin.ReactToElementVariableChange != null);
+                plugin =>
+                {
+                    if(plugin.ReactToGlueElementVariableChanged != null)
+                    {
+                        plugin.ReactToGlueElementVariableChanged(element, variable, oldValue);
+                    }
+                    if(plugin.ReactToElementVariableChange != null)
+                    {
+                        plugin.ReactToElementVariableChange(element, variable);
+                    }
+                },
+                plugin => plugin.ReactToElementVariableChange != null || plugin.ReactToGlueElementVariableChanged != null);
         }
 
         internal static void ReactToElementRenamed(IElement elementToRename, string oldName)
@@ -1015,6 +1025,7 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToElementRenamed != null);
         }
 
+        [Obsolete("Use ReactToNewObjectListAsync since that does all the proper fallbacks")]
         public static void ReactToNewObject(NamedObjectSave newObject) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToNewObjectHandler(newObject),

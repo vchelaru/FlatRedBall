@@ -1517,7 +1517,7 @@ public class GluxCommands : IGluxCommands
         return newNos;
     }
 
-    public async Task AddNamedObjectToAsync(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true,
+    public async Task AddNamedObjectToAsync(NamedObjectSave newNos, GlueElement elementToAddTo, NamedObjectSave listToAddTo = null, bool selectNewNos = true,
          bool performSaveAndGenerateCode = true, bool updateUi = true)
     {
         await TaskManager.Self.AddAsync(async () =>
@@ -1529,26 +1529,26 @@ public class GluxCommands : IGluxCommands
                 NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(newNos, listToAddTo);
 
             }
-            else if (element != null)
+            else if (elementToAddTo != null)
             {
                 if (newNos.IsList)
                 {
-                    var firstInstance = element.NamedObjects.FirstOrDefault(
+                    var firstInstance = elementToAddTo.NamedObjects.FirstOrDefault(
                         item => item.IsList == false && item.IsLayer == false && item.IsCollisionRelationship() == false);
 
                     if (firstInstance != null)
                     {
-                        var index = element.NamedObjects.IndexOf(firstInstance);
-                        element.NamedObjects.Insert(index, newNos);
+                        var index = elementToAddTo.NamedObjects.IndexOf(firstInstance);
+                        elementToAddTo.NamedObjects.Insert(index, newNos);
                     }
                     else
                     {
-                        element.NamedObjects.Add(newNos);
+                        elementToAddTo.NamedObjects.Add(newNos);
                     }
                 }
                 else
                 {
-                    element.NamedObjects.Add(newNos);
+                    elementToAddTo.NamedObjects.Add(newNos);
                 }
             }
             if (ati != null && ati.DefaultPublic)
@@ -1556,9 +1556,9 @@ public class GluxCommands : IGluxCommands
                 newNos.HasPublicProperty = true;
             }
 
-            var entity = element as EntitySave;
+            var entityToAddTo = elementToAddTo as EntitySave;
 
-            if (entity != null && entity.CreatedByOtherEntities && entity.PooledByFactory)
+            if (entityToAddTo != null && entityToAddTo.CreatedByOtherEntities && entityToAddTo.PooledByFactory)
             {
                 bool wasAnythingAdded =
                     FlatRedBall.Glue.Factories.FactoryManager.AddResetVariablesFor(newNos);
@@ -1571,11 +1571,11 @@ public class GluxCommands : IGluxCommands
 
             if (performSaveAndGenerateCode)
             {
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementToAddTo);
             }
 
             // run after generated code so plugins like level editor work off latest code
-            PluginManager.ReactToNewObject(newNos);
+            await PluginManager.ReactToNewObjectListAsync(new List<NamedObjectSave>(){ newNos});
             if (listToAddTo != null)
             {
                 await PluginManager.ReactToObjectContainerChanged(newNos, listToAddTo);
@@ -1587,7 +1587,7 @@ public class GluxCommands : IGluxCommands
                 {
                     MainGlueWindow.Self.PropertyGrid.Refresh();
                     PropertyGridHelper.UpdateNamedObjectDisplay();
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToAddTo);
 
                     if (selectNewNos)
                     {
@@ -1600,7 +1600,7 @@ public class GluxCommands : IGluxCommands
             {
                 GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
-        }, $"Adding named object {newNos.InstanceName} to {element.Name}");
+        }, $"Adding named object {newNos.InstanceName} to {elementToAddTo.Name}");
     }
 
     public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true,
@@ -1999,7 +1999,9 @@ public class GluxCommands : IGluxCommands
 
             if (notifyPlugins)
             {
-                PluginManager.ReactToNewObject(newNos);
+                //PluginManager.ReactToNewObject(newNos);
+                await PluginManager.ReactToNewObjectListAsync(new List<NamedObjectSave>() { newNos });
+
                 if (listOfThisType != null)
                 {
                     PluginManager.ReactToObjectContainerChanged(newNos, listOfThisType);

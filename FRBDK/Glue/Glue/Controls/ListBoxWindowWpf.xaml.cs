@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -79,6 +80,38 @@ namespace FlatRedBall.Glue.Controls
             };
             this.ButtonStackPanel.Children.Add(button);
             mButtons.Add(button);
+        }
+
+        public void ShowYesNoButtons()
+        {
+            this.ButtonStackPanel.Children.Clear();
+
+            Button yesButton = new Button();
+
+            yesButton.Content = "Yes";
+            yesButton.Tag = "Yes";
+            yesButton.Click += (not, used) =>
+            {
+                ClickedOption = "yes";
+                this.DialogResult = true;
+            };
+            this.ButtonStackPanel.Children.Add(yesButton);
+            mButtons.Add(yesButton);
+
+            Button noButton = new Button();
+
+            noButton.Content = "No";
+            noButton.Tag = "No";
+            noButton.Click += (not, used) =>
+            {
+                ClickedOption = "no";
+                this.DialogResult = false;
+            };
+            this.ButtonStackPanel.Children.Add(noButton);
+            mButtons.Add(noButton);
+
+
+
         }
     }
 

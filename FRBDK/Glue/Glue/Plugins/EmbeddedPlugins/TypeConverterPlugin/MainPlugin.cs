@@ -18,20 +18,26 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
     {
         public override void StartUp()
         {
-            this.GetTypeConverter += HandleGetTypeConverter;
+            this.GetTypeConverter += HandleGetInstanceTypeConverter;
         }
 
-        private TypeConverter HandleGetTypeConverter(IElement containerAsIElement, NamedObjectSave instance, Type memberType, string memberName, string customType)
+        private TypeConverter HandleGetInstanceTypeConverter(IElement containerAsIElement, NamedObjectSave instance, Type memberType, string memberName, string customType)
         {
+            ///////////////////////////////////Early Out///////////////////////////////////
+            if(instance == null)
+            {
+                // Instances can be null - we can have type converters on core elements such as Screens for the DefaultLayer property.
+                //    throw new ArgumentNullException(nameof(instance));
+                return null;
+            }
+            //////////////////////////////////End Early Out///////////////////////////////////
+
             if(memberType == null)
             {
                 throw new ArgumentNullException(nameof(memberType));
             }
 
-            if(instance == null)
-            {
-                throw new ArgumentNullException(nameof(instance));
-            }
+
             GlueElement container = containerAsIElement as GlueElement;
             TypeConverter typeConverter = null;
 

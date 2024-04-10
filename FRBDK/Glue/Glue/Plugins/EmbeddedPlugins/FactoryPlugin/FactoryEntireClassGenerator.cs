@@ -176,6 +176,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             ICodeBlock codeBlock = new CodeDocument();
 
             codeBlock.Line("public static FlatRedBall.Math.Axis? SortAxis { get; set;}");
+            codeBlock.Line("public static Layer DefaultLayer { get; set; }");
 
             GetCreateNewFactoryMethods(codeBlock, factoryClassName, poolObjects, baseClassName);
             codeBlock._();
@@ -227,17 +228,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             // no tabs needed on first line
             codeBlock
                 .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "float x = 0, float y = 0, float z = 0")
-                    .Line("return CreateNew(null, x, y, z);")
+                    .Line("return CreateNew(DefaultLayer, x, y, z);")
                 .End();
 
             codeBlock
                 .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Microsoft.Xna.Framework.Vector3 position")
-                    .Line("return CreateNew(null, position.X, position.Y, position.Z);")
+                    .Line("return CreateNew(DefaultLayer, position.X, position.Y, position.Z);")
                 .End();
 
             codeBlock
                 .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Microsoft.Xna.Framework.Vector2 position")
-                    .Line("return CreateNew(null, position.X, position.Y, 0);")
+                    .Line("return CreateNew(DefaultLayer, position.X, position.Y, 0);")
                 .End();
 
 

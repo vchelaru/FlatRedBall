@@ -1127,7 +1127,7 @@ namespace FlatRedBallAddOns.Entities
                 {
                     if (customVariable.SourceObject == nos.InstanceName)
                     {
-                        CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInElement(currentBlock, customVariable, saveObject);
+                        CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInElement(currentBlock, customVariable, saveObject as GlueElement);
                     }
                 }    
             }
@@ -2717,7 +2717,7 @@ namespace FlatRedBallAddOns.Entities
         }
     }
 
-    private static void GenerateAssignCustomVariables(ICodeBlock codeBlock, IElement element)
+    private static void GenerateAssignCustomVariables(ICodeBlock codeBlock, GlueElement element)
     {
         bool inherits = !string.IsNullOrEmpty(element.BaseElement) && !element.InheritsFromFrbType();
 

@@ -42,6 +42,8 @@ namespace FlatRedBall.Glue.Elements
 
         public AssetTypeInfo ShapeCollection { get; set; }
         public AssetTypeInfo RenderTarget { get; set; }
+
+        public AssetTypeInfo Screen { get; set; }
     }
 
     public class AvailableAssetTypes
@@ -204,6 +206,18 @@ namespace FlatRedBall.Glue.Elements
             CommonAtis.ShapeCollection = GetAti("Shape Collection (.shcx)");
 
             CommonAtis.PositionedObjectList = GetAti("PositionedObjectList (Generic)");
+
+            CommonAtis.Screen = new AssetTypeInfo()
+            {
+                QualifiedRuntimeTypeName = new PlatformSpecificType
+                {
+                    QualifiedType = "FlatRedBall.Screens.Screen",
+                },
+                FriendlyName = "Screen",
+
+            };
+
+            AvailableAssetTypes.Self.AddAssetType(CommonAtis.Screen);
 
         }
 

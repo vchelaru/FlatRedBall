@@ -153,7 +153,7 @@ public class CustomVariableSaveSetPropertyLogic
                 }
             }
 
-            Plugins.PluginManager.ReactToElementVariableChange(currentElement, customVariable);
+            Plugins.PluginManager.ReactToElementVariableChange(currentElement, customVariable, oldValue);
         }
 
         #endregion

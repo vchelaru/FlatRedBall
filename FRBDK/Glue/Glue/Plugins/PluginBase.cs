@@ -293,13 +293,20 @@ namespace FlatRedBall.Glue.Plugins
         /// <summary>
         /// Delegate called whenever a new NamedObjectSave is added.
         /// </summary>
+        [Obsolete("Use ReactToNewObjectListAsync and use the TaskManager.AddAsync to properly work with the Glue objects")]
         public ReactToNewObjectDelegate ReactToNewObjectHandler { get; protected set; }
 
         /// <summary>
         /// Delegate called whenever a group of new NamedObjectSaves is added. If this is null, then the PluginManager
         /// falls back to calling ReactToNewObjectHandler.
         /// </summary>
+        [Obsolete("use ReactToNewObjectListAsync and use the TaskManager.AddAsync to properly work with the Glue objects")]
         public Action<List<NamedObjectSave>> ReactToNewObjectList { get; protected set; }
+        /// <summary>
+        /// Delegate called whenever any new NamedObjectSaves are added to the Glue project. This is async so that it can
+        /// use TaskManager.AddAsync to properly work with the Glue objects. To get the owner of the NamedObjectSaves, use
+        /// ObjectFinder.Self.GetElementContaining(namedObjectSave)
+        /// </summary>
         public Func<List<NamedObjectSave>, Task> ReactToNewObjectListAsync { get; protected set; }
 
         public Action<IElement, NamedObjectSave> ReactToObjectRemoved { get; protected set; }
@@ -340,7 +347,10 @@ namespace FlatRedBall.Glue.Plugins
         /// <summary>
         /// Action raised when a variable changes. The IElement is the container of the variable, the CustomVariable is the changed variable.
         /// </summary>
+        [Obsolete("Use ReactToGlueElementVariableChanged")]
         public Action<IElement, CustomVariable> ReactToElementVariableChange { get; protected set; }
+
+        public Action<GlueElement, CustomVariable, object> ReactToGlueElementVariableChanged { get; protected set; }
 
         /// <summary>
         /// Raised whenever an element (screen or entity) is renamed. First parameter is the
