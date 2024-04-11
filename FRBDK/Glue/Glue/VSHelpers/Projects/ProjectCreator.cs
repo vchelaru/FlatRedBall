@@ -267,7 +267,17 @@ Additional Info:
         private static ProjectBase TryGetProjectTypeFromDefineConstants(Project coreVisualStudioProject, out string message)
         {
             string preProcessorConstants = GetPreProcessorConstantsFromProject(coreVisualStudioProject);
-            var frameworkProperty = coreVisualStudioProject.AllEvaluatedProperties.FirstOrDefault(item => item.Name == "TargetFrameworkVersion");
+
+            var frameworkProperty =
+                // April 11, 2024
+                // The .csproj contains a TargetFramework which is the desired framework; however if the .csproj is 
+                // referencing .net framework (.net 4) libs, then TargetFrameworkVersion is going to be 4.0.
+                // By using TargetFramework, we use whatever the user wants to use, but by using TargetFrameworkVersion
+                // we use whatever msbuild is evaluating. 
+                // I'm not sure which we should use, but since upgrading from .NET framework up to net 6 is so rare these 
+                // days, we can prob just keep using TargetFrameworkVersion since that's been tested for longer.
+                //coreVisualStudioProject.AllEvaluatedProperties.FirstOrDefault(item => item.Name == "TargetFramework") ??
+                coreVisualStudioProject.AllEvaluatedProperties.FirstOrDefault(item => item.Name == "TargetFrameworkVersion");
             var dotNetVersionString = frameworkProperty?.EvaluatedValue;
             Version dotNetVersion = null;
             if (dotNetVersionString?.StartsWith("v") == true)
