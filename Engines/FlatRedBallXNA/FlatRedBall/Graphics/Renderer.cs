@@ -1199,7 +1199,7 @@ namespace FlatRedBall.Graphics
         }
 #endif
 
-        internal static void ForceSetColorOperation(ColorOperation value)
+        public static void ForceSetColorOperation(ColorOperation value)
         {
             mLastColorOperationSet = value;
 
@@ -1301,7 +1301,7 @@ namespace FlatRedBall.Graphics
 
 
 
-        internal static void ForceSetBlendOperation()
+        public static void ForceSetBlendOperation()
         {
             switch (mBlendOperation)
             {
