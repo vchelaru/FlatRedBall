@@ -26,6 +26,7 @@ using Effect = Microsoft.Xna.Framework.Graphics.Effect;
 using Microsoft.Xna.Framework.Content;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Performance.Measurement;
+using FlatRedBall.Graphics.PostProcessing;
 
 
 
@@ -380,8 +381,6 @@ namespace FlatRedBall.Graphics
 
         #region Properties
 
-
-
         #region Public Properties
 
         //public static RendererDiagnosticSettings RendererDiagnosticSettings
@@ -389,9 +388,6 @@ namespace FlatRedBall.Graphics
         //    get;
         //    set;
         //}
-
-
-
 
         static public Texture2D Texture
         {
@@ -526,10 +522,6 @@ namespace FlatRedBall.Graphics
             get { return mPositionColorTexture; }
         }
 
-
-
-
-
         public static bool IsInRendering
         {
             get;
@@ -540,6 +532,8 @@ namespace FlatRedBall.Graphics
         {
             get { return mCurrentRenderMode; }
         }
+
+        public static SwapChain SwapChain { get; set; }
 
 
         [Obsolete("Use LastFrameRenderBreakList instead")]
@@ -612,6 +606,8 @@ namespace FlatRedBall.Graphics
         /// Disabled by default.
         /// </summary>
         public static bool LinearizeTextures { get; set; }
+
+        public static List<IPostProcess> GlobalPostProcesses { get; private set; } = new List<IPostProcess>();
 
         #endregion
 
@@ -1059,11 +1055,56 @@ namespace FlatRedBall.Graphics
         // renders.
         public static void Draw(Section section)
         {
+            var hasGlobalPostProcessing = GlobalPostProcesses.Count > 0;
+#if DEBUG
+            if (hasGlobalPostProcessing && SwapChain == null)
+            {
+                throw new InvalidOperationException("SwapChain must be set prior to rendering the first frame if using any post processing");
+            }
+#endif
+
+            if(hasGlobalPostProcessing)
+            {
+                SetRenderTargetForPostProcessing();
+            }
+
+
+            DrawInternal(section);
+
+            if(hasGlobalPostProcessing)
+            {
+                ApplyPostProcessing();
+            }
+
+        }
+
+        private static void SetRenderTargetForPostProcessing()
+        {
+            // Post processing 
+            ForceSetBlendOperation();
+            ForceSetColorOperation(Renderer.ColorOperation);
+
+            // Set the RenderTarget before drawing anything
+            GraphicsDevice.SetRenderTarget(Renderer.SwapChain.CurrentRenderTarget);
+        }
+
+        private static void ApplyPostProcessing()
+        {
+            foreach (var postProcess in Renderer.GlobalPostProcesses)
+            {
+                Renderer.SwapChain.Swap();
+                postProcess.Apply(Renderer.SwapChain.CurrentTexture);
+            }
+            SwapChain.RenderToScreen();
+        }
+
+        private static void DrawInternal(Section section)
+        {
             if (section != null)
             {
                 Section.GetAndStartContextAndTime("Start of Renderer.Draw");
             }
-            
+
             IsInRendering = true;
 
             // Drawing should only occur if the window actually has pixels
@@ -1072,8 +1113,8 @@ namespace FlatRedBall.Graphics
             // Using ClientBounds causes memory to be allocated. We can just
             // use the FlatRedBallServices' value which gets updated whenever
             // the resolution changes.
-            if(FlatRedBallServices.mClientWidth == 0 ||
-                FlatRedBallServices.mClientHeight == 0)                
+            if (FlatRedBallServices.mClientWidth == 0 ||
+                FlatRedBallServices.mClientHeight == 0)
             {
                 IsInRendering = false;
                 return;
@@ -1093,9 +1134,6 @@ namespace FlatRedBall.Graphics
 
             #endregion
 
-
-
-            #region Make sure there is at least one camera
 #if DEBUG
             if (SpriteManager.Cameras.Count <= 0)
             {
@@ -1103,11 +1141,6 @@ namespace FlatRedBall.Graphics
                     "There are no cameras to render, did you forget to add a camera to the SpriteManager?");
                 throw exception;
             }
-#endif
-#endregion
-
-            #region Make sure the GraphicsDeviceManager is not null
-#if DEBUG
             if (mGraphics == null || mGraphics.GraphicsDevice == null)
             {
                 NullReferenceException exception = new NullReferenceException(
@@ -1115,8 +1148,6 @@ namespace FlatRedBall.Graphics
                 throw exception;
             }
 #endif
-#endregion
-
 
             if (section != null)
             {
@@ -1175,8 +1206,8 @@ namespace FlatRedBall.Graphics
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("End of Render");
             }
-            
-            
+
+
             IsInRendering = false;
 
             Screens.ScreenManager.Draw();

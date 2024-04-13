@@ -126,6 +126,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Particle\Emitter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Particle\EmitterList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Particle\TimedRemovalRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\PostProcessing\IPostProcess.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\PostProcessing\SwapChain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\RenderBreak.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Renderer.Common.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Renderer.cs" />
