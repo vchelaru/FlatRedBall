@@ -28,9 +28,6 @@ using FlatRedBall.Math.Geometry;
 using FlatRedBall.Performance.Measurement;
 using FlatRedBall.Graphics.PostProcessing;
 
-
-
-
 namespace FlatRedBall.Graphics
 {
     #region FillVertexLogic class
@@ -1092,9 +1089,12 @@ namespace FlatRedBall.Graphics
         {
             foreach (var postProcess in Renderer.GlobalPostProcesses)
             {
+                mRenderBreaks.Add(new RenderBreak() { ObjectCausingBreak = postProcess});
                 Renderer.SwapChain.Swap();
                 postProcess.Apply(Renderer.SwapChain.CurrentTexture);
             }
+
+            mRenderBreaks.Add(new RenderBreak() { ObjectCausingBreak = SwapChain });
             SwapChain.RenderToScreen();
         }
 

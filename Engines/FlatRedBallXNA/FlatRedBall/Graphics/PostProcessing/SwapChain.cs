@@ -17,11 +17,14 @@ namespace FlatRedBall.Graphics.PostProcessing
         public RenderTarget2D CurrentRenderTarget => isSwapped ? RenderTargetB : RenderTargetA;
         public RenderTarget2D CurrentTexture => isSwapped ? RenderTargetA : RenderTargetB;
 
-        public SwapChain(int width, int height, bool shouldSwapClearRenderTarget = true)
+
+        public SwapChain(int width, int height, bool shouldSwapClearRenderTarget = true,
+            SurfaceFormat? surfaceFormat = null)
         {
+            surfaceFormat = surfaceFormat ?? FlatRedBallServices.GraphicsDevice.DisplayMode.Format;
             ShouldSwapClearRenderTarget = shouldSwapClearRenderTarget;
-            CreateRenderTarget(ref RenderTargetA, width, height, SurfaceFormat.HalfVector4);
-            CreateRenderTarget(ref RenderTargetB, width, height, SurfaceFormat.HalfVector4);
+            CreateRenderTarget(ref RenderTargetA, width, height, surfaceFormat.Value);
+            CreateRenderTarget(ref RenderTargetB, width, height, surfaceFormat.Value);
             spriteBatch = new SpriteBatch(FlatRedBallServices.GraphicsDevice);
         }
 
