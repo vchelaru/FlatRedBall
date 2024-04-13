@@ -444,49 +444,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     CreateStopAndRestartTask("Restarting because the add object group failed");
                 }
-            }
-        }
-
-        internal async void HandleNewObjectCreated(NamedObjectSave newNamedObject)
-        {
-            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
-            {
-                AddObjectDto addObjectDto = CreateAddObjectDtoFor(newNamedObject);
-
-                var sendResponse = await CommandSender.Self.Send(addObjectDto);
-                string addResponseAsString = null;
-                if (sendResponse.Succeeded)
-                {
-                    addResponseAsString = sendResponse.Data;
-                }
-
-                AddObjectDtoResponse addResponse = null;
-                if (!string.IsNullOrEmpty(addResponseAsString))
-                {
-                    try
-                    {
-                        addResponse = JsonConvert.DeserializeObject<AddObjectDtoResponse>(addResponseAsString);
-                    }
-                    catch (Exception)
-                    {
-                        printOutput($"Error parsing string:\n\n{addResponseAsString}");
-                    }
-                }
-
-                if (addResponse?.CreationResponse.Succeeded == true)
-                {
-                    var isPositionedObject = newNamedObject.SourceType == SourceType.Entity ||
-                        (newNamedObject.GetAssetTypeInfo()?.IsPositionedObject == true);
-                    if (isPositionedObject)
-                    {
-                        await AdjustNewObjectToCameraPosition(newNamedObject);
-                    }
-                }
                 else
                 {
-                    if(GlueViewSettingsViewModel.RestartOnFailedCommands)
+                    var firstPositionedObject = newObjectList.FirstOrDefault(item =>
+                        item.SourceType == SourceType.Entity ||
+                        item.GetAssetTypeInfo()?.IsPositionedObject == true);
+
+                    if(firstPositionedObject != null)
                     {
-                        CreateStopAndRestartTask($"Restarting because of added object {newNamedObject}");
+                        await AdjustNewObjectToCameraPosition(firstPositionedObject);
                     }
                 }
             }

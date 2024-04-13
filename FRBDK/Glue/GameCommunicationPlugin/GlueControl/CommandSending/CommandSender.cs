@@ -28,7 +28,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
         #region Fields/Properties
 
         public Action<string> PrintOutput { get; set; }
-        public Func<string, Task<string>> SendPacket { get; set; }
+        public Func<string, Task<GeneralResponse<string>>> SendPacket { get; set; }
         SemaphoreSlim sendCommandSemaphore = new SemaphoreSlim(1, 1);
 
         public GlueViewSettingsViewModel GlueViewSettingsViewModel { get; set; }
@@ -176,9 +176,8 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
                 };
             }
 
-            var response = JsonConvert.DeserializeObject<ToolsUtilities.GeneralResponse<string>>(returnValue);
 
-            return response;
+            return returnValue;
         }
 
 

@@ -919,12 +919,9 @@ namespace FlatRedBall.Glue.Plugins
                 });
         }
 
-        protected virtual async Task<string> HandleEventWithReturnImplementation(string eventName, string payload)
+        protected virtual Task<string> HandleEventWithReturnImplementation(string eventName, string payload)
         {
-            return await Task.Run(() =>
-            {
-                return (string)null;
-            });
+            return Task.FromResult((string)null);
         }
 
         public void HandleEventResponseWithReturn(string payload)

@@ -160,7 +160,6 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
             // todo - handle startup changed...
 
-            this.ReactToNewObjectHandler += _refreshManager.HandleNewObjectCreated;
             this.ReactToNewObjectListAsync += _refreshManager.HandleNewObjectList;
 
             this.ReactToObjectRemoved += async (owner, nos) =>
@@ -470,11 +469,10 @@ namespace GameCommunicationPlugin.GlueControl
             game1GlueControlGenerator.PortNumber = model.PortNumber;
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode && IsFrbNewEnough();
 
-            ReactToPluginEventWithReturn("GameCommunication_SetPrimarySettings", JsonConvert.SerializeObject(new
-            {
-                IsGlueControlManagerGenerationEnabled = game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled,
-                PortNumber = game1GlueControlGenerator.PortNumber
-            }));
+            MainGameCommunicationPlugin.Self.SetPrimarySettings(
+                game1GlueControlGenerator.PortNumber,
+                game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled
+                );
 
             _refreshManager.PortNumber = model.PortNumber;
 
@@ -634,7 +632,22 @@ namespace GameCommunicationPlugin.GlueControl
             CommandSender.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
             CommandSender.Self.CompilerViewModel = CompilerViewModel;
             CommandSender.Self.PrintOutput = (value) => ReactToPluginEvent("Compiler_Output_Standard", value);
-            CommandSender.Self.SendPacket = (value) => ReactToPluginEventWithReturn("GameCommunication_Send_OldDTO", value);
+            CommandSender.Self.SendPacket = async (value) =>
+            {
+                var response = await GameJsonCommunicationPlugin.Common.GameConnectionManager.Self.SendItemWithResponse(new GameJsonCommunicationPlugin.Common.GameConnectionManager.Packet
+                {
+                    PacketType = "OldDTO",
+                    Payload = value
+                });
+
+                var toReturn = new global::ToolsUtilities.GeneralResponse<string>();
+                toReturn.SetFrom(response);
+                toReturn.Data = response?.Data?.Payload;    
+
+                return toReturn;
+
+            };
+                //ReactToPluginEventWithReturn("GameCommunication_Send_OldDTO", value);
             
             glueViewSettingsView = new Views.GlueViewSettings();
             glueViewSettingsView.ViewModel = GlueViewSettingsViewModel;
@@ -853,11 +866,10 @@ namespace GameCommunicationPlugin.GlueControl
             game1GlueControlGenerator.PortNumber = GlueViewSettingsViewModel.PortNumber;
             _refreshManager.PortNumber = GlueViewSettingsViewModel.PortNumber;
 
-            var returnValue = await ReactToPluginEventWithReturn("GameCommunication_SetPrimarySettings", JsonConvert.SerializeObject(new
-            {
-                IsGlueControlManagerGenerationEnabled = game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled,
-                PortNumber = game1GlueControlGenerator.PortNumber
-            }));
+            MainGameCommunicationPlugin.Self.SetPrimarySettings(
+                    game1GlueControlGenerator.PortNumber,
+                    game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled
+            );
 
             GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
             if (IsFrbNewEnough() && GlueViewSettingsViewModel.EnableLiveEdit)
