@@ -42,6 +42,7 @@ using CompilerLibrary.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using System.Security.Permissions;
 using Microsoft.Xna.Framework.Graphics;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace GameCommunicationPlugin.GlueControl
 {
@@ -344,10 +345,9 @@ namespace GameCommunicationPlugin.GlueControl
                         
                         if(innerResult == MessageBoxResult.Yes)
                         {
-                            await ReactToPluginEventWithReturn("Runner_DoRun", JsonConvert.SerializeObject(new
-                            {
-                                PreventFocus = false
-                            }));
+                            await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun",
+                                false, // preventFocus
+                                string.Empty, new GeneralResponse());
                             CompilerViewModel.IsEditChecked = false;
                         }
                     }
@@ -356,10 +356,9 @@ namespace GameCommunicationPlugin.GlueControl
                         PluginManager.ReceiveOutput("Building succeeded. Running project...");
 
                         CompilerViewModel.IsEditChecked = false;
-                        await ReactToPluginEventWithReturn("Runner_DoRun", JsonConvert.SerializeObject(new
-                        {
-                            PreventFocus = false
-                        }));
+                        await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun",
+                            false, // preventFocus
+                            string.Empty, new GeneralResponse());
                     }
                 }
                 else

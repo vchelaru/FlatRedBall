@@ -241,7 +241,7 @@ namespace CompilerPlugin.Managers
                                 }
                             }
 
-                            succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
+                            succeeded = StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
                         }
 
                         #endregion
@@ -274,7 +274,7 @@ namespace CompilerPlugin.Managers
                                 printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
                             }
 
-                            succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
+                            succeeded = StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
                         }
 
                         #endregion
@@ -320,7 +320,7 @@ namespace CompilerPlugin.Managers
             return toReturn;
         }
 
-        private async Task<bool> StartMsBuildWithParameters(Action<string> printOutput, Action<string> printError, string startOutput, string endOutput, string arguments, string msbuildLocation)
+        private bool StartMsBuildWithParameters(Action<string> printOutput, Action<string> printError, string startOutput, string endOutput, string arguments, string msbuildLocation)
         {
             var effectiveMsBuildLocation = msBuildLocation == "dotnet" ? "dotnet" : $"\"{msbuildLocation}\"";
             Process process = CreateProcess(effectiveMsBuildLocation, arguments);
@@ -331,7 +331,9 @@ namespace CompilerPlugin.Managers
             StringBuilder outputStringBuilder = new StringBuilder();
             StringBuilder errorStringBuilder = new StringBuilder();
             
-            var errorString = await Task.Run(() => RunProcess(outputStringBuilder, errorStringBuilder, msbuildLocation, process));
+            // This puts the task on a different thread, we don't want that!
+            //var errorString = await Task.Run(() => RunProcess(outputStringBuilder, errorStringBuilder, msbuildLocation, process));
+            var errorString = RunProcess(outputStringBuilder, errorStringBuilder, msbuildLocation, process);
 
             if (outputStringBuilder.Length > 0)
             {

@@ -247,6 +247,13 @@ namespace FlatRedBall.Glue.Managers
                         {
                             taskQueueCount--;
                             await RunTask(item.Value, markAsCurrent:true);
+                            if(System.Threading.Thread.CurrentThread.ManagedThreadId != SyncTaskThreadId)
+                            {
+                                string message = "TaskManager.RunTask should be running on the SyncTaskThreadId. " +
+                                    "This may cause issues. Task: " + item.Value.DisplayInfo;
+                                GlueCommands.Self.PrintError(message);
+                                int m = 3;
+                            }
 
                         }
 
@@ -689,10 +696,8 @@ namespace FlatRedBall.Glue.Managers
             }
 
             var stackTrace = new System.Diagnostics.StackTrace();
+            var stackFrame = new System.Diagnostics.StackFrame();
 
-
-            /* For debugging:
-             * 
             List<string> frameTexts = new List<string>();
             for (int i = stackTrace.FrameCount - 1; i > -1; i--)
             {
@@ -701,6 +706,9 @@ namespace FlatRedBall.Glue.Managers
 
                 frameTexts.Add(frameText);
             }
+
+            /* For debugging:
+             * 
 
             foreach(var frameText in frameTexts)
             { 
