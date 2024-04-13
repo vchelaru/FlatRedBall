@@ -154,7 +154,7 @@ namespace CompilerPlugin
                 if (response.Succeeded)
                 {
                     _runner.IsRunning = false;
-                    await _runner.Run(preventFocus: false);
+                    _runner.Run(preventFocus: false);
                 }
                 else
                 {
@@ -162,7 +162,7 @@ namespace CompilerPlugin
                     var innerResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage);
                     if(innerResult == System.Windows.MessageBoxResult.Yes)
                     {
-                        await _runner.Run(preventFocus: false);
+                        _runner.Run(preventFocus: false);
                     }
                 }
             };

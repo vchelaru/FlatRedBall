@@ -444,7 +444,6 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     CreateStopAndRestartTask("Restarting because the add object group failed");
                 }
-                // else do we want to position based on camera? This is likely a copy/paste so...maybe not?
             }
         }
 

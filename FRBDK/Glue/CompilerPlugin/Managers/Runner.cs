@@ -318,7 +318,7 @@ namespace CompilerPlugin.Managers
                     {
                         runArguments += " LaunchedByEditor";
                     }
-                    startResponse = await StartProcess(preventFocus, runArguments, exeLocation);
+                    startResponse = StartProcess(preventFocus, runArguments, exeLocation);
 
                     if (startResponse.Succeeded)
                     {
@@ -328,8 +328,7 @@ namespace CompilerPlugin.Managers
                         while (runningGameProcess == null)
                         {
                             // didn't find it, so let's wait a little and try again:
-
-                            await Task.Delay(millisecondsToWaitBeforeRetry);
+                            Thread.Sleep(millisecondsToWaitBeforeRetry);
 
                             runningGameProcess = TryFindGameProcess();
 
@@ -356,8 +355,7 @@ namespace CompilerPlugin.Managers
 
                                 if (id == null || id == IntPtr.Zero)
                                 {
-
-                                    await Task.Delay(millisecondsToWaitBeforeRetry);
+                                    Thread.Sleep(millisecondsToWaitBeforeRetry);
                                     continue;
                                 }
                                 else
@@ -399,7 +397,7 @@ namespace CompilerPlugin.Managers
                             {
                                 if (startResponse.Data.HasExited && startResponse.Data.ExitCode != 0)
                                 {
-                                    var message = await GetCrashMessage();
+                                    var message = GetCrashMessage();
 
                                     if (!string.IsNullOrEmpty(message))
                                     {
@@ -471,7 +469,7 @@ namespace CompilerPlugin.Managers
             }
         }
 
-        private async Task<ToolsUtilities.GeneralResponse<Process>> StartProcess(bool preventFocus, string runArguments, string exeLocation)
+        private ToolsUtilities.GeneralResponse<Process> StartProcess(bool preventFocus, string runArguments, string exeLocation)
         {
             if (preventFocus)
             {
@@ -504,7 +502,7 @@ namespace CompilerPlugin.Managers
                 if (hasExited && process?.ExitCode != 0)
                 {
 
-                    var message = await GetCrashMessage();
+                    var message = GetCrashMessage();
                     var response = ToolsUtilities.GeneralResponse<Process>.UnsuccessfulWith(message);
                     response.Data = process;
                     return response;
@@ -549,7 +547,7 @@ namespace CompilerPlugin.Managers
             {
                 if (process.ExitCode != 0)
                 {
-                    string message = await GetCrashMessage();
+                    string message = GetCrashMessage();
                     if (!string.IsNullOrEmpty(message))
                     {
                         System.Windows.MessageBox.Show(message);
@@ -580,7 +578,7 @@ namespace CompilerPlugin.Managers
             }
         }
 
-        private async Task<string> GetCrashMessage()
+        private string GetCrashMessage()
         {
             string exeLocation = GetGameExeLocation(this._compilerViewModel.Configuration);
 
@@ -588,7 +586,7 @@ namespace CompilerPlugin.Managers
             if (!string.IsNullOrEmpty(exeLocation))
             {
                 // await a little to see if the crash.txt file gets written...
-                await Task.Delay(2);
+                Thread.Sleep(3);
 
                 var directory = FileManager.GetDirectory(exeLocation);
                 var logFile = directory + "CrashInfo.txt";

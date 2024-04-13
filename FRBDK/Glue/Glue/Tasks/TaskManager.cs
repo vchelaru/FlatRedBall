@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Tasks;
 using FlatRedBall.IO;
+using Nito.AsyncEx;
 
 namespace FlatRedBall.Glue.Managers
 {
@@ -227,10 +228,15 @@ namespace FlatRedBall.Glue.Managers
 
         public TaskManager()
         {
-            new Thread(DoTaskManagerLoop)
+            new Thread(StartDoTaskManagerLoop)
             {
                 IsBackground = true
             }.Start();
+        }
+
+        void StartDoTaskManagerLoop()
+        {
+            AsyncContext.Run(DoTaskManagerLoop);
         }
 
         async void DoTaskManagerLoop()
