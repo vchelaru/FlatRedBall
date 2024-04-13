@@ -7,7 +7,6 @@ namespace FlatRedBall.Graphics.PostProcessing
 {
     public interface IPostProcess
     {
-        GraphicsDevice GraphicsDevice { set; }
         void Apply(Texture2D sourceTexture);
     }
 }
