@@ -45,7 +45,7 @@ namespace CompilerPlugin
             };
             _runner.OutputReceived += (output) =>
             {
-                ReactToPluginEvent("Compiler_Output_Standard", output);
+                HandleOutput(output);
             };
             _runner.ErrorReceived += output =>
             {
@@ -133,7 +133,7 @@ namespace CompilerPlugin
             MainControl.BuildClicked += async (not, used) =>
             {
                 var compileResponse = await _compiler.Compile(
-                    (value) => ReactToPluginEvent("Compiler_Output_Standard", value), 
+                    (value) => HandleOutput(value), 
                     (value) => ReactToPluginEvent("Compiler_Output_Error", value), 
                     _compilerViewModel.Configuration, 
                     _compilerViewModel.IsPrintMsBuildCommandChecked);
@@ -150,7 +150,7 @@ namespace CompilerPlugin
 
             MainControl.RunClicked += async (not, used) =>
             {
-                var response = await _compiler.Compile((value) => ReactToPluginEvent("Compiler_Output_Standard", value), (value) => ReactToPluginEvent("Compiler_Output_Error", value), _compilerViewModel.Configuration, _compilerViewModel.IsPrintMsBuildCommandChecked);
+                var response = await _compiler.Compile((value) => HandleOutput(value), (value) => ReactToPluginEvent("Compiler_Output_Error", value), _compilerViewModel.Configuration, _compilerViewModel.IsPrintMsBuildCommandChecked);
                 if (response.Succeeded)
                 {
                     _runner.IsRunning = false;
@@ -192,7 +192,11 @@ namespace CompilerPlugin
 
         #endregion
 
+        public void HandleOutput(string output) => MainControl.PrintOutput(output);
+
         #region Overrided Method
+
+
 
         public override void HandleEvent(string eventName, string payload)
         {
@@ -212,12 +216,6 @@ namespace CompilerPlugin
                         );
                     }
                     break;
-                case "Compiler_Output_Standard":
-                    {
-                        MainControl.PrintOutput(payload);
-                        
-                    }
-                    break;
                 case "Compiler_Output_Error":
                     {
                         MainControl.PrintError(payload);
@@ -235,7 +233,7 @@ namespace CompilerPlugin
             try
             {
                 var result = await _compiler.Compile(
-                    (value) => ReactToPluginEvent("Compiler_Output_Standard", value), 
+                    (value) => HandleOutput(value), 
                     (value) => ReactToPluginEvent("Compiler_Output_Error", value), 
                     configuration, 
                     printMsBuildCommand
