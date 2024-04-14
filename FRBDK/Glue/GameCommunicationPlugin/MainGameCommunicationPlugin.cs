@@ -28,6 +28,8 @@ namespace GameCommunicationPlugin
 
         public override Version Version => new Version(1, 0);
 
+        public static MainGameCommunicationPlugin Self { get; private set; }
+
         #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
@@ -36,15 +38,18 @@ namespace GameCommunicationPlugin
             _gameCommunicationManager.OnPacketReceived -= HandleOnPacketReceived;
             _gameCommunicationManager.Dispose();
             _gameCommunicationManager = null;
-
+            GameConnectionManager.Self = null;
             return true;
         }
 
         public override void StartUp()
         {
+            Self = this;
             _gameCommunicationManager = new GameConnectionManager(ReactToPluginEvent);
             _gameCommunicationManager.Port = 8888;
             _gameCommunicationManager.OnPacketReceived += HandleOnPacketReceived;
+            GameConnectionManager.Self = _gameCommunicationManager;
+
             ReactToLoadedGlux += HandleGluxLoaded;
 
             game1GlueCommunicationGenerator = new Game1GlueCommunicationGenerator(true, 8888);
@@ -74,15 +79,6 @@ namespace GameCommunicationPlugin
                     _gameCommunicationManager.SendItem(JsonConvert.DeserializeObject<GameConnectionManager.Packet>(payload));
 
                     break;
-
-                case "GameCommunication_Send_OldDTO":
-                    _gameCommunicationManager.SendItem(new GameConnectionManager.Packet
-                    {
-                        PacketType = "OldDTO",
-                        Payload = payload
-                    });
-
-                    break;
             }
         }
 
@@ -94,38 +90,17 @@ namespace GameCommunicationPlugin
                     var returnValue = await _gameCommunicationManager.SendItemWithResponse(JsonConvert.DeserializeObject<GameConnectionManager.Packet>(payload));
 
                     return returnValue.Data?.Payload;
-                case "GameCommunication_Send_OldDTO":
-                    var response = await _gameCommunicationManager.SendItemWithResponse(new GameConnectionManager.Packet
-                    {
-                        PacketType = "OldDTO",
-                        Payload = payload
-                    });
-
-                    var returnPacket = response.Data;
-
-                    if(returnPacket?.PacketType == "OldDTO" && returnPacket?.Payload != "{\"Commands\":[]}")
-                        Debug.WriteLine($"{returnPacket.PacketType}, {returnPacket.Payload}");
-
-                    return JsonConvert.SerializeObject(new GeneralResponse<string>
-                    {
-                        Succeeded = returnPacket != null,
-                        Data = returnPacket?.Payload,
-                        Message = response.Message
-                    });
-
-                case "GameCommunication_SetPrimarySettings":
-                    var sPayload = JObject.Parse(payload);
-
-                    _gameCommunicationManager.Port = sPayload.ContainsKey("PortNumber") ? sPayload.Value<int>("PortNumber") : 8888;
-                    _gameCommunicationManager.DoConnections = sPayload.ContainsKey("IsGlueControlManagerGenerationEnabled") ? sPayload.Value<bool>("IsGlueControlManagerGenerationEnabled") : false;
-                    game1GlueCommunicationGenerator.PortNumber = _gameCommunicationManager.Port;
-                    game1GlueCommunicationGenerator.IsGameCommunicationEnabled = _gameCommunicationManager.DoConnections;
-
-                    return "";
-
             }
 
             return null;
+        }
+
+        public void SetPrimarySettings(int portNumber, bool doConnections)
+        {
+            _gameCommunicationManager.Port = portNumber;
+            _gameCommunicationManager.DoConnections = doConnections;
+            game1GlueCommunicationGenerator.PortNumber = _gameCommunicationManager.Port;
+            game1GlueCommunicationGenerator.IsGameCommunicationEnabled = _gameCommunicationManager.DoConnections;
         }
 
         private void HandleOnPacketReceived(GameConnectionManager.PacketReceivedArgs packetReceivedArgs)

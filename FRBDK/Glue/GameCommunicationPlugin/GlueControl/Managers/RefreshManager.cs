@@ -444,50 +444,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     CreateStopAndRestartTask("Restarting because the add object group failed");
                 }
-                // else do we want to position based on camera? This is likely a copy/paste so...maybe not?
-            }
-        }
-
-        internal async void HandleNewObjectCreated(NamedObjectSave newNamedObject)
-        {
-            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
-            {
-                AddObjectDto addObjectDto = CreateAddObjectDtoFor(newNamedObject);
-
-                var sendResponse = await CommandSender.Self.Send(addObjectDto);
-                string addResponseAsString = null;
-                if (sendResponse.Succeeded)
-                {
-                    addResponseAsString = sendResponse.Data;
-                }
-
-                AddObjectDtoResponse addResponse = null;
-                if (!string.IsNullOrEmpty(addResponseAsString))
-                {
-                    try
-                    {
-                        addResponse = JsonConvert.DeserializeObject<AddObjectDtoResponse>(addResponseAsString);
-                    }
-                    catch (Exception)
-                    {
-                        printOutput($"Error parsing string:\n\n{addResponseAsString}");
-                    }
-                }
-
-                if (addResponse?.CreationResponse.Succeeded == true)
-                {
-                    var isPositionedObject = newNamedObject.SourceType == SourceType.Entity ||
-                        (newNamedObject.GetAssetTypeInfo()?.IsPositionedObject == true);
-                    if (isPositionedObject)
-                    {
-                        await AdjustNewObjectToCameraPosition(newNamedObject);
-                    }
-                }
                 else
                 {
-                    if(GlueViewSettingsViewModel.RestartOnFailedCommands)
+                    var firstPositionedObject = newObjectList.FirstOrDefault(item =>
+                        item.SourceType == SourceType.Entity ||
+                        item.GetAssetTypeInfo()?.IsPositionedObject == true);
+
+                    if(firstPositionedObject != null)
                     {
-                        CreateStopAndRestartTask($"Restarting because of added object {newNamedObject}");
+                        await AdjustNewObjectToCameraPosition(firstPositionedObject);
                     }
                 }
             }
@@ -1115,23 +1080,23 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         printOutput("Could not get the game's screen, restarting game from startup screen");
                     }
 
-                    var response = await _eventCallerWithReturn("Runner_Kill", "");
+                    await PluginManager.CallPluginMethodAsync("Compiler Plugin", "KillGameProcess");
                 }
 
                 bool compileSucceeded = false;
                 var wasCancelled = false;
                 if (!DoesTaskManagerHaveAnotherRestartTask())
                 {
-                    var doCompileJsonResult =
-                        await _eventCallerWithReturn("Compiler_DoCompile", JsonConvert.SerializeObject(new
-                        {
-                            Configuration = "Debug",
-                            PrintMsBuildCommand = false
-                        }));
+                    var generalResponse = new CompileGeneralResponse();
 
-                    var compileResult = JsonConvert.DeserializeObject<CompileGeneralResponse>(doCompileJsonResult);
-                    wasCancelled = compileResult.WasCancelled;
-                    compileSucceeded = compileResult.Succeeded;
+                    await PluginManager.CallPluginMethodAsync("Compiler Plugin", "Compile",
+                        "Debug",
+                        false,
+                        generalResponse);
+
+
+                    wasCancelled = generalResponse.WasCancelled;
+                    compileSucceeded = generalResponse.Succeeded;
                 }
 
                 if (compileSucceeded)
@@ -1140,16 +1105,16 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     {
                         // If we aren't generating Glue, then the game will not be embedded, so prevent focus
                         var preventFocus = ViewModel.IsGenerateGlueControlManagerInGame1Checked == false;
-                        var response = JObject.Parse(await _eventCallerWithReturn("Runner_DoRun", JsonConvert.SerializeObject(new
+
+                        GeneralResponse response = new GeneralResponse();
+                        await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun", preventFocus, screenToRestartOn, response);
+
+
+                        if (response.Succeeded == false)
                         {
-                            PreventFocus = preventFocus,
-                            RunArguments = screenToRestartOn
-                        })));
-                        if (response.Value<bool>("Succeeded") == false)
-                        {
-                            printError(response.Value<string>("Error"));
+                            printError(response.Message);
                         }
-                        failedToRebuildAndRestart = response.Value<bool>("Succeeded") == false;
+                        failedToRebuildAndRestart = response.Succeeded == false;
                     }
                 }
                 else

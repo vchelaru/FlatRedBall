@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using ToolsUtilities;
 using CompilerLibrary.ViewModels;
 using FlatRedBall.Glue;
+using CompilerLibrary.Error;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -40,21 +41,19 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             this.glueViewSettingsTab = glueViewSettingsTab;
             gameHostView.StopClicked += async (not, used) =>
             {
-                await eventCallerWithAction("Runner_Kill", "");
+                await PluginManager.CallPluginMethodAsync("Compiler Plugin", "KillGameProcess");
             };
 
             gameHostView.RestartGameClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = false;
-                await eventCallerWithAction("Runner_Kill", "");
+                await PluginManager.CallPluginMethodAsync("Compiler Plugin", "KillGameProcess");
                 var succeeded = await Compile();
                 if (succeeded)
                 {
-                    // don't change if it's in edit mode or not here
-                    await eventCallerWithAction("Runner_DoRun", JsonConvert.SerializeObject(new
-                    {
-                        PreventFocus = false
-                    }));
+                    await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun", 
+                        false, // preventFocus
+                        string.Empty, new GeneralResponse());
                 }
                 else
                 {
@@ -74,23 +73,21 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 string commandLineArgs = await GetCommandLineArgs(isRunning:true);
 
                 compilerViewModel.IsPaused = false;
-                await eventCallerWithAction("Runner_Kill", "");
+                await PluginManager.CallPluginMethodAsync("Compiler Plugin", "KillGameProcess");
+
                 var compileSucceeded = await Compile();
                 bool runSucceeded = false;
                 string runError = "";
                 if (compileSucceeded)
                 {
-                    // don't change if it's in edit mode
-                    var runResponse = JObject.Parse(await eventCallerWithAction("Runner_DoRun", JsonConvert.SerializeObject(new
-                    {
-                        PreventFocus = false,
-                        CommandLineArgs = commandLineArgs
-                    })));
 
-                    runSucceeded = runResponse.Value<bool>("Succeeded");
+                    GeneralResponse response = new GeneralResponse();
+                    await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun",
+                        false, // prevent focus
+                        commandLineArgs, // RunArguments
+                        response);
 
-                    if (runResponse.ContainsKey("Error"))
-                        runError = runResponse.Value<string>("Error");
+                    runSucceeded = response.Succeeded;
                 }
                 else
                 {
@@ -243,20 +240,21 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     string commandLineArgs = await GetCommandLineArgs(isRunning:false);
 
-                    var runResponse = JObject.Parse( await _eventCallerWithAction("Runner_DoRun", JsonConvert.SerializeObject(new
-                    {
-                        PreventFocus = false,
-                        RunArguments = commandLineArgs
-                    })));
-                    if (runResponse.Value<bool>("Succeeded"))
+                    GeneralResponse response = new GeneralResponse();
+                    await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun", 
+                        false, // prevent focus
+                        commandLineArgs, // RunArguments
+                        response);
+
+                    if (response.Succeeded)
                     {
                         compilerViewModel.IsEditChecked = true;
                     }
                     else
                     {
-                        GlueCommands.Self.PrintError(runResponse.Value<string>("Error"));
+                        GlueCommands.Self.PrintError(response.Message);
                     }
-                    succeeded = runResponse.Value<bool>("Succeeded");
+                    succeeded = response.Succeeded;
 
                     if(glueViewSettingsViewModel.EmbedGameInGameTab && glueViewSettingsViewModel.EnableLiveEdit)
                     {
@@ -277,16 +275,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         public async Task<bool> Compile()
         {
-            await _eventCallerWithAction("Runner_Kill", "");
+            var generalResponse = new CompileGeneralResponse();
 
-            var eventResponse =
-                await _eventCallerWithAction("Compiler_DoCompile", JsonConvert.SerializeObject(new
-                {
-                    Configuration = compilerViewModel.Configuration,
-                    PrintMsBuildCommand = compilerViewModel.IsPrintMsBuildCommandChecked
-                }));
-            var toReturn = JObject.Parse(eventResponse);
-            return toReturn.Value<bool>("Succeeded");
+            await PluginManager.CallPluginMethodAsync("Compiler Plugin", "Compile", 
+                compilerViewModel.Configuration,
+                compilerViewModel.IsPrintMsBuildCommandChecked,
+                generalResponse);
+
+            return generalResponse.Succeeded;
         }
     }
 }

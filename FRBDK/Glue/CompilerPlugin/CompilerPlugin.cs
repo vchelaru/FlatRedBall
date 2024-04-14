@@ -23,6 +23,9 @@ namespace CompilerPlugin
     public class CompilerPlugin : PluginBase
     {
 
+        public override string FriendlyName => "Compiler Plugin";
+
+        public override Version Version => new Version(1, 0);
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
             return true;
@@ -42,7 +45,7 @@ namespace CompilerPlugin
             };
             _runner.OutputReceived += (output) =>
             {
-                ReactToPluginEvent("Compiler_Output_Standard", output);
+                HandleOutput(output);
             };
             _runner.ErrorReceived += output =>
             {
@@ -87,9 +90,6 @@ namespace CompilerPlugin
             }
         }
 
-        public override string FriendlyName => "Compiler Plugin";
-
-        public override Version Version => new Version(1, 0);
         #endregion
 
         #region Private Methods
@@ -133,7 +133,7 @@ namespace CompilerPlugin
             MainControl.BuildClicked += async (not, used) =>
             {
                 var compileResponse = await _compiler.Compile(
-                    (value) => ReactToPluginEvent("Compiler_Output_Standard", value), 
+                    (value) => HandleOutput(value), 
                     (value) => ReactToPluginEvent("Compiler_Output_Error", value), 
                     _compilerViewModel.Configuration, 
                     _compilerViewModel.IsPrintMsBuildCommandChecked);
@@ -150,11 +150,11 @@ namespace CompilerPlugin
 
             MainControl.RunClicked += async (not, used) =>
             {
-                var response = await _compiler.Compile((value) => ReactToPluginEvent("Compiler_Output_Standard", value), (value) => ReactToPluginEvent("Compiler_Output_Error", value), _compilerViewModel.Configuration, _compilerViewModel.IsPrintMsBuildCommandChecked);
+                var response = await _compiler.Compile((value) => HandleOutput(value), (value) => ReactToPluginEvent("Compiler_Output_Error", value), _compilerViewModel.Configuration, _compilerViewModel.IsPrintMsBuildCommandChecked);
                 if (response.Succeeded)
                 {
                     _runner.IsRunning = false;
-                    await _runner.Run(preventFocus: false);
+                    _runner.Run(preventFocus: false);
                 }
                 else
                 {
@@ -162,7 +162,7 @@ namespace CompilerPlugin
                     var innerResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage);
                     if(innerResult == System.Windows.MessageBoxResult.Yes)
                     {
-                        await _runner.Run(preventFocus: false);
+                        _runner.Run(preventFocus: false);
                     }
                 }
             };
@@ -192,7 +192,11 @@ namespace CompilerPlugin
 
         #endregion
 
+        public void HandleOutput(string output) => MainControl.PrintOutput(output);
+
         #region Overrided Method
+
+
 
         public override void HandleEvent(string eventName, string payload)
         {
@@ -212,12 +216,6 @@ namespace CompilerPlugin
                         );
                     }
                     break;
-                case "Compiler_Output_Standard":
-                    {
-                        MainControl.PrintOutput(payload);
-                        
-                    }
-                    break;
                 case "Compiler_Output_Error":
                     {
                         MainControl.PrintError(payload);
@@ -227,51 +225,35 @@ namespace CompilerPlugin
             }
         }
 
-        protected override async Task<string> HandleEventWithReturnImplementation(string eventName, string payload)
+        public Task KillGameProcess() => _runner.KillGameProcess();
+
+        public async Task Compile(string configuration, bool printMsBuildCommand, CompileGeneralResponse generalResponse)
         {
-            switch (eventName)
+
+            try
             {
-                case "Compiler_DoCompile":
-                    {
-                        var settings = JObject.Parse(payload);
-                        try
-                        {
-                            var result = await _compiler.Compile(
-                                (value) => 
-                                    ReactToPluginEvent("Compiler_Output_Standard", value), 
-                                (value) => 
-                                    ReactToPluginEvent("Compiler_Output_Error", value), 
-                                settings.ContainsKey("Configuration") ? settings.Value<string>("Configuration") : _compilerViewModel.Configuration, 
-                                settings.ContainsKey("PrintMsBuildCommand") ? settings.Value<bool>("PrintMsBuildCommand") : _compilerViewModel.IsPrintMsBuildCommandChecked
-                            );
+                var result = await _compiler.Compile(
+                    (value) => HandleOutput(value), 
+                    (value) => ReactToPluginEvent("Compiler_Output_Error", value), 
+                    configuration, 
+                    printMsBuildCommand
+                );
 
-                            return JsonConvert.SerializeObject(result);
-                        }
-                        catch (Exception ex)
-                        {
-                            return JsonConvert.SerializeObject(new CompileGeneralResponse
-                            {
-                                Succeeded = false,
-                                Message = ex.ToString()
-                            });
-                        }
-                    }
-
-                case "Runner_DoRun":
-                    {
-                        var settings = JObject.Parse(payload);
-                        var preventFocus = settings.ContainsKey("PreventFocus") ? settings.Value<bool>("PreventFocus") : false;
-                        var runArguments = settings.ContainsKey("RunArguments") ? settings.Value<string>("RunArguments") : "";
-                        var runResponse = 
-                            await _runner.Run(preventFocus, runArguments);
-                        return JsonConvert.SerializeObject(runResponse);
-                    }
-                case "Runner_Kill":
-                    return await _runner.KillGameProcess();
+                generalResponse.SetFrom(result);
             }
-
-            return null;
+            catch (Exception ex)
+            {
+                generalResponse.Succeeded = false;
+                generalResponse.Message = ex.ToString();
+            }
         }
+
+        public async Task DoRun(bool preventFocus, string runArguments, GeneralResponse generalResponse)
+        {
+            var response = await _runner.Run(preventFocus, runArguments);
+            generalResponse.SetFrom(response);
+        }
+
         #endregion
 
         #region Classes

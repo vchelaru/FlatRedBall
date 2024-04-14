@@ -885,7 +885,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             {
                 response.Content = JsonConvert.SerializeObject(contentToGame);
             }
-            await CommandSender.Self.Send(response);
+            await CommandSender.Self.Send(response, waitForResponse:false);
             return response;
         }
 

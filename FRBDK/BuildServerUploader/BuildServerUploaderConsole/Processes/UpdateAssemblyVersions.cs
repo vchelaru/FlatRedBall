@@ -101,8 +101,9 @@ namespace BuildServerUploaderConsole.Processes
             //Save Version String for uploading
             if(!IsBeta)
             {
-                var destination = DirectoryHelper.ReleaseDirectory + @"\SingleDlls\VersionInfo.txt";
-                FileManager.SaveText(GetVersionString(IsBeta), DirectoryHelper.ReleaseDirectory + destination);
+                var destination = DirectoryHelper.ReleaseDirectory + @"SingleDlls\VersionInfo.txt";
+                Results.WriteMessage($"Saving version to {destination}");
+                FileManager.SaveText(GetVersionString(IsBeta), destination);
                 Results.WriteMessage("VersionInfo file created.");
             }
             else

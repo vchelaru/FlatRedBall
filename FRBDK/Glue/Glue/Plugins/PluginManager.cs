@@ -1065,7 +1065,10 @@ namespace FlatRedBall.Glue.Plugins
                     handledByList = true;
                 }
 
-                if(!handledByList)
+                // We need to call this even if not handled by list. Some plugins, like the live edit system,
+                // subscribe to both events to differentiate between copy/paste and 
+                //if(!handledByList)
+                if(plugin.ReactToNewObjectHandler != null)
                 {
                     foreach(var nos in newObjectList)
                     {

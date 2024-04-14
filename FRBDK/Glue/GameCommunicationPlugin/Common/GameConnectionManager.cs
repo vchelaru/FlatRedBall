@@ -94,6 +94,8 @@ namespace GameJsonCommunicationPlugin.Common
         public double TimeoutInSeconds { get; set; } = 10;
         #endregion
 
+        public static GameConnectionManager Self { get; set; }
+
         public GameConnectionManager(Action<string, string> eventCaller)
         {
             _eventCaller = eventCaller;

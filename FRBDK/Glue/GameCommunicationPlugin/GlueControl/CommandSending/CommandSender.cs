@@ -28,7 +28,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
         #region Fields/Properties
 
         public Action<string> PrintOutput { get; set; }
-        public Func<string, Task<string>> SendPacket { get; set; }
+        public Func<string, bool, Task<GeneralResponse<string>>> SendPacket { get; set; }
         SemaphoreSlim sendCommandSemaphore = new SemaphoreSlim(1, 1);
 
         public GlueViewSettingsViewModel GlueViewSettingsViewModel { get; set; }
@@ -62,13 +62,13 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
         #region General Send
 
 
-        public async Task<ToolsUtilities.GeneralResponse<string>> Send(object dto, SendImportance importance = SendImportance.Normal)
+        public async Task<ToolsUtilities.GeneralResponse<string>> Send(object dto, SendImportance importance = SendImportance.Normal, bool waitForResponse = true)
         {
             var dtoTypeName = dto.GetType().Name;
 
             var serialized = JsonConvert.SerializeObject(dto);
 
-            return await SendCommand($"{dtoTypeName}:{serialized}", importance);
+            return await SendCommand($"{dtoTypeName}:{serialized}", importance, waitForResponse:waitForResponse);
         }
 
         public async Task<ToolsUtilities.GeneralResponse<T>> Send<T>(object dto, SendImportance importance = SendImportance.Normal)
@@ -103,7 +103,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
         }
 
         string lastSend;
-        private async Task<ToolsUtilities.GeneralResponse<string>> SendCommand(string text, SendImportance importance = SendImportance.Normal)
+        private async Task<ToolsUtilities.GeneralResponse<string>> SendCommand(string text, SendImportance importance = SendImportance.Normal, bool waitForResponse = true)
         {
             var isImportant = importance != SendImportance.IfNotBusy;
             var shouldPrint = isImportant && text?.StartsWith("SelectObjectDto:") == false;
@@ -140,7 +140,12 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
             {
                 if (!isSemaphoreAvailable)
                 {
+                    
+                    var textPrefix = text?.Contains(":")==true ? text.Substring(0, text.IndexOf(":")) : text;
+                    var lastPrefix = lastSend?.Contains(":")==true ? lastSend.Substring(0, lastSend.IndexOf(":")) : lastSend;
+                    GlueCommands.Self.PrintOutput($"Waiting to send {textPrefix}\nWaiting on {lastPrefix}");
                     await sendCommandSemaphore.WaitAsync();
+                    GlueCommands.Self.PrintOutput($"--Done with {textPrefix}");
                 }
 
                 lastSend = text;
@@ -151,7 +156,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
                 while(result.Succeeded == false && triesLeft > 0)
                 {
                     triesLeft--;
-                    result = await SendCommandNoSemaphore(text, isImportant, shouldPrint);
+                    result = await SendCommandNoSemaphore(text, isImportant, shouldPrint, waitForResponse);
                 }
                 return result;
             }
@@ -162,9 +167,9 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
 
         }
 
-        private async Task<ToolsUtilities.GeneralResponse<string>> SendCommandNoSemaphore(string text, bool isImportant, bool shouldPrint )
+        private async Task<ToolsUtilities.GeneralResponse<string>> SendCommandNoSemaphore(string text, bool isImportant, bool shouldPrint, bool waitForResponse )
         {
-            var returnValue = await SendPacket(text);
+            var returnValue = await SendPacket(text, waitForResponse);
 
             if (returnValue == null)
             {
@@ -176,9 +181,8 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
                 };
             }
 
-            var response = JsonConvert.DeserializeObject<ToolsUtilities.GeneralResponse<string>>(returnValue);
 
-            return response;
+            return returnValue;
         }
 
 

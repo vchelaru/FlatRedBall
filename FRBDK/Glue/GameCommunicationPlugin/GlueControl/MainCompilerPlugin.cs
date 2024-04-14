@@ -42,6 +42,7 @@ using CompilerLibrary.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using System.Security.Permissions;
 using Microsoft.Xna.Framework.Graphics;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace GameCommunicationPlugin.GlueControl
 {
@@ -101,7 +102,9 @@ namespace GameCommunicationPlugin.GlueControl
         public override void StartUp()
         {
             _refreshManager = new RefreshManager(ReactToPluginEventWithReturn, ReactToPluginEvent);
-            _refreshManager.InitializeEvents((value) => this.ReactToPluginEvent("Compiler_Output_Standard", value), (value) => this.ReactToPluginEvent("Compiler_Output_Error", value));
+            _refreshManager.InitializeEvents(
+                (value) => PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", value), 
+                (value) => this.ReactToPluginEvent("Compiler_Output_Error", value));
 
             _dragDropManagerGameWindow = new DragDropManagerGameWindow(_refreshManager);
             _variableSendingManager = new VariableSendingManager(_refreshManager);
@@ -111,7 +114,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             CreateToolbar();
 
-            Output.Initialize((value) => this.ReactToPluginEvent("Compiler_Output_Standard", value));
+            Output.Initialize((value) => PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", value));
 
 
             game1GlueControlGenerator = new Game1GlueControlGenerator();
@@ -159,7 +162,6 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
             // todo - handle startup changed...
 
-            this.ReactToNewObjectHandler += _refreshManager.HandleNewObjectCreated;
             this.ReactToNewObjectListAsync += _refreshManager.HandleNewObjectList;
 
             this.ReactToObjectRemoved += async (owner, nos) =>
@@ -344,10 +346,9 @@ namespace GameCommunicationPlugin.GlueControl
                         
                         if(innerResult == MessageBoxResult.Yes)
                         {
-                            await ReactToPluginEventWithReturn("Runner_DoRun", JsonConvert.SerializeObject(new
-                            {
-                                PreventFocus = false
-                            }));
+                            await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun",
+                                false, // preventFocus
+                                string.Empty, new GeneralResponse());
                             CompilerViewModel.IsEditChecked = false;
                         }
                     }
@@ -356,10 +357,9 @@ namespace GameCommunicationPlugin.GlueControl
                         PluginManager.ReceiveOutput("Building succeeded. Running project...");
 
                         CompilerViewModel.IsEditChecked = false;
-                        await ReactToPluginEventWithReturn("Runner_DoRun", JsonConvert.SerializeObject(new
-                        {
-                            PreventFocus = false
-                        }));
+                        await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun",
+                            false, // preventFocus
+                            string.Empty, new GeneralResponse());
                     }
                 }
                 else
@@ -471,11 +471,10 @@ namespace GameCommunicationPlugin.GlueControl
             game1GlueControlGenerator.PortNumber = model.PortNumber;
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode && IsFrbNewEnough();
 
-            ReactToPluginEventWithReturn("GameCommunication_SetPrimarySettings", JsonConvert.SerializeObject(new
-            {
-                IsGlueControlManagerGenerationEnabled = game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled,
-                PortNumber = game1GlueControlGenerator.PortNumber
-            }));
+            MainGameCommunicationPlugin.Self.SetPrimarySettings(
+                game1GlueControlGenerator.PortNumber,
+                game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled
+                );
 
             _refreshManager.PortNumber = model.PortNumber;
 
@@ -541,7 +540,7 @@ namespace GameCommunicationPlugin.GlueControl
             //pluginTab = base.CreateAndAddTab(GameHostView, "Game Contrll", TabLocation.Bottom);
 
             _gameHostController = new GameHostController();
-            _gameHostController.Initialize(gameHostView, (value) => ReactToPluginEvent("Compiler_Output_Standard", value),
+            _gameHostController.Initialize(gameHostView, (value) => PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", value),
                 CompilerViewModel,
                 GlueViewSettingsViewModel,
                 glueViewSettingsTab,
@@ -626,7 +625,7 @@ namespace GameCommunicationPlugin.GlueControl
             _refreshManager.ViewModel = CompilerViewModel;
             _dragDropManagerGameWindow.CompilerViewModel = CompilerViewModel;
             _commandReceiver.CompilerViewModel = CompilerViewModel;
-            _commandReceiver.PrintOutput = (value) => ReactToPluginEvent("Compiler_Output_Standard", value);
+            _commandReceiver.PrintOutput = (value) => PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", value);
             _refreshManager.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
             _variableSendingManager.ViewModel = CompilerViewModel;
@@ -634,8 +633,34 @@ namespace GameCommunicationPlugin.GlueControl
 
             CommandSender.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
             CommandSender.Self.CompilerViewModel = CompilerViewModel;
-            CommandSender.Self.PrintOutput = (value) => ReactToPluginEvent("Compiler_Output_Standard", value);
-            CommandSender.Self.SendPacket = (value) => ReactToPluginEventWithReturn("GameCommunication_Send_OldDTO", value);
+            CommandSender.Self.PrintOutput = (value) => PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", value);
+            CommandSender.Self.SendPacket = async (value, waitForResponse) =>
+            {
+                var whatToSend = new GameJsonCommunicationPlugin.Common.GameConnectionManager.Packet
+                {
+                    PacketType = "OldDTO",
+                    Payload = value
+                };
+
+                if(waitForResponse)
+                {
+                    var response = await GameJsonCommunicationPlugin.Common.GameConnectionManager.Self.SendItemWithResponse(whatToSend);
+
+                    var toReturn = new global::ToolsUtilities.GeneralResponse<string>();
+                    toReturn.SetFrom(response);
+                    toReturn.Data = response?.Data?.Payload;    
+
+                    return toReturn;
+                }
+                else
+                {
+                    GameJsonCommunicationPlugin.Common.GameConnectionManager.Self.SendItem(whatToSend);
+                    // I guess we return success?
+                    return new global::ToolsUtilities.GeneralResponse<string>() { Succeeded=true };
+                }
+
+            };
+                //ReactToPluginEventWithReturn("GameCommunication_Send_OldDTO", value);
             
             glueViewSettingsView = new Views.GlueViewSettings();
             glueViewSettingsView.ViewModel = GlueViewSettingsViewModel;
@@ -770,7 +795,8 @@ namespace GameCommunicationPlugin.GlueControl
                 {
                     message += $"Game sent back the following message: {response.Message}";
                 }
-                ReactToPluginEvent("Compiler_Output_Standard", message);
+                PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", message);
+                
                 GlueCommands.Self.PrintOutput(message);
             }
             else if (CommandSender.Self.IsConnected == false)
@@ -849,16 +875,15 @@ namespace GameCommunicationPlugin.GlueControl
 
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
         {
-            ReactToPluginEvent("Compiler_Output_Standard", "Applying changes");
+            PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", "Applying Changes");
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = GlueViewSettingsViewModel.EnableLiveEdit && IsFrbNewEnough();
             game1GlueControlGenerator.PortNumber = GlueViewSettingsViewModel.PortNumber;
             _refreshManager.PortNumber = GlueViewSettingsViewModel.PortNumber;
 
-            var returnValue = await ReactToPluginEventWithReturn("GameCommunication_SetPrimarySettings", JsonConvert.SerializeObject(new
-            {
-                IsGlueControlManagerGenerationEnabled = game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled,
-                PortNumber = game1GlueControlGenerator.PortNumber
-            }));
+            MainGameCommunicationPlugin.Self.SetPrimarySettings(
+                    game1GlueControlGenerator.PortNumber,
+                    game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled
+            );
 
             GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
             if (IsFrbNewEnough() && GlueViewSettingsViewModel.EnableLiveEdit)
@@ -880,9 +905,10 @@ namespace GameCommunicationPlugin.GlueControl
 
             _refreshManager.CreateStopAndRestartTask($"{propertyName} changed");
 
-            ReactToPluginEvent("Compiler_Output_Standard", "Waiting for tasks to finish...");
+            PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", "Waiting for tasks to finish...");
             await TaskManager.Self.WaitForAllTasksFinished();
-            ReactToPluginEvent("Compiler_Output_Standard", "Finishined adding/generating code for GlueControlManager");
+
+            PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", "Finishined adding/generating code for GlueControlManager");
         }
 
         private static void AddNewtonsoft()
@@ -975,12 +1001,12 @@ namespace GameCommunicationPlugin.GlueControl
         {
             if (succeeded)
             {
-                ReactToPluginEvent("Compiler_Output_Standard", $"{DateTime.Now.ToLongTimeString()} Build succeeded");
+                PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", $"{DateTime.Now.ToLongTimeString()} Build succeeded");
+
             }
             else
             {
-                ReactToPluginEvent("Compiler_Output_Standard", $"{DateTime.Now.ToLongTimeString()} Build failed");
-
+                PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", $"{DateTime.Now.ToLongTimeString()} Build failed");
             }
         }
 

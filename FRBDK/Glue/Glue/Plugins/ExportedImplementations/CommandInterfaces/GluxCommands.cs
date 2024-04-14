@@ -1520,8 +1520,12 @@ public class GluxCommands : IGluxCommands
     public async Task AddNamedObjectToAsync(NamedObjectSave newNos, GlueElement elementToAddTo, NamedObjectSave listToAddTo = null, bool selectNewNos = true,
          bool performSaveAndGenerateCode = true, bool updateUi = true)
     {
+        var frameId1 = System.Threading.Thread.CurrentThread.ManagedThreadId;
         await TaskManager.Self.AddAsync(async () =>
         {
+            
+            var frameId2 = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
             var ati = newNos.GetAssetTypeInfo();
 
             if (listToAddTo != null)
@@ -1573,11 +1577,14 @@ public class GluxCommands : IGluxCommands
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementToAddTo);
             }
+            var frameId3 = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
             // run after generated code so plugins like level editor work off latest code
             await PluginManager.ReactToNewObjectListAsync(new List<NamedObjectSave>(){ newNos});
             if (listToAddTo != null)
             {
+                var frameId4 = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
                 await PluginManager.ReactToObjectContainerChanged(newNos, listToAddTo);
             }
 

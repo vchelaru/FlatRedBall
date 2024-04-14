@@ -328,7 +328,6 @@ namespace CompilerPlugin.Managers
                         while (runningGameProcess == null)
                         {
                             // didn't find it, so let's wait a little and try again:
-
                             await Task.Delay(millisecondsToWaitBeforeRetry);
 
                             runningGameProcess = TryFindGameProcess();
@@ -356,7 +355,6 @@ namespace CompilerPlugin.Managers
 
                                 if (id == null || id == IntPtr.Zero)
                                 {
-
                                     await Task.Delay(millisecondsToWaitBeforeRetry);
                                     continue;
                                 }
@@ -588,7 +586,7 @@ namespace CompilerPlugin.Managers
             if (!string.IsNullOrEmpty(exeLocation))
             {
                 // await a little to see if the crash.txt file gets written...
-                await Task.Delay(2);
+                await Task.Delay(3);
 
                 var directory = FileManager.GetDirectory(exeLocation);
                 var logFile = directory + "CrashInfo.txt";
