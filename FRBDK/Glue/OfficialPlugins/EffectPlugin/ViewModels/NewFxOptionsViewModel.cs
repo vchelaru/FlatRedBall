@@ -27,7 +27,7 @@ namespace OfficialPlugins.EffectPlugin.ViewModels
             get
             {
                 var fileName = !string.IsNullOrWhiteSpace(FxFileName) ? FxFileName : "PostProcess";
-                return $"Include {FxFileName}.cs PostProcess file";
+                return $"Include {fileName}.cs PostProcess file";
             }
         }
 
