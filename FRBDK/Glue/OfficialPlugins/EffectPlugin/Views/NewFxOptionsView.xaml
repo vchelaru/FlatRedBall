@@ -9,7 +9,10 @@
     <Grid>
         <GroupBox Header="FX Creation Options">
             <StackPanel>
-                <CheckBox>Include PostProcess .cs file</CheckBox>
+                <CheckBox 
+                    Content="{Binding IncludePostProcessCsMessage, FallbackValue=IncludeXXXX.cs}"
+                    IsChecked="{Binding IsIncludePostProcessCsFileChecked}"
+                          ></CheckBox>
             </StackPanel>
         </GroupBox>
     </Grid>

@@ -45,6 +45,7 @@ namespace FlatRedBall.Glue.Controls
         #region Events
 
         public event SelectionChangedEventHandler SelectionChanged;
+        public event Action<string> FileNameChanged;
 
         public Func<object> GetCreationOption;
 
@@ -278,6 +279,11 @@ namespace FlatRedBall.Glue.Controls
             {
                 DialogResult = true;
             }
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FileNameChanged?.Invoke(TextBox.Text);
         }
     }
 

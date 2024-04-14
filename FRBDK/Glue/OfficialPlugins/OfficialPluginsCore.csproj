@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="EffectPlugin\EmbeddedCodeFiles\PostProcessTemplate.cs" />
     <Compile Remove="FRBDKUpdater\FrbdkUpdaterSettings.cs" />
     <Compile Remove="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
@@ -83,6 +84,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="EffectPlugin\EmbeddedCodeFiles\PostProcessTemplate.cs" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Levels\Level1Map.tmx" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Levels\Level2Map.tmx" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Levels\Level3Map.tmx" />

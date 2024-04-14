@@ -1,5 +1,7 @@
-﻿using FlatRedBall.Glue.Elements;
+﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -9,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TiledPluginCore.Models;
+using TiledPluginCore.Views;
 using TileGraphicsPlugin;
 using TMXGlueLib;
 
@@ -201,5 +204,39 @@ namespace TiledPluginCore.Managers
             tileMapSave.Save(fullTmxFile.FullPath);
             Tileset.ShouldLoadValuesFromSource = old;
         }
+
+        public void HandleAddNewFileOptions(CustomizableNewFileWindow newFileWindow)
+        {
+            var view = new NewTmxOptionsView();
+            var viewModel = new NewTmxViewModel();
+            viewModel.IncludeDefaultTileset = true;
+            viewModel.IncludeGameplayLayer = true;
+            // January 23, 2022
+            // This is so common,
+            // at least according to
+            // Vic's usage, that we should
+            // just make it default to true.
+            viewModel.IsSolidCollisionBorderChecked = true;
+            view.DataContext = viewModel;
+
+            newFileWindow.AddCustomUi(view);
+
+            newFileWindow.SelectionChanged += (not, used) =>
+            {
+                var ati = newFileWindow.SelectedItem;
+                view.Visibility = IsTmx(ati).ToVisibility();
+            };
+
+            newFileWindow.GetCreationOption += () =>
+            {
+                var ati = newFileWindow.SelectedItem;
+                return IsTmx(ati) ?
+                    viewModel :
+                    null;
+            };
+        }
+
+        public bool IsTmx(AssetTypeInfo ati) =>
+            ati?.Extension == "tmx";
     }
 }

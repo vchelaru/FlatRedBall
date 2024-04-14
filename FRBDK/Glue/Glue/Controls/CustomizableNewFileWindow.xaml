@@ -76,6 +76,7 @@
             <Label Margin="0,6,0,0" Content="{x:Static localization:Texts.EnterFile}" />
             <TextBox x:Name="TextBox"
                     KeyDown="TextBox_KeyDown"
+                    TextChanged="TextBox_TextChanged"
                     Text="{Binding FileName}" ></TextBox>
         </StackPanel>
 
