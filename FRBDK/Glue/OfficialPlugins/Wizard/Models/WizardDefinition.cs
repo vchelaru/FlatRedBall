@@ -47,8 +47,7 @@ namespace OfficialPluginsCore.Wizard.Models
                 };
                 page.TopDownClicked += () =>
                 {
-                    ViewModel.PlayerControlType = GameType.Topdown;
-                    ViewModel.AddCloudCollision = false;
+                    TopDownSetupLogic.SetupForDefaultTopDown(ViewModel);
                     DoneClicked();
                 };
                 page.FormsClicked += () =>
@@ -159,7 +158,7 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddView(grid);
 
                 formsData.AddOptions("What kind of control will the Player have?", nameof(ViewModel.PlayerControlType), nameof(ViewModel.IsPlayerCreationSelectingOptions))
-                    .Add("Top-down", GameType.Topdown)
+                    .Add("Top-down", GameType.TopDown)
                     .Add("Platformer", GameType.Platformer)
                     .Add("None (controls be added later)", GameType.None);
 
@@ -176,8 +175,14 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddBoolValue("Add Platformer Animations", nameof(ViewModel.AddPlayerSpritePlatformerAnimations),
                     nameof(ViewModel.ShowAddPlayerSpritePlatformerAnimations));
 
+                formsData.AddBoolValue("Add Top Down Animations", nameof(ViewModel.AddPlayerSpriteTopDownAnimations),
+                    nameof(ViewModel.ShowAddPlayerSpriteTopDownAnimations));
+
                 formsData.AddBoolValue("Add Platformer Animation Controller", nameof(ViewModel.AddPlatformerAnimationController),
                     nameof(ViewModel.ShowAddPlatformAnimatorController));
+
+                formsData.AddBoolValue("Add Top Down Animation Controller", nameof(ViewModel.AddTopDownAnimationController),
+                    nameof(ViewModel.ShowAddTopDownAnimatorController));
 
                 formsData.AddTitle("Player Instance in GameScreen", nameof(ViewModel.AddPlayerEntity));
 

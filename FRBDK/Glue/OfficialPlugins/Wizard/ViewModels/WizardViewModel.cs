@@ -16,7 +16,7 @@ namespace OfficialPluginsCore.Wizard.Models
     public enum GameType
     {
         Platformer,
-        Topdown,
+        TopDown,
         None,
     }
 
@@ -233,6 +233,8 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        #region Platformer Animations
+
         public bool AddPlayerSpritePlatformerAnimations
         {
             get => Get<bool>();
@@ -253,6 +255,34 @@ namespace OfficialPluginsCore.Wizard.Models
         [DependsOn(nameof(AddPlayerSpritePlatformerAnimations))]
         public bool ShowAddPlatformAnimatorController =>
             ShowAddPlayerSpritePlatformerAnimations && AddPlayerSpritePlatformerAnimations;
+
+        #endregion
+
+        #region Top-Down Animations
+
+        public bool AddPlayerSpriteTopDownAnimations
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(AddPlayerSprite))]
+        [DependsOn(nameof(PlayerControlType))]
+        public bool ShowAddPlayerSpriteTopDownAnimations =>
+            AddPlayerSprite && PlayerControlType == GameType.TopDown;
+
+        public bool AddTopDownAnimationController
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(ShowAddPlayerSpriteTopDownAnimations))]
+        [DependsOn(nameof(AddPlayerSpriteTopDownAnimations))]
+        public bool ShowAddTopDownAnimatorController =>
+            ShowAddPlayerSpriteTopDownAnimations && AddPlayerSpriteTopDownAnimations;
+
+        #endregion
 
         public bool IsPlayerDamageableChecked
         {
@@ -408,7 +438,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             AddPlayerEntity = true;
 
-            PlayerControlType = GameType.Topdown;
+            PlayerControlType = GameType.TopDown;
             AddPlayerListToGameScreen = true;
             AddPlayerToList = true;
 

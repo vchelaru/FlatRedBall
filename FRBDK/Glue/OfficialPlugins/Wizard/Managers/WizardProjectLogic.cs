@@ -616,10 +616,20 @@ namespace OfficialPluginsCore.Wizard.Managers
                         }
 
                     }
-                    else if (vm.PlayerControlType == GameType.Topdown)
+                    else if (vm.PlayerControlType == GameType.TopDown)
                     {
                         // mark as top down
                         PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeEntityTopDown", playerEntity);
+
+                        if(vm.ShowAddPlayerSpriteTopDownAnimations && vm.AddPlayerSpriteTopDownAnimations)
+                        {
+                            await AddPlayerTopDownAnimations(playerEntity);
+                        }
+
+                        if(vm.ShowAddTopDownAnimatorController && vm.AddTopDownAnimationController)
+                        {
+                            await AddPlayerTopDownAnimationController(playerEntity);
+                        }
                     }
                 }
 
@@ -627,6 +637,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             return playerEntity;
         }
+
 
         private static async Task AddPlayerPlatformerAnimations(EntitySave playerEntity)
         {
@@ -668,11 +679,65 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
+        private static async Task AddPlayerTopDownAnimations(EntitySave playerEntity)
+        {
+            var playerContentFolder = GlueCommands.Self.FileCommands.GetContentFolder(playerEntity);
+
+            // 1 - save the PNG to the right location
+            FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly,
+                // This uses the same PNG as platformer, so the fact that it references
+                // the .Platformer. folder is intentional
+                "OfficialPlugins.Wizard.EmbeddedContent.Platformer.FRBeefcakeSpritesheet.png",
+                playerContentFolder + "FRBeefcakeSpriteSheet.png");
+
+            // 2 - save the .achx to the right locatoin
+            FlatRedBall.IO.FilePath achxDestinationPath = playerContentFolder + "TopDownAnimations.achx";
+            FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly,
+                "OfficialPlugins.Wizard.EmbeddedContent.TopDown.TopDownAnimations.achx",
+                achxDestinationPath.FullPath);
+
+            // 3 - add the .achx to the Player entity
+            await GlueCommands.Self.GluxCommands.CreateReferencedFileSaveForExistingFileAsync(playerEntity, achxDestinationPath);
+
+            // 4 - Set the animations on the sprite
+            var sprite = playerEntity.AllNamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite);
+            if (sprite != null)
+            {
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                    sprite,
+                    nameof(FlatRedBall.Sprite.AnimationChains),
+                    "TopDownAnimations",
+                    false, false
+                    );
+
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                    sprite,
+                    nameof(FlatRedBall.Sprite.CurrentChainName),
+                    "CharacterIdleDown",
+                    false, false
+                    );
+            }
+        }
+
         private static Task AddPlayerPlatformerAnimationController(EntitySave playerEntity)
         {
             var whereToSave = GlueCommands.Self.GetAbsoluteFilePath(playerEntity).GetDirectoryContainingThis() +
                 "Player.PlatformerAnimations.json";
             var resourceName = "OfficialPlugins.Wizard.EmbeddedContent.Platformer.Player.PlatformerAnimations.json";
+
+            GlueCommands.Self.TryMultipleTimes(() =>
+                FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly, resourceName, whereToSave));
+
+            return Task.CompletedTask;
+        }
+
+
+        private static Task AddPlayerTopDownAnimationController(EntitySave playerEntity)
+        {
+            var whereToSave = GlueCommands.Self.GetAbsoluteFilePath(playerEntity).GetDirectoryContainingThis() +
+                "Player.TopDownAnimations.json";
+
+            var resourceName = "OfficialPlugins.Wizard.EmbeddedContent.TopDown.Player.TopDownAnimations.json";
 
             GlueCommands.Self.TryMultipleTimes(() =>
                 FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly, resourceName, whereToSave));
@@ -743,7 +808,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             playerEntity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(addEntityVm);
 
-            if (vm.PlayerControlType == GameType.Platformer && vm.PlayerCollisionType == CollisionType.Rectangle)
+            if (vm.PlayerCollisionType == CollisionType.Rectangle)
             {
                 // this should have an AARect, so let's adjust it to match the right size/position as explained here:
                 // https://github.com/vchelaru/FlatRedBall/issues/651
@@ -751,24 +816,48 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 if (aaRectNos != null)
                 {
-                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
-                        aaRectNos,
-                        nameof(AxisAlignedRectangle.Y),
-                        8.0f,
-                        performSaveAndGenerateCode: false,
-                        updateUi: false);
-                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
-                        aaRectNos,
-                        nameof(AxisAlignedRectangle.Width),
-                        10.0f,
-                        performSaveAndGenerateCode: false,
-                        updateUi: false);
-                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
-                        aaRectNos,
-                        nameof(AxisAlignedRectangle.Height),
-                        16.0f,
-                        performSaveAndGenerateCode: false,
-                        updateUi: false);
+                    if(vm.PlayerControlType == GameType.Platformer)
+                    {
+                        await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                            aaRectNos,
+                            nameof(AxisAlignedRectangle.Y),
+                            8.0f,
+                            performSaveAndGenerateCode: false,
+                            updateUi: false);
+                        await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                            aaRectNos,
+                            nameof(AxisAlignedRectangle.Width),
+                            10.0f,
+                            performSaveAndGenerateCode: false,
+                            updateUi: false);
+                        await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                            aaRectNos,
+                            nameof(AxisAlignedRectangle.Height),
+                            16.0f,
+                            performSaveAndGenerateCode: false,
+                            updateUi: false);
+                    }
+                    else if(vm.PlayerControlType == GameType.TopDown)
+                    {
+                        await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                            aaRectNos,
+                            nameof(AxisAlignedRectangle.Y),
+                            2.0f,
+                            performSaveAndGenerateCode: false,
+                            updateUi: false);
+                        await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                            aaRectNos,
+                            nameof(AxisAlignedRectangle.Width),
+                            8.0f,
+                            performSaveAndGenerateCode: false,
+                            updateUi: false);
+                        await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                            aaRectNos,
+                            nameof(AxisAlignedRectangle.Height),
+                            8.0f,
+                            performSaveAndGenerateCode: false,
+                            updateUi: false);
+                    }
                 }
             }
 
