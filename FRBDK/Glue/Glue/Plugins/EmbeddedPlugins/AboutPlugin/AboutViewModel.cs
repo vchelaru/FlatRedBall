@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.MVVM;
+﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Ionic.BZip2;
 using System;
@@ -198,7 +199,13 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
             var location = "https://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/FRBDK.zip";
             using var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Head, new Uri(location));
-            var response = await client.SendAsync(request);
+
+            HttpResponseMessage response = null;
+            
+            await GlueCommands.Self.TryMultipleTimes(async () =>
+            {
+                response = await client.SendAsync(request);
+            });
             if (response.IsSuccessStatusCode)
             {
                 if (response.Headers.TryGetValues("Last-Modified", out var values))

@@ -118,6 +118,31 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        public async Task TryMultipleTimes(Func<Task> func, int numberOfTimesToTry = 5, int msSleepBetweenAttempts = 200)
+        {
+            int failureCount = 0;
+
+            while (failureCount < numberOfTimesToTry)
+            {
+                try
+                {
+                    await func();
+                    break;
+                }
+
+
+                catch (Exception e)
+                {
+                    failureCount++;
+                    System.Threading.Thread.Sleep(msSleepBetweenAttempts);
+                    if (failureCount >= numberOfTimesToTry)
+                    {
+                        throw;
+                    }
+                }
+            }
+        }
+
         public GlueCommands()
         {
             GenerateCodeCommands = new GenerateCodeCommands();
