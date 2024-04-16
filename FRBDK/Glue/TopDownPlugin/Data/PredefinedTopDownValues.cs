@@ -24,9 +24,14 @@ namespace TopDownPlugin.Data
             {
                 Name = "Default",
                 MovementMode = TopDownValuesViewModel.ImmediateOrAccelerate.Accelerate,
-                MaxSpeed = 300,
-                AccelerationTime = .5f,
-                DecelerationTime = .25f,
+
+                // Max speed, AccelerationTime, and DecelerationTime have been
+                // tuned to work well with a 480x360 resolution game
+                MaxSpeed = 150,
+                AccelerationTime = .2f,
+                DecelerationTime = .1f,
+
+
                 ShouldChangeMovementDirection = TopDownValuesViewModel.VelocityChangeMode.UpdateFromInput,
                 // intentionally don't set IsCustomDecelerationChecked to true. The user may not want that, but if they
                 // do, we should have CustomDecelerationValue set to a useful default
