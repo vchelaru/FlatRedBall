@@ -685,9 +685,9 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             // 1 - save the PNG to the right location
             FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly,
-                // This uses the same PNG as platformer, so the fact that it references
-                // the .Platformer. folder is intentional
-                "OfficialPlugins.Wizard.EmbeddedContent.Platformer.FRBeefcakeSpritesheet.png",
+                // This uses a different .png than the platformer so that we can expand
+                // each independently in case we need the space.
+                "OfficialPlugins.Wizard.EmbeddedContent.TopDown.FRBeefcakeSpritesheet.png",
                 playerContentFolder + "FRBeefcakeSpriteSheet.png");
 
             // 2 - save the .achx to the right locatoin
