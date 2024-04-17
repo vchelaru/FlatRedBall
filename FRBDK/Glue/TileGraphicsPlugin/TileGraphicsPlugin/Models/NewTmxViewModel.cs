@@ -6,8 +6,53 @@ using System.Windows;
 
 namespace TiledPluginCore.Models
 {
+    enum WithVisualType
+    {
+        WithVisuals,
+        NoVisuals
+    }
+
+
     class NewTmxViewModel : ViewModel
     {
+        public WithVisualType WithVisualType
+        {
+            get => Get<WithVisualType>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(WithVisualType))]
+        public bool IsWithVisualsChecked
+        {
+            get => WithVisualType == WithVisualType.WithVisuals;
+            set
+            {
+                if(value)
+                {
+                    WithVisualType = WithVisualType.WithVisuals;
+                }
+            }
+        }
+
+        [DependsOn(nameof(WithVisualType))]
+        public bool IsNoVisualsChecked
+        {
+            get => WithVisualType == WithVisualType.NoVisuals;
+            set
+            {
+                if(value)
+                {
+                    WithVisualType = WithVisualType.NoVisuals;
+                }
+            }
+        }
+
+        [DependsOn(nameof(WithVisualType))]
+        public Visibility NoVisualsUiVisibility => (WithVisualType == WithVisualType.NoVisuals).ToVisibility();
+
+        [DependsOn(nameof(WithVisualType))]
+        public Visibility WithVisualsUiVisibility => (WithVisualType == WithVisualType.WithVisuals).ToVisibility();
+
         public bool IncludeDefaultTileset
         {
             get => Get<bool>();
