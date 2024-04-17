@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="75" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="1">
+ <tileset firstgid="1" source="../Tilesets/StandardTileset.tsx"/>
+ <tileset firstgid="1025" source="../Tilesets/FrbVisualTiles.tsx"/>
+ <layer id="2" name="Ground" width="75" height="27">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu3SQQ2AQBAEQT5nDCvr3wMKuFTuCV3JGOjMrCtoasVq5WrlauVq5WrlauVq5WrlauVq5WrlauVq5WrlauVq5WrlauVq5WrlauVq5U5b3et9X9Wv3Gz+8cfv7DwqMfXrpB8AAA==
+  </data>
+ </layer>
+ <layer id="1" name="GameplayLayer" width="75" height="27" opacity="0.4">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu3SQQqAMAwAQQv+/80ieNKUbrBotTuQc9MlZRFRjlGbrThbcbbibMXZirMVZyvOVpytOFtxtuJsxdmKs1VdqYyubBVbT7OzFTdqq6d2ie6H7DRjq4y3WrXe6r1L5n5qvtBqlJsfoVX05t9bZf53p1VmerIV12unWWcDB57V+6QfAAA=
+  </data>
+ </layer>
+</map>

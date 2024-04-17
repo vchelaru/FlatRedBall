@@ -16,22 +16,6 @@ namespace TiledPluginCore.Managers
 {
     public class TmxCreationManager : Singleton<TmxCreationManager>
     {
-        //internal bool HandleNewTmxCreation(AssetTypeInfo assetTypeInfo, object extraData, string directory, string name, out string resultingName)
-        //{
-        //    var canHandle = assetTypeInfo == AssetTypeInfoAdder.Self.TmxAssetTypeInfo;
-
-        //    //////////////Early Out/////////////////
-        //    if(canHandle == false)
-        //    {
-        //        resultingName = null;
-        //        return false;
-        //    }
-        //    /////////////End Early Out//////////////
-
-        //    resultingName = name;
-
-        //    return true;
-        //}
         internal void HandleNewTmx(ReferencedFileSave newFile)
         {
             var creationOptions = newFile.GetProperty<string>("CreationOptions");
@@ -86,11 +70,10 @@ namespace TiledPluginCore.Managers
 
         public void IncludeDefaultTilesetOn(ReferencedFileSave newFile)
         {
-            bool old;
             FilePath fullTmxFile, existingDefaultTilesetFile;
             TiledMapSave tileMapSave;
             SaveTilesetFilesToDisk(out existingDefaultTilesetFile);
-            old = Tileset.ShouldLoadValuesFromSource;
+            var old = Tileset.ShouldLoadValuesFromSource;
             Tileset.ShouldLoadValuesFromSource = false;
             fullTmxFile = new FilePath(GlueCommands.Self.FileCommands.GetFullFileName(newFile));
 
@@ -111,7 +94,7 @@ namespace TiledPluginCore.Managers
 
         public void SaveTilesetFilesToDisk()
         {
-            SaveTilesetFilesToDisk(out FilePath ____);
+            SaveTilesetFilesToDisk(out FilePath _);
         }
 
         private void SaveTilesetFilesToDisk(out FilePath existingDefaultTilesetFile)
@@ -188,11 +171,6 @@ namespace TiledPluginCore.Managers
                     }
                 }
             }
-
-            // let's just cheat:
-            // to do this we'd have to do all the data to gzip this. Worry about it later
-            //tileMapSave.Layers[0].data[0].Value =
-            //    "\n   H4sIAAAAAAAACu3NsQ0AAAzCMPj/6X5RFkfK7Cbp+FV8Pp/P5/P5fD6fz+d/+ssPQZZTxQAQAAA=\n  ";
 
             tileMapSave.Layers[0].data[0].SetTileData(tiles, "base64", "gzip");
 

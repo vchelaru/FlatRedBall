@@ -15,9 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="Content\Levels\PlatformerTileMap.tmx" />
-		<None Remove="Content\Levels\TiledMap.tmx" />
-		<None Remove="Content\Levels\TopDown8Bit.tmx" />
+		<None Remove="Content\Levels\OverworldPlatformerA.tmx" />
 		<None Remove="Content\Tilesets\PlatformerTiles.png" />
 		<None Remove="Content\Tilesets\StandardTileset.tsx" />
 		<None Remove="Content\Tilesets\StandardTilesetIcons.png" />
@@ -82,9 +80,7 @@
 
 
 	<ItemGroup>
-		<EmbeddedResource Include="Content\Levels\PlatformerTileMap.tmx" />
-		<EmbeddedResource Include="Content\Levels\TiledMap.tmx" />
-		<EmbeddedResource Include="Content\Levels\TopDown8Bit.tmx" />
+		<EmbeddedResource Include="Content\Levels\OverworldPlatformerA.tmx" />
 		<EmbeddedResource Include="Content\Tilesets\PlatformerTiles.png" />
 		<EmbeddedResource Include="Content\Tilesets\TopDown8Bit.png" />
 	</ItemGroup>
