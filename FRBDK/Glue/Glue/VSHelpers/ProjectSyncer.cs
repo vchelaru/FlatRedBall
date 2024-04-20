@@ -93,18 +93,6 @@ namespace FlatRedBall.Glue.VSHelpers
 
         public static void SyncProjects(ProjectBase sourceProjectBase, ProjectBase projectBaseToModify, bool performTranslation)
         {
-            // July 18, 2011
-            // We used to pass
-            // in the sourceProject
-            // and the sourceContentProject
-            // separately, but now the sourceProject
-            // has a reference to the sourceContentProject,
-            // so there's no need to do that.  I'm adding this
-            // comment just in case at some point we were actually
-            // passing in the two separately for some reason...although
-            // I think it was done because this code was originally written
-            // before ProjectBase had a ContentProject property.
-
             projectBaseToModify.SyncTo(sourceProjectBase, performTranslation);
         }
 

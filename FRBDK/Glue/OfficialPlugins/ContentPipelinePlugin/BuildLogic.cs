@@ -89,8 +89,9 @@ namespace OfficialPlugins.MonoGameContent
         {
             return project is MonoGameDesktopGlBaseProject ||
                 project is AndroidProject ||
-                project is UwpProject
-                // todo: need to support iOS
+                project is UwpProject ||
+                project is AndroidMonoGameNet8Project ||
+                project is IosMonoGameNet8Project
                 ;
 
         }
@@ -298,9 +299,13 @@ namespace OfficialPlugins.MonoGameContent
             {
                 platform = "DesktopGL";
             }
-            else if (project is AndroidProject)
+            else if (project is AndroidProject or AndroidMonoGameNet8Project)
             {
                 platform = "Android";
+            }
+            else if (project is IosMonoGameNet8Project)
+            {
+                platform = "iOS";
             }
             else if (project is UwpProject)
             {
@@ -313,7 +318,10 @@ namespace OfficialPlugins.MonoGameContent
         public static string GetXnbDestinationDirectory(FilePath fullFileName, ProjectBase project)
         {
             string platform = GetPipelinePlatformNameFor(project);
-
+            if(string.IsNullOrEmpty(platform))
+            {
+                throw new InvalidOperationException($"The project type {project.GetType().Name} does not have a specified platform for the content pipeline. This must be added.");
+            }
             string contentDirectory = GlueState.ContentDirectory;
             string projectDirectory = GlueState.CurrentGlueProjectDirectory;
             string destinationDirectory = fullFileName.GetDirectoryContainingThis().FullPath;

@@ -98,10 +98,15 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
             if (!shouldSkipContent)
             {
+                // If we got to this point, then the file has not been explicitly excluded as content. However, we still may want to skip it if it's not in the content directory.
                 string containingProjectContent = FileManager.Standardize(buildItemOwner.ContentDirectory).ToLowerInvariant();
                 string standardUnevaluatedInclude = FileManager.Standardize(bi.UnevaluatedInclude).ToLowerInvariant();
+                var isRelativeToContentFolder = standardUnevaluatedInclude.StartsWith(containingProjectContent);
 
-                shouldSkipContent = standardUnevaluatedInclude.StartsWith(containingProjectContent) == false;
+                // This could still be content if it's an XNB, but XNBs are platform-specific. We don't want to sync an XNB from one platform to another. We'll let the 
+                // XNB builder handle this. See the ContentPipelinePlugin for more information.
+
+                shouldSkipContent = !isRelativeToContentFolder;
             }
 
             return !shouldSkipContent;
