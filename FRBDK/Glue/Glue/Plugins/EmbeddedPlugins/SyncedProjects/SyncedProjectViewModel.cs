@@ -43,21 +43,6 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
             }
         }
 
-        public Visibility XamarinButtonVisibility
-        {
-            get
-            {
-                if(projectBase is AndroidProject)
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    // so columns are the same size
-                    return Visibility.Hidden;
-                }
-            }
-        }
 
         /// <summary>
         /// An ObservableCollection of orphaned files - files which are referenced by the 

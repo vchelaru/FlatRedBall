@@ -87,11 +87,11 @@ namespace OfficialPlugins.MonoGameContent
 
         public static bool GetIfNeedsMonoGameFilesBuilt(ProjectBase project)
         {
-            return project is MonoGameDesktopGlBaseProject ||
-                project is AndroidProject ||
-                project is UwpProject ||
-                project is AndroidMonoGameNet8Project ||
-                project is IosMonoGameNet8Project
+            return project is MonoGameDesktopGlBaseProject 
+                or AndroidProject 
+                or UwpProject 
+                or AndroidMonoGameNet8Project 
+                or IosMonoGameNet8Project
                 ;
 
         }
@@ -643,6 +643,7 @@ namespace OfficialPlugins.MonoGameContent
 
                 link = "Content\\" + link;
 
+                // This is not needed for .NET 8 projects, only Xamarin Android:
                 if (project is AndroidProject)
                 {
                     link = "Assets\\" + link;

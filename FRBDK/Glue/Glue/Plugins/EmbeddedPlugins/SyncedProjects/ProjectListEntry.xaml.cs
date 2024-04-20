@@ -119,61 +119,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             OpenInExplorer(Project);
         }
 
-        private void OpenInXamarinStudio(object sender, RoutedEventArgs e)
-        {
-            string solutionName = ProjectSyncer.LocateSolution(Project.FullFileName.FullPath);
-
-            HandleOpenInXamarinStudioClick(solutionName);
-        }
-
-
-        private bool HandleOpenInXamarinStudioClick(string solution)
-        {
-            string standardizedSolution = FileManager.Standardize(solution).ToLowerInvariant();
-
-            ProjectBase project = null;
-
-            string mainSolution = ProjectSyncer.LocateSolution(GlueState.Self.CurrentMainContentProject.FullFileName.FullPath);
-
-            if (standardizedSolution == FileManager.Standardize(mainSolution).ToLowerInvariant())
-            {
-                project = GlueState.Self.CurrentMainContentProject;
-            }
-
-            if (project == null)
-            {
-                // Maybe this is a synced project?
-                foreach (var potentialProject in GlueState.Self.SyncedProjects)
-                {
-                    string potentialSolutionName = FileManager.Standardize(ProjectSyncer.LocateSolution(potentialProject.FullFileName.FullPath)).ToLowerInvariant();
-
-                    if (potentialSolutionName == standardizedSolution)
-                    {
-                        project = potentialProject;
-                        break;
-                    }
-                }
-            }
-
-            bool shouldHandle = project != null && project is AndroidProject;
-
-            if (shouldHandle)
-            {
-                try
-                {
-                    string xamarinStudioLocation = GetProgramFilesx86() + "Xamarin Studio/bin/XamarinStudio.exe";
-                    Process.Start(xamarinStudioLocation, solution);
-                }
-                catch (Exception ex)
-                {
-                    PluginManager.ReceiveError(ex.ToString());
-                    MessageBox.Show(L.Texts.ErrorCannotOpenXamarin);
-                }
-            }
-            return shouldHandle;
-        }
-
-
         static string GetProgramFilesx86()
         {
             if (8 == IntPtr.Size

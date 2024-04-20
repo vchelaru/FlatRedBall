@@ -157,6 +157,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 try
                 {
+                    // Only needed for Xamarin - .NET 8 is a normal .NET project
                     if(this is AndroidProject or IosMonogameProject)
                     {
                         // this doesn't have a dotnet version, so gotta use xamarin:
@@ -171,6 +172,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 try
                 {
+                    // This doesn't have a dotnet version, not needed for .NET 8:
                     if (this is AndroidProject or IosMonogameProject)
                     {
                         DotNetVersion = new Version(0,0);

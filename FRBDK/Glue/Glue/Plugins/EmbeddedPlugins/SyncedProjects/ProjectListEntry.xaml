@@ -26,9 +26,6 @@
 
             <Rectangle Width="5"></Rectangle>
             
-            <Button Visibility="{Binding XamarinButtonVisibility}" Click="OpenInXamarinStudio">
-                <Image Source="Images/XamarinIcon.png" />
-            </Button>
             <Button Click="OpenInVisualStudio">
                 <Image Source="Images/VsIcon.png" />
             </Button>
