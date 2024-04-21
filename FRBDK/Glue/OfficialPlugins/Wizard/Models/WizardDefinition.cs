@@ -243,9 +243,19 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 formsData.AddIntValue("Number of levels to create", nameof(ViewModel.NumberOfLevels), nameof(ViewModel.AddGameScreen));
 
-                formsData.AddBoolValue("Include standard tileset", nameof(ViewModel.IncludStandardTilesetInLevels), nameof(ViewModel.AddGameScreen));
-                formsData.AddBoolValue("Include gameplay layer", nameof(ViewModel.IncludeGameplayLayerInLevels), nameof(ViewModel.AddGameScreen));
-                formsData.AddBoolValue("Add Border Collision", nameof(ViewModel.IncludeCollisionBorderInLevels), nameof(ViewModel.ShowBorderCollisionCheckBox));
+                formsData.AddOptions("Level Visuals", nameof(ViewModel.WithVisualType), nameof(ViewModel.AddGameScreen))
+                    .Add("Include Visual Layers", WithVisualType.WithVisuals)
+                    .Add("No Visual Layers", WithVisualType.NoVisuals)
+                    ;
+
+                formsData.AddBoolValue("Include standard tileset", nameof(ViewModel.IncludStandardTilesetInLevels), 
+                    nameof(ViewModel.IsIncludeStandardTilesetUiVisible));
+
+                formsData.AddBoolValue("Include gameplay layer", nameof(ViewModel.IncludeGameplayLayerInLevels), 
+                    nameof(ViewModel.IsIncludeGameplayLayerVisibile));
+
+                formsData.AddBoolValue("Add Border Collision", nameof(ViewModel.IncludeCollisionBorderInLevels), 
+                    nameof(ViewModel.ShowBorderCollisionCheckBox));
 
                 FormsDataList.Add(formsData);
 

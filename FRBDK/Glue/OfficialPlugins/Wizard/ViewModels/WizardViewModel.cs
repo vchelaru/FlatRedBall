@@ -33,6 +33,12 @@ namespace OfficialPluginsCore.Wizard.Models
         ImportEntity
     }
 
+    public enum WithVisualType
+    {
+        WithVisuals,
+        NoVisuals
+    }
+
     public enum CameraResolution
     {
         _256x224,
@@ -304,6 +310,24 @@ namespace OfficialPluginsCore.Wizard.Models
             get => Get<int>();
             set => Set(value);
         }
+
+        public WithVisualType WithVisualType
+        {
+            get => Get<WithVisualType>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(AddGameScreen))]
+        [DependsOn(nameof(WithVisualType))]
+        public bool IsIncludeStandardTilesetUiVisible =>
+            AddGameScreen && WithVisualType == WithVisualType.NoVisuals;
+
+        [DependsOn(nameof(AddGameScreen))]
+        [DependsOn(nameof(WithVisualType))]
+        public bool IsIncludeGameplayLayerVisibile =>
+            AddGameScreen && WithVisualType == WithVisualType.NoVisuals;
+
+
         public bool IncludStandardTilesetInLevels
         {
             get => Get<bool>();
@@ -322,7 +346,12 @@ namespace OfficialPluginsCore.Wizard.Models
         [DependsOn(nameof(AddGameScreen))]
         [DependsOn(nameof(IncludeGameplayLayerInLevels))]
         [DependsOn(nameof(IncludStandardTilesetInLevels))]
-        public bool ShowBorderCollisionCheckBox => AddGameScreen && IncludeGameplayLayerInLevels && IncludStandardTilesetInLevels;
+        [DependsOn(nameof(WithVisualType))]
+        public bool ShowBorderCollisionCheckBox => 
+            AddGameScreen && 
+            IncludeGameplayLayerInLevels && 
+            IncludStandardTilesetInLevels &&
+            WithVisualType == WithVisualType.NoVisuals;
 
         #endregion
 
@@ -451,6 +480,7 @@ namespace OfficialPluginsCore.Wizard.Models
             IsPlayerDamageableChecked = true;
 
             CreateLevels = true;
+            WithVisualType = WithVisualType.WithVisuals;
             NumberOfLevels = 2;
             IncludStandardTilesetInLevels = true;
             IncludeGameplayLayerInLevels = true;
