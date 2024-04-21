@@ -382,59 +382,88 @@ namespace OfficialPluginsCore.Wizard.Managers
                     mapObject.SourceName = "Entire File (LayeredTileMap)";
                 }
 
-                void SelectTmxRfs()
+                if (vm.WithVisualType == WithVisualType.WithVisuals)
                 {
-                    GlueState.Self.CurrentReferencedFileSave = levelScreen.ReferencedFiles
-                        .FirstOrDefault(Item => Item.GetAssetTypeInfo()?.Extension == "tmx");
-                }
-
-                bool handledByPremadeLevel = false;
-                if(vm.IncludStandardTilesetInLevels && vm.IncludeGameplayLayerInLevels && vm.IncludeCollisionBorderInLevels)
-                {
-                    var levelIndex1Based = levelIndex0Based + 1;
-
-                    var resourceName = $"OfficialPlugins.Wizard.EmbeddedContent.Levels.{levelName}Map.tmx";
-                    var resourceStream = typeof(WizardProjectLogic).Assembly.GetManifestResourceStream(resourceName);
-
-                    var hasPremade = resourceStream != null;
-                    // dispose it, we'll use standard code to save it:
-                    resourceStream?.Dispose();
-
-                    if(hasPremade)
+                    var reminder = levelIndex0Based % 3;
+                    char suffix = 'A';
+                    if (reminder == 1)
                     {
-                        PluginManager.CallPluginMethod("Tiled Plugin", "SaveTilesetFilesToDisk");
-                        
-                        try
-                        {
-                            var rfsAbsolute = GlueCommands.Self.GetAbsoluteFilePath(newRfs);
-                            FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly, resourceName, rfsAbsolute.FullPath);
-                            handledByPremadeLevel = true;
-                        }
-                        catch
-                        {
-                            // couldn't save it, oh well...
-                        }
+                        suffix = 'B';
+                    }
+                    else if (reminder == 2)
+                    {
+                        suffix = 'C';
+                    }
 
+                    if(vm.PlayerControlType == GameType.TopDown)
+                    {
+
+                    }
+                    // make platformer default if no other type is set
+                    else // if(vm.PlayerControlType == GameType.Platformer)
+                    {
+                        PluginManager.CallPluginMethod("Tiled Plugin", "SaveFileWithVisuals", 
+                            newRfs, $"OverworldPlatformer{suffix}");
                     }
                 }
-
-                if(!handledByPremadeLevel)
+                else
                 {
-                    if (vm.IncludStandardTilesetInLevels)
+
+                    bool handledByPremadeLevel = false;
+                    if (vm.IncludStandardTilesetInLevels && vm.IncludeGameplayLayerInLevels && vm.IncludeCollisionBorderInLevels)
                     {
-                        SelectTmxRfs();
-                        PluginManager.CallPluginMethod("Tiled Plugin", "AddStandardTilesetOnCurrentFile");
-                    }
-                    if (vm.IncludeGameplayLayerInLevels)
-                    {
-                        SelectTmxRfs();
-                        PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
+                        var levelIndex1Based = levelIndex0Based + 1;
+
+                        var resourceName = $"OfficialPlugins.Wizard.EmbeddedContent.Levels.{levelName}Map.tmx";
+                        var resourceStream = typeof(WizardProjectLogic).Assembly.GetManifestResourceStream(resourceName);
+
+                        var hasPremade = resourceStream != null;
+                        // dispose it, we'll use standard code to save it:
+                        resourceStream?.Dispose();
+
+                        if (hasPremade)
+                        {
+                            PluginManager.CallPluginMethod("Tiled Plugin", "SaveTilesetFilesToDisk");
+
+                            try
+                            {
+                                var rfsAbsolute = GlueCommands.Self.GetAbsoluteFilePath(newRfs);
+                                FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly, resourceName, rfsAbsolute.FullPath);
+                                handledByPremadeLevel = true;
+                            }
+                            catch
+                            {
+                                // couldn't save it, oh well...
+                            }
+
+                        }
                     }
 
-                    if (vm.IncludeCollisionBorderInLevels)
+
+
+                    if (!handledByPremadeLevel)
                     {
-                        SelectTmxRfs();
-                        PluginManager.CallPluginMethod("Tiled Plugin", "AddCollisionBorderToCurrentFile");
+                        if (vm.IncludStandardTilesetInLevels)
+                        {
+                            SelectTmxRfs();
+                            PluginManager.CallPluginMethod("Tiled Plugin", "AddStandardTilesetOnCurrentFile");
+                        }
+                        if (vm.IncludeGameplayLayerInLevels)
+                        {
+                            SelectTmxRfs();
+                            PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
+                        }
+
+                        if (vm.IncludeCollisionBorderInLevels)
+                        {
+                            SelectTmxRfs();
+                            PluginManager.CallPluginMethod("Tiled Plugin", "AddCollisionBorderToCurrentFile");
+                        }
+                        void SelectTmxRfs()
+                        {
+                            GlueState.Self.CurrentReferencedFileSave = levelScreen.ReferencedFiles
+                                .FirstOrDefault(Item => Item.GetAssetTypeInfo()?.Extension == "tmx");
+                        }
                     }
                 }
 
@@ -605,12 +634,12 @@ namespace OfficialPluginsCore.Wizard.Managers
                         // mark as platformer
                         PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeEntityPlatformer", playerEntity);
 
-                        if(vm.ShowAddPlayerSpritePlatformerAnimations && vm.AddPlayerSpritePlatformerAnimations)
+                        if (vm.ShowAddPlayerSpritePlatformerAnimations && vm.AddPlayerSpritePlatformerAnimations)
                         {
                             await AddPlayerPlatformerAnimations(playerEntity);
                         }
 
-                        if(vm.ShowAddPlatformAnimatorController && vm.AddPlatformerAnimationController)
+                        if (vm.ShowAddPlatformAnimatorController && vm.AddPlatformerAnimationController)
                         {
                             await AddPlayerPlatformerAnimationController(playerEntity);
                         }
@@ -621,12 +650,12 @@ namespace OfficialPluginsCore.Wizard.Managers
                         // mark as top down
                         PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeEntityTopDown", playerEntity);
 
-                        if(vm.ShowAddPlayerSpriteTopDownAnimations && vm.AddPlayerSpriteTopDownAnimations)
+                        if (vm.ShowAddPlayerSpriteTopDownAnimations && vm.AddPlayerSpriteTopDownAnimations)
                         {
                             await AddPlayerTopDownAnimations(playerEntity);
                         }
 
-                        if(vm.ShowAddTopDownAnimatorController && vm.AddTopDownAnimationController)
+                        if (vm.ShowAddTopDownAnimatorController && vm.AddTopDownAnimationController)
                         {
                             await AddPlayerTopDownAnimationController(playerEntity);
                         }
@@ -660,7 +689,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             // 4 - Set the animations on the sprite
             var sprite = playerEntity.AllNamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite);
-            if(sprite != null)
+            if (sprite != null)
             {
                 await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
                     sprite,
@@ -795,9 +824,9 @@ namespace OfficialPluginsCore.Wizard.Managers
                 // none are checked, but we'll still have it be ICollidable
             }
 
-            if(vm.IsPlayerDamageableChecked)
+            if (vm.IsPlayerDamageableChecked)
             {
-                addEntityVm.IsIDamageableChecked= true;
+                addEntityVm.IsIDamageableChecked = true;
             }
 
             addEntityVm.IsICollidableChecked = true;
@@ -816,7 +845,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 if (aaRectNos != null)
                 {
-                    if(vm.PlayerControlType == GameType.Platformer)
+                    if (vm.PlayerControlType == GameType.Platformer)
                     {
                         await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
                             aaRectNos,
@@ -837,7 +866,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                             performSaveAndGenerateCode: false,
                             updateUi: false);
                     }
-                    else if(vm.PlayerControlType == GameType.TopDown)
+                    else if (vm.PlayerControlType == GameType.TopDown)
                     {
                         await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
                             aaRectNos,
@@ -994,12 +1023,12 @@ namespace OfficialPluginsCore.Wizard.Managers
             decimal aspectRatioHeight = 3;
 
             int scalePercent = vm.ScalePercent;
-            if(scalePercent <= 0)
+            if (scalePercent <= 0)
             {
                 scalePercent = 100;
             }
 
-            switch(vm.SelectedCameraResolution)
+            switch (vm.SelectedCameraResolution)
             {
                 case CameraResolution._256x224:
                     width = 256;
@@ -1023,25 +1052,25 @@ namespace OfficialPluginsCore.Wizard.Managers
                     width = 640;
                     height = 480;
                     aspectRatioWidth = 4;
-                    aspectRatioHeight = 3; 
+                    aspectRatioHeight = 3;
                     break;
                 case CameraResolution._800x600:
                     width = 800;
                     height = 600;
                     aspectRatioWidth = 4;
-                    aspectRatioHeight = 3; 
+                    aspectRatioHeight = 3;
                     break;
                 case CameraResolution._1024x768:
                     width = 1024;
                     height = 768;
                     aspectRatioWidth = 4;
-                    aspectRatioHeight = 3; 
+                    aspectRatioHeight = 3;
                     break;
                 case CameraResolution._1920x1080:
                     width = 1920;
                     height = 1080;
                     aspectRatioWidth = 16;
-                    aspectRatioHeight = 9; 
+                    aspectRatioHeight = 9;
                     break;
 
             }
@@ -1071,11 +1100,11 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             var cameraNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addCameraControllerVm, gameScreen, null, selectNewNos: false);
 
-            if(cameraNos == null)
+            if (cameraNos == null)
             {
                 System.Diagnostics.Debugger.Break();
             }
-            else if(ObjectFinder.Self.GetElementContaining(cameraNos) == null)
+            else if (ObjectFinder.Self.GetElementContaining(cameraNos) == null)
             {
                 System.Diagnostics.Debugger.Break();
             }

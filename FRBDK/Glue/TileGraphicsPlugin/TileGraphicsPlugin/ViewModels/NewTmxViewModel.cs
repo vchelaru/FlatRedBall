@@ -14,7 +14,7 @@ namespace TiledPluginCore.ViewModels
         NoVisuals
     }
 
-    enum TmxLevels
+    public enum TmxLevels
     {
         OverworldPlatformerA,
         OverworldPlatformerB,

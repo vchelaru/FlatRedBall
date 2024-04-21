@@ -57,7 +57,6 @@ namespace TiledPluginCore.Managers
 
         private void HandleNewTmxWithVisuals(ReferencedFileSave newFile, NewTmxViewModel viewModel)
         {
-            var newFilePath = GlueCommands.Self.GetAbsoluteFilePath(newFile);
             var selectedLevel = viewModel.SelectedLevel;
 
             string levelName = null;
@@ -80,6 +79,18 @@ namespace TiledPluginCore.Managers
                 throw new NotImplementedException();
             }
 
+
+            SaveTmxWithVisuals(newFile, levelName);
+        }
+
+
+
+        public void SaveTmxWithVisuals(ReferencedFileSave newFile, string levelName)
+        {
+            var newFilePath = GlueCommands.Self.GetAbsoluteFilePath(newFile);
+
+
+
             void SaveIfNotExist(string resourceName, FilePath targetFile)
             {
                 if (!targetFile.Exists())
@@ -97,7 +108,7 @@ namespace TiledPluginCore.Managers
             var visualTsxResourceName = "TiledPluginCore.Content.Tilesets.FrbVisualTiles.tsx";
             var targetVisualTsxFile = new FilePath(GlueState.Self.ContentDirectory + "FrbVisualTiles.tsx");
             SaveIfNotExist(visualTsxResourceName, targetVisualTsxFile);
-            
+
             var visualPngResourceName = "TiledPluginCore.Content.Tilesets.FrbVisualTiles.png";
             var targetVisualPngFile = new FilePath(GlueState.Self.ContentDirectory + "FrbVisualTiles.png");
             SaveIfNotExist(visualPngResourceName, targetVisualPngFile);
@@ -124,18 +135,18 @@ namespace TiledPluginCore.Managers
                 var newVisualTsxRelative = targetVisualTsxFile.RelativeTo(newFilePath.GetDirectoryContainingThis());
                 var newStandardTsxRelative = targetStandardTsxFile.RelativeTo(newFilePath.GetDirectoryContainingThis());
 
-                foreach(var tileset in tiledMapSave.Tilesets)
+                foreach (var tileset in tiledMapSave.Tilesets)
                 {
-                    if(tileset.Source == "../Tilesets/FrbVisualTiles.tsx")
+                    if (tileset.Source == "../Tilesets/FrbVisualTiles.tsx")
                     {
                         tileset.Source = newVisualTsxRelative;
                     }
-                    else if(tileset.Source == "../Tilesets/StandardTileset.tsx")
+                    else if (tileset.Source == "../Tilesets/StandardTileset.tsx")
                     {
                         tileset.Source = newStandardTsxRelative;
                     }
                 }
-                    
+
                 tiledMapSave.Save(newFilePath.FullPath);
             }
             Tileset.ShouldLoadValuesFromSource = wasLoadingSource;
