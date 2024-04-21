@@ -3,64 +3,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization" xmlns:views="clr-namespace:TiledPluginCore.Views"
              mc:Ignorable="d" d:DesignWidth="300">
     <Grid VerticalAlignment="Top">
-        <ScrollViewer>
-            <GroupBox Header="{x:Static localization:Texts.TmxCreationOptions}">
-                <StackPanel>
-                    <GroupBox Header="Level Type" BorderThickness="0">
-                        <StackPanel Orientation="Horizontal">
-                            <RadioButton IsChecked="{Binding IsWithVisualsChecked}">With Visuals</RadioButton>
-                            <RadioButton  IsChecked="{Binding IsNoVisualsChecked}" Margin="16,0,0,0">No Visuals</RadioButton>
-                        </StackPanel>
-                    </GroupBox>
+        <GroupBox Header="{x:Static localization:Texts.TmxCreationOptions}">
+            <StackPanel>
+                <GroupBox Header="Level Type" BorderThickness="0">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton IsChecked="{Binding IsWithVisualsChecked}">With Visuals</RadioButton>
+                        <RadioButton  IsChecked="{Binding IsNoVisualsChecked}" Margin="16,0,0,0">No Visuals</RadioButton>
+                    </StackPanel>
+                </GroupBox>
 
-                    <Grid Visibility="{Binding WithVisualsUiVisibility}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <RadioButton>
-                            <Rectangle Width="100" Height="100" Fill="Red" />
-                        </RadioButton>
-                        <RadioButton Grid.Column="1">
-                            <Rectangle Width="100" Height="100" Fill="Blue" />
-                        </RadioButton>
-                        <RadioButton Grid.Row="1" Margin="0,5,0,0">
-                            <Rectangle Width="100" Height="100" Fill="Orange" />
+                <views:LevelWithVisualsSelectionView Visibility="{Binding WithVisualsUiVisibility}">
+                
+                </views:LevelWithVisualsSelectionView>
 
-                        </RadioButton>
-                        <RadioButton Grid.Column="1" Grid.Row="1"  Margin="0,5,0,0">
-                            <Rectangle Width="100" Height="100" Fill="Purple" />
+                <StackPanel Visibility="{Binding NoVisualsUiVisibility}">
 
-                        </RadioButton>
-                        <RadioButton  Grid.Row="2"  Margin="0,5,0,0">
-                            <Rectangle Width="100" Height="100" Fill="Green" />
-
-                        </RadioButton>
-                    </Grid>
-
-                    <StackPanel Visibility="{Binding NoVisualsUiVisibility}">
-
-                        <CheckBox VerticalContentAlignment="Center"
+                    <CheckBox VerticalContentAlignment="Center"
                         IsChecked="{Binding IncludeDefaultTileset}">
-                            Include Default Tileset</CheckBox>
-                        <CheckBox VerticalContentAlignment="Center"
+                        Include Default Tileset</CheckBox>
+                    <CheckBox VerticalContentAlignment="Center"
                         IsChecked="{Binding IncludeGameplayLayer}">
-                            Include Gameplay Layer</CheckBox>
-                        <CheckBox VerticalContentAlignment="Center"
+                        Include Gameplay Layer</CheckBox>
+                    <CheckBox VerticalContentAlignment="Center"
                               Visibility="{Binding SolidCollisionCheckBoxVisibility}"
                               IsChecked="{Binding IsSolidCollisionBorderChecked}"
                         Content="{x:Static localization:Texts.CollisionIncludeSolid}" />
-                    </StackPanel>
                 </StackPanel>
-            </GroupBox>
-        </ScrollViewer>
+            </StackPanel>
+        </GroupBox>
     </Grid>
 </UserControl>

@@ -29,13 +29,13 @@ using FlatRedBall.Glue.IO;
 using TileGraphicsPlugin.Logic;
 using System.ComponentModel;
 using TiledPluginCore.Controls;
-using TiledPluginCore.Models;
 using TiledPluginCore.CodeGeneration;
 using TiledPluginCore.Controllers;
 using TiledPluginCore.Managers;
 using TiledPluginCore.Views;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.FormHelpers;
+using TiledPluginCore.ViewModels;
 
 namespace TileGraphicsPlugin;
 
