@@ -17,12 +17,6 @@ namespace GlueCommunication
     {
         public static bool CanUseJsonManager = false;
 
-        private void HandleOnPacketReceived(GameConnectionManager.PacketReceivedArgs packetReceivedArgs)
-        {
-            if (packetReceivedArgs?.Packet?.Payload != "GetCommandsDto:{}")
-                Debug.WriteLine($"Packet Type: {packetReceivedArgs.Packet.PacketType}, Payload: {packetReceivedArgs.Packet.Payload}");
-        }
-
         #region private
         private Object _lock = new Object();
         private ConcurrentQueue<Packet> _sendItems = new ConcurrentQueue<Packet>();
@@ -74,7 +68,6 @@ namespace GlueCommunication
         public GameConnectionManager(int port)
         {
             _port = port;
-            OnPacketReceived += HandleOnPacketReceived;
             _addr = IPAddress.Loopback;
             StartConnecting();
             _periodicCheckTaskCancellationToken = new CancellationTokenSource();
@@ -300,7 +293,6 @@ namespace GlueCommunication
         {
             try { _periodicCheckTaskCancellationToken.Cancel(); } catch { }
             try { _server?.Dispose(); } catch { }
-            OnPacketReceived -= HandleOnPacketReceived;
         }
 
         #endregion

@@ -308,33 +308,34 @@ namespace GameJsonCommunicationPlugin.Common
                     WaitingFor = item.Id
                 });
 
-                var packet = await Task.Run(async () =>
+                Packet packet;
+                do
                 {
-                    do
-                    {
-                        await Task.Delay(10);
+                    await Task.Delay(10);
 
-                        if (_waitingPackets.TryGetValue(item.Id, out var waitingPacket))
+                    if (_waitingPackets.TryGetValue(item.Id, out var waitingPacket))
+                    {
+                        if (waitingPacket.ReceivedPacket != null)
                         {
-                            if (waitingPacket.ReceivedPacket != null)
-                            {
-                                _waitingPackets.TryRemove(item.Id, out var tempPacket);
-                                return waitingPacket.ReceivedPacket;
-                            }
-                            else if ((DateTime.Now - waitingPacket.StartedWaitingAt).TotalSeconds > TimeoutInSeconds)
-                            {
-                                Debug.WriteLine($"Removing Wait Id: {item.Id} due to timeout");
-                                _waitingPackets.TryRemove(item.Id, out var tempPacket);
-                                return (Packet)null;
-                            }
+                            _waitingPackets.TryRemove(item.Id, out var tempPacket);
+                            packet = waitingPacket.ReceivedPacket;
+                            break;
                         }
-                        else
+                        else if ((DateTime.Now - waitingPacket.StartedWaitingAt).TotalSeconds > TimeoutInSeconds)
                         {
-                            return (Packet)null;
+                            Debug.WriteLine($"Removing Wait Id: {item.Id} due to timeout");
+                            _waitingPackets.TryRemove(item.Id, out var tempPacket);
+                            packet = null;
+                            break;
                         }
                     }
-                    while (true);
-                });
+                    else
+                    {
+                        packet = null;
+                        break;
+                    }
+                }
+                while (true);
 
                 responseToReturn.Succeeded = packet != null;
                 responseToReturn.Data = packet;

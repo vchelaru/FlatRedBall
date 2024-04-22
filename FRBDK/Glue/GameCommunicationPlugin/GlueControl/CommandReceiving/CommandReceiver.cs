@@ -175,8 +175,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         //private async void HandleRemoveObject(RemoveObjectDto removeObjectDto)
         private async void HandleDto(RemoveObjectDto removeObjectDto)
         {
-            GlueElement elementToRemoveFrom = await CommandSender.Self.GetCurrentInGameScreen();
-            elementToRemoveFrom = elementToRemoveFrom ?? GlueState.Self.CurrentElement;
+            GlueElement elementToRemoveFrom = null;
+
+            if(removeObjectDto.ElementNamesGlue?.Count > 0)
+            {
+                elementToRemoveFrom = ObjectFinder.Self.GetElement(removeObjectDto.ElementNamesGlue[0]);
+            }
+            else
+            {
+                elementToRemoveFrom = GlueState.Self.CurrentElement;
+            }
+
             if(elementToRemoveFrom != null)
             {
                 await TaskManager.Self.AddAsync(() =>

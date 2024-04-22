@@ -792,6 +792,19 @@ namespace GlueControl
             // by batching.
             var dto = new Dtos.RemoveObjectDto();
             dto.ObjectNames = instances.Select(item => item.Name).ToList();
+            dto.ElementNamesGlue = new List<string>();
+
+            var screen =
+                FlatRedBall.Screens.ScreenManager.CurrentScreen;
+            var screenType = screen.GetType().FullName;
+            var glueType = CommandReceiver.GameElementTypeToGlueElement(screenType);
+            // pass the screen names:
+            for (int i = 0; i < instances.Count; i++)
+            {
+
+                dto.ElementNamesGlue.Add(glueType);
+
+            }
 
             GlueControlManager.Self.SendToGlue(dto);
         }
