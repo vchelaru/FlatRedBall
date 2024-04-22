@@ -69,32 +69,6 @@ namespace GameCommunicationPlugin
             //});
         }
 
-        public override void HandleEvent(string eventName, string payload)
-        {
-            base.HandleEvent(eventName, payload);
-
-            switch(eventName)
-            {
-                case "GameCommunication_SendPacket":
-                    _gameCommunicationManager.SendItem(JsonConvert.DeserializeObject<GameConnectionManager.Packet>(payload));
-
-                    break;
-            }
-        }
-
-        protected override async Task<string> HandleEventWithReturnImplementation(string eventName, string payload)
-        {
-            switch (eventName)
-            {
-                case "GameCommunication_SendPacket":
-                    var returnValue = await _gameCommunicationManager.SendItemWithResponse(JsonConvert.DeserializeObject<GameConnectionManager.Packet>(payload));
-
-                    return returnValue.Data?.Payload;
-            }
-
-            return null;
-        }
-
         public void SetPrimarySettings(int portNumber, bool doConnections)
         {
             _gameCommunicationManager.Port = portNumber;

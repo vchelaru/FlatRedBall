@@ -8,6 +8,14 @@
     <RootNamespace>GameCommunicationPlugin</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants);GLUE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants);GLUE</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Embedded\GlueCommunication\**" />
     <EmbeddedResource Remove="Embedded\GlueCommunication\**" />

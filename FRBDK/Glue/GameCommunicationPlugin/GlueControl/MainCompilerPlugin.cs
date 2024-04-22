@@ -648,7 +648,7 @@ namespace GameCommunicationPlugin.GlueControl
 
                     var toReturn = new global::ToolsUtilities.GeneralResponse<string>();
                     toReturn.SetFrom(response);
-                    toReturn.Data = response?.Data?.Payload;    
+                    toReturn.Data = response?.Data;    
 
                     return toReturn;
                 }
@@ -746,7 +746,7 @@ namespace GameCommunicationPlugin.GlueControl
                     await CommandSender.Self.Send(new SetSpeedDto
                     {
                         SpeedPercentage = speedPercentage
-                    });
+                    }, waitForResponse:false);
                     
                     break;
                 case nameof(CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):

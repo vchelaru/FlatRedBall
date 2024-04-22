@@ -113,7 +113,7 @@ namespace GlueCommunication
             Debug.WriteLine("Connected");
             _isConnected = true;
 
-            Task.Run(() =>
+            Task.Run(async() =>
             {
                 try
                 {
@@ -137,23 +137,57 @@ namespace GlueCommunication
 
                             var payload = Encoding.ASCII.GetString(stream.ToArray());
 
-                            if (OnPacketReceived != null)
-                            {
-                                var packet = JsonConvert.DeserializeObject<Packet>(payload);
 
-                                if (packet != null)
+                            var packet = JsonConvert.DeserializeObject<Packet>(payload);
+
+                            if (packet != null)
+                            {
+                                if (packet.InResponseTo.HasValue && _waitingPackets.TryGetValue(packet.InResponseTo.Value, out var waitingPacket))
                                 {
-                                    if (packet.InResponseTo.HasValue && _waitingPackets.TryGetValue(packet.InResponseTo.Value, out var waitingPacket))
+                                    waitingPacket.ReceivedPacket = packet;
+                                }
+                                else
+                                {
+                                    if (packet.PacketType == "OldDTO")
                                     {
-                                        waitingPacket.ReceivedPacket = packet;
-                                    }
-                                    else
-                                    {
-                                        OnPacketReceived(new PacketReceivedArgs
+#if GLUE
+
+#else
+                                        var returnValue = await GlueControl.GlueControlManager.Self?.ProcessMessage(packet.Payload);
+
+                                        var sendBytes = returnValue != null 
+                                            ? Encoding.ASCII.GetBytes(returnValue)
+                                            : new byte[0];
+                                        long size = sendBytes.LongLength;
+
+                                        //Send size
+                                        var bytes = BitConverter.GetBytes(size);
+                                        try
                                         {
-                                            Packet = packet
-                                        });
+                                            _server.Send(bytes);
+                                        }
+                                        catch (ObjectDisposedException) { }
+
+                                        try
+                                        {
+                                            //Send payload
+                                            if(size > 0)
+                                            {
+                                                //Send payload
+                                                _server.Send(sendBytes);
+                                            }
+                                        }
+                                        catch (ObjectDisposedException) { }
+
+
+#endif
                                     }
+
+
+                                    //OnPacketReceived(new PacketReceivedArgs
+                                    //{
+                                    //    Packet = packet
+                                    //});
                                 }
                             }
 
@@ -234,7 +268,7 @@ namespace GlueCommunication
                 StartConnecting();
             }
         }
-        #endregion
+#endregion
 
         #region publicMethods
 
@@ -322,7 +356,7 @@ namespace GlueCommunication
         #region events
 
         public delegate void PacketReceivedDelegate(PacketReceivedArgs packetReceivedArgs);
-        public event PacketReceivedDelegate OnPacketReceived;
+
 
         #endregion
     }

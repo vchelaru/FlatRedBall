@@ -107,29 +107,6 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
         private async Task<ToolsUtilities.GeneralResponse<string>> SendCommand(string text, SendImportance importance = SendImportance.Normal, bool waitForResponse = true)
         {
             // commands cannot be sent when receiving commands or we get a deadlock:
-            var stackTrace = new System.Diagnostics.StackTrace();
-
-            bool hasHandleDto = false;
-            bool hasSendResponseBack = false;
-            foreach (var frame in stackTrace.GetFrames())
-            {
-                var methodName = frame.GetMethod().Name;
-                if (methodName == "HandleDto")
-                {
-                    hasHandleDto = true;
-                }
-                else if (methodName == "SendResponseBackToGame")
-                {
-                    hasSendResponseBack = true;
-                }
-            }
-
-            if (hasHandleDto && !hasSendResponseBack)
-            {
-                return ToolsUtilities.GeneralResponse<string>.UnsuccessfulWith("Cannot send commands while receiving commands");
-            }
-
-
             var isImportant = importance != SendImportance.IfNotBusy;
             var shouldPrint = isImportant && text?.StartsWith("SelectObjectDto:") == false;
 

@@ -174,6 +174,7 @@ namespace GameJsonCommunicationPlugin.Common
 
             Task.Run(() =>
             {
+                return;
                 try
                 {
                     while (IsConnected)
@@ -224,46 +225,48 @@ namespace GameJsonCommunicationPlugin.Common
                 }
                 finally { IsConnected = false; }
             });
+        }
 
-            Task.Run(() =>
+        private string SendItemImmediately(Packet item)
+        {
+            var packet = JsonConvert.SerializeObject(item);
+            var sendBytes = Encoding.ASCII.GetBytes(packet);
+            long size = sendBytes.LongLength;
+
+            //Send size
+            _client.Send(BitConverter.GetBytes(size));
+
+            //Send payload
+            _client.Send(sendBytes);
+
+
+            byte[] bufferSize = new byte[sizeof(long)];
+
+            _client.Receive(bufferSize);
+            var packetSize = BitConverter.ToInt64(bufferSize, 0);
+
+            using (MemoryStream stream = new MemoryStream())
             {
-                try
+                var remainingBytes = packetSize;
+                while (remainingBytes > 0)
                 {
-                    while (IsConnected)
-                    {
-                        if (_sendItems.TryDequeue(out var item))
-                        {
-                            try
-                            {
-                                var packet = JsonConvert.SerializeObject(item);
-                                var sendBytes = Encoding.ASCII.GetBytes(packet);
-                                long size = sendBytes.LongLength;
-
-                                //Send size
-                                _client.Send(BitConverter.GetBytes(size));
-
-                                //Send payload
-                                _client.Send(sendBytes);
-                            }
-                            catch
-                            {
-                                Debug.WriteLine($"Removing Wait Id: {item.Id} due to error");
-                                _waitingPackets.TryRemove(item.Id, out var tempValue);
-                                throw;
-                            }
-                        }
-                        else
-                        {
-                            Thread.Sleep(10);
-                        }
-                    }
+                    var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
+                    byte[] bufferData = new byte[pullSize];
+                    _client.Receive(bufferData);
+                    stream.Write(bufferData, 0, bufferData.Length);
+                    remainingBytes -= pullSize;
                 }
-                catch (Exception ex)
-                {
-                    Debug.Write($"Client Connection Failed: {ex}");
-                }
-                finally { IsConnected = false; }
-            });
+
+                var payload = Encoding.ASCII.GetString(stream.ToArray());
+
+                return payload;
+            }
+            return null;
+
+            //if (numberOfBytes >0)
+            //{
+            //    // read:
+            //}
         }
 
         private async Task StatusCheckTask(CancellationToken cancellation)
@@ -292,53 +295,21 @@ namespace GameJsonCommunicationPlugin.Common
         public void SendItem(Packet item)
         {
             if (IsConnected)
-                _sendItems.Enqueue(item);
+            {
+                SendItemImmediately(item);
+            }
         }
 
-        public async Task<GeneralResponse<Packet>> SendItemWithResponse(Packet item)
+        public async Task<GeneralResponse<string>> SendItemWithResponse(Packet item)
         {
-            var responseToReturn = new GeneralResponse<Packet>();
+            var responseToReturn = new GeneralResponse<string>();
 
             if (IsConnected)
             {
-                _sendItems.Enqueue(item);
-                _waitingPackets.TryAdd(item.Id, new WaitingPacket
-                {
-                    StartedWaitingAt = DateTime.Now,
-                    WaitingFor = item.Id
-                });
+                var responseString = SendItemImmediately(item);
 
-                Packet packet;
-                do
-                {
-                    await Task.Delay(10);
-
-                    if (_waitingPackets.TryGetValue(item.Id, out var waitingPacket))
-                    {
-                        if (waitingPacket.ReceivedPacket != null)
-                        {
-                            _waitingPackets.TryRemove(item.Id, out var tempPacket);
-                            packet = waitingPacket.ReceivedPacket;
-                            break;
-                        }
-                        else if ((DateTime.Now - waitingPacket.StartedWaitingAt).TotalSeconds > TimeoutInSeconds)
-                        {
-                            Debug.WriteLine($"Removing Wait Id: {item.Id} due to timeout");
-                            _waitingPackets.TryRemove(item.Id, out var tempPacket);
-                            packet = null;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        packet = null;
-                        break;
-                    }
-                }
-                while (true);
-
-                responseToReturn.Succeeded = packet != null;
-                responseToReturn.Data = packet;
+                responseToReturn.Succeeded = true;
+                responseToReturn.Data = responseString;
             }
             else
             {
@@ -346,6 +317,39 @@ namespace GameJsonCommunicationPlugin.Common
                 responseToReturn.Message = "Not connected";
             }
             return responseToReturn;
+        }
+
+        private async Task<Packet> DoGetPacketResponse(Packet item)
+        {
+            Packet packet = null;
+            do
+            {
+                await Task.Delay(10);
+
+                if (_waitingPackets.TryGetValue(item.Id, out var waitingPacket))
+                {
+                    if (waitingPacket.ReceivedPacket != null)
+                    {
+                        _waitingPackets.TryRemove(item.Id, out var tempPacket);
+                        packet = waitingPacket.ReceivedPacket;
+                        break;
+                    }
+                    else if ((DateTime.Now - waitingPacket.StartedWaitingAt).TotalSeconds > TimeoutInSeconds)
+                    {
+                        Debug.WriteLine($"Removing Wait Id: {item.Id} due to timeout");
+                        _waitingPackets.TryRemove(item.Id, out var tempPacket);
+                        packet = null;
+                        break;
+                    }
+                }
+                else
+                {
+                    packet = null;
+                    break;
+                }
+            }
+            while (true);
+            return packet;
         }
 
         public void Dispose()
