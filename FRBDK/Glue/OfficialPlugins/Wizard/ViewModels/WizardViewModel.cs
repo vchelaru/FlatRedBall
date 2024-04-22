@@ -5,6 +5,7 @@ using OfficialPluginsCore.Wizard.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Security.Policy;
 using System.Text;
 using System.Windows;
 using System.Xml.Serialization;
@@ -311,9 +312,26 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        [DependsOn(nameof(PlayerControlType))]
+        [DependsOn(nameof(AddGameScreen))]
+        public bool IsWithVisualsVisible => 
+            AddGameScreen &&
+            PlayerControlType == GameType.Platformer;
+
         public WithVisualType WithVisualType
         {
-            get => Get<WithVisualType>();
+            get
+            {
+                if(PlayerControlType == GameType.Platformer)
+                {
+                    return Get<WithVisualType>();
+                }
+                else
+                {
+                    // top down doesn't yet support visuals
+                    return WithVisualType.NoVisuals;
+                }
+            }
             set => Set(value);
         }
 

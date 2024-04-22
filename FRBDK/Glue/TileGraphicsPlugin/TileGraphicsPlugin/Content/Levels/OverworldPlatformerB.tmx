@@ -22,9 +22,9 @@
    H4sIAAAAAAAACu2YWxKCMAxFQQeX4v63AMpCUNyH9SNjzKTpg6RVambyIWCbHm7SlNvQdTfGr84Pp647Ot+DLZ51bvG9MQLTZLVXRmCarO5D7dXYWu80MCtpaq96whbDC/KL+twQJzCJl8RiaSD3OONqV0gzrbLqmRwL5RbHanS/J+eXBhlKRlm9OD0a2RdTDLhgJjiPKcMJOae5MXC/hNE4Y12KF+tnRf+Ba9J1eo8+U2JfPQ9vx5bbb0o5ZHE24jj51mRluetaBW1ZsSpd42jOUf1rxK7NyvIsKWmzxBkvZQ6p56+lp5x15LLqyRmHYxHq0fqEPs6qbmmykmoWzPXLfZR2LQnth9/EKlV/LbDS6ltLsYJ+dBXi9vXBW/ty3/lgyzi5juu19D2Gq2+Yia9fgedymZVklbt3gY0CB6385ubk3gEeI6Ze+cbRiNGKU6q+fBpIXUtq3tXO8Zx4/qw+9SW5T8u1WMV807Q6N1tyjmGeOj73TSo01xPcRsIHpB8AAA==
   </data>
  </layer>
- <layer id="1" name="GameplayLayer" width="75" height="27" visible="0" opacity="0.4">
+ <layer id="1" name="GameplayLayer" width="75" height="27" opacity="0.5">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu2W0Q6AIAhFbetL/P+P7KG1nKMEBMy8Z+OlOYUjaltKaWvEH2jV2Bt/Ao74wBEfuJIBTzK0LlbzdKHpGbjiny1qTC4C3NSucoIrCqr3nlzV3ymPX3grPN4263+N6Hd1L6JkRletmrzw2N9Z+6kmIveZXL315qyuRvBFV5w53vC6tyL3fGRPWLCyK2n/reDK6q6LcsUZq/GvqdFqnmhXVj0rqVFLRA0R51uy5gXnvoraT+1aFvlY1QJXvvlr8XLl6bk3/9Y8lmshzjgAakda5KQfAAA=
+   H4sIAAAAAAAACu2W2wrAIAhAC/b/37yHEUS0vKR20QO+jdKT2XJKKQNxA1CNs3ET4QhPOMITrmiEJxpcF948FTg9E67wd6v3jcd7iaF14nWGQfSc/LnC9OsOnjXeNul/Det39ami5kRXUE1aaJzvqf3UYpH7Sa5GvXmqqxXs6AqzxgituWV55it7QgLPrqj958GV1KyzcoX5luOfU6PUOtaupHqWUiMXixos7jdlzwJmXlmdJ3cviXykaglXuvlz0XKl6Xk2f2gdyb0ivngBWKUkAqQfAAA=
   </data>
  </layer>
 </map>

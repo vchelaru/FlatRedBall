@@ -243,7 +243,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 formsData.AddIntValue("Number of levels to create", nameof(ViewModel.NumberOfLevels), nameof(ViewModel.AddGameScreen));
 
-                formsData.AddOptions("Level Visuals", nameof(ViewModel.WithVisualType), nameof(ViewModel.AddGameScreen))
+                formsData.AddOptions("Level Visuals", nameof(ViewModel.WithVisualType), nameof(ViewModel.IsWithVisualsVisible))
                     .Add("Include Visual Layers", WithVisualType.WithVisuals)
                     .Add("No Visual Layers", WithVisualType.NoVisuals)
                     ;

@@ -19,12 +19,12 @@
  </layer>
  <layer id="2" name="Ground" width="40" height="64">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu2aYW6DMAyF+ZOjbDsHbBdhpQdZdxLCDjqq8bTXzIAhgRiNJ1lCQOHrizFO2qI4dSqfKlcUbR/e/W7f49XlJvvRu5PjcvKppOUrh3Gvhthr/LV89bD/rY9bH5+Z+ZrhmYFn14FtjKuk8z09b9he6/fN6WPKs4+Iz1oU8tlSLWMhny3VCtYR+fCM4T1WZeSW+HgfwhJfJ/C15OdTH88L44VqHl9r7Lks6R0U1kbJv9h37lTdk2qedD7Ok45Z7AlYR+Jr3L69iUaWe7+7jsiH3kpTb1BfwjkM6kdsrsTWmy1qFiu2Z5vjy/3MzfHlzmkt35KcRl77BN9Jy7fUR1w3VnPzjjU5nZJvK1nnw7hYE+Z16A2tKczn3Coz1m6N6oy1OxRyi/2yxIeacTHCF/ol8XU78PHaWjh2zLOHf5i/ShzSvXlftxEf14CxMdLwbeVfLdzja4V/a/iQN5g7VLTNns3dYys+Ta+Wk0/Tq+Xk08g6H69reveYq+3EdpjbbXANT/tieoSlc4w1EeOhtK5pic+Kf/ybSVj/LPCFHFPr6iffMfi8k/+D4N3fdbwcfEs+vyUf90MW+WL9a9xj7eF8SDH+El+Z+Pun4sMc4pqQD/7CT8lrXlcJj1d0LCXXf49vE/cQIQAoAAA=
+   H4sIAAAAAAAACu2aYW6DMAyF+ZOjbDsHbBdhpQdZdxLCDjqq8bTXzIAhgRiNJ1lCQOHrizFO2qI4dSqfKlcUbR/e/W7f49XlJvvRu5PjcvKppOUrh3Gvhthr/LV89bD/rY9bH5+Z+ZrhmYFn14FtjKuk8z09b9he6/fN6WPKs4+Iz1oU8tlSLWMhny3VCtYR+fCM4T1WZeSW+HgfwhJfJ/C15OdTH88L44VqHl9r7Lks6R0U1kbJv9h37lTdk2qedD7Ok45Z7AlYR+Jr3L69iUaWe7+7jsiH3kpTb1BfwjkM6kdsrsTWmy1qFiu2Z5vjy/3MzfHlzmkt35KcRl77BN9Jy7fUR1w3VnPzjjU5nZJvK1nlw7wJvZc1hflyalplxtqtUZ2xdodC7rNflvhQMy5G+EK/JL5uBz5eWwvHjnn28A/zV4lDujfv6zbi4xowNkYavq38q4V7fK3wbw0f8gZzh4q22bO5e2zFp+nVcvJperWcfBpZ5+N1Te8ec7Wd2A5zuw2u4WlfTI+wdI6xJmI8lNY1LfFZ8Y9/MwnrnwW+kGNqXf3kOwafd/J/ELz7u46Xg2/J57fk437IIl+sf417rD2cDynGX+IrE3//VHyYQ1wT8sFf+Cl5zes+4fGKjqXk+u/xDenxPaIAKAAA
   </data>
  </layer>
- <layer id="1" name="GameplayLayer" width="40" height="64" visible="0" opacity="0.4">
+ <layer id="1" name="GameplayLayer" width="40" height="64" opacity="0.8">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu3VWwqAIBRFUYVG4vwHGX0IEpalXT3mXuBP9NiVlnfO+cIYSbUrUu2KVLuiWfpUKbcdZusLyVCQ9gU3Z995e67d6hta+rfVDuW+aEuGSt/XVumzUnvtN30t83C2/8dIuec8ou/N3Ljb12o9tPT1WLeKfU/OcTX/enz/ao9dpc/q3ka3tb4XAAAAAAAAAAD+aAchnDKkACgAAA==
+   H4sIAAAAAAAACu3YQQrAIAxEUQu9/5mLu64kwdFOzX+QdYcYg7Q14Dv3oFAH55+T7dfontFvPXpbD3dKL7K3Zir6PYB5qGH1jkEcfdRgdvEHzN9ZOMc45j7HpV9OO8slx5tbHie8v+Bu9T84Zh0dM4HdrkSR7+x8u/MrsynzqXNRvvUAf/HEEgAoAAA=
   </data>
  </layer>
  <layer id="6" name="Foreground" width="40" height="64" opacity="0.9">

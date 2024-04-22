@@ -382,7 +382,9 @@ namespace OfficialPluginsCore.Wizard.Managers
                     mapObject.SourceName = "Entire File (LayeredTileMap)";
                 }
 
-                if (vm.WithVisualType == WithVisualType.WithVisuals)
+                if (vm.WithVisualType == WithVisualType.WithVisuals && 
+                    // for now only platformer is supported
+                    vm.PlayerControlType == GameType.Platformer)
                 {
                     var reminder = levelIndex0Based % 3;
                     char suffix = 'A';
