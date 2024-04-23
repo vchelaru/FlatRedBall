@@ -207,7 +207,7 @@ namespace GameJsonCommunicationPlugin.Common
                 {
                     while (IsConnected)
                     {
-                        string stringFromGame = ReceiveString(gameToGlueSocket);
+                        string stringFromGame = await ReceiveString(gameToGlueSocket);
 
                         string toReturn = null;
 
@@ -231,7 +231,7 @@ namespace GameJsonCommunicationPlugin.Common
                         }
 
                         // todo - need to send the string...
-                        glueToGameSocket.Send(new byte[] { 0 });
+                        gameToGlueSocket.Send(new byte[] { 0 });
                     }
                 }
                 catch (Exception ex)
@@ -242,7 +242,7 @@ namespace GameJsonCommunicationPlugin.Common
             });
         }
 
-        private string SendItemImmediately(Packet item)
+        private async Task<string> SendItemImmediately(Packet item)
         {
             var packet = JsonConvert.SerializeObject(item);
             var sendBytes = Encoding.ASCII.GetBytes(packet);
@@ -254,15 +254,17 @@ namespace GameJsonCommunicationPlugin.Common
             //Send payload
             glueToGameSocket.Send(sendBytes);
 
-            string responseString = ReceiveString(glueToGameSocket);
+            string responseString = await ReceiveString(glueToGameSocket);
             return responseString;
         }
 
-        private static string ReceiveString(Socket socket)
+        private static async Task<string> ReceiveString(Socket socket)
         {
             byte[] bufferSize = new byte[sizeof(long)];
+            //socket.Receive(bufferSize);
+            ArraySegment<byte> buffer = new ArraySegment<byte>(bufferSize);
+            await socket.ReceiveAsync(buffer, SocketFlags.None);
 
-            socket.Receive(bufferSize);
             var packetSize = BitConverter.ToInt64(bufferSize, 0);
 
             string responseString = null;
@@ -308,11 +310,11 @@ namespace GameJsonCommunicationPlugin.Common
 
         #region publicMethods
 
-        public void SendItem(Packet item)
+        public async Task SendItem(Packet item)
         {
             if (IsConnected)
             {
-                SendItemImmediately(item);
+                await SendItemImmediately(item);
             }
         }
 
@@ -322,7 +324,7 @@ namespace GameJsonCommunicationPlugin.Common
 
             if (IsConnected)
             {
-                var responseString = SendItemImmediately(item);
+                var responseString = await SendItemImmediately(item);
 
                 responseToReturn.Succeeded = true;
                 responseToReturn.Data = responseString;

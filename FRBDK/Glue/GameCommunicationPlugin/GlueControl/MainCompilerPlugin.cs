@@ -656,7 +656,7 @@ namespace GameCommunicationPlugin.GlueControl
                 }
                 else
                 {
-                    GameJsonCommunicationPlugin.Common.GameConnectionManager.Self.SendItem(whatToSend);
+                    await GameJsonCommunicationPlugin.Common.GameConnectionManager.Self.SendItem(whatToSend);
                     // I guess we return success?
                     return new global::ToolsUtilities.GeneralResponse<string>() { Succeeded=true };
                 }
