@@ -58,6 +58,7 @@ namespace GameCommunicationPlugin.GlueControl
 
         public static CompilerViewModel MainViewModel { get; private set; }
 
+        public static MainCompilerPlugin Self { get; private set; }
 
         PluginTab glueViewSettingsTab;
         GlueViewSettings glueViewSettingsView;
@@ -101,6 +102,7 @@ namespace GameCommunicationPlugin.GlueControl
 
         public override void StartUp()
         {
+            Self = this;
             _refreshManager = new RefreshManager(ReactToPluginEventWithReturn, ReactToPluginEvent);
             _refreshManager.InitializeEvents(
                 (value) => PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", value), 
@@ -1067,6 +1069,7 @@ namespace GameCommunicationPlugin.GlueControl
         private DragDropManagerGameWindow _dragDropManagerGameWindow;
         private VariableSendingManager _variableSendingManager;
         private CommandReceiver _commandReceiver;
+        public CommandReceiver CommandReceiver => _commandReceiver;
 
         #endregion
 
@@ -1178,12 +1181,7 @@ namespace GameCommunicationPlugin.GlueControl
                 //    _commandReceiver.HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(payload));
 
                 //    break;
-                
-                case "GameCommunicationPlugin_PacketReceived_OldDTO":
-                    var commands = new List<string> { payload };
-                    // do we want to await this?
-                    _=_commandReceiver.HandleCommandsFromGame(commands, GlueViewSettingsViewModel.PortNumber);
-                    break;
+
             }
         }
         #endregion

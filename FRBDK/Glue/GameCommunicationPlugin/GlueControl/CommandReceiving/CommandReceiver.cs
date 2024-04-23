@@ -32,7 +32,7 @@ using CompilerLibrary.ViewModels;
 
 namespace OfficialPluginsCore.Compiler.CommandReceiving
 {
-    class CommandReceiver
+    public class CommandReceiver
     {
         int _gamePortNumber;
         private RefreshManager _refreshManager;
@@ -54,15 +54,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region General Functions
 
-        public async Task HandleCommandsFromGame(List<string> commands, int gamePortNumber)
-        {
-            foreach (var command in commands)
-            {
-                await Receive(command, gamePortNumber);
-            }
-        }
-
-        private async Task Receive(string message, int gamePortNumber)
+        public async Task<object> HandleCommandsFromGame(string message, int gamePortNumber)
         {
             string dtoTypeName = null;
             string dtoSerialized = null;
@@ -99,11 +91,13 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 ? $"Processing command of type {dtoTypeName}.{facadeCommandBase.Method ?? facadeCommandBase.GetPropertyName ?? facadeCommandBase.SetPropertyName}"
                 : $"Processing command of type {dtoTypeName}";
 
+            object response = null;
+
             await TaskManager.Self.AddAsync(async () =>
             {
                 if(dto != null)
                 {
-                    var response = ReceiveDto(dto);
+                    response = ReceiveDto(dto);
                 }
                 else
                 {
@@ -127,6 +121,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
             },
             outputText);
+
+            return response;
         }
 
         private object ReceiveDto(object dto)

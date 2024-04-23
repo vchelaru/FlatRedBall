@@ -248,8 +248,7 @@ namespace GlueControl
         #endregion
 
         #region Glue -> Game
-
-        public async Task<string> ProcessMessage(string message, bool runSetImmediately = false)
+        public string ProcessMessage(string message, bool runSetImmediately = false)
         {
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
@@ -287,9 +286,20 @@ namespace GlueControl
                 }
                 else
                 {
-                    await FlatRedBall.Instructions.InstructionManager.DoOnMainThreadAsync(
-                        () => response = ApplySetMessage(message));
+                    var didProcess = false;
 
+                    // cannot await here, will lock the thread
+                    FlatRedBall.Instructions.InstructionManager.DoOnMainThreadAsync(
+                        () =>
+                        {
+                            response = ApplySetMessage(message);
+                            didProcess = true;
+                        });
+
+                    while (!didProcess)
+                    {
+                        System.Threading.Thread.Sleep(10);
+                    }
                 }
             }
 

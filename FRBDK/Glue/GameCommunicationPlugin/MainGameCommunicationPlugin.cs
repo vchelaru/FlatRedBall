@@ -13,6 +13,10 @@ using Newtonsoft.Json.Linq;
 using GameCommunicationPlugin.CodeGeneration;
 using EmbeddedCodeManager = GameCommunicationPlugin.CodeGeneration.EmbeddedCodeManager;
 using ToolsUtilities;
+using GameCommunicationPlugin.GlueControl.ViewModels;
+using OfficialPluginsCore.Compiler.CommandReceiving;
+using System.Collections.Generic;
+using GameCommunicationPlugin.GlueControl;
 
 namespace GameCommunicationPlugin
 {
@@ -77,13 +81,19 @@ namespace GameCommunicationPlugin
             game1GlueCommunicationGenerator.IsGameCommunicationEnabled = _gameCommunicationManager.DoConnections;
         }
 
-        private void HandleOnPacketReceived(GameConnectionManager.PacketReceivedArgs packetReceivedArgs)
+        private async Task<object> HandleOnPacketReceived(GameConnectionManager.PacketReceivedArgs packetReceivedArgs)
         {
+            object toReturn = null;
             if(!string.IsNullOrEmpty(packetReceivedArgs.Packet.Payload))
             {
-                ReactToPluginEvent($"GameCommunicationPlugin_PacketReceived_{packetReceivedArgs.Packet.PacketType}", packetReceivedArgs.Packet.Payload);
+                //ReactToPluginEvent($"GameCommunicationPlugin_PacketReceived_{packetReceivedArgs.Packet.PacketType}", packetReceivedArgs.Packet.Payload);
+
+                // do we want to await this?
+                toReturn = await MainCompilerPlugin.Self.CommandReceiver.HandleCommandsFromGame(packetReceivedArgs.Packet.Payload, _gameCommunicationManager.Port);
+
                 Debug.WriteLine($"Packet Type: {packetReceivedArgs.Packet.PacketType}, Payload: {packetReceivedArgs.Packet.Payload}");
             }
+            return toReturn;
         }
 
         private void HandleGluxLoaded()

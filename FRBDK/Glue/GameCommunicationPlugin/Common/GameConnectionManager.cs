@@ -201,7 +201,7 @@ namespace GameJsonCommunicationPlugin.Common
 
             gameToGlueSocket = socket;
 
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 try
                 {
@@ -209,18 +209,29 @@ namespace GameJsonCommunicationPlugin.Common
                     {
                         string stringFromGame = ReceiveString(gameToGlueSocket);
 
+                        string toReturn = null;
+
                         if (OnPacketReceived != null)
                         {
                             var packet = JsonConvert.DeserializeObject<Packet>(stringFromGame);
 
                             if (packet != null)
                             {
-                                OnPacketReceived(new PacketReceivedArgs
+                                object response = await OnPacketReceived(new PacketReceivedArgs
                                 {
                                     Packet = packet
                                 });
+
+                                if(response != null)
+                                {
+                                    toReturn = JsonConvert.SerializeObject(response);
+                                }
+
                             }
                         }
+
+                        // todo - need to send the string...
+                        glueToGameSocket.Send(new byte[] { 0 });
                     }
                 }
                 catch (Exception ex)
@@ -357,8 +368,7 @@ namespace GameJsonCommunicationPlugin.Common
 
         #region events
 
-        public delegate void PacketReceivedDelegate(PacketReceivedArgs packetReceivedArgs);
-        public event PacketReceivedDelegate OnPacketReceived;
+        public event Func<PacketReceivedArgs, Task<object>> OnPacketReceived;
 
         #endregion
     }

@@ -119,7 +119,7 @@ namespace GlueCommunication
             Debug.WriteLine("Connected");
             _isConnected = true;
 
-            Task.Run(async() =>
+            Task.Run(() =>
             {
                 try
                 {
@@ -130,31 +130,37 @@ namespace GlueCommunication
 #if GLUE
 
 #else
-                        var returnValue = await GlueControl.GlueControlManager.Self?.ProcessMessage(stringFromGlue);
+                        var packet = JsonConvert.DeserializeObject<Packet>(stringFromGlue);
 
-                        var sendBytes = returnValue != null
-                            ? Encoding.ASCII.GetBytes(returnValue)
-                            : new byte[0];
-                        long size = sendBytes.LongLength;
-
-                        //Send size
-                        var bytes = BitConverter.GetBytes(size);
-                        try
+                        if(packet != null)
                         {
-                            glueToGameSocket.Send(bytes);
-                        }
-                        catch (ObjectDisposedException) { }
 
-                        try
-                        {
-                            //Send payload
-                            if (size > 0)
+                            var returnValue = GlueControl.GlueControlManager.Self?.ProcessMessage(packet.Payload);
+
+                            var sendBytes = returnValue != null
+                                ? Encoding.ASCII.GetBytes(returnValue)
+                                : new byte[0];
+                            long size = sendBytes.LongLength;
+
+                            //Send size
+                            var bytes = BitConverter.GetBytes(size);
+                            try
+                            {
+                                glueToGameSocket.Send(bytes);
+                            }
+                            catch (ObjectDisposedException) { }
+
+                            try
                             {
                                 //Send payload
-                                glueToGameSocket.Send(sendBytes);
+                                if (size > 0)
+                                {
+                                    //Send payload
+                                    glueToGameSocket.Send(sendBytes);
+                                }
                             }
+                            catch (ObjectDisposedException) { }
                         }
-                        catch (ObjectDisposedException) { }
 #endif
 
                     }
