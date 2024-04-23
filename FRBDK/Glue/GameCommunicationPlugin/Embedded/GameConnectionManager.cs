@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ToolsUtilities;
 
 namespace GlueCommunication
 {
@@ -19,10 +20,9 @@ namespace GlueCommunication
 
         #region private
         private Object _lock = new Object();
-        private ConcurrentQueue<Packet> _sendItems = new ConcurrentQueue<Packet>();
-        private ConcurrentDictionary<Guid, WaitingPacket> _waitingPackets = new ConcurrentDictionary<Guid, WaitingPacket>();
         private IPAddress _addr;
-        private Socket _server = null;
+        private Socket glueToGameSocket = null;
+        private Socket gameToGlueSocket = null;
         private bool _isConnected = false;
         private bool _isConnecting = false;
         private CancellationTokenSource _periodicCheckTaskCancellationToken;
@@ -41,7 +41,8 @@ namespace GlueCommunication
                 _doConnections = value;
                 if (!_doConnections)
                 {
-                    _server?.Dispose();
+                    glueToGameSocket?.Dispose();
+                    gameToGlueSocket?.Dispose();
                 }
             }
         }
@@ -78,8 +79,10 @@ namespace GlueCommunication
 
         private void StartConnecting()
         {
-            if (_server != null)
-                _server.Dispose();
+            if (gameToGlueSocket != null)
+                gameToGlueSocket.Dispose();
+            if(glueToGameSocket != null)
+                glueToGameSocket.Dispose();
 
             Task.Run(() =>
             {
@@ -89,10 +92,13 @@ namespace GlueCommunication
                     {
                         _isConnecting = true;
 
-                        _server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        glueToGameSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        glueToGameSocket.Connect(EndPoint);
+                        glueToGameSocket.Send(new byte[] { 1 });
 
-                        //Debug.WriteLine($"Connecting on port {Port}");
-                        _server.Connect(EndPoint);
+                        gameToGlueSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        gameToGlueSocket.Connect(EndPoint);
+                        gameToGlueSocket.Send(new byte[] { 2 });
 
                         Connected();
                     }
@@ -119,129 +125,38 @@ namespace GlueCommunication
                 {
                     while (_isConnected)
                     {
-                        byte[] bufferSize = new byte[sizeof(long)];
-                        _server.Receive(bufferSize);
-                        var packetSize = BitConverter.ToInt64(bufferSize, 0);
+                        string stringFromGlue = ReceiveString(glueToGameSocket);
 
-                        using (MemoryStream stream = new MemoryStream())
-                        {
-                            var remainingBytes = packetSize;
-                            while (remainingBytes > 0)
-                            {
-                                var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
-                                byte[] bufferData = new byte[pullSize];
-                                _server.Receive(bufferData);
-                                stream.Write(bufferData, 0, bufferData.Length);
-                                remainingBytes -= pullSize;
-                            }
-
-                            var payload = Encoding.ASCII.GetString(stream.ToArray());
-
-
-                            var packet = JsonConvert.DeserializeObject<Packet>(payload);
-
-                            if (packet != null)
-                            {
-                                if (packet.InResponseTo.HasValue && _waitingPackets.TryGetValue(packet.InResponseTo.Value, out var waitingPacket))
-                                {
-                                    waitingPacket.ReceivedPacket = packet;
-                                }
-                                else
-                                {
-                                    if (packet.PacketType == "OldDTO")
-                                    {
 #if GLUE
 
 #else
-                                        var returnValue = await GlueControl.GlueControlManager.Self?.ProcessMessage(packet.Payload);
+                        var returnValue = await GlueControl.GlueControlManager.Self?.ProcessMessage(stringFromGlue);
 
-                                        var sendBytes = returnValue != null 
-                                            ? Encoding.ASCII.GetBytes(returnValue)
-                                            : new byte[0];
-                                        long size = sendBytes.LongLength;
+                        var sendBytes = returnValue != null
+                            ? Encoding.ASCII.GetBytes(returnValue)
+                            : new byte[0];
+                        long size = sendBytes.LongLength;
 
-                                        //Send size
-                                        var bytes = BitConverter.GetBytes(size);
-                                        try
-                                        {
-                                            _server.Send(bytes);
-                                        }
-                                        catch (ObjectDisposedException) { }
+                        //Send size
+                        var bytes = BitConverter.GetBytes(size);
+                        try
+                        {
+                            glueToGameSocket.Send(bytes);
+                        }
+                        catch (ObjectDisposedException) { }
 
-                                        try
-                                        {
-                                            //Send payload
-                                            if(size > 0)
-                                            {
-                                                //Send payload
-                                                _server.Send(sendBytes);
-                                            }
-                                        }
-                                        catch (ObjectDisposedException) { }
-
-
+                        try
+                        {
+                            //Send payload
+                            if (size > 0)
+                            {
+                                //Send payload
+                                glueToGameSocket.Send(sendBytes);
+                            }
+                        }
+                        catch (ObjectDisposedException) { }
 #endif
-                                    }
 
-
-                                    //OnPacketReceived(new PacketReceivedArgs
-                                    //{
-                                    //    Packet = packet
-                                    //});
-                                }
-                            }
-
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Server Connection Failed: {ex}");
-                }
-                finally { _isConnected = false; }
-            });
-
-            Task.Run(() =>
-            {
-                try
-                {
-                    while (_isConnected)
-                    {
-                        if (_sendItems.TryDequeue(out var item))
-                        {
-                            try
-                            {
-                                var packet = JsonConvert.SerializeObject(item);
-                                var sendBytes = Encoding.ASCII.GetBytes(packet);
-                                long size = sendBytes.LongLength;
-
-                                //Send size
-                                var bytes = BitConverter.GetBytes(size);
-                                try
-                                {
-                                    _server.Send(bytes);
-                                }
-                                catch(ObjectDisposedException) { }
-
-                                try
-                                {
-                                    //Send payload
-                                    _server.Send(sendBytes);
-                                }
-                                catch (ObjectDisposedException) { }
-
-                            }
-                            catch
-                            {
-                                Debug.WriteLine($"Removing Wait Id: {item.Id} due to error");
-                                _waitingPackets.TryRemove(item.Id, out var tempValue);
-                                throw;
-                            }
-                        }
-                        else
-                        {
-                            Thread.Sleep(10);
-                        }
                     }
                 }
                 catch (Exception ex)
@@ -275,47 +190,60 @@ namespace GlueCommunication
         public void SendItem(Packet item)
         {
             if (_isConnected)
-                _sendItems.Enqueue(item);
+                SendItemImmediately(item);
         }
 
-        public async Task<Packet> SendItemWithResponse(Packet item)
+        private string SendItemImmediately(Packet item)
+        {
+            var packet = JsonConvert.SerializeObject(item);
+            var sendBytes = Encoding.ASCII.GetBytes(packet);
+            long size = sendBytes.LongLength;
+
+            //Send size
+            gameToGlueSocket.Send(BitConverter.GetBytes(size));
+
+            //Send payload
+            gameToGlueSocket.Send(sendBytes);
+
+            string responseString = ReceiveString(gameToGlueSocket);
+            return responseString;
+        }
+
+        private static string ReceiveString(Socket socket)
+        {
+            byte[] bufferSize = new byte[sizeof(long)];
+
+            socket.Receive(bufferSize);
+            var packetSize = BitConverter.ToInt64(bufferSize, 0);
+
+            string responseString = null;
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                var remainingBytes = packetSize;
+                while (remainingBytes > 0)
+                {
+                    var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
+                    byte[] bufferData = new byte[pullSize];
+                    socket.Receive(bufferData);
+                    stream.Write(bufferData, 0, bufferData.Length);
+                    remainingBytes -= pullSize;
+                }
+
+                responseString = Encoding.ASCII.GetString(stream.ToArray());
+            }
+
+            return responseString;
+        }
+
+
+        public async Task<string> SendItemWithResponse(Packet item)
         {
             if (_isConnected)
             {
-                _sendItems.Enqueue(item);
-                _waitingPackets.TryAdd(item.Id, new WaitingPacket
-                {
-                    StartedWaitingAt = DateTime.Now,
-                    WaitingFor = item.Id
-                });
+                var responseString = SendItemImmediately(item);
 
-                return await Task.Run(async () =>
-                {
-                    do
-                    {
-                        await Task.Delay(10);
-
-                        if (_waitingPackets.TryGetValue(item.Id, out var waitingPacket))
-                        {
-                            if (waitingPacket.ReceivedPacket != null)
-                            {
-                                _waitingPackets.TryRemove(item.Id, out var tempPacket);
-                                return waitingPacket.ReceivedPacket;
-                            }
-                            else if ((DateTime.Now - waitingPacket.StartedWaitingAt).TotalSeconds > TimeoutInSeconds)
-                            {
-                                Debug.WriteLine($"Removing Wait Id: {item.Id} due to timeout");
-                                _waitingPackets.TryRemove(item.Id, out var tempPacket);
-                                return (Packet)null;
-                            }
-                        }
-                        else
-                        {
-                            return (Packet)null;
-                        }
-                    }
-                    while (true);
-                });
+                return responseString;
             }
             else
             {
@@ -326,7 +254,8 @@ namespace GlueCommunication
         public void Dispose()
         {
             try { _periodicCheckTaskCancellationToken.Cancel(); } catch { }
-            try { _server?.Dispose(); } catch { }
+            try { gameToGlueSocket?.Dispose(); } catch { }
+            try { glueToGameSocket?.Dispose(); } catch { }
         }
 
         #endregion
