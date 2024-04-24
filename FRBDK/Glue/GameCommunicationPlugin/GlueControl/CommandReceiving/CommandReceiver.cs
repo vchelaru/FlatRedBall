@@ -775,9 +775,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Glue/XXXX/CommandDto
 
-        private async void HandleDto(GlueCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self, dto);
+        private async Task<string> HandleDto(GlueCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self, dto);
 
-        private async void HandleDto(GluxCommandDto dto)
+        private async Task<string> HandleDto(GluxCommandDto dto)
         {
             if(dto.Method == nameof(GluxCommands.SetVariableOn) && !dto.EchoToGame)
             {
@@ -798,19 +798,20 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     _variableSendingManager.AddOneTimeIgnore(nos, memberName);
                 }
             }
-            await HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
+            return await HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
         }
 
-        private async void HandleDto(GlueStateDto dto) => await HandleFacadeCommand(GlueState.Self, dto);
-        private async void HandleDto(GenerateCodeCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self.GenerateCodeCommands, dto);
+        private async Task<string> HandleDto(GlueStateDto dto) => await HandleFacadeCommand(GlueState.Self, dto);
+        private async Task<string> HandleDto(GenerateCodeCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self.GenerateCodeCommands, dto);
 
-        private async Task HandleFacadeCommand(object target, FacadeCommandBase dto)
+        private async Task<string> HandleFacadeCommand(object target, FacadeCommandBase incomingDto)
         {
+            string toReturn = null;
             var targetType = target.GetType();
-            if(!string.IsNullOrEmpty( dto.Method ))
+            if(!string.IsNullOrEmpty( incomingDto.Method ))
             {
-                MethodInfo method = targetType.GetMethod(dto.Method);
-                var dtoParameters = dto.Parameters;
+                MethodInfo method = targetType.GetMethod(incomingDto.Method);
+                var dtoParameters = incomingDto.Parameters;
                 List<object> parameters = new List<object>();
                 var methodParameters = method.GetParameters();
 
@@ -819,8 +820,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     var parameter = dtoParameters[i];
                     var parameterInfo = methodParameters[i];
                     var parameterType = parameterInfo.ParameterType;
-                    if (dto.CorrectTypeForParameters?.ContainsKey(parameterInfo.Name) == true)
-                        parameterType = Type.GetType(dto.CorrectTypeForParameters[parameterInfo.Name]);
+                    if (incomingDto.CorrectTypeForParameters?.ContainsKey(parameterInfo.Name) == true)
+                        parameterType = Type.GetType(incomingDto.CorrectTypeForParameters[parameterInfo.Name]);
                     var converted = Convert(parameter, parameterType);
 
                     parameters.Add(converted);
@@ -834,7 +835,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 catch(TargetParameterCountException)
                 {
                     var message =
-                        $"Attempting to invoke method {dto.Method} but the parameter count is wrong. Did this change in Glue without changing in the generated code for this method?";
+                        $"Attempting to invoke method {incomingDto.Method} but the parameter count is wrong. Did this change in Glue without changing in the generated code for this method?";
                     throw new Exception(message);
                 }
 
@@ -846,13 +847,16 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     {
                         var resultProperty = taskType.GetProperty("Result");
                         var taskResult = resultProperty.GetValue(asTask);
-                        await SendResponseBackToGame(dto, taskResult);
+
+                        if(taskResult != null)
+                        {
+                            toReturn = JsonConvert.SerializeObject(taskResult);
+                        }
 
                     }
                     else
                     {
-                        // do we send anything back?
-                        await SendResponseBackToGame(dto, null);
+                        toReturn = null;
                     }
 
 
@@ -860,16 +864,19 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 else
                 {
                     var contentToGame = methodResponse;
-                    await SendResponseBackToGame(dto, contentToGame);
+                    if(contentToGame != null)
+                    {
+                        toReturn = JsonConvert.SerializeObject(contentToGame);
+                    }
                 }
             }
-            else if(!string.IsNullOrEmpty(dto.SetPropertyName))
+            else if(!string.IsNullOrEmpty(incomingDto.SetPropertyName))
             {
-                PropertyInfo property = targetType.GetProperty(dto.SetPropertyName);
-                var parameter = dto.Parameters[0];
+                PropertyInfo property = targetType.GetProperty(incomingDto.SetPropertyName);
+                var parameter = incomingDto.Parameters[0];
                 var converted = Convert(parameter, property.PropertyType);
 
-                if(dto.SetPropertyName == "CurrentNamedObjectSaves")
+                if(incomingDto.SetPropertyName == "CurrentNamedObjectSaves")
                 {
                     // ignore the next selection
                     _refreshManager.IgnoreNextObjectSelect = true;
@@ -877,22 +884,23 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 property.SetValue(target, converted);
 
-                await SendResponseBackToGame(dto, null);
+                toReturn = null;
             }
+            return toReturn;
         }
 
-        private async Task<ResponseWithContentDto> SendResponseBackToGame(FacadeCommandBase dto, object contentToGame)
-        {
-            var response = new ResponseWithContentDto();
-            response.Id = -1;
-            response.OriginalDtoId = dto.Id;
-            if (contentToGame != null)
-            {
-                response.Content = JsonConvert.SerializeObject(contentToGame);
-            }
-            await CommandSender.Self.Send(response, waitForResponse:false);
-            return response;
-        }
+        //private async Task<ResponseWithContentDto> SendResponseBackToGame(FacadeCommandBase dto, object contentToGame)
+        //{
+        //    var response = new ResponseWithContentDto();
+        //    response.Id = -1;
+        //    response.OriginalDtoId = dto.Id;
+        //    if (contentToGame != null)
+        //    {
+        //        response.Content = JsonConvert.SerializeObject(contentToGame);
+        //    }
+        //    await CommandSender.Self.Send(response, waitForResponse:false);
+        //    return response;
+        //}
 
         private object Convert(object parameter, Type reflectedParameterType)
         {

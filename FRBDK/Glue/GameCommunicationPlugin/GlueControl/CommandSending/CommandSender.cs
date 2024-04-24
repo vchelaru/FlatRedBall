@@ -145,9 +145,9 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
                     
                     var textPrefix = text?.Contains(":")==true ? text.Substring(0, text.IndexOf(":")) : text;
                     var lastPrefix = lastStartedSend?.Contains(":")==true ? lastStartedSend.Substring(0, lastStartedSend.IndexOf(":")) : lastStartedSend;
-                    GlueCommands.Self.PrintOutput($"Waiting to send {textPrefix}\nWaiting on {lastPrefix}");
+                    //GlueCommands.Self.PrintOutput($"Waiting to send {textPrefix}\nWaiting on {lastPrefix}");
                     await sendCommandSemaphore.WaitAsync();
-                    GlueCommands.Self.PrintOutput($"--Done with {textPrefix}");
+                    //GlueCommands.Self.PrintOutput($"--Done with {textPrefix}");
                 }
 
                 lastStartedSend = text;

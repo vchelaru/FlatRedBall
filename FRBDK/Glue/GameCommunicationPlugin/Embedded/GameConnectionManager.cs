@@ -119,13 +119,13 @@ namespace GlueCommunication
             Debug.WriteLine("Connected");
             _isConnected = true;
 
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 try
                 {
                     while (_isConnected)
                     {
-                        string stringFromGlue = ReceiveString(glueToGameSocket);
+                        string stringFromGlue = await ReceiveString(glueToGameSocket);
 
 #if GLUE
 
@@ -135,7 +135,7 @@ namespace GlueCommunication
                         if(packet != null)
                         {
 
-                            var returnValue = GlueControl.GlueControlManager.Self?.ProcessMessage(packet.Payload);
+                            var returnValue = await GlueControl.GlueControlManager.Self?.ProcessMessage(packet.Payload);
 
                             var sendBytes = returnValue != null
                                 ? Encoding.ASCII.GetBytes(returnValue)
@@ -173,6 +173,7 @@ namespace GlueCommunication
             });
         }
 
+
         private async Task StatusCheckTask(CancellationToken cancellation)
         {
             while (!cancellation.IsCancellationRequested)
@@ -196,10 +197,10 @@ namespace GlueCommunication
         public void SendItem(Packet item)
         {
             if (_isConnected)
-                SendItemImmediately(item);
+                _=SendItemImmediately(item);
         }
 
-        private string SendItemImmediately(Packet item)
+        private async Task<string> SendItemImmediately(Packet item)
         {
             var packet = JsonConvert.SerializeObject(item);
             var sendBytes = Encoding.ASCII.GetBytes(packet);
@@ -211,15 +212,17 @@ namespace GlueCommunication
             //Send payload
             gameToGlueSocket.Send(sendBytes);
 
-            string responseString = ReceiveString(gameToGlueSocket);
+            string responseString = await ReceiveString(gameToGlueSocket);
             return responseString;
         }
 
-        private static string ReceiveString(Socket socket)
+        private static async Task<string> ReceiveString(Socket socket)
         {
             byte[] bufferSize = new byte[sizeof(long)];
+            ArraySegment<byte> buffer = new ArraySegment<byte>(bufferSize);
 
-            socket.Receive(bufferSize);
+            await socket.ReceiveAsync(buffer, SocketFlags.None);
+
             var packetSize = BitConverter.ToInt64(bufferSize, 0);
 
             string responseString = null;
@@ -247,7 +250,7 @@ namespace GlueCommunication
         {
             if (_isConnected)
             {
-                var responseString = SendItemImmediately(item);
+                var responseString = await SendItemImmediately(item);
 
                 return responseString;
             }
