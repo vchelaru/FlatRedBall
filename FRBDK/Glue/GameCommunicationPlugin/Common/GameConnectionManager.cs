@@ -217,10 +217,7 @@ namespace GameJsonCommunicationPlugin.Common
 
                             if (packet != null)
                             {
-                                object response = await OnPacketReceived(new PacketReceivedArgs
-                                {
-                                    Packet = packet
-                                });
+                                object response = await OnPacketReceived(packet);
 
                                 if(response != null)
                                 {
@@ -349,8 +346,6 @@ namespace GameJsonCommunicationPlugin.Common
         #region classes
         public class Packet
         {
-            public Guid Id { get; private set; } = Guid.NewGuid();
-            public Guid? InResponseTo { get; set; }
             public string PacketType { get; set; }
             public string Payload { get; set; }
         }
@@ -362,16 +357,8 @@ namespace GameJsonCommunicationPlugin.Common
             public Packet? ReceivedPacket { get; set; }
         }
 
-        public class PacketReceivedArgs : EventArgs
-        {
-            public Packet? Packet { get; set; }
-        }
         #endregion
 
-        #region events
-
-        public event Func<PacketReceivedArgs, Task<object>> OnPacketReceived;
-
-        #endregion
+        public event Func<Packet, Task<object>> OnPacketReceived;
     }
 }

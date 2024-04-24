@@ -272,17 +272,11 @@ namespace GlueCommunication
         #region classes
         public class Packet
         {
-            public Guid Id { get; set; } = Guid.NewGuid();
-            public Guid? InResponseTo { get; set; }
             public string PacketType { get; set; }
             public string Payload { get; set; }
         }
 
-        public class PacketReceivedArgs : EventArgs
-        {
-            public Packet Packet { get; set; }
-        }
-
+        
         public class WaitingPacket
         {
             public Guid WaitingFor { get; set; }
@@ -291,11 +285,5 @@ namespace GlueCommunication
         }
         #endregion
 
-        #region events
-
-        public delegate void PacketReceivedDelegate(PacketReceivedArgs packetReceivedArgs);
-
-
-        #endregion
     }
 }

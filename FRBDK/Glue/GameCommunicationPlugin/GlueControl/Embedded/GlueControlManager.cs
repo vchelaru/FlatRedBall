@@ -454,10 +454,8 @@ namespace GlueControl
             // Send immediately to glue
             GameConnectionManager.SendItem(new GameConnectionManager.Packet
             {
-                Id = Guid.NewGuid(),
                 Payload = command,
                 PacketType = "OldDTO",
-                InResponseTo = null,
             });
         }
 

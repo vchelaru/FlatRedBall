@@ -81,17 +81,17 @@ namespace GameCommunicationPlugin
             game1GlueCommunicationGenerator.IsGameCommunicationEnabled = _gameCommunicationManager.DoConnections;
         }
 
-        private async Task<object> HandleOnPacketReceived(GameConnectionManager.PacketReceivedArgs packetReceivedArgs)
+        private async Task<object> HandleOnPacketReceived(GameConnectionManager.Packet packet)
         {
             object toReturn = null;
-            if(!string.IsNullOrEmpty(packetReceivedArgs.Packet.Payload))
+            if(!string.IsNullOrEmpty(packet.Payload))
             {
                 //ReactToPluginEvent($"GameCommunicationPlugin_PacketReceived_{packetReceivedArgs.Packet.PacketType}", packetReceivedArgs.Packet.Payload);
 
                 // do we want to await this?
-                toReturn = await MainCompilerPlugin.Self.CommandReceiver.HandleCommandsFromGame(packetReceivedArgs.Packet.Payload, _gameCommunicationManager.Port);
+                toReturn = await MainCompilerPlugin.Self.CommandReceiver.HandleCommandsFromGame(packet.Payload, _gameCommunicationManager.Port);
 
-                Debug.WriteLine($"Packet Type: {packetReceivedArgs.Packet.PacketType}, Payload: {packetReceivedArgs.Packet.Payload}");
+                Debug.WriteLine($"Packet Type: {packet.PacketType}, Payload: {packet.Payload}");
             }
             return toReturn;
         }
