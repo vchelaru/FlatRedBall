@@ -20,7 +20,7 @@ namespace OfficialPluginsCore.Wizard.Views
             InitializeComponent();
 
             var definition = new WizardFormsDefinition();
-            definition.CreatePages();
+            definition.CreateInitialUi();
 
             definition.Start(GridInstance);
 
