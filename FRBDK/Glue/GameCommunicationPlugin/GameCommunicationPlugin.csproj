@@ -97,7 +97,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Embedded\GameConnectionManager.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\GameConnectionManager.cs" />
     <EmbeddedResource Include="Embedded\Json\GlueJsonManager.cs" />
     <EmbeddedResource Include="Embedded\Json\JsonContainer.cs" />
     <EmbeddedResource Include="Embedded\Json\JsonManager.cs" />

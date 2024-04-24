@@ -11,7 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using GameCommunicationPlugin.CodeGeneration;
-using EmbeddedCodeManager = GameCommunicationPlugin.CodeGeneration.EmbeddedCodeManager;
 using ToolsUtilities;
 using GameCommunicationPlugin.GlueControl.ViewModels;
 using OfficialPluginsCore.Compiler.CommandReceiving;
@@ -38,7 +37,6 @@ namespace GameCommunicationPlugin
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
-            ReactToLoadedGlux -= HandleGluxLoaded;
             _gameCommunicationManager.OnPacketReceived -= HandleOnPacketReceived;
             _gameCommunicationManager.Dispose();
             _gameCommunicationManager = null;
@@ -53,8 +51,6 @@ namespace GameCommunicationPlugin
             _gameCommunicationManager.Port = 8888;
             _gameCommunicationManager.OnPacketReceived += HandleOnPacketReceived;
             GameConnectionManager.Self = _gameCommunicationManager;
-
-            ReactToLoadedGlux += HandleGluxLoaded;
 
             game1GlueCommunicationGenerator = new Game1GlueCommunicationGenerator(true, 8888);
             RegisterCodeGenerator(game1GlueCommunicationGenerator);
@@ -96,15 +92,5 @@ namespace GameCommunicationPlugin
             return toReturn;
         }
 
-        private void HandleGluxLoaded()
-        {
-            if (GameCommunicationHelper.IsFrbNewEnough())
-            {
-                EmbeddedCodeManager.Embed(new System.Collections.Generic.List<string>
-                {
-                    "GameConnectionManager.cs"
-                });
-            }
-        }
     }
 }

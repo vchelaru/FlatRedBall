@@ -18,6 +18,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
             "CommandReceiver.cs",
             
             "Dtos.cs",
+            "GameConnectionManager.cs",
             "GlueCallsClassGenerationManager.cs",
             
             "Editing.CameraLogic.cs",
@@ -91,6 +92,12 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
 
             // This was a typo in old projects:
             RemoveEmbeddedFile("Runtime/DynamicEntitys.Generated.cs", saveAfterRemoving:true);
+
+            // this was moved:
+            FilePath oldGameConnectionManagerLocation = GlueState.Self.CurrentGlueProjectDirectory + "GlueCommunication/GameConnectionManager.Generated.cs";
+            GlueCommands.Self.ProjectCommands.RemoveFromProjects(oldGameConnectionManagerLocation);
+
+
         }
 
         public static void RemoveAll()
