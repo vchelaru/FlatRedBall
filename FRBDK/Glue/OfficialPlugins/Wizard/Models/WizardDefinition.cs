@@ -31,7 +31,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
         #endregion
 
-        public void CreatePages()
+        public void CreateInitialUi()
         {
             ViewModel = new WizardViewModel();
             ViewModel.ApplyDefaults();
@@ -43,7 +43,17 @@ namespace OfficialPluginsCore.Wizard.Models
                 page.PlatformerClicked += () =>
                 {
                     PlatformerSetupLogic.SetupForDefaultPlatformer(ViewModel);
-                    DoneClicked();
+                    // for now, set this to false...
+                    ViewModel.IncludePlatformerVisualLayers = false;
+                    while (FormsDataList.Count > 1)
+                    {
+                        FormsDataList.RemoveAt(FormsDataList.Count - 1);
+                    }
+
+                    //DoneClicked();
+
+                    var nextPage = CreatePlatformerOptionsUi();
+                    Show(nextPage, isLast:true);
                 };
                 page.TopDownClicked += () =>
                 {
@@ -63,6 +73,12 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 page.CustomClicked += () =>
                 {
+                    while(FormsDataList.Count > 1)
+                    {
+                        FormsDataList.RemoveAt(FormsDataList.Count - 1);
+                    }
+                    AddFullyCustomizedWizardScreens();
+
                     formsData.CallNext();
                 };
 
@@ -80,7 +96,23 @@ namespace OfficialPluginsCore.Wizard.Models
                 FormsDataList.Add(formsData);
             }
 
+        }
 
+        private WizardPage CreatePlatformerOptionsUi()
+        {
+            var formsData = new WizardPage(ViewModel);
+
+            formsData.AddTitle("Platformer Options");
+
+            formsData.AddBoolValue("Include Visual Layers", nameof(ViewModel.IncludePlatformerVisualLayers))
+                .Subtext = "If checked, all levels will be created with visual layers (ground, background, and decorations)";
+
+            FormsDataList.Add(formsData);
+            return formsData;
+        }
+
+        private void AddFullyCustomizedWizardScreens()
+        {
             #region Welcome Page
             {
                 var formsData = new WizardPage(ViewModel);
@@ -93,12 +125,12 @@ namespace OfficialPluginsCore.Wizard.Models
                     ViewModel = welcomePageViewModel.DeserializedObject;
 
                     // just in case the user wants to go back:
-                    foreach(var innerFormsData in FormsDataList)
+                    foreach (var innerFormsData in FormsDataList)
                     {
                         innerFormsData.ViewModel = ViewModel;
                     }
 
-                    Show(FormsDataList.Last());
+                    Show(FormsDataList.Last(), isLast:true);
                 };
 
                 var item = formsData.AddView(page);
@@ -197,15 +229,15 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 formsData.Validate = () =>
                 {
-                    if(ViewModel.AddPlayerEntity && ViewModel.PlayerCreationType == PlayerCreationType.ImportEntity)
+                    if (ViewModel.AddPlayerEntity && ViewModel.PlayerCreationType == PlayerCreationType.ImportEntity)
                     {
-                        if(elementImportViewModel.UrlStatus == UrlStatus.Failed)
+                        if (elementImportViewModel.UrlStatus == UrlStatus.Failed)
                         {
                             return GeneralResponse.UnsuccessfulWith($"The Player Entity could not be imported from {elementImportViewModel.UrlOrLocalFile}");
                         }
-                        else if(elementImportViewModel.UrlStatus == UrlStatus.Unknown)
+                        else if (elementImportViewModel.UrlStatus == UrlStatus.Unknown)
                         {
-                            if(string.IsNullOrWhiteSpace( elementImportViewModel.UrlOrLocalFile))
+                            if (string.IsNullOrWhiteSpace(elementImportViewModel.UrlOrLocalFile))
                             {
                                 return GeneralResponse.UnsuccessfulWith($"Player URL must be specified");
                             }
@@ -248,13 +280,13 @@ namespace OfficialPluginsCore.Wizard.Models
                     .Add("No Visual Layers", WithVisualType.NoVisuals)
                     ;
 
-                formsData.AddBoolValue("Include standard tileset", nameof(ViewModel.IncludStandardTilesetInLevels), 
+                formsData.AddBoolValue("Include standard tileset", nameof(ViewModel.IncludStandardTilesetInLevels),
                     nameof(ViewModel.IsIncludeStandardTilesetUiVisible));
 
-                formsData.AddBoolValue("Include gameplay layer", nameof(ViewModel.IncludeGameplayLayerInLevels), 
+                formsData.AddBoolValue("Include gameplay layer", nameof(ViewModel.IncludeGameplayLayerInLevels),
                     nameof(ViewModel.IsIncludeGameplayLayerVisibile));
 
-                formsData.AddBoolValue("Add Border Collision", nameof(ViewModel.IncludeCollisionBorderInLevels), 
+                formsData.AddBoolValue("Add Border Collision", nameof(ViewModel.IncludeCollisionBorderInLevels),
                     nameof(ViewModel.ShowBorderCollisionCheckBox));
 
                 FormsDataList.Add(formsData);
@@ -284,12 +316,12 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddTitle("Camera");
 
                 var options = formsData.AddOptions("Game Resolution", nameof(ViewModel.SelectedCameraResolution));
-                options.Add("256x224 (8:7)",    CameraResolution._256x224);
-                options.Add("360x240 (3:2)",    CameraResolution._360x240);
-                options.Add("480x360 (4:3)",    CameraResolution._480x360);
-                options.Add("640x480 (4:3)",    CameraResolution._640x480);
-                options.Add("800x600 (4:3)",    CameraResolution._800x600);
-                options.Add("1024x768 (4:3)",   CameraResolution._1024x768);
+                options.Add("256x224 (8:7)", CameraResolution._256x224);
+                options.Add("360x240 (3:2)", CameraResolution._360x240);
+                options.Add("480x360 (4:3)", CameraResolution._480x360);
+                options.Add("640x480 (4:3)", CameraResolution._640x480);
+                options.Add("800x600 (4:3)", CameraResolution._800x600);
+                options.Add("1024x768 (4:3)", CameraResolution._1024x768);
                 options.Add("1920x1080 (16:9)", CameraResolution._1920x1080);
 
                 formsData.AddIntValue("Game Scale%", nameof(ViewModel.ScalePercent));
@@ -334,7 +366,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 viewModel.PropertyChanged += (sender, args) =>
                 {
-                    if(args.PropertyName == nameof(viewModel.IsValid))
+                    if (args.PropertyName == nameof(viewModel.IsValid))
                     {
                         formsData.IsNextButtonEnabled = viewModel.IsValid;
                     }
@@ -382,7 +414,6 @@ namespace OfficialPluginsCore.Wizard.Models
             }
 
             #endregion
-
         }
 
         private void HandleCopyWizardSettings()
@@ -401,48 +432,46 @@ namespace OfficialPluginsCore.Wizard.Models
         {
             this.grid = grid;
             var formsDataList = FormsDataList;
-            Show(formsDataList.First());
+            Show(formsDataList.First(), isLast: false);
 
             //formsData.Fill(StackP)
         }
 
-        void Show(WizardPage formsData)
+        void Show(WizardPage formsData, bool isLast)
         {
             var index = FormsDataList.IndexOf(formsData);
 
-            var isLast =
-                index == FormsDataList.Count - 1;
             grid.Children.Clear();
             formsData.Fill(grid, 
                 showBack: index > 0,
                 isNextButtonDone:isLast);
 
-            if(isLast)
+            formsData.NextClicked += () =>
             {
-                formsData.NextClicked += () =>
+                var isLastInner =
+                    index == FormsDataList.Count - 1;
+
+                if(isLastInner)
                 {
                     DoneClicked();
-                };
-            }
-            else
-            {
-                formsData.NextClicked += () =>
+                }
+                else
                 {
                     if (index < FormsDataList.Count - 1)
                     {
-                        Show(FormsDataList[index + 1]);
+                        Show(FormsDataList[index + 1], isLast:index+1 == FormsDataList.Count-1);
                     }
                     else
                     {
                         // do nothing, it's the end
                     }
-                };
-            }
+                }
+            };
             formsData.BackClicked += () =>
             {
                 if (index > 0)
                 {
-                    Show(FormsDataList[index - 1]);
+                    Show(FormsDataList[index - 1], isLast:false);
                 }
                 else
                 {

@@ -335,6 +335,12 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        public bool IncludePlatformerVisualLayers
+        {
+            get => WithVisualType == WithVisualType.WithVisuals;
+            set => WithVisualType = value ? WithVisualType.WithVisuals : WithVisualType.NoVisuals;
+        }
+
         [DependsOn(nameof(AddGameScreen))]
         [DependsOn(nameof(WithVisualType))]
         public bool IsIncludeStandardTilesetUiVisible =>
