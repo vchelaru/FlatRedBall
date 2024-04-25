@@ -63,22 +63,22 @@ jobs:
       with:
         name: iOSMonoGameNet8Debug
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Debug\net8.0-ios\
-
-
-    - name: Build FlatRedBall iOS .NET 8 Release
-      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
-    - name: Package FlatRedBall iOS .NET 8
-      uses: actions/upload-artifact@v3
-      with:
-        name: iOSMonoGameNet8Release
-        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Release\net8.0-ios\
-    
     - name: Publish NuGet package iOS .NET 8
       run: |
         $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBalliOS\bin\Debug\*.nupkg'
         foreach ($file in $files) {
           dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
         }     
+
+
+    - name: Build FlatRedBall iOS .NET 8 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
+      ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
+    - name: Package FlatRedBall iOS .NET 8
+      uses: actions/upload-artifact@v3
+      with:
+        name: iOSMonoGameNet8Release
+        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Release\net8.0-ios\
         
 
     - name: Build FlatRedBall Android .NET 8 Debug
@@ -88,21 +88,22 @@ jobs:
       with:
         name: AndroidMonoGameNet8Debug
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Debug\net8.0-android\
-
-    - name: Build FlatRedBall Android .NET 8 Release
-      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
-    - name: Package FlatRedBall Android .NET 8
-      uses: actions/upload-artifact@v3
-      with:
-        name: AndroidMonoGameNet8Release
-        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Release\net8.0-android\
-    
     - name: Publish NuGet package Android .NET 8
       run: |
         $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallAndroid\bin\Debug\*.nupkg'
         foreach ($file in $files) {
           dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
         }        
+
+    - name: Build FlatRedBall Android .NET 8 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
+      ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
+    - name: Package FlatRedBall Android .NET 8
+      uses: actions/upload-artifact@v3
+      with:
+        name: AndroidMonoGameNet8Release
+        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Release\net8.0-android\
+    
 
 
 
@@ -113,21 +114,22 @@ jobs:
       with:
         name: DesktopGlFnaNet7Debug
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Debug/net7.0/
-
-    - name: Build FlatRedBall FNA .NET 7 Release
-      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
-    - name: Package FlatRedBall FNA .NET 7
-      uses: actions/upload-artifact@v3
-      with:
-        name: DesktopGlFnaNet7Release
-        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Release/net7.0/    
-
     - name: Publish NuGet package FRB FNA .NET 7
       run: |
         $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.FNA\bin\Debug\*.nupkg'
         foreach ($file in $files) {
           dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
         }        
+
+    - name: Build FlatRedBall FNA .NET 7 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
+      ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
+    - name: Package FlatRedBall FNA .NET 7
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlFnaNet7Release
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Release/net7.0/    
+
 
     - name: Build FlatRedBall DesktopGL .NET 6 Debug
       run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
@@ -136,20 +138,21 @@ jobs:
       with:
         name: DesktopGlNet6Debug
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Debug/net6.0/
-
-    - name: Build FlatRedBall DesktopGL .NET 6 Release
-      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
-    - name: Package FlatRedBall .NET 6
-      uses: actions/upload-artifact@v3
-      with:
-        name: DesktopGlNet6Release
-        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Release/net6.0/
     - name: Publish NuGet package DesktopGL .NET 6
       run: |
         $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\bin\Debug\*.nupkg'
         foreach ($file in $files) {
           dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
         }
+
+    - name: Build FlatRedBall DesktopGL .NET 6 Release
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
+      ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
+    - name: Package FlatRedBall .NET 6
+      uses: actions/upload-artifact@v3
+      with:
+        name: DesktopGlNet6Release
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Release/net6.0/
 
     - name: Build FlatRedBall .NET 4 Debug
       if: ${{ github.event.inputs.IsBeta == 'false' }}
@@ -160,10 +163,12 @@ jobs:
       with:
         name: DesktopGlNet4Debug
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms/bin/DesktopGL/Debug/
+        ## Net4 doesn't (and maybe never will) nuget publish. We still have this as of April 25,2024 for historical reasons but this will get retired in the future
 
     - name: Build FlatRedBall .NET 4 Release
       if: ${{ github.event.inputs.IsBeta == 'false' }}
       run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGL.sln'
+      ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
     - name: Package FlatRedBall .NET 4
       if: ${{ github.event.inputs.IsBeta == 'false' }}
       uses: actions/upload-artifact@v3
