@@ -7,13 +7,32 @@
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300">
     <Grid>
-        <GroupBox Header="FX Creation Options">
-            <StackPanel>
-                <CheckBox 
-                    Content="{Binding IncludePostProcessCsMessage, FallbackValue=IncludeXXXX.cs}"
-                    IsChecked="{Binding IsIncludePostProcessCsFileChecked}"
-                          ></CheckBox>
-            </StackPanel>
-        </GroupBox>
+        <StackPanel>
+            <GroupBox Header="FX Creation Options">
+                <StackPanel>
+                    <RadioButton Content="Post Processing Shader"
+                                 IsChecked="{Binding IsPostProcessingChecked}"></RadioButton>
+                    <RadioButton Content="Sprite Shader"
+                                 IsChecked="{Binding IsSpriteChecked}"></RadioButton>
+                    <RadioButton Content="Empty Shader"
+                                 IsChecked="{Binding IsEmptyChecked}"></RadioButton>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Post Processing Options"
+                      Visibility="{Binding PostProcessOptionsVisibility}">
+                <StackPanel>
+                    <CheckBox
+                        Content="{Binding IncludePostProcessCsMessage, FallbackValue=IncludeXXXX.cs}"
+                        IsChecked="{Binding IsIncludePostProcessCsFileChecked}"
+                    ></CheckBox>
+                    <RadioButton>
+                        <StackPanel>
+                            <TextBlock>Empty Template</TextBlock>
+                            <Image Width="100" Height="100" Source="/OfficialPluginsCore;component/EffectPlugin/Content/PostProcessingTemplate.png"></Image>
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
     </Grid>
 </UserControl>
