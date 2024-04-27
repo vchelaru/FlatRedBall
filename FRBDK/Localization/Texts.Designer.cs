@@ -2914,15 +2914,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Fullscreen.
-        /// </summary>
-        public static string Fullscreen {
-            get {
-                return ResourceManager.GetString("Fullscreen", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Fully Managed.
         /// </summary>
         public static string FullyManaged {

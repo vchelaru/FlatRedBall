@@ -1168,9 +1168,6 @@ for {1}?</value>
   <data name="TextureFilter" xml:space="preserve">
     <value>Texture Filter</value>
   </data>
-  <data name="Fullscreen" xml:space="preserve">
-    <value>Fullscreen</value>
-  </data>
   <data name="WindowResizingAllow" xml:space="preserve">
     <value>Allow Window Resizing</value>
   </data>

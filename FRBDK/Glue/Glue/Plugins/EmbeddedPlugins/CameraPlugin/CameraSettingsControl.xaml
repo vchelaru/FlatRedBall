@@ -74,7 +74,8 @@
                                 <RadioButton IsChecked="{Binding UseHeightInternalCoordinates}" VerticalContentAlignment="Center" Content="{Binding KeepResolutionHeightConstantMessage}"></RadioButton>
                             </StackPanel>
                         </GroupBox>
-                            
+                        <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" IsChecked="{Binding RunInFullScreen}" Content="Fullscreen (hide nav bar on Android)" />
+                        
                     </StackPanel>
                 </GroupBox>
 
@@ -114,7 +115,6 @@
 
                 <GroupBox Header="{x:Static localization:Texts.Desktop}">
                     <StackPanel>
-                        <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" IsChecked="{Binding RunInFullScreen}" Content="{x:Static localization:Texts.Fullscreen}" />
 
                         <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" IsChecked="{Binding AllowWindowResizing}" Content="{x:Static localization:Texts.WindowResizingAllow}" />
 

@@ -5,9 +5,10 @@ using System.Xml.Serialization;
 using FlatRedBall.IO;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-    #if !MONOGAME && !FNA
+
+#if !MONOGAME && !FNA
     using System.Windows.Forms;
-    #endif
+#endif
 
 namespace FlatRedBall.Graphics
 {
@@ -518,22 +519,42 @@ namespace FlatRedBall.Graphics
             mResolutionWidth = width;
             mResolutionHeight = height;
             ResetDevice();
+
+#if ANDROID
+            var activity = FlatRedBallServices.Game.Services.GetService<Activity>();
+            var activityWindow = activity?.Window;
+
+            if (activityWindow != null)
+            {
+                if (windowedFullscreenMode == WindowedFullscreenMode.Fullscreen)
+                {
+                    activityWindow.DecorView.SystemUiFlags =
+                        //activityWindow.DecorView.SystemUiVisibility = (Android.Views.StatusBarVisibility)
+                        (Android.Views.SystemUiFlags.ImmersiveSticky | Android.Views.SystemUiFlags.HideNavigation |
+                         Android.Views.SystemUiFlags.Fullscreen | Android.Views.SystemUiFlags.Immersive);
+                }
+                else
+                {
+                    activityWindow.DecorView.SystemUiFlags = Android.Views.SystemUiFlags.Visible;
+                }
+            }
+#endif
+
+
 #if !WINDOWS && !FNA
 
             SizeOrOrientationChanged?.Invoke(this, null);
 #endif
         }
 
-            #region XML Docs
         /// <summary>
         /// Sets the display mode to full-screen and sets the resolution
         /// </summary>
         /// <param name="width">The new width</param>
         /// <param name="height">The new height</param>
-            #endregion
         public void SetFullScreen(int width, int height)
         {
-            SetResolution(width, height, isFullscreen: true);
+            SetResolution(width, height, WindowedFullscreenMode.Fullscreen);
         }
 
 
