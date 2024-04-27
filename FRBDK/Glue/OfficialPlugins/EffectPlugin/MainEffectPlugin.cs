@@ -43,7 +43,7 @@ namespace OfficialPlugins.EffectPlugin
 
             newFileWindow.AddCustomUi(view);
 
-            newFileWindow.SelectionChanged += (not, used) =>
+            newFileWindow.SelectionChanged += (_, _) =>
             {
                 var ati = newFileWindow.SelectedItem;
                 view.Visibility = IsFx(ati).ToVisibility();
@@ -91,15 +91,50 @@ namespace OfficialPlugins.EffectPlugin
         {
             if(viewModel.IsIncludePostProcessCsFileChecked)
             {
-                IncludePostProcessCsFile(viewModel.FxFileName);
+                IncludeFullscreenEffectWrapper();
+                IncludePostProcessCsFile(newFile.Name);
+            }
+        }
+
+        private void IncludeFullscreenEffectWrapper()
+        {
+            FilePath destinationFile = GlueState.Self.CurrentGlueProjectDirectory + $"Graphics/FullscreenEffectWrapper.cs";
+
+            var assemblyContainingResource = GetType().Assembly;
+
+            var resourceName = "OfficialPlugins.EffectPlugin.EmbeddedCodeFiles.FullscreenEffectWrapper.cs";
+
+            using var stream =
+                assemblyContainingResource.GetManifestResourceStream(resourceName);
+            
+            if (stream != null)
+            {
+                using var reader = new StreamReader(stream);
+                string fileContent = reader.ReadToEnd();
+
+                fileContent = fileContent.Replace("ReplaceNamespace", $"{GlueState.Self.ProjectNamespace}.Graphics");
+                
+                var directory = destinationFile.GetDirectoryContainingThis();
+                if(!System.IO.Directory.Exists(directory.FullPath))
+                {
+                    System.IO.Directory.CreateDirectory(directory.FullPath);
+                }
+
+                System.IO.File.WriteAllText(destinationFile.FullPath, fileContent);
+
+                GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(destinationFile.FullPath);
             }
         }
 
         private void IncludePostProcessCsFile(string fxFileName)
         {
-            FilePath destinationFile = GlueState.Self.CurrentGlueProjectDirectory + $"Graphics/{fxFileName}.cs";
+            string newDirectory = Path.Combine("Graphics", Path.GetDirectoryName(fxFileName) ?? "");
+            string newFileName = Path.GetFileName(Path.ChangeExtension(fxFileName, "cs") ?? "");
+            string newFileNameOnly = Path.GetFileNameWithoutExtension(Path.GetFileName(Path.ChangeExtension(fxFileName, "cs")) ?? "");
+            string newFileRelativePath = Path.Combine(newDirectory, newFileName);
+            FilePath destinationFile = GlueState.Self.CurrentGlueProjectDirectory + newFileRelativePath;
 
-            var assemblyContainingResource = this.GetType().Assembly;
+            var assemblyContainingResource = GetType().Assembly;
 
             var resourceName = "OfficialPlugins.EffectPlugin.EmbeddedCodeFiles.PostProcessTemplate.cs";
 
@@ -110,7 +145,28 @@ namespace OfficialPlugins.EffectPlugin
                 using var reader = new StreamReader(stream);
                 string fileContent = reader.ReadToEnd();
 
-                // todo - replace things here
+                fileContent = fileContent.Replace("ReplaceNamespace", $"{GlueState.Self.ProjectNamespace}.{newDirectory.Replace('\\', '.')}");
+
+                if (newFileNameOnly.Length < 1)
+                {
+                    throw new ArgumentException("FX file name must have at least 1 character");
+                }
+                
+                char firstLetter = char.ToUpper(newFileNameOnly[0]);
+                fileContent = fileContent.Replace("ReplaceClassName", firstLetter + newFileNameOnly[1..]);
+                
+                fileContent = fileContent.Replace("ReplaceClassMembers",
+                    "protected FullscreenEffectWrapper Wrapper { get; set; } = new FullscreenEffectWrapper();");
+
+                fileContent = fileContent.Replace("ReplaceApplyBody", @"_effect.Parameters[""TexWeight""].SetValue(1.0f);
+            _effect.Parameters[""PixelPosWeight""].SetValue(0.0f);
+            _effect.Parameters[""ScreenPosWeight""].SetValue(1.0f);
+            _effect.Parameters[""WorldPosWeight""].SetValue(0.0f);
+            _effect.Parameters[""ColorWeight""].SetValue(0.0f);
+            _effect.Parameters[""UvWeight""].SetValue(0.0f);
+            
+            Wrapper.Draw(Camera.Main, _effect, sourceTexture);");
+                
                 var directory = destinationFile.GetDirectoryContainingThis();
                 if(!System.IO.Directory.Exists(directory.FullPath))
                 {

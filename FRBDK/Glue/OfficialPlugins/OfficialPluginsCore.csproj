@@ -17,6 +17,8 @@
     <None Remove="GlueView\**" />
     <None Remove="StateInterpolation\**" />
     <None Remove="XamarinStudioPlugin\**" />
+    <Compile Remove="EffectPlugin\EmbeddedCodeFiles\FullscreenEffectWrapper.cs" />
+    <EmbeddedResource Include="EffectPlugin\EmbeddedCodeFiles\FullscreenEffectWrapper.cs" />
   </ItemGroup>
 
   <ItemGroup>
