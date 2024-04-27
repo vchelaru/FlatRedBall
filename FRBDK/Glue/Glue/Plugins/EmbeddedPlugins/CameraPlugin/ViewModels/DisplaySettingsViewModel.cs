@@ -103,6 +103,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             set => Set(value);
         }
 
+        [DependsOn(nameof(Perspective))]
         public bool Is2D
         {
             get => Perspective == Perspective.Perspective2D;
@@ -115,6 +116,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             }
         }
 
+        [DependsOn(nameof(Perspective))]
         public bool Is3D
         {
             get => Perspective == Perspective.Perspective3D;
