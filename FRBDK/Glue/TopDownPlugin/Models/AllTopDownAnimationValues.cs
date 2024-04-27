@@ -12,7 +12,7 @@ namespace TopDownPlugin.Models
         NoAssignment,
         BasedOnVelocityMultiplier,
         BasedOnMaxSpeedRatioMultiplier,
-        BasedOnHorizontalInputMultiplier
+        BasedOnInputMultiplier
 
     }
 

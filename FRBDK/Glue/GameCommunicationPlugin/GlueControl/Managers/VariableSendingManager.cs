@@ -30,7 +30,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         public DateTime TimeIgnoreCreated { get; set; }
     }
 
-    class VariableSendingManager
+    public class VariableSendingManager
     {
         public VariableSendingManager(RefreshManager refreshManager)
         {

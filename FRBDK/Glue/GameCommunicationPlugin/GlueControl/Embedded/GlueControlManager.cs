@@ -248,7 +248,6 @@ namespace GlueControl
         #endregion
 
         #region Glue -> Game
-
         public async Task<string> ProcessMessage(string message, bool runSetImmediately = false)
         {
             var screen =
@@ -288,8 +287,10 @@ namespace GlueControl
                 else
                 {
                     await FlatRedBall.Instructions.InstructionManager.DoOnMainThreadAsync(
-                        () => response = ApplySetMessage(message));
-
+                        () =>
+                        {
+                            response = ApplySetMessage(message);
+                        });
                 }
             }
 
@@ -453,10 +454,8 @@ namespace GlueControl
             // Send immediately to glue
             GameConnectionManager.SendItem(new GameConnectionManager.Packet
             {
-                Id = Guid.NewGuid(),
                 Payload = command,
                 PacketType = "OldDTO",
-                InResponseTo = null,
             });
         }
 

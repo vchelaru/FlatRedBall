@@ -69,10 +69,10 @@ namespace OfficialPluginsCore.Wizard.Models
     {
         public List<Option> Options = new List<Option>();
 
-        public OptionContainer Add(string optionName, object value)
+        public OptionContainer Add(string displayText, object value)
         {
             var option = new Option();
-            option.OptionName = optionName;
+            option.OptionName = displayText;
             option.OptionValue = value;
 
             Options.Add(option);

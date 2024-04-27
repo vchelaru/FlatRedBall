@@ -98,10 +98,15 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
             if (!shouldSkipContent)
             {
+                // If we got to this point, then the file has not been explicitly excluded as content. However, we still may want to skip it if it's not in the content directory.
                 string containingProjectContent = FileManager.Standardize(buildItemOwner.ContentDirectory).ToLowerInvariant();
                 string standardUnevaluatedInclude = FileManager.Standardize(bi.UnevaluatedInclude).ToLowerInvariant();
+                var isRelativeToContentFolder = standardUnevaluatedInclude.StartsWith(containingProjectContent);
 
-                shouldSkipContent = standardUnevaluatedInclude.StartsWith(containingProjectContent) == false;
+                // This could still be content if it's an XNB, but XNBs are platform-specific. We don't want to sync an XNB from one platform to another. We'll let the 
+                // XNB builder handle this. See the ContentPipelinePlugin for more information.
+
+                shouldSkipContent = !isRelativeToContentFolder;
             }
 
             return !shouldSkipContent;
@@ -110,7 +115,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
         public bool GetIfHandledByContentPipelinePlugin(VisualStudioProject targetProject, string extension, ReferencedFileSave rfs)
         {
             // this depends on the type of project:
-            if(targetProject is AndroidProject)
+            if(targetProject is AndroidProject or AndroidMonoGameNet8Project)
             {
                 return extension == "wav" ||
                     extension == "fbx" ||
@@ -126,7 +131,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                     (extension == "wav" || extension == "mp3" || extension == "png") && 
                     rfs?.UseContentPipeline == true;
             }
-            else if(targetProject is IosMonogameProject)
+            else if(targetProject is IosMonogameProject or IosMonoGameNet8Project)
             {
                 // Turns out we don't want to ignore MP3s on iOS.
                 // We just need to make an additional XNB which is

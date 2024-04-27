@@ -10,8 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TiledPluginCore.Models;
 using TiledPluginCore.Views;
+using TiledPluginCore.ViewModels;
 using TileGraphicsPlugin;
 using TMXGlueLib;
 
@@ -19,22 +19,6 @@ namespace TiledPluginCore.Managers
 {
     public class TmxCreationManager : Singleton<TmxCreationManager>
     {
-        //internal bool HandleNewTmxCreation(AssetTypeInfo assetTypeInfo, object extraData, string directory, string name, out string resultingName)
-        //{
-        //    var canHandle = assetTypeInfo == AssetTypeInfoAdder.Self.TmxAssetTypeInfo;
-
-        //    //////////////Early Out/////////////////
-        //    if(canHandle == false)
-        //    {
-        //        resultingName = null;
-        //        return false;
-        //    }
-        //    /////////////End Early Out//////////////
-
-        //    resultingName = name;
-
-        //    return true;
-        //}
         internal void HandleNewTmx(ReferencedFileSave newFile)
         {
             var creationOptions = newFile.GetProperty<string>("CreationOptions");
@@ -45,21 +29,130 @@ namespace TiledPluginCore.Managers
 
                 if(viewModel != null)
                 {
-                    if(viewModel.IncludeDefaultTileset)
-                    {
-                        IncludeDefaultTilesetOn(newFile);
-                    }
-                    if (viewModel.IncludeGameplayLayer)
-                    {
-                        IncludeGameplayLayerOn(newFile);
-                    }
-                    if(viewModel.ShouldAddCollisionBorder)
-                    {
-                        AddCollisionBorderOn(newFile);
-                    }
+                    HandleNewTmx(newFile, viewModel);
 
                 }
             }
+        }
+
+        private void HandleNewTmx(ReferencedFileSave newFile, NewTmxViewModel viewModel)
+        {
+            if (viewModel.WithVisualType == WithVisualType.WithVisuals)
+            {
+                HandleNewTmxWithVisuals(newFile, viewModel);
+            }
+            else
+            {
+                if (viewModel.IncludeDefaultTileset)
+                {
+                    IncludeDefaultTilesetOn(newFile);
+                }
+                if (viewModel.IncludeGameplayLayer)
+                {
+                    IncludeGameplayLayerOn(newFile);
+                }
+                if (viewModel.ShouldAddCollisionBorder)
+                {
+                    AddCollisionBorderOn(newFile);
+                }
+            }
+        }
+
+        private void HandleNewTmxWithVisuals(ReferencedFileSave newFile, NewTmxViewModel viewModel)
+        {
+            var selectedLevel = viewModel.SelectedLevel;
+
+            string levelName = null;
+
+            switch (selectedLevel)
+            {
+                case TmxLevels.OverworldPlatformerA:
+                    levelName = "OverworldPlatformerA";
+                    break;
+                case TmxLevels.OverworldPlatformerB:
+                    levelName = "OverworldPlatformerB";
+                    break;
+                case TmxLevels.OverworldPlatformerC:
+                    levelName = "OverworldPlatformerC";
+                    break;
+            }
+
+            if (string.IsNullOrEmpty(levelName))
+            {
+                throw new NotImplementedException();
+            }
+
+
+            SaveTmxWithVisuals(newFile, levelName);
+        }
+
+
+
+        public void SaveTmxWithVisuals(ReferencedFileSave newFile, string levelName)
+        {
+            var newFilePath = GlueCommands.Self.GetAbsoluteFilePath(newFile);
+
+
+
+            void SaveIfNotExist(string resourceName, FilePath targetFile)
+            {
+                if (!targetFile.Exists())
+                {
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                    {
+                        FileManager.SaveEmbeddedResource(
+                            this.GetType().Assembly,
+                            resourceName,
+                            targetFile.FullPath);
+                    });
+                }
+            }
+
+            var visualTsxResourceName = "TiledPluginCore.Content.Tilesets.FrbVisualTiles.tsx";
+            var targetVisualTsxFile = new FilePath(GlueState.Self.ContentDirectory + "FrbVisualTiles.tsx");
+            SaveIfNotExist(visualTsxResourceName, targetVisualTsxFile);
+
+            var visualPngResourceName = "TiledPluginCore.Content.Tilesets.FrbVisualTiles.png";
+            var targetVisualPngFile = new FilePath(GlueState.Self.ContentDirectory + "FrbVisualTiles.png");
+            SaveIfNotExist(visualPngResourceName, targetVisualPngFile);
+
+            var standardTsxResourceName = "TiledPluginCore.Content.Tilesets.StandardTileset.tsx";
+            var targetStandardTsxFile = new FilePath(GlueState.Self.ContentDirectory + "StandardTileset.tsx");
+            SaveIfNotExist(standardTsxResourceName, targetStandardTsxFile);
+
+            var startTilesetPngResourceName = "TiledPluginCore.Content.Tilesets.StandardTilesetIcons.png";
+            var targetStartTilesetPngFile = new FilePath(GlueState.Self.ContentDirectory + "StandardTilesetIcons.png");
+            SaveIfNotExist(startTilesetPngResourceName, targetStartTilesetPngFile);
+
+
+            var wasLoadingSource = Tileset.ShouldLoadValuesFromSource;
+            Tileset.ShouldLoadValuesFromSource = false;
+            {
+                var tmxResourceName = "TiledPluginCore.Content.Levels." + levelName + ".tmx";
+                var byteArray = FileManager.GetByteArrayFromEmbeddedResource(this.GetType().Assembly, tmxResourceName);
+                var tmxString = Encoding.UTF8.GetString(byteArray);
+                //TiledMapSave.FromFile(byteArrayString);
+                var tiledMapSave = FileManager.XmlDeserializeFromString<TiledMapSave>(tmxString);
+
+
+                var newVisualTsxRelative = targetVisualTsxFile.RelativeTo(newFilePath.GetDirectoryContainingThis());
+                var newStandardTsxRelative = targetStandardTsxFile.RelativeTo(newFilePath.GetDirectoryContainingThis());
+
+                foreach (var tileset in tiledMapSave.Tilesets)
+                {
+                    if (tileset.Source == "../Tilesets/FrbVisualTiles.tsx")
+                    {
+                        tileset.Source = newVisualTsxRelative;
+                    }
+                    else if (tileset.Source == "../Tilesets/StandardTileset.tsx")
+                    {
+                        tileset.Source = newStandardTsxRelative;
+                    }
+                }
+
+                tiledMapSave.Save(newFilePath.FullPath);
+            }
+            Tileset.ShouldLoadValuesFromSource = wasLoadingSource;
         }
 
         public void IncludeGameplayLayerOn(ReferencedFileSave newFile)
@@ -89,11 +182,10 @@ namespace TiledPluginCore.Managers
 
         public void IncludeDefaultTilesetOn(ReferencedFileSave newFile)
         {
-            bool old;
             FilePath fullTmxFile, existingDefaultTilesetFile;
             TiledMapSave tileMapSave;
             SaveTilesetFilesToDisk(out existingDefaultTilesetFile);
-            old = Tileset.ShouldLoadValuesFromSource;
+            var old = Tileset.ShouldLoadValuesFromSource;
             Tileset.ShouldLoadValuesFromSource = false;
             fullTmxFile = new FilePath(GlueCommands.Self.FileCommands.GetFullFileName(newFile));
 
@@ -114,7 +206,7 @@ namespace TiledPluginCore.Managers
 
         public void SaveTilesetFilesToDisk()
         {
-            SaveTilesetFilesToDisk(out FilePath ____);
+            SaveTilesetFilesToDisk(out FilePath _);
         }
 
         private void SaveTilesetFilesToDisk(out FilePath existingDefaultTilesetFile)
@@ -191,11 +283,6 @@ namespace TiledPluginCore.Managers
                     }
                 }
             }
-
-            // let's just cheat:
-            // to do this we'd have to do all the data to gzip this. Worry about it later
-            //tileMapSave.Layers[0].data[0].Value =
-            //    "\n   H4sIAAAAAAAACu3NsQ0AAAzCMPj/6X5RFkfK7Cbp+FV8Pp/P5/P5fD6fz+d/+ssPQZZTxQAQAAA=\n  ";
 
             tileMapSave.Layers[0].data[0].SetTileData(tiles, "base64", "gzip");
 

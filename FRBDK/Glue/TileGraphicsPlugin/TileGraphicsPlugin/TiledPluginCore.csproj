@@ -15,9 +15,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="Content\Levels\PlatformerTileMap.tmx" />
+		<None Remove="Content\Icons\OverworldPlatformerAPreview.png" />
+		<None Remove="Content\Icons\OverworldPlatformerBPreview.png" />
+		<None Remove="Content\Icons\OverworldPlatformerCPreview.png" />
+		<None Remove="Content\Levels\OverworldPlatformerA.tmx" />
+		<None Remove="Content\Levels\OverworldPlatformerB.tmx" />
+		<None Remove="Content\Levels\OverworldPlatformerC.tmx" />
 		<None Remove="Content\Levels\TiledMap.tmx" />
-		<None Remove="Content\Levels\TopDown8Bit.tmx" />
+		<None Remove="Content\Tilesets\FrbVisualTiles.png" />
+		<None Remove="Content\Tilesets\FrbVisualTiles.tsx" />
 		<None Remove="Content\Tilesets\PlatformerTiles.png" />
 		<None Remove="Content\Tilesets\StandardTileset.tsx" />
 		<None Remove="Content\Tilesets\StandardTilesetIcons.png" />
@@ -46,6 +52,11 @@
 		<EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TiledMapSave.Serialization.cs" Link="EmbeddedCodeFiles\TiledMapSave.Serialization.cs" />
 		<EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TiledMapToShapeCollectionConverter.cs" Link="EmbeddedCodeFiles\TiledMapToShapeCollectionConverter.cs" />
 		<EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TilesetExtensionMethods.cs" Link="EmbeddedCodeFiles\TilesetExtensionMethods.cs" />
+		<EmbeddedResource Include="Content\Levels\OverworldPlatformerB.tmx" />
+		<EmbeddedResource Include="Content\Levels\OverworldPlatformerC.tmx" />
+		<EmbeddedResource Include="Content\Levels\TiledMap.tmx" />
+		<EmbeddedResource Include="Content\Tilesets\FrbVisualTiles.png" />
+		<EmbeddedResource Include="Content\Tilesets\FrbVisualTiles.tsx" />
 		<EmbeddedResource Include="Content\Tilesets\StandardTilesetIcons.png" />
 		<EmbeddedResource Include="Content\Tilesets\StandardTileset.tsx" />
 	</ItemGroup>
@@ -76,21 +87,23 @@
 
 
 	<ItemGroup>
+		<Folder Include="Models\" />
 		<Folder Include="Properties\" />
 		<Folder Include="TiledPluginCore\" />
 	</ItemGroup>
 
 
 	<ItemGroup>
-		<EmbeddedResource Include="Content\Levels\PlatformerTileMap.tmx" />
-		<EmbeddedResource Include="Content\Levels\TiledMap.tmx" />
-		<EmbeddedResource Include="Content\Levels\TopDown8Bit.tmx" />
+		<EmbeddedResource Include="Content\Levels\OverworldPlatformerA.tmx" />
 		<EmbeddedResource Include="Content\Tilesets\PlatformerTiles.png" />
 		<EmbeddedResource Include="Content\Tilesets\TopDown8Bit.png" />
 	</ItemGroup>
 
 
 	<ItemGroup>
+		<Resource Include="Content\Icons\OverworldPlatformerAPreview.png" />
+		<Resource Include="Content\Icons\OverworldPlatformerBPreview.png" />
+		<Resource Include="Content\Icons\OverworldPlatformerCPreview.png" />
 		<Resource Include="Icons\TiledIcon.png" />
 	</ItemGroup>
 

@@ -69,31 +69,25 @@ namespace FlatRedBallAddOns.Screens
 {
     public partial class ScreenTemplate
     {
-
-        void CustomInitialize()
+        private void CustomInitialize()
         {
-
-
+            
         }
 
-        void CustomActivity(bool firstTimeCalled)
+        private void CustomActivity(bool firstTimeCalled)
         {
-
-
+            
         }
 
-        void CustomDestroy()
+        private void CustomDestroy()
         {
-
-
+            
         }
 
-        static void CustomLoadStaticContent(string contentManagerName)
+        private static void CustomLoadStaticContent(string contentManagerName)
         {
-
-
+            
         }
-
     }
 }
 ";
@@ -122,26 +116,22 @@ namespace FlatRedBallAddOns.Entities
         /// </summary>
         private void CustomInitialize()
         {
-
-
+            
         }
 
         private void CustomActivity()
         {
-
-
+            
         }
 
         private void CustomDestroy()
         {
-
-
+            
         }
 
         private static void CustomLoadStaticContent(string contentManagerName)
         {
-
-
+            
         }
     }
 }

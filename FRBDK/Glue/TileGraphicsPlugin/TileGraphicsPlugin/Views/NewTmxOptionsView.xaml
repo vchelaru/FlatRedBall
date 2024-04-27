@@ -3,22 +3,35 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:localization="clr-namespace:Localization;assembly=Localization"
-             mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="300">
-    <Grid>
+             xmlns:localization="clr-namespace:Localization;assembly=Localization" xmlns:views="clr-namespace:TiledPluginCore.Views"
+             mc:Ignorable="d" d:DesignWidth="300">
+    <Grid VerticalAlignment="Top">
         <GroupBox Header="{x:Static localization:Texts.TmxCreationOptions}">
             <StackPanel>
-                <CheckBox VerticalContentAlignment="Center"
-                    IsChecked="{Binding IncludeDefaultTileset}">
+                <GroupBox Header="Level Type" BorderThickness="0">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton IsChecked="{Binding IsWithVisualsChecked}">With Visuals</RadioButton>
+                        <RadioButton  IsChecked="{Binding IsNoVisualsChecked}" Margin="16,0,0,0">No Visuals</RadioButton>
+                    </StackPanel>
+                </GroupBox>
+
+                <views:LevelWithVisualsSelectionView Visibility="{Binding WithVisualsUiVisibility}">
+                
+                </views:LevelWithVisualsSelectionView>
+
+                <StackPanel Visibility="{Binding NoVisualsUiVisibility}">
+
+                    <CheckBox VerticalContentAlignment="Center"
+                        IsChecked="{Binding IncludeDefaultTileset}">
                         Include Default Tileset</CheckBox>
-                <CheckBox VerticalContentAlignment="Center"
-                    IsChecked="{Binding IncludeGameplayLayer}">
+                    <CheckBox VerticalContentAlignment="Center"
+                        IsChecked="{Binding IncludeGameplayLayer}">
                         Include Gameplay Layer</CheckBox>
-                <CheckBox VerticalContentAlignment="Center"
-                          Visibility="{Binding SolidCollisionCheckBoxVisibility}"
-                          IsChecked="{Binding IsSolidCollisionBorderChecked}"
-                    Content="{x:Static localization:Texts.CollisionIncludeSolid}" />
+                    <CheckBox VerticalContentAlignment="Center"
+                              Visibility="{Binding SolidCollisionCheckBoxVisibility}"
+                              IsChecked="{Binding IsSolidCollisionBorderChecked}"
+                        Content="{x:Static localization:Texts.CollisionIncludeSolid}" />
+                </StackPanel>
             </StackPanel>
         </GroupBox>
     </Grid>

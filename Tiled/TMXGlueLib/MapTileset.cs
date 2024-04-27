@@ -327,7 +327,8 @@ namespace TMXGlueLib
                     string message = "Could not find the shared tsx file \n" + fileAttemptedToLoad + 
                         "\nIf this is a relative file name, then the loader will use " +
                         "the FileManager's RelativeDirectory to make the file absolute.  Therefore, be sure to set the FileManger's RelativeDirectory to the file represented by " +
-                        "this fileset before setting this property if setting this property manually.";
+                        "this fileset before setting this property if setting this property manually.\n\nIf you are loading this TMX in a tool and you do not want to recursively" +
+                        "load all content, then set Tileset.ShouldLoadValuesFromSource to false prior to loading.";
 
 
                     throw new FileNotFoundException(message);

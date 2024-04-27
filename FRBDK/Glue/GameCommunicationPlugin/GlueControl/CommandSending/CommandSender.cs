@@ -102,9 +102,11 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
             return toReturn;
         }
 
-        string lastSend;
+        string lastStartedSend;
+        string lastFinishedSend;
         private async Task<ToolsUtilities.GeneralResponse<string>> SendCommand(string text, SendImportance importance = SendImportance.Normal, bool waitForResponse = true)
         {
+            // commands cannot be sent when receiving commands or we get a deadlock:
             var isImportant = importance != SendImportance.IfNotBusy;
             var shouldPrint = isImportant && text?.StartsWith("SelectObjectDto:") == false;
 
@@ -142,13 +144,13 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
                 {
                     
                     var textPrefix = text?.Contains(":")==true ? text.Substring(0, text.IndexOf(":")) : text;
-                    var lastPrefix = lastSend?.Contains(":")==true ? lastSend.Substring(0, lastSend.IndexOf(":")) : lastSend;
-                    GlueCommands.Self.PrintOutput($"Waiting to send {textPrefix}\nWaiting on {lastPrefix}");
+                    var lastPrefix = lastStartedSend?.Contains(":")==true ? lastStartedSend.Substring(0, lastStartedSend.IndexOf(":")) : lastStartedSend;
+                    //GlueCommands.Self.PrintOutput($"Waiting to send {textPrefix}\nWaiting on {lastPrefix}");
                     await sendCommandSemaphore.WaitAsync();
-                    GlueCommands.Self.PrintOutput($"--Done with {textPrefix}");
+                    //GlueCommands.Self.PrintOutput($"--Done with {textPrefix}");
                 }
 
-                lastSend = text;
+                lastStartedSend = text;
 
                 int triesLeft = importance  == SendImportance.RetryOnFailure ? 5 : 1;
                 GeneralResponse<string> result = GeneralResponse<string>.UnsuccessfulResponse;
@@ -158,6 +160,9 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
                     triesLeft--;
                     result = await SendCommandNoSemaphore(text, isImportant, shouldPrint, waitForResponse);
                 }
+
+                lastFinishedSend = text;
+
                 return result;
             }
             finally

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="75" height="27" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1">
+ <tileset firstgid="1" source="../Tilesets/StandardTileset.tsx"/>
+ <tileset firstgid="1025" source="../Tilesets/FrbVisualTiles.tsx"/>
+ <layer id="4" name="Sky" width="75" height="27">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu3DMQ0AAAwDoD7TWv8OqmIfJPSSqqqqqqqqqqrvBwifd02kHwAA
+  </data>
+ </layer>
+ <layer id="3" name="Bushes" width="75" height="27" parallaxx="0.6" parallaxy="0.6">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACuVYW27CQAzMT+5/klA4CAUOQklu0ESKpekw43XSVkJiJattug97PH7sdt17jHPfdZ8g11kOs9zEd/4W8i7jPtt6Mhgck/+9I1bLcHgpLgV+4yr/idWwcvzjxfyBeE0Jzx79c9z+9QiMwk+XF8NqGYHBmOA0CK7xGIgLYTuK44ra/1pY58ZWblZ1Zb5UcFJYnck+tYa5wlxyuTP2rdiO+ra4mZ2vzlzi8AvkROc4LHlk8Xxc937QOt6b68qiA+57bXCT7W5h5WzL/Ms2h12OUy5fcb0Yk/Nc3MW3I2Bzpjkq1lU9Yt+oNeyf8CtzJhsZTlluV75S9vHenC+DU1FX0Cbcj89j/6jcxVxFXbjXrGDV4qfKgQ7fEewb+p89iMKJbb0Jmy597s+WzWjfaHTIsMJ6kHFK5aCMK4HNZeVI/GS+Kx05rvHcSr5ZZGpghTry79X8kQnmgtba4ATG1R32wPqCsaH8hrpXsFJ1hfXlHjL05HV4ruOhEuRhhhNypxr7sUZxDvfI7mpZDLXuw1m9db7N7Fdnqrsk6uH6q8hjMQ97G2WX6nmcznhmxbcZxi3cFH6q93J3IWcnxoF7z3B5TfndncsxW42dSh+ruBd2jaBrYIo5MOahbcw15Jm7g+LcG63BOsH+dTWAfbMHK+494p5S8dmhf45x/B3jrlqvKoJ1ggf3rKGjimUlmCfdHSPLbc4fWU7jfJ7dz7eIquXob5e72F/ujS7rpRQGzF3nDz4bdcS7Sfa2uhUnzIfKv8x1zBkYv/G3uitUccIz3R0iRPU87u5QfWttxZ6LJcVX/Ib+V32Gu9sr+7HH53WO18gl1zc6v+7Bauw1RzHHKD2ZL8gTfvNBjlTei9zdnP3Ruo85brTmV3OauyOr2HJ3baUPx/YiWK9VfWWcsxhjvNW7TDbnN+J8pt7CKvMyQS7xu05wGjGLmOS3ggp3OLfuwcadx70a5288cxLzWhghl4KfuDdykfuurfa6fIO6VP27tfcIH010XvVMrndZzVO98h5OKFyC11tz3xbh/srVoipm2TrVK38DvTkFzaQfAAA=
+  </data>
+ </layer>
+ <layer id="5" name="CliffBackground" width="75" height="27" tintcolor="#b0b0b0">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu2YYQ7CIAxGcYbd/0rTeZApu4c2o1lTJVSGMdC+hMiPmbiX0n7onGEYR5i8c1f/71/RBsvLUxD4AqcXtrQ5Bld35mtie/Cyxufoeih1he8+RS90zx2Zq+3dlw97c7VBfQRSRyFTUxpdnUbnbhkn5mond9bM1Q7W1uy/qzGNrgDwdR63z0FwLsErPG/kz6Ukv2pB0sMwg/EcL7k34fd6QOqKZw7M+MG/34noWuM57oESV1rnqCR3hQOuepoNubsgrhJXPXkCJA7mAletecIZlJpV0pqS9ivwM8Tc1ponej9OzShpb05l/lb9UI7MrdQc45m/ZT+UX7jqlVquWuvRJdRy1XtNATVcaagpgPbfGv+HPgGFey2fpB8AAA==
+  </data>
+ </layer>
+ <layer id="2" name="Ground" width="75" height="27">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu2YWxKCMAxFQQeX4v63AMpCUNyH9SNjzKTpg6RVambyIWCbHm7SlNvQdTfGr84Pp647Ot+DLZ51bvG9MQLTZLVXRmCarO5D7dXYWu80MCtpaq96whbDC/KL+twQJzCJl8RiaSD3OONqV0gzrbLqmRwL5RbHanS/J+eXBhlKRlm9OD0a2RdTDLhgJjiPKcMJOae5MXC/hNE4Y12KF+tnRf+Ba9J1eo8+U2JfPQ9vx5bbb0o5ZHE24jj51mRluetaBW1ZsSpd42jOUf1rxK7NyvIsKWmzxBkvZQ6p56+lp5x15LLqyRmHYxHq0fqEPs6qbmmykmoWzPXLfZR2LQnth9/EKlV/LbDS6ltLsYJ+dBXi9vXBW/ty3/lgyzi5juu19D2Gq2+Yia9fgedymZVklbt3gY0CB6385ubk3gEeI6Ze+cbRiNGKU6q+fBpIXUtq3tXO8Zx4/qw+9SW5T8u1WMV807Q6N1tyjmGeOj73TSo01xPcRsIHpB8AAA==
+  </data>
+ </layer>
+ <layer id="1" name="GameplayLayer" width="75" height="27" opacity="0.5">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu2W2wrAIAhAC/b/37yHEUS0vKR20QO+jdKT2XJKKQNxA1CNs3ET4QhPOMITrmiEJxpcF948FTg9E67wd6v3jcd7iaF14nWGQfSc/LnC9OsOnjXeNul/Det39ami5kRXUE1aaJzvqf3UYpH7Sa5GvXmqqxXs6AqzxgituWV55it7QgLPrqj958GV1KyzcoX5luOfU6PUOtaupHqWUiMXixos7jdlzwJmXlmdJ3cviXykaglXuvlz0XKl6Xk2f2gdyb0ivngBWKUkAqQfAAA=
+  </data>
+ </layer>
+</map>

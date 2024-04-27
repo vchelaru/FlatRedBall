@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="40" height="64" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="1">
+ <tileset firstgid="1" source="../Tilesets/StandardTileset.tsx"/>
+ <tileset firstgid="1025" source="../Tilesets/FrbVisualTiles.tsx"/>
+ <layer id="4" name="Sky" width="40" height="64">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu3DMQkAAAwDsD6TX8/VMUggvaSqqqqqqqqqqqrqqwOPP9V3ACgAAA==
+  </data>
+ </layer>
+ <layer id="3" name="BushesAndClouds" width="40" height="64" parallaxx="0.6" parallaxy="0.6">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACtVZ7W4aMRDkj2n7/u9ASiht8hLkg6aBlyAhEg19g57FjTKZ7trr49SqK1lw5LyenR2v9y6Tyf9nizSZXHTj4/Q08vfPKTZ31s/7Erw/gkXX3nXXl924ofFhGvO36u+/62Nsic2y6fTkS+PNGD9NT+Op+/49uMY6ne4fMtcycIV4x8rLEFukNz3lT/C+pnjPifUcy7q9F03d/QMsM9IlcrUQbHPS/1DDHm/VftY783Ph8HY/AB9qB3zue18tGLF/tD54g431WcuBxtvK4zqAcZ7e75VVYW3rbxiZx9sBWin5vOl9Wjm3MOJvrF2rfkP/kTrFWmTOUD+fG3TAMXk85zzc03UJI9eTvfi3dPASwJZjy/XRituLpZbbveFfDWdZics89zm93Y8c8KfOL+0bjZH9e8br8vn55MRlzY9iXAl30f7jXLNyb+UZdRAD3KHGoc79DXxRbqwzuMVQO0q1GFpmXUa0YWGr4cMZi3qWuXkJ1I6IaR692lsyrnNav7UeX6Q/z8SSRWvUUB9e7xHVW+T8reFD3xrxM0/tPS788z6+FJ8RW8kcq0bWait0UHu2Y16j/TPmRGp8yQf4yfmfFeoA85ENfWe+3+oB8++7M7Cx7fp6U/LHNYrxej3WkN5uTCv1YXj2HPIuYSzjfL8Ql9zPtfDJGhnjeTpaK2v4sEetOn6Ooa/S+mPlu1TftK/29js/B7bqxutVSzxgPdWCx7OXr5bnQN7jT+k9Z3rmeme7xjTr9Vh6Btb3Xoid38d4tqjg0dyqDla0PvNdeia03jcAL/aelz9oErq8LGDLpj3Bnta1Yi498zJe6x5L+8hbqT8o9S0ej9GB+eecw9lQLxRL3k/RWreXT+Z7rPNOsaje5gY/0BFzxX0UzrsxzjjrGY7fKz8b/CKu22T3GLsU6/fGMu4zoev1COsvu/lfu/GtwY/1v4Sh70FruLbd+NGNx4Bf4Fobex/7HbldSsxYj4fHyZJwYWwC87xedUn5BO4H8anrWZwoZzquunFNfiM5R6xqh95X9vvLWOdnN15l3oODh+Nhv5tKDjhWyw7i/1jQkpfTLWEFnge5x9KR+vJMOfF8qr+jXIO71x4fc8v+dD34sbRrrYs58LmktY7Jxsacw+dGfD8mfz1LUyVOgOex5wKf8HFt+Ac+1Qyva+UKg7VeioN1xTk7kI9DvyZj9WoBa7mEr6RNi+frFKu5zKvFLftQbhVfrT4wD1sDH59lHCvXO11D9xq413UV31VAE+ybNaHaZ64snVp1UNdVfnk/sT/llPnUOu7plufwXmPTXKt2N/Kdc1ritHXwXrO0i/s8XVp7AvOsOtcyOBdcH6FV1qJqz9IHeobS/m7BxvrmHPE1frNqkp7lfJaW+I7m1drPXl6YM6+WHtN7rOfgPCY7F1wrOYe186+k7RqOKF5Lh9tCLFYuPe7PzTdry+JJe5AIR9wPD90z3npaS1vXqHHO2mnFOOZQLKgbrVqujd/kxspxACgAAA==
+  </data>
+ </layer>
+ <layer id="5" name="CliffBackground" width="40" height="64">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu3OQQ0AMAgEMD4zOv8icLAf2YW0CloFAAAAAAAAAAD73fN78OY3K/2f/iNTA2V64awAKAAA
+  </data>
+ </layer>
+ <layer id="2" name="Ground" width="40" height="64">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu2aYW6DMAyF+ZOjbDsHbBdhpQdZdxLCDjqq8bTXzIAhgRiNJ1lCQOHrizFO2qI4dSqfKlcUbR/e/W7f49XlJvvRu5PjcvKppOUrh3Gvhthr/LV89bD/rY9bH5+Z+ZrhmYFn14FtjKuk8z09b9he6/fN6WPKs4+Iz1oU8tlSLWMhny3VCtYR+fCM4T1WZeSW+HgfwhJfJ/C15OdTH88L44VqHl9r7Lks6R0U1kbJv9h37lTdk2qedD7Ok45Z7AlYR+Jr3L69iUaWe7+7jsiH3kpTb1BfwjkM6kdsrsTWmy1qFiu2Z5vjy/3MzfHlzmkt35KcRl77BN9Jy7fUR1w3VnPzjjU5nZJvK1nlw7wJvZc1hflyalplxtqtUZ2xdodC7rNflvhQMy5G+EK/JL5uBz5eWwvHjnn28A/zV4lDujfv6zbi4xowNkYavq38q4V7fK3wbw0f8gZzh4q22bO5e2zFp+nVcvJperWcfBpZ5+N1Te8ec7Wd2A5zuw2u4WlfTI+wdI6xJmI8lNY1LfFZ8Y9/MwnrnwW+kGNqXf3kOwafd/J/ELz7u46Xg2/J57fk437IIl+sf417rD2cDynGX+IrE3//VHyYQ1wT8sFf+Cl5zes+4fGKjqXk+u/xDenxPaIAKAAA
+  </data>
+ </layer>
+ <layer id="1" name="GameplayLayer" width="40" height="64" opacity="0.8">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu3YQQrAIAxEUQu9/5mLu64kwdFOzX+QdYcYg7Q14Dv3oFAH55+T7dfontFvPXpbD3dKL7K3Zir6PYB5qGH1jkEcfdRgdvEHzN9ZOMc45j7HpV9OO8slx5tbHie8v+Bu9T84Zh0dM4HdrkSR7+x8u/MrsynzqXNRvvUAf/HEEgAoAAA=
+  </data>
+ </layer>
+ <layer id="6" name="Foreground" width="40" height="64" opacity="0.9">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu2VXQ6CMBCE+7JV738HFfUcKOg58OcU0qQb6tKFFeHBZL5kopSyO52S4hwAAAAAAAAAAAD+jS05t/bO7eIvK1yfqD9vT3otK8ek10mpF+YED3Wrs6KKOj9lHFv537xtRc+Kumx21OXive5LegzPcs2LIb8j6bloeRSt7q0OMYPS4E3zy+sNHniv0n0v47ycx7G6dfw/tK9FXIfFa01937kxVi4vHnuO9Htm+n6j10DNobym7OMUWXMfy2cpjeW+RP/ce2LJbGqW4bmNtz+rvSfs+0H5s0pmyX1zNVgH6p9nlncpty/pOdiIrLhv8MN6xPl8He7f6PPsuQq/qWSm6foLMS/tl9bmvvLeXMgcOLtfv2lz0hiyAgAAAAAAAAAAwH/zBmxX2uwAKAAA
+  </data>
+ </layer>
+</map>

@@ -74,6 +74,9 @@
     <None Remove="Wizard\EmbeddedContent\Platformer\FRBeefcakeSpritesheet.png" />
     <None Remove="Wizard\EmbeddedContent\Platformer\PlatformerAnimations.achx" />
     <None Remove="Wizard\EmbeddedContent\Platformer\Player.PlatformerAnimations.json" />
+    <None Remove="Wizard\EmbeddedContent\TopDown\FRBeefcakeSpritesheet.png" />
+    <None Remove="Wizard\EmbeddedContent\TopDown\Player.TopDownAnimations.json" />
+    <None Remove="Wizard\EmbeddedContent\TopDown\TopDownAnimations.achx" />
     <None Remove="Wizard\Icons\action_forms.png" />
     <None Remove="Wizard\Icons\action_platformer.png" />
     <None Remove="Wizard\Icons\action_project.png" />
@@ -92,6 +95,9 @@
     <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\Player.PlatformerAnimations.json" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\PlatformerAnimations.achx" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\FRBeefcakeSpritesheet.png" />
+    <EmbeddedResource Include="Wizard\EmbeddedContent\TopDown\FRBeefcakeSpritesheet.png" />
+    <EmbeddedResource Include="Wizard\EmbeddedContent\TopDown\Player.TopDownAnimations.json" />
+    <EmbeddedResource Include="Wizard\EmbeddedContent\TopDown\TopDownAnimations.achx" />
     <Resource Include="Content\Icons\CopyIcon.png" />
     <EmbeddedResource Include="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>

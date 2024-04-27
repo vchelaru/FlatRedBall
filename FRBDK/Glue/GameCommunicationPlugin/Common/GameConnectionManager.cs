@@ -16,12 +16,14 @@ namespace GameJsonCommunicationPlugin.Common
     {
         #region private
         private Object _lock = new Object();
-        private ConcurrentQueue<Packet> _sendItems = new ConcurrentQueue<Packet>();
-        private ConcurrentDictionary<Guid, WaitingPacket> _waitingPackets = new ConcurrentDictionary<Guid, WaitingPacket>();
+
         private Action<string, string> _eventCaller;
         private IPAddress _addr;
         private Socket _listener = null;
-        private Socket _client = null;
+        
+        private Socket glueToGameSocket = null;
+        private Socket gameToGlueSocket = null;
+
         private bool _isListening = false;
 
         private bool _isConnected = false;
@@ -60,7 +62,7 @@ namespace GameJsonCommunicationPlugin.Common
                 if (!_doConnections)
                 {
                     _listener?.Dispose();
-                    _client?.Dispose();
+                    glueToGameSocket?.Dispose();
                 }
             }
         }
@@ -78,7 +80,7 @@ namespace GameJsonCommunicationPlugin.Common
                 {
                     _port = value;
                     _listener?.Dispose();
-                    _client?.Dispose();
+                    glueToGameSocket?.Dispose();
                 }
                 
             }
@@ -118,10 +120,10 @@ namespace GameJsonCommunicationPlugin.Common
                     if (_listener != null)
                         _listener.Dispose();
 
-                    if (_client != null)
+                    if (glueToGameSocket != null)
                     {
-                        _client.Dispose();
-                        _client = null;
+                        glueToGameSocket.Dispose();
+                        glueToGameSocket = null;
                     }
 
                     if (_doConnections)
@@ -135,11 +137,16 @@ namespace GameJsonCommunicationPlugin.Common
                                 _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
                                 _listener.Bind(EndPoint);
-                                _listener.Listen(1);
+                                _listener.Listen(2);
 
                                 Debug.WriteLine($"Listening on port {Port}");
 
-                                EstablishConnection(_listener.Accept());
+                                HandleConnection(_listener.Accept());
+                                HandleConnection(_listener.Accept());
+                                IsConnected = true;
+                                // Vic asks - do we still need this?
+                                _eventCaller("GameCommunication_Connected", "");
+
                                 _listener.Dispose();
                                 _listener = null;
                             }
@@ -160,62 +167,68 @@ namespace GameJsonCommunicationPlugin.Common
             }
         }
 
-        private void EstablishConnection(Socket socket)
+        private void HandleConnection(Socket socket)
         {
-            Debug.WriteLine("Connected");
+            // need to determine which way this socket is communicating
+            var buffer = new byte[1];
+            socket.Receive(buffer);
 
-            _client = socket;
-            _sendItems.Clear();
-            _waitingPackets.Clear();
+            if (buffer[0] == 1)
+            {
+                EstablishGlueToGameConnection(socket);
+            }
+            else if(buffer[0] == 2)
+            {
+                EstablishGameToGlueConnection(socket);
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+        }
 
-            IsConnected = true;
 
-            _eventCaller("GameCommunication_Connected", "");
+        private void EstablishGlueToGameConnection(Socket socket)
+        {
+            Debug.WriteLine("Connected Glue->Game");
 
-            Task.Run(() =>
+            glueToGameSocket = socket;
+        }
+
+        private void EstablishGameToGlueConnection(Socket socket)
+        {
+            Debug.WriteLine("Connected Game->Glue");
+
+            gameToGlueSocket = socket;
+
+            Task.Run(async () =>
             {
                 try
                 {
                     while (IsConnected)
                     {
-                        byte[] bufferSize = new byte[sizeof(long)];
-                        _client.Receive(bufferSize);
-                        var packetSize = BitConverter.ToInt64(bufferSize, 0);
+                        string stringFromGame = await ReceiveString(gameToGlueSocket);
 
-                        using (MemoryStream stream = new MemoryStream())
+                        string toReturn = null;
+
+                        if (OnPacketReceived != null)
                         {
-                            var remainingBytes = packetSize;
-                            while (remainingBytes > 0)
+                            var packet = JsonConvert.DeserializeObject<Packet>(stringFromGame);
+
+                            if (packet != null)
                             {
-                                var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
-                                byte[] bufferData = new byte[pullSize];
-                                _client.Receive(bufferData);
-                                stream.Write(bufferData, 0, bufferData.Length);
-                                remainingBytes -= pullSize;
-                            }
+                                object response = await OnPacketReceived(packet);
 
-                            var payload = Encoding.ASCII.GetString(stream.ToArray());
-
-                            if (OnPacketReceived != null)
-                            {
-                                var packet = JsonConvert.DeserializeObject<Packet>(payload);
-
-                                if (packet != null)
+                                if(response != null)
                                 {
-                                    if(packet.InResponseTo.HasValue && _waitingPackets.TryGetValue(packet.InResponseTo.Value, out var waitingPacket))
-                                    {
-                                        waitingPacket.ReceivedPacket = packet;
-                                    }
-                                    else
-                                    {
-                                        OnPacketReceived(new PacketReceivedArgs
-                                        {
-                                            Packet = packet
-                                        });
-                                    }
+                                    toReturn = JsonConvert.SerializeObject(response);
                                 }
+
                             }
                         }
+
+                        // todo - need to send the string...
+                        gameToGlueSocket.Send(new byte[] { 0 });
                     }
                 }
                 catch (Exception ex)
@@ -224,46 +237,51 @@ namespace GameJsonCommunicationPlugin.Common
                 }
                 finally { IsConnected = false; }
             });
+        }
 
-            Task.Run(() =>
+        private async Task<string> SendItemImmediately(Packet item)
+        {
+            var packet = JsonConvert.SerializeObject(item);
+            var sendBytes = Encoding.ASCII.GetBytes(packet);
+            long size = sendBytes.LongLength;
+
+            //Send size
+            glueToGameSocket.Send(BitConverter.GetBytes(size));
+
+            //Send payload
+            glueToGameSocket.Send(sendBytes);
+
+            string responseString = await ReceiveString(glueToGameSocket);
+            return responseString;
+        }
+
+        private static async Task<string> ReceiveString(Socket socket)
+        {
+            byte[] bufferSize = new byte[sizeof(long)];
+            //socket.Receive(bufferSize);
+            ArraySegment<byte> buffer = new ArraySegment<byte>(bufferSize);
+            await socket.ReceiveAsync(buffer, SocketFlags.None);
+
+            var packetSize = BitConverter.ToInt64(bufferSize, 0);
+
+            string responseString = null;
+
+            using (MemoryStream stream = new MemoryStream())
             {
-                try
+                var remainingBytes = packetSize;
+                while (remainingBytes > 0)
                 {
-                    while (IsConnected)
-                    {
-                        if (_sendItems.TryDequeue(out var item))
-                        {
-                            try
-                            {
-                                var packet = JsonConvert.SerializeObject(item);
-                                var sendBytes = Encoding.ASCII.GetBytes(packet);
-                                long size = sendBytes.LongLength;
-
-                                //Send size
-                                _client.Send(BitConverter.GetBytes(size));
-
-                                //Send payload
-                                _client.Send(sendBytes);
-                            }
-                            catch
-                            {
-                                Debug.WriteLine($"Removing Wait Id: {item.Id} due to error");
-                                _waitingPackets.TryRemove(item.Id, out var tempValue);
-                                throw;
-                            }
-                        }
-                        else
-                        {
-                            Thread.Sleep(10);
-                        }
-                    }
+                    var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
+                    byte[] bufferData = new byte[pullSize];
+                    socket.Receive(bufferData);
+                    stream.Write(bufferData, 0, bufferData.Length);
+                    remainingBytes -= pullSize;
                 }
-                catch (Exception ex)
-                {
-                    Debug.Write($"Client Connection Failed: {ex}");
-                }
-                finally { IsConnected = false; }
-            });
+
+                responseString = Encoding.ASCII.GetString(stream.ToArray());
+            }
+
+            return responseString;
         }
 
         private async Task StatusCheckTask(CancellationToken cancellation)
@@ -289,55 +307,24 @@ namespace GameJsonCommunicationPlugin.Common
 
         #region publicMethods
 
-        public void SendItem(Packet item)
+        public async Task SendItem(Packet item)
         {
             if (IsConnected)
-                _sendItems.Enqueue(item);
+            {
+                await SendItemImmediately(item);
+            }
         }
 
-        public async Task<GeneralResponse<Packet>> SendItemWithResponse(Packet item)
+        public async Task<GeneralResponse<string>> SendItemWithResponse(Packet item)
         {
-            var responseToReturn = new GeneralResponse<Packet>();
+            var responseToReturn = new GeneralResponse<string>();
 
             if (IsConnected)
             {
-                _sendItems.Enqueue(item);
-                _waitingPackets.TryAdd(item.Id, new WaitingPacket
-                {
-                    StartedWaitingAt = DateTime.Now,
-                    WaitingFor = item.Id
-                });
+                var responseString = await SendItemImmediately(item);
 
-                var packet = await Task.Run(async () =>
-                {
-                    do
-                    {
-                        await Task.Delay(10);
-
-                        if (_waitingPackets.TryGetValue(item.Id, out var waitingPacket))
-                        {
-                            if (waitingPacket.ReceivedPacket != null)
-                            {
-                                _waitingPackets.TryRemove(item.Id, out var tempPacket);
-                                return waitingPacket.ReceivedPacket;
-                            }
-                            else if ((DateTime.Now - waitingPacket.StartedWaitingAt).TotalSeconds > TimeoutInSeconds)
-                            {
-                                Debug.WriteLine($"Removing Wait Id: {item.Id} due to timeout");
-                                _waitingPackets.TryRemove(item.Id, out var tempPacket);
-                                return (Packet)null;
-                            }
-                        }
-                        else
-                        {
-                            return (Packet)null;
-                        }
-                    }
-                    while (true);
-                });
-
-                responseToReturn.Succeeded = packet != null;
-                responseToReturn.Data = packet;
+                responseToReturn.Succeeded = true;
+                responseToReturn.Data = responseString;
             }
             else
             {
@@ -351,7 +338,7 @@ namespace GameJsonCommunicationPlugin.Common
         {
             try { _periodicCheckTaskCancellationToken.Cancel(); } catch { }
             try { _listener?.Dispose(); } catch { }
-            try { _client?.Dispose(); } catch { }
+            try { glueToGameSocket?.Dispose(); } catch { }
         }
 
         #endregion
@@ -359,8 +346,6 @@ namespace GameJsonCommunicationPlugin.Common
         #region classes
         public class Packet
         {
-            public Guid Id { get; private set; } = Guid.NewGuid();
-            public Guid? InResponseTo { get; set; }
             public string PacketType { get; set; }
             public string Payload { get; set; }
         }
@@ -372,17 +357,8 @@ namespace GameJsonCommunicationPlugin.Common
             public Packet? ReceivedPacket { get; set; }
         }
 
-        public class PacketReceivedArgs : EventArgs
-        {
-            public Packet? Packet { get; set; }
-        }
         #endregion
 
-        #region events
-
-        public delegate void PacketReceivedDelegate(PacketReceivedArgs packetReceivedArgs);
-        public event PacketReceivedDelegate OnPacketReceived;
-
-        #endregion
+        public event Func<Packet, Task<object>> OnPacketReceived;
     }
 }

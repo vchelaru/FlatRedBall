@@ -65,7 +65,10 @@
 
                 </Grid>
             </Grid>
-            <StackPanel Grid.Column="{Binding AdditionalUiStackColumn}" x:Name="AdditionalUiStack"></StackPanel>
+            <ScrollViewer Width="auto" Grid.Column="{Binding AdditionalUiStackColumn}" >
+                
+                <StackPanel x:Name="AdditionalUiStack"></StackPanel>
+            </ScrollViewer>
 
         </Grid>
 

@@ -1,0 +1,32 @@
+{
+  "Values": [
+    {
+      "AnimationName": "CharacterIdle",
+      "IsDirectionFacingAppended": true,
+      "MinVelocityAbsolute": null,
+      "MaxVelocityAbsolute": null,
+      "AbsoluteVelocityAnimationSpeedMultiplier": null,
+      "MinMovementInputAbsolute": null,
+      "MaxMovementInputAbsolute": null,
+      "MaxSpeedRatioMultiplier": null,
+      "MovementName": null,
+      "CustomCondition": null,
+      "AnimationSpeedAssignment": 0,
+      "Notes": null
+    },
+    {
+      "AnimationName": "CharacterWalk",
+      "IsDirectionFacingAppended": true,
+      "MinVelocityAbsolute": 5.0,
+      "MaxVelocityAbsolute": null,
+      "AbsoluteVelocityAnimationSpeedMultiplier": null,
+      "MinMovementInputAbsolute": null,
+      "MaxMovementInputAbsolute": null,
+      "MaxSpeedRatioMultiplier": null,
+      "MovementName": null,
+      "CustomCondition": null,
+      "AnimationSpeedAssignment": 3,
+      "Notes": null
+    }
+  ]
+}

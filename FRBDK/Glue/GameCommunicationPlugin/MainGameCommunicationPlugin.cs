@@ -11,8 +11,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using GameCommunicationPlugin.CodeGeneration;
-using EmbeddedCodeManager = GameCommunicationPlugin.CodeGeneration.EmbeddedCodeManager;
 using ToolsUtilities;
+using GameCommunicationPlugin.GlueControl.ViewModels;
+using OfficialPluginsCore.Compiler.CommandReceiving;
+using System.Collections.Generic;
+using GameCommunicationPlugin.GlueControl;
 
 namespace GameCommunicationPlugin
 {
@@ -34,7 +37,6 @@ namespace GameCommunicationPlugin
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
-            ReactToLoadedGlux -= HandleGluxLoaded;
             _gameCommunicationManager.OnPacketReceived -= HandleOnPacketReceived;
             _gameCommunicationManager.Dispose();
             _gameCommunicationManager = null;
@@ -49,8 +51,6 @@ namespace GameCommunicationPlugin
             _gameCommunicationManager.Port = 8888;
             _gameCommunicationManager.OnPacketReceived += HandleOnPacketReceived;
             GameConnectionManager.Self = _gameCommunicationManager;
-
-            ReactToLoadedGlux += HandleGluxLoaded;
 
             game1GlueCommunicationGenerator = new Game1GlueCommunicationGenerator(true, 8888);
             RegisterCodeGenerator(game1GlueCommunicationGenerator);
@@ -69,32 +69,6 @@ namespace GameCommunicationPlugin
             //});
         }
 
-        public override void HandleEvent(string eventName, string payload)
-        {
-            base.HandleEvent(eventName, payload);
-
-            switch(eventName)
-            {
-                case "GameCommunication_SendPacket":
-                    _gameCommunicationManager.SendItem(JsonConvert.DeserializeObject<GameConnectionManager.Packet>(payload));
-
-                    break;
-            }
-        }
-
-        protected override async Task<string> HandleEventWithReturnImplementation(string eventName, string payload)
-        {
-            switch (eventName)
-            {
-                case "GameCommunication_SendPacket":
-                    var returnValue = await _gameCommunicationManager.SendItemWithResponse(JsonConvert.DeserializeObject<GameConnectionManager.Packet>(payload));
-
-                    return returnValue.Data?.Payload;
-            }
-
-            return null;
-        }
-
         public void SetPrimarySettings(int portNumber, bool doConnections)
         {
             _gameCommunicationManager.Port = portNumber;
@@ -103,24 +77,20 @@ namespace GameCommunicationPlugin
             game1GlueCommunicationGenerator.IsGameCommunicationEnabled = _gameCommunicationManager.DoConnections;
         }
 
-        private void HandleOnPacketReceived(GameConnectionManager.PacketReceivedArgs packetReceivedArgs)
+        private async Task<object> HandleOnPacketReceived(GameConnectionManager.Packet packet)
         {
-            if(!string.IsNullOrEmpty(packetReceivedArgs.Packet.Payload))
+            object toReturn = null;
+            if(!string.IsNullOrEmpty(packet.Payload))
             {
-                ReactToPluginEvent($"GameCommunicationPlugin_PacketReceived_{packetReceivedArgs.Packet.PacketType}", packetReceivedArgs.Packet.Payload);
-                Debug.WriteLine($"Packet Type: {packetReceivedArgs.Packet.PacketType}, Payload: {packetReceivedArgs.Packet.Payload}");
+                //ReactToPluginEvent($"GameCommunicationPlugin_PacketReceived_{packetReceivedArgs.Packet.PacketType}", packetReceivedArgs.Packet.Payload);
+
+                // do we want to await this?
+                toReturn = await MainCompilerPlugin.Self.CommandReceiver.HandleCommandsFromGame(packet.Payload, _gameCommunicationManager.Port);
+
+                Debug.WriteLine($"Packet Type: {packet.PacketType}, Payload: {packet.Payload}");
             }
+            return toReturn;
         }
 
-        private void HandleGluxLoaded()
-        {
-            if (GameCommunicationHelper.IsFrbNewEnough())
-            {
-                EmbeddedCodeManager.Embed(new System.Collections.Generic.List<string>
-                {
-                    "GameConnectionManager.cs"
-                });
-            }
-        }
     }
 }

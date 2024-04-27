@@ -29,7 +29,6 @@ using FlatRedBall.Glue.IO;
 using TileGraphicsPlugin.Logic;
 using System.ComponentModel;
 using TiledPluginCore.Controls;
-using TiledPluginCore.Models;
 using TiledPluginCore.CodeGeneration;
 using TiledPluginCore.Controllers;
 using TiledPluginCore.Managers;
@@ -37,6 +36,7 @@ using TiledPluginCore.Views;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.MVVM;
+using TiledPluginCore.ViewModels;
 
 namespace TileGraphicsPlugin;
 
@@ -356,7 +356,7 @@ public class TileGraphicsPluginClass : PluginBase
 
         this.ReactToNewFileHandler = ReactToNewFile;
 
-        this.AddNewFileOptionsHandler += TmxCreationManager.Self.HandleAddNewFileOptions;
+        this.AddNewFileOptionsHandler += HandleAddNewFileOptions;
 
         //this.CreateNewFileHandler += TmxCreationManager.Self.HandleNewTmxCreation;
     }
@@ -709,8 +709,52 @@ public class TileGraphicsPluginClass : PluginBase
     }
 
 
+    bool IsTmx(AssetTypeInfo ati) =>
+        ati?.Extension == "tmx";
 
+    private void HandleAddNewFileOptions(CustomizableNewFileWindow newFileWindow)
+    {
+        var view = new NewTmxOptionsView();
+        var viewModel = new NewTmxViewModel();
+        viewModel.IncludeDefaultTileset = true;
+        viewModel.IncludeGameplayLayer = true;
+        // January 23, 2022
+        // This is so common,
+        // at least according to
+        // Vic's usage, that we should
+        // just make it default to true.
+        viewModel.IsSolidCollisionBorderChecked = true;
+        view.DataContext = viewModel;
 
+        newFileWindow.AddCustomUi(view);
+
+        newFileWindow.SelectionChanged += (not, used) =>
+        {
+            var ati = newFileWindow.SelectedItem;
+
+            if(IsTmx(ati))
+            {
+                view.Visibility = System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                view.Visibility = System.Windows.Visibility.Collapsed;
+            }
+        };
+
+        newFileWindow.GetCreationOption += () =>
+        {
+            var ati = newFileWindow.SelectedItem;
+            if (IsTmx(ati))
+            {
+                return viewModel;
+            }
+            else
+            {
+                return null;
+            }
+        };
+    }
 
     int changesToIgnore = 0;
     //public void SaveTiledMapSave(ChangeType changeType)
@@ -770,7 +814,7 @@ public class TileGraphicsPluginClass : PluginBase
 
         var rfsAti = rfs?.GetAssetTypeInfo();
 
-        if (rfsAti != null && TmxCreationManager.Self.IsTmx(rfsAti))
+        if (rfsAti != null && IsTmx(rfsAti))
         {
             TmxCreationManager.Self.IncludeDefaultTilesetOn(rfs);
         }
@@ -782,7 +826,7 @@ public class TileGraphicsPluginClass : PluginBase
 
         var rfsAti = rfs?.GetAssetTypeInfo();
 
-        if (rfsAti != null && TmxCreationManager.Self.IsTmx(rfsAti))
+        if (rfsAti != null && IsTmx(rfsAti))
         {
             TmxCreationManager.Self.IncludeGameplayLayerOn(rfs);
         }
@@ -794,7 +838,7 @@ public class TileGraphicsPluginClass : PluginBase
 
         var rfsAti = rfs?.GetAssetTypeInfo();
 
-        if (rfsAti != null && TmxCreationManager.Self.IsTmx(rfsAti))
+        if (rfsAti != null && IsTmx(rfsAti))
         {
             TmxCreationManager.Self.AddCollisionBorderOn(rfs);
         }

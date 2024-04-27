@@ -5,6 +5,7 @@ using OfficialPluginsCore.Wizard.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Security.Policy;
 using System.Text;
 using System.Windows;
 using System.Xml.Serialization;
@@ -16,7 +17,7 @@ namespace OfficialPluginsCore.Wizard.Models
     public enum GameType
     {
         Platformer,
-        Topdown,
+        TopDown,
         None,
     }
 
@@ -31,6 +32,12 @@ namespace OfficialPluginsCore.Wizard.Models
     {
         SelectOptions,
         ImportEntity
+    }
+
+    public enum WithVisualType
+    {
+        WithVisuals,
+        NoVisuals
     }
 
     public enum CameraResolution
@@ -233,6 +240,8 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        #region Platformer Animations
+
         public bool AddPlayerSpritePlatformerAnimations
         {
             get => Get<bool>();
@@ -254,6 +263,34 @@ namespace OfficialPluginsCore.Wizard.Models
         public bool ShowAddPlatformAnimatorController =>
             ShowAddPlayerSpritePlatformerAnimations && AddPlayerSpritePlatformerAnimations;
 
+        #endregion
+
+        #region Top-Down Animations
+
+        public bool AddPlayerSpriteTopDownAnimations
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(AddPlayerSprite))]
+        [DependsOn(nameof(PlayerControlType))]
+        public bool ShowAddPlayerSpriteTopDownAnimations =>
+            AddPlayerSprite && PlayerControlType == GameType.TopDown;
+
+        public bool AddTopDownAnimationController
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(ShowAddPlayerSpriteTopDownAnimations))]
+        [DependsOn(nameof(AddPlayerSpriteTopDownAnimations))]
+        public bool ShowAddTopDownAnimatorController =>
+            ShowAddPlayerSpriteTopDownAnimations && AddPlayerSpriteTopDownAnimations;
+
+        #endregion
+
         public bool IsPlayerDamageableChecked
         {
             get => Get<bool>();
@@ -274,6 +311,47 @@ namespace OfficialPluginsCore.Wizard.Models
             get => Get<int>();
             set => Set(value);
         }
+
+        [DependsOn(nameof(PlayerControlType))]
+        [DependsOn(nameof(AddGameScreen))]
+        public bool IsWithVisualsVisible => 
+            AddGameScreen &&
+            PlayerControlType == GameType.Platformer;
+
+        public WithVisualType WithVisualType
+        {
+            get
+            {
+                if(PlayerControlType == GameType.Platformer)
+                {
+                    return Get<WithVisualType>();
+                }
+                else
+                {
+                    // top down doesn't yet support visuals
+                    return WithVisualType.NoVisuals;
+                }
+            }
+            set => Set(value);
+        }
+
+        public bool IncludePlatformerVisualLayers
+        {
+            get => WithVisualType == WithVisualType.WithVisuals;
+            set => WithVisualType = value ? WithVisualType.WithVisuals : WithVisualType.NoVisuals;
+        }
+
+        [DependsOn(nameof(AddGameScreen))]
+        [DependsOn(nameof(WithVisualType))]
+        public bool IsIncludeStandardTilesetUiVisible =>
+            AddGameScreen && WithVisualType == WithVisualType.NoVisuals;
+
+        [DependsOn(nameof(AddGameScreen))]
+        [DependsOn(nameof(WithVisualType))]
+        public bool IsIncludeGameplayLayerVisibile =>
+            AddGameScreen && WithVisualType == WithVisualType.NoVisuals;
+
+
         public bool IncludStandardTilesetInLevels
         {
             get => Get<bool>();
@@ -292,7 +370,12 @@ namespace OfficialPluginsCore.Wizard.Models
         [DependsOn(nameof(AddGameScreen))]
         [DependsOn(nameof(IncludeGameplayLayerInLevels))]
         [DependsOn(nameof(IncludStandardTilesetInLevels))]
-        public bool ShowBorderCollisionCheckBox => AddGameScreen && IncludeGameplayLayerInLevels && IncludStandardTilesetInLevels;
+        [DependsOn(nameof(WithVisualType))]
+        public bool ShowBorderCollisionCheckBox => 
+            AddGameScreen && 
+            IncludeGameplayLayerInLevels && 
+            IncludStandardTilesetInLevels &&
+            WithVisualType == WithVisualType.NoVisuals;
 
         #endregion
 
@@ -408,7 +491,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
             AddPlayerEntity = true;
 
-            PlayerControlType = GameType.Topdown;
+            PlayerControlType = GameType.TopDown;
             AddPlayerListToGameScreen = true;
             AddPlayerToList = true;
 
@@ -421,6 +504,7 @@ namespace OfficialPluginsCore.Wizard.Models
             IsPlayerDamageableChecked = true;
 
             CreateLevels = true;
+            WithVisualType = WithVisualType.WithVisuals;
             NumberOfLevels = 2;
             IncludStandardTilesetInLevels = true;
             IncludeGameplayLayerInLevels = true;

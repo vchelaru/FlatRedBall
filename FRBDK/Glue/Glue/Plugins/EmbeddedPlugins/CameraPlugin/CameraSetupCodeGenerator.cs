@@ -840,10 +840,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // hides the status UI on iOS, but we also need to set the resolution to the
                 // native resolution for the cursor to work correctly:
                 //methodContents.Line("FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);");
-                methodContents.Line(
+                methodContents
+                    .Line(
                     //"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);"
-                    "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight);"
-                    );
+                    "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight, isFullscreen:Data.IsFullScreen);");
                 methodContents.Line("#elif UWP");
 
                 methodContents
