@@ -834,15 +834,31 @@ public static class RightClickHelper
             Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode));
             Add(L.Texts.Open, () => HandleOpen(targetNode));
             AddItem(mFindAllReferences);
-            Add(L.Texts.CopyPathClipboard, () => HandleCopyToClipboardClick(targetNode));
+
             var rfs = targetNode.Tag as ReferencedFileSave;
-            var name = rfs.GetInstanceName();
-            Add($"Copy Code Instance Name ({name})", () =>
+
+            var topLevelCopyNameItem = Add("Copy Name...", () => { });
             {
-                Clipboard.SetText(name);
+                var oldList = ListToAddTo;
+                ListToAddTo = topLevelCopyNameItem.DropDownItems;
+
+                Add(L.Texts.CopyPathClipboard, () => HandleCopyToClipboardClick(targetNode));
+                var name = rfs.GetInstanceName();
+                Add($"Copy Code Instance Name ({name})", () =>
+                {
+                    Clipboard.SetText(name);
 
 
-            });
+                });
+
+                var strippedName = FileManager.RemovePath(FileManager.RemoveExtension(rfs.Name));
+                Add($"Copy Stripped Name ({strippedName})", () =>
+                {
+                    Clipboard.SetText(strippedName);
+                });
+
+                ListToAddTo = oldList;
+            }
             AddSeparator();
 
             AddItem(mCreateZipPackage);
@@ -1069,7 +1085,7 @@ public static class RightClickHelper
 
     #region Utility Methods
 
-    static void Add(string text, Action action, string shortcutDisplay = null, System.Windows.Controls.Image image = null)
+    static GeneralToolStripMenuItem Add(string text, Action action, string shortcutDisplay = null, System.Windows.Controls.Image image = null)
     {
         if (ListToAddTo != null)
         {
@@ -1083,6 +1099,8 @@ public static class RightClickHelper
             item.Image = image;
 
             ListToAddTo.Add(item);
+
+            return item;
         }
         else
         {
