@@ -24,6 +24,8 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
         FilePath textureFilePath;
 
+        public FilePath TextureFilePath => textureFilePath;
+
         List<PolygonRuntime> Outlines = new List<PolygonRuntime>();
 
         public SKBitmap Texture => MainSprite?.Texture;
@@ -142,6 +144,27 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             TopGumCanvas.InvalidateVisual();
         }
 
+        public void RefreshTexture(FilePath achxFilePath, AnimationChainViewModel animationChainViewModel)
+        {
+            var animationChain = animationChainViewModel?.BackingModel;
+
+            if (animationChain == null)
+            {
+                ForceRefreshMainSpriteTexture(null);
+            }
+            else
+            {
+
+                var firstFrame = animationChain.Frames.FirstOrDefault();
+
+                var textureName = firstFrame.TextureName;
+
+                var textureAbsolute = achxFilePath.GetDirectoryContainingThis() + textureName;
+
+                ForceRefreshMainSpriteTexture(textureAbsolute);
+            }
+        }
+
         private void CreatePolygonFor(AnimationFrameSave frame)
         {
             PolygonRuntime outline = CreateOutlinePolygon(frame);
@@ -175,7 +198,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
         {
             if (MainSprite.Texture == null || TopGumCanvas.ActualWidth == 0 || TopGumCanvas.ActualHeight == 0)
             {
-                ViewModel.WholeZoom.CurrentZoomPercent = 100;
+                ViewModel.TopWindowZoom.CurrentZoomPercent = 100;
             }
             else
             {
@@ -184,7 +207,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
                 var minZoom = Math.Min(zoomToFitWidth, zoomToFitHeight);
 
-                ViewModel.WholeZoom.CurrentZoomPercent = (float)minZoom * 100;
+                ViewModel.TopWindowZoom.CurrentZoomPercent = (float)minZoom * 100;
             }
 
 
@@ -201,6 +224,24 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
             FillSpriteToView(viewModel);
 
+        }
+
+        public void FocusWholeToFrame(AnimationFrameSave animationFrame, AchxViewModel ViewModel)
+        {
+            var centerX = (animationFrame.LeftCoordinate + animationFrame.RightCoordinate) / 2.0f;
+            var centerY = (animationFrame.TopCoordinate + animationFrame.BottomCoordinate) / 2.0f;
+
+            var camera = TopGumCanvas.SystemManagers.Renderer.Camera;
+
+            // If already zoomed in, stay zoomed in...
+            if (ViewModel.TopWindowZoom.CurrentZoomPercent < 100)
+            {
+                ViewModel.TopWindowZoom.CurrentZoomPercent = 100;
+            }
+            camera.X = centerX - (TopGumCanvas.CanvasSize.Width / 2f) / ViewModel.TopWindowZoom.CurrentZoomScale;
+            camera.Y = centerY - (TopGumCanvas.CanvasSize.Height / 2f) / ViewModel.TopWindowZoom.CurrentZoomScale;
+
+            CameraLogic.RefreshCameraZoomToViewModel();
         }
     }
 }

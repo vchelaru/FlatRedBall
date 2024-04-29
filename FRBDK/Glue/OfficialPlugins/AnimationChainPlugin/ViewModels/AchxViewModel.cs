@@ -7,8 +7,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 {
     internal class AchxViewModel : ViewModel
     {
-        public ZoomViewModel WholeZoom { get; set; }
-        public ZoomViewModel SingleZoom { get; set; }
+        public ZoomViewModel TopWindowZoom { get; set; }
+        public ZoomViewModel BottomWindowZoom { get; set; }
 
         public int ResolutionWidth
         {
@@ -78,11 +78,11 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public AchxViewModel()
         {
-            WholeZoom = new ZoomViewModel();
-            SingleZoom = new ZoomViewModel();
+            TopWindowZoom = new ZoomViewModel();
+            BottomWindowZoom = new ZoomViewModel();
 
-            WholeZoom.CurrentZoomPercent = 100;
-            SingleZoom.CurrentZoomPercent = 100;
+            TopWindowZoom.CurrentZoomPercent = 100;
+            BottomWindowZoom.CurrentZoomPercent = 100;
         }
     }
 }
