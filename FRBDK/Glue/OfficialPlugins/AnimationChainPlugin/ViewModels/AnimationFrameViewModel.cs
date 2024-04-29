@@ -242,6 +242,12 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
                 toReturn = true;
             }
 
+            if(animationFrame.FrameLength != LengthInSeconds)
+            {
+                animationFrame.FrameLength = LengthInSeconds;
+                toReturn = true;
+            }
+
             return toReturn;
         }
     }
