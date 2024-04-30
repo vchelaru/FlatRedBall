@@ -154,6 +154,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         int ResolutionHeight;
 
         [DependsOn(nameof(LengthInSeconds))]
+        [DependsOn(nameof(RelativeTextureName))]
         public string Text => $"{LengthInSeconds.ToString("0.00")} ({RelativeTextureName})";
 
         public void SetFrom(AnimationChainViewModel parent, AnimationFrameSave animationFrame, int resolutionWidth, int resolutionHeight)

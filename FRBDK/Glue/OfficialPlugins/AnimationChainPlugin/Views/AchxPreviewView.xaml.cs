@@ -150,12 +150,12 @@ namespace OfficialPlugins.ContentPreview.Views
 
                 achxFilePath = achxFilePath ?? this.AchxFilePath;
 
-                AnimationChainListSave animationChain = null;
+                AnimationChainListSave animationChainListSave = null;
                 if (achxFilePath?.Exists() == true)
                 {
-                    animationChain = AnimationChainListSave.FromFile(achxFilePath.FullPath);
+                    animationChainListSave = AnimationChainListSave.FromFile(achxFilePath.FullPath);
                 }
-                ViewModel.BackgingData = animationChain;
+                ViewModel.BackgingData = animationChainListSave;
 
                 TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
                 
@@ -166,7 +166,7 @@ namespace OfficialPlugins.ContentPreview.Views
                     BottomWindowManager.ForceRefreshMainAnimationSpriteTexture(TopWindowManager.TextureFilePath);
                 }
 
-                RefreshTreeView(animationChain, achxFilePath);
+                RefreshTreeView(animationChainListSave, achxFilePath);
 
                 if(preserveSelection && previouslySelected != null)
                 {
@@ -205,9 +205,6 @@ namespace OfficialPlugins.ContentPreview.Views
                 {
                     BottomWindowManager.ForceRefreshMainAnimationSpriteTexture(TopWindowManager.TextureFilePath);
                 }
-
-
-                RefreshTreeView(ViewModel.BackgingData, achxFilePath);
             }
             TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
             TopGumCanvas.InvalidateVisual();
