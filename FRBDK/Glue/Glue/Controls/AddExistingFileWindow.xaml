@@ -79,7 +79,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <TextBlock FontSize="10" Margin="5,0,5,5" TextWrapping="Wrap" Grid.Row="2"  Text="{x:Static localization:Texts.GlueWillDownloadFileAndDependencies}">
+            <TextBlock FontSize="10" Margin="5,0,5,5" TextWrapping="Wrap" Grid.Row="2"  Text="Files dependencies will also be downloaded">
             </TextBlock>
             <Grid Grid.Row="3" Margin="5,0,15,5">
                 <Grid.ColumnDefinitions>

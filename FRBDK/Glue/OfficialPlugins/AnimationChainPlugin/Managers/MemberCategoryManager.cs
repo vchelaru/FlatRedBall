@@ -82,9 +82,13 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
             return;
 
-            void Add(string propertyName, bool canWrite = false)
+            void Add(string propertyName, bool canWrite = false, Type preferredDisplayer = null)
             {
                 var member = new InstanceMember(propertyName, animationFrame);
+                if(preferredDisplayer != null)
+                {
+                    member.PreferredDisplayer = preferredDisplayer;
+                }
                 member.IsReadOnly = !canWrite;
                 currentCategory.Members.Add(member);
             }
