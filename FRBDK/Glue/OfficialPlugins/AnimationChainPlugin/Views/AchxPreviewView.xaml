@@ -41,20 +41,25 @@
                 </pt:TreeListBox.ItemTemplate>
 
             </pt:TreeListBox>
-            <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"></GridSplitter>
+            <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
+                          Background="#cccccc"
+                          ></GridSplitter>
             <ScrollViewer Grid.Row="2">
                 <wpfdataui:DataUiGrid x:Name="PropertyGrid"  Instance="{Binding SelectedAnimationChain}"></wpfdataui:DataUiGrid>
             </ScrollViewer>
         </Grid>
 
-        <GridSplitter Width="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"></GridSplitter>
+        <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"
+                          Background="#cccccc"
+                      ></GridSplitter>
 
 
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="223*"></RowDefinition>
                 <RowDefinition Height="5"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="65*"></RowDefinition>
+                <RowDefinition Height="157*"/>
             </Grid.RowDefinitions>
             <Grid  Grid.Row="0">
                 <Grid.ColumnDefinitions>
@@ -63,7 +68,8 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="134*"></RowDefinition>
+                    <RowDefinition Height="71*"/>
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
@@ -71,14 +77,14 @@
                         MouseDown="TopGumCanvas_MouseDown"
                         MouseMove="TopGumCanvas_MouseMove"
                         MouseWheel="TopGumCanvas_MouseWheel"
-                        SizeChanged="TopGumCanvas_SizeChanged"
+                        SizeChanged="TopGumCanvas_SizeChanged" Margin="0,0,0,16" Grid.RowSpan="3"
                                    ></wpf1:GumSKElement>
-                <ScrollBar Grid.Column="1" x:Name="TopWindowVerticalSrollBar" ValueChanged="TopWindowVerticalSrollBar_ValueChanged">
+                <ScrollBar Grid.Column="1" x:Name="TopWindowVerticalSrollBar" ValueChanged="TopWindowVerticalSrollBar_ValueChanged" Margin="0,0,0,16" Grid.RowSpan="3">
                 </ScrollBar>
-                <ScrollBar Orientation="Horizontal" Grid.Row="1" x:Name="TopWindowHorizontalScrollBar" ValueChanged="TopWindowHorizontalScrollBar_ValueChanged">
-                    
+                <ScrollBar Orientation="Horizontal" Grid.Row="2" x:Name="TopWindowHorizontalScrollBar" ValueChanged="TopWindowHorizontalScrollBar_ValueChanged">
+
                 </ScrollBar>
-                
+
             </Grid>
             <GridSplitter Grid.Row="1"
                           Background="#cccccc"
@@ -86,9 +92,9 @@
                           VerticalAlignment="Center"
                           ResizeBehavior="PreviousAndNext"
                           ShowsPreview="True"
-                          Height="5"
+                          Height="6"
                           />
-            <Grid x:Name="BottomHalfGrid" Grid.Row="2">
+            <Grid x:Name="BottomHalfGrid" Grid.Row="2" Grid.RowSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
