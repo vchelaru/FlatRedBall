@@ -68,9 +68,10 @@
                 </Grid.RowDefinitions>
 
                 <wpf1:GumSKElement x:Name="TopGumCanvas"
-                        MouseDown="GumCanvas_MouseDown"
-                        MouseMove="GumCanvas_MouseMove"
-                        MouseWheel="GumCanvas_MouseWheel"
+                        MouseDown="TopGumCanvas_MouseDown"
+                        MouseMove="TopGumCanvas_MouseMove"
+                        MouseWheel="TopGumCanvas_MouseWheel"
+                        SizeChanged="TopGumCanvas_SizeChanged"
                                    ></wpf1:GumSKElement>
                 <ScrollBar Grid.Column="1" x:Name="TopWindowVerticalSrollBar" ValueChanged="TopWindowVerticalSrollBar_ValueChanged">
                 </ScrollBar>
@@ -97,9 +98,9 @@
                     <CheckBox IsChecked="{Binding IsShowGuidesChecked}">Show Guides</CheckBox>
                 </StackPanel>
                 <wpf1:GumSKElement x:Name="BottomGumCanvas" Grid.Row="1"
-                        MouseDown="GumAnimationCanvas_MouseDown"
-                        MouseMove="GumAnimationCanvas_MouseMove"
-                        MouseWheel="GumAnimationCanvas_MouseWheel"
+                        MouseDown="BottomCanvas_MouseDown"
+                        MouseMove="BottomCanvas_MouseMove"
+                        MouseWheel="BottomCanvas_MouseWheel"
                                ></wpf1:GumSKElement>
                 <StackPanel Grid.Row="2" Orientation="Horizontal">
                     <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>

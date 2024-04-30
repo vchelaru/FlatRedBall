@@ -1,7 +1,9 @@
 ﻿using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.MVVM;
 using OfficialPlugins.Common.ViewModels;
+using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 {
@@ -76,6 +78,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public AnimationChainListSave BackgingData { get; internal set; }
 
+        public event Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
+
         public AchxViewModel()
         {
             TopWindowZoom = new ZoomViewModel();
@@ -83,6 +87,19 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
             TopWindowZoom.CurrentZoomPercent = 100;
             BottomWindowZoom.CurrentZoomPercent = 100;
+
+            VisibleRoot.CollectionChanged += HandleAnimationChainViewModelCollectionChanged;
+        }
+
+        private void HandleAnimationChainViewModelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if(e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Replace)
+            {
+                foreach(AnimationChainViewModel item in e.NewItems)
+                {
+                    item.FrameUpdatedByUi += (frame, property) => FrameUpdatedByUi?.Invoke(frame, property);
+                }
+            }
         }
     }
 }

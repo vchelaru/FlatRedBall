@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WpfDataUi;
+using WpfDataUi.Controls;
 using WpfDataUi.DataTypes;
 
 namespace OfficialPlugins.AnimationChainPlugin.Managers
@@ -54,7 +55,8 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             list.Add(currentCategory);
 
 
-            Add(nameof(animationFrame.StrippedTextureName));
+            var member = Add(nameof(animationFrame.RelativeTextureName), canWrite:true, typeof(FileSelectionDisplay));
+            member.PropertiesToSetOnDisplayer[nameof(FileSelectionDisplay.Filter)] = "PNG|*.png";
             Add(nameof(animationFrame.LengthInSeconds), canWrite: true);
 
             currentCategory = new MemberCategory();
@@ -82,7 +84,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
             return;
 
-            void Add(string propertyName, bool canWrite = false, Type preferredDisplayer = null)
+            InstanceMember Add(string propertyName, bool canWrite = false, Type preferredDisplayer = null)
             {
                 var member = new InstanceMember(propertyName, animationFrame);
                 if(preferredDisplayer != null)
@@ -91,6 +93,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 }
                 member.IsReadOnly = !canWrite;
                 currentCategory.Members.Add(member);
+                return member;
             }
         }
 

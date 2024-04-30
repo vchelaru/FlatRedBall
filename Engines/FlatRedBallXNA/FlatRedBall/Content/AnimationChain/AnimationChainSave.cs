@@ -27,8 +27,9 @@ namespace FlatRedBall.Content.AnimationChain
 
         /// <summary>
         /// This is used if the AnimationChain actually comes from 
-        /// a file like a .gif.
+        /// a file like a .gif. If it does not come from a gif, it is not set
         /// </summary>
+        [Obsolete("gif loading no longer supported")]
         public string ParentFile;
 
         [XmlElementAttribute("Frame")]

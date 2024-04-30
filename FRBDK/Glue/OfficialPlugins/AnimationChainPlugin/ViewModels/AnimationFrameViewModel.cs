@@ -21,10 +21,25 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         public AnimationFrameSave BackingModel { get; set; }
         public AnimationChainViewModel Parent { get; private set; }
 
-        public string StrippedTextureName
+        public string RelativeTextureName
         {
             get => Get<string>();
-            set => Set(value);
+            set
+            {
+                var valueDiffers = value != RelativeTextureName;
+
+                if (valueDiffers && !string.IsNullOrEmpty(value))
+                {
+                    var valueRelativeToFrame = value;
+                    if(!FileManager.IsRelative(valueRelativeToFrame))
+                    {
+                        var removeDotDotSlash = FileManager.RemoveDotDotSlash(valueRelativeToFrame);
+                        var directoryToMakeRelativeTo = Parent.FilePath.GetDirectoryContainingThis().FullPath;
+                        valueRelativeToFrame = FileManager.MakeRelative(removeDotDotSlash, directoryToMakeRelativeTo, preserveCase:true);
+                    }
+                    Set(valueRelativeToFrame);
+                }
+            }
         }
 
         public float LengthInSeconds
@@ -139,7 +154,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         int ResolutionHeight;
 
         [DependsOn(nameof(LengthInSeconds))]
-        public string Text => $"{LengthInSeconds.ToString("0.00")} ({StrippedTextureName})";
+        public string Text => $"{LengthInSeconds.ToString("0.00")} ({RelativeTextureName})";
 
         public void SetFrom(AnimationChainViewModel parent, AnimationFrameSave animationFrame, int resolutionWidth, int resolutionHeight)
         {
@@ -149,11 +164,11 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
             if (!string.IsNullOrEmpty(animationFrame.TextureName))
             {
-                StrippedTextureName = FileManager.RemovePath(FileManager.RemoveExtension(animationFrame.TextureName));
+                RelativeTextureName = parent.FilePath.GetDirectoryContainingThis() + animationFrame.TextureName;
             }
             else
             {
-                StrippedTextureName = string.Empty;
+                RelativeTextureName = string.Empty;
             }
 
             LeftCoordinate = animationFrame.LeftCoordinate;
@@ -245,6 +260,14 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             if(animationFrame.FrameLength != LengthInSeconds)
             {
                 animationFrame.FrameLength = LengthInSeconds;
+                toReturn = true;
+            }
+
+            if(animationFrame.TextureName != RelativeTextureName)
+            {
+                // Even though FRB and Gum are moving to slashes matching the OS's separator, we should
+                // not change the .achx file structure:
+                animationFrame.TextureName = RelativeTextureName?.Replace("\\", "/");
                 toReturn = true;
             }
 

@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Content.AnimationChain;
+﻿using AsepriteDotNet;
+using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.Managers;
@@ -165,7 +166,7 @@ namespace OfficialPlugins.ContentPreview.Views
                     BottomWindowManager.ForceRefreshMainAnimationSpriteTexture(TopWindowManager.TextureFilePath);
                 }
 
-                RefreshTreeView(animationChain);
+                RefreshTreeView(animationChain, achxFilePath);
 
                 if(preserveSelection && previouslySelected != null)
                 {
@@ -176,7 +177,7 @@ namespace OfficialPlugins.ContentPreview.Views
             });
         }
 
-        private void RefreshTreeView(AnimationChainListSave animationChain)
+        private void RefreshTreeView(AnimationChainListSave animationChain, FilePath achxFilePath)
         {
             ViewModel.VisibleRoot.Clear();
 
@@ -185,15 +186,29 @@ namespace OfficialPlugins.ContentPreview.Views
             foreach(var animation in animationChain.AnimationChains)
             {
                 var animationViewModel = new AnimationChainViewModel();
-                animationViewModel.SetFrom(animation, ViewModel.ResolutionWidth, ViewModel.ResolutionHeight);
+                animationViewModel.SetFrom(animation, achxFilePath, ViewModel.ResolutionWidth, ViewModel.ResolutionHeight);
                 ViewModel.VisibleRoot.Add(animationViewModel);
 
                 animationViewModel.FrameUpdatedByUi += HandleFrameUpdated;
             }
         }
 
-        private void HandleFrameUpdated()
+        private void HandleFrameUpdated(AnimationFrameViewModel frame, string propertyName)
         {
+            if (propertyName == nameof(AnimationFrameViewModel.RelativeTextureName))
+            {
+                // refresh the top view:
+                TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
+                TopWindowManager.RefreshTexture(achxFilePath, ViewModel.SelectedAnimationChain);
+
+                if (ViewModel.SelectedAnimationChain != null)
+                {
+                    BottomWindowManager.ForceRefreshMainAnimationSpriteTexture(TopWindowManager.TextureFilePath);
+                }
+
+
+                RefreshTreeView(ViewModel.BackgingData, achxFilePath);
+            }
             TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
             TopGumCanvas.InvalidateVisual();
             BottomWindowManager.RefreshAnimationPreview(ViewModel);
@@ -218,7 +233,9 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
-        private void GumCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+        #region Top Canvas Events
+
+        private void TopGumCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             TopWindowCameraLogic.HandleMousePush(e);
             //MouseEditingLogic.HandleMousePush(e);
@@ -229,7 +246,7 @@ namespace OfficialPlugins.ContentPreview.Views
             IInputElement element = Keyboard.Focus(TopGumCanvas);
         }
 
-        private void GumCanvas_MouseMove(object sender, MouseEventArgs e)
+        private void TopGumCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             var moved = TopWindowCameraLogic.HandleMouseMove(e);
             if(moved)
@@ -239,7 +256,7 @@ namespace OfficialPlugins.ContentPreview.Views
             //MouseEditingLogic.HandleMouseMove(e);
         }
 
-        private void GumCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void TopGumCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             var changed = TopWindowCameraLogic.HandleMouseWheel(e);
             if(changed)
@@ -248,7 +265,17 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
-        private void GumAnimationCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+        private void TopGumCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            TopGumCanvas.ForceGumLayout();
+            RefreshTopWindowScrollBars();
+        }
+
+        #endregion
+
+        #region Bottom Canvas
+
+        private void BottomCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             BottomWindowCameraLogic.HandleMousePush(e);
             //MouseEditingLogic.HandleMousePush(e);
@@ -259,16 +286,18 @@ namespace OfficialPlugins.ContentPreview.Views
             IInputElement element = Keyboard.Focus(BottomGumCanvas);
         }
 
-        private void GumAnimationCanvas_MouseMove(object sender, MouseEventArgs e)
+        private void BottomCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             BottomWindowCameraLogic.HandleMouseMove(e);
             //MouseEditingLogic.HandleMouseMove(e);
         }
 
-        private void GumAnimationCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void BottomCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             BottomWindowCameraLogic.HandleMouseWheel(e);
         }
+
+        #endregion
 
         public void ResetCamera() => TopWindowManager.ResetCamera(ViewModel);
 
@@ -364,5 +393,7 @@ namespace OfficialPlugins.ContentPreview.Views
         }
 
         #endregion
+
+
     }
 }

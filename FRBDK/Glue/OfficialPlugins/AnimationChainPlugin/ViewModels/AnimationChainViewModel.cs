@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +15,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
     {
         [DependsOn(nameof(Name))]
         public string Text => Name;
+
+        public FilePath FilePath { get; set; }
 
         public string Name
         {
@@ -35,8 +38,9 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public override string ToString() => Name;
 
-        public void SetFrom(AnimationChainSave animationChain, int resolutionWidth, int resolutionHeight)
+        public void SetFrom(AnimationChainSave animationChain, FilePath filePath, int resolutionWidth, int resolutionHeight)
         {
+            FilePath = filePath;
             BackingModel = animationChain;
             Name = animationChain.Name;
             Duration = animationChain.Frames.Sum(item => item.FrameLength);
@@ -50,7 +54,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             }
         }
 
-        public Action FrameUpdatedByUi;
+        public Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
 
         private void HandleFrameViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -61,7 +65,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
             if(changed)
             {
-                FrameUpdatedByUi?.Invoke();
+                FrameUpdatedByUi?.Invoke(vm, e.PropertyName);
             }
         }
     }
