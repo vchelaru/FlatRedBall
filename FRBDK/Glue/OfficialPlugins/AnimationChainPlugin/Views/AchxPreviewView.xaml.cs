@@ -16,6 +16,7 @@ using System.Threading;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -82,6 +83,8 @@ namespace OfficialPlugins.ContentPreview.Views
 
         }
 
+        #region Initialization
+
         private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (ViewModel != null)
@@ -89,6 +92,24 @@ namespace OfficialPlugins.ContentPreview.Views
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
             }
         }
+
+        private void HandleLoaded(object sender, RoutedEventArgs e)
+        {
+            TopWindowManager.FillSpriteToView(ViewModel);
+        }
+
+        public void Initialize(CameraLogic topWindowCameraLogic, CameraLogic bottomWindowCameraLogic)
+        {
+            this.TopWindowCameraLogic = topWindowCameraLogic;
+            this.BottomWindowCameraLogic = bottomWindowCameraLogic;
+
+            TopWindowManager = new TopWindowManager(TopGumCanvas, this, topWindowCameraLogic, (this.DataContext as AchxViewModel)?.TopWindowZoom);
+
+            BottomWindowManager = new BottomWindowManager(BottomGumCanvas, this, BottomWindowCameraLogic, (this.DataContext as AchxViewModel)?.BottomWindowZoom);
+        }
+
+        #endregion
+
 
         private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -99,7 +120,7 @@ namespace OfficialPlugins.ContentPreview.Views
                     TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
                     TopWindowManager.RefreshTexture(achxFilePath, ViewModel.SelectedAnimationChain);
 
-                    if(ViewModel.SelectedAnimationChain != null)
+                    if (ViewModel.SelectedAnimationChain != null)
                     {
                         BottomWindowManager.ForceRefreshMainAnimationSpriteTexture(TopWindowManager.TextureFilePath);
                     }
@@ -108,6 +129,10 @@ namespace OfficialPlugins.ContentPreview.Views
 
                     TopGumCanvas.InvalidateVisual();
                     BottomGumCanvas.InvalidateVisual();
+
+                    // ForceGumLayout is needed to calculate the bars:
+                    TopGumCanvas.ForceGumLayout();
+                    RefreshTopWindowScrollBars();
 
                     break;
                 case nameof(ViewModel.IsShowGuidesChecked):
@@ -193,23 +218,6 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
-
-
-        private void HandleLoaded(object sender, RoutedEventArgs e)
-        {
-            TopWindowManager.FillSpriteToView(ViewModel);
-        }
-
-        public void Initialize(CameraLogic topWindowCameraLogic, CameraLogic bottomWindowCameraLogic)
-        {
-            this.TopWindowCameraLogic = topWindowCameraLogic;
-            this.BottomWindowCameraLogic = bottomWindowCameraLogic;
-
-            TopWindowManager = new TopWindowManager(TopGumCanvas, this, topWindowCameraLogic, (this.DataContext as AchxViewModel)?.TopWindowZoom);
-
-            BottomWindowManager = new BottomWindowManager(BottomGumCanvas, this, BottomWindowCameraLogic, (this.DataContext as AchxViewModel)?.BottomWindowZoom);
-        }
-
         private void GumCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             TopWindowCameraLogic.HandleMousePush(e);
@@ -223,13 +231,21 @@ namespace OfficialPlugins.ContentPreview.Views
 
         private void GumCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            TopWindowCameraLogic.HandleMouseMove(e);
+            var moved = TopWindowCameraLogic.HandleMouseMove(e);
+            if(moved)
+            {
+                RefreshTopWindowScrollBars();
+            }
             //MouseEditingLogic.HandleMouseMove(e);
         }
 
         private void GumCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            TopWindowCameraLogic.HandleMouseWheel(e);
+            var changed = TopWindowCameraLogic.HandleMouseWheel(e);
+            if(changed)
+            {
+                RefreshTopWindowScrollBars();
+            }
         }
 
         private void GumAnimationCanvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -294,5 +310,59 @@ namespace OfficialPlugins.ContentPreview.Views
 
             return originalSource as TreeListBoxItem;
         }
+
+        #region Scroll Bar Logic
+
+        private void RefreshTopWindowScrollBars()
+        {
+            var zoom = TopGumCanvas.SystemManagers.Renderer.Camera.Zoom;
+            {
+                var canvasDimension = TopGumCanvas.ActualHeight;
+                var cameraAbsoluteStart = TopGumCanvas.SystemManagers.Renderer.Camera.AbsoluteTop;
+                var mainSpriteDimension = TopWindowManager.MainSprite.GetAbsoluteHeight();
+                var scrollBar = TopWindowVerticalSrollBar;
+
+                RefreshScrollBar(zoom, canvasDimension, cameraAbsoluteStart, mainSpriteDimension, scrollBar);
+            }
+
+            {
+                var canvasDimension = TopGumCanvas.ActualWidth;
+                var cameraAbsoluteStart = TopGumCanvas.SystemManagers.Renderer.Camera.AbsoluteLeft;
+                var mainSpriteDimension = TopWindowManager.MainSprite.GetAbsoluteWidth();
+                var scrollBar = TopWindowHorizontalScrollBar;
+
+                RefreshScrollBar(zoom, canvasDimension, cameraAbsoluteStart, mainSpriteDimension, scrollBar);
+            }
+
+
+        }
+
+        private static void RefreshScrollBar(float zoom, double canvasDimension, float cameraAbsoluteStart, float mainSpriteDimension, ScrollBar scrollBar)
+        {
+            var min = (0 - canvasDimension / 2) / zoom;
+            var max = mainSpriteDimension - canvasDimension / 2;
+            var viewportSize = canvasDimension / zoom;
+
+            scrollBar.Minimum = min;
+            scrollBar.Maximum = max;
+            scrollBar.ViewportSize = viewportSize / zoom;
+            scrollBar.Value = cameraAbsoluteStart;
+        }
+
+        private void TopWindowVerticalSrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            TopGumCanvas.SystemManagers.Renderer.Camera.Y = (float)e.NewValue;
+            TopWindowManager.MoveBackgroundToCamera();
+            TopGumCanvas.InvalidateVisual();
+        }
+
+        private void TopWindowHorizontalScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            TopGumCanvas.SystemManagers.Renderer.Camera.X = (float)e.NewValue;
+            TopWindowManager.MoveBackgroundToCamera();
+            TopGumCanvas.InvalidateVisual();
+        }
+
+        #endregion
     }
 }

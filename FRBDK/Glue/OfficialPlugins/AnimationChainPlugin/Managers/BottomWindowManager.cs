@@ -62,6 +62,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             CreateBottomGuideLines();
 
             CameraLogic.Initialize(userControl, bottomWindowZoom, BottomGumCanvas, this.GumAnimationBackground);
+            bottomGumCanvas.SystemManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
 
             StartAnimating();
         }

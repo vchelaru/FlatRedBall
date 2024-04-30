@@ -56,11 +56,29 @@
                 <RowDefinition Height="5"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
-            <wpf1:GumSKElement x:Name="TopGumCanvas" Grid.Row="0"
-                    MouseDown="GumCanvas_MouseDown"
-                    MouseMove="GumCanvas_MouseMove"
-                    MouseWheel="GumCanvas_MouseWheel"
-                               ></wpf1:GumSKElement>
+            <Grid  Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <wpf1:GumSKElement x:Name="TopGumCanvas"
+                        MouseDown="GumCanvas_MouseDown"
+                        MouseMove="GumCanvas_MouseMove"
+                        MouseWheel="GumCanvas_MouseWheel"
+                                   ></wpf1:GumSKElement>
+                <ScrollBar Grid.Column="1" x:Name="TopWindowVerticalSrollBar" ValueChanged="TopWindowVerticalSrollBar_ValueChanged">
+                </ScrollBar>
+                <ScrollBar Orientation="Horizontal" Grid.Row="1" x:Name="TopWindowHorizontalScrollBar" ValueChanged="TopWindowHorizontalScrollBar_ValueChanged">
+                    
+                </ScrollBar>
+                
+            </Grid>
             <GridSplitter Grid.Row="1"
                           Background="#cccccc"
                           HorizontalAlignment="Stretch"

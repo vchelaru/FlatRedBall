@@ -2,6 +2,7 @@
 using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.ViewModels;
 using OfficialPlugins.SpritePlugin.Managers;
+using RenderingLibrary;
 using SkiaGum.GueDeriving;
 using SkiaGum.Wpf;
 using SkiaSharp;
@@ -18,7 +19,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
     {
         #region Fields/Properties
 
-        SpriteRuntime MainSprite;
+        public SpriteRuntime MainSprite { get; private set; }
 
         GumSKElement TopGumCanvas;
 
@@ -49,6 +50,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             CreateMainSprite();
 
             cameraLogic.Initialize(userControl, wholeZoom, this.TopGumCanvas, this.GumBackground);
+            TopGumCanvas.SystemManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
         }
 
         private void CreateMainSprite()
@@ -242,6 +244,11 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             camera.Y = centerY - (TopGumCanvas.CanvasSize.Height / 2f) / ViewModel.TopWindowZoom.CurrentZoomScale;
 
             CameraLogic.RefreshCameraZoomToViewModel();
+        }
+
+        public void MoveBackgroundToCamera()
+        {
+            CameraLogic.UpdateBackgroundPositionToCamera();
         }
     }
 }

@@ -72,12 +72,12 @@ namespace OfficialPlugins.SpritePlugin.Managers
             Background = background;
             Camera.X = -20;
             Camera.Y = -20;
-            UpdateBackgroundPosition();
+            UpdateBackgroundPositionToCamera();
 
             Canvas.InvalidateVisual();
         }
 
-        private void UpdateBackgroundPosition()
+        public void UpdateBackgroundPositionToCamera()
         {
             Background.X = Camera.X;
             Background.Y = Camera.Y;
@@ -91,7 +91,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
             }
         }
 
-        public void HandleMouseMove(MouseEventArgs args)
+        public bool HandleMouseMove(MouseEventArgs args)
         {
             var newPosition = args.GetPosition(View);
 
@@ -103,15 +103,17 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
                 camera.X -= (float)(newPosition.X - LastMiddleMouseButtonPoint.Value.X) / ViewModel.CurrentZoomScale;
                 camera.Y -= (float)(newPosition.Y - LastMiddleMouseButtonPoint.Value.Y) / ViewModel.CurrentZoomScale;
-                UpdateBackgroundPosition();
+                UpdateBackgroundPositionToCamera();
 
                 Canvas.InvalidateVisual();
 
                 LastMiddleMouseButtonPoint = newPosition;
+                return true;
             }
+            return false;
         }
 
-        public void HandleMouseWheel(MouseWheelEventArgs args)
+        public bool HandleMouseWheel(MouseWheelEventArgs args)
         {
             if(args.Delta != 0)
             {
@@ -119,7 +121,9 @@ namespace OfficialPlugins.SpritePlugin.Managers
                 var screenPosition = args.GetPosition(Canvas);
 
                 HandleZoomInDirection(zoomDirection, screenPosition);
+                return true;
             }
+            return false;
         }
 
         private void HandleZoomInDirection(int zoomDirection, System.Windows.Point cursorPosition)
@@ -151,7 +155,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
         public void ResetCamera() {
             Camera.X = -20;
             Camera.Y = -20;
-            UpdateBackgroundPosition();
+            UpdateBackgroundPositionToCamera();
             RefreshCameraZoomToViewModel();
         }
 
@@ -164,7 +168,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
             }
             //////////////End Early Out///////////////
             Camera.Zoom = ViewModel.CurrentZoomScale;
-            UpdateBackgroundPosition();
+            UpdateBackgroundPositionToCamera();
             Canvas.InvalidateVisual();
         }
 
@@ -209,7 +213,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
             e.Handled = refresh;
             if (refresh)
             {
-                UpdateBackgroundPosition();
+                UpdateBackgroundPositionToCamera();
                 Canvas.InvalidateVisual();
             }
         }
@@ -226,5 +230,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
             x += camera.X;
             y += camera.Y;
         }
+
+
     }
 }
