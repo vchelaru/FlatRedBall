@@ -32,13 +32,6 @@ namespace OfficialPluginsCore.AnimationChainPlugin
 
         #endregion
 
-        public new void RefreshErrors() => base.RefreshErrors();
-
-        public override bool ShutDown(PluginShutDownReason shutDownReason)
-        {
-            return true;
-        }
-
         public override void StartUp()
         {
             Self = this;
@@ -57,7 +50,15 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
             this.ReactToLoadedGluxEarly += HandleLoadedGluxEarly;
             this.ReactToUnloadedGlux += HandleUnloadedGlux;
+            this.IsHandlingHotkeys += GetIfIsHandlingHotkeys;
         }
+
+        private bool GetIfIsHandlingHotkeys()
+        {
+            return AchxManager.GetIfIsHandlingHotkeys();
+        }
+
+        public new void RefreshErrors() => base.RefreshErrors();
 
         private void HandleLoadedGluxEarly()
         {

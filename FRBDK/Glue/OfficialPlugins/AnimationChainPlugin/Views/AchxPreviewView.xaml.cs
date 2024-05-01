@@ -389,8 +389,49 @@ namespace OfficialPlugins.ContentPreview.Views
             TopGumCanvas.InvalidateVisual();
         }
 
+
         #endregion
 
+        private void TreeListBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            var ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+            var altDown = (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt;
+            var shiftDown = (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
 
+            Key key = (e.Key == Key.System ? e.SystemKey : e.Key);
+
+
+            // Check if CTRL+C was pressed
+            if (ctrlDown && key == Key.C)
+            {
+                AnimationChainCopyPasteManager.HandleCopy(ViewModel);
+                e.Handled = true;
+            }
+            // Check if CTRL+V was pressed
+            else if (ctrlDown && key == Key.V)
+            {
+                AnimationChainCopyPasteManager.HandlePaste(ViewModel);
+                e.Handled = true;
+            }
+        }
+
+        internal bool GetIfIsHandlingHotkeys()
+        {
+
+            var focusedElement = Keyboard.FocusedElement as DependencyObject;
+
+            while(focusedElement != null)
+            {
+                if(focusedElement == ListBox)
+                {
+                    return true;
+                }
+                else
+                {
+                    focusedElement = VisualTreeHelper.GetParent(focusedElement);
+                }
+            }
+            return false;
+        }
     }
 }

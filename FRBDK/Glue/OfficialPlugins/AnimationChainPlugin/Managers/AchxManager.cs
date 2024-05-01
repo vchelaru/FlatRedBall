@@ -115,5 +115,17 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
         internal static void ForceRefreshAchx(FilePath filePath) =>
             View.ForceRefreshAchx(filePath, preserveSelection:true);
+
+        internal static bool GetIfIsHandlingHotkeys()
+        {
+            if( Tab == null || View == null)
+            {
+                return false;
+            }
+            else
+            {
+                return View.GetIfIsHandlingHotkeys();
+            }
+        }
     }
 }
