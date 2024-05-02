@@ -11,6 +11,7 @@ using SkiaGum.GueDeriving;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -93,6 +94,8 @@ namespace OfficialPlugins.ContentPreview.Views
             if (ViewModel != null)
             {
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
+                ViewModel.AnimationChainCollectionChanged += HandleAnimationChainCollectionChanged;
+                ViewModel.FrameUpdatedByUi += HandleFrameUpdated;
             }
         }
 
@@ -112,6 +115,8 @@ namespace OfficialPlugins.ContentPreview.Views
         }
 
         #endregion
+
+
 
 
         private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -182,8 +187,26 @@ namespace OfficialPlugins.ContentPreview.Views
             });
         }
 
+        private void HandleAnimationChainCollectionChanged(AnimationChainViewModel model, NotifyCollectionChangedEventArgs args)
+        {
+            SaveCurrentAchx();
+        }
+
+        HashSet<string> FramePropertiesWhichShouldNotTriggerSave = new()
+        {
+            nameof(AnimationFrameViewModel.Text)
+        };
+
         private void HandleFrameUpdated(AnimationFrameViewModel frame, string propertyName)
         {
+
+            //////////////////////Early Out////////////////////////////////
+            if(FramePropertiesWhichShouldNotTriggerSave.Contains(propertyName))
+            {
+                return;
+            }
+            ////////////////////End Early Out//////////////////////////////
+
             if (propertyName == nameof(AnimationFrameViewModel.RelativeTextureName))
             {
                 // refresh the top view:
@@ -200,6 +223,11 @@ namespace OfficialPlugins.ContentPreview.Views
             BottomWindowManager.RefreshAnimationPreview(ViewModel);
             BottomGumCanvas.InvalidateVisual();
 
+            SaveCurrentAchx();
+        }
+
+        private void SaveCurrentAchx()
+        {
             // now save it:
             var animationChain = ViewModel.BackgingData;
             var filePath = this.achxFilePath;
@@ -384,8 +412,6 @@ namespace OfficialPlugins.ContentPreview.Views
         private void TreeListBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             var ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
-            var altDown = (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt;
-            var shiftDown = (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
 
             Key key = (e.Key == Key.System ? e.SystemKey : e.Key);
 

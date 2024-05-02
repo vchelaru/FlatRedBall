@@ -60,15 +60,21 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                         var deserialized = FileManager.XmlDeserializeFromString<AnimationChainSave>(copiedXml);
 
 
+
                     }
                     break;
                 case CopiedType.AnimationFrames:
                     {
-                        var chainToAddTo = viewModel.CurrentAnimationChain;
-                        if(chainToAddTo == null)
+                        var chainVmToAddTo = viewModel.CurrentAnimationChain;
+                        if(chainVmToAddTo != null)
                         {
                             var deserialized = FileManager.XmlDeserializeFromString<AnimationFrameSave>(copiedXml);
+                            // add it to the backing model first, so that when it's added to the VM, the save picks up the add:
+                            chainVmToAddTo.BackingModel.Frames.Add(deserialized);
 
+                            var newFrame = chainVmToAddTo.AddAnimationFrame(deserialized);
+                            viewModel.CurrentAnimationFrame = newFrame;
+                            //chainToAddTo.
                         }
                     }
 

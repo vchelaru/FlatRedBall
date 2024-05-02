@@ -26,17 +26,21 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             get => Get<string>();
             set
             {
-                var valueDiffers = value != RelativeTextureName;
+                // .achx file sll save with forward slashes, so set those here...
+                var valueWithSlashesFixed = value.Replace("\\", "/");
 
-                if (valueDiffers && !string.IsNullOrEmpty(value))
+                var valueDiffers = valueWithSlashesFixed != RelativeTextureName;
+
+                if (valueDiffers && !string.IsNullOrEmpty(valueWithSlashesFixed))
                 {
-                    var valueRelativeToFrame = value;
+                    var valueRelativeToFrame = valueWithSlashesFixed;
                     if(!FileManager.IsRelative(valueRelativeToFrame))
                     {
                         var removeDotDotSlash = FileManager.RemoveDotDotSlash(valueRelativeToFrame);
                         var directoryToMakeRelativeTo = Parent.FilePath.GetDirectoryContainingThis().FullPath;
                         valueRelativeToFrame = FileManager.MakeRelative(removeDotDotSlash, directoryToMakeRelativeTo, preserveCase:true);
                     }
+                    // ...and here (since standardized may have changed it back to backslashes).
                     Set(valueRelativeToFrame);
                 }
             }
@@ -150,14 +154,11 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             set => Set(value);
         }
 
-        int ResolutionWidth;
-        int ResolutionHeight;
-
         [DependsOn(nameof(LengthInSeconds))]
         [DependsOn(nameof(RelativeTextureName))]
         public string Text => $"{LengthInSeconds.ToString("0.00")} ({RelativeTextureName})";
 
-        public void SetFrom(AnimationChainViewModel parent, AnimationFrameSave animationFrame, int resolutionWidth, int resolutionHeight)
+        public void SetFrom(AnimationChainViewModel parent, AnimationFrameSave animationFrame)
         {
             BackingModel = animationFrame;
             Parent = parent;
@@ -176,9 +177,6 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             TopCoordinate = animationFrame.TopCoordinate;
             RightCoordinate = animationFrame.RightCoordinate;
             BottomCoordinate = animationFrame.BottomCoordinate;
-
-            ResolutionWidth = resolutionWidth;
-            ResolutionHeight = resolutionHeight;
 
             FlipHorizontal = animationFrame.FlipHorizontal;
             FlipVertical = animationFrame.FlipVertical;

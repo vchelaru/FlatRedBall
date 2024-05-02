@@ -38,8 +38,11 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             set => Set(value);
         }
 
-        public ObservableCollection<AnimationChainViewModel> VisibleRoot { get; private set; }
-            = new ObservableCollection<AnimationChainViewModel>();
+        public ObservableCollection<AnimationChainViewModel> VisibleRoot 
+        { 
+            get => Get<ObservableCollection<AnimationChainViewModel>>();
+            private set => Set(value);
+        }
 
         public bool IsShowGuidesChecked
         {
@@ -73,6 +76,10 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
                 {
                     return SelectedAnimationFrame;
                 }
+            }
+            set
+            {
+                SelectedItem = value;
             }
         }
 
@@ -115,7 +122,9 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         // VisibleRoot updates when animations are loaded. We don't want 
         // to react to properties changing when animations are loaded, only
         // when the user interacts with the UI.
-        public event Action<AnimationChainViewModel, string> animationChainUpdatedByUi;
+        public event Action<AnimationChainViewModel, string> AnimationChainUpdatedByUi;
+
+        public event Action<AnimationChainViewModel, NotifyCollectionChangedEventArgs> AnimationChainCollectionChanged;
 
         public AchxViewModel()
         {
@@ -125,19 +134,20 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             TopWindowZoom.CurrentZoomPercent = 100;
             BottomWindowZoom.CurrentZoomPercent = 100;
 
-            VisibleRoot.CollectionChanged += HandleAnimationChainViewModelCollectionChanged;
+            VisibleRoot = new ObservableCollection<AnimationChainViewModel>();
+            //VisibleRoot.CollectionChanged += HandleAnimationChainViewModelCollectionChanged;
         }
 
-        private void HandleAnimationChainViewModelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if(e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Replace)
-            {
-                foreach(AnimationChainViewModel item in e.NewItems)
-                {
-                    item.FrameUpdatedByUi += (frame, property) => FrameUpdatedByUi?.Invoke(frame, property);
-                }
-            }
-        }
+        //private void HandleAnimationChainViewModelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        //{
+        //    if(e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Replace)
+        //    {
+        //        foreach(AnimationChainViewModel item in e.NewItems)
+        //        {
+        //            item.FrameUpdatedByUi += (frame, property) => FrameUpdatedByUi?.Invoke(frame, property);
+        //        }
+        //    }
+        //}
 
         public void SetFrom(AnimationChainListSave animationChainListSave, FilePath achxFilePath, int resolutionWidth, int resolutionHeight)
         {
@@ -159,10 +169,23 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public void AddAnimationChain(AnimationChainSave animationChainSave)
         {
+            AddAnimationChainInner(animationChainSave, broadcastAddition: true);
+        }
+
+        /// <summary>
+        /// Adds the argument AnimationChainSave to this view model, and optionally broadcasts that it hs been added.
+        /// Broadcast should occur if the AnimationChain is added through user actions. The response to the broadcast will be at 
+        /// the plugin level, which will save the file.
+        /// </summary>
+        /// <param name="animationChainSave">The new AnimationChainSave</param>
+        /// <param name="broadcastAddition">Whether to broadcast the addition.</param>
+        private void AddAnimationChainInner(AnimationChainSave animationChainSave, bool broadcastAddition)
+        {
             var newViewModel = new AnimationChainViewModel();
             newViewModel.SetFrom(animationChainSave, AchxFilePath, ResolutionWidth, ResolutionHeight);
             newViewModel.FrameUpdatedByUi += (frame, property) => FrameUpdatedByUi?.Invoke(frame, property);
-            newViewModel.PropertyChanged += (sender, args) => animationChainUpdatedByUi?.Invoke(newViewModel, args.PropertyName);
+            newViewModel.PropertyChanged += (sender, args) => AnimationChainUpdatedByUi?.Invoke(newViewModel, args.PropertyName);
+            newViewModel.VisibleChildren.CollectionChanged += (sender, args) => AnimationChainCollectionChanged?.Invoke(newViewModel, args);
             VisibleRoot.Add(newViewModel);
         }
     }
