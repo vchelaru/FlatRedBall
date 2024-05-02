@@ -61,6 +61,8 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
+
+
         public SKBitmap Texture => TopWindowManager.Texture;
 
         CameraLogic TopWindowCameraLogic;
@@ -116,12 +118,12 @@ namespace OfficialPlugins.ContentPreview.Views
         {
             switch (e.PropertyName)
             {
-                case nameof(ViewModel.SelectedAnimationChain):
+                case nameof(ViewModel.CurrentAnimationChain):
 
                     TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
-                    TopWindowManager.RefreshTexture(achxFilePath, ViewModel.SelectedAnimationChain);
+                    TopWindowManager.RefreshTexture(achxFilePath, ViewModel.CurrentAnimationChain);
 
-                    if (ViewModel.SelectedAnimationChain != null)
+                    if (ViewModel.CurrentAnimationChain != null)
                     {
                         BottomWindowManager.ForceRefreshMainAnimationSpriteTexture(TopWindowManager.TextureFilePath);
                     }
@@ -146,7 +148,7 @@ namespace OfficialPlugins.ContentPreview.Views
         {
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                var previouslySelected = ViewModel.SelectedAnimationChain;
+                var previouslySelected = ViewModel.CurrentAnimationChain;
 
                 achxFilePath = achxFilePath ?? this.AchxFilePath;
 
@@ -156,41 +158,28 @@ namespace OfficialPlugins.ContentPreview.Views
                     animationChainListSave = AnimationChainListSave.FromFile(achxFilePath.FullPath);
                 }
                 ViewModel.BackgingData = animationChainListSave;
+                ViewModel.AchxFilePath = achxFilePath;
 
                 TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
                 
-                TopWindowManager.RefreshTexture(achxFilePath, ViewModel.SelectedAnimationChain);
+                TopWindowManager.RefreshTexture(achxFilePath, ViewModel.CurrentAnimationChain);
 
-                if (ViewModel.SelectedAnimationChain != null)
+                if (ViewModel.CurrentAnimationChain != null)
                 {
                     BottomWindowManager.ForceRefreshMainAnimationSpriteTexture(TopWindowManager.TextureFilePath);
                 }
 
-                RefreshTreeView(animationChainListSave, achxFilePath);
+                ViewModel.SetFrom(animationChainListSave, achxFilePath, 
+                    TopWindowManager.MainSprite.Texture?.Width??0,
+                    TopWindowManager.MainSprite.Texture?.Height??0);
 
                 if(preserveSelection && previouslySelected != null)
                 {
-                    ViewModel.SelectedAnimationChain = ViewModel.VisibleRoot
+                    ViewModel.CurrentAnimationChain = ViewModel.VisibleRoot
                         .FirstOrDefault(item => item.Name == previouslySelected.Name);
                 }
 
             });
-        }
-
-        private void RefreshTreeView(AnimationChainListSave animationChain, FilePath achxFilePath)
-        {
-            ViewModel.VisibleRoot.Clear();
-
-            if (animationChain == null) return;
-
-            foreach(var animation in animationChain.AnimationChains)
-            {
-                var animationViewModel = new AnimationChainViewModel();
-                animationViewModel.SetFrom(animation, achxFilePath, ViewModel.ResolutionWidth, ViewModel.ResolutionHeight);
-                ViewModel.VisibleRoot.Add(animationViewModel);
-
-                animationViewModel.FrameUpdatedByUi += HandleFrameUpdated;
-            }
         }
 
         private void HandleFrameUpdated(AnimationFrameViewModel frame, string propertyName)
@@ -199,9 +188,9 @@ namespace OfficialPlugins.ContentPreview.Views
             {
                 // refresh the top view:
                 TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
-                TopWindowManager.RefreshTexture(achxFilePath, ViewModel.SelectedAnimationChain);
+                TopWindowManager.RefreshTexture(achxFilePath, ViewModel.CurrentAnimationChain);
 
-                if (ViewModel.SelectedAnimationChain != null)
+                if (ViewModel.CurrentAnimationChain != null)
                 {
                     BottomWindowManager.ForceRefreshMainAnimationSpriteTexture(TopWindowManager.TextureFilePath);
                 }

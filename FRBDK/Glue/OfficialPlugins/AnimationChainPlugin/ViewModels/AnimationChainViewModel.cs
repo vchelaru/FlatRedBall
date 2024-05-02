@@ -38,9 +38,9 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public override string ToString() => Name;
 
-        public void SetFrom(AnimationChainSave animationChain, FilePath filePath, int resolutionWidth, int resolutionHeight)
+        public void SetFrom(AnimationChainSave animationChain, FilePath achxFilePath, int resolutionWidth, int resolutionHeight)
         {
-            FilePath = filePath;
+            FilePath = achxFilePath;
             BackingModel = animationChain;
             Name = animationChain.Name;
             Duration = animationChain.Frames.Sum(item => item.FrameLength);

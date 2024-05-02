@@ -1,5 +1,7 @@
 ﻿using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Graphics.Animation;
+using FlatRedBall.IO;
 using OfficialPlugins.Common.ViewModels;
 using System;
 using System.Collections.ObjectModel;
@@ -11,6 +13,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
     {
         public ZoomViewModel TopWindowZoom { get; set; }
         public ZoomViewModel BottomWindowZoom { get; set; }
+
+        public FilePath AchxFilePath { get; set; }
 
         public int ResolutionWidth
         {
@@ -37,31 +41,6 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         public ObservableCollection<AnimationChainViewModel> VisibleRoot { get; private set; }
             = new ObservableCollection<AnimationChainViewModel>();
 
-        [DependsOn(nameof(SelectedItem))]
-        public AnimationChainViewModel SelectedAnimationChain
-        {
-            set
-            {
-                SelectedItem = value;
-            }
-            get
-            {
-                if(SelectedItem is AnimationChainViewModel asAnimationChainViewModel)
-                {
-                    return asAnimationChainViewModel;
-                }
-                else if(SelectedItem is AnimationFrameViewModel asAnimationFrameViewModel)
-                {
-                    return asAnimationFrameViewModel.Parent;
-                }
-                else
-                {
-                    return null;
-                }
-
-            }
-        }
-
         public bool IsShowGuidesChecked
         {
             get => Get<bool>();
@@ -76,9 +55,67 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         public ShapeViewModel SelectedShape =>
             SelectedItem as ShapeViewModel;
 
+        /// <summary>
+        /// The effective current AnimationChain, which could be directly selected or indirectly selected
+        /// by having one of its children selected
+        /// </summary>
+        [DependsOn(nameof(SelectedShape))]
+        [DependsOn(nameof(SelectedAnimationFrame))]
+        public AnimationFrameViewModel CurrentAnimationFrame
+        {
+            get
+            {
+                if(SelectedShape != null)
+                {
+                    return SelectedShape.Parent;
+                }
+                else
+                {
+                    return SelectedAnimationFrame;
+                }
+            }
+        }
+
+        [DependsOn(nameof(SelectedItem))]
+        public AnimationChainViewModel CurrentAnimationChain
+        {
+            get
+            {
+                var selectedItem = SelectedItem;
+                if(selectedItem is AnimationChainViewModel asAnimationChainViewModel)
+                {
+                    return asAnimationChainViewModel;
+                }
+                else if(selectedItem is AnimationFrameViewModel asAnimationFrameViewModel)
+                {
+                    return asAnimationFrameViewModel.Parent;
+                }
+                else if(selectedItem is ShapeViewModel asShapeViewModel)
+                {
+                    return asShapeViewModel.Parent?.Parent;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                SelectedItem = value;
+            }
+        }
+
         public AnimationChainListSave BackgingData { get; internal set; }
 
         public event Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
+
+        // Event raised when an animation chain is updated by the UI,
+        // such as a new frame being added or a frame being removed.
+        // This is used rather than relying on the VisibleRoot because
+        // VisibleRoot updates when animations are loaded. We don't want 
+        // to react to properties changing when animations are loaded, only
+        // when the user interacts with the UI.
+        public event Action<AnimationChainViewModel, string> animationChainUpdatedByUi;
 
         public AchxViewModel()
         {
@@ -100,6 +137,33 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
                     item.FrameUpdatedByUi += (frame, property) => FrameUpdatedByUi?.Invoke(frame, property);
                 }
             }
+        }
+
+        public void SetFrom(AnimationChainListSave animationChainListSave, FilePath achxFilePath, int resolutionWidth, int resolutionHeight)
+        {
+            VisibleRoot.Clear();
+
+            if (animationChainListSave == null) return;
+
+
+            AchxFilePath = achxFilePath;
+            ResolutionWidth = resolutionWidth;
+            ResolutionHeight = resolutionHeight;
+
+
+            foreach (var animationChain in animationChainListSave.AnimationChains)
+            {
+                AddAnimationChain(animationChain);
+            }
+        }
+
+        public void AddAnimationChain(AnimationChainSave animationChainSave)
+        {
+            var newViewModel = new AnimationChainViewModel();
+            newViewModel.SetFrom(animationChainSave, AchxFilePath, ResolutionWidth, ResolutionHeight);
+            newViewModel.FrameUpdatedByUi += (frame, property) => FrameUpdatedByUi?.Invoke(frame, property);
+            newViewModel.PropertyChanged += (sender, args) => animationChainUpdatedByUi?.Invoke(newViewModel, args.PropertyName);
+            VisibleRoot.Add(newViewModel);
         }
     }
 }

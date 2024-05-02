@@ -51,7 +51,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
         {
             switch (e.PropertyName)
             {
-                case nameof(ViewModel.SelectedAnimationChain):
+                case nameof(ViewModel.CurrentAnimationChain):
                 case nameof(ViewModel.SelectedAnimationFrame):
                 case nameof(ViewModel.SelectedShape):
                     if(ViewModel.SelectedShape != null)
@@ -72,10 +72,10 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                         View.PropertyGrid.Visibility = System.Windows.Visibility.Visible;
                         PropertyGridManager.ShowInPropertyGrid(ViewModel.SelectedAnimationFrame);
                     }
-                    else if(ViewModel.SelectedAnimationChain != null)
+                    else if(ViewModel.CurrentAnimationChain != null)
                     {
                         View.PropertyGrid.Visibility = System.Windows.Visibility.Visible;
-                        PropertyGridManager.ShowInPropertyGrid(ViewModel.SelectedAnimationChain);
+                        PropertyGridManager.ShowInPropertyGrid(ViewModel.CurrentAnimationChain);
                     }
                     break;
             }
@@ -95,9 +95,6 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
 
             view.AchxFilePath = filePath;
-            var vm = ViewModel;
-            vm.ResolutionWidth = view.Texture?.Width ?? 0;
-            vm.ResolutionHeight = view.Texture?.Height ?? 0;
             if (changedFilePath)
             {
                 view.ResetCamera();

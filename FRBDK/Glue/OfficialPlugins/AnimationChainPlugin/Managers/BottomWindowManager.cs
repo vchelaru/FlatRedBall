@@ -103,16 +103,16 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
                     RenderFrame(frame, shapes);
                 }
-                else if (ViewModel.SelectedAnimationChain != null)
+                else if (ViewModel.CurrentAnimationChain != null)
                 {
-                    if (ViewModel.SelectedAnimationChain.VisibleChildren.Count > 0)
+                    if (ViewModel.CurrentAnimationChain.VisibleChildren.Count > 0)
                     {
-                        _currentAnimationChain = ViewModel.SelectedAnimationChain;
+                        _currentAnimationChain = ViewModel.CurrentAnimationChain;
 
                         RunAnimation();
                     }
                 }
-                else //if(ViewModel.SelectedAnimationChain == null)
+                else //if(ViewModel.CurrentAnimationChain == null)
                 {
                     MainAnimationSprite.Visible = false;
                 }

@@ -36,9 +36,9 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 FileManager.XmlSerialize(frameBacking, out copiedXml);
                 CopiedType = CopiedType.AnimationFrames;
             }
-            else if (viewModel.SelectedAnimationChain != null)
+            else if (viewModel.CurrentAnimationChain != null)
             {
-                var animationChainBacking = viewModel.SelectedAnimationChain.BackingModel;
+                var animationChainBacking = viewModel.CurrentAnimationChain.BackingModel;
                 FileManager.XmlSerialize(animationChainBacking, out copiedXml);
                 CopiedType = CopiedType.AnimationChains;
             }
@@ -64,7 +64,12 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                     break;
                 case CopiedType.AnimationFrames:
                     {
-                        var deserialized = FileManager.XmlDeserializeFromString<AnimationFrameSave>(copiedXml);
+                        var chainToAddTo = viewModel.CurrentAnimationChain;
+                        if(chainToAddTo == null)
+                        {
+                            var deserialized = FileManager.XmlDeserializeFromString<AnimationFrameSave>(copiedXml);
+
+                        }
                     }
 
                     break;

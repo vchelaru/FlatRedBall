@@ -113,13 +113,13 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             var texture = MainSprite.Texture;
             if (texture != null && ViewModel != null)
             {
-                if (ViewModel.SelectedAnimationFrame != null)
+                if (ViewModel.CurrentAnimationFrame != null)
                 {
-                    CreatePolygonFor(ViewModel.SelectedAnimationFrame.BackingModel);
+                    CreatePolygonFor(ViewModel.CurrentAnimationFrame.BackingModel);
                 }
-                else if (ViewModel.SelectedAnimationChain != null)
+                else if (ViewModel.CurrentAnimationChain != null)
                 {
-                    CreatePolygonsFor(ViewModel.SelectedAnimationChain.BackingModel);
+                    CreatePolygonsFor(ViewModel.CurrentAnimationChain.BackingModel);
                 }
                 else if (ViewModel.SelectedShape != null)
                 {
