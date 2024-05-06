@@ -17,7 +17,7 @@ using TopDownPluginCore.CodeGenerators;
 
 namespace TopDownPlugin
 {
-    public class MainPlugin //: PluginBase
+    public class MainTopDownPlugin //: PluginBase
     {
         #region Fields/Properties
 

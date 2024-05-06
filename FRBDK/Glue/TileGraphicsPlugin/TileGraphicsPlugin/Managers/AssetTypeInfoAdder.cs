@@ -131,6 +131,7 @@ namespace TileGraphicsPlugin
             AssetTypeInfo toReturn = CreateAtiForLayeredTilemapScnx();
             toReturn.FriendlyName = "LayeredTileMap (.tilb)";
             toReturn.QualifiedSaveTypeName = "";
+            toReturn.HideFromNewFileWindow= true;
             toReturn.Extension = "tilb";
             toReturn.CustomLoadMethod = "{THIS} = FlatRedBall.TileGraphics.LayeredTileMap.FromReducedTileMapInfo(\"{FILE_NAME}\", {CONTENT_MANAGER_NAME});";
 

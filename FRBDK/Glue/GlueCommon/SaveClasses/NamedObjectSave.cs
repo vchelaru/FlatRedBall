@@ -282,7 +282,17 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
-        [CategoryAttribute("Access"), DefaultValue(false)]
+        /// <summary>
+        /// Whether this NamedObjectSave is expected to be set (instantiated) by the derived class.
+        /// If this is false, then this instance will be instantiated, and the derived classes are expected
+        /// to use this instance. If true, then the derived class is expected to instantiate this instance.
+        /// and the base class will use it.
+        /// </summary>
+        [CategoryAttribute("Access"), DefaultValue(false), Description(
+            "Whether this NamedObjectSave is expected to be set (instantiated) by the derived class." +
+            "If this is false, then this instance will be instantiated, and the derived classes are expected" +
+            "to use this instance. If true, then the derived class is expected to instantiate this instance." +
+            "and the base class will use it.")]
         public bool SetByDerived
         {
             get { return mSetByDerived; }
@@ -292,7 +302,15 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        [CategoryAttribute("Access"), DefaultValue(false)]
+        /// <summary>
+        /// Whether this NamedObjectSave is exposed to derived classes so that derived classes can modify it, but
+        /// derived classes should not re-assign it. If assignment should happen in the derived classes, then SetByDerived
+        /// should be set to true instead.
+        /// </summary>
+        [CategoryAttribute("Access"), DefaultValue(false), Description(
+            "Whether this NamedObjectSave is exposed to derived classes so that derived classes can modify it, but" +
+            "derived classes should not re-assign it. If assignment should happen in the derived classes, then SetByDerived" +
+            "should be set to true instead.")]
         public bool ExposedInDerived
         {
             get { return mExposedInDerived; }
@@ -487,6 +505,18 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
+        /// <summary>
+        /// If this is a NOS that is in a derived Element and its DefinedByBase is true, this property
+        /// determines whether instantition is handled in one of the base elements. If this is true, then
+        /// this is not instantiated in this (derived) Element.
+        /// </summary>
+        /// <remarks>
+        /// This is typically true for NOS's which are defined in base Entities such as a Sprite in a base Enemy
+        /// entity. The derived Enemy variants may modify properties on the Sprite, but they share the same Sprite
+        /// instance.
+        /// This is typically false for NOS's which are defined in base Entities but which are instantiated on the derived
+        /// entity, such as visuals which come from TMX or Spine files.
+        /// </remarks>
         [DefaultValue(false), CategoryAttribute("Access")]
         public bool InstantiatedByBase
         {

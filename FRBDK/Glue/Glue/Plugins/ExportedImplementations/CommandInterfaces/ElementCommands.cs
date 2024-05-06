@@ -1438,7 +1438,9 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     #region Inheritance
 
     /// <summary>
-    /// Updates the argument glueElement from its base types. This updates variables and named objects.
+    /// Updates the argument glueElement from its base types. This updates variables and named objects. This is called whenever an element's base type changes,
+    /// which can result in the element having new variables and named objects (automatically inherited), or existing variables and named objects being modified
+    /// (such as being marked as instantiated by base).
     /// </summary>
     /// <param name="glueElement">The base Glue element to update.</param>
     /// <returns>Whether the object updated</returns>
@@ -1596,12 +1598,18 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         }
     }
 
-
-    private bool UpdateNamedObjectsFromBaseType(INamedObjectContainer derivedNamedObjectContainer, bool showPopupAboutObjectErrors)
+    /// <summary>
+    /// This method is called whenever the derivedGlueElement has its base type changed, resulting in
+    /// inheritance-based properties on the NamedObjects needing to be updated.
+    /// </summary>
+    /// <param name="derivedGlueElement">The derived element which conains named objects which should be upated.</param>
+    /// <param name="showPopupAboutObjectErrors">Whether to show popups on errors. This should be true if this is called in response to a UI action.</param>
+    /// <returns>Whether any changes have happened on the NamedObjects, which means a save is needed.</returns>
+    private bool UpdateNamedObjectsFromBaseType(GlueElement derivedGlueElement, bool showPopupAboutObjectErrors)
     {
         bool haveChangesOccurred = false;
 
-        List<NamedObjectSave> referencedObjectsBeforeUpdate = derivedNamedObjectContainer.AllNamedObjects.Where(item => item.DefinedByBase).ToList();
+        List<NamedObjectSave> referencedObjectsBeforeUpdate = derivedGlueElement.AllNamedObjects.Where(item => item.DefinedByBase).ToList();
 
         List<NamedObjectSave> namedObjectsInBaseSetByDerived = new List<NamedObjectSave>();
         List<NamedObjectSave> namedObjectsExposedInDerived = new List<NamedObjectSave>();
@@ -1622,11 +1630,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         // in the inheritance chain shouldn't have to define it, but before
         // today it did.  This caused a lot of problems including generated
         // code creating the element twice.
-        if (derivedNamedObjectContainer is EntitySave)
+        if (derivedGlueElement is EntitySave)
         {
-            if (!string.IsNullOrEmpty(derivedNamedObjectContainer.BaseObject))
+            if (!string.IsNullOrEmpty(derivedGlueElement.BaseObject))
             {
-                baseElements.Add(ObjectFinder.Self.GetElement(derivedNamedObjectContainer.BaseObject));
+                baseElements.Add(ObjectFinder.Self.GetElement(derivedGlueElement.BaseObject));
             }
             //List<EntitySave> allBase = ((EntitySave)namedObjectContainer).GetAllBaseEntities();
             //foreach (EntitySave baseEntitySave in allBase)
@@ -1636,9 +1644,9 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         }
         else
         {
-            if (!string.IsNullOrEmpty(derivedNamedObjectContainer.BaseObject))
+            if (!string.IsNullOrEmpty(derivedGlueElement.BaseObject))
             {
-                baseElements.Add(ObjectFinder.Self.GetElement(derivedNamedObjectContainer.BaseObject));
+                baseElements.Add(ObjectFinder.Self.GetElement(derivedGlueElement.BaseObject));
             }
             //List<ScreenSave> allBase = ((ScreenSave)namedObjectContainer).GetAllBaseScreens();
             //foreach (ScreenSave baseScreenSave in allBase)
@@ -1716,13 +1724,13 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             {
                 foreach (var nos in derivedNosesToAskAbout)
                 {
-                    if (derivedNamedObjectContainer.NamedObjects.Contains(nos))
+                    if (derivedGlueElement.NamedObjects.Contains(nos))
                     {
-                        derivedNamedObjectContainer.NamedObjects.Remove(nos);
+                        derivedGlueElement.NamedObjects.Remove(nos);
                     }
                     else
                     {
-                        derivedNamedObjectContainer.NamedObjects
+                        derivedGlueElement.NamedObjects
                             .FirstOrDefault(item => item.ContainedObjects.Contains(nos))
                             ?.ContainedObjects.Remove(nos);
                     }
@@ -1760,7 +1768,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             if (matchingDefinedByBase == null)
             {
-                AddSetByDerivedNos(derivedNamedObjectContainer, namedObjectInBase, false);
+                AddSetByDerivedNos(derivedGlueElement, namedObjectInBase, false);
             }
             else
             {
@@ -1778,7 +1786,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             if (nosInDerived == null)
             {
-                nosInDerived = AddSetByDerivedNos(derivedNamedObjectContainer, nosInBase, true);
+                nosInDerived = AddSetByDerivedNos(derivedGlueElement, nosInBase, true);
             }
             else
             {
@@ -1793,7 +1801,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                         .FirstOrDefault(item => item.InstanceName == containedInBaseNos.InstanceName && item.DefinedByBase);
                     if (containedInDerived == null)
                     {
-                        AddSetByDerivedNos(derivedNamedObjectContainer, containedInBaseNos, true, nosInDerived);
+                        AddSetByDerivedNos(derivedGlueElement, containedInBaseNos, true, nosInDerived);
                     }
                     else
                     {

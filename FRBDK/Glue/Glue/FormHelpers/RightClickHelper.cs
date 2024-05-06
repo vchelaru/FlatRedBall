@@ -596,7 +596,7 @@ public static class RightClickHelper
 
         else if (targetNode.IsEntityNode())
         {
-            if (menuShowingAction == MenuShowingAction.RightButtonDrag && draggedNode.IsEntityNode())
+            if (menuShowingAction == MenuShowingAction.RightButtonDrag && draggedNode?.IsEntityNode() == true)
             {
 
                 var mAddEntityList = new GeneralToolStripMenuItem(L.Texts.EntityListAdd);

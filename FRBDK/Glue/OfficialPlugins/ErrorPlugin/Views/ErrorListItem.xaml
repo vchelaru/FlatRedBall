@@ -19,8 +19,13 @@
             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding DoubleClickCommand}" />
         </Grid.InputBindings>
         <Grid.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="{x:Static localization:Texts.GoToObject}" Command="{Binding DoubleClickCommand}"/>
+            <ContextMenu x:Name="RightClickMenu" ItemsSource="{Binding MenuItemList}">
+                <ContextMenu.ItemContainerStyle>
+                    <Style TargetType="MenuItem">
+                        <Setter Property="Header" Value="{Binding Header}" />
+                        <Setter Property="Command" Value="{Binding Command}" />
+                    </Style>
+                </ContextMenu.ItemContainerStyle>
             </ContextMenu>
         </Grid.ContextMenu>
     </Grid>
