@@ -12,7 +12,6 @@ using EntityInputMovementPlugin.ViewModels;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.FormHelpers;
 using System.Threading.Tasks;
-using PlatformerPluginCore.Views;
 using FlatRedBall.IO;
 
 namespace EntityInputMovementPlugin
@@ -244,6 +243,7 @@ namespace EntityInputMovementPlugin
             if (renamedElement is EntitySave renamedEntity)
             {
                 TopDownPlugin.Controllers.MainController.Self.HandleElementRenamed(renamedEntity, oldName);
+
                 //FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.HandleElementRenamed(renamedElement, oldName);
 
             }

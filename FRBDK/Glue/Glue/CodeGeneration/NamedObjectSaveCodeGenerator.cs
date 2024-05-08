@@ -1165,8 +1165,18 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     var forBlock = codeBlock.For(string.Format("int i = {0}.Count - 1; i > -1; i--", namedObject.InstanceName));
 
+                    // May 8 2024
+                    // This can be
+                    // null if the NOS
+                    // references an EntitySave
+                    // which is invalid due to some
+                    // error in the JSON, or due to some
+                    // failure mid refactor in Glue. We should
+                    // tolerate this by not crashing. Null is okay
+                    // here, even if it really is intended to reference
+                    // an entity. This is something the user will have to
+                    // manually fix in their project.
                     bool isEntity = ObjectFinder.Self.GetEntitySave(namedObject.SourceClassGenericType) != null;
-
 
                     if (isEntity)
                     {
@@ -1179,7 +1189,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         AssetTypeInfo atiForListElement = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(genericClassType,
                             namedObject);
 
-                        var hasDestroy = atiForListElement.DestroyMethod != null || atiForListElement.DestroyFunc != null;
+                        var hasDestroy = atiForListElement?.DestroyMethod != null || atiForListElement?.DestroyFunc != null;
 
                         if (atiForListElement != null && hasDestroy)
                         {
@@ -1204,14 +1214,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                                                         namedObject.InstanceName));
                         }
                     }
-
-                    string genericType = namedObject.SourceClassGenericType;
-
-                    if (genericType.Contains("\\"))
-                    {
-                        genericType = genericType.Substring(genericType.IndexOf("\\") + 1);
-                    }
-
                 }
 
                 // Vic says:  We used to manually call UnloadStaticContent on all Entities.  But this
