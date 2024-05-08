@@ -243,16 +243,15 @@ namespace EntityInputMovementPlugin
             if (renamedElement is EntitySave renamedEntity)
             {
                 TopDownPlugin.Controllers.MainController.Self.HandleElementRenamed(renamedEntity, oldName);
-
-                //FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.HandleElementRenamed(renamedElement, oldName);
+                FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.HandleElementRenamed(renamedEntity, oldName);
 
             }
         }
 
         private void HandleElementRemoved(EntitySave removedElement, List<string> additionalFiles)
         {
-            // This could be the very last entity that was a top-down, but isn't
-            // anymore.
+            // This could be the very last entity that was a top-down or platformer. If so, we should
+            // check and remove unused files.
             TopDownPlugin.Controllers.MainController.Self.CheckForNoTopDownEntities();
             //FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.CheckForNoPlatformerEntities();
         }

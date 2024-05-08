@@ -366,6 +366,12 @@ public static class AnimationController
     public static FilePath PlatformerAnimationsFileLocationFor(GlueElement element) =>
             GlueCommands.Self.GetAbsoluteFilePath(element).RemoveExtension() + ".PlatformerAnimations.json";
 
+    public static FilePath PlatformerAnimationsFileLocationFor(string elementName)
+    {
+        var glueDirectory = GlueState.Self.CurrentGlueProjectDirectory;
+        var qualified = glueDirectory + elementName + ".PlatformerAnimations.json";
+        return qualified;
+    }
 
     private static void SaveOrDeleteViewModelFileFor(GlueElement currentElement)
     {

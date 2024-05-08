@@ -17,6 +17,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.PlatformerPlugin.Data;
 using PlatformerPluginCore.Logic;
 using GlueCommon.Models;
+using PlatformerPluginCore.Controllers;
 
 namespace FlatRedBall.PlatformerPlugin.Controllers
 {
@@ -192,6 +193,21 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                 IPlatformerCodeGenerator.Self.GenerateAndSave();
                 PlatformerAnimationControllerGenerator.Self.GenerateAndSave();
                 GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+            }
+        }
+
+        public void HandleElementRenamed(GlueElement renamedElement, string oldName)
+        {
+            var oldFile = AnimationController.PlatformerAnimationsFileLocationFor(oldName);
+            var newFile = AnimationController.PlatformerAnimationsFileLocationFor(renamedElement);
+
+            if (oldFile.Exists())
+            {
+                TaskManager.Self.AddAsync(() =>
+                {
+                    System.IO.Directory.CreateDirectory(newFile.GetDirectoryContainingThis().FullPath);
+                    System.IO.File.Move(oldFile.FullPath, newFile.FullPath);
+                }, $"Moving animation file for renamed entity\n{oldFile}->{newFile}");
             }
         }
 
