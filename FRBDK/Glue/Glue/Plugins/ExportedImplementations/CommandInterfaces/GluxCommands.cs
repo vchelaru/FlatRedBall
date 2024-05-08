@@ -725,7 +725,7 @@ public class GluxCommands : IGluxCommands
             toReturn = CreateReferencedFileSaveForExistingFile(
                 sourceElement, directoryToUse, targetFile, PromptHandleEnum.Prompt,
                 assetTypeInfo,
-                out creationReport, out errorMessage);
+                out creationReport, out errorMessage, selectFileAfterCreation: selectFileAfterCreation);
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
