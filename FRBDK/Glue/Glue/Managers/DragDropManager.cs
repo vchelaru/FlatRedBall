@@ -727,6 +727,7 @@ public class DragDropManager : Singleton<DragDropManager>
         return newTreeNode;
     }
 
+    #region ... on NamedObject
     private async Task<ITreeNode> MoveEntityOnNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
     {
         ITreeNode newTreeNode = null;
@@ -821,7 +822,11 @@ public class DragDropManager : Singleton<DragDropManager>
         return newTreeNode;
     }
 
-    static async void MoveEntityToDirectory(ITreeNode treeNodeMoving, ITreeNode targetNode)
+    #endregion
+
+    #region ... on Directory
+
+    static void MoveEntityToDirectory(ITreeNode treeNodeMoving, ITreeNode targetNode)
     {
         bool succeeded = true;
 
@@ -849,6 +854,10 @@ public class DragDropManager : Singleton<DragDropManager>
             GlueState.Self.CurrentElement = entitySave;
         }
     }
+
+    #endregion
+
+    #region ... On other Element (such as a Screen)
 
     public async Task<ITreeNode> DropEntityOntoElement(EntitySave entitySaveMoved, GlueElement elementToCreateIn)
     {
@@ -951,6 +960,8 @@ public class DragDropManager : Singleton<DragDropManager>
         return await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectViewModel,
             elementToCreateIn);
     }
+
+    #endregion
 
     private static string IncrementNumberAtEndOfNewObject(IElement elementToCreateIn, string objectName)
     {
