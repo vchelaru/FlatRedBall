@@ -2939,26 +2939,26 @@ public class GluxCommands : IGluxCommands
         return succeeded;
     }
 
-    public bool MoveEntityToDirectory(EntitySave entitySave, string newRelativeDirectory)
+    public bool MoveEntityToDirectory(EntitySave movedEntitySave, string newRelativeDirectory)
     {
         bool succeeded = true;
-        var fileNameBeforeMove = GlueCommands.Self.FileCommands.GetJsonFilePath(entitySave);
+        var fileNameBeforeMove = GlueCommands.Self.FileCommands.GetJsonFilePath(movedEntitySave);
 
         string targetDirectory = GlueState.Self.CurrentGlueProjectDirectory + newRelativeDirectory;
-        string oldName = entitySave.Name;
-        string newName = newRelativeDirectory.Replace("/", "\\") + entitySave.ClassName;
-        succeeded = MoveEntityCodeFilesToDirectory(entitySave, targetDirectory);
+        string oldName = movedEntitySave.Name;
+        string newName = newRelativeDirectory.Replace("/", "\\") + movedEntitySave.ClassName;
+        succeeded = MoveEntityCodeFilesToDirectory(movedEntitySave, targetDirectory);
 
         if (succeeded)
         {
-            entitySave.Name = newName;
+            movedEntitySave.Name = newName;
         }
 
         if (succeeded)
         {
             // Do this after changing the name of the Entity so
             // namespaces come over properly
-            succeeded = UpdateNamespaceOnCodeFiles(entitySave);
+            succeeded = UpdateNamespaceOnCodeFiles(movedEntitySave);
         }
 
         if (succeeded)
@@ -2974,10 +2974,10 @@ public class GluxCommands : IGluxCommands
 
             // 6:  Find all objects referending this NamedObjectSave and re-generate the code
 
-            if (entitySave.CreatedByOtherEntities)
+            if (movedEntitySave.CreatedByOtherEntities)
             {
                 // Vic says: I'm tired.  For now just ignore the directory.  Fix this when it becomes a problem.
-                FactoryElementCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
+                FactoryElementCodeGenerator.GenerateAndAddFactoryToProjectClass(movedEntitySave);
             }
 
             if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
@@ -3041,6 +3041,8 @@ public class GluxCommands : IGluxCommands
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             }
+
+            PluginManager.ReactToElementRenamed(movedEntitySave, oldName);
         }
 
         return succeeded;
