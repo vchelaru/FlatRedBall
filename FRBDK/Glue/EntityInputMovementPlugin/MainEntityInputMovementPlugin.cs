@@ -243,7 +243,7 @@ namespace EntityInputMovementPlugin
         {
             if (renamedElement is EntitySave renamedEntity)
             {
-                TopDownPlugin.Controllers.MainController.Self.HandleElementRenamed(renamedElement, oldName);
+                TopDownPlugin.Controllers.MainController.Self.HandleElementRenamed(renamedEntity, oldName);
                 //FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.HandleElementRenamed(renamedElement, oldName);
 
             }
