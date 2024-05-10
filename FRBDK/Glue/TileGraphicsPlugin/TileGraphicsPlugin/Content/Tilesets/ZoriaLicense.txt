@@ -1,0 +1,4 @@
+All art with the "Zoria" prefix obtained from https://opengameart.org/content/zoria-tileset
+
+The following modifications have been made from the original:
+* Added an empty dirt tile at the top left of the image
