@@ -253,10 +253,20 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             var variablesReferencingElement = ObjectFinder.Self.GetVariablesReferencingElementType(oldNameFull);
 
+            var newVariantName = elementToRename.Name.Replace("\\", ".") + "Variant";
+            var oldVariantName = oldNameFull.Replace("\\", ".") + "Variant";
 
             foreach (var variable in variablesReferencingElement)
             {
-                variable.DefaultValue = newNameFull;
+
+                if((variable.DefaultValue as string) == oldNameFull)
+                {
+                    variable.DefaultValue = newNameFull;
+                }
+                if(variable.Type == oldVariantName)
+                {
+                    variable.Type = newVariantName;
+                }
 
                 renameModifications.ChangedCustomVariables.Add(variable);
 

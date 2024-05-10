@@ -1527,11 +1527,24 @@ public class ObjectFinder : IObjectFinder
                 // have been renamed, so we just have to trust that the value matches...
                 var startsWithScreensOrEntities =
                     customVariable.Type.StartsWith("Screens.") || customVariable.Type.StartsWith("Entities.");
-                var endsWithType = customVariable.Type.EndsWith("Type");
+                // This assumes "Type" but we also have variants. I'm not sure
+                // why we do this check because a prefix of Screens. or Entities. should be sufficient but
+                // I suppose it's a little safer?
+                var endsWithType = customVariable.Type.EndsWith("Type") ||
+                    customVariable.Type.EndsWith("Variant");
 
-                if (startsWithScreensOrEntities && endsWithType && (customVariable.DefaultValue as string) == elementType)
+                var elementTypeWithVariant = elementType.Replace("\\", ".") + "Variant";
+
+                if (startsWithScreensOrEntities && endsWithType)
                 {
-                    customVariables.Add(customVariable);
+                    if((customVariable.DefaultValue as string) == elementType)
+                    {
+                        customVariables.Add(customVariable);
+                    }
+                    else if(customVariable.Type == elementTypeWithVariant) 
+                    {
+                        customVariables.Add(customVariable);
+                    }
                 }
             }
         }
