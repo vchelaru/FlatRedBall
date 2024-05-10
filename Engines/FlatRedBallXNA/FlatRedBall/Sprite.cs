@@ -936,9 +936,7 @@ namespace FlatRedBall
                         mTimeIntoAnimation = 0;
                         mCurrentChainIndex = -1;
 
-                        // Ensure time related states are reset when changing chains
-                        mJustCycled = false;
-                        mJustChangedFrame = false;
+                        ClearTimeRelatedStates();
                     }
                     else
                     {
@@ -959,10 +957,7 @@ namespace FlatRedBall
                                 wasAnimationSet = true;
                                 mCurrentChainIndex = i;
 
-                                // Ensure time related states are reset when changing chains
-                                mJustCycled = false;
-                                mJustChangedFrame = false;
-
+                                ClearTimeRelatedStates();
                                 UpdateToCurrentAnimationFrame();
 
                                 break;
@@ -1630,6 +1625,11 @@ namespace FlatRedBall
             UpdateScale();
         }
 
+        public void ClearTimeRelatedStates()
+        {
+            mJustCycled = false;
+            mJustChangedFrame = false;
+        }
 
         #region XML Docs
         /// <summary>
