@@ -1,20 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="1">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="12" nextobjectid="1">
  <tileset firstgid="1" source="../Tilesets/StandardTileset.tsx"/>
- <tileset firstgid="1025" source="../Tilesets/FrbVisualTiles.tsx"/>
- <layer id="2" name="Ground" width="50" height="50">
+ <tileset firstgid="1025" source="../Tilesets/ZoriaOverworld.tsx"/>
+ <layer id="7" name="Ground" width="50" height="50">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu2aUU4CMRBA+duLqXgQFQ4CXkEjHEPUKH56A+FDuYYCionTSJM6ael22k1nkvl42Y+my7y2Uzq7u2h6vQVz7oFZgDvglkGMJRwfGMQhlSvgoxDXFT2WwEshXtVDPQR5tMnhTwEeJcdaPcp5HAHHwIlwjzPgHLhQD/VQD/Wo7HEDTBBTgR6PwBNiHvHA7lMUU6y9C4834B2xinhg9zmKKdbehccX8A0876+GnUAPSp6rBy8PnFMrFFOsPccD10VrYOOwbfw1ks/D5NRP85dT5rpDMbk552vP8TDja8/gKQz3HgNC3xhuLZDiYceWC+4cp3iMgHEip+i3+4R7hLgkesTWqA88h12dT2IeNr+pzza4eOQ+LzjkUbJ2r+lR8ixc08PsG2YfGBSYk5oe1mXc/N978Lprs/Zqe4QwDsOEfhw9sEPfM1/mPeDMIfY+rYaH28fn0Gb8OXi45wafA0cP6n8IJw83D1L3Xk4ets2eHUNrSIJHKI8leYyIDtw8clAPGriGpK6jXI9D3wnVRL/rkcMvlKqKGRAnAAA=
+   H4sIAAAAAAAACu3WPw6CMByG4Q4tF3AwrlxBNB7ExKPo6CncvAOeRONN/JO4CtGGhhQq8LVA/IZnawlvbPEXSyFiIiIiIiIiIiIi6t0daKqEmKlmezYK05EoHN3RZM8F9Hs8FY7u+HX9C9ixjHB0h2vdIrPPuyNcRwqkO1zrTplJhO1AStWHa92VHexgBzvY0em9y/6x4ybDzJGIc1TXMQ80R/rsOGZ7HzWQc6SvjuQ7L+qZ8WwR6v607dgas6SeGcfYYTtjITvK79zkG1X1vLUs+Oyo+ra2YXv2QRb67uh6rsw7b1qN6H6Yd95mN+D/waEJ1fEGtYECBxAnAAA=
   </data>
  </layer>
- <layer id="6" name="GroundAbove" width="50" height="50">
+ <layer id="11" name="GroundDecorations" width="50" height="50">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu1abW7CMAzlX69XGAcJtAfpduK1Up/0ZGwnsDR1pD0pEpA02K6/k3G4XK7rmNfx+GB8reNO36d9v9s6xv3zO2OmPeTvD2NOo3+j61vQps1jzWTI4LmOZDwnxz2z5p6Z0+h87nKcB13emM+9w0ns8bMOC8tOk7VmceZSwf9r36Wcczrn0VcDpbRIujaaFud9yrVHI+3/9Y4ts415OtWKB/AxZeTKemG9P2k/0L1WgG5YcmWZSrtnfwE9k7+1hGcjll9qKetSSD5YR7S40FLvSzEqdGo+lfUoGg8b0vAau2Xs8miHzt1O5i3t8td8aIn+JOL9TF7gdz+Nv+yjztQ3jskt8ocjEUU3/gr2TT3zkga9Borgh0qB+OHl7z3wA/pz+fuR+jZW2Bv+qqQOOSqnSpX2Tv98VEFNPmTtoNVVkfmAv9L2bpXnen2QUoBeQNZMEeslDfBXVi+qFz42aHbeY864DOV1U3T0qEcaovYPNHh5DPqE0fPBDSX96l54sYB4fu/cRjh+9MwH5yE92LoFyz6ss70aNlSjfpLgeM56pZ3t1fJtNfJDCauXzv0t1Op8ZhrNt3k5CXrAsl8XMeaAfk1n0TuVZ9dzIL8AO8Znze9yrch1YhQeNsCOxwL5ynO1KDwwXamQh4h5Pdsv3+fQ7DZ31+AsjET7PLzeuegFso614mBkaGebPfKh9Q45b8/FNs65tHXefSuZu3n3s7BWzuMZ7e4C4Nkz5/baXZOrMi97MIi1XCN4ORzvx/1A647OL+BsZM0QJwAA
+   H4sIAAAAAAAACu2WQQrCMBBFu7AnKa6qtmu9gojgOezCi+g5PI3HqLcwAx2YhqQJoSZp+Q+GJG1o/mc6SYoCAAAAAAAAAAAAAAAAAABL47xxz9l6zEmNj48lwD561X4tnmzPc2Jt/9Ua8nFZgE4X7IPzYcpLjvmolaadCIJ8VEJrn1B3o9Z+iGgtWkx1zT5sNRIzHzfPfcenHlLmYw4fyMd8XLX6MBGSj6lzJSbHcjxmH+8h6D33G9Vvy+k9eIpP6Z4TykHTwfvVfmhPw9q+d486Ym7kGUHo5wXRqf7TES+D5ntEH7RWZwki5B6S211R1rlLG73XIxd8fZg88PxKtJX2DX38L+a+30rdsv8DWoNSHhAnAAA=
+  </data>
+ </layer>
+ <layer id="9" name="BuildingsFloor" width="50" height="50">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu3OwQmAQBADwDzu6lS0sytD0dpc8OVfEGQGwkLy2QQAAAAAAAAA4J+mnsyV0ZKl7tqf+1b93u79qJztmz8BeMcFK0wjFxAnAAA=
   </data>
  </layer>
  <layer id="1" name="GameplayLayer" width="50" height="50" visible="0" opacity="0.4">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu3PQQrAIBAEwfj/T+cachHRsJOlCuaq2+PqYVQfcIiOLDqy6MiiI4uOLDqy6MiiI4uOc8ZjO29U+0vH7M6OHe+t/PG12X2VHSt/73SsrEtHhwEAAADQ0w2KYP0AECcAAA==
+   H4sIAAAAAAAACu3PAQ0AMAjAMPBv+jZ20iYTsJ2ZPdLvfLT4aPHR4qPFR4uPFh8tPlp8tPho8dHio8VHi48WHy0+Wny0+Gjx0eKjxUeLjxYfLdc+LvQAkbSDWBAnAAA=
+  </data>
+ </layer>
+ <layer id="10" name="BuildingAbovePlayer" width="50" height="50">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu3Ptw0CQRBA0Q32ysA1gQtwVQCV4BrBVXaYSjBfugs4RM4i/pN+sBppNROCJEmSJEmSJEmSJOmX5TGEE53pQtdYnbd5d6hLPerHz/982y0W3elR9moai2Y0L0tRLQuhTg1qUiurzhfsvaQVrWmT6B0D9h7SiMY0ebtjy9472tOBjoneIUn6L0+FbBtzECcAAA==
+  </data>
+ </layer>
+ <layer id="8" name="AbovePlayer" width="50" height="50">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu3XQQqAIBCF4Vl4/2PkUepY5SII07GN5Bv+D2J22fNFmBkAAAAAAAAAAFC2J7MjvaeS8sz5urbGVMvSypDFMtDHWiL1cVPuo3h+ZyP0Ub9jauhjLZH7UM0wU5Q9idQvWXx//TttnXVHs5fBOxvOztg7X3uzXt/L8OVeo0wnC+NJIBAnAAA=
   </data>
  </layer>
 </map>

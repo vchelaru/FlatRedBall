@@ -57,9 +57,11 @@ namespace OfficialPlugins.FrbUpdater
 
         public bool ShutDown(PluginShutDownReason shutDownReason)
         {
-            ToolStripMenuItem itemToAddTo = ToolStripHelper.Self.GetItem(mMenuStrip, PluginsMenuItem);
+            ToolStripMenuItem itemToAddTo = null;
+            
+            itemToAddTo = ToolStripHelper.Self.GetItem(mMenuStrip, PluginsMenuItem);
 
-            itemToAddTo.DropDownItems.Remove(mMenuItem);
+            itemToAddTo?.DropDownItems.Remove(mMenuItem);
 
             if (!mForm.Disposing && !mForm.IsDisposed)
                 mForm.Hide();

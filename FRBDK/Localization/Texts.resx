@@ -967,9 +967,6 @@ for {1}?</value>
   <data name="EnterUrlName" xml:space="preserve">
     <value>Enter URL Name:</value>
   </data>
-  <data name="GlueWillDownloadFileAndDependencies" xml:space="preserve">
-    <value>Glue will download the file entered above along with any dependencies.</value>
-  </data>
   <data name="SelectFileOrClickBrowse" xml:space="preserve">
     <value>Select a file or click the Browse button</value>
   </data>

@@ -17,6 +17,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.PlatformerPlugin.Data;
 using PlatformerPluginCore.Logic;
 using GlueCommon.Models;
+using PlatformerPluginCore.Controllers;
 
 namespace FlatRedBall.PlatformerPlugin.Controllers
 {
@@ -126,10 +127,10 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             var viewModel = sender as PlatformerEntityViewModel;
             var entity = viewModel.BackingData;
-            bool shouldGenerateCsv, shouldGenerateEntity, shouldAddPlatformerVariables;
+            bool shouldGenerateCsv, shouldGenerateEntity, shouldReaddPlatformerVariables;
 
             DetermineWhatToGenerate(e.PropertyName, viewModel, 
-                out shouldGenerateCsv, out shouldGenerateEntity, out shouldAddPlatformerVariables);
+                out shouldGenerateCsv, out shouldGenerateEntity, out shouldReaddPlatformerVariables);
 
             switch(e.PropertyName)
             {
@@ -164,7 +165,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                 await GenerateAndAddCsv(entity, viewModel);
             }
 
-            if(shouldAddPlatformerVariables)
+            if(shouldReaddPlatformerVariables)
             {
                 AddPlatformerVariables(entity);
             }
@@ -177,7 +178,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             }
 
-            if(shouldAddPlatformerVariables)
+            if(shouldReaddPlatformerVariables)
             {
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
                 if(entity != null)
@@ -186,12 +187,27 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                 }
             }
 
-            if (shouldGenerateCsv || shouldGenerateEntity || shouldAddPlatformerVariables)
+            if (shouldGenerateCsv || shouldGenerateEntity || shouldReaddPlatformerVariables)
             {
                 EnumFileGenerator.Self.GenerateAndSave();
                 IPlatformerCodeGenerator.Self.GenerateAndSave();
                 PlatformerAnimationControllerGenerator.Self.GenerateAndSave();
                 GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+            }
+        }
+
+        public void HandleElementRenamed(GlueElement renamedElement, string oldName)
+        {
+            var oldFile = AnimationController.PlatformerAnimationsFileLocationFor(oldName);
+            var newFile = AnimationController.PlatformerAnimationsFileLocationFor(renamedElement);
+
+            if (oldFile.Exists())
+            {
+                TaskManager.Self.AddAsync(() =>
+                {
+                    System.IO.Directory.CreateDirectory(newFile.GetDirectoryContainingThis().FullPath);
+                    System.IO.File.Move(oldFile.FullPath, newFile.FullPath);
+                }, $"Moving animation file for renamed entity\n{oldFile}->{newFile}");
             }
         }
 

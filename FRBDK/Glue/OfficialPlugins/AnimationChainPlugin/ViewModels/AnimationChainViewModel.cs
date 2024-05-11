@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +15,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
     {
         [DependsOn(nameof(Name))]
         public string Text => Name;
+
+        public FilePath FilePath { get; set; }
 
         public string Name
         {
@@ -35,22 +38,30 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public override string ToString() => Name;
 
-        public void SetFrom(AnimationChainSave animationChain, int resolutionWidth, int resolutionHeight)
+        public void SetFrom(AnimationChainSave animationChain, FilePath achxFilePath, int resolutionWidth, int resolutionHeight)
         {
+            FilePath = achxFilePath;
             BackingModel = animationChain;
             Name = animationChain.Name;
-            Duration = animationChain.Frames.Sum(item => item.FrameLength);
 
             foreach(var frame in animationChain.Frames)
             {
-                var frameVm = new AnimationFrameViewModel();
-                frameVm.SetFrom(this, frame, resolutionWidth, resolutionHeight);
-                frameVm.PropertyChanged += HandleFrameViewModelPropertyChanged;
-                VisibleChildren.Add(frameVm);
+                AddAnimationFrame(frame);
             }
         }
 
-        public Action FrameUpdatedByUi;
+        public AnimationFrameViewModel AddAnimationFrame(AnimationFrameSave frame)
+        {
+            var frameVm = new AnimationFrameViewModel();
+            frameVm.SetFrom(this, frame);
+            frameVm.PropertyChanged += HandleFrameViewModelPropertyChanged;
+            VisibleChildren.Add(frameVm);
+
+            Duration = VisibleChildren.Sum(item => item.LengthInSeconds);
+            return frameVm;
+        }
+
+        public Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
 
         private void HandleFrameViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -61,7 +72,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
             if(changed)
             {
-                FrameUpdatedByUi?.Invoke();
+                FrameUpdatedByUi?.Invoke(vm, e.PropertyName);
             }
         }
     }

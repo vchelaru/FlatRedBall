@@ -21,10 +21,29 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         public AnimationFrameSave BackingModel { get; set; }
         public AnimationChainViewModel Parent { get; private set; }
 
-        public string StrippedTextureName
+        public string RelativeTextureName
         {
             get => Get<string>();
-            set => Set(value);
+            set
+            {
+                // .achx file sll save with forward slashes, so set those here...
+                var valueWithSlashesFixed = value.Replace("\\", "/");
+
+                var valueDiffers = valueWithSlashesFixed != RelativeTextureName;
+
+                if (valueDiffers && !string.IsNullOrEmpty(valueWithSlashesFixed))
+                {
+                    var valueRelativeToFrame = valueWithSlashesFixed;
+                    if(!FileManager.IsRelative(valueRelativeToFrame))
+                    {
+                        var removeDotDotSlash = FileManager.RemoveDotDotSlash(valueRelativeToFrame);
+                        var directoryToMakeRelativeTo = Parent.FilePath.GetDirectoryContainingThis().FullPath;
+                        valueRelativeToFrame = FileManager.MakeRelative(removeDotDotSlash, directoryToMakeRelativeTo, preserveCase:true);
+                    }
+                    // ...and here (since standardized may have changed it back to backslashes).
+                    Set(valueRelativeToFrame);
+                }
+            }
         }
 
         public float LengthInSeconds
@@ -135,13 +154,11 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             set => Set(value);
         }
 
-        int ResolutionWidth;
-        int ResolutionHeight;
-
         [DependsOn(nameof(LengthInSeconds))]
-        public string Text => $"{LengthInSeconds.ToString("0.00")} ({StrippedTextureName})";
+        [DependsOn(nameof(RelativeTextureName))]
+        public string Text => $"{LengthInSeconds.ToString("0.00")} ({RelativeTextureName})";
 
-        public void SetFrom(AnimationChainViewModel parent, AnimationFrameSave animationFrame, int resolutionWidth, int resolutionHeight)
+        public void SetFrom(AnimationChainViewModel parent, AnimationFrameSave animationFrame)
         {
             BackingModel = animationFrame;
             Parent = parent;
@@ -149,20 +166,17 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
             if (!string.IsNullOrEmpty(animationFrame.TextureName))
             {
-                StrippedTextureName = FileManager.RemovePath(FileManager.RemoveExtension(animationFrame.TextureName));
+                RelativeTextureName = parent.FilePath.GetDirectoryContainingThis() + animationFrame.TextureName;
             }
             else
             {
-                StrippedTextureName = string.Empty;
+                RelativeTextureName = string.Empty;
             }
 
             LeftCoordinate = animationFrame.LeftCoordinate;
             TopCoordinate = animationFrame.TopCoordinate;
             RightCoordinate = animationFrame.RightCoordinate;
             BottomCoordinate = animationFrame.BottomCoordinate;
-
-            ResolutionWidth = resolutionWidth;
-            ResolutionHeight = resolutionHeight;
 
             FlipHorizontal = animationFrame.FlipHorizontal;
             FlipVertical = animationFrame.FlipVertical;
@@ -239,6 +253,20 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             if(animationFrame.FlipHorizontal != FlipHorizontal)
             {
                 animationFrame.FlipHorizontal = FlipHorizontal;
+                toReturn = true;
+            }
+
+            if(animationFrame.FrameLength != LengthInSeconds)
+            {
+                animationFrame.FrameLength = LengthInSeconds;
+                toReturn = true;
+            }
+
+            if(animationFrame.TextureName != RelativeTextureName)
+            {
+                // Even though FRB and Gum are moving to slashes matching the OS's separator, we should
+                // not change the .achx file structure:
+                animationFrame.TextureName = RelativeTextureName?.Replace("\\", "/");
                 toReturn = true;
             }
 

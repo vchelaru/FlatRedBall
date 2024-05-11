@@ -3103,15 +3103,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Glue will download the file entered above along with any dependencies..
-        /// </summary>
-        public static string GlueWillDownloadFileAndDependencies {
-            get {
-                return ResourceManager.GetString("GlueWillDownloadFileAndDependencies", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The New Project Wizard can help you get a fully functional game set up in seconds..
         /// </summary>
         public static string GlueWizardDescription {

@@ -8,6 +8,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Math.Collision;
 using OfficialPlugins.CollisionPlugin.CodeGenerators;
 using OfficialPlugins.CollisionPlugin.Controllers;
 using OfficialPlugins.CollisionPlugin.Managers;
@@ -106,6 +107,41 @@ namespace OfficialPlugins.CollisionPlugin
 
                 return nos;
             };
+
+            this.ReactToElementRenamed += HandleElementRenamed;
+        }
+
+        private void HandleElementRenamed(IElement element, string oldName)
+        {
+            // loop through all screens. If any screen has a collision relationship that is not DefinedByBase, then look at its objects.
+            // If those objects are of type that reference the newly named element, then we generate that screen
+
+            var screensToRegenerate = new HashSet<ScreenSave>();
+            var elementNameWithDot = element.Name.Replace("\\", ".");
+            foreach(var screen in GlueState.Self.CurrentGlueProject.Screens)
+            {
+                foreach(var nos in screen.AllNamedObjects)
+                {
+                    if(nos.DefinedByBase == false && nos.IsCollisionRelationship())
+                    {
+                        var firstType = AssetTypeInfoManager.GetFirstGenericType(nos, out bool isFirstList);
+                        var secondType = AssetTypeInfoManager.GetSecondGenericType(nos, out bool isSecondList);
+
+                        if(firstType == elementNameWithDot || secondType == elementNameWithDot)
+                        {
+                            screensToRegenerate.Add(screen);
+                            // don't break - we still need to fix all source class types:
+                            //break;
+                            CollisionRelationshipViewModelController.TryFixSourceClassType(nos);
+                        }
+                    }
+                }
+            }
+
+            foreach(var screen in screensToRegenerate)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen, generateDerivedElements:false);
+            }
         }
 
         private void HandleObjectRemoved(IElement element, NamedObjectSave namedObject)
@@ -315,9 +351,9 @@ namespace OfficialPlugins.CollisionPlugin
             CollidableNamedObjectController.RefreshViewModelTo(element, selectedNos, collidableViewModel);
         }
 
-        public void FixNamedObjectCollisionType(NamedObjectSave selectedNos)
+        public bool FixNamedObjectCollisionType(NamedObjectSave selectedNos)
         {
-            CollisionRelationshipViewModelController.TryFixSourceClassType(selectedNos);
+            return CollisionRelationshipViewModelController.TryFixSourceClassType(selectedNos);
         }
     }
 }

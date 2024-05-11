@@ -40,6 +40,11 @@ namespace OfficialPlugins.ErrorReportingPlugin
                 foreach (var nos in screen.AllNamedObjects)
                 {
                     FillWithBadFileRelatedProperties(nos, availableSourceFiles, errors);
+
+                    if(FromFileNamedObjectAlsoInstantiatedByBase.IsError(nos))
+                    {
+                        errors.Add(new FromFileNamedObjectAlsoInstantiatedByBase(nos));
+                    }
                 }
             }
             foreach (var entity in project.Entities)
@@ -51,6 +56,11 @@ namespace OfficialPlugins.ErrorReportingPlugin
                 foreach (var nos in entity.AllNamedObjects)
                 {
                     FillWithBadFileRelatedProperties(nos, availableSourceFiles, errors);
+
+                    if (FromFileNamedObjectAlsoInstantiatedByBase.IsError(nos))
+                    {
+                        errors.Add(new FromFileNamedObjectAlsoInstantiatedByBase(nos));
+                    }
                 }
             }
         }

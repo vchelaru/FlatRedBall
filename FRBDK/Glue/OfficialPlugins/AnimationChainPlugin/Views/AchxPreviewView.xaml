@@ -21,11 +21,12 @@
                 <RowDefinition Height="5"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <pt:TreeListBox
+            <pt:TreeListBox x:Name="ListBox"
                 HierarchySource="{Binding VisibleRoot}"
                 ChildrenPath="VisibleChildren"
                 SelectedItem="{Binding SelectedItem}"
                 MouseDoubleClick="TreeListBox_MouseDoubleClick"
+                PreviewKeyDown="TreeListBox_PreviewKeyDown"
                 >
 
                 <pt:TreeListBox.ItemTemplate>
@@ -41,35 +42,60 @@
                 </pt:TreeListBox.ItemTemplate>
 
             </pt:TreeListBox>
-            <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"></GridSplitter>
+            <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
+                          Background="#cccccc"
+                          ></GridSplitter>
             <ScrollViewer Grid.Row="2">
                 <wpfdataui:DataUiGrid x:Name="PropertyGrid"  Instance="{Binding SelectedAnimationChain}"></wpfdataui:DataUiGrid>
             </ScrollViewer>
         </Grid>
 
-        <GridSplitter Width="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"></GridSplitter>
+        <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"
+                          Background="#cccccc"
+                      ></GridSplitter>
 
 
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="223*"></RowDefinition>
                 <RowDefinition Height="5"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="65*"></RowDefinition>
+                <RowDefinition Height="157*"/>
             </Grid.RowDefinitions>
-            <wpf1:GumSKElement x:Name="TopGumCanvas" Grid.Row="0"
-                    MouseDown="GumCanvas_MouseDown"
-                    MouseMove="GumCanvas_MouseMove"
-                    MouseWheel="GumCanvas_MouseWheel"
-                               ></wpf1:GumSKElement>
+            <Grid  Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="134*"></RowDefinition>
+                    <RowDefinition Height="71*"/>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <wpf1:GumSKElement x:Name="TopGumCanvas"
+                        MouseDown="TopGumCanvas_MouseDown"
+                        MouseMove="TopGumCanvas_MouseMove"
+                        MouseWheel="TopGumCanvas_MouseWheel"
+                        SizeChanged="TopGumCanvas_SizeChanged" Margin="0,0,0,16" Grid.RowSpan="3"
+                                   ></wpf1:GumSKElement>
+                <ScrollBar Grid.Column="1" x:Name="TopWindowVerticalSrollBar" ValueChanged="TopWindowVerticalSrollBar_ValueChanged" Margin="0,0,0,16" Grid.RowSpan="3">
+                </ScrollBar>
+                <ScrollBar Orientation="Horizontal" Grid.Row="2" x:Name="TopWindowHorizontalScrollBar" ValueChanged="TopWindowHorizontalScrollBar_ValueChanged">
+
+                </ScrollBar>
+
+            </Grid>
             <GridSplitter Grid.Row="1"
                           Background="#cccccc"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Center"
                           ResizeBehavior="PreviousAndNext"
                           ShowsPreview="True"
-                          Height="5"
+                          Height="6"
                           />
-            <Grid x:Name="BottomHalfGrid" Grid.Row="2">
+            <Grid x:Name="BottomHalfGrid" Grid.Row="2" Grid.RowSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
@@ -79,9 +105,9 @@
                     <CheckBox IsChecked="{Binding IsShowGuidesChecked}">Show Guides</CheckBox>
                 </StackPanel>
                 <wpf1:GumSKElement x:Name="BottomGumCanvas" Grid.Row="1"
-                        MouseDown="GumAnimationCanvas_MouseDown"
-                        MouseMove="GumAnimationCanvas_MouseMove"
-                        MouseWheel="GumAnimationCanvas_MouseWheel"
+                        MouseDown="BottomCanvas_MouseDown"
+                        MouseMove="BottomCanvas_MouseMove"
+                        MouseWheel="BottomCanvas_MouseWheel"
                                ></wpf1:GumSKElement>
                 <StackPanel Grid.Row="2" Orientation="Horizontal">
                     <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>

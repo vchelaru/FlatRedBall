@@ -163,11 +163,18 @@ namespace TopDownPlugin.Controllers
 
         }
 
-        public void HandleElementRenamed(IElement renamedElement, string oldName)
+        public void HandleElementRenamed(GlueElement renamedElement, string oldName)
         {
-            if (topDownAnimationData != null)
+            var oldFile = AnimationController.TopDownAnimationsFileLocationFor(oldName);
+            var newFile = AnimationController.TopDownAnimationsFileLocationFor(renamedElement);
+
+            if(oldFile.Exists())
             {
-                SaveCurrentEntitySaveAnimationDataTask();
+                TaskManager.Self.AddAsync(() =>
+                {
+                    System.IO.Directory.CreateDirectory(newFile.GetDirectoryContainingThis().FullPath);
+                    System.IO.File.Move(oldFile.FullPath, newFile.FullPath);
+                }, $"Moving animation file for renamed entity\n{oldFile}->{newFile}");
             }
         }
 
@@ -272,7 +279,10 @@ namespace TopDownPlugin.Controllers
                             selectFileAfterCreation:false
                             );
 
-                        newCsvRfs.HasPublicProperty = true;
+                        if(newCsvRfs != null)
+                        {
+                            newCsvRfs.HasPublicProperty = true;
+                        }
                     }
 
                     var rfs = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName);
@@ -349,25 +359,6 @@ namespace TopDownPlugin.Controllers
             RefreshTopDownValues(currentEntitySave);
         }
 
-        private void RemoveUnneededAnimationMovementValues(EntitySave currentEntitySave,
-            ObservableCollection<TopDownValuesViewModel> topDownValues)
-        {
-            for (int i = topDownAnimationData.Animations.Count - 1; i > -1; i--)
-            {
-                var movementValueAnimations = topDownAnimationData.Animations[i];
-
-                var isReferencedByTopDownValues =
-                    movementValueAnimations.MovementValuesName == baseAnimationsName ||
-                    topDownValues
-                        .Any(topDownValue => topDownValue.Name == movementValueAnimations.MovementValuesName);
-
-                if (!isReferencedByTopDownValues)
-                {
-                    topDownAnimationData.Animations.RemoveAt(i);
-                }
-            }
-        }
-
         private void HandleSetViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var changedVm = sender as AnimationSetViewModel;
@@ -381,69 +372,25 @@ namespace TopDownPlugin.Controllers
 
         private void SaveCurrentEntitySaveAnimationDataTask()
         {
-            var filePath = GetAnimationFilePathFor(viewModel.BackingData);
+            // This was saving the old animation, need to save the new animation:
 
-            TaskManager.Self.Add(() =>
-            {
-                var contents = JsonConvert.SerializeObject(topDownAnimationData);
+            //var filePath = GetAnimationFilePathFor(viewModel.BackingData);
 
-                GlueCommands.Self.TryMultipleTimes(() =>
-                {
-                    System.IO.Directory.CreateDirectory(
-                        filePath.GetDirectoryContainingThis().FullPath);
-                    System.IO.File.WriteAllText(filePath.FullPath, contents);
-                    GlueCommands.Self.PrintOutput($"Saved animation file {filePath.FullPath}");
-                });
+            //TaskManager.Self.Add(() =>
+            //{
+            //    var contents = JsonConvert.SerializeObject(topDownAnimationData);
 
-            }, $"Saving animation file for {viewModel.BackingData}");
+            //    GlueCommands.Self.TryMultipleTimes(() =>
+            //    {
+            //        System.IO.Directory.CreateDirectory(
+            //            filePath.GetDirectoryContainingThis().FullPath);
+            //        System.IO.File.WriteAllText(filePath.FullPath, contents);
+            //        GlueCommands.Self.PrintOutput($"Saved animation file {filePath.FullPath}");
+            //    });
+
+            //}, $"Saving animation file for {viewModel.BackingData}");
         }
 
-        private void AddNecessaryAnimationMovementValuesFor(EntitySave currentEntitySave, ObservableCollection<TopDownValuesViewModel> topDownValues)
-        {
-            //////////////////////////////////Early Out////////////////////////////////////////
-            if(viewModel.IsTopDown == false && !GetIfInheritsFromTopDown(currentEntitySave))
-            {
-                return;
-            }
-            /////////////////////////////End Early Out//////////////////////////////////////
-            if (topDownAnimationData.Animations.Any(item => item.MovementValuesName == baseAnimationsName) == false)
-            {
-                var newAnimation = new MovementValueAnimations();
-                newAnimation.MovementValuesName = baseAnimationsName;
-                newAnimation.AnimationSets.Add(new AnimationSetModel()
-                {
-                    AnimationSetName = "Idle"
-                });
-                newAnimation.AnimationSets.Add(new AnimationSetModel()
-                {
-                    AnimationSetName = "Move"
-                });
-                topDownAnimationData.Animations.Add(newAnimation);
-
-                // temporary:
-
-            }
-
-            foreach (var topDownValue in viewModel.TopDownValues)
-            {
-                if (topDownAnimationData.Animations.Any(item => item.MovementValuesName == topDownValue.Name) == false)
-                {
-                    var newAnimation = new MovementValueAnimations();
-                    newAnimation.MovementValuesName = topDownValue.Name;
-                    newAnimation.AnimationSets.Add(new AnimationSetModel()
-                    {
-                        AnimationSetName = "Idle"
-                    });
-                    newAnimation.AnimationSets.Add(new AnimationSetModel()
-                    {
-                        AnimationSetName = "Move"
-                    });
-                    topDownAnimationData.Animations.Add(newAnimation);
-                }
-            }
-
-
-        }
 
         private void RefreshTopDownValues(EntitySave currentEntitySave)
         {
@@ -536,41 +483,6 @@ namespace TopDownPlugin.Controllers
             {
                 topDownValuesViewModel.PropertyChanged += HandleTopDownValuesViewModelChanged;
             }
-        }
-
-        private void LoadAnimationData(EntitySave currentEntitySave)
-        {
-            FilePath fileToLoad = GetAnimationFilePathFor(currentEntitySave);
-
-            topDownAnimationData = null;
-
-            if (viewModel.IsTopDown || GetIfInheritsFromTopDown(currentEntitySave))
-            {
-                if (fileToLoad.Exists())
-                {
-                    try
-                    {
-                        var fileContents = System.IO.File.ReadAllText(fileToLoad.FullPath);
-
-                        topDownAnimationData = JsonConvert.DeserializeObject<TopDownAnimationData>(fileContents);
-                    }
-                    catch
-                    {
-                        // do nothing
-                    }
-                }
-
-                if (topDownAnimationData == null)
-                {
-                    // if it's null then the file wasn't there or there was some unrecoverable failure, so just make a new one:
-                    topDownAnimationData = new TopDownAnimationData();
-                }
-            }
-        }
-
-        public static FilePath GetAnimationFilePathFor(EntitySave currentEntitySave)
-        {
-            return $"{GlueState.Self.CurrentGlueProjectDirectory}AnimationSets/{currentEntitySave.Name}.json";
         }
 
         #endregion

@@ -366,6 +366,12 @@ public static class AnimationController
     public static FilePath TopDownAnimationsFileLocationFor(GlueElement element) =>
         GlueCommands.Self.GetAbsoluteFilePath(element).RemoveExtension() + ".TopDownAnimations.json";
 
+    public static FilePath TopDownAnimationsFileLocationFor(string elementName)
+    {
+        var glueDirectory = GlueState.Self.CurrentGlueProjectDirectory;
+        var qualified = glueDirectory + elementName + ".TopDownAnimations.json";
+        return qualified;
+    }
 
     private static void SaveOrDeleteViewModelFileFor(GlueElement currentElement)
     {

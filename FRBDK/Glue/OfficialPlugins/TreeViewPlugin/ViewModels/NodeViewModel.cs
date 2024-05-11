@@ -554,7 +554,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             if(Tag is GlueElement element)
             {
-                await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(element, Text);
+                var oldName = element.Name;
+                var newName = oldName.Substring(0, oldName.IndexOf("\\") + 1) + Text;
+
+                await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(element, newName);
 
                 // This updates the tree node back in case RenameElement doesn't allow the rename to happen.
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);

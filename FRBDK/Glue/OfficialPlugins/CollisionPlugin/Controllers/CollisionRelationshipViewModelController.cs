@@ -565,13 +565,20 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        public static void TryFixSourceClassType(NamedObjectSave selectedNos)
+        public static bool TryFixSourceClassType(NamedObjectSave selectedNos)
         {
+            var didChange = false;
             if (selectedNos.IsCollisionRelationship())
             {
+                var oldSourceClassType = selectedNos.SourceClassType;
+
                 selectedNos.SourceClassType = AssetTypeInfoManager.Self.CollisionRelationshipAti
                     .QualifiedRuntimeTypeName.PlatformFunc(selectedNos);
+
+                didChange = oldSourceClassType != selectedNos.SourceClassType;
             }
+
+            return didChange;
         }
 
         private static void HandleViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

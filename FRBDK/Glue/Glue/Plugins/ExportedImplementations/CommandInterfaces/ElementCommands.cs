@@ -31,9 +31,41 @@ using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Events;
 using EditorObjects.IoC;
 using System.Windows.Data;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.Refactoring.Views;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
+using Microsoft.VisualBasic;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
+
+public class ChangedNamedObjectVariable
+{
+    public NamedObjectSave NamedObjectSave;
+    public string VariableName;
+}
+
+public class FileChange
+{
+    public FilePath OldFile;
+    public FilePath NewFile;
+
+    public override string ToString()
+    {
+        return OldFile + " -> " + NewFile;
+    }
+}
+
+public class RenameModifications
+{
+    public List<FileChange> CodeFilesAffectedByRename = new List<FileChange>();
+    public List<GlueElement> ElementsWithChangedBaseType = new List<GlueElement>();
+    public List<NamedObjectSave> ObjectsWithChangedBaseEntity = new List<NamedObjectSave>();
+    public List<NamedObjectSave> ObjectsWithChangedGenericBaseEntity = new List<NamedObjectSave>();
+    public List<NamedObjectSave> ChangedCollisionRelationships = new List<NamedObjectSave>();
+    public List<ChangedNamedObjectVariable> ChangedNamedObjectVariables = new List<ChangedNamedObjectVariable>();
+    public List<CustomVariable> ChangedCustomVariables = new List<CustomVariable>();
+    public string StartupScreenChange;
+}
 public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 {
     #region Fields/Properties
@@ -60,22 +92,22 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     /// for the entity's folder. In other words, GameScreen would be "GameScreen" rather than "Screens\\GameScreen".
     /// </summary>
     /// <param name="elementToRename">The element to rename.</param>
-    /// <param name="value">The new name without any prefixes. For example, even an entity in a folder should pass "NewName" rather than 
-    /// "Entities\\Subfolder\\NewName".</param>
+    /// <param name="newElementName">The new full name. "Entities\\Subfolder\\NewName".</param>
     /// <returns>A task which completes when all logic and UI are finished.</returns>
-    public async Task RenameElement(GlueElement elementToRename, string value)
+    public async Task RenameElement(GlueElement elementToRename, string newFullElementName, bool showRenameWindow = true)
     {
+        newFullElementName = newFullElementName.Replace("/", "\\");
         await TaskManager.Self.AddAsync(() =>
         {
             bool isValid = true;
             string whyItIsntValid;
             if (elementToRename is ScreenSave)
             {
-                isValid = NameVerifier.IsScreenNameValid(value, elementToRename as ScreenSave, out whyItIsntValid);
+                isValid = NameVerifier.IsScreenNameValid(newFullElementName, elementToRename as ScreenSave, out whyItIsntValid);
             }
             else
             {
-                isValid = NameVerifier.IsEntityNameValid(value, elementToRename as EntitySave, out whyItIsntValid);
+                isValid = NameVerifier.IsEntityNameValid(newFullElementName, elementToRename as EntitySave, out whyItIsntValid);
 
             }
 
@@ -85,151 +117,232 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             }
             else
             {
-
-                string oldNameFull = elementToRename.Name;
-                string newNameFull = oldNameFull.Substring(0, oldNameFull.Length - elementToRename.ClassName.Length) + value;
-
-                var result = ChangeClassNamesInCodeAndFileName(elementToRename, oldNameFull, newNameFull);
-
-                if (result == DialogResult.Yes)
-                {
-                    // Set the name first because that's going
-                    // to be used by code that follows to modify
-                    // inheritance.
-                    elementToRename.Name = newNameFull;
-
-                    var elementsToRegenerate = new HashSet<GlueElement>();
-
-                    // The Types object is in the root object, so we need to generate the root-most object
-                    elementsToRegenerate.Add(ObjectFinder.Self.GetRootBaseElement(elementToRename));
-
-                    if (elementToRename is EntitySave entityToRename)
-                    {
-                        // Change any Entities that depend on this
-                        for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
-                        {
-                            var entitySave = ProjectManager.GlueProjectSave.Entities[i];
-                            if (entitySave.BaseElement == oldNameFull)
-                            {
-                                entitySave.BaseEntity = newNameFull;
-                            }
-                        }
-
-                        // Change any NamedObjects that use this as their type (whether in Entity, or as a generic class)
-                        List<NamedObjectSave> namedObjectsWithElementSourceClassType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldNameFull);
-
-                        foreach (NamedObjectSave nos in namedObjectsWithElementSourceClassType)
-                        {
-                            elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
-                            if (nos.SourceType == SourceType.Entity && nos.SourceClassType == oldNameFull)
-                            {
-                                nos.SourceClassType = newNameFull;
-                                nos.UpdateCustomProperties();
-                            }
-                            else if (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassGenericType == oldNameFull)
-                            {
-                                nos.SourceClassGenericType = newNameFull;
-                            }
-                            else if (nos.IsCollisionRelationship())
-                            {
-                                PluginManager.CallPluginMethod(
-                                    "Collision Plugin",
-                                    "FixNamedObjectCollisionType",
-                                    new object[] { nos });
-                            }
-                        }
-
-                        List<NamedObjectSave> namedObjectsWithElementAsVariableType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntityAsVariableType(oldNameFull);
-                        foreach(var nos in namedObjectsWithElementAsVariableType)
-                        {
-                            elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
-
-                            foreach (var variable in nos.InstructionSaves)
-                            {
-                                if((variable.Value as string) == oldNameFull)
-                                {
-                                    variable.Value = newNameFull;
-                                }
-                            }
-                        }
-
-                        // If this has a base entity, then the most base entity might be used in a list associated with factories.
-                        if(!string.IsNullOrEmpty( elementToRename.BaseElement) && entityToRename.CreatedByOtherEntities)
-                        {
-                            var rootBase = ObjectFinder.Self.GetBaseElementRecursively(elementToRename);
-
-                            if(rootBase != elementToRename)
-                            {
-                                foreach(var nosUsingRoot in ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(rootBase as EntitySave))
-                                {
-                                    elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nosUsingRoot));
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Change any Screens that depend on this
-                        for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
-                        {
-                            var screenSave = ProjectManager.GlueProjectSave.Screens[i];
-                            if (screenSave.BaseScreen == oldNameFull)
-                            {
-                                screenSave.BaseScreen = newNameFull;
-                            }
-                        }
-
-                        if (GlueCommands.Self.GluxCommands.StartUpScreenName == oldNameFull)
-                        {
-                            GlueCommands.Self.GluxCommands.StartUpScreenName = newNameFull;
-
-                        }
-                        // Don't do anything with NamedObjects and Screens since they can't (currently) be named objects
-                    }
-
-                    var variablesReferencingElement = ObjectFinder.Self.GetVariablesReferencingElementType(oldNameFull);
-
-
-                    foreach(var variable in variablesReferencingElement)
-                    {
-                        variable.DefaultValue = newNameFull;
-
-                        elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(variable));
-                    }
-
-                    foreach (var element in elementsToRegenerate)
-                    {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                    }
-
-                    GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
-
-                    GlueCommands.Self.ProjectCommands.SaveProjects();
-
-                    GlueState.Self.CurrentGlueProject.Entities.SortByName();
-                    GlueState.Self.CurrentGlueProject.Screens.SortByName();
-
-                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
-
-
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToRename);
-
-                    PluginManager.ReactToElementRenamed(elementToRename, oldNameFull);
-                }
+                DoRenameInner(elementToRename, newFullElementName, showRenameWindow);
             }
-        }, $"Renaming {elementToRename} to {value}");
+        }, $"Renaming {elementToRename} to {newFullElementName}");
     }
 
-    private DialogResult ChangeClassNamesInCodeAndFileName(GlueElement elementToRename, string oldName, string newName)
+    private void DoRenameInner(GlueElement elementToRename, string newNameFull, bool showRenameWindow)
     {
-        var validFiles = CodeWriter.GetAllCodeFilesFor(elementToRename);
+        RenameModifications renameModifications = new RenameModifications();
+
+        string oldNameFull = elementToRename.Name;
+        var fileNameBeforeMove = GlueCommands.Self.FileCommands.GetJsonFilePath(elementToRename);
+
+        var oldFileNames = CodeWriter.GetAllCodeFilesFor(elementToRename);
+
+        var changeClassNamesResponse = ChangeClassNamesAndNamespaceInCodeAndFileName(oldFileNames, oldNameFull, newNameFull);
+
+        var oldDirectory = FileManager.GetDirectory(oldNameFull, RelativeType.Relative);
+        var newDirectory = FileManager.GetDirectory(newNameFull, RelativeType.Relative);
+        var didChangeDirectory = oldDirectory != newDirectory;
+
+        if(didChangeDirectory)
+        {
+            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
+            {
+                // delete the old file (put it in recycle bin)
+                // From https://stackoverflow.com/questions/2342628/deleting-file-to-recycle-bin-on-windows-x64-in-c-sharp
+
+                if (fileNameBeforeMove?.Exists() == true)
+                {
+                    try
+                    {
+                        Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(
+                            fileNameBeforeMove.FullPath,
+                            Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
+                            Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+                    }
+                    catch (Exception e)
+                    {
+                        GlueCommands.Self.PrintError(e.ToString());
+                    }
+                }
+            }
+        }
+
+        if (changeClassNamesResponse.Succeeded)
+        {
+            renameModifications.CodeFilesAffectedByRename.AddRange(changeClassNamesResponse.Data);
+
+            // Set the name first because that's going
+            // to be used by code that follows to modify
+            // inheritance.
+            elementToRename.Name = newNameFull;
+
+            var elementsToRegenerate = new HashSet<GlueElement>();
+
+            // The Types object is in the root object, so we need to generate the root-most object
+            elementsToRegenerate.Add(ObjectFinder.Self.GetRootBaseElement(elementToRename));
+
+            if (elementToRename is EntitySave entityToRename)
+            {
+                // Change any Entities that depend on this
+                for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
+                {
+                    var entitySave = ProjectManager.GlueProjectSave.Entities[i];
+                    if (entitySave.BaseElement == oldNameFull)
+                    {
+                        entitySave.BaseEntity = newNameFull;
+                        renameModifications.ElementsWithChangedBaseType.Add(entitySave);
+                    }
+                }
+
+                // Change any NamedObjects that use this as their type (whether in Entity, or as a generic class)
+                List<NamedObjectSave> namedObjectsWithElementSourceClassType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldNameFull);
+
+                foreach (NamedObjectSave nos in namedObjectsWithElementSourceClassType)
+                {
+                    elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
+                    if (nos.SourceType == SourceType.Entity && nos.SourceClassType == oldNameFull)
+                    {
+                        nos.SourceClassType = newNameFull;
+                        renameModifications.ObjectsWithChangedBaseEntity.Add(nos);
+                        nos.UpdateCustomProperties();
+                    }
+                    else if (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassGenericType == oldNameFull)
+                    {
+                        nos.SourceClassGenericType = newNameFull;
+                        renameModifications.ObjectsWithChangedGenericBaseEntity.Add(nos);
+
+                    }
+                    else if (nos.IsCollisionRelationship())
+                    {
+                        var didChange = (bool)PluginManager.CallPluginMethod(
+                            "Collision Plugin",
+                            "FixNamedObjectCollisionType",
+                            new object[] { nos });
+
+                        if (didChange)
+                        {
+                            renameModifications.ChangedCollisionRelationships.Add(nos);
+                        }
+                    }
+                }
+
+                List<NamedObjectSave> namedObjectsWithElementAsVariableType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntityAsVariableType(oldNameFull);
+                foreach (var nos in namedObjectsWithElementAsVariableType)
+                {
+                    elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
+
+                    foreach (var variable in nos.InstructionSaves)
+                    {
+                        if ((variable.Value as string) == oldNameFull)
+                        {
+                            variable.Value = newNameFull;
+
+                            renameModifications.ChangedNamedObjectVariables.Add(new ChangedNamedObjectVariable
+                            {
+                                NamedObjectSave = nos,
+                                VariableName = variable.Member
+                            });
+                        }
+                    }
+                }
+
+                // If this has a base entity, then the most base entity might be used in a list associated with factories.
+                if (!string.IsNullOrEmpty(elementToRename.BaseElement) && entityToRename.CreatedByOtherEntities)
+                {
+                    var rootBase = ObjectFinder.Self.GetBaseElementRecursively(elementToRename);
+
+                    if (rootBase != elementToRename)
+                    {
+                        foreach (var nosUsingRoot in ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(rootBase as EntitySave))
+                        {
+                            elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nosUsingRoot));
+                        }
+                    }
+                }
+
+                // todo - what about free-floating variables that aren't tied to NOS's? We have this code for screens, but not for entities?
+            }
+            else
+            {
+                // Change any Screens that depend on this
+                for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
+                {
+                    var screenSave = ProjectManager.GlueProjectSave.Screens[i];
+                    if (screenSave.BaseScreen == oldNameFull)
+                    {
+                        screenSave.BaseScreen = newNameFull;
+
+                        renameModifications.ElementsWithChangedBaseType.Add(screenSave);
+
+                    }
+                }
+
+                if (GlueCommands.Self.GluxCommands.StartUpScreenName == oldNameFull)
+                {
+                    GlueCommands.Self.GluxCommands.StartUpScreenName = newNameFull;
+                    renameModifications.StartupScreenChange = newNameFull;
+
+                }
+                // Don't do anything with NamedObjects and Screens since they can't (currently) be named objects
+            }
+
+            var variablesReferencingElement = ObjectFinder.Self.GetVariablesReferencingElementType(oldNameFull);
+
+            var newVariantName = elementToRename.Name.Replace("\\", ".") + "Variant";
+            var oldVariantName = oldNameFull.Replace("\\", ".") + "Variant";
+
+            foreach (var variable in variablesReferencingElement)
+            {
+
+                if((variable.DefaultValue as string) == oldNameFull)
+                {
+                    variable.DefaultValue = newNameFull;
+                }
+                if(variable.Type == oldVariantName)
+                {
+                    variable.Type = newVariantName;
+                }
+
+                renameModifications.ChangedCustomVariables.Add(variable);
+
+                elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(variable));
+            }
+
+            foreach (var element in elementsToRegenerate)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+            }
+
+            GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
+
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+
+            GlueState.Self.CurrentGlueProject.Entities.SortByName();
+            GlueState.Self.CurrentGlueProject.Screens.SortByName();
+
+            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+
+
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToRename);
+
+            PluginManager.ReactToElementRenamed(elementToRename, oldNameFull);
+
+            if(showRenameWindow)
+            {
+                GlueCommands.Self.DoOnUiThread(() =>
+                {
+                    // show a wrap-up of what happened
+                    var window = new RenameModificationWindow();
+                    window.SetFrom(renameModifications);    
+                    window.ShowDialog();
+                });
+            }
+        }
+    }
+
+    private ToolsUtilities.GeneralResponse<List<FileChange>> ChangeClassNamesAndNamespaceInCodeAndFileName(List<FilePath> validFiles, string oldName, string newName)
+    {
 
         string oldStrippedName = FileManager.RemovePath(oldName);
         string newStrippedName = FileManager.RemovePath(newName);
 
 
-        bool wasAnythingFound = false;
-        List<Tuple<string, string>> oldNewAbsoluteFiles = new List<Tuple<string, string>>();
+        List<FilePath> filesThatWillGetOverwritten = new List<FilePath>();
+        List<FileChange> oldNewAbsoluteFiles = new List<FileChange>();
 
         foreach (var file in validFiles)
         {
@@ -241,28 +354,45 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                 newFile = newFile.Replace($"/Factories/{oldStrippedName}Factory.Generated.cs", $"/Factories/{newStrippedName}Factory.Generated.cs");
             }
 
-            oldNewAbsoluteFiles.Add(new Tuple<string, string>(file.FullPath, newFile));
+            oldNewAbsoluteFiles.Add(new FileChange { OldFile = file, NewFile = newFile });
 
-            if (File.Exists(newFile))
+            if (File.Exists(newFile) && 
+                // No need to warn the user about generated files getting overwritten.
+                // They get ovewritten every time Glue is opened.
+                newFile.Contains(".Generated.") == false)
             {
-                wasAnythingFound = true;
+                filesThatWillGetOverwritten.Add(newFile);
             }
 
         }
-        DialogResult result = DialogResult.Yes;
+        var response = ToolsUtilities.GeneralResponse<List<FileChange>>.SuccessfulResponse;
+        response.Data = oldNewAbsoluteFiles;
 
-        if (wasAnythingFound)
+        if (filesThatWillGetOverwritten.Count > 0)
         {
-            result = MessageBox.Show("This rename would result in existing files being overwritten. \n\nOverwrite?", "Overwrite",
+            var message = "This rename would result in existing files being overwritten.";
+
+            foreach(var file in filesThatWillGetOverwritten)
+            {
+                message += "\n" + file;
+            }
+            
+            message += "\n\nOverwrite?";
+            var result = MessageBox.Show(message, "Overwrite",
                 MessageBoxButtons.YesNo);
+
+            response.Succeeded = result == DialogResult.Yes;
         }
 
-        if (result == DialogResult.Yes)
+
+        if (response.Succeeded)
         {
+            var newNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElementName(newName);
+            var oldNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElementName(oldName);
             foreach (var pair in oldNewAbsoluteFiles)
             {
-                string absoluteOldFile = pair.Item1;
-                string absoluteNewFile = pair.Item2;
+                string absoluteOldFile = pair.OldFile.FullPath;
+                string absoluteNewFile = pair.NewFile.FullPath;
 
                 bool isCapitalizationOnlyChange = absoluteOldFile.Equals(absoluteNewFile, StringComparison.InvariantCultureIgnoreCase);
 
@@ -291,6 +421,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                         newStrippedName,
                         ref fileContents);
 
+                    if(oldNamespace != newNamespace)
+                    {
+                        fileContents = CodeWriter.ReplaceNamespace(fileContents, newNamespace);
+                    }
+
                     FileManager.SaveText(fileContents, absoluteNewFile);
 
                     string relativeOld = FileManager.MakeRelative(absoluteOldFile);
@@ -307,7 +442,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                 }
             }
         }
-        return result;
+        return response;
     }
 
 
@@ -1438,7 +1573,9 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     #region Inheritance
 
     /// <summary>
-    /// Updates the argument glueElement from its base types. This updates variables and named objects.
+    /// Updates the argument glueElement from its base types. This updates variables and named objects. This is called whenever an element's base type changes,
+    /// which can result in the element having new variables and named objects (automatically inherited), or existing variables and named objects being modified
+    /// (such as being marked as instantiated by base).
     /// </summary>
     /// <param name="glueElement">The base Glue element to update.</param>
     /// <returns>Whether the object updated</returns>
@@ -1596,12 +1733,18 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         }
     }
 
-
-    private bool UpdateNamedObjectsFromBaseType(INamedObjectContainer derivedNamedObjectContainer, bool showPopupAboutObjectErrors)
+    /// <summary>
+    /// This method is called whenever the derivedGlueElement has its base type changed, resulting in
+    /// inheritance-based properties on the NamedObjects needing to be updated.
+    /// </summary>
+    /// <param name="derivedGlueElement">The derived element which conains named objects which should be upated.</param>
+    /// <param name="showPopupAboutObjectErrors">Whether to show popups on errors. This should be true if this is called in response to a UI action.</param>
+    /// <returns>Whether any changes have happened on the NamedObjects, which means a save is needed.</returns>
+    private bool UpdateNamedObjectsFromBaseType(GlueElement derivedGlueElement, bool showPopupAboutObjectErrors)
     {
         bool haveChangesOccurred = false;
 
-        List<NamedObjectSave> referencedObjectsBeforeUpdate = derivedNamedObjectContainer.AllNamedObjects.Where(item => item.DefinedByBase).ToList();
+        List<NamedObjectSave> referencedObjectsBeforeUpdate = derivedGlueElement.AllNamedObjects.Where(item => item.DefinedByBase).ToList();
 
         List<NamedObjectSave> namedObjectsInBaseSetByDerived = new List<NamedObjectSave>();
         List<NamedObjectSave> namedObjectsExposedInDerived = new List<NamedObjectSave>();
@@ -1622,11 +1765,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         // in the inheritance chain shouldn't have to define it, but before
         // today it did.  This caused a lot of problems including generated
         // code creating the element twice.
-        if (derivedNamedObjectContainer is EntitySave)
+        if (derivedGlueElement is EntitySave)
         {
-            if (!string.IsNullOrEmpty(derivedNamedObjectContainer.BaseObject))
+            if (!string.IsNullOrEmpty(derivedGlueElement.BaseObject))
             {
-                baseElements.Add(ObjectFinder.Self.GetElement(derivedNamedObjectContainer.BaseObject));
+                baseElements.Add(ObjectFinder.Self.GetElement(derivedGlueElement.BaseObject));
             }
             //List<EntitySave> allBase = ((EntitySave)namedObjectContainer).GetAllBaseEntities();
             //foreach (EntitySave baseEntitySave in allBase)
@@ -1636,9 +1779,9 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         }
         else
         {
-            if (!string.IsNullOrEmpty(derivedNamedObjectContainer.BaseObject))
+            if (!string.IsNullOrEmpty(derivedGlueElement.BaseObject))
             {
-                baseElements.Add(ObjectFinder.Self.GetElement(derivedNamedObjectContainer.BaseObject));
+                baseElements.Add(ObjectFinder.Self.GetElement(derivedGlueElement.BaseObject));
             }
             //List<ScreenSave> allBase = ((ScreenSave)namedObjectContainer).GetAllBaseScreens();
             //foreach (ScreenSave baseScreenSave in allBase)
@@ -1716,13 +1859,13 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             {
                 foreach (var nos in derivedNosesToAskAbout)
                 {
-                    if (derivedNamedObjectContainer.NamedObjects.Contains(nos))
+                    if (derivedGlueElement.NamedObjects.Contains(nos))
                     {
-                        derivedNamedObjectContainer.NamedObjects.Remove(nos);
+                        derivedGlueElement.NamedObjects.Remove(nos);
                     }
                     else
                     {
-                        derivedNamedObjectContainer.NamedObjects
+                        derivedGlueElement.NamedObjects
                             .FirstOrDefault(item => item.ContainedObjects.Contains(nos))
                             ?.ContainedObjects.Remove(nos);
                     }
@@ -1760,7 +1903,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             if (matchingDefinedByBase == null)
             {
-                AddSetByDerivedNos(derivedNamedObjectContainer, namedObjectInBase, false);
+                AddSetByDerivedNos(derivedGlueElement, namedObjectInBase, false);
             }
             else
             {
@@ -1778,7 +1921,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             if (nosInDerived == null)
             {
-                nosInDerived = AddSetByDerivedNos(derivedNamedObjectContainer, nosInBase, true);
+                nosInDerived = AddSetByDerivedNos(derivedGlueElement, nosInBase, true);
             }
             else
             {
@@ -1793,7 +1936,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                         .FirstOrDefault(item => item.InstanceName == containedInBaseNos.InstanceName && item.DefinedByBase);
                     if (containedInDerived == null)
                     {
-                        AddSetByDerivedNos(derivedNamedObjectContainer, containedInBaseNos, true, nosInDerived);
+                        AddSetByDerivedNos(derivedGlueElement, containedInBaseNos, true, nosInDerived);
                     }
                     else
                     {
