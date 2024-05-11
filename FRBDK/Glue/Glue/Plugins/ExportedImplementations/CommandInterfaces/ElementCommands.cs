@@ -94,7 +94,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     /// <param name="elementToRename">The element to rename.</param>
     /// <param name="newElementName">The new full name. "Entities\\Subfolder\\NewName".</param>
     /// <returns>A task which completes when all logic and UI are finished.</returns>
-    public async Task RenameElement(GlueElement elementToRename, string newFullElementName)
+    public async Task RenameElement(GlueElement elementToRename, string newFullElementName, bool showRenameWindow = true)
     {
         await TaskManager.Self.AddAsync(() =>
         {

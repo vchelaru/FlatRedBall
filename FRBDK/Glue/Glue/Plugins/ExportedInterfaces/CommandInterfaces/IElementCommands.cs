@@ -55,8 +55,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="elementToRename">The element to rename.</param>
         /// <param name="fullNewName">The full name including prefixes. For example, 
         /// "Entities\\Subfolder\\NewName".</param>
+        /// <param name="showRenameWindow">Whether to show a window that provides a summary of changes made during the remove</param>
         /// <returns>A task which completes when all logic and UI are finished.</returns>
-        Task RenameElement(GlueElement elementToRename, string fullNewName);
+        Task RenameElement(GlueElement elementToRename, string fullNewName, bool showRenameWindow = true);
 
         #endregion
 

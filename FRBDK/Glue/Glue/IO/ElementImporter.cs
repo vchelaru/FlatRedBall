@@ -204,7 +204,9 @@ class ElementImporter
             if (moveToSelectedFolderTreeNode && treeNode?.IsFolderForEntities() == true)
             {
                 var directory = treeNode.GetRelativeFilePath();
-                GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entitySave, directory);
+                var strippedName = elementName;
+                var fullName = directory + strippedName;
+                GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(entitySave, fullName, showRenameWindow:false);
 
                 shouldSave = true;
             }

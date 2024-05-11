@@ -353,7 +353,7 @@ namespace FlatRedBall.Glue.SaveClasses
         public static bool IsScreenNameValid(string name, ScreenSave screenSave, out string whyItIsntValid)
 		{
             var strippedName = name;
-            if(strippedName.Contains("\\"))
+            if(strippedName?.Contains("\\") == true)
             {
                 strippedName = strippedName.Substring(strippedName.LastIndexOf("\\") + 1);
             }
@@ -395,7 +395,7 @@ namespace FlatRedBall.Glue.SaveClasses
 		public static bool IsEntityNameValid(string name, EntitySave entitySave, out string whyItIsntValid)
 		{
             var strippedName = name;
-            if(strippedName.Contains("\\"))
+            if(strippedName?.Contains("\\") == true)
             {
                 strippedName = strippedName.Substring(strippedName.LastIndexOf("\\") + 1);
             }
