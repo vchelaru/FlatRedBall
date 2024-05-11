@@ -96,6 +96,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     /// <returns>A task which completes when all logic and UI are finished.</returns>
     public async Task RenameElement(GlueElement elementToRename, string newFullElementName, bool showRenameWindow = true)
     {
+        newFullElementName = newFullElementName.Replace("/", "\\");
         await TaskManager.Self.AddAsync(() =>
         {
             bool isValid = true;
@@ -116,12 +117,12 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             }
             else
             {
-                DoRenameInner(elementToRename, newFullElementName);
+                DoRenameInner(elementToRename, newFullElementName, showRenameWindow);
             }
         }, $"Renaming {elementToRename} to {newFullElementName}");
     }
 
-    private void DoRenameInner(GlueElement elementToRename, string newNameFull)
+    private void DoRenameInner(GlueElement elementToRename, string newNameFull, bool showRenameWindow)
     {
         RenameModifications renameModifications = new RenameModifications();
 
@@ -320,13 +321,16 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             PluginManager.ReactToElementRenamed(elementToRename, oldNameFull);
 
-            GlueCommands.Self.DoOnUiThread(() =>
+            if(showRenameWindow)
             {
-                // show a wrap-up of what happened
-                var window = new RenameModificationWindow();
-                window.SetFrom(renameModifications);    
-                window.ShowDialog();
-            });
+                GlueCommands.Self.DoOnUiThread(() =>
+                {
+                    // show a wrap-up of what happened
+                    var window = new RenameModificationWindow();
+                    window.SetFrom(renameModifications);    
+                    window.ShowDialog();
+                });
+            }
         }
     }
 
