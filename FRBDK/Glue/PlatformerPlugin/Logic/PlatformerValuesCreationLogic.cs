@@ -15,7 +15,7 @@ namespace PlatformerPluginCore.Logic
             out Dictionary<string, PlatformerValues> csvValues)
         {
             csvValues = new Dictionary<string, PlatformerValues>();
-            var filePath = CsvGenerator.Self.CsvFileFor(currentEntitySave);
+            var filePath = CsvGenerator.Self.CsvPlatformerFileFor(currentEntitySave);
 
             if (filePath.Exists())
             {

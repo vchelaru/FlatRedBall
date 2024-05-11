@@ -87,10 +87,16 @@ namespace TopDownPlugin.Controllers
 
             var viewModel = sender as TopDownEntityViewModel;
             var entity = viewModel.BackingData;// GlueState.Self.CurrentEntitySave;
-            bool shouldGenerateCsv, shouldGenerateEntity, shouldAddTopDownVariables;
+            bool shouldGenerateCsv, shouldGenerateEntity, shouldReAddTopDownVariables;
+            bool shouldRemoveCsvRfs = false;
+
+            if(viewModel.IsTopDown == false)
+            {
+                shouldRemoveCsvRfs = true;
+            }
 
             DetermineWhatToGenerate(e.PropertyName, viewModel,
-                out shouldGenerateCsv, out shouldGenerateEntity, out shouldAddTopDownVariables);
+                out shouldGenerateCsv, out shouldGenerateEntity, out shouldReAddTopDownVariables);
 
             switch (e.PropertyName)
             {
@@ -123,7 +129,7 @@ namespace TopDownPlugin.Controllers
                 await GenerateAndAddCsv(entity, viewModel);
             }
 
-            if (shouldAddTopDownVariables)
+            if (shouldReAddTopDownVariables)
             {
                 AddTopDownGlueVariables(entity);
             }
@@ -135,7 +141,7 @@ namespace TopDownPlugin.Controllers
                     "Generating " + entity.Name);
             }
 
-            if (shouldAddTopDownVariables)
+            if (shouldReAddTopDownVariables)
             {
                 await TaskManager.Self.AddAsync(() =>
                 {
@@ -144,7 +150,7 @@ namespace TopDownPlugin.Controllers
                 }, "Refreshing UI after top down plugin values changed", doOnUiThread:true);
             }
 
-            if (shouldGenerateCsv || shouldGenerateEntity || shouldAddTopDownVariables)
+            if (shouldGenerateCsv || shouldGenerateEntity || shouldReAddTopDownVariables)
             {
                 GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 await TaskManager.Self.AddAsync(
@@ -152,13 +158,39 @@ namespace TopDownPlugin.Controllers
                     {
                         EnumFileGenerator.Self.GenerateAndSave();
                         InterfacesFileGenerator.Self.GenerateAndSave();
-                        if (shouldGenerateCsv || shouldAddTopDownVariables)
+                        if (shouldGenerateCsv || shouldReAddTopDownVariables)
                         {
                             AiCodeGenerator.Self.GenerateAndSave();
                             AiTargetLogicCodeGenerator.Self.GenerateAndSave();
                         }
                         TopDownAnimationControllerGenerator.Self.GenerateAndSave();
                     }, "Generating all top-down code");
+            }
+
+            if(shouldRemoveCsvRfs)
+            {
+                await TaskManager.Self.AddAsync(() =>
+                {
+                    var csvFile = CsvGenerator.Self.CsvTopdownFileFor(entity);
+
+                    var relativeToProject = csvFile.RelativeTo(GlueState.Self.ContentDirectory);
+
+                    var rfses = entity.ReferencedFiles.Where(item => item.Name == relativeToProject).ToArray();
+
+                    if(rfses.Length > 0)
+                    {
+                        foreach(var rfs in rfses)
+                        {
+                            entity.ReferencedFiles.Remove(rfs);
+                        }
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entity);
+                        _=GlueCommands.Self.GluxCommands.SaveElementAsync(entity);
+                    }
+
+
+
+                }, "Removing top down files from entity");
             }
 
         }
