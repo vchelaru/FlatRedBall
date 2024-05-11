@@ -130,7 +130,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public string GetNamespaceForElement(GlueElement element)
         {
-            string directory = FileManager.GetDirectory(element.Name, RelativeType.Relative);
+            string elementName = element.Name;
+            return GetNamespaceForElementName(elementName);
+        }
+
+        public string GetNamespaceForElementName(string elementName)
+        { 
+            string directory = FileManager.GetDirectory(elementName, RelativeType.Relative);
 
             string returnString = GlueState.ProjectNamespace + "." + directory.Replace('\\', '.').Replace('/', '.');
             // This ends in a period.

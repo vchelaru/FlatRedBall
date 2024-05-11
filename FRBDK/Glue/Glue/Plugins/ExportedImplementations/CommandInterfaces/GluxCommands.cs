@@ -30,8 +30,6 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 using GlueFormsCore.ViewModels;
 using GlueFormsCore.Managers;
 //using FlatRedBall.Utilities;
-//using ToolsUtilities;
-using GeneralResponse = ToolsUtilities.GeneralResponse;
 using System.Threading.Tasks;
 using FlatRedBall.Utilities;
 using static FlatRedBall.Glue.Plugins.PluginManager;
@@ -44,6 +42,7 @@ using FlatRedBall.Glue.AutomatedGlue;
 using static FlatRedBall.Debugging.Debugger;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
 using WpfDataUi.DataTypes;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
@@ -86,25 +85,15 @@ public class GluxCommands : IGluxCommands
 
     public IScreenCommands ScreenCommands => mElementCommands;
 
+    public IEntityCommands EntityCommands => mElementCommands; 
 
-    public IEntityCommands EntityCommands
-    {
-        get { return mElementCommands; }
-    }
+    public IElementCommands ElementCommands => mElementCommands; 
 
-    public IElementCommands ElementCommands
-    {
-        get { return mElementCommands; }
-    }
-
-    public IProjectCommands ProjectCommands
-    {
-        get { return projectCommands; }
-    }
+    public IProjectCommands ProjectCommands => projectCommands; 
 
     public string StartUpScreenName
     {
-        get { return GlueState.Self.CurrentGlueProject?.StartUpScreen; }
+        get => GlueState.Self.CurrentGlueProject?.StartUpScreen; 
         set
         {
             // if statement is here to prevent unnecessary saves
@@ -2915,16 +2904,16 @@ public class GluxCommands : IGluxCommands
     
     #region Entity
 
-    private static bool MoveEntityCodeFilesToDirectory(EntitySave entitySave, string targetDirectory)
+    public ToolsUtilities.GeneralResponse<List<FileChange>> MoveElementCodeFilesToDirectory(GlueElement entitySave, FilePath targetDirectory)
     {
-        bool succeeded = true;
+        var toReturn = ToolsUtilities.GeneralResponse<List<FileChange>>.SuccessfulResponse;
 
         var allFiles = CodeWriter.GetAllCodeFilesFor(entitySave);
         foreach (var file in allFiles)
         {
             bool isFactory = GetIfFileIsFactory(entitySave, file.FullPath);
 
-            if (!succeeded)
+            if (!toReturn.Succeeded)
             {
                 break;
             }
@@ -2932,22 +2921,38 @@ public class GluxCommands : IGluxCommands
             if (file.Exists() && !isFactory)
             {
                 string relative = FileManager.MakeRelative(file.FullPath);
-                succeeded = MoveSingleCodeFileToDirectory(relative, targetDirectory);
+                var responseInner = MoveSingleCodeFileToDirectory(relative, targetDirectory);
+                if(responseInner.Succeeded)
+                {
+                    toReturn.Data.Add(responseInner.Data);
+                }
+                else
+                {
+                    toReturn.Succeeded = false;
+                }
+
             }
         }
 
-        return succeeded;
+        return toReturn;
     }
 
     public bool MoveEntityToDirectory(EntitySave movedEntitySave, string newRelativeDirectory)
     {
+        // newRelativeDirectory is the new directory relative to the project root. For example, moving an entity into a Characters folder
+        // would result in newRelativeDirectory being "Entities/Characters/"
+        RenameModifications renameModifications = new RenameModifications();
+
         bool succeeded = true;
         var fileNameBeforeMove = GlueCommands.Self.FileCommands.GetJsonFilePath(movedEntitySave);
 
-        string targetDirectory = GlueState.Self.CurrentGlueProjectDirectory + newRelativeDirectory;
-        string oldName = movedEntitySave.Name;
+        FilePath targetDirectory = GlueState.Self.CurrentGlueProjectDirectory + newRelativeDirectory;
+        string oldNameFull = movedEntitySave.Name;
         string newName = newRelativeDirectory.Replace("/", "\\") + movedEntitySave.ClassName;
-        succeeded = MoveEntityCodeFilesToDirectory(movedEntitySave, targetDirectory);
+        var moveCodeFileResponse = MoveElementCodeFilesToDirectory(movedEntitySave, targetDirectory);
+        succeeded = moveCodeFileResponse.Succeeded;
+        renameModifications.CodeFilesAffectedByRename.AddRange(moveCodeFileResponse.Data);
+
 
         if (succeeded)
         {
@@ -2964,7 +2969,7 @@ public class GluxCommands : IGluxCommands
         if (succeeded)
         {
             // 5: Change namespaces
-            string newNamespace = ProjectManager.ProjectNamespace + "." + FileManager.MakeRelative(targetDirectory).Replace("/", ".");
+            string newNamespace = ProjectManager.ProjectNamespace + "." + FileManager.MakeRelative(targetDirectory.FullPath).Replace("/", ".");
             newNamespace = newNamespace.Substring(0, newNamespace.Length - 1);
             string customFileContents = FileManager.FromFileText(FileManager.RelativeDirectory + newName + ".cs");
             customFileContents = CodeWriter.ReplaceNamespace(customFileContents, newNamespace);
@@ -3003,7 +3008,7 @@ public class GluxCommands : IGluxCommands
                 }
             }
 
-            List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldName);
+            List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldNameFull);
 
 
             // Let's get all the TreeNodes to regenerate.
@@ -3013,12 +3018,12 @@ public class GluxCommands : IGluxCommands
 
             foreach (NamedObjectSave nos in namedObjects)
             {
-                if (nos.SourceClassGenericType == oldName)
+                if (nos.SourceClassGenericType == oldNameFull)
                 {
                     nos.SourceClassGenericType = newName;
                 }
 
-                if (nos.SourceClassType == oldName)
+                if (nos.SourceClassType == oldNameFull)
                 {
                     nos.SourceClassType = newName;
                 }
@@ -3030,7 +3035,7 @@ public class GluxCommands : IGluxCommands
 
             foreach (EntitySave esToTestForInheritance in ProjectManager.GlueProjectSave.Entities)
             {
-                if (esToTestForInheritance.BaseEntity == oldName)
+                if (esToTestForInheritance.BaseEntity == oldNameFull)
                 {
                     esToTestForInheritance.BaseEntity = newName;
                     elementsToRegenerate.Add(esToTestForInheritance);
@@ -3042,7 +3047,7 @@ public class GluxCommands : IGluxCommands
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             }
 
-            PluginManager.ReactToElementRenamed(movedEntitySave, oldName);
+            PluginManager.ReactToElementRenamed(movedEntitySave, oldNameFull);
         }
 
         return succeeded;
@@ -3119,15 +3124,15 @@ public class GluxCommands : IGluxCommands
         GluxCommands.Self.SaveProjectAndElements();
     }
 
-    private static bool UpdateNamespaceOnCodeFiles(EntitySave entitySave)
+    public bool UpdateNamespaceOnCodeFiles(GlueElement glueElement)
     {
-        var allFiles = CodeWriter.GetAllCodeFilesFor(entitySave);
-        string newNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElement(entitySave);
+        var allFiles = CodeWriter.GetAllCodeFilesFor(glueElement);
+        string newNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElement(glueElement);
 
         foreach (var file in allFiles)
         {
             bool doesFileExist = file.Exists();
-            bool isFactory = GetIfFileIsFactory(entitySave, file.FullPath);
+            bool isFactory = GetIfFileIsFactory(glueElement, file.FullPath);
 
             if (doesFileExist && !isFactory)
             {
@@ -3305,12 +3310,12 @@ public class GluxCommands : IGluxCommands
 
     #region Code Files
 
-    private static bool GetIfFileIsFactory(EntitySave entitySave, string file)
+    private static bool GetIfFileIsFactory(GlueElement glueElement, string file)
     {
-        return file.EndsWith("Factories/" + entitySave.ClassName + "Factory.Generated.cs");
+        return file.EndsWith("Factories/" + glueElement.ClassName + "Factory.Generated.cs");
     }
 
-    static bool MoveSingleCodeFileToDirectory(string relativeCodeFile, string directory)
+    static ToolsUtilities.GeneralResponse<FileChange> MoveSingleCodeFileToDirectory(string relativeCodeFile, FilePath directory)
     {
         string absoluteCodeFile = FileManager.MakeAbsolute(relativeCodeFile);
         bool succeeded = true;
@@ -3331,7 +3336,16 @@ public class GluxCommands : IGluxCommands
 
             GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(targetFile, save: false);
         }
-        return succeeded;
+
+        var toReturn = new ToolsUtilities.GeneralResponse<FileChange>();
+        toReturn.Succeeded = succeeded;
+        toReturn.Data = new FileChange
+        {
+            OldFile = absoluteCodeFile,
+            NewFile = targetFile.FullPath
+        };
+
+        return toReturn;
     }
 
     #endregion

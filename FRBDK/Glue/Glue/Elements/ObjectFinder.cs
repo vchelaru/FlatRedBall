@@ -237,7 +237,7 @@ public class ObjectFinder : IObjectFinder
         return listToReturn;
     }
 
-    public EntitySave GetEntitySaveUnqualified(string entityName)
+    public EntitySave GetEntitySaveUnqualified(string entityName, EntitySave toIgnore = null)
     {
         if (GlueProject != null)
         {
@@ -245,7 +245,7 @@ public class ObjectFinder : IObjectFinder
             {
                 EntitySave entitySave = GlueProject.Entities[i];
 
-                if (FileManager.RemovePath(entitySave.Name) == entityName)
+                if (FileManager.RemovePath(entitySave.Name) == entityName && entitySave != toIgnore)
                 {
                     return entitySave;
                 }

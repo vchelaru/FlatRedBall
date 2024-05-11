@@ -37,6 +37,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
 
         string GetNamespaceForElement(GlueElement element);
+        string GetNamespaceForElementName(string elementName);
+
 
         void GenerateCurrentCsvCode();
 

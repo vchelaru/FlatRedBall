@@ -352,6 +352,11 @@ namespace FlatRedBall.Glue.SaveClasses
         /// <returns>Whether the name is valid.</returns>
         public static bool IsScreenNameValid(string name, ScreenSave screenSave, out string whyItIsntValid)
 		{
+            var strippedName = name;
+            if(strippedName.Contains("\\"))
+            {
+                strippedName = strippedName.Substring(strippedName.LastIndexOf("\\") + 1);
+            }
 			whyItIsntValid = "";
 
 			CheckForCommonImproperNames(name, ref whyItIsntValid);
@@ -389,39 +394,41 @@ namespace FlatRedBall.Glue.SaveClasses
 
 		public static bool IsEntityNameValid(string name, EntitySave entitySave, out string whyItIsntValid)
 		{
+            var strippedName = name;
+            if(strippedName.Contains("\\"))
+            {
+                strippedName = strippedName.Substring(strippedName.LastIndexOf("\\") + 1);
+            }
 			whyItIsntValid = "";
 
-			CheckForCommonImproperNames(name, ref whyItIsntValid);
+			CheckForCommonImproperNames(strippedName, ref whyItIsntValid);
 
-
-            CheckForExistingEntity(name, ref whyItIsntValid);
-
-			if (ObjectFinder.Self.GetEntitySaveUnqualified(name) != null)
+			if (ObjectFinder.Self.GetEntitySaveUnqualified(strippedName, entitySave) != null)
 			{
-				whyItIsntValid = "There is already an entity named " + name;
+				whyItIsntValid = "There is already an entity named " + strippedName;
 			}
-			else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile("Entities\\" + name) != null)
+			else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile("Entities\\" + strippedName) != null)
 			{
-				whyItIsntValid = "There is already a file named " + name;
+				whyItIsntValid = "There is already a file named " + strippedName;
 			}
-            else if (mReservedClassNames.Contains(name))
+            else if (mReservedClassNames.Contains(strippedName))
             {
-                whyItIsntValid = "The name " + name + " is a reserved class name, so it can't be used for an Entity";
+                whyItIsntValid = "The name " + strippedName + " is a reserved class name, so it can't be used for an Entity";
             }
-            else if (ObjectFinder.Self.GetScreenSaveUnqualified(name) != null)
+            else if (ObjectFinder.Self.GetScreenSaveUnqualified(strippedName) != null)
             {
-                whyItIsntValid = "There is already a Screen named " + name + ".\n\nGlue recommends not naming your Screens and Entities the same because " +
+                whyItIsntValid = "There is already a Screen named " + strippedName + ".\n\nGlue recommends not naming your Screens and Entities the same because " +
                     "adding an Entity to a Screen that has the same name may cause problems in the generated code.";
 
             }
-            else if (name == ProjectManager.ProjectNamespace)
+            else if (strippedName == ProjectManager.ProjectNamespace)
             {
                 whyItIsntValid = "The Entity cannot be named the same as the root namespace (which is usually the same name as the project)";
             }
 
             if (string.IsNullOrEmpty(whyItIsntValid))
             {
-                CheckForFileNameWindowsReserved(name, out whyItIsntValid);
+                CheckForFileNameWindowsReserved(strippedName, out whyItIsntValid);
             }
 
 

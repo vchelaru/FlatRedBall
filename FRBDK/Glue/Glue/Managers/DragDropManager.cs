@@ -837,7 +837,8 @@ public class DragDropManager : Singleton<DragDropManager>
         string newName = newRelativeDirectory.Replace("/", "\\") + entitySave.ClassName;
 
         // modify data and files
-        succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entitySave, newRelativeDirectory);
+        //succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entitySave, newRelativeDirectory);
+        GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(entitySave, newName);
 
         // Generate and save
         if (succeeded)

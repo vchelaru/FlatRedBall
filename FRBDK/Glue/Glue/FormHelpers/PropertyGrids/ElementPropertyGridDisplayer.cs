@@ -17,7 +17,11 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
         protected async void SetClassName(object sender, MemberChangeArgs args)
         {
             var element = (GlueElement)Instance;
-            await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(element, (string)args.Value);
+
+            var oldName = element.Name;
+            var newName = oldName.Substring(0, oldName.LastIndexOf("\\") + 1) + (string)args.Value;
+
+            await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(element, newName);
         }
 
         protected void HandleMemberSet(object sender, MemberChangeArgs args)

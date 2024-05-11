@@ -32,6 +32,8 @@ using FlatRedBall.Glue.Events;
 using EditorObjects.IoC;
 using System.Windows.Data;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.Refactoring.Views;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
+using Microsoft.VisualBasic;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
@@ -90,10 +92,9 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     /// for the entity's folder. In other words, GameScreen would be "GameScreen" rather than "Screens\\GameScreen".
     /// </summary>
     /// <param name="elementToRename">The element to rename.</param>
-    /// <param name="value">The new name without any prefixes. For example, even an entity in a folder should pass "NewName" rather than 
-    /// "Entities\\Subfolder\\NewName".</param>
+    /// <param name="newElementName">The new full name. "Entities\\Subfolder\\NewName".</param>
     /// <returns>A task which completes when all logic and UI are finished.</returns>
-    public async Task RenameElement(GlueElement elementToRename, string value)
+    public async Task RenameElement(GlueElement elementToRename, string newFullElementName)
     {
         await TaskManager.Self.AddAsync(() =>
         {
@@ -101,11 +102,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             string whyItIsntValid;
             if (elementToRename is ScreenSave)
             {
-                isValid = NameVerifier.IsScreenNameValid(value, elementToRename as ScreenSave, out whyItIsntValid);
+                isValid = NameVerifier.IsScreenNameValid(newFullElementName, elementToRename as ScreenSave, out whyItIsntValid);
             }
             else
             {
-                isValid = NameVerifier.IsEntityNameValid(value, elementToRename as EntitySave, out whyItIsntValid);
+                isValid = NameVerifier.IsEntityNameValid(newFullElementName, elementToRename as EntitySave, out whyItIsntValid);
 
             }
 
@@ -115,22 +116,49 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             }
             else
             {
-                DoRenameInner(elementToRename, value);
+                DoRenameInner(elementToRename, newFullElementName);
             }
-        }, $"Renaming {elementToRename} to {value}");
+        }, $"Renaming {elementToRename} to {newFullElementName}");
     }
 
-    private void DoRenameInner(GlueElement elementToRename, string value)
+    private void DoRenameInner(GlueElement elementToRename, string newNameFull)
     {
         RenameModifications renameModifications = new RenameModifications();
 
         string oldNameFull = elementToRename.Name;
-        string newNameFull = oldNameFull.Substring(0, oldNameFull.Length - elementToRename.ClassName.Length) + value;
+        var fileNameBeforeMove = GlueCommands.Self.FileCommands.GetJsonFilePath(elementToRename);
 
         var oldFileNames = CodeWriter.GetAllCodeFilesFor(elementToRename);
 
-        var changeClassNamesResponse = ChangeClassNamesInCodeAndFileName(oldFileNames, oldNameFull, newNameFull);
+        var changeClassNamesResponse = ChangeClassNamesAndNamespaceInCodeAndFileName(oldFileNames, oldNameFull, newNameFull);
 
+        var oldDirectory = FileManager.GetDirectory(oldNameFull, RelativeType.Relative);
+        var newDirectory = FileManager.GetDirectory(newNameFull, RelativeType.Relative);
+        var didChangeDirectory = oldDirectory != newDirectory;
+
+        if(didChangeDirectory)
+        {
+            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
+            {
+                // delete the old file (put it in recycle bin)
+                // From https://stackoverflow.com/questions/2342628/deleting-file-to-recycle-bin-on-windows-x64-in-c-sharp
+
+                if (fileNameBeforeMove?.Exists() == true)
+                {
+                    try
+                    {
+                        Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(
+                            fileNameBeforeMove.FullPath,
+                            Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
+                            Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+                    }
+                    catch (Exception e)
+                    {
+                        GlueCommands.Self.PrintError(e.ToString());
+                    }
+                }
+            }
+        }
 
         if (changeClassNamesResponse.Succeeded)
         {
@@ -302,7 +330,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         }
     }
 
-    private ToolsUtilities.GeneralResponse<List<FileChange>> ChangeClassNamesInCodeAndFileName(List<FilePath> validFiles, string oldName, string newName)
+    private ToolsUtilities.GeneralResponse<List<FileChange>> ChangeClassNamesAndNamespaceInCodeAndFileName(List<FilePath> validFiles, string oldName, string newName)
     {
 
         string oldStrippedName = FileManager.RemovePath(oldName);
@@ -341,8 +369,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             response.Succeeded = result == DialogResult.Yes;
         }
 
+
         if (response.Succeeded)
         {
+            var newNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElementName(newName);
+            var oldNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElementName(oldName);
             foreach (var pair in oldNewAbsoluteFiles)
             {
                 string absoluteOldFile = pair.OldFile.FullPath;
@@ -374,6 +405,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                         FileManager.RemovePath(oldName),
                         newStrippedName,
                         ref fileContents);
+
+                    if(oldNamespace != newNamespace)
+                    {
+                        fileContents = CodeWriter.ReplaceNamespace(fileContents, newNamespace);
+                    }
 
                     FileManager.SaveText(fileContents, absoluteNewFile);
 
