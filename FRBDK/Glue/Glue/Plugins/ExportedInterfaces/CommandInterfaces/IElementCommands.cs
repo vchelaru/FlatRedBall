@@ -49,8 +49,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #region GlueElement
 
         /// <summary>
-        /// Performs all logic related to renaming an element. The name should not have the "Screens\\" or "Entities\\" prefix, nor any prefixes
-        /// for the entity's folder. In other words, GameScreen would be "GameScreen" rather than "Screens\\GameScreen".
+        /// Performs all logic related to renaming an element. This should get called
+        /// before the element's name has been set. This will internally set the element's name.
+        /// The fullNewName is the full name of the element such as "Screens\\GameScreen".
         /// </summary>
         /// <param name="elementToRename">The element to rename.</param>
         /// <param name="fullNewName">The full name including prefixes. For example, 

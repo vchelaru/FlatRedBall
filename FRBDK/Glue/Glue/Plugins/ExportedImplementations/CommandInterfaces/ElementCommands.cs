@@ -341,7 +341,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         string newStrippedName = FileManager.RemovePath(newName);
 
 
-        bool wasAnythingFound = false;
+        List<FilePath> filesThatWillGetOverwritten = new List<FilePath>();
         List<FileChange> oldNewAbsoluteFiles = new List<FileChange>();
 
         foreach (var file in validFiles)
@@ -356,18 +356,29 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             oldNewAbsoluteFiles.Add(new FileChange { OldFile = file, NewFile = newFile });
 
-            if (File.Exists(newFile))
+            if (File.Exists(newFile) && 
+                // No need to warn the user about generated files getting overwritten.
+                // They get ovewritten every time Glue is opened.
+                newFile.Contains(".Generated.") == false)
             {
-                wasAnythingFound = true;
+                filesThatWillGetOverwritten.Add(newFile);
             }
 
         }
         var response = ToolsUtilities.GeneralResponse<List<FileChange>>.SuccessfulResponse;
         response.Data = oldNewAbsoluteFiles;
 
-        if (wasAnythingFound)
+        if (filesThatWillGetOverwritten.Count > 0)
         {
-            var result = MessageBox.Show("This rename would result in existing files being overwritten. \n\nOverwrite?", "Overwrite",
+            var message = "This rename would result in existing files being overwritten.";
+
+            foreach(var file in filesThatWillGetOverwritten)
+            {
+                message += "\n" + file;
+            }
+            
+            message += "\n\nOverwrite?";
+            var result = MessageBox.Show(message, "Overwrite",
                 MessageBoxButtons.YesNo);
 
             response.Succeeded = result == DialogResult.Yes;

@@ -3492,19 +3492,23 @@ public class GluxCommands : IGluxCommands
             { 
                 var allContainedEntities = GlueState.Self.CurrentGlueProject.Entities
                     .Where(entity => entity.Name.StartsWith(directoryRenaming)).ToList();
+                var oldDirectoryAbsolute = GlueCommands.Self.GetAbsoluteFileName(treeNode.GetRelativeFilePath(), isContent: false);
 
                 newDirectoryNameRelative = newDirectoryNameRelative.Replace('/', '\\');
 
 
                 foreach (var entity in allContainedEntities)
                 {
-                    bool succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entity, newDirectoryNameRelative);
+                    var strippedEntityName = entity.GetStrippedName();
+                    var newEntityName = newDirectoryNameRelative + strippedEntityName;
 
-                    if (!succeeded)
-                    {
-                        didAllSucceed = false;
-                        break;
-                    }
+                    await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(entity, newEntityName, showRenameWindow: false);
+                }
+
+                // Is the old directory empty? If so, we can delete it:
+                if (Directory.GetFiles(oldDirectoryAbsolute).Length == 0)
+                {
+                    Directory.Delete(oldDirectoryAbsolute);
                 }
             }
 
@@ -3519,7 +3523,8 @@ public class GluxCommands : IGluxCommands
 
             if (didAllSucceed)
             {
-                treeNode.Text = newName;
+                // I dont' think we need to do this anymore, it's done automatically by the movement above...
+                //treeNode.Text = newName;
 
                 GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();

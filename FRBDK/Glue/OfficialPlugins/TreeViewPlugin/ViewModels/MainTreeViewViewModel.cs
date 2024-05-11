@@ -337,10 +337,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                             var newParentTreeNode = GetTreeNodeByRelativePath(desiredFolderForElement);
 
-                            elementTreeNode.Parent.Remove(elementTreeNode);
+                            // on a rename, the parent node hasn't yet been renamed yet, so let's tolerate nulls:
+                            if(newParentTreeNode != null)
+                            {
+                                elementTreeNode.Parent.Remove(elementTreeNode);
 
-                            newParentTreeNode.Add(elementTreeNode);
-                            elementTreeNode.Parent = newParentTreeNode;
+                                newParentTreeNode.Add(elementTreeNode);
+                                elementTreeNode.Parent = newParentTreeNode;
+                            }
                         }
                     }
 
