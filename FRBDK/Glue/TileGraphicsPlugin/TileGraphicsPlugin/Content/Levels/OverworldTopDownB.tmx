@@ -14,7 +14,7 @@
  </layer>
  <layer id="1" name="GameplayLayer" width="43" height="41" opacity="0.7">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu2UUQ7DIAxDy/0vvd8qImA7Du20WapWdYBfTOC6/voVjcmDjtvNcbAovm9lnXmP5De+d7BkXLtcs/86WNH1GB5HXijjfYySnTMrRt/GuvJx+1V0KhNV8f55mpXtt9W4DsW1R/jOZBjnOhlRJma/O3qjypblqtS2+u6459hc1Zwde6Tkqni6eqibc+ajKN4drrPZyVrlRM6Wg7Uzz7vPKVaHT3V+J1/0qrCc4sxYWc+ME62B8WH5ZucX5azkruSHsnT3CbJPSK5MPVXejB3db5aXYZ6N3/nvWFhWhEHJA11H4WXn7oQwM3WjYtZw58qqskez+aiHKndP7daviGXt6sdu3kr/ZN4dvGqNlboUdrW+p58P3SVoMowbAAA=
+   H4sIAAAAAAAACu2UUQ6DMAxD4f6X3i+KktZ2HGDaLKFN0MYvbuA4/voVncmFrtvtcbAovm9lzbzP4jf+n2CpuHa5Vs8mWNF6DI8jL5TxukbJzpkVo29jXfm4/Tq6KxNV8fvzNCs7b6t1E4q1z3CfyTDudTKiTMx5T8xGl63KVeltdd/xnWNzVXN2nJGSq+LpmqFpzsxHUfx2uN7NSdYuJ/JuOVgn87z63MXq8Onun+SLXh2Wuzgr1sxz5V1xoj2gvVV1s2dVbYazkzuzl2WZnhPknJBcmX66vBU7et4sL8Ocrd/571hYVoRByQOto/Cye3dCmJm+UTE13Lmy6pxRth/1UOWeqV39jljWqXmc5u3MT+U9wav22OlLYVf7e/r6AIPwGtWMGwAA
   </data>
  </layer>
  <layer id="8" name="AbovePlayer" width="43" height="41">

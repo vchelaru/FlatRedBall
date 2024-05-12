@@ -14,6 +14,8 @@ namespace OfficialPlugins.Wizard.Managers
             viewModel.PlayerControlType = GameType.TopDown;
             viewModel.AddCloudCollision = false;
 
+            viewModel.WithVisualType = WithVisualType.WithVisuals;
+
             // The FRBBeefcake is SNES resolution so we should make things smaller and zoomed:
             viewModel.SelectedCameraResolution = CameraResolution._480x360;
             viewModel.ScalePercent = 200;
