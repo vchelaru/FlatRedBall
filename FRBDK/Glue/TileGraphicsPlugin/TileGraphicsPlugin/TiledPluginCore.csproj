@@ -18,9 +18,15 @@
 		<None Remove="Content\Icons\OverworldPlatformerAPreview.png" />
 		<None Remove="Content\Icons\OverworldPlatformerBPreview.png" />
 		<None Remove="Content\Icons\OverworldPlatformerCPreview.png" />
+		<None Remove="Content\Icons\OverworldTopDownAPreview.png" />
+		<None Remove="Content\Icons\OverworldTopDownBPreview.png" />
+		<None Remove="Content\Icons\OverworldTopDownCPreview.png" />
 		<None Remove="Content\Levels\OverworldPlatformerA.tmx" />
 		<None Remove="Content\Levels\OverworldPlatformerB.tmx" />
 		<None Remove="Content\Levels\OverworldPlatformerC.tmx" />
+		<None Remove="Content\Levels\OverworldTopDownA.tmx" />
+		<None Remove="Content\Levels\OverworldTopDownB.tmx" />
+		<None Remove="Content\Levels\OverworldTopDownC.tmx" />
 		<None Remove="Content\Levels\TiledMap.tmx" />
 		<None Remove="Content\Tilesets\FrbVisualTiles.png" />
 		<None Remove="Content\Tilesets\FrbVisualTiles.tsx" />
@@ -28,6 +34,9 @@
 		<None Remove="Content\Tilesets\StandardTileset.tsx" />
 		<None Remove="Content\Tilesets\StandardTilesetIcons.png" />
 		<None Remove="Content\Tilesets\TopDown8Bit.png" />
+		<None Remove="Content\Tilesets\ZoriaLicense.txt" />
+		<None Remove="Content\Tilesets\ZoriaOverworld.png" />
+		<None Remove="Content\Tilesets\ZoriaOverworld.tsx" />
 		<None Remove="Icons\TiledIcon.png" />
 	</ItemGroup>
 
@@ -54,11 +63,17 @@
 		<EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TilesetExtensionMethods.cs" Link="EmbeddedCodeFiles\TilesetExtensionMethods.cs" />
 		<EmbeddedResource Include="Content\Levels\OverworldPlatformerB.tmx" />
 		<EmbeddedResource Include="Content\Levels\OverworldPlatformerC.tmx" />
+		<EmbeddedResource Include="Content\Levels\OverworldTopDownA.tmx" />
+		<EmbeddedResource Include="Content\Levels\OverworldTopDownB.tmx" />
+		<EmbeddedResource Include="Content\Levels\OverworldTopDownC.tmx" />
 		<EmbeddedResource Include="Content\Levels\TiledMap.tmx" />
 		<EmbeddedResource Include="Content\Tilesets\FrbVisualTiles.png" />
 		<EmbeddedResource Include="Content\Tilesets\FrbVisualTiles.tsx" />
 		<EmbeddedResource Include="Content\Tilesets\StandardTilesetIcons.png" />
 		<EmbeddedResource Include="Content\Tilesets\StandardTileset.tsx" />
+		<EmbeddedResource Include="Content\Tilesets\ZoriaLicense.txt" />
+		<EmbeddedResource Include="Content\Tilesets\ZoriaOverworld.png" />
+		<EmbeddedResource Include="Content\Tilesets\ZoriaOverworld.tsx" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -104,6 +119,9 @@
 		<Resource Include="Content\Icons\OverworldPlatformerAPreview.png" />
 		<Resource Include="Content\Icons\OverworldPlatformerBPreview.png" />
 		<Resource Include="Content\Icons\OverworldPlatformerCPreview.png" />
+		<Resource Include="Content\Icons\OverworldTopDownAPreview.png" />
+		<Resource Include="Content\Icons\OverworldTopDownBPreview.png" />
+		<Resource Include="Content\Icons\OverworldTopDownCPreview.png" />
 		<Resource Include="Icons\TiledIcon.png" />
 	</ItemGroup>
 

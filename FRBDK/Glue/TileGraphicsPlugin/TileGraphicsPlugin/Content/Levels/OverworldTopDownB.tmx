@@ -12,19 +12,9 @@
    H4sIAAAAAAAACs2YTXKDMAyFs4BlTtHChnSd6R0yXWXRI2ST9BT92bW9S07VXqJohjdRFEmWDSR9Mx5IMPZnIVmCplosGtG4fvrfv+I/3ndZLyaTNpecF304q3af7EecktWbz7u2M/5/7f9/Y9dadk5zY0x5xNq47Y+CFdei9rYYNbWOHaPSngvszsdtC8cfozHrKuXdOTZ9rs+PUsf68r4p40yTxok1dP3xQbEDZ7L2j5QQl1P4dTdce5rJx1KMMv65pH03/fm2PrHeFzLfVfo5F9ll1bfPvn0Nfb6Nvtqz2M9o127gQjv07WXEPOQfm+F+7rNkX8/GuMZtCLvBdmO4LO2HNR+YDVZG02IQjKRc2+XkiAg/act8R/LjmsVYyoM9mo676jROaxwl90GZN2LLEl5iaCs/P6BfU536c23Y77n2Os5B8moX1CpNghX2fJwhl6U4vRpgXZ+zwqbrTM7IXLm81lh7Fk/avqBxtWI8Pkd0bRByvcUr61eZ77Sx5Rw0Bh+H2yyyVsQQr/9TdkUNobHyGhfjW+slefWCrInBivswnsfr7QNePSbryyinV6dZnDK2wMpji8bU3uUwV6Q2tJ5nJK74s+vEGDIHeH7E33u82PD4NS7Nt0iIKZIWV7I+J/F8ovmIlm8sPk8lOct6h8xRLqcUzZdiRXx67zspnx3D+d73/xjuQW1u7a2WeGxxVi0/yPOopJ+RZI61JJ+/9b2nJN+neKEoK7ch94eI/cZ8myhhJS3ryz2KpO1ZknMK3hzW1Pwpf/Xy89Q6KnlB4/Y4r6XItxvvu+pY3hIfgCIxlsrzOZrz+wc0BSdEvHN8qyBN6a/XiEkows15rsmmKSefafvOrRTNH/+V95acf2eGbv6MGwAA
   </data>
  </layer>
- <layer id="9" name="BuildingsFloor" width="43" height="41" visible="0">
-  <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu3OwQmAQBADwDzu6lS0sytD0dpc8CUWoI8ZCAvJZxMAAODPpp7MldGSpe7an/tW/d7u/aic7Zs/AQAAgLcLptmbkowbAAA=
-  </data>
- </layer>
- <layer id="1" name="GameplayLayer" width="43" height="41" visible="0" opacity="0.7">
+ <layer id="1" name="GameplayLayer" width="43" height="41" opacity="0.7">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAACu2UUQ7DIAxDy/0vvd8qImA7Du20WapWdYBfTOC6/voVjcmDjtvNcbAovm9lnXmP5De+d7BkXLtcs/86WNH1GB5HXijjfYySnTMrRt/GuvJx+1V0KhNV8f55mpXtt9W4DsW1R/jOZBjnOhlRJma/O3qjypblqtS2+u6459hc1Zwde6Tkqni6eqibc+ajKN4drrPZyVrlRM6Wg7Uzz7vPKVaHT3V+J1/0qrCc4sxYWc+ME62B8WH5ZucX5azkruSHsnT3CbJPSK5MPVXejB3db5aXYZ6N3/nvWFhWhEHJA11H4WXn7oQwM3WjYtZw58qqskez+aiHKndP7daviGXt6sdu3kr/ZN4dvGqNlboUdrW+p58P3SVoMowbAAA=
-  </data>
- </layer>
- <layer id="10" name="BuildingAbovePlayer" width="43" height="41">
-  <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu3BMQEAAADCoPVPbQo/oAAAAAAAAICHAZdINoaMGwAA
   </data>
  </layer>
  <layer id="8" name="AbovePlayer" width="43" height="41">

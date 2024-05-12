@@ -15,25 +15,53 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
+
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+
         </Grid.RowDefinitions>
-        <RadioButton Margin="5" IsChecked="{Binding IsOverworldPlatformerASelected}">
+        <RadioButton Margin="5" IsChecked="{Binding IsOverworldPlatformerASelected}" Visibility="{Binding PlatformerLevelVisibility}">
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center">Platformer A</TextBlock>
                 <Image Width="100" Height="100" Source="/TiledPluginCore;component/Content/Icons/OverworldPlatformerAPreview.png" />
             </StackPanel>
         </RadioButton>
-        <RadioButton  Margin="5"  IsChecked="{Binding IsOverworldPlatformerBSelected}" Grid.Column="1">
+        <RadioButton  Margin="5"  IsChecked="{Binding IsOverworldPlatformerBSelected}" Grid.Column="1" Visibility="{Binding PlatformerLevelVisibility}">
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center">Platformer B</TextBlock>
                 <Image Width="100" Height="100" Source="/TiledPluginCore;component/Content/Icons/OverworldPlatformerBPreview.png" />
             </StackPanel>
         </RadioButton>
-        <RadioButton Grid.Row="1"  IsChecked="{Binding IsOverworldPlatformerCSelected}" Margin="5">
+        <RadioButton Grid.Row="1"  IsChecked="{Binding IsOverworldPlatformerCSelected}" Margin="5" Visibility="{Binding PlatformerLevelVisibility}">
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center">Platformer C</TextBlock>
                 <Image Width="100" Height="100" Source="/TiledPluginCore;component/Content/Icons/OverworldPlatformerCPreview.png" />
             </StackPanel>
         </RadioButton>
+
+
+        <RadioButton Margin="5" IsChecked="{Binding IsOverworldTopDownASelected}" Grid.Row="2" Visibility="{Binding TopDownLevelVisibility}">
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Center">Top Down A</TextBlock>
+                <Image Width="100" Height="100" Source="/TiledPluginCore;component/Content/Icons/OverworldTopDownAPreview.png" />
+            </StackPanel>
+        </RadioButton>
+        <RadioButton  Margin="5"  IsChecked="{Binding IsOverworldTopDownBSelected}" Grid.Row="2" Grid.Column="1" Visibility="{Binding TopDownLevelVisibility}">
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Center">Top Down B</TextBlock>
+                <Image Width="100" Height="100" Source="/TiledPluginCore;component/Content/Icons/OverworldTopDownBPreview.png" />
+            </StackPanel>
+        </RadioButton>
+        <RadioButton IsChecked="{Binding IsOverworldTopDownCSelected}" Grid.Row="3" Margin="5" Visibility="{Binding TopDownLevelVisibility}">
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Center">Top Down C</TextBlock>
+                <Image Width="100" Height="100" Source="/TiledPluginCore;component/Content/Icons/OverworldTopDownCPreview.png" />
+            </StackPanel>
+        </RadioButton>
+
+
+
 
     </Grid>
 </UserControl>

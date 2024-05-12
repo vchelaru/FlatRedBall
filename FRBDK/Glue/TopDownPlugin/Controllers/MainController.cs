@@ -354,7 +354,8 @@ namespace TopDownPlugin.Controllers
 
         #region Update To / Refresh From Model
 
-        public static bool IsTopDown(EntitySave entitySave) => entitySave.Properties.GetValue<bool>(nameof(TopDownEntityViewModel.IsTopDown));
+        public static bool IsTopDown(EntitySave entitySave) => 
+            entitySave.Properties.GetValue<bool>(nameof(TopDownEntityViewModel.IsTopDown));
 
         public bool GetIfInheritsFromTopDown(EntitySave entitySave) =>
             ObjectFinder.Self

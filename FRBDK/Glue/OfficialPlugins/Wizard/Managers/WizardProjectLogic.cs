@@ -382,9 +382,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     mapObject.SourceName = "Entire File (LayeredTileMap)";
                 }
 
-                if (vm.WithVisualType == WithVisualType.WithVisuals && 
-                    // for now only platformer is supported
-                    vm.PlayerControlType == GameType.Platformer)
+                if (vm.WithVisualType == WithVisualType.WithVisuals)
                 {
                     var reminder = levelIndex0Based % 3;
                     char suffix = 'A';
@@ -399,7 +397,8 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                     if(vm.PlayerControlType == GameType.TopDown)
                     {
-
+                        PluginManager.CallPluginMethod("Tiled Plugin", "SaveFileWithVisuals",
+                            newRfs, $"OverworldTopDown{suffix}");
                     }
                     // make platformer default if no other type is set
                     else // if(vm.PlayerControlType == GameType.Platformer)
