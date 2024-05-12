@@ -741,7 +741,7 @@ namespace FlatRedBall.Debugging
                 case Corner.BottomRight:
                     mText.RelativeX = SpriteManager.Camera.RelativeXEdgeAt(SpriteManager.Camera.Z - 40) * .95f;// -15;
                     mText.RelativeY = -SpriteManager.Camera.RelativeYEdgeAt(SpriteManager.Camera.Z - 40) * .95f +
-                        NumberOfLinesInCommandLine * mText.NewLineDistance;
+                        mText.NumberOfLines * mText.NewLineDistance;
                     mText.HorizontalAlignment = HorizontalAlignment.Right;
 
                     break;
