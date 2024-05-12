@@ -103,9 +103,47 @@ namespace OfficialPlugins.CollisionPlugin
                 {
                     throw new ArgumentNullException(nameof(second));
                 }
-                var nos = await CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects(first.InstanceName, second.InstanceName, first.GetContainer());
 
-                return nos;
+
+                var firstParent = first.GetContainer();
+                var secondParent = second.GetContainer();
+
+                var shouldCreate = true;
+
+                if(firstParent == secondParent && firstParent != null)
+                {
+                    if(firstParent is ScreenSave parentScreen)
+                    {
+                        var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
+
+                        var baseScreens = ObjectFinder.Self.GetAllBaseElementsRecursively(parentScreen);
+
+                        var inheritsFromGameScreen = baseScreens.Contains(gameScreen);
+
+                        if(inheritsFromGameScreen)
+                        {
+                            var message = "You are creating a collision relationship in the screen " +
+                                $"{parentScreen}. Usually CollisionRelationships are created in the GameScreen. Are you sure you want to continue?";
+                            var result = MessageBox.Show(message, "Create collision relationship?", MessageBoxButtons.YesNo);
+
+                            if(result == DialogResult.No)
+                            {
+                                shouldCreate = false;
+                            }
+                        }
+                    }
+                }
+
+                if(shouldCreate)
+                {
+                    var nos = await CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects(first.InstanceName, second.InstanceName, first.GetContainer());
+
+                    return nos;
+                }
+                else
+                {
+                    return null;
+                }
             };
 
             this.ReactToElementRenamed += HandleElementRenamed;
