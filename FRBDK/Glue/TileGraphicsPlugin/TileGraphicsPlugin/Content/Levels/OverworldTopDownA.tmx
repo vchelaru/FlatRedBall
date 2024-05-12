@@ -17,7 +17,7 @@
    H4sIAAAAAAAACu3OsQmAQBAEwA3+61S0sy9D0do8MDIXPpmB5WA3uQQAAIAZlp6sldGSre7ev/tR/dne/arcbc6fAPzjAa2I/YKIEwAA
   </data>
  </layer>
- <layer id="1" name="GameplayLayer" width="50" height="25" visible="0" opacity="0.4">
+ <layer id="1" name="GameplayLayer" width="50" height="25" opacity="0.4">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAACu2TSwoAIQxD6/0v7Wo2gxX6Myk0kJ0jeWayRGSNzf6EzjEcw8Fij9CZLTy3c+isUYYOZmbxCp07kp2JpTNDtZAMGbyIPv5ZrW+A2oGnD2aOUwcdOTR14tCye2TpUvs2619iUKQLJpbMbbxW5c5fqmrvFZkq7uzoDZtWl2+IEwAA
   </data>
