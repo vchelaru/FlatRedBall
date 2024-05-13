@@ -723,6 +723,10 @@ namespace FlatRedBall.Math
             return mName + ": " + this.Count;
         }
 
+        public List<T>.Enumerator GetEnumerator()
+        {
+            return mInternalList.GetEnumerator();
+        }
 
         #endregion
 
@@ -775,13 +779,9 @@ namespace FlatRedBall.Math
 
         #region IEnumerable<T> Members
 
-        public IEnumerator<T> GetEnumerator()
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            for (int i = 0; i < mInternalList.Count; i++)
-            {
-                yield return mInternalList[i];
-            }
-            //return mInternalList.GetEnumerator();
+            return mInternalList.GetEnumerator();
         }
 
         #endregion
