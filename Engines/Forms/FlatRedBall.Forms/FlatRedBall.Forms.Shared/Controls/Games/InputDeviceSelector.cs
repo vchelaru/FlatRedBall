@@ -37,9 +37,7 @@ namespace FlatRedBall.Forms.Controls.Games
         public List<IInputDevice> AllConnectedInputDevices { get; private set; }
 
         /// <summary>
-        /// An observable array of joined devices. Note that changing MaxPlayers re-creates
-        /// this instance resulting in any CollectionChanged events being cleared. Always set
-        /// the MaxPlayers before assigning CollectionChanged events.
+        /// An observable array of joined devices.
         /// </summary>
         public ObservableArray<IInputDevice> JoinedInputDevices { get; private set; }
 
@@ -47,9 +45,7 @@ namespace FlatRedBall.Forms.Controls.Games
         bool hasAssignedMaxPlayers = false;
 
         /// <summary>
-        /// Sets the maximum number of players that can join. This may re-create the JoinedInputDevices
-        /// ObservableArray, so if CollectionChanged events are assigned before changing this value, changing
-        /// this will clear the CollectionChanged events.
+        /// Sets the maximum number of players that can join. 
         /// </summary>
         public int MaxPlayers
         {
@@ -140,33 +136,11 @@ namespace FlatRedBall.Forms.Controls.Games
 
         private void UpdateToJoinedInputDeviceCount()
         {
-            ObservableArray<IInputDevice> oldArray = JoinedInputDevices;
-            var didCountChange = JoinedInputDevices == null || JoinedInputDevices.Length != MaxPlayers;
-
-            if(didCountChange)
+            if(JoinedInputDevices.Length != MaxPlayers)
             {
-                if(oldArray != null)
-                {
-                    oldArray.CollectionChanged -= HandleJoinedInputDevicesChanged;
-                }
-
-                JoinedInputDevices = new ObservableArray<IInputDevice>(MaxPlayers);
-
+                JoinedInputDevices.Resize(MaxPlayers);
             }
             UpdateInputDeviceSelectionItemsCount();
-
-            if(didCountChange)
-            {
-                JoinedInputDevices.CollectionChanged += HandleJoinedInputDevicesChanged;
-                if(oldArray != null)
-                {
-                    for(int i = 0; i < oldArray.Length && i < JoinedInputDevices.Length; i++)
-                    {
-                        JoinedInputDevices[i] = oldArray[i];
-                    }
-                }
-            }
-
         }
 
         private void HandleJoinedInputDevicesChanged(object sender, ObservableArrayIndexChangeArgs e)
@@ -361,6 +335,16 @@ namespace FlatRedBall.Forms.Controls.Games
         public bool Contains(T item)
         {
             return _array.Contains(item);
+        }
+
+        public void Resize(int newSize)
+        {
+            var newArray = new T[newSize];
+            for(int i = 0; i < System.Math.Min(newSize, _array.Length); i++)
+            {
+                newArray[i] = _array[i];
+            }
+            _array = newArray;
         }
 
         void OnIndexChanged(T oldItem, int index)
