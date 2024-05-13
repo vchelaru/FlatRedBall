@@ -36,10 +36,21 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public List<IInputDevice> AllConnectedInputDevices { get; private set; }
 
+        /// <summary>
+        /// An observable array of joined devices. Note that changing MaxPlayers re-creates
+        /// this instance resulting in any CollectionChanged events being cleared. Always set
+        /// the MaxPlayers before assigning CollectionChanged events.
+        /// </summary>
         public ObservableArray<IInputDevice> JoinedInputDevices { get; private set; }
 
         int maxPlayers = 0;
         bool hasAssignedMaxPlayers = false;
+
+        /// <summary>
+        /// Sets the maximum number of players that can join. This may re-create the JoinedInputDevices
+        /// ObservableArray, so if CollectionChanged events are assigned before changing this value, changing
+        /// this will clear the CollectionChanged events.
+        /// </summary>
         public int MaxPlayers
         {
             get => maxPlayers;
@@ -54,6 +65,10 @@ namespace FlatRedBall.Forms.Controls.Games
 
         List<InputDeviceSelectionItem> InputDeviceSelectionItemsInternal = new List<InputDeviceSelectionItem>();
 
+        /// <summary>
+        /// Event raised when the user presses the confirm join button, such as the A button on a gamepad or the Enter key on the keyboard.
+        /// This can be used to advance to the next screen, but the ConfirmJoinedEventArgs should be checked to verify that the game can proceed.
+        /// </summary>
         public event Action<object, ConfirmJoinedEventArgs> ConfirmedJoinedInput;
 
 
@@ -125,25 +140,33 @@ namespace FlatRedBall.Forms.Controls.Games
 
         private void UpdateToJoinedInputDeviceCount()
         {
-            var oldArray = JoinedInputDevices;
+            ObservableArray<IInputDevice> oldArray = JoinedInputDevices;
+            var didCountChange = JoinedInputDevices == null || JoinedInputDevices.Length != MaxPlayers;
 
-            if(oldArray != null)
+            if(didCountChange)
             {
-                oldArray.CollectionChanged -= HandleJoinedInputDevicesChanged;
-            }
+                if(oldArray != null)
+                {
+                    oldArray.CollectionChanged -= HandleJoinedInputDevicesChanged;
+                }
 
-            JoinedInputDevices = new ObservableArray<IInputDevice>(MaxPlayers);
+                JoinedInputDevices = new ObservableArray<IInputDevice>(MaxPlayers);
+
+            }
             UpdateInputDeviceSelectionItemsCount();
 
-            JoinedInputDevices.CollectionChanged += HandleJoinedInputDevicesChanged;
-
-            if(oldArray != null)
+            if(didCountChange)
             {
-                for(int i = 0; i < oldArray.Length && i < JoinedInputDevices.Length; i++)
+                JoinedInputDevices.CollectionChanged += HandleJoinedInputDevicesChanged;
+                if(oldArray != null)
                 {
-                    JoinedInputDevices[i] = oldArray[i];
+                    for(int i = 0; i < oldArray.Length && i < JoinedInputDevices.Length; i++)
+                    {
+                        JoinedInputDevices[i] = oldArray[i];
+                    }
                 }
             }
+
         }
 
         private void HandleJoinedInputDevicesChanged(object sender, ObservableArrayIndexChangeArgs e)
@@ -229,6 +252,7 @@ namespace FlatRedBall.Forms.Controls.Games
                 if(DidUnjoin(inputDevice))
                 {
                     // cancel pressed = handle...
+                    HandleUnjoin(inputDevice);
                 }
             }
 
@@ -284,6 +308,17 @@ namespace FlatRedBall.Forms.Controls.Games
             if(firstEmpty != null)
             {
                 JoinedInputDevices[firstEmpty.Value] = inputDevice;
+            }
+        }
+
+        private void HandleUnjoin(IInputDevice inputDevice)
+        {
+            for(int i = 0; i < JoinedInputDevices.Length; i++)
+            {
+                if (JoinedInputDevices[i] == inputDevice)
+                {
+                    JoinedInputDevices[i] = null;
+                }
             }
         }
     }
