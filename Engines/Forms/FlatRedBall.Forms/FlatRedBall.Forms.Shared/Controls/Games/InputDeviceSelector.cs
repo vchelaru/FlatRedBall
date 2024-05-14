@@ -136,6 +136,11 @@ namespace FlatRedBall.Forms.Controls.Games
 
         private void UpdateToJoinedInputDeviceCount()
         {
+            if(JoinedInputDevices == null)
+            {
+                JoinedInputDevices = new ObservableArray<IInputDevice>(MaxPlayers);
+                JoinedInputDevices.CollectionChanged += HandleJoinedInputDevicesChanged;
+            }
             if(JoinedInputDevices.Length != MaxPlayers)
             {
                 JoinedInputDevices.Resize(MaxPlayers);
