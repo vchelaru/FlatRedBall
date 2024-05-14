@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Gui;
+using FlatRedBall.Managers;
 using Gum.DataTypes;
 using Gum.Wireframe;
 using GumCoreShared.FlatRedBall.Embedded;
@@ -670,6 +671,97 @@ namespace Gum.Wireframe
             return toReturn;
         }
 
+        public string GetCursorOverInfo(Cursor cursor)
+        {
+            string message = null;
+            if(!((IWindow)this).AbsoluteVisible)
+            {
+                message += "This instance is not visible";
+            }
+
+            int cursorScreenX = cursor.ScreenX;
+            int cursorScreenY = cursor.ScreenY;
+
+            var managers = this.EffectiveManagers as SystemManagers;
+
+
+            // If there are no managers, we an still fall back to the default:
+            if (managers == null)
+            {
+                managers = global::RenderingLibrary.SystemManagers.Default;
+            }
+
+            // A lot of this code is pulled from HasCursorOver
+            // Adjust by viewport values:
+            cursorScreenX -= managers.Renderer.GraphicsDevice.Viewport.X;
+            cursorScreenY -= managers.Renderer.GraphicsDevice.Viewport.Y;
+
+            var camera = managers.Renderer.Camera;
+
+            float worldX;
+            float worldY;
+
+            if (this.mLayer != null)
+            {
+                mLayer.ScreenToWorld(
+                    camera,
+                    cursorScreenX, cursorScreenY,
+                    out worldX, out worldY);
+            }
+            else
+            {
+                camera.ScreenToWorld(
+                    cursorScreenX, cursorScreenY,
+                    out worldX, out worldY);
+            }
+
+
+            // for now we'll just rely on the bounds of the GUE itself
+
+            var isCursorOverThis = global::RenderingLibrary.IPositionedSizedObjectExtensionMethods.HasCursorOver(
+                this, worldX, worldY);
+
+            if(!isCursorOverThis)
+            {
+                message += $"\nThe cursor is not positioned over this instance. Cursor: ({worldX}, {worldY})  " +
+                    $"this AbsolutePosition:({this.GetAbsoluteLeft()},{this.GetAbsoluteTop()})";
+            }
+
+
+            // See if this raises events and if all of its parents raise events:
+            var currentInstance = this;
+            while(currentInstance is GraphicalUiElement gue)
+            {
+                if(gue.HasEvents == false && gue.ExposeChildrenEvents == false)
+                {
+                    message += $"\nThe instance {currentInstance.Name} does not have events and does not expose its children events, " +
+                        $"so the cursor will not register events for {this.Name}";
+                    break;
+                }
+                currentInstance = gue.Parent as GraphicalUiElement;
+            }
+
+            // see if this is even part of the GuiManager hierarchy
+            currentInstance = this;
+            while(currentInstance is GraphicalUiElement gue)
+            {
+                if(GuiManager.Windows.Contains(gue) || GuiManager.DominantWindows.Contains(gue))
+                {
+                    // all good
+                    break;
+                }
+                if(gue.Parent == null)
+                {
+
+                    message += $"\n{this.Name} is not part of the GuiManager hierarchy";
+                    break;
+                }
+                currentInstance = gue.Parent as GraphicalUiElement;
+            }
+
+            return message ?? $"The cursor is over this instance {this.Name ?? "<no name>"} ({this.GetType().Name})";
+        }
+
         FlatRedBall.Graphics.Layer frbLayer;
         FlatRedBall.Graphics.Layer FlatRedBall.Graphics.ILayered.Layer
         {
@@ -1221,5 +1313,7 @@ namespace Gum.Wireframe
 
         // This is added for compatability for projects created before GumCommon:
         public void AddToManagers() => this.AddToManagers(SystemManagers.Default, layer: null);
+
+
     }
 }
