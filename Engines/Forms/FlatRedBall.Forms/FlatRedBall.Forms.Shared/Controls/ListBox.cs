@@ -15,6 +15,21 @@ using FlatRedBall.Math.Geometry;
 
 namespace FlatRedBall.Forms.Controls
 {
+    public enum ScrollIntoViewStyle
+    {
+        /// <summary>
+        /// Scrolls only if the item is not in view. Scrolls the minimum amount necessary to bring the item into view.
+        /// In other words, if the item is above the visible area, then the scrolling brings the item to the top.
+        /// If the item is below the visible area, then the scrolling brings the item to the bottom.
+        /// If the item is already into view, no scrolling is performed.
+        /// </summary>
+        BringIntoView,
+
+        Top,
+        Center,
+        Bottom
+    }
+
     public class ListBox : ItemsControl , IInputReceiver
     {
         #region Fields/Properties
@@ -208,7 +223,12 @@ namespace FlatRedBall.Forms.Controls
             PushValueToViewModel(nameof(SelectedIndex));
         }
 
-        public void ScrollIntoView(object item)
+        /// <summary>
+        /// Scrolls the list view so that the argument item is in view. The amount of scrolling depends on the scrollIntoViewStyle argument.
+        /// </summary>
+        /// <param name="item">The item to scroll into view.</param>
+        /// <param name="scrollIntoViewStyle">The desired location of the item after scrolling.</param>
+        public void ScrollIntoView(object item, ScrollIntoViewStyle scrollIntoViewStyle = ScrollIntoViewStyle.BringIntoView)
         {
             var itemIndex = Items.IndexOf(item);
 
@@ -225,15 +245,40 @@ namespace FlatRedBall.Forms.Controls
                 var isAboveView = visualTop < viewTop;
                 var isBelowView = visualBottom > viewBottom;
 
-                if(isAboveView)
+                float amountToScroll = 0;
+                switch(scrollIntoViewStyle)
                 {
-                    var amountToScroll = visualTop - viewTop;
-                    verticalScrollBar.Value += amountToScroll;
-                }
-                else if(isBelowView)
-                {
-                    var amountToScroll = visualBottom - viewBottom;
-                    verticalScrollBar.Value += amountToScroll;
+                    case ScrollIntoViewStyle.BringIntoView:
+                        if(isAboveView)
+                        {
+                            amountToScroll = visualTop - viewTop;
+                            verticalScrollBar.Value += amountToScroll;
+                        }
+                        else if(isBelowView)
+                        {
+                            amountToScroll = visualBottom - viewBottom;
+                            verticalScrollBar.Value += amountToScroll;
+                        }
+
+                        break;
+                    case ScrollIntoViewStyle.Top:
+                        amountToScroll = visualTop - viewTop;
+                        verticalScrollBar.Value += amountToScroll;
+                        break;
+                    case ScrollIntoViewStyle.Center:
+
+                        var viewHeight = visualAsIpso.Height;
+
+                        var desiredViewTop = viewHeight/ 2.0f + visualTop - clipContainer.GetAbsoluteHeight() / 2;
+
+                        amountToScroll = desiredViewTop - viewTop;
+                        verticalScrollBar.Value += amountToScroll;
+
+                        break;
+                    case ScrollIntoViewStyle.Bottom:
+                        amountToScroll = visualBottom - viewBottom;
+                        verticalScrollBar.Value += amountToScroll;
+                        break;
                 }
             }
         }
