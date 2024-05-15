@@ -41,7 +41,7 @@ namespace FlatRedBall.Forms.Controls.Games
         /// </summary>
         public ObservableArray<IInputDevice> JoinedInputDevices { get; private set; }
 
-        int maxPlayers = 0;
+        int maxPlayers = 4;
         bool hasAssignedMaxPlayers = false;
 
         /// <summary>
@@ -94,11 +94,15 @@ namespace FlatRedBall.Forms.Controls.Games
                 InputManager.Xbox360GamePads[3]
             };
 
-            
         }
 
         protected override void ReactToVisualChanged()
         {
+            // ReactToVisualChanged gets called before DoCommonInitialization
+            JoinedInputDevices = new ObservableArray<IInputDevice>(MaxPlayers);
+            JoinedInputDevices.CollectionChanged += HandleJoinedInputDevicesChanged;
+
+
             InputDeviceContainerInstance = this.Visual.GetGraphicalUiElementByName("InputDeviceContainerInstance");
             // If using the built-in instantiation from the runtime,
             // the Form association is made before variables are assigned.
@@ -136,11 +140,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
         private void UpdateToJoinedInputDeviceCount()
         {
-            if(JoinedInputDevices == null)
-            {
-                JoinedInputDevices = new ObservableArray<IInputDevice>(MaxPlayers);
-                JoinedInputDevices.CollectionChanged += HandleJoinedInputDevicesChanged;
-            }
+
             if(JoinedInputDevices.Length != MaxPlayers)
             {
                 JoinedInputDevices.Resize(MaxPlayers);
