@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Content.AnimationChain;
+﻿using FlatRedBall;
+using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.IO;
@@ -13,8 +14,11 @@ using OfficialPlugins.ContentPreview.Managers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Navigation;
+
 using FileManager = ToolsUtilities.FileManager;
 
 namespace OfficialPluginsCore.AnimationChainPlugin
@@ -51,6 +55,77 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             this.ReactToLoadedGluxEarly += HandleLoadedGluxEarly;
             this.ReactToUnloadedGlux += HandleUnloadedGlux;
             this.IsHandlingHotkeys += GetIfIsHandlingHotkeys;
+            //this.FillWithReferencedFiles += HandleFillWithReferencedFiles;
+            this.FillWithReferencedFiles += HandleFillWithReferencedFilesNew;
+        }
+
+        // See HandleFillWithReferencedFilesNew for info on why this isn't used
+        private ToolsUtilities.GeneralResponse HandleFillWithReferencedFiles(FilePath path, List<FilePath> list)
+        {
+            if(path.Extension == "achx")
+            {
+                if(path.Exists())
+                {
+                    var acls = AnimationChainListSave.FromFile(path.FullPath);
+                    var newReferencedFiles = acls.GetReferencedFiles(RelativeType.Absolute).Select(item => new FilePath(item)).ToList();
+
+                    list.AddRange(newReferencedFiles);
+
+                    return ToolsUtilities.GeneralResponse.SuccessfulResponse;
+                }
+                else
+                {
+                    return ToolsUtilities.GeneralResponse.UnsuccessfulWith("File does not exist: " + path.FullPath);
+                }
+            }
+            else
+            {
+                return ToolsUtilities.GeneralResponse.SuccessfulResponse;
+            }
+        }
+
+        // Deadvivors has a lot of .achx files and 
+        // loading the project can be a bit slow. This
+        // method attempts to speed up the .achx file reference
+        // tracking by looping through the lines and looking for
+        // the <TextureName> XML tag. This seems to be faster than
+        // XML loading - my tests loaded a file 1000 times and it went
+        // from 0.7 seconds to 0.2 seconds. This is a little less flexible
+        // since it assumes TextureName rather than relying on reusable reference
+        // tracking, but modern .achx files only use this.
+        private ToolsUtilities.GeneralResponse HandleFillWithReferencedFilesNew(FilePath path, List<FilePath> list)
+        {
+            if (path.Extension == "achx")
+            {
+                if (path.Exists())
+                {
+                    var directory = path.GetDirectoryContainingThis();
+                    using (StreamReader reader = new StreamReader(path.FullPath))
+                    {
+                        string line;
+                        var textureNameLength = "<TextureName>".Length;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            if(line.Contains("<TextureName>"))
+                            {
+                                var startIndex = line.IndexOf("<TextureName>") + textureNameLength;
+                                var endIndex = line.IndexOf("</TextureName>");
+                                var textureName = line.Substring(startIndex, endIndex - startIndex);
+                                list.Add(directory + textureName);
+                            }
+                        }
+                    }
+                    return ToolsUtilities.GeneralResponse.SuccessfulResponse;
+                }
+                else
+                {
+                    return ToolsUtilities.GeneralResponse.UnsuccessfulWith("File does not exist: " + path.FullPath);
+                }
+            }
+            else
+            {
+                return ToolsUtilities.GeneralResponse.SuccessfulResponse;
+            }
         }
 
         private bool GetIfIsHandlingHotkeys()

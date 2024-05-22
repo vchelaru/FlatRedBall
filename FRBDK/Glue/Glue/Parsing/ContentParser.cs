@@ -221,24 +221,8 @@ namespace EditorObjects.Parsing
 
                     #endregion
 
-                    #region AnimationChain List
+                    // .achx handled in MainAnimationChainPlugin
 
-                    case "achx":
-
-                        AnimationChainListSave acls = null;
-                        try
-                        {
-
-                            acls = AnimationChainListSave.FromFile(filePath.FullPath);
-                            newReferencedFiles = acls.GetReferencedFiles(RelativeType.Absolute).Select(item => new FilePath(item)).ToList();
-                        }
-                        catch(Exception e)
-                        {
-                            throw new Exception($"Error parsing file {filePath}:\n{e}");
-                        }
-                        break;
-
-                    #endregion
 
                     #region X File (.x)
 

@@ -392,6 +392,11 @@ namespace FlatRedBall.Glue.Plugins
         [Obsolete("Use FillWithReferencedFiles instead", error: true)]
         public Action<string, EditorObjects.Parsing.TopLevelOrRecursive, List<string>> GetFilesReferencedBy { get; protected set; }
 
+        /// <summary>
+        /// Fills the argument List<FilePath> with files referenced by the argument FilePath.
+        /// This should return GeneralResponse.Succeeded if either the parse succeeded, or if the file
+        /// is ignored by this plugin. This should not return a failure if the file is ignored by the plugin.
+        /// </summary>
         public Func<FilePath, List<FilePath>, GeneralResponse> FillWithReferencedFiles { get; protected set; }
         public Action<FilePath, GeneralResponse> ReactToFileReadError { get; protected set; }
 
