@@ -378,6 +378,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
 
         public static void AddGeneratedPerformanceTypes()
         {
+            // May 23, 2024
+            // PoolList is part
+            // of FRB and also generated
+            // code. We could (should?) move
+            // to FRB code instead of generated
+            // code in the future, but for now I'm
+            // just going to make this file only re-gen
+            // if it differs.
             FilePath poolListFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\PoolList.Generated.cs";
             FilePath iEntityFactoryFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\IEntityFactory.Generated.cs";
 
@@ -386,14 +394,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             var thisAssembly = typeof(FactoryElementCodeGenerator).Assembly;
 
             var byteArray = FileManager.GetByteArrayFromEmbeddedResource(thisAssembly, embeddedResourcePrefix + "PoolList.cs");
-            var contents = Encoding.Default.GetString(byteArray);
+            var contents = Encoding.Default.GetString(byteArray).Trim(new char[] { '\uFEFF', '\u200B' });
             contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
-            FileManager.SaveText(contents, poolListFileName.FullPath);
+            GlueCommands.Self.FileCommands.SaveIfDiffers(poolListFileName, contents);
 
             byteArray = FileManager.GetByteArrayFromEmbeddedResource(thisAssembly, embeddedResourcePrefix + "IEntityFactory.cs");
-            contents = Encoding.Default.GetString(byteArray);
+            contents = Encoding.Default.GetString(byteArray).Trim(new char[] { '\uFEFF', '\u200B' });
             contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
-            FileManager.SaveText(contents, iEntityFactoryFileName.FullPath);
+            GlueCommands.Self.FileCommands.SaveIfDiffers(iEntityFactoryFileName, contents);
 
 
 
@@ -407,6 +415,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             }
 
         }
+
+
 
     }
 }

@@ -103,6 +103,9 @@ namespace DialogTreePlugin
                 //    JsonToGlsnConverter.Self.HandleJsonFile(fileRef, isGlueLoad: true);
                 //}
 
+                // This assumes that having a json is all that's needed to generate the files.
+                // JSON can be used for lots of other reasons so this is a little noisy. We'll modify
+                // this internally to at least only Save if differs.
                 RootObjectCodeGenerator.Self.GenerateAndSave();
 
             }

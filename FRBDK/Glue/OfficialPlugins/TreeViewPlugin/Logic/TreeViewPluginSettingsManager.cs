@@ -49,7 +49,8 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                     GlueCommands.Self.TryMultipleTimes(() =>
                     {
                         System.IO.Directory.CreateDirectory(SettingsFullFile.GetDirectoryContainingThis().FullPath);
-                        System.IO.File.WriteAllText(SettingsFullFile.FullPath, serialized);
+
+                        GlueCommands.Self.FileCommands.SaveIfDiffers(SettingsFullFile, serialized);
                     });
                 }
             }

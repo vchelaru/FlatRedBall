@@ -32,7 +32,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
         {
             var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(filePath);
 
-            if(rfs?.IsDatabaseForLocalizing == true)
+            if (rfs?.IsDatabaseForLocalizing == true)
             {
                 TryGenerateStringConsts(rfs);
             }
@@ -76,7 +76,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
 
                 try
                 {
-                    glueCommands.TryMultipleTimes(() => System.IO.File.WriteAllText(glueState.CurrentGlueProjectDirectory + fileName, contents), 5);
+                    glueCommands.TryMultipleTimes(() =>
+                    {
+                        //System.IO.File.WriteAllText(glueState.CurrentGlueProjectDirectory + fileName, contents);
+                        GlueCommands.Self.FileCommands.SaveIfDiffers(glueState.CurrentGlueProjectDirectory + fileName, contents);
+                    });
                 }
                 catch (Exception e)
                 {
@@ -92,7 +96,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
 
             string toReturn = null;
 
-            if(referencedFileSave != null)
+            if (referencedFileSave != null)
             {
                 var namespaceName = $"{glueState.ProjectNamespace}.DataTypes";
 
@@ -111,7 +115,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
                     var runtime = CsvFileManager.CsvDeserializeToRuntime(fileName);
 
 
-                    foreach(var row in runtime.Records)
+                    foreach (var row in runtime.Records)
                     {
                         TryAddMemberForRow(codeBlock, row);
                     }
@@ -138,14 +142,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
 
                 // assume english is row 1
                 var comments = row[1].Split('\n');
-                if(comments.Length == 1)
+                if (comments.Length == 1)
                 {
                     codeBlock.Line($"/// <summary>{row[1]}</summary>");
                 }
                 else
                 {
                     codeBlock.Line($"/// <summary>");
-                    foreach(var line in comments)
+                    foreach (var line in comments)
                     {
                         codeBlock.Line($"/// {line?.Trim()}");
                     }
@@ -164,14 +168,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LocalizationPlugin
                 toReturn = "_" + toReturn;
             }
 
-            if(toReturn.Contains(' '))
+            if (toReturn.Contains(' '))
             {
                 toReturn = toReturn.Replace(' ', '_');
             }
 
-            foreach(var invalidCharacter in NameVerifier.InvalidCharacters)
+            foreach (var invalidCharacter in NameVerifier.InvalidCharacters)
             {
-                if(toReturn.Contains(invalidCharacter))
+                if (toReturn.Contains(invalidCharacter))
                 {
                     toReturn = toReturn.Replace(invalidCharacter, '_');
                 }

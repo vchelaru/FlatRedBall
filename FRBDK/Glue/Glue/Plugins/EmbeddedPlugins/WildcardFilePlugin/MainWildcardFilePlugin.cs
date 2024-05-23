@@ -61,7 +61,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                                 // Note - a file may change 2x really fast (one after another)
                                 // If that happens, the alradyExists may be false both times, and
                                 // the file may get added 2x. We need to instead wrap everything in tasks to prevent this from happening:
-                                if(IsFileRelativeToWildcard(changedFile, wildcardFile))
+                                if(GlueState.Self.CurrentGlueProject != null && IsFileRelativeToWildcard(changedFile, wildcardFile))
                                 {
                                     TryAddFile(changedFile, project, wildcardFile);
                                     break;

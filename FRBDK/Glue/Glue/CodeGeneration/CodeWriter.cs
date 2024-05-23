@@ -310,22 +310,7 @@ namespace FlatRedBallAddOns.Entities
 
         if (element is EntitySave entitySave)
         {
-            var fileContents = contentsToSave;
             string fileName = FileManager.RelativeDirectory + element.Name + ".Generated.cs";
-            bool shouldSave = false;
-
-            #region Ok, the code is generated, but we may still need to give it a base class
-
-
-            bool inheritsFromEntity = element.InheritsFromEntity();
-
-
-
-            EntitySave rootEntitySave;
-            List<string> inheritanceList = InheritanceCodeWriter.Self.GetInheritanceList(entitySave, out rootEntitySave);
-            InheritanceCodeWriter.Self.RemoveCallsForInheritance(entitySave, inheritsFromEntity, rootEntitySave, ref fileContents, ref shouldSave);
-
-            #endregion
 
             #region If this thing is created by other entities, then we should make it IPoolable
 
@@ -340,27 +325,6 @@ namespace FlatRedBallAddOns.Entities
 
             #endregion
 
-            #region If this uses global content, then make it use global content regardless of what is passed in
-
-            if (entitySave.UseGlobalContent)
-            {
-                fileContents = fileContents.Replace("ContentManagerName = contentManagerName;", "ContentManagerName = FlatRedBall.FlatRedBallServices.GlobalContentManager;");
-                shouldSave = true;
-            }
-
-            #endregion
-
-
-            #region If a change was made to the fileContents, let's save it
-
-            if (shouldSave)
-            {
-                bool tryAgain = true;
-
-                CodeWriter.SaveFileContents(fileContents, fileName, tryAgain);
-            }
-
-            #endregion
         }
         #endregion
 
@@ -561,14 +525,32 @@ namespace FlatRedBallAddOns.Entities
 
         var elementName = FileManager.RemovePath(element.Name);
 
-        if (element is EntitySave)
+        if (element is EntitySave entitySave)
         {
             codeBlock.Constructor("public", elementName, "", "this(FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName, true)");
 
             codeBlock.Constructor("public", elementName, "string contentManagerName", "this(contentManagerName, true)");
 
-            constructor = codeBlock.Constructor("public", elementName, "string contentManagerName, bool addToManagers", "base()");
-            constructor.Line("ContentManagerName = contentManagerName;");
+            bool inheritsFromEntity = element.InheritsFromEntity();
+            if(inheritsFromEntity)
+            {
+                constructor = codeBlock.Constructor("public", elementName, "string contentManagerName, bool addToManagers", "base(contentManagerName, addToManagers)");
+            }
+            else
+            {
+                constructor = codeBlock.Constructor("public", elementName, "string contentManagerName, bool addToManagers", "base()");
+            }
+
+            if(entitySave.UseGlobalContent)
+            {
+                constructor.Line("ContentManagerName = FlatRedBall.FlatRedBallServices.GlobalContentManager;");
+            }
+            else
+            {
+                constructor.Line("ContentManagerName = contentManagerName;");
+
+            }
+
 
             // See below on why we do this here
             CallElementComponentCodeGeneratorGenerateConstructor(element, constructor);
@@ -738,16 +720,19 @@ namespace FlatRedBallAddOns.Entities
             {
                 fileContents = $"#pragma warning disable\r\n{fileContents}";
             }
-            FileWatchManager.IgnoreNextChangeOnFile(fileName);
+
             if (!tryAgain)
             {
-                FileManager.SaveText(fileContents, fileName);
+                GlueCommands.Self.FileCommands.SaveIfDiffers(fileName, fileContents, ignoreNextChange: true);
             }
             else
             {
                 try
                 {
-                    GlueCommands.Self.TryMultipleTimes(() =>FileManager.SaveText(fileContents, fileName), numberOfTimesToTry:10);
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                    {
+                        GlueCommands.Self.FileCommands.SaveIfDiffers(fileName, fileContents, ignoreNextChange: true);
+                    });
                 }
                 catch(Exception e)
                 {

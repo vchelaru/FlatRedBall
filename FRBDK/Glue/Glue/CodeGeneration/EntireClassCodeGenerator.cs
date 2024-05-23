@@ -51,7 +51,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             try
             {
                 GlueCommands.Self.TryMultipleTimes(() =>
-                        FileManager.SaveText(codeContents, absoluteFileName.FullPath));
+                {
+                    GlueCommands.Self.FileCommands.SaveIfDiffers(absoluteFileName, codeContents);
+                });
             }
             catch(System.Exception e)
             {

@@ -28,7 +28,7 @@ namespace FlatRedBall.Glue.Plugins.CodeGenerators
                 GlueCommands.Self.TryMultipleTimes(() =>
                 {
                     GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fullPath);
-                    System.IO.File.WriteAllText(fullPath.FullPath, contents);
+                    GlueCommands.Self.FileCommands.SaveIfDiffers(fullPath, contents);
 
                 });
 

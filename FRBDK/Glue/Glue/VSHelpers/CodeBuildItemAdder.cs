@@ -164,7 +164,10 @@ namespace FlatRedBall.Glue.VSHelpers
                 if (ProjectManager.ProjectBase != null)
                 {
                     var resourceName = resourceInfo.ResourceName;
-
+                    if(resourceName.Contains('/'))
+                    {
+                        resourceName = resourceName.Replace('/', '.');
+                    }
                     var effectiveAssembly = resourceInfo.Assembly ?? assemblyContainingResource;
 
                     if(effectiveAssembly == null)
@@ -327,29 +330,13 @@ namespace FlatRedBall.Glue.VSHelpers
 
             var names = assemblyContainingResource.GetManifestResourceNames();
 
-            const int maxFailures = 7;
-            try
-            {
-                GlueCommands.Self.TryMultipleTimes(() =>
-                {
-                    FileManager.SaveEmbeddedResource(assemblyContainingResource, resourceName.Replace("/", "."), destination);
-                    succeeded = true;
-                }, maxFailures);
-
-            }
-            catch(Exception e)
-            {
-                // failed - what do we do?
-                PluginManager.ReceiveOutput("Failed to copy over file " + resourceName + " because of the following error:\n" + e.ToString());
-            }
+            var byteArray = FileManager.GetByteArrayFromEmbeddedResource(assemblyContainingResource, resourceName);
+            var contents = System.Text.Encoding.UTF8.GetString(byteArray).Trim(new char[] { '\uFEFF', '\u200B' });
 
             if (succeeded)
             {
                 // But after it's been saved we gotta see if it includes any
                 // special string sequences like $PROJECT_NAMESPACE$
-
-                string contents = "";
-                Plugins.ExportedImplementations.GlueCommands.Self.TryMultipleTimes(() => contents = System.IO.File.ReadAllText(destination), 5);
 
                 bool shouldSave = false;
 
@@ -371,7 +358,11 @@ namespace FlatRedBall.Glue.VSHelpers
                 { 
                     try
                     {
-                        GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(destination, contents), maxFailures);
+                        GlueCommands.Self.TryMultipleTimes(() =>
+                        {
+                            //System.IO.File.WriteAllText(destination, contents);
+                            GlueCommands.Self.FileCommands.SaveIfDiffers(destination, contents);
+                        });
                     }
                     catch(Exception e)
                     {

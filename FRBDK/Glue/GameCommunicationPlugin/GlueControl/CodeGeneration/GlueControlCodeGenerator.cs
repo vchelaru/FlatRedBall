@@ -53,7 +53,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 // still put it in, in case it got wiped out by a copy/paste
                 asString = compilerDirectives + "\n" + asString;
             }
-            return asString;
+            return asString.Trim(new char[] { '\uFEFF', '\u200B' });
         }
     }
 }

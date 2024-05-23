@@ -575,7 +575,11 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
         string whereToSave = GumRuntimesFolder + "GumIdb.Generated.cs";
 
         GlueCommands.Self.TryMultipleTimes(() =>
-            System.IO.File.WriteAllText(whereToSave, contents));
+        {
+            //System.IO.File.WriteAllText(whereToSave, contents);
+            GlueCommands.Self.FileCommands.SaveIfDiffers(whereToSave, contents);
+        }
+            );
 
         wasAdded |=
             FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
@@ -690,7 +694,11 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
             try
             {
                 GlueCommands.Self.TryMultipleTimes(() =>
-                    System.IO.File.WriteAllText(saveLocation.FullPath, generatedCode));
+                {
+                    //System.IO.File.WriteAllText(saveLocation.FullPath, generatedCode);
+                    GlueCommands.Self.FileCommands.SaveIfDiffers(saveLocation, generatedCode);
+                });
+                
             }
             catch (Exception e)
             {

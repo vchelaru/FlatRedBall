@@ -936,7 +936,8 @@ namespace GameCommunicationPlugin.GlueControl
                 GlueCommands.Self.TryMultipleTimes(() =>
                 {
                     System.IO.Directory.CreateDirectory(JsonSettingsFilePath.GetDirectoryContainingThis().FullPath);
-                    System.IO.File.WriteAllText(JsonSettingsFilePath.FullPath, text);
+
+                    GlueCommands.Self.FileCommands.SaveIfDiffers(JsonSettingsFilePath, text);
                 });
             }
             catch
