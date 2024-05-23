@@ -57,6 +57,11 @@ namespace OfficialPlugins.MonoGameContent
                 return;
             }
 
+            if(GlueState.CurrentGlueProject == null)
+            {
+                return;
+            }
+
             ////////////End Early Out////////////////
 
             var allReferencedFileSaves = GlueState.CurrentGlueProject.GetAllReferencedFiles();

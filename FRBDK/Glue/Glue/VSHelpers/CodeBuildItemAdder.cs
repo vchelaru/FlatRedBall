@@ -164,10 +164,7 @@ namespace FlatRedBall.Glue.VSHelpers
                 if (ProjectManager.ProjectBase != null)
                 {
                     var resourceName = resourceInfo.ResourceName;
-                    if(resourceName.Contains('/'))
-                    {
-                        resourceName = resourceName.Replace('/', '.');
-                    }
+
                     var effectiveAssembly = resourceInfo.Assembly ?? assemblyContainingResource;
 
                     if(effectiveAssembly == null)
@@ -251,7 +248,7 @@ namespace FlatRedBall.Glue.VSHelpers
 
                 if (shouldAdd)
                 {
-                    SaveResource(assemblyContainingResource, filesToAddToProject, resourceName, destinationDirectory, destination);
+                    SaveResource(assemblyContainingResource, filesToAddToProject, resourceName.Replace("/", "."), destinationDirectory, destination);
 
                     if (IsVerbose)
                     {
