@@ -688,8 +688,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         FileWatchManager.IgnoreNextChangeOnFile(filePath);
                     }
 
-                    var differenceIndex = FindDifferenceIndex(existingContents, contents);
-
                     FileManager.SaveText(contents, filePath.FullPath);
                 }
             }
