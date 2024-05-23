@@ -680,8 +680,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else
             {
-                string existingContents = FileManager.FromFileText(filePath.FullPath);
-                if (existingContents != contents)
+                ReadOnlySpan<byte> existing = System.IO.File.ReadAllBytes(filePath.FullPath);
+                ReadOnlySpan<byte> current = Encoding.UTF8.GetBytes(contents);
+                if (!existing.SequenceEqual(current))
                 {
                     if (ignoreNextChange)
                     {
