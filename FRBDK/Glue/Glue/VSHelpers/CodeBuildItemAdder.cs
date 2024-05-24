@@ -35,6 +35,11 @@ namespace FlatRedBall.Glue.VSHelpers
         public Assembly Assembly { get; set; }
 
         public Func<string, string> ModifyString;
+
+        public override string ToString()
+        {
+            return ResourceName;
+        }
     }
 
     /// <summary>
@@ -330,47 +335,44 @@ namespace FlatRedBall.Glue.VSHelpers
             var byteArray = FileManager.GetByteArrayFromEmbeddedResource(assemblyContainingResource, resourceName);
             var contents = System.Text.Encoding.UTF8.GetString(byteArray).Trim(new char[] { '\uFEFF', '\u200B' });
 
-            if (succeeded)
+            // But after it's been saved we gotta see if it includes any
+            // special string sequences like $PROJECT_NAMESPACE$
+
+            bool shouldSave = false;
+
+            if (contents.Contains("$PROJECT_NAMESPACE$"))
             {
-                // But after it's been saved we gotta see if it includes any
-                // special string sequences like $PROJECT_NAMESPACE$
+                contents = contents.Replace("$PROJECT_NAMESPACE$", ProjectManager.ProjectNamespace);
 
-                bool shouldSave = false;
+                shouldSave = true;
+            }
 
-                if (contents.Contains("$PROJECT_NAMESPACE$"))
+            if(contents.Contains("$GLUE_VERSIONS$"))
+            {
+                contents = contents.Replace("$GLUE_VERSIONS$", GetGlueVersionsString());
+
+                shouldSave = true;
+            }
+
+            if(shouldSave)
+            { 
+                try
                 {
-                    contents = contents.Replace("$PROJECT_NAMESPACE$", ProjectManager.ProjectNamespace);
-
-                    shouldSave = true;
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                    {
+                        //System.IO.File.WriteAllText(destination, contents);
+                        GlueCommands.Self.FileCommands.SaveIfDiffers(destination, contents);
+                    });
                 }
-
-                if(contents.Contains("$GLUE_VERSIONS$"))
+                catch(Exception e)
                 {
-                    contents = contents.Replace("$GLUE_VERSIONS$", GetGlueVersionsString());
-
-                    shouldSave = true;
-                }
-
-                if(shouldSave)
-                { 
-                    try
-                    {
-                        GlueCommands.Self.TryMultipleTimes(() =>
-                        {
-                            //System.IO.File.WriteAllText(destination, contents);
-                            GlueCommands.Self.FileCommands.SaveIfDiffers(destination, contents);
-                        });
-                    }
-                    catch(Exception e)
-                    {
-                        PluginManager.ReceiveOutput("Failed to save file " + 
-                            resourceName + " because of the following error:\n" +
-                            e.ToString());
-                    }
-
+                    PluginManager.ReceiveOutput("Failed to save file " + 
+                        resourceName + " because of the following error:\n" +
+                        e.ToString());
                 }
 
             }
+
         }
 
         public static string GetGlueVersionsString()

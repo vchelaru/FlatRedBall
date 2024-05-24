@@ -19,6 +19,8 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Reflection;
 using System.IO;
 using FlatRedBall.Glue.SaveClasses;
+using System.Windows.Forms.VisualStyles;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -928,6 +930,26 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         }
 
+        public FilePath GetOutputDirectory()
+        {
+            var outputPathProperty = Project.Properties
+                            .ToArray()
+                            .FirstOrDefault(item => item.Name == "OutputPath");
+
+            var thisDirectory = FullFileName.GetDirectoryContainingThis();
+
+            if (outputPathProperty != null)
+            {
+                var debugPath = outputPathProperty.EvaluatedValue.Replace('\\', '/');
+
+                return thisDirectory + debugPath;
+            }
+            else
+            {
+                // default?
+                return thisDirectory + "bin/Debug/";
+            }
+        }
 
         public override void UpdateContentFile(string sourceFileName)
         {
