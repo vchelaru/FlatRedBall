@@ -2377,7 +2377,7 @@ namespace FlatRedBall.Glue.Plugins
                     wasAddHandled = plugin.TryAddContainedObjects(sourceFile, listToAddTo);
                 }
             },
-            plugin => plugin.TryAddContainedObjects != null);
+            plugin => plugin.TryAddContainedObjects != null, methodName:$"TryAddContainedObjects for {sourceFile}");
 
             ResumeRelativeDirectory("TryAddContainedObjects");
             return wasAddHandled;
