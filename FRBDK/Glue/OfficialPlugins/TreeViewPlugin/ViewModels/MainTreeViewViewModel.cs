@@ -239,13 +239,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public MainTreeViewViewModel()
         {
             ScreenRootNode =
-                new NodeViewModel(null) { Text = "Screens" };
+                new NodeViewModel(TreeNodeType.ScreenRootNode) { Text = "Screens" };
 
             EntityRootNode =
-                new NodeViewModel(null) { Text = "Entities" };
+                new NodeViewModel(TreeNodeType.EntityRootNode) { Text = "Entities" };
 
             GlobalContentRootNode =
-                new NodeViewModel(null) { Text = "Global Content Files" };
+                new NodeViewModel(TreeNodeType.GlobalContentRootNode) { Text = "Global Content Files" };
 
             Root = new List<NodeViewModel>()
             {
@@ -445,7 +445,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                     var nodeToAddTo = TreeNodeForDirectory(absoluteRfs.GetDirectoryContainingThis()) ??
                         GlobalContentRootNode;
-                    nodeForFile = new NodeViewModel(nodeToAddTo);
+                    nodeForFile = new NodeViewModel(TreeNodeType.ReferencedFileSaveNode, nodeToAddTo );
 
                     nodeToAddTo.Children.Add(nodeForFile);
 
@@ -546,7 +546,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                         if (treeNode == null)
                         {
-                            treeNode = new NodeViewModel(parentTreeNode);
+                            treeNode = new NodeViewModel(TreeNodeType.GeneralDirectoryNode, parentTreeNode);
 
                             treeNode.IsEditable = true;
 
@@ -812,7 +812,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 var matchWeight = GetMatchWeight(nos.InstanceName, nos.DefinedByBase);
                 if (matchWeight > 0)
                 {
-                    var node = new NodeViewModel();
+                    var node = new NodeViewModel(TreeNodeType.NamedObjectSaveNode );
 
                     node.ImageSource = NamedObjectsRootNodeViewModel.GetIcon(nos);
 
@@ -835,7 +835,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 var matchWeight = GetMatchWeight(category.Name);
                 if (matchWeight > 0)
                 {
-                    var treeNode = new NodeViewModel();
+                    var treeNode = new NodeViewModel(TreeNodeType.StateCategoryNode );
                     treeNode.ImageSource = NodeViewModel.FolderClosedIcon;
                     treeNode.Text = category.ToString();
                     treeNode.Tag = category;
@@ -848,7 +848,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 var matchWeight = GetMatchWeight(state.Name);
                 if (matchWeight > 0)
                 {
-                    var treeNode = new NodeViewModel(null);
+                    var treeNode = new NodeViewModel(TreeNodeType.StateNode);
                     treeNode.ImageSource = NodeViewModel.StateIcon;
                     treeNode.Text = state.ToString();
                     treeNode.Tag = state;
@@ -863,7 +863,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 var matchWeight = GetMatchWeight(variable.Name, variable.DefinedByBase);
                 if (matchWeight > 0)
                 {
-                    var treeNode = new NodeViewModel(null);
+                    var treeNode = new NodeViewModel(TreeNodeType.CustomVariableNode);
                     if(variable.DefinedByBase)
                     {
                         treeNode.ImageSource = NodeViewModel.VariableIconDerived;
@@ -885,7 +885,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 var matchWeight = GetMatchWeight(eventItem.EventName);
                 if(matchWeight > 0)
                 {
-                    var treeNode = new NodeViewModel(null);
+                    var treeNode = new NodeViewModel(TreeNodeType.EventNode);
                     treeNode.ImageSource = NodeViewModel.EventIcon;
                     treeNode.Text = eventItem.ToString();
                     treeNode.Tag = eventItem;
@@ -896,7 +896,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             NodeViewModel NodeFor(ReferencedFileSave rfs)
             {
-                var nodeForFile = new NodeViewModel(null);
+                var nodeForFile = new NodeViewModel(TreeNodeType.ReferencedFileSaveNode);
                 nodeForFile.ImageSource =
                     rfs.IsCreatedByWildcard
                         ? NodeViewModel.FileIconWildcard
@@ -918,7 +918,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 if(matchWeight > 0 && possibleFolderNode.Text.EndsWith(".cs") == false && possibleFolderNode.Tag == null &&
                     (((ITreeNode)possibleFolderNode).IsFolderForGlobalContentFiles() || ((ITreeNode)possibleFolderNode).IsFolderInFilesContainerNode()))
                 {
-                    var node = new NodeViewModel(null);
+                    var node = new NodeViewModel(TreeNodeType.GeneralDirectoryNode);
                     node.ImageSource = NodeViewModel.FolderClosedIcon; 
                     node.Tag = possibleFolderNode;
                     node.Text = $"{possibleFolderNode.Text} ({((ITreeNode) possibleFolderNode).GetRelativeFilePath()})";

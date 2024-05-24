@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+﻿using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
     {
         private GlueElement glueElement;
 
-        public CustomVariablesRootNodeViewModel(NodeViewModel parent, GlueElement glueElement) : base(parent)
+        public CustomVariablesRootNodeViewModel(NodeViewModel parent, GlueElement glueElement) : base(TreeNodeType.CustomVariablesContainerNode, parent)
         {
             this.glueElement = glueElement;
 
@@ -23,7 +24,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 int indexToAddAt = Children.Count;
                 var text = GetDisplayTextForCustomVariable(glueElement.CustomVariables[indexToAddAt]);
-                var node = new NodeViewModel(this);
+                var node = new NodeViewModel(TreeNodeType.CustomVariableNode, this);
 
                 var variable = glueElement.CustomVariables[indexToAddAt];
                 if(variable.DefinedByBase)

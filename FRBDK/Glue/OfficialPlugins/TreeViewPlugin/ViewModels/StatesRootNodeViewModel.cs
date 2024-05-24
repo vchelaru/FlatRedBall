@@ -11,7 +11,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
     {
         private GlueElement glueElement;
 
-        public StatesRootNodeViewModel(NodeViewModel parent, GlueElement glueElement) : base(parent)
+        public StatesRootNodeViewModel(NodeViewModel parent, GlueElement glueElement) : base(FlatRedBall.Glue.FormHelpers.TreeNodeType.StateContainerNode, parent)
         {
             this.glueElement = glueElement;
         }
@@ -56,7 +56,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                 if (treeNode == null)
                 {
-                    treeNode = new NodeViewModel(parentTreeNode);
+                    treeNode = new NodeViewModel(FlatRedBall.Glue.FormHelpers.TreeNodeType.StateNode, parentTreeNode);
                     treeNode.ImageSource = StateIcon;
                     treeNode.Text = stateSave.Name;
                     treeNode.Tag = stateSave;
@@ -99,7 +99,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             if (treeNode == null)
             {
-                treeNode = new NodeViewModel(this);
+                treeNode = new NodeViewModel(FlatRedBall.Glue.FormHelpers.TreeNodeType.StateCategoryNode, this);
                 treeNode.Tag = stateSaveCategory;
                 treeNode.Text = stateSaveCategory.Name;
                 //treeNode.ForeColor = ElementViewWindow.StateCategoryColor;

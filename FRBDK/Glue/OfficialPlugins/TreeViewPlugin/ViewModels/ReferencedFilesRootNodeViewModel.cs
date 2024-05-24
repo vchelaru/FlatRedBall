@@ -24,7 +24,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         }
 
 
-        public ReferencedFilesRootNodeViewModel(NodeViewModel parent, GlueElement glueElement) : base(parent)
+        public ReferencedFilesRootNodeViewModel(NodeViewModel parent, GlueElement glueElement) : base(TreeNodeType.ReferenedFileSaveContainerNode, parent)
         {
             this.glueElement = glueElement;
         }
@@ -57,7 +57,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     {
                         nodeToAddTo = this;
                     }
-                    nodeForFile = new NodeViewModel(nodeToAddTo);
+                    nodeForFile = new NodeViewModel( TreeNodeType.ReferencedFileSaveNode, nodeToAddTo);
                     nodeForFile.ImageSource = file.IsCreatedByWildcard
                         ? NodeViewModel.FileIconWildcard
                         : NodeViewModel.FileIcon;
@@ -233,7 +233,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                         if (existingTreeNode == null)
                         {
-                            var newNode = new NodeViewModel(treeNode);
+                            var newNode = new NodeViewModel(TreeNodeType.GeneralDirectoryNode, treeNode);
                             // We don't support this...yet
                             newNode.IsEditable = false;
                             newNode.Text = (FileManager.RemovePath(directory));

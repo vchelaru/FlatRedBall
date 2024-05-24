@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Parsing;
+﻿using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 
@@ -8,7 +9,7 @@ class CodeRootViewModel : NodeViewModel
 {
     private readonly GlueElement _glueElement;
 
-    public CodeRootViewModel(NodeViewModel parent, GlueElement glueElement) : base(parent)
+    public CodeRootViewModel(NodeViewModel parent, GlueElement glueElement) : base(TreeNodeType.CodeContainerNode, parent)
     {
         this._glueElement = glueElement;
     }
@@ -38,7 +39,7 @@ class CodeRootViewModel : NodeViewModel
 
             if (foundTreeNode == null)
             {
-                var treeNode = new NodeViewModel(this);
+                var treeNode = new NodeViewModel(TreeNodeType.CodeNode, this);
                 treeNode.ImageSource = CodeIcon;
                 treeNode.Text = text;
                 Children.Add(treeNode);

@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using System;
@@ -19,7 +20,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         public bool IsGameScreen { get; private set; }
 
-        public NamedObjectsRootNodeViewModel(NodeViewModel parent, GlueElement glueElement) : base(parent)
+        public NamedObjectsRootNodeViewModel(NodeViewModel parent, GlueElement glueElement) : base(TreeNodeType.NamedObjectContainerNode, parent)
         {
             this.glueElement = glueElement;
 
@@ -111,7 +112,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 if (LayersTreeNode == null)
                 {
-                    LayersTreeNode = new NodeViewModel(this);
+                    LayersTreeNode = new NodeViewModel(TreeNodeType.Other, this);
                     LayersTreeNode.ImageSource = LayersIcon;
                     LayersTreeNode.Text = "Layers";
                     //LayersTreeNode.SelectedImageKey = "layerList.png";
@@ -174,7 +175,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 if (CollisionRelationshipTreeNode == null)
                 {
-                    CollisionRelationshipTreeNode = new NodeViewModel(this);
+                    CollisionRelationshipTreeNode = new NodeViewModel(FlatRedBall.Glue.FormHelpers.TreeNodeType.Other , this);
                     CollisionRelationshipTreeNode.ImageSource = CollisionsIcon;
                     CollisionRelationshipTreeNode.Text = "Collision Relationships";
                     //CollisionRelationshipTreeNode.SelectedImageKey = "collisionRelationshipList.png";
@@ -262,7 +263,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         private static NodeViewModel CreateTreeNodeForNamedObjectAtIndex(NodeViewModel parentNode, int i, NamedObjectSave namedObject)
         {
-            var treeNode = new NodeViewModel(parentNode);
+            var treeNode = new NodeViewModel(FlatRedBall.Glue.FormHelpers.TreeNodeType.ReferencedFileSaveNode, parentNode);
             treeNode.Tag = namedObject;
             treeNode.IsEditable = true;
 
