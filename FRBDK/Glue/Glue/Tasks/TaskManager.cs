@@ -167,6 +167,32 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        public string AllTasksDescription
+        {
+            get
+            {
+                StringBuilder toReturn = new StringBuilder();
+
+                if (IsTaskProcessingEnabled == false)
+                {
+                    toReturn.AppendLine("Task processing disabled, next task when re-enabled:");
+                }
+
+                var currentlyRunning = CurrentlyRunningTask;
+                if (currentlyRunning != null)
+                {
+                    toReturn.AppendLine(GetDetails(currentlyRunning));
+                }
+                foreach (var item in taskQueue.ToArray())
+                {
+                    toReturn.AppendLine(GetDetails(item.Value));
+                }
+
+                string GetDetails(GlueTaskBase taskBase) => $"{taskBase?.DisplayInfo} ({taskBase?.TaskExecutionPreference})";
+                return toReturn.ToString();
+            }
+        }
+
         public string NextTasksDescription
         {
             get

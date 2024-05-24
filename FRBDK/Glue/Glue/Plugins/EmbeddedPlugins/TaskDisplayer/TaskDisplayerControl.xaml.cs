@@ -14,5 +14,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
         {
             InitializeComponent();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var text = TaskManager.Self.AllTasksDescription;
+
+            System.Windows.Clipboard.SetText(text);
+        }
     }
 }
