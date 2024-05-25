@@ -1322,11 +1322,12 @@ namespace FlatRedBall.Glue.Plugins
             SaveRelativeDirectory();
 
             CallMethodOnPlugin(
-                async plugin =>
+                //async plugin =>
+                plugin =>
                 {
                     // Info on this and the other Task.Delay calls can be found here:
                     // https://github.com/vchelaru/FlatRedBall/issues/1412
-                    await Task.Delay(1);
+                    //await Task.Delay(1);
                     if (changeType == FileChangeType.Created)
                     {
                         // The "Create" type is new. If it is reported to all plugins, then
@@ -1348,7 +1349,7 @@ namespace FlatRedBall.Glue.Plugins
                     }
 
                     // See the other Task.Delay for info
-                    await Task.Delay(1);
+                    //await Task.Delay(1);
 
                 },
                 plugin => plugin.ReactToFileChangeHandler != null || plugin.ReactToFileChange != null
