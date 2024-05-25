@@ -1322,9 +1322,12 @@ namespace FlatRedBall.Glue.Plugins
             SaveRelativeDirectory();
 
             CallMethodOnPlugin(
-                plugin =>
+                async plugin =>
                 {
-                    if(changeType == FileChangeType.Created)
+                    // Info on this and the other Task.Delay calls can be found here:
+                    // https://github.com/vchelaru/FlatRedBall/issues/1412
+                    await Task.Delay(1);
+                    if (changeType == FileChangeType.Created)
                     {
                         // The "Create" type is new. If it is reported to all plugins, then
                         // files may get re-loaded unnecessarily, and we don't want that, so only 
@@ -1343,11 +1346,16 @@ namespace FlatRedBall.Glue.Plugins
                         }
 
                     }
+
+                    // See the other Task.Delay for info
+                    await Task.Delay(1);
+
                 },
-                plugin => plugin.ReactToFileChangeHandler != null || plugin.ReactToFileChange != null,
+                plugin => plugin.ReactToFileChangeHandler != null || plugin.ReactToFileChange != null
                 // This can cause a deadlock. We need the underlying calls to do things on UI thread specifically on the calls
                 // that are needed
-                doOnUiThread:false);
+                //doOnUiThread:false
+                );
 
 
             ResumeRelativeDirectory(nameof(ReactToChangedFile));

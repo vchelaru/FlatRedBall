@@ -268,9 +268,16 @@ namespace FlatRedBall.Glue.Managers
 
         void StartDoTaskManagerLoop()
         {
-            // this makes the thread return:
-            AsyncContext.Run(DoTaskManagerLoop);
-            //DoTaskManagerLoop();
+            var shouldForceOnSameThread = true;
+
+            if(shouldForceOnSameThread)
+            {
+                AsyncContext.Run(DoTaskManagerLoop);
+            }
+            else
+            {
+                DoTaskManagerLoop();
+            }
         }
 
         async void DoTaskManagerLoop()

@@ -270,7 +270,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             // On Version 13 and later, we do this:
-            await TaskManager.Self.AddAsync(
+            // Update May 25, 2024
+            // This call seems to deadlock. Why? Not sure.
+            // Adding _= prevents the deadlock. It's probably related
+            // to : https://github.com/vchelaru/FlatRedBall/issues/1412
+            _ = TaskManager.Self.AddAsync(
                 GenerateGame1Internal,
                 "Generating Game1.Generated.cs",
                 TaskExecutionPreference.AddOrMoveToEnd

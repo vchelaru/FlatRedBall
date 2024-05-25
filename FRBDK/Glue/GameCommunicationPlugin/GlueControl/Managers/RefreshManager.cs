@@ -141,6 +141,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         public async void HandleFileChanged(FilePath fileName)
         {
+
             // always do this:
             RemoveExpiredPaths();
             var foundTempIgnoredFilePath =
@@ -232,12 +233,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                                 }
                                 else
                                 {
-                                    printOutput($"Telling game to restart screen");
                                     shouldReloadScreen = true;
                                 }
 
                                 if (shouldReloadScreen)
                                 {
+                                    printOutput($"Telling game to restart screen");
                                     var dto = new RestartScreenDto();
                                     dto.ReloadGlobalContent = isGlobalContent;
                                     await CommandSender.Self.Send(dto);
