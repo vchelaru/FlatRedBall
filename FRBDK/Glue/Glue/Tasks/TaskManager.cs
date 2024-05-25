@@ -306,11 +306,11 @@ namespace FlatRedBall.Glue.Managers
                 {
                     try
                     {
-                        if (isTaskProcessingEnabled)
+                        if (item.Value.IsCancelled == false)
                         {
-                            if (item.Value.IsCancelled == false)
+                            taskQueueCount--;
+                            if (isTaskProcessingEnabled)
                             {
-                                taskQueueCount--;
                                 await RunTask(item.Value, markAsCurrent: true);
                                 if (System.Threading.Thread.CurrentThread.ManagedThreadId != SyncTaskThreadId)
                                 {
@@ -322,13 +322,12 @@ namespace FlatRedBall.Glue.Managers
 
                             }
 
-                        }
-                        else
-                        {
-                            taskQueueCount++;
-                            AddInternal(item.Value);
-                            System.Threading.Thread.Sleep(50);
+                            else
+                            {
+                                AddInternal(item.Value);
+                                System.Threading.Thread.Sleep(50);
 
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -566,6 +565,7 @@ namespace FlatRedBall.Glue.Managers
                 {
                     existing.Value.IsCancelled = true;
                     wasMoved = true;
+
                     taskQueueCount--;
                 }
 
@@ -581,6 +581,7 @@ namespace FlatRedBall.Glue.Managers
             }
 
             taskQueue.Add(new KeyValuePair<ulong, GlueTaskBase>(priorityValue, glueTask));
+
             taskQueueCount++;
 
         }
@@ -823,7 +824,6 @@ namespace FlatRedBall.Glue.Managers
             {
                 var stackTrace = Environment.StackTrace;
 
-                GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.PrintOutput("Code not in task:\n" + stackTrace));
             }
         }
 

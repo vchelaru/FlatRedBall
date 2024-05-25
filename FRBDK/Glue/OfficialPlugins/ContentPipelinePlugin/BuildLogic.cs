@@ -327,13 +327,20 @@ namespace OfficialPlugins.MonoGameContent
             {
                 throw new InvalidOperationException($"The project type {project.GetType().Name} does not have a specified platform for the content pipeline. This must be added.");
             }
-            string contentDirectory = GlueState.ContentDirectory;
-            string projectDirectory = GlueState.CurrentGlueProjectDirectory;
+            string contentDirectory = project.FullFileName.GetDirectoryContainingThis() + project.ContentDirectory;
+            var projectDirectory = project.FullFileName.GetDirectoryContainingThis();
             string destinationDirectory = fullFileName.GetDirectoryContainingThis().FullPath;
-            destinationDirectory = FileManager.MakeRelative(destinationDirectory, contentDirectory);
-            destinationDirectory = FileManager.RemoveDotDotSlash($"{projectDirectory}../BuiltXnbs/{platform}/{destinationDirectory}");
+            if(contentDirectory != null)
+            {
+                destinationDirectory = FileManager.MakeRelative(destinationDirectory, contentDirectory);
+                destinationDirectory = FileManager.RemoveDotDotSlash($"{projectDirectory}../BuiltXnbs/{platform}/{destinationDirectory}");
 
-            return destinationDirectory;
+                return destinationDirectory;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private async Task<List<FilePath>> TryAddXnbReferencesAndBuild(ReferencedFileSave referencedFile, VisualStudioProject project, bool save)
