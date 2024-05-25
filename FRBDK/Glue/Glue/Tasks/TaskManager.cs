@@ -284,38 +284,61 @@ namespace FlatRedBall.Glue.Managers
         {
             SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
-            foreach (var item in taskQueue.GetConsumingEnumerable())
+            while (true)
             {
-                try
+                // `taskQueue` is a blocking collection, which means if we call `GetConsumingEnumerable()` it will 
+                // sit here and block the thread while waiting for an item to be added to the collection. However, 
+                // the intention of the task manager is that all tasks that are executed are stickied to the 
+                // same thread, and thus all code executed by a task is executed by this same thread. This is done
+                // via the `AsyncContext.Run()` used to invoke the current method.
+                //
+                // Due to the desire for this to be single threaded, if a task's implementation calls a fire and
+                // forget async method via calling an `async void` method, then once the first `await` call is hit,
+                // the task will no longer executed, as the Task continuation will be waiting to be marshalled to
+                // the current thread, but that thread is "active" waiting for the blocking collection to return.
+                //
+                // To fix this, instead of looping over the blocking collection forever, we instead grab each task
+                // out of the queue and execute it, and once we have no items left in the queue we use a 
+                // `Task.Delay()` to free the thread up for handling any pending continuation tasks that are waiting.
+                //
+                // Related to https://github.com/vchelaru/FlatRedBall/issues/1412.
+                if (taskQueue.TryTake(out var item))
                 {
-                    if(isTaskProcessingEnabled)
+                    try
                     {
-                        if (item.Value.IsCancelled == false)
+                        if (isTaskProcessingEnabled)
                         {
-                            taskQueueCount--;
-                            await RunTask(item.Value, markAsCurrent:true);
-                            if(System.Threading.Thread.CurrentThread.ManagedThreadId != SyncTaskThreadId)
+                            if (item.Value.IsCancelled == false)
                             {
-                                string message = "TaskManager.RunTask should be running on the SyncTaskThreadId. " +
-                                    "This may cause issues. Task: " + item.Value.DisplayInfo;
-                                GlueCommands.Self.PrintError(message);
-                                int m = 3;
+                                taskQueueCount--;
+                                await RunTask(item.Value, markAsCurrent: true);
+                                if (System.Threading.Thread.CurrentThread.ManagedThreadId != SyncTaskThreadId)
+                                {
+                                    string message = "TaskManager.RunTask should be running on the SyncTaskThreadId. " +
+                                                     "This may cause issues. Task: " + item.Value.DisplayInfo;
+                                    GlueCommands.Self.PrintError(message);
+                                    int m = 3;
+                                }
+
                             }
 
                         }
+                        else
+                        {
+                            taskQueueCount--;
+                            AddInternal(item.Value);
+                            System.Threading.Thread.Sleep(50);
 
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        taskQueueCount--;
-                        AddInternal(item.Value);
-                        System.Threading.Thread.Sleep(50);
-
+                        GlueCommands.Self.PrintError(ex.ToString());
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    GlueCommands.Self.PrintError(ex.ToString());
+                    await Task.Delay(50);
                 }
             }
         }
