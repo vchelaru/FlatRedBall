@@ -17,6 +17,8 @@
                 </Button.ToolTip>
                 <Image IsHitTestVisible="False" Source="/Plugins/EmbeddedPlugins/OutputPlugin/DeleteOutput.png" Width="25" ></Image>
             </Button>
+            <Label Content="Max Lines: "/>
+            <TextBox x:Name="MaxLinesTextBox" Width="50" VerticalContentAlignment="Center" Text="1000" TextChanged="MaxLinesTextBox_TextChanged"/>
         </StackPanel>
         <RichTextBox x:Name="TextBox" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Row="1">
             

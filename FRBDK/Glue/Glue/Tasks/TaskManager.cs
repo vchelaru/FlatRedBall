@@ -325,7 +325,7 @@ namespace FlatRedBall.Glue.Managers
                         }
                         else
                         {
-                            taskQueueCount--;
+                            taskQueueCount++;
                             AddInternal(item.Value);
                             System.Threading.Thread.Sleep(50);
 
@@ -605,6 +605,7 @@ namespace FlatRedBall.Glue.Managers
         bool DoesTaskNeedToFinish(GlueTaskBase glueTask)
         {
             return
+                glueTask.TimeStarted == null ||
                 taskQueue.Any(item => item.Value == glueTask) ||
                 mActiveParallelTasks.Contains(glueTask) ||
                 CurrentlyRunningTask == glueTask;

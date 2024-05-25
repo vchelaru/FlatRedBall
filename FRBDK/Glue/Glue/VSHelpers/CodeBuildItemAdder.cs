@@ -144,14 +144,14 @@ namespace FlatRedBall.Glue.VSHelpers
             return filesInFolder;
         }
 
-        public void PerformAddAndSaveTask(Assembly assemblyContainingResource = null)
+        public void PerformAddAndSaveTask(Assembly assemblyContainingResource = null, string codeBuildItemAdderName = null)
         {
             TaskManager.Self.Add(() =>
             {
                 PerformAddInternal(assemblyContainingResource);
 
             },
-            "Adding and saving files...");
+            "Adding and saving files..." + codeBuildItemAdderName);
         }
 
         private bool PerformAddInternal(Assembly assemblyContainingResource = null)
@@ -335,42 +335,29 @@ namespace FlatRedBall.Glue.VSHelpers
             var byteArray = FileManager.GetByteArrayFromEmbeddedResource(assemblyContainingResource, resourceName);
             var contents = System.Text.Encoding.UTF8.GetString(byteArray).Trim(new char[] { '\uFEFF', '\u200B' });
 
-            // But after it's been saved we gotta see if it includes any
-            // special string sequences like $PROJECT_NAMESPACE$
-
-            bool shouldSave = false;
-
             if (contents.Contains("$PROJECT_NAMESPACE$"))
             {
                 contents = contents.Replace("$PROJECT_NAMESPACE$", ProjectManager.ProjectNamespace);
-
-                shouldSave = true;
             }
 
             if(contents.Contains("$GLUE_VERSIONS$"))
             {
                 contents = contents.Replace("$GLUE_VERSIONS$", GetGlueVersionsString());
-
-                shouldSave = true;
             }
 
-            if(shouldSave)
-            { 
-                try
+            try
+            {
+                GlueCommands.Self.TryMultipleTimes(() =>
                 {
-                    GlueCommands.Self.TryMultipleTimes(() =>
-                    {
-                        //System.IO.File.WriteAllText(destination, contents);
-                        GlueCommands.Self.FileCommands.SaveIfDiffers(destination, contents);
-                    });
-                }
-                catch(Exception e)
-                {
-                    PluginManager.ReceiveOutput("Failed to save file " + 
-                        resourceName + " because of the following error:\n" +
-                        e.ToString());
-                }
-
+                    //System.IO.File.WriteAllText(destination, contents);
+                    GlueCommands.Self.FileCommands.SaveIfDiffers(destination, contents);
+                });
+            }
+            catch(Exception e)
+            {
+                PluginManager.ReceiveOutput("Failed to save file " + 
+                    resourceName + " because of the following error:\n" +
+                    e.ToString());
             }
 
         }

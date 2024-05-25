@@ -82,9 +82,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
             }
         }
 
+        public int MaxLinesOfText { get; set; } = 1000;
+
         private void ShortenOutputIfNecessary()
         {
-            if(this.TextBox.Document.Blocks.Count > 1000)
+            if(this.TextBox.Document.Blocks.Count > MaxLinesOfText)
             {
                 for(int i = 0; i < 100; i++)
                 {
@@ -98,6 +100,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
             lock(mBuffer)
             {
                 this.TextBox.Document.Blocks.Clear();
+            }
+        }
+
+        private void MaxLinesTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if(int.TryParse(MaxLinesTextBox.Text, out int parsedValue))
+            {
+                MaxLinesOfText = parsedValue;
             }
         }
     }

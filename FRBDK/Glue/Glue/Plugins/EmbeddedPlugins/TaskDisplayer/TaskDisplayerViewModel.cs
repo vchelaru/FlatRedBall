@@ -101,9 +101,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
                         taskEvent = "  " + taskEvent;
                     }
                     var text = $"{taskEvent} {glueTask.DisplayInfo}";
-                    if(addedOrRemoved == TaskEvent.Removed)
+                    if(addedOrRemoved == TaskEvent.Removed )
                     {
-                        var time = glueTask.TimeEnded - glueTask.TimeStarted;
+                        // time started better not be null here:
+                        var time = glueTask.TimeEnded - glueTask.TimeStarted.Value;
 
                         if(time.Minutes > 0)
                         {
