@@ -263,7 +263,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         private static NodeViewModel CreateTreeNodeForNamedObjectAtIndex(NodeViewModel parentNode, int i, NamedObjectSave namedObject)
         {
-            var treeNode = new NodeViewModel(FlatRedBall.Glue.FormHelpers.TreeNodeType.ReferencedFileSaveNode, parentNode);
+            var treeNode = new NodeViewModel(FlatRedBall.Glue.FormHelpers.TreeNodeType.NamedObjectSaveNode, parentNode);
             treeNode.Tag = namedObject;
             treeNode.IsEditable = true;
 
