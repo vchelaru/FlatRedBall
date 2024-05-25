@@ -183,9 +183,15 @@ namespace FlatRedBall.Glue.Managers
                 {
                     toReturn.AppendLine(GetDetails(currentlyRunning));
                 }
-                foreach (var item in taskQueue.ToArray())
+
+                var taskQueueArray = taskQueue.ToArray();
+
+                foreach (var item in taskQueueArray)
                 {
-                    toReturn.AppendLine(GetDetails(item.Value));
+                    if(item.Value.IsCancelled == false && item.Value != currentlyRunning)
+                    {
+                        toReturn.AppendLine(GetDetails(item.Value));
+                    }
                 }
 
                 string GetDetails(GlueTaskBase taskBase) => $"{taskBase?.DisplayInfo} ({taskBase?.TaskExecutionPreference})";
@@ -212,7 +218,7 @@ namespace FlatRedBall.Glue.Managers
                 }
 
                 var tasksToPrint = taskQueue
-                    .Where(item => item.Value.IsCancelled == false)
+                    .Where(item => item.Value.IsCancelled == false && item.Value != currentlyRunning)
                     .Take(10)
                     .ToArray();
                 foreach(var item in tasksToPrint)
