@@ -271,6 +271,15 @@ namespace OfficialPlugins.MonoGameContent
 
         private void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)
         {
+            // This method gets called a LOT for games like Deadvivors for .achx files. We can early out for file types
+            // that we know are not content pipeline files:
+            var extension = filePath.Extension;
+            if(extension == "achx" || extension == "json" || extension == "tsx" || extension == "tmx")
+            {
+                return;
+            }
+
+
             aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
 
             // See if it's a ReferencedFileSave. If so, we might want to look at that for additional properties

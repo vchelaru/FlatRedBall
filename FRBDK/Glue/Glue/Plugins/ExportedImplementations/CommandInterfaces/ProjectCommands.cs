@@ -548,7 +548,7 @@ class ProjectCommands : IProjectCommands
 
             }
 
-        }, $"{nameof(CopyToBuildFolder)} {absoluteSource}");
+        }, $"{nameof(CopyToBuildFolder)} {absoluteSource}", TaskExecutionPreference.AddOrMoveToEnd);
     }
 
     private static void CopyToBuildFolder(FilePath absoluteSource, string outputPathRelativeToCsProj)

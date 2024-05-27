@@ -51,6 +51,8 @@ namespace FlatRedBall.Glue.Managers
 
         readonly BlockingCollection<KeyValuePair<ulong, GlueTaskBase>> taskQueue = new BlockingCollection<KeyValuePair<ulong, GlueTaskBase>>(new ConcurrentPriorityQueue<ulong, GlueTaskBase>());
 
+        ConcurrentDictionary<string, GlueTaskBase> addOrMoveToEndTaskQueueTaskIds = new ();
+
         const string RestartTaskDisplay = "Restarting due to Glue or file change";
         public bool HasRestartTask => taskQueue.Any(item => item.Value.DisplayInfo == RestartTaskDisplay);
 
@@ -311,7 +313,15 @@ namespace FlatRedBall.Glue.Managers
                             taskQueueCount--;
                             if (isTaskProcessingEnabled)
                             {
+                                // Remove before adding - we want to err on the side of running things more
+                                // rather than less, and removing it earlier will increase the chances of
+                                // it running again.
+                                if(item.Value.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
+                                {
+                                    addOrMoveToEndTaskQueueTaskIds.Remove(item.Value.EffectiveId, out _);
+                                }
                                 await RunTask(item.Value, markAsCurrent: true);
+
                                 if (System.Threading.Thread.CurrentThread.ManagedThreadId != SyncTaskThreadId)
                                 {
                                     string message = "TaskManager.RunTask should be running on the SyncTaskThreadId. " +
@@ -557,17 +567,22 @@ namespace FlatRedBall.Glue.Managers
             var wasMoved = false;
             if(glueTask.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
             {
-                var existing = taskQueue.FirstOrDefault(item => 
-                    item.Value.EffectiveId == glueTask.EffectiveId &&
-                    item.Value.IsCancelled == false);
+                var effectiveId = glueTask.EffectiveId;
 
-                if (existing.Key != 0)
+                var isPresent = addOrMoveToEndTaskQueueTaskIds.ContainsKey(effectiveId);
+                if(isPresent)
                 {
-                    existing.Value.IsCancelled = true;
-                    wasMoved = true;
+                    addOrMoveToEndTaskQueueTaskIds.TryGetValue(effectiveId, out var existing);
 
-                    taskQueueCount--;
+                    if (existing != null)
+                    {
+                        existing.IsCancelled = true;
+                        wasMoved = true;
+
+                        taskQueueCount--;
+                    }
                 }
+
 
             }
 
@@ -581,6 +596,11 @@ namespace FlatRedBall.Glue.Managers
             }
 
             taskQueue.Add(new KeyValuePair<ulong, GlueTaskBase>(priorityValue, glueTask));
+
+            if(glueTask.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
+            {
+                addOrMoveToEndTaskQueueTaskIds[glueTask.EffectiveId] = glueTask;
+            }
 
             taskQueueCount++;
 
@@ -767,17 +787,17 @@ namespace FlatRedBall.Glue.Managers
                 return true;
             }
 
-            var stackTrace = new System.Diagnostics.StackTrace();
-            var stackFrame = new System.Diagnostics.StackFrame();
+            //var stackTrace = new System.Diagnostics.StackTrace();
+            //var stackFrame = new System.Diagnostics.StackFrame();
 
-            List<string> frameTexts = new List<string>();
-            for (int i = stackTrace.FrameCount - 1; i > -1; i--)
-            {
-                var frame = stackTrace.GetFrame(i);
-                var frameText = frame.ToString();
+            //List<string> frameTexts = new List<string>();
+            //for (int i = stackTrace.FrameCount - 1; i > -1; i--)
+            //{
+            //    var frame = stackTrace.GetFrame(i);
+            //    var frameText = frame.ToString();
 
-                frameTexts.Add(frameText);
-            }
+            //    frameTexts.Add(frameText);
+            //}
 
             /* For debugging:
              * 
@@ -796,24 +816,24 @@ namespace FlatRedBall.Glue.Managers
                 }
             }
             */
-            for (int i = stackTrace.FrameCount - 1; i > -1; i--)
-            {
-                var frame = stackTrace.GetFrame(i);
-                var frameText = frame.ToString();
+            //for (int i = stackTrace.FrameCount - 1; i > -1; i--)
+            //{
+            //    var frame = stackTrace.GetFrame(i);
+            //    var frameText = frame.ToString();
 
-                var isTasked = frameText.StartsWith("RunOnUiThreadTasked") ||
-                    // Vic says - not sure why but sometimes thread IDs change when in an async function.
-                    // So I thought I could check if the thread is the main task thread, but this won't work
-                    // because command receiving from the game runs on a separate thread, so that would behave
-                    // as if it's tasked, even though it's not
-                    // so we check this:
-                    frameText.StartsWith(nameof(GlueTask.Do_Action_Internal) + " ");
+            //    var isTasked = frameText.StartsWith("RunOnUiThreadTasked") ||
+            //        // Vic says - not sure why but sometimes thread IDs change when in an async function.
+            //        // So I thought I could check if the thread is the main task thread, but this won't work
+            //        // because command receiving from the game runs on a separate thread, so that would behave
+            //        // as if it's tasked, even though it's not
+            //        // so we check this:
+            //        frameText.StartsWith(nameof(GlueTask.Do_Action_Internal) + " ");
 
-                if (isTasked) 
-                {
-                    return true;
-                }
-            }
+            //    if (isTasked) 
+            //    {
+            //        return true;
+            //    }
+            //}
 
             return false;
         }

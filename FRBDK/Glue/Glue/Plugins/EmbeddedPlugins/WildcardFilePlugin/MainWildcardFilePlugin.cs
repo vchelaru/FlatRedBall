@@ -68,7 +68,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                                 }
                             }
                         }
-                    }, $"MainWildcardFilePlugin HandleFileChanged {changedFile} {fileChangeType}");
+                    }, $"MainWildcardFilePlugin HandleFileChanged {changedFile} {fileChangeType}",
+                    TaskExecutionPreference.AddOrMoveToEnd);
 
                 }
             }

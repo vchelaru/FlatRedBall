@@ -182,7 +182,7 @@ namespace OfficialPlugins.MonoGameContent
                     {
                         GlueCommands.TryMultipleTimes(project.Save, 5);
                     }
-                }, $"Removing XNB references for {fullFileName}");
+                }, $"Removing XNB references for {fullFileName}", TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
 
