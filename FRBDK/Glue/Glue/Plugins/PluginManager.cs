@@ -2194,22 +2194,6 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.GrabbedTreeNodeChanged(treeNode, treeNodeAction),
                 plugin => plugin.GrabbedTreeNodeChanged != null);
 
-        public static void ReactToGlobalTimer()
-        {
-            try
-            {
-                CallMethodOnPlugin(
-                    plugin => plugin.ReactToGlobalTimer(),
-                    plugin => plugin.ReactToGlobalTimer != null);
-
-            }
-            catch(InvalidOperationException)
-            {
-                // no biggie, this means the plugins changed when this was called. it is called so frequently,
-                // so we don't want to make a copy of the list.
-            }
-        }
-
         public static Task ReactToStateCategoryExcludedVariablesChangedAsync(StateSaveCategory category, string variableName, StateCategoryVariableAction action) => 
             CallMethodOnPluginAsync(
                 plugin => plugin.ReactToStateCategoryExcludedVariablesChanged(category, variableName, action),
@@ -2378,7 +2362,9 @@ namespace FlatRedBall.Glue.Plugins
                     wasAddHandled = plugin.TryAddContainedObjects(sourceFile, listToAddTo);
                 }
             },
-            plugin => plugin.TryAddContainedObjects != null, methodName:$"TryAddContainedObjects for {sourceFile}");
+            plugin => plugin.TryAddContainedObjects != null, methodName:$"TryAddContainedObjects for {sourceFile}", 
+                // May 27, 2024 - I don't think this needs to be on the UI thread, and it slows things down...
+                doOnUiThread:false);
 
             ResumeRelativeDirectory("TryAddContainedObjects");
             return wasAddHandled;

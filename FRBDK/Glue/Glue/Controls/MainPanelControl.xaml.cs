@@ -53,25 +53,10 @@ namespace GlueFormsCore.Controls
 
             CreateFileWatchTimer();
 
-            CreateWindowTimer();
-
             this.PreviewMouseLeftButtonUp += MainPanelControl_PreviewMouseLeftButtonUp;
             this.PreviewMouseMove += MainPanelControl_PreviewMouseMove;
             //TopTabControl
 
-        }
-
-
-        System.Timers.Timer timer;
-        private void CreateWindowTimer()
-        {
-            timer = new System.Timers.Timer();
-            timer.Elapsed += (not, used) =>
-            {
-                PluginManager.ReactToGlobalTimer();
-            };
-            timer.Interval = 250;
-            timer.Start();
         }
 
         private void MainPanelControl_PreviewMouseMove(object sender, MouseEventArgs e)

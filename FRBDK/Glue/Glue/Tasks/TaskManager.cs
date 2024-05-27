@@ -625,11 +625,18 @@ namespace FlatRedBall.Glue.Managers
 
         bool DoesTaskNeedToFinish(GlueTaskBase glueTask)
         {
-            return
-                glueTask.TimeStarted == null ||
-                taskQueue.Any(item => item.Value == glueTask) ||
-                mActiveParallelTasks.Contains(glueTask) ||
-                CurrentlyRunningTask == glueTask;
+            if(glueTask.IsCancelled)
+            {
+                return false;
+            }
+            else
+            {
+                return
+                    glueTask.TimeStarted == null ||
+                    taskQueue.Any(item => item.Value == glueTask) ||
+                    mActiveParallelTasks.Contains(glueTask) ||
+                    CurrentlyRunningTask == glueTask;
+            }
 
         }
 
