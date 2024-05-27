@@ -68,7 +68,10 @@ namespace FlatRedBall.Glue.Managers
 
         GlueTaskBase CurrentlyRunningTask;
 
-        public bool AreAllAsyncTasksDone => TaskCountAccurate == 0;
+        public bool AreAllAsyncTasksDone => 
+            TaskCountAccurate == 0
+
+            ;
 
         /// <summary>
         /// Returns the task count, including cancelled tasks.
@@ -282,6 +285,8 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        const int TaskManagerLoopDelayMs = 50;
+
         async void DoTaskManagerLoop()
         {
             SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
@@ -347,7 +352,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else
                 {
-                    await Task.Delay(50);
+                    await Task.Delay(TaskManagerLoopDelayMs);
                 }
             }
         }
@@ -520,7 +525,9 @@ namespace FlatRedBall.Glue.Managers
                     DoOnUiThread = doOnUiThread
                 };
 
+                TaskAddedOrRemoved?.Invoke(TaskEvent.StartedImmediate, task);
                 await RunTask(task, markAsCurrent: false);
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
 
                 return task;
             }
@@ -794,10 +801,13 @@ namespace FlatRedBall.Glue.Managers
                 return true;
             }
 
-            //var stackTrace = new System.Diagnostics.StackTrace();
+            // It's possible we may not be in a task based on threads, but we are 
+            // still in the task based on callstack because we're running on the UI thread.
+            // So we need to do the expensive operation of checking the callstack.
+            var stackTrace = new System.Diagnostics.StackTrace();
             //var stackFrame = new System.Diagnostics.StackFrame();
 
-            //List<string> frameTexts = new List<string>();
+            List<string> frameTexts = new List<string>();
             //for (int i = stackTrace.FrameCount - 1; i > -1; i--)
             //{
             //    var frame = stackTrace.GetFrame(i);
@@ -823,24 +833,18 @@ namespace FlatRedBall.Glue.Managers
                 }
             }
             */
-            //for (int i = stackTrace.FrameCount - 1; i > -1; i--)
-            //{
-            //    var frame = stackTrace.GetFrame(i);
-            //    var frameText = frame.ToString();
+            for (int i = stackTrace.FrameCount - 1; i > -1; i--)
+            {
+                var frame = stackTrace.GetFrame(i);
+                var frameText = frame.ToString();
 
-            //    var isTasked = frameText.StartsWith("RunOnUiThreadTasked") ||
-            //        // Vic says - not sure why but sometimes thread IDs change when in an async function.
-            //        // So I thought I could check if the thread is the main task thread, but this won't work
-            //        // because command receiving from the game runs on a separate thread, so that would behave
-            //        // as if it's tasked, even though it's not
-            //        // so we check this:
-            //        frameText.StartsWith(nameof(GlueTask.Do_Action_Internal) + " ");
+                var isTasked = frameText.StartsWith("RunOnUiThreadTasked");
 
-            //    if (isTasked) 
-            //    {
-            //        return true;
-            //    }
-            //}
+                if (isTasked)
+                {
+                    return true;
+                }
+            }
 
             return false;
         }
