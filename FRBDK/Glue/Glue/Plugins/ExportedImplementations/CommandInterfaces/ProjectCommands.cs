@@ -535,8 +535,10 @@ class ProjectCommands : IProjectCommands
                         // Maybe the project was never built...
                         System.IO.Directory.CreateDirectory(destination.GetDirectoryContainingThis().FullPath);
                         System.IO.File.Copy(absoluteSource.FullPath, destination.FullPath, true);
-
-                        PluginManager.ReceiveOutput("Copied " + absoluteSource.FullPath + " ==> " + destination.FullPath);
+                        if(FileWatchManager.IsPrintingDiagnosticOutput)
+                        {
+                            PluginManager.ReceiveOutput("Copied " + absoluteSource.FullPath + " ==> " + destination.FullPath);
+                        }
                     }
                     catch (Exception e)
                     {
