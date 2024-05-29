@@ -120,7 +120,15 @@ namespace FlatRedBall.Forms.MVVM
             }
         }
 
-
+        /// <summary>
+        /// Sets the underlying property without notifying any subscribers. This can be used for initial setting
+        /// or in rare cases when properties should be set without any 
+        /// </summary>
+        /// <typeparam name="T">The type of the property being set.</typeparam>
+        /// <param name="propertyValue">The new value.</param>
+        /// <param name="propertyName">The name of the property to set - typically used with nameof.</param>
+        /// <param name="oldValue">The old value, used to determine if a value should be assigned. If the old value matches the new value, then the property is not assigned and the return value is false.</param>
+        /// <returns>Whether the value was set. This is true if the old property did not exist, or if the old value does not match the new value. If this is the initial set, then this value is ignored.</returns>
         protected bool SetWithoutNotifying<T>(T propertyValue, string propertyName, T oldValue)
         {
             var didSet = false;
