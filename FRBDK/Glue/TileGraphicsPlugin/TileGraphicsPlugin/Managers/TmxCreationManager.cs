@@ -27,7 +27,7 @@ namespace TiledPluginCore.Managers
             {
                 var viewModel = JsonConvert.DeserializeObject<NewTmxViewModel>(creationOptions);
 
-                if(viewModel != null)
+                if (viewModel != null)
                 {
                     HandleNewTmx(newFile, viewModel);
 
@@ -58,6 +58,12 @@ namespace TiledPluginCore.Managers
             }
         }
 
+        enum TilesetType
+        {
+            FrbVisualTiles,
+            Zoria
+        }
+
         private void HandleNewTmxWithVisuals(ReferencedFileSave newFile, NewTmxViewModel viewModel)
         {
             var selectedLevel = viewModel.SelectedLevel;
@@ -74,6 +80,15 @@ namespace TiledPluginCore.Managers
                     break;
                 case TmxLevels.OverworldPlatformerC:
                     levelName = "OverworldPlatformerC";
+                    break;
+                case TmxLevels.OverworldTopDownA:
+                    levelName = "OverworldTopDownA";
+                    break;
+                case TmxLevels.OverworldTopDownB:
+                    levelName = "OverworldTopDownB";
+                    break;
+                case TmxLevels.OverworldTopDownC:
+                    levelName = "OverworldTopDownC";
                     break;
             }
 
@@ -92,7 +107,13 @@ namespace TiledPluginCore.Managers
         {
             var newFilePath = GlueCommands.Self.GetAbsoluteFilePath(newFile);
 
-
+            TilesetType tilesetType = TilesetType.FrbVisualTiles;
+            if (levelName == nameof(TmxLevels.OverworldTopDownA) ||
+                levelName == nameof(TmxLevels.OverworldTopDownB) ||
+                levelName == nameof(TmxLevels.OverworldTopDownC))
+            {
+                tilesetType = TilesetType.Zoria;
+            }
 
             void SaveIfNotExist(string resourceName, FilePath targetFile)
             {
@@ -108,14 +129,27 @@ namespace TiledPluginCore.Managers
                 }
             }
 
-            var visualTsxResourceName = "TiledPluginCore.Content.Tilesets.FrbVisualTiles.tsx";
-            var targetVisualTsxFile = new FilePath(GlueState.Self.ContentDirectory + "FrbVisualTiles.tsx");
-            SaveIfNotExist(visualTsxResourceName, targetVisualTsxFile);
+            FilePath targetVisualTsxFile = null;
+            if (tilesetType == TilesetType.FrbVisualTiles)
+            {
+                var visualTsxResourceName = "TiledPluginCore.Content.Tilesets.FrbVisualTiles.tsx";
+                targetVisualTsxFile = new FilePath(GlueState.Self.ContentDirectory + "FrbVisualTiles.tsx");
+                SaveIfNotExist(visualTsxResourceName, targetVisualTsxFile);
 
-            var visualPngResourceName = "TiledPluginCore.Content.Tilesets.FrbVisualTiles.png";
-            var targetVisualPngFile = new FilePath(GlueState.Self.ContentDirectory + "FrbVisualTiles.png");
-            SaveIfNotExist(visualPngResourceName, targetVisualPngFile);
+                var visualPngResourceName = "TiledPluginCore.Content.Tilesets.FrbVisualTiles.png";
+                var targetVisualPngFile = new FilePath(GlueState.Self.ContentDirectory + "FrbVisualTiles.png");
+                SaveIfNotExist(visualPngResourceName, targetVisualPngFile);
+            }
+            else if (tilesetType == TilesetType.Zoria)
+            {
+                var visualTsxResourceName = "TiledPluginCore.Content.Tilesets.ZoriaOverworld.tsx";
+                targetVisualTsxFile = new FilePath(GlueState.Self.ContentDirectory + "ZoriaOverworld.tsx");
+                SaveIfNotExist(visualTsxResourceName, targetVisualTsxFile);
 
+                var visualPngResourceName = "TiledPluginCore.Content.Tilesets.ZoriaOverworld.png";
+                var targetVisualPngFile = new FilePath(GlueState.Self.ContentDirectory + "ZoriaOverworld.png");
+                SaveIfNotExist(visualPngResourceName, targetVisualPngFile);
+            }
             var standardTsxResourceName = "TiledPluginCore.Content.Tilesets.StandardTileset.tsx";
             var targetStandardTsxFile = new FilePath(GlueState.Self.ContentDirectory + "StandardTileset.tsx");
             SaveIfNotExist(standardTsxResourceName, targetStandardTsxFile);
@@ -140,10 +174,12 @@ namespace TiledPluginCore.Managers
 
                 foreach (var tileset in tiledMapSave.Tilesets)
                 {
-                    if (tileset.Source == "../Tilesets/FrbVisualTiles.tsx")
+                    if (tileset.Source == "../Tilesets/FrbVisualTiles.tsx" ||
+                        tileset.Source == "../Tilesets/ZoriaOverworld.tsx")
                     {
                         tileset.Source = newVisualTsxRelative;
                     }
+
                     else if (tileset.Source == "../Tilesets/StandardTileset.tsx")
                     {
                         tileset.Source = newStandardTsxRelative;
@@ -271,11 +307,11 @@ namespace TiledPluginCore.Managers
 
             var tiles = tileMapSave.Layers[0].data[0].tiles;
 
-            for(int y = 0; y < 32; y++)
+            for (int y = 0; y < 32; y++)
             {
-                for(int x = 0; x < 32; x++)
+                for (int x = 0; x < 32; x++)
                 {
-                    if(x == 0 || y == 0 || x == 31 || y == 31)
+                    if (x == 0 || y == 0 || x == 31 || y == 31)
                     {
                         var absoluteValue = x + 32 * y;
 

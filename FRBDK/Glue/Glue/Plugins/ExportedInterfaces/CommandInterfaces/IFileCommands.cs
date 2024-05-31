@@ -47,6 +47,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         FilePath GetFilePath(ReferencedFileSave rfs);
         ReferencedFileSave GetReferencedFile(FilePath filePath);
         List<ReferencedFileSave> GetReferencedFiles(FilePath filePath);
+
+        /// <summary>
+        /// Returns all ReferencedFileSaves that use the argument file as their source - in other words,
+        /// the ReferencedFileSave converts the source to a destination file, and the destination file is
+        /// ultimately used in game. Source files are used to build destination files, such as ODS->CSV.
+        /// </summary>
         List<ReferencedFileSave> GetReferencedFilesUsingSourceFile(FilePath filePath);
 
 
@@ -73,5 +79,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         public List<string> GumFileExtensions { get; }
         public string GetGumExeFilePath();
+
+        void SaveIfDiffers(FilePath filePath, string contents, bool ignoreNextChange = false);
     }
 }

@@ -668,6 +668,53 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
         }
 
+        public void SaveIfDiffers(FilePath filePath, string contents, bool ignoreNextChange = false)
+        {
+            if (filePath.Exists() == false)
+            {
+                if(ignoreNextChange)
+                {
+                    FileWatchManager.IgnoreNextChangeOnFile(filePath);
+                }
+                FileManager.SaveText(contents, filePath.FullPath);
+            }
+            else
+            {
+                ReadOnlySpan<byte> existing = System.IO.File.ReadAllBytes(filePath.FullPath);
+                ReadOnlySpan<byte> current = Encoding.UTF8.GetBytes(contents);
+                if (!existing.SequenceEqual(current))
+                {
+                    if (ignoreNextChange)
+                    {
+                        FileWatchManager.IgnoreNextChangeOnFile(filePath);
+                    }
+
+                    FileManager.SaveText(contents, filePath.FullPath);
+                }
+            }
+        }
+
+        static int FindDifferenceIndex(string str1, string str2)
+        {
+            // Ensure both strings are not null and have the same length
+            if (str1 == null || str2 == null)
+            {
+                throw new ArgumentException("Both strings must not be null and must have the same length.");
+            }
+
+            var minLength = System.Math.Min(str1.Length, str2.Length);
+
+            for (int i = 0; i < minLength; i++)
+            {
+                if (str1[i] != str2[i])
+                {
+                    return i;
+                }
+            }
+
+            // If no differences were found, return -1 or handle accordingly
+            return -1;
+        }
     }
 
 }

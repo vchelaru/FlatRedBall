@@ -27,9 +27,18 @@ namespace TopDownPlugin.Data
 
                 // Max speed, AccelerationTime, and DecelerationTime have been
                 // tuned to work well with a 480x360 resolution game
-                MaxSpeed = 150,
-                AccelerationTime = .2f,
-                DecelerationTime = .1f,
+                // Update May 12, 2024
+                // These values have been
+                // adjusted to feel more "Link to the past" like.
+                // They haven't really been compared with the game
+                // itself, just eyeballed
+                //MaxSpeed = 150,
+                //AccelerationTime = .2f,
+                //DecelerationTime = .1f,
+
+                MaxSpeed = 76,
+                AccelerationTime = .16f,
+                DecelerationTime = .08f,
 
 
                 ShouldChangeMovementDirection = TopDownValuesViewModel.VelocityChangeMode.UpdateFromInput,

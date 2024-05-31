@@ -19,6 +19,8 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Reflection;
 using System.IO;
 using FlatRedBall.Glue.SaveClasses;
+using System.Windows.Forms.VisualStyles;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -39,8 +41,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         #region Properties
 
-        protected Dictionary<string, ProjectItem> mBuildItemDictionaries =
+        Dictionary<string, ProjectItem> mBuildItemDictionaries =
             new Dictionary<string, ProjectItem>(StringComparer.OrdinalIgnoreCase);
+
+        protected Dictionary<string, ProjectItem> LinkedDictionary = new Dictionary<string, ProjectItem>(StringComparer.OrdinalIgnoreCase);
 
         public IEnumerable<ProjectItem> EvaluatedItems
         {
@@ -101,6 +105,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
+        /// <summary>
+        /// Whether contnet files can be directly added to the project. This is only true for XNA content projects, which are no longer supported
+        /// as of 2024. For all modern projects like FNA and XNA, this is false.
+        /// </summary>
         public virtual bool AllowContentCompile { get { return true; } }
 
         public virtual string DefaultContentAction { get { return "None"; } }
@@ -291,9 +299,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 #endregion
                 try
                 {
-                    // The items in the dictionary must be to-lower on some
-                    // platforms, and ProcessPath takes care of this.
                     mBuildItemDictionaries.Add(itemInclude, buildItem);
+
+
                 }
                 catch
                 {
@@ -338,6 +346,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
 
                         buildItem.SetMetadataValue("Link", linkValue);
+
+                        LinkedDictionary.Add(linkValue, buildItem);
+
                     }
                 }
                 try
@@ -444,6 +455,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 projectItem.SetMetadataValue("Version", versionNumber);
                 mBuildItemDictionaries.Add(packageName, projectItem);
                 Project.ReevaluateIfNecessary();
+
+                // No need to update Link, that's not used here...
             }
         }
 
@@ -480,6 +493,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 if (isSyncedProject)
                 {
                     item.SetMetadataValue("Link", nameRelativeToThisProject);
+
+                    LinkedDictionary.Add(nameRelativeToThisProject, item);
+
 
                     if (nameRelativeToThisProject.Contains("Generated"))
                     {
@@ -695,6 +711,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public override void Load(string fileName)
         {
             mBuildItemDictionaries.Clear();
+            LinkedDictionary.Clear();
 
             bool wasChanged = false;
 
@@ -733,6 +750,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     mBuildItemDictionaries.Add(
                         buildItem.UnevaluatedInclude,
                         buildItem);
+
+                    var linkMetadata = buildItem.Metadata.FirstOrDefault(metadata => String.Equals(metadata.ItemType, "Link", StringComparison.OrdinalIgnoreCase));
+                    if(linkMetadata != null)
+                    {
+                        var foundLink = linkMetadata?.EvaluatedValue;
+                        LinkedDictionary.Add(foundLink, buildItem);
+                    }
+
                 }
             }
             #endregion
@@ -844,29 +869,34 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 itemName = itemName.Replace("/", "\\");
             }
-            if (!mBuildItemDictionaries.ContainsKey(itemName))
+
+            if(mBuildItemDictionaries.ContainsKey(itemName))
             {
-                List<ProjectItem> values;
-                lock (this)
-                {
-                    values = mBuildItemDictionaries.Values.ToList();
-                }
-
-                foreach (var item in values)
-                {
-                    // This may be a link
-                    var foundLink = item.Metadata.FirstOrDefault(metadata => String.Equals(metadata.ItemType, "Link", StringComparison.OrdinalIgnoreCase))?.EvaluatedValue;
-
-                    if (!string.IsNullOrEmpty(foundLink) && foundLink.Equals(itemName, System.StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        return item;
-                    }
-                }
-                return null;// mBuildItemDictionaries[itemName];
+                return mBuildItemDictionaries[itemName];
+            }
+            else if(LinkedDictionary.ContainsKey(itemName))
+            {
+                return LinkedDictionary[itemName];
             }
             else
             {
-                return mBuildItemDictionaries[itemName];
+                //List<ProjectItem> values;
+                //lock (this)
+                //{
+                //    values = mBuildItemDictionaries.Values.ToList();
+                //}
+
+                //foreach (var item in values)
+                //{
+                //    // This may be a link
+                //    var foundLink = item.Metadata.FirstOrDefault(metadata => String.Equals(metadata.ItemType, "Link", StringComparison.OrdinalIgnoreCase))?.EvaluatedValue;
+
+                //    if (!string.IsNullOrEmpty(foundLink) && foundLink.Equals(itemName, System.StringComparison.InvariantCultureIgnoreCase))
+                //    {
+                //        return item;
+                //    }
+                //}
+                return null;// mBuildItemDictionaries[itemName];
             }
         }
 
@@ -887,6 +917,12 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             //mBuildItemDictionaries.Add(newName, item);
             mBuildItemDictionaries[newName] = item;
 
+            if(LinkedDictionary.ContainsKey(oldName))
+            {
+                LinkedDictionary.Remove(oldName);
+                LinkedDictionary[newName] = item;
+            }
+
             if (newName.Contains(".generated.cs"))
             {
                 MakeBuildItemNested(item, FileManager.RemovePath(FileManager.RemoveExtension(newName)).Replace(".generated", "") + ".cs");
@@ -894,6 +930,26 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         }
 
+        public FilePath GetOutputDirectory()
+        {
+            var outputPathProperty = Project.Properties
+                            .ToArray()
+                            .FirstOrDefault(item => item.Name == "OutputPath");
+
+            var thisDirectory = FullFileName.GetDirectoryContainingThis();
+
+            if (outputPathProperty != null)
+            {
+                var debugPath = outputPathProperty.EvaluatedValue.Replace('\\', '/');
+
+                return thisDirectory + debugPath;
+            }
+            else
+            {
+                // default?
+                return thisDirectory + "bin/Debug/";
+            }
+        }
 
         public override void UpdateContentFile(string sourceFileName)
         {
@@ -1101,10 +1157,22 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             string itemName = buildItem.EvaluatedInclude.Replace("/", "\\");
 
-            return RemoveItem(itemName);
+            if(buildItem.Metadata.Any(metadata => metadata.ItemType == "Link"))
+            {
+                var evaluated = buildItem.Metadata.First(metadata => metadata.ItemType == "Link").EvaluatedValue;
+                
+                if(LinkedDictionary.ContainsKey(evaluated))
+                {
+                    LinkedDictionary.Remove(evaluated);
+                }
+            }
+
+            var wasRemoved = RemoveItem(itemName);
+
+            return wasRemoved;
         }
 
-        protected void RemoveItem(string itemName, ProjectItem item)
+        private void RemoveItem(string itemName, ProjectItem item)
         {
             lock (this)
             {
@@ -1114,6 +1182,15 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     Project.ReevaluateIfNecessary();
 
                     mBuildItemDictionaries.Remove(itemName);
+
+                    if(item.Metadata.Any(metadata => metadata.ItemType == "Link"))
+                    {
+                        var evaluated = item.Metadata.First(metadata => metadata.ItemType == "Link").EvaluatedValue;
+                        if(LinkedDictionary.ContainsKey(evaluated))
+                        {
+                            LinkedDictionary.Remove(evaluated);
+                        }
+                    }
                 }
             }
         }

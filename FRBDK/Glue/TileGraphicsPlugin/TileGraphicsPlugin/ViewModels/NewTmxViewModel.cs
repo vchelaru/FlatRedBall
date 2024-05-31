@@ -18,7 +18,10 @@ namespace TiledPluginCore.ViewModels
     {
         OverworldPlatformerA,
         OverworldPlatformerB,
-        OverworldPlatformerC
+        OverworldPlatformerC,
+        OverworldTopDownA,
+        OverworldTopDownB,
+        OverworldTopDownC
     }
 
     #endregion
@@ -93,6 +96,57 @@ namespace TiledPluginCore.ViewModels
                 }
             }
         }
+
+
+        [DependsOn(nameof(SelectedLevel))]
+        public bool IsOverworldTopDownASelected
+        {
+            get => SelectedLevel == TmxLevels.OverworldTopDownA;
+            set
+            {
+                if (value)
+                {
+                    SelectedLevel = TmxLevels.OverworldTopDownA;
+                }
+            }
+        }
+        [DependsOn(nameof(SelectedLevel))]
+        public bool IsOverworldTopDownBSelected
+        {
+            get => SelectedLevel == TmxLevels.OverworldTopDownB;
+            set
+            {
+                if (value)
+                {
+                    SelectedLevel = TmxLevels.OverworldTopDownB;
+                }
+            }
+        }
+        [DependsOn(nameof(SelectedLevel))]
+        public bool IsOverworldTopDownCSelected
+        {
+            get => SelectedLevel == TmxLevels.OverworldTopDownC;
+            set
+            {
+                if (value)
+                {
+                    SelectedLevel = TmxLevels.OverworldTopDownC;
+                }
+            }
+        }
+
+        public Visibility PlatformerLevelVisibility
+        {
+            get => Get<Visibility>();
+            set => Set(value);
+        }
+
+        public Visibility TopDownLevelVisibility
+        {
+            get => Get<Visibility>();
+            set => Set(value);
+        }
+
 
         #endregion
 

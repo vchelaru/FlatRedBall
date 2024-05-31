@@ -57,7 +57,11 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
             string glueControlManagerCode = GenerateGlueCommunicationClass(generationOptions);
             FilePath destinationFilePath = glueControlFolder + relativeDestinationFilePath;
             GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(destinationFilePath);
-            GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(destinationFilePath.FullPath, glueControlManagerCode));
+            GlueCommands.Self.TryMultipleTimes(() =>
+            {
+                //System.IO.File.WriteAllText(destinationFilePath.FullPath, glueControlManagerCode);
+                GlueCommands.Self.FileCommands.SaveIfDiffers(destinationFilePath, glueControlManagerCode);
+            });
         }
 
         private static string GenerateGlueCommunicationClass(GenerationOptions generationOptions)

@@ -37,9 +37,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
         #endregion
 
-        public FilePath CsvFileFor(EntitySave entity)
+        public FilePath CsvPlatformerFileFor(EntitySave entity)
         {
-            string absoluteFileName = GlueCommands.Self.FileCommands.GetContentFolder(entity) + RelativeCsvFile;
+            string absoluteFileName = 
+                GlueCommands.Self.FileCommands.GetContentFolder(entity) + 
+                RelativeCsvFile;
             return absoluteFileName;
         }
 
@@ -50,7 +52,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             {
                 string contents = GenerateCsvContents(inheritsFromPlatformer, viewModel);
 
-                var fileName = CsvFileFor(entity);
+                var fileName = CsvPlatformerFileFor(entity);
 
                 GlueCommands.Self.TryMultipleTimes(() =>
                 {

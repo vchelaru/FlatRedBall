@@ -46,7 +46,10 @@ namespace OfficialPlugins.ContentPipelinePlugin
                     var absolutePath = glueState.CurrentGlueProjectDirectory + "FileAliases.Generated.cs";
 
 
-                    glueCommands.TryMultipleTimes(() => System.IO.File.WriteAllText(absolutePath, codeFileContents), 5);
+                    glueCommands.TryMultipleTimes(() =>
+                    {
+                        glueCommands.FileCommands.SaveIfDiffers(absolutePath, codeFileContents);
+                    });
                 }
                 
      

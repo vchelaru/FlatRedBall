@@ -1,0 +1,8 @@
+﻿All art with the name "Zoria" is licensed under the Creative Commons 4.0 License.
+https://creativecommons.org/licenses/by/4.0/
+
+Original artwork from https://opengameart.org/content/zoria-tileset
+The following modifications have been made to the art:
+- The modified tileset is used which has different colors
+- The main character now has walk and attack animations
+- The enemy now has walk animations

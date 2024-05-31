@@ -23,7 +23,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         void CloseGlueProject(bool shouldSave = true, bool isExiting = false, GlueFormsCore.Controls.InitializationWindowWpf initWindow = null);
 
         void DoOnUiThread(Action action);
-        void TryMultipleTimes(Action action, int numberOfTimesToTry, int msSleepBetweenAttempts = 200);
+        void TryMultipleTimes(Action action, int numberOfTimesToTry = 5, int msSleepBetweenAttempts = 200);
 
         void PrintOutput(string output);
         void PrintError(string output);

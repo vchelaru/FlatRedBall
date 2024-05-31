@@ -79,30 +79,6 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-
-
-        internal void RemoveCallsForInheritance(EntitySave entitySave, bool inheritsFromEntity, EntitySave rootEntitySave,  ref string fileContents, ref bool shouldSave)
-        {
-
-
-            if (inheritsFromEntity)
-            {
-                #region Set the call to base(ContentManagerName)
-
-                if (fileContents.Contains("base()"))
-                {
-                    // use the lower-case contentManagerName since that's the argument that's given to
-                    // the base class' constructor.
-                    fileContents = fileContents.Replace("base()", "base(contentManagerName, addToManagers)");
-
-                }
-
-                #endregion
-
-                shouldSave = true;
-            }
-        }
-
         internal void WriteBaseInitialize(IElement saveObject, ICodeBlock codeBlock)
         {
             // August 29, 2011

@@ -460,11 +460,10 @@ namespace CompilerPlugin.Managers
             }
             else
             {
-                var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName.FullPath;
-                var projectDirectory = FileManager.GetDirectory(projectFileName);
                 var executableName = project.ExecutableName;
-                // todo - make the plugin smarter so it knows where the .exe is really located
-                var exeLocation = projectDirectory + $"bin/{configuration}/" + executableName + ".exe";
+                var outputDirectory = project.GetOutputDirectory();
+                var exeLocation = outputDirectory + executableName + ".exe";
+
                 return exeLocation;
             }
         }

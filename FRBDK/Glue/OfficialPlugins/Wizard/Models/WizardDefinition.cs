@@ -44,7 +44,7 @@ namespace OfficialPluginsCore.Wizard.Models
                 {
                     PlatformerSetupLogic.SetupForDefaultPlatformer(ViewModel);
                     // for now, set this to false...
-                    ViewModel.IncludePlatformerVisualLayers = false;
+                    ViewModel.IncludeLevelVisualLayers = false;
                     while (FormsDataList.Count > 1)
                     {
                         FormsDataList.RemoveAt(FormsDataList.Count - 1);
@@ -58,7 +58,18 @@ namespace OfficialPluginsCore.Wizard.Models
                 page.TopDownClicked += () =>
                 {
                     TopDownSetupLogic.SetupForDefaultTopDown(ViewModel);
-                    DoneClicked();
+
+                    // for now, set this to false...
+                    ViewModel.IncludeLevelVisualLayers = false;
+
+                    while (FormsDataList.Count > 1)
+                    {
+                        FormsDataList.RemoveAt(FormsDataList.Count - 1);
+                    }
+
+
+                    var nextPage = CreateTopDownOptionsUi();
+                    Show(nextPage, isLast: true);
                 };
                 page.FormsClicked += () =>
                 {
@@ -104,10 +115,24 @@ namespace OfficialPluginsCore.Wizard.Models
 
             formsData.AddTitle("Platformer Options");
 
-            formsData.AddBoolValue("Include Visual Layers", nameof(ViewModel.IncludePlatformerVisualLayers))
+            formsData.AddBoolValue("Include Visual Layers", nameof(ViewModel.IncludeLevelVisualLayers))
                 .Subtext = "If checked, all levels will be created with visual layers (ground, background, and decorations)";
 
             FormsDataList.Add(formsData);
+            return formsData;
+        }
+
+        private WizardPage CreateTopDownOptionsUi()
+        {
+            var formsData = new WizardPage(ViewModel);
+
+            formsData.AddTitle("Top Down Options");
+
+            formsData.AddBoolValue("Include Visual Layers", nameof(ViewModel.IncludeLevelVisualLayers))
+                .Subtext = "If checked, all levels will be created with visual layers (ground, background, and decorations)";
+
+            FormsDataList.Add(formsData);
+
             return formsData;
         }
 

@@ -101,6 +101,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         #region Fields/Properties
 
+        public TreeNodeType TreeNodeType { get; private set; }
+
         public object Tag { get; set; }
         
         // Not sure if we should have the setter be private or if it's okay to assign this. I think 
@@ -270,8 +272,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         }
 
 
-        public NodeViewModel(NodeViewModel parent = null)
+        public NodeViewModel(TreeNodeType treeNodeType, NodeViewModel parent = null)
         {
+            this.TreeNodeType = treeNodeType;
             Visibility = Visibility.Visible;
             //this.Node = Node;
             this.Parent = parent;

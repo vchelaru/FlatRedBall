@@ -312,30 +312,17 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
-        [DependsOn(nameof(PlayerControlType))]
         [DependsOn(nameof(AddGameScreen))]
         public bool IsWithVisualsVisible => 
-            AddGameScreen &&
-            PlayerControlType == GameType.Platformer;
+            AddGameScreen;
 
         public WithVisualType WithVisualType
         {
-            get
-            {
-                if(PlayerControlType == GameType.Platformer)
-                {
-                    return Get<WithVisualType>();
-                }
-                else
-                {
-                    // top down doesn't yet support visuals
-                    return WithVisualType.NoVisuals;
-                }
-            }
+            get => Get<WithVisualType>();
             set => Set(value);
         }
 
-        public bool IncludePlatformerVisualLayers
+        public bool IncludeLevelVisualLayers
         {
             get => WithVisualType == WithVisualType.WithVisuals;
             set => WithVisualType = value ? WithVisualType.WithVisuals : WithVisualType.NoVisuals;

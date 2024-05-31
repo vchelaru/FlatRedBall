@@ -38,6 +38,7 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
+        // todo - support face buttons, not just normal buttons...
         public List<Xbox360GamePad.Button> JoinButtons { get; private set; } = new List<Xbox360GamePad.Button>()
         {
             Xbox360GamePad.Button.Start

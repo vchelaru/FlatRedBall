@@ -180,7 +180,16 @@ namespace FlatRedBall.Glue.IO
                     //GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeSync();
                     //ProjectManager.SaveProjects();
                 }
+
+                var section = Section.GetAndStartContextAndTime("ProjectLoader.LoadProject");
+
                 PerformGluxLoad(projectFileName, glueProjectFile.FullPath, initializationWindow);
+
+                Section.EndContextAndTime();
+
+                var verboseSectionResult = section.ToStringVerbose();
+
+                int mm = 3;
 
                 #endregion
 
@@ -344,12 +353,7 @@ namespace FlatRedBall.Glue.IO
                 ProjectManager.GlueProjectSave.FixErrors(true);
                 ProjectManager.GlueProjectSave.RemoveInvalidStatesFromNamedObjects(true);
 
-                FixProjectErrors();
-
                 SetUnsetValues();
-
-
-                
 
                 ProjectManager.LoadOrCreateProjectSpecificSettings(FileManager.GetDirectory(projectFileName));
 
@@ -767,77 +771,6 @@ namespace FlatRedBall.Glue.IO
                     ErrorReporter.ReportError(GlueCommands.Self.GetAbsoluteFileName(rfs), error, false);
                 }
             }
-        }
-
-        private void FixProjectErrors()
-        {
-            bool shouldSave = false;
-
-            VisualStudioProject contentProjectBase = null;
-            if (ProjectManager.ProjectBase != null)
-            {
-                contentProjectBase = ProjectManager.ProjectBase;
-
-                if (ProjectManager.ProjectBase.ContentProject != null)
-                {
-                    contentProjectBase = (VisualStudioProject) ProjectManager.ProjectBase.ContentProject;
-                }
-            }
-
-            List<ReferencedFileSave> rfsList = null;
-            foreach (EntitySave entitySave in ProjectManager.GlueProjectSave.Entities)
-            {
-                rfsList = entitySave.ReferencedFiles;
-
-                shouldSave |= FixContentPipelineProjectValues(rfsList, contentProjectBase);
-
-            }
-
-            foreach (ScreenSave screenSave in ProjectManager.GlueProjectSave.Screens)
-            {
-                rfsList = screenSave.ReferencedFiles;
-
-                shouldSave |= FixContentPipelineProjectValues(rfsList, contentProjectBase);
-            }
-
-            rfsList = ProjectManager.GlueProjectSave.GlobalFiles;
-            shouldSave |= FixContentPipelineProjectValues(rfsList, contentProjectBase);
-
-            if (shouldSave)
-            {
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-            }
-
-        }
-
-        private bool FixContentPipelineProjectValues(List<ReferencedFileSave> rfsList, VisualStudioProject contentProjectBase)
-        {
-            bool hasMadeChanges = false;
-
-            if (contentProjectBase != null)
-            {
-                foreach (ReferencedFileSave rfs in rfsList)
-                {
-                    var item = contentProjectBase.GetItem(rfs.Name);
-
-
-                    if (item != null)
-                    {
-                        if (rfs.UseContentPipeline)
-                        {
-                            //if (rfs.TextureFormat == Microsoft.Xna.Framework.Content.Pipeline.Processors.TextureProcessorOutputFormat.DxtCompressed &&
-                            //    !item.HasMetadata("ProcessorParameters_TextureProcessorOutputFormat"))
-                            //{
-                            //    hasMadeChanges = true;
-                            //    // Gotta make this thing use the DxtCompression
-                            //    ContentPipelineHelper.UpdateTextureFormatFor(rfs);
-                            //}
-                        }
-                    }
-                }
-            }
-
-            return hasMadeChanges;
         }
 
         private void CheckForMissingCustomFile(GlueElement element)

@@ -253,7 +253,7 @@ namespace CompilerPlugin.Managers
                             string startOutput = "Build started at " + DateTime.Now.ToLongTimeString();
                             string endOutput = "Build succeeded";
 
-                            string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + $"bin/{configuration}/";
+                            var outputDirectory = GlueState.Self.CurrentMainProject.GetOutputDirectory();
                             // For info on parameters:
                             // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
                             // \m uses multiple cores

@@ -36,10 +36,17 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public List<IInputDevice> AllConnectedInputDevices { get; private set; }
 
+        /// <summary>
+        /// An observable array of joined devices.
+        /// </summary>
         public ObservableArray<IInputDevice> JoinedInputDevices { get; private set; }
 
-        int maxPlayers = 0;
+        int maxPlayers = 4;
         bool hasAssignedMaxPlayers = false;
+
+        /// <summary>
+        /// Sets the maximum number of players that can join. 
+        /// </summary>
         public int MaxPlayers
         {
             get => maxPlayers;
@@ -54,6 +61,10 @@ namespace FlatRedBall.Forms.Controls.Games
 
         List<InputDeviceSelectionItem> InputDeviceSelectionItemsInternal = new List<InputDeviceSelectionItem>();
 
+        /// <summary>
+        /// Event raised when the user presses the confirm join button, such as the A button on a gamepad or the Enter key on the keyboard.
+        /// This can be used to advance to the next screen, but the ConfirmJoinedEventArgs should be checked to verify that the game can proceed.
+        /// </summary>
         public event Action<object, ConfirmJoinedEventArgs> ConfirmedJoinedInput;
 
 
@@ -83,11 +94,15 @@ namespace FlatRedBall.Forms.Controls.Games
                 InputManager.Xbox360GamePads[3]
             };
 
-            
         }
 
         protected override void ReactToVisualChanged()
         {
+            // ReactToVisualChanged gets called before DoCommonInitialization
+            JoinedInputDevices = new ObservableArray<IInputDevice>(MaxPlayers);
+            JoinedInputDevices.CollectionChanged += HandleJoinedInputDevicesChanged;
+
+
             InputDeviceContainerInstance = this.Visual.GetGraphicalUiElementByName("InputDeviceContainerInstance");
             // If using the built-in instantiation from the runtime,
             // the Form association is made before variables are assigned.
@@ -125,25 +140,12 @@ namespace FlatRedBall.Forms.Controls.Games
 
         private void UpdateToJoinedInputDeviceCount()
         {
-            var oldArray = JoinedInputDevices;
 
-            if(oldArray != null)
+            if(JoinedInputDevices.Length != MaxPlayers)
             {
-                oldArray.CollectionChanged -= HandleJoinedInputDevicesChanged;
+                JoinedInputDevices.Resize(MaxPlayers);
             }
-
-            JoinedInputDevices = new ObservableArray<IInputDevice>(MaxPlayers);
             UpdateInputDeviceSelectionItemsCount();
-
-            JoinedInputDevices.CollectionChanged += HandleJoinedInputDevicesChanged;
-
-            if(oldArray != null)
-            {
-                for(int i = 0; i < oldArray.Length && i < JoinedInputDevices.Length; i++)
-                {
-                    JoinedInputDevices[i] = oldArray[i];
-                }
-            }
         }
 
         private void HandleJoinedInputDevicesChanged(object sender, ObservableArrayIndexChangeArgs e)
@@ -229,6 +231,7 @@ namespace FlatRedBall.Forms.Controls.Games
                 if(DidUnjoin(inputDevice))
                 {
                     // cancel pressed = handle...
+                    HandleUnjoin(inputDevice);
                 }
             }
 
@@ -286,6 +289,17 @@ namespace FlatRedBall.Forms.Controls.Games
                 JoinedInputDevices[firstEmpty.Value] = inputDevice;
             }
         }
+
+        private void HandleUnjoin(IInputDevice inputDevice)
+        {
+            for(int i = 0; i < JoinedInputDevices.Length; i++)
+            {
+                if (JoinedInputDevices[i] == inputDevice)
+                {
+                    JoinedInputDevices[i] = null;
+                }
+            }
+        }
     }
 
     #region ObservableArray Class 
@@ -326,6 +340,16 @@ namespace FlatRedBall.Forms.Controls.Games
         public bool Contains(T item)
         {
             return _array.Contains(item);
+        }
+
+        public void Resize(int newSize)
+        {
+            var newArray = new T[newSize];
+            for(int i = 0; i < System.Math.Min(newSize, _array.Length); i++)
+            {
+                newArray[i] = _array[i];
+            }
+            _array = newArray;
         }
 
         void OnIndexChanged(T oldItem, int index)

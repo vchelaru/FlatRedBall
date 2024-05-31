@@ -20,6 +20,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             get { return "Xna4"; }
         }
 
+        // This was true because it inherited from VisualStudioProject, but I don't think we really need this...
+        public override bool AllowContentCompile => true;
+
 
         protected override string ContentProjectDirectory
         {

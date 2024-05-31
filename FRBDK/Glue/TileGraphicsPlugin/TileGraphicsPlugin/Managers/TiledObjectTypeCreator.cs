@@ -77,7 +77,11 @@ namespace TileGraphicsPlugin.Managers
 
                 try
                 {
-                    GlueCommands.Self.TryMultipleTimes(() => FlatRedBall.IO.FileManager.SaveText(fileContents, fileName.FullPath));
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                    {
+                        //FlatRedBall.IO.FileManager.SaveText(fileContents, fileName.FullPath);
+                        GlueCommands.Self.FileCommands.SaveIfDiffers(fileName, fileContents);
+                    });
                 }
                 catch(System.IO.IOException)
                 {

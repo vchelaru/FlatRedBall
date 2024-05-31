@@ -51,6 +51,8 @@ namespace FlatRedBall.Glue.Managers
 
         readonly BlockingCollection<KeyValuePair<ulong, GlueTaskBase>> taskQueue = new BlockingCollection<KeyValuePair<ulong, GlueTaskBase>>(new ConcurrentPriorityQueue<ulong, GlueTaskBase>());
 
+        ConcurrentDictionary<string, GlueTaskBase> addOrMoveToEndTaskQueueTaskIds = new ();
+
         const string RestartTaskDisplay = "Restarting due to Glue or file change";
         public bool HasRestartTask => taskQueue.Any(item => item.Value.DisplayInfo == RestartTaskDisplay);
 
@@ -66,7 +68,10 @@ namespace FlatRedBall.Glue.Managers
 
         GlueTaskBase CurrentlyRunningTask;
 
-        public bool AreAllAsyncTasksDone => TaskCountAccurate == 0;
+        public bool AreAllAsyncTasksDone => 
+            TaskCountAccurate == 0
+
+            ;
 
         /// <summary>
         /// Returns the task count, including cancelled tasks.
@@ -167,6 +172,38 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        public string AllTasksDescription
+        {
+            get
+            {
+                StringBuilder toReturn = new StringBuilder();
+
+                if (IsTaskProcessingEnabled == false)
+                {
+                    toReturn.AppendLine("Task processing disabled, next task when re-enabled:");
+                }
+
+                var currentlyRunning = CurrentlyRunningTask;
+                if (currentlyRunning != null)
+                {
+                    toReturn.AppendLine(GetDetails(currentlyRunning));
+                }
+
+                var taskQueueArray = taskQueue.ToArray();
+
+                foreach (var item in taskQueueArray)
+                {
+                    if(item.Value.IsCancelled == false && item.Value != currentlyRunning)
+                    {
+                        toReturn.AppendLine(GetDetails(item.Value));
+                    }
+                }
+
+                string GetDetails(GlueTaskBase taskBase) => $"{taskBase?.DisplayInfo} ({taskBase?.TaskExecutionPreference})";
+                return toReturn.ToString();
+            }
+        }
+
         public string NextTasksDescription
         {
             get
@@ -186,7 +223,7 @@ namespace FlatRedBall.Glue.Managers
                 }
 
                 var tasksToPrint = taskQueue
-                    .Where(item => item.Value.IsCancelled == false)
+                    .Where(item => item.Value.IsCancelled == false && item.Value != currentlyRunning)
                     .Take(10)
                     .ToArray();
                 foreach(var item in tasksToPrint)
@@ -236,47 +273,86 @@ namespace FlatRedBall.Glue.Managers
 
         void StartDoTaskManagerLoop()
         {
-            // this makes the thread return:
-            AsyncContext.Run(DoTaskManagerLoop);
-            //DoTaskManagerLoop();
+            var shouldForceOnSameThread = true;
+
+            if(shouldForceOnSameThread)
+            {
+                AsyncContext.Run(DoTaskManagerLoop);
+            }
+            else
+            {
+                DoTaskManagerLoop();
+            }
         }
+
+        const int TaskManagerLoopDelayMs = 50;
 
         async void DoTaskManagerLoop()
         {
             SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
-            foreach (var item in taskQueue.GetConsumingEnumerable())
+            while (true)
             {
-                try
+                // `taskQueue` is a blocking collection, which means if we call `GetConsumingEnumerable()` it will 
+                // sit here and block the thread while waiting for an item to be added to the collection. However, 
+                // the intention of the task manager is that all tasks that are executed are stickied to the 
+                // same thread, and thus all code executed by a task is executed by this same thread. This is done
+                // via the `AsyncContext.Run()` used to invoke the current method.
+                //
+                // Due to the desire for this to be single threaded, if a task's implementation calls a fire and
+                // forget async method via calling an `async void` method, then once the first `await` call is hit,
+                // the task will no longer executed, as the Task continuation will be waiting to be marshalled to
+                // the current thread, but that thread is "active" waiting for the blocking collection to return.
+                //
+                // To fix this, instead of looping over the blocking collection forever, we instead grab each task
+                // out of the queue and execute it, and once we have no items left in the queue we use a 
+                // `Task.Delay()` to free the thread up for handling any pending continuation tasks that are waiting.
+                //
+                // Related to https://github.com/vchelaru/FlatRedBall/issues/1412.
+                if (taskQueue.TryTake(out var item))
                 {
-                    if(isTaskProcessingEnabled)
+                    try
                     {
                         if (item.Value.IsCancelled == false)
                         {
                             taskQueueCount--;
-                            await RunTask(item.Value, markAsCurrent:true);
-                            if(System.Threading.Thread.CurrentThread.ManagedThreadId != SyncTaskThreadId)
+                            if (isTaskProcessingEnabled)
                             {
-                                string message = "TaskManager.RunTask should be running on the SyncTaskThreadId. " +
-                                    "This may cause issues. Task: " + item.Value.DisplayInfo;
-                                GlueCommands.Self.PrintError(message);
-                                int m = 3;
+                                // Remove before adding - we want to err on the side of running things more
+                                // rather than less, and removing it earlier will increase the chances of
+                                // it running again.
+                                if(item.Value.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
+                                {
+                                    addOrMoveToEndTaskQueueTaskIds.Remove(item.Value.EffectiveId, out _);
+                                }
+                                await RunTask(item.Value, markAsCurrent: true);
+
+                                if (System.Threading.Thread.CurrentThread.ManagedThreadId != SyncTaskThreadId)
+                                {
+                                    string message = "TaskManager.RunTask should be running on the SyncTaskThreadId. " +
+                                                     "This may cause issues. Task: " + item.Value.DisplayInfo;
+                                    GlueCommands.Self.PrintError(message);
+                                    int m = 3;
+                                }
+
                             }
 
+                            else
+                            {
+                                AddInternal(item.Value);
+                                System.Threading.Thread.Sleep(50);
+
+                            }
                         }
-
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        taskQueueCount--;
-                        AddInternal(item.Value);
-                        System.Threading.Thread.Sleep(50);
-
+                        GlueCommands.Self.PrintError(ex.ToString());
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    GlueCommands.Self.PrintError(ex.ToString());
+                    await Task.Delay(TaskManagerLoopDelayMs);
                 }
             }
         }
@@ -449,7 +525,9 @@ namespace FlatRedBall.Glue.Managers
                     DoOnUiThread = doOnUiThread
                 };
 
+                TaskAddedOrRemoved?.Invoke(TaskEvent.StartedImmediate, task);
                 await RunTask(task, markAsCurrent: false);
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
 
                 return task;
             }
@@ -496,16 +574,22 @@ namespace FlatRedBall.Glue.Managers
             var wasMoved = false;
             if(glueTask.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
             {
-                var existing = taskQueue.FirstOrDefault(item => 
-                    item.Value.EffectiveId == glueTask.EffectiveId &&
-                    item.Value.IsCancelled == false);
+                var effectiveId = glueTask.EffectiveId;
 
-                if (existing.Key != 0)
+                var isPresent = addOrMoveToEndTaskQueueTaskIds.ContainsKey(effectiveId);
+                if(isPresent)
                 {
-                    existing.Value.IsCancelled = true;
-                    wasMoved = true;
-                    taskQueueCount--;
+                    addOrMoveToEndTaskQueueTaskIds.TryGetValue(effectiveId, out var existing);
+
+                    if (existing != null)
+                    {
+                        existing.IsCancelled = true;
+                        wasMoved = true;
+
+                        taskQueueCount--;
+                    }
                 }
+
 
             }
 
@@ -519,6 +603,12 @@ namespace FlatRedBall.Glue.Managers
             }
 
             taskQueue.Add(new KeyValuePair<ulong, GlueTaskBase>(priorityValue, glueTask));
+
+            if(glueTask.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
+            {
+                addOrMoveToEndTaskQueueTaskIds[glueTask.EffectiveId] = glueTask;
+            }
+
             taskQueueCount++;
 
         }
@@ -542,10 +632,18 @@ namespace FlatRedBall.Glue.Managers
 
         bool DoesTaskNeedToFinish(GlueTaskBase glueTask)
         {
-            return
-                taskQueue.Any(item => item.Value == glueTask) ||
-                mActiveParallelTasks.Contains(glueTask) ||
-                CurrentlyRunningTask == glueTask;
+            if(glueTask.IsCancelled)
+            {
+                return false;
+            }
+            else
+            {
+                return
+                    glueTask.TimeStarted == null ||
+                    taskQueue.Any(item => item.Value == glueTask) ||
+                    mActiveParallelTasks.Contains(glueTask) ||
+                    CurrentlyRunningTask == glueTask;
+            }
 
         }
 
@@ -703,17 +801,20 @@ namespace FlatRedBall.Glue.Managers
                 return true;
             }
 
+            // It's possible we may not be in a task based on threads, but we are 
+            // still in the task based on callstack because we're running on the UI thread.
+            // So we need to do the expensive operation of checking the callstack.
             var stackTrace = new System.Diagnostics.StackTrace();
-            var stackFrame = new System.Diagnostics.StackFrame();
+            //var stackFrame = new System.Diagnostics.StackFrame();
 
             List<string> frameTexts = new List<string>();
-            for (int i = stackTrace.FrameCount - 1; i > -1; i--)
-            {
-                var frame = stackTrace.GetFrame(i);
-                var frameText = frame.ToString();
+            //for (int i = stackTrace.FrameCount - 1; i > -1; i--)
+            //{
+            //    var frame = stackTrace.GetFrame(i);
+            //    var frameText = frame.ToString();
 
-                frameTexts.Add(frameText);
-            }
+            //    frameTexts.Add(frameText);
+            //}
 
             /* For debugging:
              * 
@@ -737,15 +838,9 @@ namespace FlatRedBall.Glue.Managers
                 var frame = stackTrace.GetFrame(i);
                 var frameText = frame.ToString();
 
-                var isTasked = frameText.StartsWith("RunOnUiThreadTasked") ||
-                    // Vic says - not sure why but sometimes thread IDs change when in an async function.
-                    // So I thought I could check if the thread is the main task thread, but this won't work
-                    // because command receiving from the game runs on a separate thread, so that would behave
-                    // as if it's tasked, even though it's not
-                    // so we check this:
-                    frameText.StartsWith(nameof(GlueTask.Do_Action_Internal) + " ");
+                var isTasked = frameText.StartsWith("RunOnUiThreadTasked");
 
-                if (isTasked) 
+                if (isTasked)
                 {
                     return true;
                 }
@@ -760,7 +855,6 @@ namespace FlatRedBall.Glue.Managers
             {
                 var stackTrace = Environment.StackTrace;
 
-                GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.PrintOutput("Code not in task:\n" + stackTrace));
             }
         }
 

@@ -664,6 +664,10 @@ public class TileGraphicsPluginClass : PluginBase
                     {
                         TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(nos, element);
                     }
+                    if(nodeNetworkTab?.IsShown == true && nos != null)
+                    {
+                        TileNodeNetworkPropertiesController.Self.RefreshViewModelTo(nos, element);
+                    }
                 });
 
             }
@@ -716,6 +720,38 @@ public class TileGraphicsPluginClass : PluginBase
     {
         var view = new NewTmxOptionsView();
         var viewModel = new NewTmxViewModel();
+
+        var hasPlatformerEntity = GetIfHasPlatformerEntity();
+        var hasTopDownEntity = GetIfHasTopDownEntity();
+
+        if((hasPlatformerEntity == false && hasTopDownEntity == false) ||
+            (hasPlatformerEntity && hasTopDownEntity))
+        {
+            // We don't know what kind of game the user is making, so show it all
+            viewModel.PlatformerLevelVisibility = System.Windows.Visibility.Visible;
+            viewModel.TopDownLevelVisibility = System.Windows.Visibility.Visible;
+        }
+        else if(hasPlatformerEntity)
+        {
+            viewModel.PlatformerLevelVisibility = System.Windows.Visibility.Visible;
+            viewModel.TopDownLevelVisibility = System.Windows.Visibility.Collapsed;
+        }
+        else if(hasTopDownEntity)
+        {
+            viewModel.PlatformerLevelVisibility = System.Windows.Visibility.Collapsed;
+            viewModel.TopDownLevelVisibility = System.Windows.Visibility.Visible;
+        }
+
+        if(viewModel.PlatformerLevelVisibility == System.Windows.Visibility.Visible)
+        {
+            viewModel.SelectedLevel = TmxLevels.OverworldPlatformerA;
+        }
+        else if(viewModel.TopDownLevelVisibility == System.Windows.Visibility.Visible)
+        {
+            viewModel.SelectedLevel = TmxLevels.OverworldTopDownA;
+        }
+
+
         viewModel.IncludeDefaultTileset = true;
         viewModel.IncludeGameplayLayer = true;
         // January 23, 2022
@@ -754,6 +790,18 @@ public class TileGraphicsPluginClass : PluginBase
                 return null;
             }
         };
+    }
+
+    private bool GetIfHasPlatformerEntity()
+    {
+        return GlueState.Self.CurrentGlueProject.Entities.Any(item => 
+            item.Properties.GetValue<bool>("IsPlatformer"));
+    }
+
+    private bool GetIfHasTopDownEntity()
+    {
+        return GlueState.Self.CurrentGlueProject.Entities.Any(item =>
+            item.Properties.GetValue<bool>("IsTopDown"));
     }
 
     int changesToIgnore = 0;

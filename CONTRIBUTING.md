@@ -2,15 +2,9 @@
 
 Thanks for your interest in contributing to FlatRedBall. The FlatRedBall Engine and associated tool are continually-evolving, and your involvement can help move the technology forward even faster. There's a lot of ways to get involved.
 
-## Discord Chat
+If you are interested in helping with FlatRedBall, see the How To Contribute page: https://docs.flatredball.com/flatredball/contributing/how-to-contribute
 
-The FlatRedBall Discord server is an active place to ask and answer questions. The more activity in the Discord server, the more confident new developers will feel when evaluating FlatRedBall. Joining the server and chatting can help the community grow and stay active. 
-
-FlatRedBall Discord: https://discord.gg/tG5RBgw
-
-## Spread the Word
-
-FRB is a mature and powerful engine, and the more people who know about it, the better! Let others know that you're working with the engine, show off your progress, and invite others to join the community. 
+If you are making contributions such as reporting a bug or commmitting code, see the sections below.
 
 ## Reporting a Bug
 
@@ -35,16 +29,12 @@ If possible, include:
 * Callstacks of the errors (many errors in Glue or in the FlatRedBall Engine will provide them)
 * Entire projects if the steps to reproduce are complicated or unknown. If including a project, please exclude the bin and obj folders as they are unnecessary and can use a lot of extra space
 
-## Asking Questions
-
-Questions can be asked on Discord (as mentioned above) or as an issue on Github. When asking questions on github, please include information about what you are attempting to accomplish, what you've tried, and how the outcome differs from what you expect. Following the same guidelines as **Reporting a Bug** is helpful.
-
 ## Suggestions for Improvements
 
 If you have an idea for how to improve FlatRedBall, please let us know in the Discord channel. We believe that FlatRedBall has an unlimited amount of potential to improve game development, and often times we have certain features planned, but they haven't yet been worked on due to implementation difficulty. We prefer to keep discussions about potential improvements in Discord so that we can talk about the details of why a particular feature may or may not make sense given the current state of development.
 
 ## Making Code Contributions
 
-If you have code which you would like to submit to FlatRedBall, please follow the standard fork/pull request approach. At the time of this writing we have not been adding issues labeled specifically as **Help Wanted** but this may change over time.
+If you have code which you would like to submit to FlatRedBall, please follow the standard fork/pull request approach.
 
-If you would like to contribute, but you don't know where to help, join the Discord chat and discuss ideas with other contributors.
+If you would like to contribute, but you don't know where to help, join the Discord chat and discuss ideas with other contributors, or see the How to Contribute page: https://docs.flatredball.com/flatredball/contributing/how-to-contribute

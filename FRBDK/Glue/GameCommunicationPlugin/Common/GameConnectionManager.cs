@@ -257,31 +257,41 @@ namespace GameJsonCommunicationPlugin.Common
 
         private static async Task<string> ReceiveString(Socket socket)
         {
-            byte[] bufferSize = new byte[sizeof(long)];
-            //socket.Receive(bufferSize);
-            ArraySegment<byte> buffer = new ArraySegment<byte>(bufferSize);
-            await socket.ReceiveAsync(buffer, SocketFlags.None);
-
-            var packetSize = BitConverter.ToInt64(bufferSize, 0);
-
-            string responseString = null;
-
-            using (MemoryStream stream = new MemoryStream())
+            try
             {
-                var remainingBytes = packetSize;
-                while (remainingBytes > 0)
+                byte[] bufferSize = new byte[sizeof(long)];
+                //socket.Receive(bufferSize);
+
+                ArraySegment<byte> buffer = new ArraySegment<byte>(bufferSize);
+                await socket.ReceiveAsync(buffer, SocketFlags.None);
+
+                var packetSize = BitConverter.ToInt64(bufferSize, 0);
+
+                string responseString = null;
+
+                using (MemoryStream stream = new MemoryStream())
                 {
-                    var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
-                    byte[] bufferData = new byte[pullSize];
-                    socket.Receive(bufferData);
-                    stream.Write(bufferData, 0, bufferData.Length);
-                    remainingBytes -= pullSize;
+                    var remainingBytes = packetSize;
+                    while (remainingBytes > 0)
+                    {
+                        var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
+                        byte[] bufferData = new byte[pullSize];
+                        socket.Receive(bufferData);
+                        stream.Write(bufferData, 0, bufferData.Length);
+                        remainingBytes -= pullSize;
+                    }
+
+                    responseString = Encoding.ASCII.GetString(stream.ToArray());
                 }
 
-                responseString = Encoding.ASCII.GetString(stream.ToArray());
-            }
+                return responseString;
 
-            return responseString;
+            }
+            catch(SocketException)
+            {
+                // This can mean the socket was closed, so return null
+                return null;
+            }
         }
 
         private async Task StatusCheckTask(CancellationToken cancellation)

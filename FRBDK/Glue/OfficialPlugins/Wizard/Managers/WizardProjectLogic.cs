@@ -382,9 +382,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     mapObject.SourceName = "Entire File (LayeredTileMap)";
                 }
 
-                if (vm.WithVisualType == WithVisualType.WithVisuals && 
-                    // for now only platformer is supported
-                    vm.PlayerControlType == GameType.Platformer)
+                if (vm.WithVisualType == WithVisualType.WithVisuals)
                 {
                     var reminder = levelIndex0Based % 3;
                     char suffix = 'A';
@@ -399,7 +397,8 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                     if(vm.PlayerControlType == GameType.TopDown)
                     {
-
+                        PluginManager.CallPluginMethod("Tiled Plugin", "SaveFileWithVisuals",
+                            newRfs, $"OverworldTopDown{suffix}");
                     }
                     // make platformer default if no other type is set
                     else // if(vm.PlayerControlType == GameType.Platformer)
@@ -718,13 +717,15 @@ namespace OfficialPluginsCore.Wizard.Managers
             FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly,
                 // This uses a different .png than the platformer so that we can expand
                 // each independently in case we need the space.
-                "OfficialPlugins.Wizard.EmbeddedContent.TopDown.FRBeefcakeSpritesheet.png",
-                playerContentFolder + "FRBeefcakeSpriteSheet.png");
+                "OfficialPlugins.Wizard.EmbeddedContent.TopDown.ZoriaSpritesSheetModified.png",
+                playerContentFolder + "ZoriaSpritesSheetModified.png");
+
+
 
             // 2 - save the .achx to the right locatoin
-            FlatRedBall.IO.FilePath achxDestinationPath = playerContentFolder + "TopDownAnimations.achx";
+            FlatRedBall.IO.FilePath achxDestinationPath = playerContentFolder + "ZoriaTopDownAnimations.achx";
             FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly,
-                "OfficialPlugins.Wizard.EmbeddedContent.TopDown.TopDownAnimations.achx",
+                "OfficialPlugins.Wizard.EmbeddedContent.TopDown.ZoriaTopDownAnimations.achx",
                 achxDestinationPath.FullPath);
 
             // 3 - add the .achx to the Player entity
@@ -737,17 +738,23 @@ namespace OfficialPluginsCore.Wizard.Managers
                 await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
                     sprite,
                     nameof(FlatRedBall.Sprite.AnimationChains),
-                    "TopDownAnimations",
+                    "ZoriaTopDownAnimations",
                     false, false
                     );
 
                 await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
                     sprite,
                     nameof(FlatRedBall.Sprite.CurrentChainName),
-                    "CharacterIdleDown",
+                    "IdleDown",
                     false, false
                     );
             }
+
+            // 5 - Save the Zoria license file:
+            FilePath zoriaLicenseDestination = playerContentFolder + "ZoriaLicense.txt";
+            FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly,
+                               "OfficialPlugins.Wizard.EmbeddedContent.TopDown.ZoriaLicense.txt",
+                               zoriaLicenseDestination.FullPath);
         }
 
         private static Task AddPlayerPlatformerAnimationController(EntitySave playerEntity)

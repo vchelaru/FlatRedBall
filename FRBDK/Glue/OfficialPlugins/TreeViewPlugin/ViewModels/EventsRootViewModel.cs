@@ -10,7 +10,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
     {
         private GlueElement glueElement;
 
-        public EventsRootViewModel(NodeViewModel parent, GlueElement glueElement) : base(parent)
+        public EventsRootViewModel(NodeViewModel parent, GlueElement glueElement) : base(FlatRedBall.Glue.FormHelpers.TreeNodeType.EventsContainerNode, parent)
         {
             this.glueElement = glueElement;
 
@@ -22,7 +22,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 int indexAddingAt = this.Children.Count;
 
-                var node = new NodeViewModel(this);
+                var node = new NodeViewModel(FlatRedBall.Glue.FormHelpers.TreeNodeType.EventNode, this);
                 node.ImageSource = EventIcon;
                 node.Text = glueElement.Events[indexAddingAt].EventName;
                 node.Tag = glueElement.Events[indexAddingAt];

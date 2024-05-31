@@ -1324,7 +1324,7 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 plugin =>
                 {
-                    if(changeType == FileChangeType.Created)
+                    if (changeType == FileChangeType.Created)
                     {
                         // The "Create" type is new. If it is reported to all plugins, then
                         // files may get re-loaded unnecessarily, and we don't want that, so only 
@@ -1344,10 +1344,11 @@ namespace FlatRedBall.Glue.Plugins
 
                     }
                 },
-                plugin => plugin.ReactToFileChangeHandler != null || plugin.ReactToFileChange != null,
+                plugin => plugin.ReactToFileChangeHandler != null || plugin.ReactToFileChange != null
                 // This can cause a deadlock. We need the underlying calls to do things on UI thread specifically on the calls
                 // that are needed
-                doOnUiThread:false);
+                //doOnUiThread:false
+                );
 
 
             ResumeRelativeDirectory(nameof(ReactToChangedFile));
@@ -2193,22 +2194,6 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.GrabbedTreeNodeChanged(treeNode, treeNodeAction),
                 plugin => plugin.GrabbedTreeNodeChanged != null);
 
-        public static void ReactToGlobalTimer()
-        {
-            try
-            {
-                CallMethodOnPlugin(
-                    plugin => plugin.ReactToGlobalTimer(),
-                    plugin => plugin.ReactToGlobalTimer != null);
-
-            }
-            catch(InvalidOperationException)
-            {
-                // no biggie, this means the plugins changed when this was called. it is called so frequently,
-                // so we don't want to make a copy of the list.
-            }
-        }
-
         public static Task ReactToStateCategoryExcludedVariablesChangedAsync(StateSaveCategory category, string variableName, StateCategoryVariableAction action) => 
             CallMethodOnPluginAsync(
                 plugin => plugin.ReactToStateCategoryExcludedVariablesChanged(category, variableName, action),
@@ -2377,7 +2362,9 @@ namespace FlatRedBall.Glue.Plugins
                     wasAddHandled = plugin.TryAddContainedObjects(sourceFile, listToAddTo);
                 }
             },
-            plugin => plugin.TryAddContainedObjects != null);
+            plugin => plugin.TryAddContainedObjects != null, methodName:$"TryAddContainedObjects for {sourceFile}", 
+                // May 27, 2024 - I don't think this needs to be on the UI thread, and it slows things down...
+                doOnUiThread:false);
 
             ResumeRelativeDirectory("TryAddContainedObjects");
             return wasAddHandled;

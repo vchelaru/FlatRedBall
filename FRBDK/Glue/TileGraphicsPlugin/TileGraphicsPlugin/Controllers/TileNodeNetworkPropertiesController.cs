@@ -47,7 +47,10 @@ namespace TiledPluginCore.Controllers
             viewModel.AvailableTypes.Clear();
             var tmxName = viewModel.SourceTmxName;
 
-            var types = TileGraphicsPlugin.Controllers.TileShapeCollectionsPropertiesController.GetAvailableTypes(tmxName, element);
+            var types = TileGraphicsPlugin.Controllers.TileShapeCollectionsPropertiesController
+                .GetAvailableTypes(tmxName, element)
+                .OrderBy(item => item)
+                ;
 
             // todo - apply hashset to the view model
             foreach (var item in types)

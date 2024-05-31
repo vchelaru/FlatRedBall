@@ -10,6 +10,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
         }
 
+        public override bool AllowContentCompile => true;
+
         public override string ProjectId { get { return "XnaContent"; } }
 
         public override string PrecompilerDirective { get { throw new NotImplementedException(); } }

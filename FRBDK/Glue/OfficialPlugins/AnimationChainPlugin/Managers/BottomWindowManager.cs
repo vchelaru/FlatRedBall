@@ -214,12 +214,19 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 _currentFrameTime = frame.LengthInSeconds * 1000;
             }
 
-            UserControl.Dispatcher.Invoke(() =>
+            try
             {
-                RenderFrame(frame, frame.VisibleChildren.ToList());
+                UserControl.Dispatcher.Invoke(() =>
+                {
+                    RenderFrame(frame, frame.VisibleChildren.ToList());
 
-                CameraLogic.RefreshCameraZoomToViewModel();
-            });
+                    CameraLogic.RefreshCameraZoomToViewModel();
+                });
+            }
+            catch(TaskCanceledException)
+            {
+
+            }
         }
 
         private void RenderFrame(AnimationFrameViewModel frame, List<ShapeViewModel> shapes)

@@ -270,7 +270,7 @@ public class DragDropManager : Singleton<DragDropManager>
         {
             var response = await HandleCreateCollisionRelationship(movingNos, targetNos);
 
-            if (!response.Succeeded)
+            if (!response.Succeeded && !string.IsNullOrEmpty(response.Message))
             {
                 MessageBox.Show(response.Message);
             }
@@ -293,11 +293,16 @@ public class DragDropManager : Singleton<DragDropManager>
 
     private async Task<GeneralResponse> HandleCreateCollisionRelationship(NamedObjectSave movingNos, NamedObjectSave targetNos)
     {
-        await PluginManager.ReactToCreateCollisionRelationshipsBetween(movingNos, targetNos);
-        return GeneralResponse.SuccessfulResponse;
+        var nos = await PluginManager.ReactToCreateCollisionRelationshipsBetween(movingNos, targetNos);
+        if(nos != null)
+        {
+            return GeneralResponse.SuccessfulResponse;
+        }
+        else
+        {
+            return GeneralResponse.UnsuccessfulResponse;
+        }
     }
-
-
 
     #endregion
 
