@@ -17,7 +17,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AsepriteDotNet" Version="1.7.4" />
+      <PackageReference Include="AsepriteDotNet" Version="1.8.1" />
     </ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\3rd Party Libraries\FNA\FNA.Core.csproj">
