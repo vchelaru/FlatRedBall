@@ -437,7 +437,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
             while(focusedElement != null)
             {
-                if(focusedElement == ListBox)
+                if(focusedElement is ListBox)
                 {
                     return true;
                 }
@@ -447,6 +447,15 @@ namespace OfficialPlugins.ContentPreview.Views
                 }
             }
             return false;
+        }
+
+        private void OpenInAnimationEditorButton_Click(object sender, RoutedEventArgs e)
+        {
+            var rfs = GlueState.Self.CurrentReferencedFileSave;
+            if(rfs != null)
+            {
+                GlueCommands.Self.FileCommands.OpenReferencedFileInDefaultProgram(rfs);
+            }
         }
     }
 }

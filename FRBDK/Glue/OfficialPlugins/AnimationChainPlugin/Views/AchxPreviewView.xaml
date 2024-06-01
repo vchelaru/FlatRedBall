@@ -9,19 +9,28 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="170"></ColumnDefinition>
-            <ColumnDefinition Width="5"></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Label Content="This is the ACHX Preview window. To edit the .achx: "/>
+            <Button x:Name="OpenInAnimationEditorButton" Content="Click Here" Click="OpenInAnimationEditorButton_Click"/>
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="170"></ColumnDefinition>
+                <ColumnDefinition Width="5"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition Height="5"></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
-            <pt:TreeListBox x:Name="ListBox"
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="5"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <pt:TreeListBox x:Name="ListBox"
                 HierarchySource="{Binding VisibleRoot}"
                 ChildrenPath="VisibleChildren"
                 SelectedItem="{Binding SelectedItem}"
@@ -29,65 +38,65 @@
                 PreviewKeyDown="TreeListBox_PreviewKeyDown"
                 >
 
-                <pt:TreeListBox.ItemTemplate>
+                    <pt:TreeListBox.ItemTemplate>
 
-                    <DataTemplate>
-                        <Grid x:Name="ItemGrid">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="1" Text="{Binding Text}" />
-                        </Grid>
-                    </DataTemplate>
-                </pt:TreeListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid x:Name="ItemGrid">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="1" Text="{Binding Text}" />
+                            </Grid>
+                        </DataTemplate>
+                    </pt:TreeListBox.ItemTemplate>
 
-            </pt:TreeListBox>
-            <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
+                </pt:TreeListBox>
+                <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
                           Background="#cccccc"
                           ></GridSplitter>
-            <ScrollViewer Grid.Row="2">
-                <wpfdataui:DataUiGrid x:Name="PropertyGrid"  Instance="{Binding SelectedAnimationChain}"></wpfdataui:DataUiGrid>
-            </ScrollViewer>
-        </Grid>
+                <ScrollViewer Grid.Row="2">
+                    <wpfdataui:DataUiGrid x:Name="PropertyGrid"  Instance="{Binding SelectedAnimationChain}"></wpfdataui:DataUiGrid>
+                </ScrollViewer>
+            </Grid>
 
-        <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"
+            <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"
                           Background="#cccccc"
                       ></GridSplitter>
 
 
-        <Grid Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="223*"></RowDefinition>
-                <RowDefinition Height="5"></RowDefinition>
-                <RowDefinition Height="65*"></RowDefinition>
-                <RowDefinition Height="157*"/>
-            </Grid.RowDefinitions>
-            <Grid  Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-
+            <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="134*"></RowDefinition>
-                    <RowDefinition Height="71*"/>
-                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="223*"></RowDefinition>
+                    <RowDefinition Height="5"></RowDefinition>
+                    <RowDefinition Height="65*"></RowDefinition>
+                    <RowDefinition Height="157*"/>
                 </Grid.RowDefinitions>
+                <Grid  Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
 
-                <wpf1:GumSKElement x:Name="TopGumCanvas"
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="134*"></RowDefinition>
+                        <RowDefinition Height="71*"/>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <wpf1:GumSKElement x:Name="TopGumCanvas"
                         MouseDown="TopGumCanvas_MouseDown"
                         MouseMove="TopGumCanvas_MouseMove"
                         MouseWheel="TopGumCanvas_MouseWheel"
                         SizeChanged="TopGumCanvas_SizeChanged" Margin="0,0,0,16" Grid.RowSpan="3"
                                    ></wpf1:GumSKElement>
-                <ScrollBar Grid.Column="1" x:Name="TopWindowVerticalSrollBar" ValueChanged="TopWindowVerticalSrollBar_ValueChanged" Margin="0,0,0,16" Grid.RowSpan="3">
-                </ScrollBar>
-                <ScrollBar Orientation="Horizontal" Grid.Row="2" x:Name="TopWindowHorizontalScrollBar" ValueChanged="TopWindowHorizontalScrollBar_ValueChanged">
+                    <ScrollBar Grid.Column="1" x:Name="TopWindowVerticalSrollBar" ValueChanged="TopWindowVerticalSrollBar_ValueChanged" Margin="0,0,0,16" Grid.RowSpan="3">
+                    </ScrollBar>
+                    <ScrollBar Orientation="Horizontal" Grid.Row="2" x:Name="TopWindowHorizontalScrollBar" ValueChanged="TopWindowHorizontalScrollBar_ValueChanged">
 
-                </ScrollBar>
+                    </ScrollBar>
 
-            </Grid>
-            <GridSplitter Grid.Row="1"
+                </Grid>
+                <GridSplitter Grid.Row="1"
                           Background="#cccccc"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Center"
@@ -95,24 +104,26 @@
                           ShowsPreview="True"
                           Height="6"
                           />
-            <Grid x:Name="BottomHalfGrid" Grid.Row="2" Grid.RowSpan="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <CheckBox IsChecked="{Binding IsShowGuidesChecked}">Show Guides</CheckBox>
-                </StackPanel>
-                <wpf1:GumSKElement x:Name="BottomGumCanvas" Grid.Row="1"
+                <Grid x:Name="BottomHalfGrid" Grid.Row="2" Grid.RowSpan="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding IsShowGuidesChecked}">Show Guides</CheckBox>
+                    </StackPanel>
+                    <wpf1:GumSKElement x:Name="BottomGumCanvas" Grid.Row="1"
                         MouseDown="BottomCanvas_MouseDown"
                         MouseMove="BottomCanvas_MouseMove"
                         MouseWheel="BottomCanvas_MouseWheel"
                                ></wpf1:GumSKElement>
-                <StackPanel Grid.Row="2" Orientation="Horizontal">
-                    <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>
-                </StackPanel>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                        <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>
+
 </UserControl>
