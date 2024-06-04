@@ -629,7 +629,6 @@ namespace FlatRedBall.Glue.Managers
             return didWait;
         }
 
-
         bool DoesTaskNeedToFinish(GlueTaskBase glueTask)
         {
             if(glueTask.IsCancelled)
@@ -676,7 +675,6 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-
         public async Task<T> WaitForTaskToFinish<T>(GlueTask<T> glueTask)
         {
             if (glueTask == null)
@@ -703,6 +701,32 @@ namespace FlatRedBall.Glue.Managers
                     await Task.Delay(150);
                 }
                 return (T)glueTask.Result;
+            }
+        }
+
+        public async Task WaitForTaskToFinish(string taskDescription)
+        {
+            GlueTaskBase task = null;
+            if(addOrMoveToEndTaskQueueTaskIds.ContainsKey(taskDescription))
+            {
+                addOrMoveToEndTaskQueueTaskIds.TryGetValue(taskDescription, out task);
+            }
+
+            if(task == null)
+            {
+                var taskInQueue = taskQueue.FirstOrDefault(item => item.Value.DisplayInfo == taskDescription);
+                task = taskInQueue.Value;
+
+            }
+            
+            if(task == null)
+            {
+                task = mActiveParallelTasks.FirstOrDefault(item => item.DisplayInfo == taskDescription);
+            }
+
+            if(task != null)
+            {
+                await WaitForTaskToFinish(task);
             }
         }
 

@@ -18,6 +18,10 @@ namespace FlatRedBall.Glue.Tasks
             set;
         }
 
+        /// <summary>
+        /// Custom ID used to uniquely identify a task. If this is null or empty, the DisplayInfo will be used.
+        /// <seealso cref="EffectiveId"/>
+        /// </summary>
         public string CustomId
         {
             get; set;

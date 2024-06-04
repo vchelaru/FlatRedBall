@@ -2293,6 +2293,14 @@ namespace FlatRedBall.Glue.Plugins
             return false;
         }
 
+        /// <summary>
+        /// Raised when the user adds a file to the project which is outisde of the project file structure (Content).
+        /// When this occurs, the file must be copied to the new location. This method allows plugins to perform
+        /// a custom file copy including adjusting references.
+        /// </summary>
+        /// <param name="sourceFile">The source file location.</param>
+        /// <param name="targetFile">The destination file location.</param>
+        /// <returns>Whether a plugin successfully copied the file.</returns>
         internal static bool TryCopyFile(string sourceFile, string targetFile)
         {
 

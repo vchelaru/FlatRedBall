@@ -28,6 +28,7 @@ using GameCommunicationPlugin.Common;
 using CompilerLibrary.ViewModels;
 using static FlatRedBall.Glue.Plugins.PluginManager;
 using CompilerLibrary.Error;
+using FlatRedBall;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -196,6 +197,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                     var containerNames = rfses.Select(item => item.GetContainer()?.Name).Where(item => item != null).ToHashSet();
 
+
                     var shouldCopy = false;
                     shouldCopy = containerNames.Any() || GlueCommands.Self.FileCommands.IsContent(fileName);
 
@@ -203,8 +205,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     {
                         // Right now we'll assume the screen owns this file, although it is possible that it's 
                         // global but not part of global content. That's a special case we'll have to handle later
+                        var timeBefore = TimeManager.CurrentSystemTime;
                         printOutput($"Waiting for file to be copied: {strippedName}");
-                        await Task.Delay(600);
+                        //await Task.Delay(600);
+                        await TaskManager.Self.WaitForTaskToFinish(
+                            GlueCommands.Self.ProjectCommands.CopyToBuildFolderTaskIdFor(fileName));
+                        var timeAfter = TimeManager.CurrentSystemTime;
+                        printOutput($"Waited {timeAfter - timeBefore} seconds");
+
+
                         try
                         {
                             if (ViewModel.IsRunning)
@@ -239,6 +248,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                                 if (shouldReloadScreen)
                                 {
                                     printOutput($"Telling game to restart screen");
+
+                                    GlueCommands.Self.PrintOutput($"Restarting at {TimeManager.CurrentTime}");
+
                                     var dto = new RestartScreenDto();
                                     dto.ReloadGlobalContent = isGlobalContent;
                                     await CommandSender.Self.Send(dto);

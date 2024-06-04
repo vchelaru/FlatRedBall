@@ -106,6 +106,10 @@ namespace FlatRedBall.IO
         }
 
         string standardizedCaseSensitive;
+        /// <summary>
+        /// Returns the file with all slashes as forward slashes, and with the relative directory prepended if the file is relative. 
+        /// This is case-sensitive (case is preserved).
+        /// </summary>
         public string StandardizedCaseSensitive
         {
             get

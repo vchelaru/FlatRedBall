@@ -58,6 +58,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void CopyToBuildFolder(ReferencedFileSave rfs);
         void CopyToBuildFolder(FilePath absoluteSource);
 
+        string CopyToBuildFolderTaskIdFor(FilePath filePath);
+
         void AddDirectory(string folderName, ITreeNode treeNodeToAddTo);
 
         void MakeGeneratedCodeItemsNested();

@@ -507,8 +507,14 @@ class ProjectCommands : IProjectCommands
         CopyToBuildFolder(source);
     }
 
+    public string CopyToBuildFolderTaskIdFor(FilePath filePath) =>
+        $"{nameof(CopyToBuildFolder)} {filePath}";
+
+
     public void CopyToBuildFolder(FilePath absoluteSource)
     {
+        var taskExecutionPreference = TaskExecutionPreference.AddOrMoveToEnd;
+
         TaskManager.Self.AddOrRunIfTasked(() =>
         {
             // This is the location when running from Glue
@@ -550,7 +556,7 @@ class ProjectCommands : IProjectCommands
 
             }
 
-        }, $"{nameof(CopyToBuildFolder)} {absoluteSource}", TaskExecutionPreference.AddOrMoveToEnd);
+        }, CopyToBuildFolderTaskIdFor(absoluteSource), taskExecutionPreference);
     }
 
     private static void CopyToBuildFolder(FilePath absoluteSource, string outputPathRelativeToCsProj)
