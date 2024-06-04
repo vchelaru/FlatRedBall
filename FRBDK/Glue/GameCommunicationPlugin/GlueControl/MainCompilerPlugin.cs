@@ -53,6 +53,7 @@ namespace GameCommunicationPlugin.GlueControl
 
 
         public CompilerViewModel CompilerViewModel { get; private set; }
+
         public GlueViewSettingsViewModel GlueViewSettingsViewModel { get; private set; }
         
 
@@ -375,6 +376,8 @@ namespace GameCommunicationPlugin.GlueControl
         {
             return CompilerViewModel.IsEditChecked && CompilerViewModel.IsRunning;
         }
+
+        public bool GetIfIsRunning() => CompilerViewModel.IsRunning;
 
         public async Task<string> MakeGameBorderless(bool isBorderless)
         {
@@ -1186,6 +1189,8 @@ namespace GameCommunicationPlugin.GlueControl
             }
         }
         #endregion
+
+
 
     }
 

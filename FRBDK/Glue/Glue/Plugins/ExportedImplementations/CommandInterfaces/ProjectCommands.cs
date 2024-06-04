@@ -515,6 +515,15 @@ class ProjectCommands : IProjectCommands
     {
         var taskExecutionPreference = TaskExecutionPreference.AddOrMoveToEnd;
 
+        var isRunning = (bool)PluginManager.CallPluginMethod(
+            "Glue Compiler",
+            "GetIfIsRunning");
+
+        if(isRunning)
+        {
+            taskExecutionPreference = TaskExecutionPreference.Asap;
+        }
+
         TaskManager.Self.AddOrRunIfTasked(() =>
         {
             // This is the location when running from Glue
