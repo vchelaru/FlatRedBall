@@ -5,9 +5,11 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
@@ -20,6 +22,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
             this.ReactToFileChange += HandleFileChanged;
         }
 
+        ConcurrentQueue<FilePath> changedExistingFiles = new ConcurrentQueue<FilePath>();
+
         private async void HandleFileChanged(FilePath changedFile, FileChangeType fileChangeType)
         {
             var project = GlueState.Self.CurrentGlueProject;
@@ -30,45 +34,84 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
             {
                 if(project != null)
                 {
+                    changedExistingFiles.Enqueue(changedFile);
                     // Sept 26, 2023 - why do we await here? Shouldn't we just fire and forget?
                     //await TaskManager.Self.AddAsync(() =>
                     _ = TaskManager.Self.AddAsync(() =>
                     {
+                        var glueState = GlueState.Self;
+                        var contentFolder = glueState.ContentDirectory;
 
-                        if(changedFile.IsDirectory)
+                        Dictionary<ReferencedFileSave, List < FilePath >> filesMatchingPattern = new ();
+
+                        // This is the slowest part of the methods here. We can do this up-front once, then re-use it for every 
+                        // file that has been queued up for change, speeding up the process when there are a lot of files that have changed:
+                        foreach(var wildcardFile in project.GlobalFileWildcards)
                         {
-                            var contentFolder = GlueState.Self.ContentDirectory;
-                            foreach (var wildcardFile in project.GlobalFileWildcards)
+                            var wildcardFilePath = GlueCommands.Self.GetAbsoluteFilePath(wildcardFile);
+                            FilePath directoryWithNoWildcard = wildcardFilePath;
+                            while (directoryWithNoWildcard.FullPath.Contains("*"))
                             {
-                                var absoluteFile = new FilePath(contentFolder + wildcardFile.Name);
-                                var files = WildcardReferencedFileSaveLogic.GetFilesForWildcard(absoluteFile);
+                                directoryWithNoWildcard = directoryWithNoWildcard.GetDirectoryContainingThis();
+                            }
 
-                                foreach(var candidate in files)
+                            var suffix = wildcardFilePath.RelativeTo(directoryWithNoWildcard);
+
+                            List<FilePath> filesMatchingSuffixFilePattern = null;
+
+                            if (suffix.StartsWith("**") && suffix != "**" && suffix.Contains('/'))
+                            {
+                                var suffixFilePattern = wildcardFilePath.NoPath;
+
+                                filesMatchingSuffixFilePattern = System.IO.Directory
+                                    .GetFiles(directoryWithNoWildcard.FullPath, suffixFilePattern, System.IO.SearchOption.AllDirectories)
+                                    .Select(item => new FilePath(item))
+                                    .ToList();
+                            }
+
+                            filesMatchingPattern[wildcardFile] = filesMatchingSuffixFilePattern;
+
+                        }
+
+
+                        while (changedExistingFiles.TryDequeue(out FilePath existingFile))
+                        {
+                            if(existingFile.IsDirectory)
+                            {
+                                foreach (var wildcardFile in project.GlobalFileWildcards)
                                 {
-                                    if(candidate.IsRelativeTo(changedFile))
-                                    {
-                                        TryAddFile(candidate, project, wildcardFile);
+                                    var absoluteFile = new FilePath(contentFolder + wildcardFile.Name);
+                                    var files = WildcardReferencedFileSaveLogic.GetFilesForWildcard(absoluteFile);
 
+                                    foreach(var candidate in files)
+                                    {
+                                        if(candidate.IsRelativeTo(existingFile))
+                                        {
+                                            TryAddFile(candidate, project, wildcardFile);
+
+                                        }
                                     }
                                 }
                             }
-                        }
-                        else
-                        {
-                            // was it added?
-                            foreach(var wildcardFile in project.GlobalFileWildcards)
+                            else
                             {
-                                // Note - a file may change 2x really fast (one after another)
-                                // If that happens, the alradyExists may be false both times, and
-                                // the file may get added 2x. We need to instead wrap everything in tasks to prevent this from happening:
-                                if(GlueState.Self.CurrentGlueProject != null && IsFileRelativeToWildcard(changedFile, wildcardFile))
+                                // was it added?
+                                foreach (var wildcardPattern in project.GlobalFileWildcards)
                                 {
-                                    TryAddFile(changedFile, project, wildcardFile);
-                                    break;
+                                    // Note - a file may change 2x really fast (one after another)
+                                    // If that happens, the alradyExists may be false both times, and
+                                    // the file may get added 2x. We need to instead wrap everything in tasks to prevent this from happening:
+                                    if(glueState.CurrentGlueProject != null && IsFileRelativeToWildcard(existingFile, wildcardPattern, filesMatchingPattern[wildcardPattern]))
+                                    {
+                                        TryAddFile(existingFile, project, wildcardPattern);
+                                        break;
+                                    }
                                 }
                             }
+
                         }
-                    }, $"MainWildcardFilePlugin HandleFileChanged {changedFile} {fileChangeType}");
+                    }, $"MainWildcardFilePlugin process files in HandleFileChanged",
+                    TaskExecutionPreference.AddOrMoveToEnd);
 
                 }
             }
@@ -102,7 +145,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
             }
         }
 
-        private bool IsFileRelativeToWildcard(FilePath changedFilePath, SaveClasses.ReferencedFileSave wildcardFile)
+        private bool IsFileRelativeToWildcard(FilePath changedFilePath, SaveClasses.ReferencedFileSave wildcardFile, IEnumerable<FilePath> filesMatchingSuffixFilePattern)
         {
             var changedFileName = changedFilePath.FullPath;
 
@@ -126,13 +169,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                 }
                 else if(suffix.Contains('/'))
                 {
-                    var suffixFilePattern = wildcardFilePath.NoPath;
-
-                    var allFiles = System.IO.Directory
-                        .GetFiles(directoryWithNoWildcard.FullPath, suffixFilePattern, System.IO.SearchOption.AllDirectories)
-                        .Select(item => new FilePath(item));
-
-                    return allFiles.Contains(changedFilePath);
+                    return filesMatchingSuffixFilePattern.Contains(changedFilePath);
                 }
                 else
                 {

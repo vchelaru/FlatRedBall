@@ -663,6 +663,10 @@ public class TileGraphicsPluginClass : PluginBase
                     {
                         TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(nos, element);
                     }
+                    if(nodeNetworkTab?.IsShown == true && nos != null)
+                    {
+                        TileNodeNetworkPropertiesController.Self.RefreshViewModelTo(nos, element);
+                    }
                 });
 
             }

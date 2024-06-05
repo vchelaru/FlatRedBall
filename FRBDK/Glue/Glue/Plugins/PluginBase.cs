@@ -376,6 +376,8 @@ namespace FlatRedBall.Glue.Plugins
         /// react to a specific project unloading (such as by saving content).
         /// </summary>
         public Action ReactToUnloadedGlux { get; protected set; }
+
+
         public TryHandleCopyFileDelegate TryHandleCopyFile { get; protected set; }
 
         /// <summary>

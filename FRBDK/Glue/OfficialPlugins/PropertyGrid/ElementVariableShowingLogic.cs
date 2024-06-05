@@ -26,6 +26,82 @@ namespace OfficialPlugins.VariableDisplay
     class ElementVariableShowingLogic
     {
 
+        private static void CreateCategoriesAndVariables(GlueElement element)
+        {
+            List<VariableDefinition> variableDefinitions = new List<VariableDefinition>();
+
+            if (element is ScreenSave)
+            {
+                var screenAti = AvailableAssetTypes.CommonAtis.Screen;
+                variableDefinitions.AddRange(screenAti.VariableDefinitions);
+            }
+
+            variableDefinitions.AddRange(PluginManager.GetVariableDefinitionsFor(element));
+
+
+            foreach (var variableDefinition in variableDefinitions)
+            {
+                var customVariable = element.GetCustomVariable(variableDefinition.Name);
+
+                if (customVariable == null)
+                {
+                    customVariable = new CustomVariable();
+                    customVariable.DefaultValue = variableDefinition.DefaultValue;
+                    customVariable.Name = variableDefinition.Name;
+                    customVariable.Type = variableDefinition.Type;
+                    if (variableDefinition.CustomGetForcedOptionFunc != null)
+                    {
+                        customVariable.CustomGetForcedOptionsFunc = element => variableDefinition.CustomGetForcedOptionFunc(element, null, null);
+
+                    }
+                    // category?
+                    customVariable.Category = variableDefinition.Category;
+
+                    element.CustomVariables.Add(customVariable);
+
+                    var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
+                }
+            }
+        }
+
+        private static void CreateInstanceMembersForVariables(GlueElement element, List<MemberCategory> categoryListToFill)
+        {
+            CreateCategoriesAndVariables(element);
+
+            foreach (CustomVariable variable in element.CustomVariables)
+            {
+                DataGridItem instanceMember = CreateInstanceMemberForVariable(element, variable);
+
+                var categoryName = !string.IsNullOrWhiteSpace(variable.Category) ?
+                    variable.Category : "Variables";
+
+                var category = categoryListToFill.FirstOrDefault(item => item.Name == categoryName);
+
+                if (category == null)
+                {
+                    category = CreateAndAddDefaultCategory(categoryListToFill, categoryName);
+                }
+
+                category.Members.Add(instanceMember);
+            }
+        }
+
+
+        public static void UpdateShownVariables(DataUiGrid grid, GlueElement element)
+        {
+            grid.Categories.Clear();
+
+            List<MemberCategory> categories = new List<MemberCategory>();
+
+            CreateInstanceMembersForVariables(element, categories);
+
+            AddAlternatingColors(grid, categories);
+
+            grid.Refresh();
+
+        }
+
+
         private static DataGridItem CreateInstanceMemberForVariable(GlueElement element, CustomVariable variable)
         {
             AssetTypeInfo elementAti = null;
@@ -228,20 +304,6 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        public static void UpdateShownVariables(DataUiGrid grid, GlueElement element)
-        {
-            grid.Categories.Clear();
-
-            List<MemberCategory> categories = new List<MemberCategory>();
-
-            CreateAndAddDefaultCategory(categories, Localization.Texts.Variables);
-            CreateInstanceMembersForVariables(element, categories);
-
-            AddAlternatingColors(grid, categories);
-
-            grid.Refresh();
-
-        }
 
         private static void AddAlternatingColors(DataUiGrid grid, List<MemberCategory> categories)
         {
@@ -271,126 +333,5 @@ namespace OfficialPlugins.VariableDisplay
             return defaultCategory;
         }
 
-        private static void CreateInstanceMembersForVariables(GlueElement element, List<MemberCategory> categories)
-        {
-            List<VariableDefinition> variableDefinitions = new List<VariableDefinition>();
-
-            if(element is ScreenSave)
-            {
-                var screenAti = AvailableAssetTypes.CommonAtis.Screen;
-                variableDefinitions.AddRange(screenAti.VariableDefinitions);
-            }
-
-            variableDefinitions.AddRange(PluginManager.GetVariableDefinitionsFor(element));
-            foreach (var variableDefinition in variableDefinitions)
-            {
-                var customVariable = element.GetCustomVariable(variableDefinition.Name);
-
-                if (customVariable == null)
-                {
-                    customVariable = new CustomVariable();
-                    customVariable.DefaultValue = variableDefinition.DefaultValue;
-                    customVariable.Name = variableDefinition.Name;
-                    customVariable.Type = variableDefinition.Type;
-                    if(variableDefinition.CustomGetForcedOptionFunc != null)
-                    {
-                        customVariable.CustomGetForcedOptionsFunc = element => variableDefinition.CustomGetForcedOptionFunc(element, null, null);
-
-                    }
-                    // category?
-                    customVariable.Category = variableDefinition.Category;
-
-                    element.CustomVariables.Add(customVariable);
-
-                    var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
-                }
-            }
-
-
-            foreach (CustomVariable variable in element.CustomVariables)
-            {
-                DataGridItem instanceMember = CreateInstanceMemberForVariable(element, variable);
-
-                var categoryName = !string.IsNullOrWhiteSpace(variable.Category) ?
-                    variable.Category : "Variables";
-
-                var category = categories.FirstOrDefault(item => item.Name == categoryName);
-
-                if (category == null)
-                {
-                    category = CreateAndAddDefaultCategory(categories, categoryName);
-                }
-
-                category.Members.Add(instanceMember);
-            }
-
-            // April 24, 2024
-            // What does this code
-            // do? It seems to create
-            // isntances, but never adds 
-            // them. Does it need to be here?
-            //foreach (var variable in variableDefinitions)
-            //{
-            //    var type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variable.Type);
-
-            //    if (type == null)
-            //    {
-            //        type = typeof(string);
-            //    }
-
-            //    string name = variable.Name;
-
-            //    var instanceMember = new DataGridItem();
-            //    instanceMember.CustomGetTypeEvent += (throwaway) => type;
-            //    string displayName = StringFunctions.InsertSpacesInCamelCaseString(name);
-
-            //    // Currently this only works on TextBox variables - eventually will expand
-            //    // we don't have this on variable definitions
-            //    //instanceMember.DetailText = variable.Summary;
-
-            //    instanceMember.DisplayName = displayName;
-            //    instanceMember.UnmodifiedVariableName = name;
-
-            //    // todo - figure out type converters?
-            //    //TypeConverter converter = variable.GetTypeConverter(element);
-            //    //instanceMember.TypeConverter = converter;
-
-            //    instanceMember.CustomSetPropertyEvent += (intance, args) =>
-            //    {
-            //        var value = args.Value;
-            //        instanceMember.IsDefault = false;
-
-            //        RefreshLogic.IgnoreNextRefresh();
-
-            //        var customVariable = element.GetCustomVariable(name);
-            //        var oldValue = customVariable?.DefaultValue;
-            //        if (customVariable == null)
-            //        {
-            //            element.CustomVariables.Add(new CustomVariable() { Name = name });
-            //        }
-            //        element.Properties.SetValue(name, value);
-
-            //        // todo - do we need this?
-            //        //EditorObjects.IoC.Container.Get<CustomVariableSaveSetVariableLogic>().ReactToCustomVariableChangedValue(
-            //        //        "DefaultValue", variable, oldValue);
-
-
-
-            //        var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
-
-            //        GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-
-            //        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-            //    };
-
-            //    instanceMember.CustomGetEvent += (instance) =>
-            //    {
-            //        var foundVariable = element.GetCustomVariableRecursively(name);
-            //        return foundVariable?.DefaultValue;
-            //    };
-
-            //    instanceMember.TypeConverter = TypeConverterLogic.GetTypeConverter(null, element, name, type, null, variable);
-            //}
-        }
     }
 }

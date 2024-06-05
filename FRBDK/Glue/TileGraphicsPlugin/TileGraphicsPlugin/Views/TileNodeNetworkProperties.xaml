@@ -6,114 +6,117 @@
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="660" d:DesignWidth="300">
-    <StackPanel IsEnabled="{Binding IsEntireViewEnabled}">
-        <GroupBox Header="{x:Static localization:Texts.LinksPerNode}">
-            <StackPanel Orientation="Horizontal" >
-                <RadioButton IsChecked="{Binding IsFourDirectionalTypeChecked}" Content="{x:Static localization:Texts.Four}" />
-                <RadioButton IsChecked="{Binding IsEightDirectionalTypeChecked}" Margin="10,0,0,0" Content="{x:Static localization:Texts.Eight}" />
-            </StackPanel>
-        </GroupBox>
-        <CheckBox IsChecked="{Binding EliminateCutCorners}" VerticalContentAlignment="Center"  Content="{x:Static localization:Texts.EliminateCutCorners}" />
-        <GroupBox Header="{x:Static localization:Texts.CreationOptions}" Grid.Row="1">
-            <StackPanel>
-                <RadioButton 
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+        <StackPanel IsEnabled="{Binding IsEntireViewEnabled}">
+            <GroupBox Header="{x:Static localization:Texts.LinksPerNode}">
+                <StackPanel Orientation="Horizontal" >
+                    <RadioButton IsChecked="{Binding IsFourDirectionalTypeChecked}" Content="{x:Static localization:Texts.Four}" />
+                    <RadioButton IsChecked="{Binding IsEightDirectionalTypeChecked}" Margin="10,0,0,0" Content="{x:Static localization:Texts.Eight}" />
+                </StackPanel>
+            </GroupBox>
+            <CheckBox IsChecked="{Binding EliminateCutCorners}" VerticalContentAlignment="Center"  Content="{x:Static localization:Texts.EliminateCutCorners}" />
+            <GroupBox Header="{x:Static localization:Texts.CreationOptions}" Grid.Row="1">
+                <StackPanel>
+                    <RadioButton 
                              Margin="0,10,0,0"
                              VerticalContentAlignment="Center"
                              IsChecked="{Binding IsEmptyChecked}" Content="{x:Static localization:Texts.Empty}" />
-                <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                    <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                              IsChecked="{Binding IsFillCompletelyChecked}"  Content="{x:Static localization:Texts.FillCompletely}" />
-                <StackPanel Margin="10, 0, 0, 0" Visibility="{Binding FillDimensionsVisibility}">
+                    <StackPanel Margin="10, 0, 0, 0" Visibility="{Binding FillDimensionsVisibility}">
 
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="60" Text="{x:Static localization:Texts.TileSize}" />
-                        <TextBox Width="100" Text="{Binding NodeNetworkTileSize}"
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Width="60" Text="{x:Static localization:Texts.TileSize}" />
+                            <TextBox Width="100" Text="{Binding NodeNetworkTileSize}"
                                  KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                            <TextBlock Width="40" Text="{x:Static localization:Texts.Left}" />
+                            <TextBox Width="100" Text="{Binding NodeNetworkFillLeft}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Width="40" Text="{x:Static localization:Texts.Top}" />
+                            <TextBox Width="100" Text="{Binding NodeNetworkFillTop}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                            <TextBlock Width="60"  Text="{x:Static localization:Texts.TilesWide}" />
+                            <TextBox Width="100" Text="{Binding NodeNetworkFillWidth}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Width="60"  Text="{x:Static localization:Texts.TilesHigh}" />
+                            <TextBox Width="100" Text="{Binding NodeNetworkFillHeight}"
+                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+                        </StackPanel>
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                        <TextBlock Width="40" Text="{x:Static localization:Texts.Left}" />
-                        <TextBox Width="100" Text="{Binding NodeNetworkFillLeft}"
-                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="40" Text="{x:Static localization:Texts.Top}" />
-                        <TextBox Width="100" Text="{Binding NodeNetworkFillTop}"
-                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                        <TextBlock Width="60"  Text="{x:Static localization:Texts.TilesWide}" />
-                        <TextBox Width="100" Text="{Binding NodeNetworkFillWidth}"
-                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="60"  Text="{x:Static localization:Texts.TilesHigh}" />
-                        <TextBox Width="100" Text="{Binding NodeNetworkFillHeight}"
-                                 KeyUp="TextBox_KeyEnterUpdate"></TextBox>
-                    </StackPanel>
-                </StackPanel>
 
-
-                <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                    <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                              IsChecked="{Binding IsFromTypeChecked}" Content="{x:Static localization:Texts.TypeFrom}" />
-                <StackPanel x:Name="Types" Margin="10, 0, 0, 0" 
+                    <StackPanel x:Name="Types" Margin="10, 0, 0, 0" 
                             Visibility="{Binding FromTypeVisibility}">
-                    <TextBlock  Text="{x:Static localization:Texts.SourceTmxFileObject}" />
-                    <ComboBox Width="200" HorizontalAlignment="Left"
+                        <TextBlock  Text="{x:Static localization:Texts.SourceTmxFileObject}" />
+                        <ComboBox Width="200" HorizontalAlignment="Left"
                               ItemsSource="{Binding TmxObjectNames}"
                               SelectedItem="{Binding SourceTmxName}"></ComboBox>
-                    <TextBlock Margin="0,5,0,0"  Text="{x:Static localization:Texts.Type}" />
-                    <ComboBox x:Name="CollisionTileTypeComboBox" 
+                        <TextBlock Margin="0,5,0,0"  Text="{x:Static localization:Texts.Type}" />
+                        <ComboBox x:Name="CollisionTileTypeComboBox" 
                               IsEditable="True"
                               HorizontalAlignment="Left" Width="200" 
                               Text="{Binding NodeNetworkTileTypeName}"
                               ItemsSource="{Binding AvailableTypes}"
                              KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
-                </StackPanel>
+                    </StackPanel>
 
 
 
-                <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                    <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                              IsChecked="{Binding IsFromPropertiesChecked}" Content="{x:Static localization:Texts.PropertyFrom}" />
-                <StackPanel x:Name="Properties" Margin="10, 0, 0, 0" 
+                    <StackPanel x:Name="Properties" Margin="10, 0, 0, 0" 
                             Visibility="{Binding FromPropertiesVisibility}">
-                    <TextBlock  Text="{x:Static localization:Texts.SourceTmxFileObject}" />
-                    <ComboBox Width="200" HorizontalAlignment="Left"
+                        <TextBlock  Text="{x:Static localization:Texts.SourceTmxFileObject}" />
+                        <ComboBox Width="200" HorizontalAlignment="Left"
                               ItemsSource="{Binding TmxObjectNames}"
                               SelectedItem="{Binding SourceTmxName}"></ComboBox>
-                    <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.Property}" />
-                    <ComboBox IsEditable="True"  HorizontalAlignment="Left" Width="200" 
+                        <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.Property}" />
+                        <ComboBox IsEditable="True"  HorizontalAlignment="Left" Width="200" 
                               Text="{Binding NodeNetworkPropertyName}"
                               KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
-                </StackPanel>
+                    </StackPanel>
 
 
-                <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
+                    <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                              IsChecked="{Binding IsFromLayerChecked}" Content="{x:Static localization:Texts.LayerFrom}" />
-                <StackPanel Margin="10,0,0,0" Visibility="{Binding FromLayerVisibility}">
-                    <TextBlock  Text="{x:Static localization:Texts.SourceTmxFileObject}" />
-                    <ComboBox Width="200" HorizontalAlignment="Left"
+                    <StackPanel Margin="10,0,0,0" Visibility="{Binding FromLayerVisibility}">
+                        <TextBlock  Text="{x:Static localization:Texts.SourceTmxFileObject}" />
+                        <ComboBox Width="200" HorizontalAlignment="Left"
                               ItemsSource="{Binding TmxObjectNames}"
                               SelectedItem="{Binding SourceTmxName}"></ComboBox>
-                    <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.Layer}" />
-                    <ComboBox HorizontalAlignment="Left" Width="200" 
+                        <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.Layer}" />
+                        <ComboBox HorizontalAlignment="Left" Width="200" 
                              Text="{Binding NodeNetworkLayerName}"
                              ItemsSource="{Binding AvailableLayerNames}"
                              IsEditable="True"
                              KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
 
-                    <RadioButton Margin="0,8,0,0" IsChecked="{Binding IsFromLayerAllEmptySelected}" Content="{x:Static localization:Texts.EmptyAll}" />
-                    <RadioButton Margin="0,8,0,0" IsChecked="{Binding IsFromLayerFromTypeSelected}" Content="{x:Static localization:Texts.TypeFrom}" />
-                    <StackPanel Margin="10,0,0,0" Visibility="{Binding FromLayerFromTypeVisibility}">
-                        <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.Type}" />
-                        <ComboBox HorizontalAlignment="Left" Width="200" 
+                        <RadioButton Margin="0,8,0,0" IsChecked="{Binding IsFromLayerAllEmptySelected}" Content="{x:Static localization:Texts.EmptyAll}" />
+                        <RadioButton Margin="0,8,0,0" IsChecked="{Binding IsFromLayerFromTypeSelected}" Content="{x:Static localization:Texts.TypeFrom}" />
+                        <StackPanel Margin="10,0,0,0" Visibility="{Binding FromLayerFromTypeVisibility}">
+                            <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.Type}" />
+                            <ComboBox HorizontalAlignment="Left" Width="200" 
                                  Text="{Binding NodeNetworkLayerTileType}"
                                  IsEditable="True"
                                  ItemsSource="{Binding AvailableTypes}"
                                  KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
 
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
-            </StackPanel>
-        </GroupBox>
-    </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

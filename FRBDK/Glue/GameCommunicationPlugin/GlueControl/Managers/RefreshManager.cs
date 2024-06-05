@@ -28,6 +28,7 @@ using GameCommunicationPlugin.Common;
 using CompilerLibrary.ViewModels;
 using static FlatRedBall.Glue.Plugins.PluginManager;
 using CompilerLibrary.Error;
+using FlatRedBall;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -165,7 +166,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             var rfsesUsingSource = GlueCommands.Self.FileCommands.GetReferencedFilesUsingSourceFile(fileName);
 
-            if(shouldReactToFileChange && rfsesUsingSource.Count > 0)
+            if (shouldReactToFileChange && rfsesUsingSource.Count > 0)
             {
                 // If this file is used to build other files (like an ODS -> CSV), then do not
                 // react to this change since the built file should result in a reaction:
@@ -196,55 +197,62 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                     var containerNames = rfses.Select(item => item.GetContainer()?.Name).Where(item => item != null).ToHashSet();
 
+
                     var shouldCopy = false;
                     shouldCopy = containerNames.Any() || GlueCommands.Self.FileCommands.IsContent(fileName);
 
-                    if (shouldCopy)
+                    if (shouldCopy && ViewModel.IsRunning)
                     {
                         // Right now we'll assume the screen owns this file, although it is possible that it's 
                         // global but not part of global content. That's a special case we'll have to handle later
+                        var timeBefore = TimeManager.CurrentSystemTime;
                         printOutput($"Waiting for file to be copied: {strippedName}");
-                        await Task.Delay(600);
+                        //await Task.Delay(600);
+                        await TaskManager.Self.WaitForTaskToFinish(
+                            GlueCommands.Self.ProjectCommands.CopyToBuildFolderTaskIdFor(fileName));
+                        var timeAfter = TimeManager.CurrentSystemTime;
+                        printOutput($"Waited {timeAfter - timeBefore} seconds");
+
+
                         try
                         {
-                            if (ViewModel.IsRunning)
+                            var extension = fileName.Extension;
+                            var shouldReloadFile = extension == "csv";
+
+                            var shouldReloadScreen = false;
+
+                            if (shouldReloadFile)
                             {
-                                var extension = fileName.Extension;
-                                var shouldReloadFile = extension == "csv";
+                                printOutput($"Sending force reload for file: {strippedName}");
 
-                                var shouldReloadScreen = false;
+                                var dto = new Dtos.ForceReloadFileDto();
+                                dto.ElementsContainingFile = containerNames.ToList();
+                                dto.LoadInGlobalContent = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Contains(firstRfs);
+                                dto.IsLocalizationDatabase = firstRfs.IsDatabaseForLocalizing;
+                                dto.FileRelativeToProject =
+                                    ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(firstRfs);
+                                dto.StrippedFileName = fileName.NoPathNoExtension;
+                                await CommandSender.Self.Send(dto);
 
-                                if (shouldReloadFile)
-                                {
-                                    printOutput($"Sending force reload for file: {strippedName}");
-
-                                    var dto = new Dtos.ForceReloadFileDto();
-                                    dto.ElementsContainingFile = containerNames.ToList();
-                                    dto.LoadInGlobalContent = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Contains(firstRfs);
-                                    dto.IsLocalizationDatabase = firstRfs.IsDatabaseForLocalizing;
-                                    dto.FileRelativeToProject =
-                                        ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(firstRfs);
-                                    dto.StrippedFileName = fileName.NoPathNoExtension;
-                                    await CommandSender.Self.Send(dto);
-
-                                    // Typically localization is applied in custom code, so we can't
-                                    // apply these changes without reloading the screen
-                                    shouldReloadScreen = dto.IsLocalizationDatabase;
-                                }
-                                else
-                                {
-                                    shouldReloadScreen = true;
-                                }
-
-                                if (shouldReloadScreen)
-                                {
-                                    printOutput($"Telling game to restart screen");
-                                    var dto = new RestartScreenDto();
-                                    dto.ReloadGlobalContent = isGlobalContent;
-                                    await CommandSender.Self.Send(dto);
-                                }
+                                // Typically localization is applied in custom code, so we can't
+                                // apply these changes without reloading the screen
+                                shouldReloadScreen = dto.IsLocalizationDatabase;
+                            }
+                            else
+                            {
+                                shouldReloadScreen = true;
                             }
 
+                            if (shouldReloadScreen)
+                            {
+                                printOutput($"Telling game to restart screen");
+
+                                GlueCommands.Self.PrintOutput($"Restarting at {TimeManager.CurrentTime}");
+
+                                var dto = new RestartScreenDto();
+                                dto.ReloadGlobalContent = isGlobalContent;
+                                await CommandSender.Self.Send(dto);
+                            }
                             handled = true;
                         }
                         catch (Exception e)
@@ -252,7 +260,6 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                             printError($"Error trying to send command:{e.ToString()}");
                         }
                     }
-
                     var isContentPipeline = firstRfs?.UseContentPipeline == true || firstRfs?.GetAssetTypeInfo()?.MustBeAddedToContentPipeline == true;
                     // the game should reload only after copying the file
                     if (isGlobalContent &&
@@ -315,7 +322,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 return false;
             }
-            if(string.IsNullOrEmpty(filePath.Extension))
+            if (string.IsNullOrEmpty(filePath.Extension))
             {
                 return false;
             }
@@ -451,7 +458,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         item.SourceType == SourceType.Entity ||
                         item.GetAssetTypeInfo()?.IsPositionedObject == true);
 
-                    if(firstPositionedObject != null)
+                    if (firstPositionedObject != null)
                     {
                         await AdjustNewObjectToCameraPosition(firstPositionedObject);
                     }
@@ -513,7 +520,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             if (newPosition.X != 0)
             {
-                await gluxCommands.SetVariableOnAsync(newNamedObject, "X", newPosition.X, false, updateUi:false);
+                await gluxCommands.SetVariableOnAsync(newNamedObject, "X", newPosition.X, false, updateUi: false);
                 didSetValue = true;
             }
             if (newPosition.Y != 0)
@@ -679,7 +686,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         // needed to determine this.
         SelectObjectDto LastDtoPushedToGame;
         private Func<string, string, Task<string>> _eventCallerWithReturn;
-        
+
         private Action<string, string> _eventCaller;
 
         public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null, GlueElement forcedElement = null, bool bringIntoFocus = false)
@@ -713,7 +720,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             else if (element != null)
             {
                 // Let's try this to go faster...
-                if(shouldPushElement)
+                if (shouldPushElement)
                 {
                     dto.ScreenSave = element as ScreenSave;
                     dto.EntitySave = element as EntitySave;
@@ -736,7 +743,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 // If its abstract and there's no derived, don't try to select it
                 if (canSend)
                 {
-                    
+
                     dto.BringIntoFocus = bringIntoFocus;
                     dto.NamedObjectNames.AddRange(namedObjects);
                     dto.ElementNameGlue = element.Name;
@@ -858,7 +865,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 var container = ObjectFinder.Self.GetElementContaining(category);
 
                 var dto = new UpdateStateSaveCategory();
-                dto.Category =  category.Clone();
+                dto.Category = category.Clone();
                 dto.ElementNameGame = GetGameTypeFor(container);
 
                 await CommandSender.Self.Send(dto);
@@ -944,23 +951,23 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal async Task HandleObjectReordered(object reorderedObject, int oldIndex, int newIndex)
         {
-            if(reorderedObject is NamedObjectSave nos)
+            if (reorderedObject is NamedObjectSave nos)
             {
                 var ownerElement = ObjectFinder.Self.GetElementContaining(nos);
-                if(ownerElement != null)
+                if (ownerElement != null)
                 {
                     var dto = new NamedObjectReorderedDto
                     {
-                        NamedObjectName = nos.InstanceName, 
-                        OldIndex = oldIndex, 
+                        NamedObjectName = nos.InstanceName,
+                        OldIndex = oldIndex,
                         NewIndex = newIndex
                     };
 
-                    if(ownerElement is ScreenSave screenSave)
+                    if (ownerElement is ScreenSave screenSave)
                     {
                         dto.ScreenSave = screenSave;
                     }
-                    else if(ownerElement is EntitySave entitySave)
+                    else if (ownerElement is EntitySave entitySave)
                     {
                         dto.EntitySave = entitySave;
                     }
@@ -1049,7 +1056,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         ViewModel.IsEditChecked = true;
                     }
 
-                }, $"{nameof(CreateStopAndRestartTask)} : {reason}" , TaskExecutionPreference.AddOrMoveToEnd);
+                }, $"{nameof(CreateStopAndRestartTask)} : {reason}", TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
 

@@ -51,6 +51,8 @@ namespace FlatRedBall.Glue.Managers
 
         readonly BlockingCollection<KeyValuePair<ulong, GlueTaskBase>> taskQueue = new BlockingCollection<KeyValuePair<ulong, GlueTaskBase>>(new ConcurrentPriorityQueue<ulong, GlueTaskBase>());
 
+        ConcurrentDictionary<string, GlueTaskBase> addOrMoveToEndTaskQueueTaskIds = new ();
+
         const string RestartTaskDisplay = "Restarting due to Glue or file change";
         public bool HasRestartTask => taskQueue.Any(item => item.Value.DisplayInfo == RestartTaskDisplay);
 
@@ -66,7 +68,10 @@ namespace FlatRedBall.Glue.Managers
 
         GlueTaskBase CurrentlyRunningTask;
 
-        public bool AreAllAsyncTasksDone => TaskCountAccurate == 0;
+        public bool AreAllAsyncTasksDone => 
+            TaskCountAccurate == 0
+
+            ;
 
         /// <summary>
         /// Returns the task count, including cancelled tasks.
@@ -280,6 +285,8 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        const int TaskManagerLoopDelayMs = 50;
+
         async void DoTaskManagerLoop()
         {
             SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
@@ -311,7 +318,15 @@ namespace FlatRedBall.Glue.Managers
                             taskQueueCount--;
                             if (isTaskProcessingEnabled)
                             {
+                                // Remove before adding - we want to err on the side of running things more
+                                // rather than less, and removing it earlier will increase the chances of
+                                // it running again.
+                                if(item.Value.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
+                                {
+                                    addOrMoveToEndTaskQueueTaskIds.Remove(item.Value.EffectiveId, out _);
+                                }
                                 await RunTask(item.Value, markAsCurrent: true);
+
                                 if (System.Threading.Thread.CurrentThread.ManagedThreadId != SyncTaskThreadId)
                                 {
                                     string message = "TaskManager.RunTask should be running on the SyncTaskThreadId. " +
@@ -337,7 +352,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else
                 {
-                    await Task.Delay(50);
+                    await Task.Delay(TaskManagerLoopDelayMs);
                 }
             }
         }
@@ -510,7 +525,9 @@ namespace FlatRedBall.Glue.Managers
                     DoOnUiThread = doOnUiThread
                 };
 
+                TaskAddedOrRemoved?.Invoke(TaskEvent.StartedImmediate, task);
                 await RunTask(task, markAsCurrent: false);
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
 
                 return task;
             }
@@ -557,17 +574,22 @@ namespace FlatRedBall.Glue.Managers
             var wasMoved = false;
             if(glueTask.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
             {
-                var existing = taskQueue.FirstOrDefault(item => 
-                    item.Value.EffectiveId == glueTask.EffectiveId &&
-                    item.Value.IsCancelled == false);
+                var effectiveId = glueTask.EffectiveId;
 
-                if (existing.Key != 0)
+                var isPresent = addOrMoveToEndTaskQueueTaskIds.ContainsKey(effectiveId);
+                if(isPresent)
                 {
-                    existing.Value.IsCancelled = true;
-                    wasMoved = true;
+                    addOrMoveToEndTaskQueueTaskIds.TryGetValue(effectiveId, out var existing);
 
-                    taskQueueCount--;
+                    if (existing != null)
+                    {
+                        existing.IsCancelled = true;
+                        wasMoved = true;
+
+                        taskQueueCount--;
+                    }
                 }
+
 
             }
 
@@ -581,6 +603,11 @@ namespace FlatRedBall.Glue.Managers
             }
 
             taskQueue.Add(new KeyValuePair<ulong, GlueTaskBase>(priorityValue, glueTask));
+
+            if(glueTask.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
+            {
+                addOrMoveToEndTaskQueueTaskIds[glueTask.EffectiveId] = glueTask;
+            }
 
             taskQueueCount++;
 
@@ -602,14 +629,20 @@ namespace FlatRedBall.Glue.Managers
             return didWait;
         }
 
-
         bool DoesTaskNeedToFinish(GlueTaskBase glueTask)
         {
-            return
-                glueTask.TimeStarted == null ||
-                taskQueue.Any(item => item.Value == glueTask) ||
-                mActiveParallelTasks.Contains(glueTask) ||
-                CurrentlyRunningTask == glueTask;
+            if(glueTask.IsCancelled)
+            {
+                return false;
+            }
+            else
+            {
+                return
+                    glueTask.TimeStarted == null ||
+                    taskQueue.Any(item => item.Value == glueTask) ||
+                    mActiveParallelTasks.Contains(glueTask) ||
+                    CurrentlyRunningTask == glueTask;
+            }
 
         }
 
@@ -642,7 +675,6 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-
         public async Task<T> WaitForTaskToFinish<T>(GlueTask<T> glueTask)
         {
             if (glueTask == null)
@@ -669,6 +701,32 @@ namespace FlatRedBall.Glue.Managers
                     await Task.Delay(150);
                 }
                 return (T)glueTask.Result;
+            }
+        }
+
+        public async Task WaitForTaskToFinish(string taskDescription)
+        {
+            GlueTaskBase task = null;
+            if(addOrMoveToEndTaskQueueTaskIds.ContainsKey(taskDescription))
+            {
+                addOrMoveToEndTaskQueueTaskIds.TryGetValue(taskDescription, out task);
+            }
+
+            if(task == null)
+            {
+                var taskInQueue = taskQueue.FirstOrDefault(item => item.Value.DisplayInfo == taskDescription);
+                task = taskInQueue.Value;
+
+            }
+            
+            if(task == null)
+            {
+                task = mActiveParallelTasks.FirstOrDefault(item => item.DisplayInfo == taskDescription);
+            }
+
+            if(task != null)
+            {
+                await WaitForTaskToFinish(task);
             }
         }
 
@@ -767,17 +825,20 @@ namespace FlatRedBall.Glue.Managers
                 return true;
             }
 
+            // It's possible we may not be in a task based on threads, but we are 
+            // still in the task based on callstack because we're running on the UI thread.
+            // So we need to do the expensive operation of checking the callstack.
             var stackTrace = new System.Diagnostics.StackTrace();
-            var stackFrame = new System.Diagnostics.StackFrame();
+            //var stackFrame = new System.Diagnostics.StackFrame();
 
             List<string> frameTexts = new List<string>();
-            for (int i = stackTrace.FrameCount - 1; i > -1; i--)
-            {
-                var frame = stackTrace.GetFrame(i);
-                var frameText = frame.ToString();
+            //for (int i = stackTrace.FrameCount - 1; i > -1; i--)
+            //{
+            //    var frame = stackTrace.GetFrame(i);
+            //    var frameText = frame.ToString();
 
-                frameTexts.Add(frameText);
-            }
+            //    frameTexts.Add(frameText);
+            //}
 
             /* For debugging:
              * 
@@ -801,15 +862,9 @@ namespace FlatRedBall.Glue.Managers
                 var frame = stackTrace.GetFrame(i);
                 var frameText = frame.ToString();
 
-                var isTasked = frameText.StartsWith("RunOnUiThreadTasked") ||
-                    // Vic says - not sure why but sometimes thread IDs change when in an async function.
-                    // So I thought I could check if the thread is the main task thread, but this won't work
-                    // because command receiving from the game runs on a separate thread, so that would behave
-                    // as if it's tasked, even though it's not
-                    // so we check this:
-                    frameText.StartsWith(nameof(GlueTask.Do_Action_Internal) + " ");
+                var isTasked = frameText.StartsWith("RunOnUiThreadTasked");
 
-                if (isTasked) 
+                if (isTasked)
                 {
                     return true;
                 }

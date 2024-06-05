@@ -27,6 +27,8 @@ namespace $NAMESPACE$.TopDown
             }
         }
 
+        public Color PathColor { get; set; } = Color.Yellow;
+
 
         List<Line> ownedLines = new List<Line>();
 
@@ -235,7 +237,7 @@ namespace $NAMESPACE$.TopDown
                 while (ownedLines.Count < Path.Count)
                 {
                     var line = new Line();
-                    line.Color = new Color(1f, 1f, 0);
+                    line.Color = PathColor;
                     line.Name = "Pathfinding line " + ownedLines.Count;
 
                     line.Visible = true;

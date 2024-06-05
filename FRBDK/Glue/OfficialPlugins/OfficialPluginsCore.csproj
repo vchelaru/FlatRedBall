@@ -103,13 +103,12 @@
     <EmbeddedResource Include="Wizard\EmbeddedContent\TopDown\ZoriaLicense.txt" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\TopDown\ZoriaSpritesSheetModified.png" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\TopDown\ZoriaTopDownAnimations.achx" />
-    <EmbeddedResource Include="Wizard\EmbeddedContent\TopDown\ZoriaTopDownAnimations.aeproperties" />
     <Resource Include="Content\Icons\CopyIcon.png" />
     <EmbeddedResource Include="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
 
   <ItemGroup>
-	  <PackageReference Include="AsepriteDotNet" Version="1.7.4" />
+	  <PackageReference Include="AsepriteDotNet" Version="1.8.1" />
 	  <PackageReference Include="NAudio" Version="2.1.0" />
 	  <PackageReference Include="NAudio.Core" Version="2.1.0" />
 	  <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />

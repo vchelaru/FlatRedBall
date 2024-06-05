@@ -507,8 +507,23 @@ class ProjectCommands : IProjectCommands
         CopyToBuildFolder(source);
     }
 
+    public string CopyToBuildFolderTaskIdFor(FilePath filePath) =>
+        $"{nameof(CopyToBuildFolder)} {filePath}";
+
+
     public void CopyToBuildFolder(FilePath absoluteSource)
     {
+        var taskExecutionPreference = TaskExecutionPreference.AddOrMoveToEnd;
+
+        var isRunning = (bool)PluginManager.CallPluginMethod(
+            "Glue Compiler",
+            "GetIfIsRunning");
+
+        if(isRunning)
+        {
+            taskExecutionPreference = TaskExecutionPreference.Asap;
+        }
+
         TaskManager.Self.AddOrRunIfTasked(() =>
         {
             // This is the location when running from Glue
@@ -535,8 +550,10 @@ class ProjectCommands : IProjectCommands
                         // Maybe the project was never built...
                         System.IO.Directory.CreateDirectory(destination.GetDirectoryContainingThis().FullPath);
                         System.IO.File.Copy(absoluteSource.FullPath, destination.FullPath, true);
-
-                        PluginManager.ReceiveOutput("Copied " + absoluteSource.FullPath + " ==> " + destination.FullPath);
+                        if(FileWatchManager.IsPrintingDiagnosticOutput)
+                        {
+                            PluginManager.ReceiveOutput("Copied " + absoluteSource.FullPath + " ==> " + destination.FullPath);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -548,7 +565,7 @@ class ProjectCommands : IProjectCommands
 
             }
 
-        }, $"{nameof(CopyToBuildFolder)} {absoluteSource}");
+        }, CopyToBuildFolderTaskIdFor(absoluteSource), taskExecutionPreference);
     }
 
     private static void CopyToBuildFolder(FilePath absoluteSource, string outputPathRelativeToCsProj)

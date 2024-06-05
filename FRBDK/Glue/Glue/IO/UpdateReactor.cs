@@ -166,7 +166,7 @@ namespace FlatRedBall.Glue.IO
 
             ProjectManager.UpdateExternallyBuiltFile(changedFile.FullPath);
 
-            if (handled)
+            if (handled && FileWatchManager.IsPrintingDiagnosticOutput)
             {
                 PluginManager.ReceiveOutput("Handled changed file: " + changedFile);
 
