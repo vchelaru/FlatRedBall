@@ -32,9 +32,14 @@ public class BehaviorCodeGenerator : Singleton<BehaviorCodeGenerator>
 
     public string GetStrippedBehavorName(BehaviorSave behavior) => $"I{behavior.Name}";
 
-    public string GetFullyQualifiedBehaviorName(BehaviorSave behavior)
+    public string GetFullyQualifiedBehaviorName(BehaviorSave behavior, bool prefixGlobal = true)
     {
-        return GueDerivingClassCodeGenerator.GueRuntimeNamespace + "." + GetStrippedBehavorName(behavior);
+        var toReturn = GueDerivingClassCodeGenerator.GueRuntimeNamespace + "." + GetStrippedBehavorName(behavior);
+        if(prefixGlobal)
+        {
+            toReturn = "global::" + toReturn;
+        }
+        return toReturn;
     }
 
     private void GenerateInterface(ICodeBlock codeBlock, BehaviorSave behavior)

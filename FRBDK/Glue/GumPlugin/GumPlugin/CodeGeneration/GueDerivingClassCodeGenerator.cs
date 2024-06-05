@@ -173,7 +173,7 @@ namespace GumPlugin.CodeGeneration
 
             if(elementSave.BaseType != "Component" && !string.IsNullOrEmpty(elementSave.BaseType))
             {
-                inheritance = GueRuntimeNamespace + "." + elementSave.BaseType.Replace("/", ".") + "Runtime";
+                inheritance = "global::" + GueRuntimeNamespace + "." + elementSave.BaseType.Replace("/", ".") + "Runtime";
 
                 if(elementSave.BaseType == "Container")
                 {
@@ -229,15 +229,15 @@ namespace GumPlugin.CodeGeneration
             return FlatRedBall.IO.FileManager.RemovePath( elementSave.Name) + "Runtime";
         }
 
-        public string GetFullRuntimeNamespaceFor(ElementSave elementSave)
+        public string GetFullRuntimeNamespaceFor(ElementSave elementSave, bool prefixGlobal = true)
         {
             string elementName = elementSave.Name;
             var isStandardElement = elementSave is StandardElementSave;
 
-            return GetFullRuntimeNamespaceFor(isStandardElement, elementName);
+            return GetFullRuntimeNamespaceFor(isStandardElement, elementName, prefixGlobal);
         }
 
-        public string GetFullRuntimeNamespaceFor(bool isStandardElement, string elementName)
+        public string GetFullRuntimeNamespaceFor(bool isStandardElement, string elementName, bool prefixGlobal = true)
         {
             string subNamespace = null;
             if (isStandardElement == false && (elementName.Contains('/')))
@@ -259,7 +259,14 @@ namespace GumPlugin.CodeGeneration
 
             var fullNamespace = GueRuntimeNamespace + subNamespace;
 
-            return fullNamespace;
+            if(prefixGlobal)
+            {
+                return "global::" + fullNamespace;
+            }
+            else
+            {
+                return fullNamespace;
+            }
         }
 
         #endregion
@@ -279,7 +286,7 @@ namespace GumPlugin.CodeGeneration
 
         #region Generate Properties
 
-        public string GetQualifiedRuntimeTypeFor(InstanceSave instance, ElementSave container)
+        public string GetQualifiedRuntimeTypeFor(InstanceSave instance, ElementSave container, bool includeGlobalPrefix = true)
         {
             var element = ObjectFinder.Self.GetElementSave(instance);
             if(element == null)
@@ -307,7 +314,14 @@ namespace GumPlugin.CodeGeneration
                     }
                 }
 
-                return qualifiedRuntimeType;
+                if(includeGlobalPrefix)
+                {
+                    return $"global::{qualifiedRuntimeType}";
+                }
+                else
+                {
+                    return $"{qualifiedRuntimeType}";
+                }
             }
         }
 
