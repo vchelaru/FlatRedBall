@@ -80,6 +80,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                 ProfilingViewModel.CollisionText = text;
             }
+            else
+            {
+                ProfilingViewModel.SummaryText = response.Message;
+                ProfilingViewModel.CollisionText = response.Message;
+
+            }
         }
     }
 }
