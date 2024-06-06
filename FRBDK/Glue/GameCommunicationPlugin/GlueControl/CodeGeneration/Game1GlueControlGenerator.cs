@@ -108,7 +108,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 var startUpScreen = GetStartupScreenUnqualified();
                 if(!string.IsNullOrEmpty(startUpScreen))
                 {
-                    startUpScreen = GlueState.Self.ProjectNamespace + "." + startUpScreen.Replace("\\", ".");
+                    startUpScreen = "global::" + GlueState.Self.ProjectNamespace + "." + startUpScreen.Replace("\\", ".");
                     codeBlock.Line($"System.Type startScreenType = typeof({startUpScreen});");
 
                 }

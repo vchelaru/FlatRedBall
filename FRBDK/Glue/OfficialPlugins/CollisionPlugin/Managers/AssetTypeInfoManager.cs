@@ -329,7 +329,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                     }
                     else
                     {
-                        type = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(namedObject);
+                        type = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(namedObject, prefixGlobal:false);
 
                         // This returns the fully-qualified name, including the namespace of the project
                         if(type?.StartsWith(GlueState.Self.ProjectNamespace + ".") == true)

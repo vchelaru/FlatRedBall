@@ -4,11 +4,9 @@ using System.Text;
 
 namespace FlatRedBall.Math
 {
-    #region XML Docs
     /// <summary>
     /// A class which can be used to store and calculate rolling averages for regular numbers and radians.
     /// </summary>
-    #endregion
     public class RollingAverage
     {
         #region Fields
@@ -81,11 +79,9 @@ namespace FlatRedBall.Math
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets the number of values that are used when calculating a rolling average.
         /// </summary>
-        #endregion
         public int Capacity
         {
             get { return mCapacity; }
@@ -109,7 +105,6 @@ namespace FlatRedBall.Math
             get { return mValues.Count; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets whether the average value is calculated as radians.
         /// </summary>
@@ -117,7 +112,6 @@ namespace FlatRedBall.Math
         /// This is important for radian values because rotation values reported
         /// by FlatRedBall loop every 2*PI
         /// </remarks>
-        #endregion
         public bool IsRadian
         {
             get { return mIsRadian; }

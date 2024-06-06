@@ -677,7 +677,7 @@ namespace GumPlugin.Managers
 
             newAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
             {
-                QualifiedType = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element)
+                QualifiedType = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element, prefixGlobal:false)
             };
 
 

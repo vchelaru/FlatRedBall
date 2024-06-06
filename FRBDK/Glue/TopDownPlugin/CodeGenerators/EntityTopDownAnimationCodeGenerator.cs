@@ -51,7 +51,7 @@ public class EntityTopDownAnimationCodeGenerator : ElementComponentCodeGenerator
     }
 
     string TopDownAnimationControllerClassName =>
-        $"{GlueState.Self.ProjectNamespace}.TopDown.TopDownAnimationController";
+        $"global::{GlueState.Self.ProjectNamespace}.TopDown.TopDownAnimationController";
 
     public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
     {

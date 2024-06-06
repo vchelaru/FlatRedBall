@@ -476,6 +476,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
+        #region Activity
+
         public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
             #region Loop through all NamedObjects
@@ -490,6 +492,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
+        #endregion
+
         public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
             return codeBlock;
@@ -503,7 +507,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             foreach (NamedObjectSave nos in element.NamedObjects)
             {
-                string qualifiedType = GetQualifiedTypeName(nos);
+                string qualifiedType = GetQualifiedTypeName(nos, prefixGlobal:true);
 
                 if ((nos.SourceType == SourceType.Entity) && !typesAlreadyLoaded.Contains(qualifiedType) && nos.IsFullyDefined)
                 {
@@ -1326,14 +1330,14 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public static string GetQualifiedTypeName(NamedObjectSave namedObjectSave)
+        public static string GetQualifiedTypeName(NamedObjectSave namedObjectSave, bool prefixGlobal=true)
         {
             AssetTypeInfo ati = null;
             if (namedObjectSave.SourceType == SaveClasses.SourceType.Entity &&
                 !string.IsNullOrEmpty(namedObjectSave.SourceClassType))
             {
 
-                return ProjectManager.ProjectNamespace + '.' + namedObjectSave.SourceClassType.Replace('\\', '.');
+                return "global::" + ProjectManager.ProjectNamespace + '.' + namedObjectSave.SourceClassType.Replace('\\', '.');
             }
             else if(namedObjectSave.IsList)
             {
@@ -1341,9 +1345,19 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             else if ((ati = namedObjectSave.GetAssetTypeInfo()) != null)
             {
-                return
+                var toReturn =
                     ati.QualifiedRuntimeTypeName.PlatformFunc?.Invoke(namedObjectSave) ?? 
-                    ati.QualifiedRuntimeTypeName.QualifiedType;             }
+                    ati.QualifiedRuntimeTypeName.QualifiedType;             
+
+                if(prefixGlobal && !string.IsNullOrEmpty(toReturn)&& !toReturn.StartsWith("global::"))
+                {
+                    toReturn = "global::" + toReturn;
+                }
+
+                return toReturn;
+            }
+
+
             else
             {
                 return GetQualifiedClassType(namedObjectSave);
@@ -1351,8 +1365,9 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        static string GetQualifiedClassType(NamedObjectSave instance)
+        static string GetQualifiedClassType(NamedObjectSave instance, bool prefixGlobal=true)
         {
+            var globalPrefix = prefixGlobal ? "global::" : "";
             if (instance.SourceType == SourceType.FlatRedBallType && !string.IsNullOrEmpty(instance.InstanceType) &&
                 instance.InstanceType.Contains("<T>"))
             {
@@ -1368,24 +1383,24 @@ namespace FlatRedBall.Glue.CodeGeneration
                     var ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(genericType, true);
                     if (ati != null)
                     {
-                        genericType = ati.QualifiedRuntimeTypeName.QualifiedType;
+                        genericType = globalPrefix + ati.QualifiedRuntimeTypeName.QualifiedType;
                     }
 
                     string instanceType = instance.InstanceType;
 
                     if (instanceType == "List<T>")
                     {
-                        instanceType = "System.Collections.Generic.List<T>";
+                        instanceType = globalPrefix + "System.Collections.Generic.List<T>";
                     }
                     else if (instanceType?.Contains("PositionedObjectList<T>") == true)
                     {
-                        instanceType = "FlatRedBall.Math.PositionedObjectList<T>";
+                        instanceType = globalPrefix + "FlatRedBall.Math.PositionedObjectList<T>";
                     }
 
                     if (genericType.StartsWith("Entities\\") || genericType.StartsWith("Entities/"))
                     {
                         genericType =
-                            ProjectManager.ProjectNamespace + '.' + genericType.Replace('\\', '.');
+                            globalPrefix + ProjectManager.ProjectNamespace + '.' + genericType.Replace('\\', '.');
                         return instanceType.Replace("<T>", "<" + genericType + ">");
 
                     }

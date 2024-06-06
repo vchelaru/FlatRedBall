@@ -70,7 +70,7 @@ namespace GumPlugin.CodeGeneration
             // It's much easier to add the LINQ usings here instead of using the qualified method names in code gen below
             topBlock.Line("using System.Linq;");
 
-            var fullNamespace = GetFullRuntimeNamespaceFor(elementSave);
+            var fullNamespace = GetFullRuntimeNamespaceFor(elementSave, prefixGlobal:false);
 
             ICodeBlock currentBlock = topBlock.Namespace(fullNamespace);
 
@@ -214,9 +214,9 @@ namespace GumPlugin.CodeGeneration
             return currentBlock;
         }
 
-        public string GetQualifiedRuntimeTypeFor(ElementSave elementSave)
+        public string GetQualifiedRuntimeTypeFor(ElementSave elementSave, bool prefixGlobal = true)
         {
-            return GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementSave) + 
+            return GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementSave, prefixGlobal) + 
                 "." + GetUnqualifiedRuntimeTypeFor(elementSave);
         }
 
@@ -295,7 +295,7 @@ namespace GumPlugin.CodeGeneration
             }
             else
             {
-                var qualifiedRuntimeType = GetQualifiedRuntimeTypeFor(element);
+                var qualifiedRuntimeType = GetQualifiedRuntimeTypeFor(element, includeGlobalPrefix);
 
                 var isContainer = element is StandardElementSave && element.Name == "Container";
 
@@ -314,14 +314,7 @@ namespace GumPlugin.CodeGeneration
                     }
                 }
 
-                if(includeGlobalPrefix)
-                {
-                    return $"global::{qualifiedRuntimeType}";
-                }
-                else
-                {
-                    return $"{qualifiedRuntimeType}";
-                }
+                return $"{qualifiedRuntimeType}";
             }
         }
 
