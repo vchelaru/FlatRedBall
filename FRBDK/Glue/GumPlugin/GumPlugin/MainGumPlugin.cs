@@ -507,7 +507,7 @@ public class MainGumPlugin : PluginBase
 
             var foundItem = AssetTypeInfoManager.Self.AssetTypesForThisProject
                 .Where(item => item.QualifiedRuntimeTypeName.QualifiedType ==
-                    GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element));
+                    GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element, prefixGlobal:false));
 
             if (foundItem.Any())
             {
