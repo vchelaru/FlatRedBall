@@ -240,7 +240,7 @@ namespace FlatRedBall.Input
 
         /// <summary>
         /// The number of pixels that the mouse has moved on the
-        /// X axis during the last frame.
+        /// X axis since the last frame.
         /// </summary>
         public int XChange
         {
@@ -256,7 +256,7 @@ namespace FlatRedBall.Input
 
         /// <summary>
         /// The number of pixels that the mouse has moved on the
-        /// Y axis during the last frame.
+        /// Y axis since the last frame.
         /// </summary>
         public int YChange
         {
