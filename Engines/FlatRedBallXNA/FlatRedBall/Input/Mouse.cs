@@ -17,6 +17,9 @@ namespace FlatRedBall.Input
 {
     public delegate void ModifyMouseState(ref MouseState mouseState);
 
+    /// <summary>
+    /// Represents the mouse hardware.
+    /// </summary>
     public class Mouse : IEquatable<Mouse>, IInputDevice
     {
         #region Enums
@@ -87,6 +90,10 @@ namespace FlatRedBall.Input
 
         #region Properties
 
+        /// <summary>
+        /// Returns whether any mouse button was pushed.
+        /// </summary>
+        /// <returns></returns>
         public bool AnyButtonPushed()
         {
             bool valueToReturn = false;
@@ -196,11 +203,9 @@ namespace FlatRedBall.Input
         }
 #endif
 
-        #region XML Docs
         /// <summary>
         /// Returns the client rectangle-relative X pixel coordinate of the cursor.
         /// </summary>
-        #endregion
         public int X
         {
             get 
@@ -216,11 +221,9 @@ namespace FlatRedBall.Input
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the client rectangle-Y pixel coordinate of the cursor.
         /// </summary>
-        #endregion
         public int Y
         {
             get 
@@ -235,12 +238,10 @@ namespace FlatRedBall.Input
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The number of pixels that the mouse has moved on the
         /// X axis during the last frame.
         /// </summary>
-        #endregion
         public int XChange
         {
             get 
@@ -253,12 +254,10 @@ namespace FlatRedBall.Input
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The number of pixels that the mouse has moved on the
         /// Y axis during the last frame.
         /// </summary>
-        #endregion
         public int YChange
         {
             get 
@@ -271,23 +270,19 @@ namespace FlatRedBall.Input
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The rate of change of the X property in 
         /// pixels per second.
         /// </summary>
-        #endregion
         public float XVelocity
         {
             get { return mXVelocity; }
         }
 
-        #region XML Docs
         /// <summary>
         /// The rate of change of the Y property in 
         /// pixels per second.
         /// </summary>
-        #endregion
         public float YVelocity
         {
             get { return mYVelocity; }
