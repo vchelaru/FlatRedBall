@@ -703,7 +703,7 @@ namespace GumPlugin.Managers
             }
             if (element is Gum.DataTypes.ScreenSave)
             {
-                var qualifiedName = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element, prefixGlobal: false);
+                var qualifiedName = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element, prefixGlobal: true);
 
                 newAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos, qualifiedName);
 
