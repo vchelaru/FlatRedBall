@@ -618,7 +618,7 @@ namespace FlatRedBall.Input
             return X > camera.LeftDestination && X < camera.RightDestination &&
                 Y > camera.TopDestination && Y < camera.BottomDestination;
         }
-#if !XBOX360
+
         public bool IsOn3D(FlatRedBall.Graphics.Text text, bool relativeToCamera)
         {
 			Vector3 offset = new Vector3();
@@ -648,9 +648,7 @@ namespace FlatRedBall.Input
 
 			return value;
         }
-#endif
 
-#if !XBOX360
 
         public bool IsOn3D<T>(T objectToTest, bool relativeToCamera) where T : IPositionable, IRotatable, IReadOnlyScalable
         {
@@ -719,7 +717,6 @@ namespace FlatRedBall.Input
 
             }
         }
-#endif
 
         public bool IsInGameWindow()
         {
