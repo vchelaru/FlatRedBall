@@ -20,7 +20,7 @@
     <Compile Remove="EffectPlugin\EmbeddedCodeFiles\FullscreenEffectWrapper.cs" />
     <EmbeddedResource Include="EffectPlugin\EmbeddedCodeFiles\FullscreenEffectWrapper.cs" />
     <None Remove="EffectPlugin\Content\PostProcessingTemplate.png" />
-    <EmbeddedResource Include="EffectPlugin\Content\PostProcessingTemplate.png" />
+    <Resource Include="EffectPlugin\Content\PostProcessingTemplate.png" />
   </ItemGroup>
 
   <ItemGroup>

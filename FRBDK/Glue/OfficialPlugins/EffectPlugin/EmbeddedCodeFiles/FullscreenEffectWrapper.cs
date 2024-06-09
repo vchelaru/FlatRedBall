@@ -1,8 +1,9 @@
+using System;
 using FlatRedBall;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace ReplaceNamespace;
+namespace PostProcessingTest.Graphics;
 
 public class FullscreenEffectWrapper
 {
@@ -30,6 +31,18 @@ public class FullscreenEffectWrapper
 
     public virtual void Draw(Camera camera, Effect effect, Texture2D texture, float zDepth = 0, bool isVisible = true)
     {
+        if (effect.IsDisposed)
+        {
+            throw new ArgumentException("Effect has been disposed. Are you attempting to draw with an effect loaded with a non-global content manager?" +
+                                        " It is recommended that effect files for post processing be stored in global content.");
+        }
+
+        if (texture.IsDisposed)
+        {
+            throw new ArgumentException("Texture has been disposed. Are you attempting to draw with a texture loaded with a non-global content manager?" +
+                                        " It is recommended that texture files for post processing be stored in global content.");
+        }
+        
         if (!isVisible) { return; }
         
         SetParameters(effect, camera, texture);

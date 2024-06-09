@@ -89,10 +89,13 @@ namespace OfficialPlugins.EffectPlugin
 
         private void HandleNewFxViewModel(ReferencedFileSave newFile, NewFxOptionsViewModel viewModel)
         {
-            if(viewModel.IsIncludePostProcessCsFileChecked)
+            if (viewModel.ShaderType == ShaderType.PostProcessing)
             {
-                IncludeFullscreenEffectWrapper();
-                IncludePostProcessCsFile(newFile.Name);
+                if(viewModel.IsIncludePostProcessCsFileChecked)
+                {
+                    IncludeFullscreenEffectWrapper();
+                    IncludePostProcessCsFile(newFile.Name);
+                }
             }
         }
 
