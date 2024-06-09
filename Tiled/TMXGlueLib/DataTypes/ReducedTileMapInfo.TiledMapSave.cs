@@ -69,6 +69,8 @@ namespace TMXGlueLib.DataTypes
                 NumberCellsTall = tiledMapSave.Height,
                 NumberCellsWide = tiledMapSave.Width
             };
+
+            toReturn.TileOrientation = tiledMapSave.orientation == "isometric" ? TileOrientation.Isometric : TileOrientation.Orthogonal;
             toReturn.CellHeightInPixels = (ushort)tiledMapSave.tileheight;
             toReturn.CellWidthInPixels = (ushort)tiledMapSave.tilewidth;
             toReturn.QuadHeight = tiledMapSave.tileheight;

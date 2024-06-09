@@ -187,7 +187,12 @@ namespace TMXGlueLib.DataTypes
     #endregion
 
     #region ReducedTileMapInfo
-
+    public enum TileOrientation
+    {
+        Orthogonal,
+        Isometric
+            // could add more here in the future
+    }
 
     public partial class ReducedTileMapInfo
     {
@@ -211,6 +216,8 @@ namespace TMXGlueLib.DataTypes
 
         public int NumberCellsWide;
         public int NumberCellsTall;
+
+        public TileOrientation TileOrientation;
 
         public List<ReducedLayerInfo> Layers = new List<ReducedLayerInfo>();
 
