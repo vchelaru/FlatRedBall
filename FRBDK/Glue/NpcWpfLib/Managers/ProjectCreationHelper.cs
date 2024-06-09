@@ -310,7 +310,7 @@ public static class ProjectCreationHelper
         return isFileNameValid;
     }
 
-    private static GeneralResponse DownloadFileSync(NewProjectViewModel viewModel, string zipToUnpack, string fileToDownoad)
+    private static GeneralResponse DownloadFileSync(NewProjectViewModel viewModel, string destinationZip, string fileToDownoad)
     {
         var urs = new UpdaterRuntimeSettings();
         urs.FileToDownload = fileToDownoad;
@@ -321,7 +321,7 @@ public static class ProjectCreationHelper
         //    throw new Exception("The zipToUnpack argument is null - it shouldn't be");
         //}
 
-        urs.LocationToSaveFile = zipToUnpack;
+        urs.LocationToSaveFile = destinationZip;
 
         string whereToSaveSettings =
             FileManager.UserApplicationDataForThisApplication + "DownloadInformation." + UpdaterRuntimeSettings.RuntimeSettingsExtension;

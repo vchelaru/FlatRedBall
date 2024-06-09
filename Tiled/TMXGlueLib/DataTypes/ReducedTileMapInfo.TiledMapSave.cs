@@ -195,8 +195,10 @@ namespace TMXGlueLib.DataTypes
                     }
                 }
 
-                int tileWidth = tiledMapSave.tilewidth;
-                int tileHeight = tiledMapSave.tileheight;
+                // Update June 9, 2024
+                // the tileset may have its own tile height and width, so we should look to that:
+                int tileWidth = tileSet?.Tilewidth ?? tiledMapSave.tilewidth;
+                int tileHeight = tileSet?.Tileheight ?? tiledMapSave.tileheight;
 
                 reducedLayerInfo = new ReducedLayerInfo
                 {
