@@ -17,7 +17,7 @@
             <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsAutoSnapshotEnabled}" Content="{x:Static localization:Texts.AutoTakeSnapshot}"></CheckBox>
         </WrapPanel>
         <TabControl Grid.Row="1">
-            <TabItem Header="{x:Static localization:Texts.Summary}">
+            <TabItem Header="Summary">
                 <ScrollViewer>
                     <TextBlock Grid.Row="1" x:Name="SummaryTextBlock" Text="{Binding SummaryText}">
 
