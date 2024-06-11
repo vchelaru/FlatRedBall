@@ -328,7 +328,13 @@ namespace $NAMESPACE$.TopDown
                 Math.Abs(xDiff) < RequiredDistanceForNextTarget && Math.Abs(yDiff) < RequiredDistanceForNextTarget;
 
             var shouldRemove = isCloseToFindNextTarget &&
-                RemoveTargetOnReaching &&
+                // June 8, 2024
+                // No idea why we
+                // have this check. 
+                // This should always
+                // happen or the object
+                // gets stuck.
+                //RemoveTargetOnReaching &&
                 Path.Count > 1;
 
             if (shouldRemove)

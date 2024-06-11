@@ -257,7 +257,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 
         string QualifiedTypeName(GlueElement element)
         {
-            return ProjectManager.ProjectNamespace + '.' + element.Name.Replace('\\', '.');
+            return "global::" + ProjectManager.ProjectNamespace + '.' + element.Name.Replace('\\', '.');
         }
     }
 }

@@ -35,7 +35,7 @@ namespace GumPluginCore.CodeGeneration
                 var shouldGenerateGum = element.AllNamedObjects.Any(item => item.InstanceName == gumScreenName) == false;
                 if(shouldGenerateGum)
                 {
-                    codeBlock.Line($"{rfs.RuntimeType} {gumScreenName};");
+                    codeBlock.Line($"global::{rfs.RuntimeType} {gumScreenName};");
                 }
 
             }

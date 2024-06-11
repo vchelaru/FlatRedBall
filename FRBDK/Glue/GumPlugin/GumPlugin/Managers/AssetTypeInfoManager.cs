@@ -653,7 +653,7 @@ namespace GumPlugin.Managers
 
         public AssetTypeInfo GetAtiFor(ElementSave elementSave)
         {
-            var qualified = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(elementSave);
+            var qualified = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(elementSave, prefixGlobal: false);
 
             return AssetTypesForThisProject.FirstOrDefault(Item => Item.QualifiedRuntimeTypeName.QualifiedType == qualified);
         }
@@ -677,7 +677,7 @@ namespace GumPlugin.Managers
 
             newAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
             {
-                QualifiedType = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element)
+                QualifiedType = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element, prefixGlobal:false)
             };
 
 
@@ -703,7 +703,7 @@ namespace GumPlugin.Managers
             }
             if (element is Gum.DataTypes.ScreenSave)
             {
-                var qualifiedName = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
+                var qualifiedName = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element, prefixGlobal: true);
 
                 newAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos, qualifiedName);
 
@@ -851,7 +851,7 @@ namespace GumPlugin.Managers
             // todo: for now we'll return the unqualified name for the state, but eventually we may want to qualify it:
             if(isState)
             {
-                return GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(container) + "." + variable.Type + "?";
+                return GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(container, prefixGlobal: false) + "." + variable.Type + "?";
             }
             else
             {

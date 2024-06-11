@@ -110,7 +110,7 @@ namespace GumPlugin.Managers
                 if ( rfsAti == AssetTypeInfoManager.Self.ScreenIdbAti  || rfsAti == null)
                 {
                     availableObjects.Add("this (" + 
-                        GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element) + ")");
+                        GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element, prefixGlobal: false) + ")");
                 }
                 if(rfsAti != null)
                 {

@@ -2017,10 +2017,14 @@ namespace FlatRedBall.Math.Geometry
 
         }
 
-        // From:
-        // https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
+        /// <summary>
+        /// Loops through all points to determine if the Polygon is in Clockwise order.
+        /// </summary>
+        /// <returns>Whether the points on the Polygon are in clockwise order.</returns>
         public bool IsClockwise()
         {
+            // From:
+            // https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
             double sum = 0;
             for (int i = 0; i < Points.Count - 1; i++)
             {
@@ -2121,6 +2125,9 @@ namespace FlatRedBall.Math.Geometry
 
         #endregion
 
+        /// <summary>
+        /// Inverts the order of the points so that the first point becomes the last, the second becomes the second to last, etc.
+        /// </summary>
         public void InvertPointOrder()
         {
             Point temporaryPoint = new Point();
@@ -2134,6 +2141,7 @@ namespace FlatRedBall.Math.Geometry
 
                 mPoints[invertValue] = temporaryPoint;
             }
+            isClockwiseCache = IsClockwise();
         }
 
         public void KeepThisInsideOf(AxisAlignedRectangle rectangle)

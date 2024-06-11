@@ -236,7 +236,7 @@ namespace GumPlugin.Managers
                 if(gumElement != null)
                 {
                     newRfs.RuntimeType =
-                        GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(gumElement);
+                        GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(gumElement, prefixGlobal:false);
 
                     GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(glueScreen);

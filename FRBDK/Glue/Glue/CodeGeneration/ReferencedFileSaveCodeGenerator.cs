@@ -139,6 +139,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                 typeName = CsvCodeGenerator.GetEntireGenericTypeForCsvFile(referencedFile);
             }
 
+            if(!string.IsNullOrEmpty(typeName))
+            {
+                typeName = "global::" + typeName;
+            }
+
             #endregion
 
             //////////////////////////////EARLY OUT///////////////////////////////////////

@@ -960,7 +960,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             foreach(var elementToLoad in elementsToLoadStaticContent)
             {
                 var fullName = CodeWriter.GetGlueElementNamespace(elementToLoad) + "." + elementToLoad.GetStrippedName();
-                codeBlock.Line($"{fullName}.LoadStaticContent(contentManagerName);");
+                codeBlock.Line($"global::{fullName}.LoadStaticContent(contentManagerName);");
             }
             return codeBlock;
         }

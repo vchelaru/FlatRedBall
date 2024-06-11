@@ -658,7 +658,7 @@ namespace FlatRedBallAddOns.Entities
 
         if (inheritsFromElement)
         {
-            codeBlock.Line(ProjectManager.ProjectNamespace + "." + element.BaseElement.Replace("\\", ".")  + ".LoadStaticContent(contentManagerName);");
+            codeBlock.Line("global::" + ProjectManager.ProjectNamespace + "." + element.BaseElement.Replace("\\", ".")  + ".LoadStaticContent(contentManagerName);");
         }
 
         foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators

@@ -53,7 +53,7 @@ namespace TopDownPlugin.CodeGenerators
             {
                 var className = element.GetStrippedName();
                 codeBlock = codeBlock.Class("public partial", className, "");
-                codeBlock.Line($"protected override System.Collections.Generic.Dictionary<string, {projectNamespace}.DataTypes.TopDownValues> TopDownValues => TopDownValuesStatic;");
+                codeBlock.Line($"protected override System.Collections.Generic.Dictionary<string, global::{projectNamespace}.DataTypes.TopDownValues> TopDownValues => TopDownValuesStatic;");
             }
 
 
@@ -69,7 +69,7 @@ namespace TopDownPlugin.CodeGenerators
 
             if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CsvInheritanceSupport)
             {
-                codeBlock.Line($"protected virtual System.Collections.Generic.Dictionary<string, {projectNamespace}.DataTypes.TopDownValues> TopDownValues => TopDownValuesStatic;");
+                codeBlock.Line($"protected virtual System.Collections.Generic.Dictionary<string, global::{projectNamespace}.DataTypes.TopDownValues> TopDownValues => TopDownValuesStatic;");
             }
 
             // Made a field so the user can assign individual values

@@ -25,7 +25,8 @@ namespace FlatRedBall.TileGraphics
     {
         None,
         X,
-        Y
+        Y,
+        YTopDown
     }
 
     #endregion
@@ -496,7 +497,12 @@ namespace FlatRedBall.TileGraphics
 
             TMXGlueLib.DataTypes.ReducedQuadInfo[] quads = null;
 
-            if (rtmi.NumberCellsWide > rtmi.NumberCellsTall)
+            if (rtmi.TileOrientation == TileOrientation.Isometric)
+            {
+                quads = reducedLayerInfo.Quads.OrderByDescending(item => item.BottomQuadCoordinate).ToArray();
+                toReturn.mSortAxis = SortAxis.YTopDown;
+            }
+            else if (rtmi.NumberCellsWide > rtmi.NumberCellsTall)
             {
                 quads = reducedLayerInfo.Quads.OrderBy(item => item.LeftQuadCoordinate).ToArray();
                 toReturn.mSortAxis = SortAxis.X;
