@@ -330,6 +330,9 @@ namespace CompilerLibrary.ViewModels
         [DependsOn(nameof(IsPlayChecked))]
         public Visibility RunDisabledIconVisibility => (!IsPlayChecked).ToVisibility();
 
+        /// <summary>
+        /// Whether the user is in Edit mode (as opposed to Play mode)
+        /// </summary>
         [DependsOn(nameof(PlayOrEdit))]
         public bool IsEditChecked
         {

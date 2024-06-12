@@ -429,6 +429,7 @@ namespace FlatRedBall.Debugging
             stringBuilder.Append(GetInstructionInformation());
 
             stringBuilder.AppendLine();
+            stringBuilder.AppendLine();
             stringBuilder.AppendLine($"Render breaks: {Renderer.LastFrameRenderBreakList.Count}");
 
             int sameRenderBreaks = 0;
