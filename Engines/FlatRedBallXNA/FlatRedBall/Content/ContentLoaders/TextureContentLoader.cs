@@ -143,16 +143,24 @@ namespace FlatRedBall.Content.ContentLoaders
 
                 Texture2D file = null;
 
+                Texture2D tempFile = null;
+
+                // Monogame 3.8.1 introduces a parameter for processing a file as it's loaded. In my tests this 
+                // does not speed up the load. It's actually slightly slower. Using SpriteBatches is the way to go.
+                //    file = Texture2D.FromStream(Renderer.GraphicsDevice, titleStream, DefaultColorProcessors.PremultiplyAlpha);
                 using (Stream titleStream = FileManager.GetStreamForFile(loc))
                 {
-                    file = Texture2D.FromStream(Renderer.GraphicsDevice, titleStream);
+                    tempFile = Texture2D.FromStream(Renderer.GraphicsDevice, titleStream);
                 }
+                file = MakePremultiplied(tempFile);
 
-                file = MakePremultiplied(file);
+                tempFile.Dispose();
+
                 return file;
             }
         }
 
+        static SpriteBatch premultSpriteBatch = new SpriteBatch(Renderer.GraphicsDevice);
         public static Texture2D MakePremultiplied(Texture2D file)
         {
 
@@ -225,15 +233,14 @@ namespace FlatRedBall.Content.ContentLoaders
 
                     var position = Vector2.Zero;
 
-                    SpriteBatch spriteBatch = new SpriteBatch(Renderer.GraphicsDevice);
 
 #if MONOGAME
-                    spriteBatch.Begin(SpriteSortMode.Immediate, blendColor, samplerState: SamplerState.PointClamp);
+                    premultSpriteBatch.Begin(SpriteSortMode.Immediate, blendColor, samplerState: SamplerState.PointClamp);
 #else
                     spriteBatch.Begin(SpriteSortMode.Immediate, blendColor, SamplerState.PointClamp, null, null);
 #endif
-                    spriteBatch.Draw(file, position, Color.White);
-                    spriteBatch.End();
+                    premultSpriteBatch.Draw(file, position, Color.White);
+                    premultSpriteBatch.End();
 
                     //Now copy over the alpha values from the PNG source texture to the final one, without multiplying them
                     BlendState blendAlpha = new BlendState();
@@ -246,12 +253,12 @@ namespace FlatRedBall.Content.ContentLoaders
                     blendAlpha.ColorSourceBlend = Blend.One;
 
 #if MONOGAME
-                    spriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha, samplerState: SamplerState.PointClamp);
+                    premultSpriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha, samplerState: SamplerState.PointClamp);
 #else
                     spriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha, SamplerState.PointClamp, null, null);
 #endif
-                    spriteBatch.Draw(file, position, Color.White);
-                    spriteBatch.End();
+                    premultSpriteBatch.Draw(file, position, Color.White);
+                    premultSpriteBatch.End();
 
                     //Release the GPU back to drawing to the screen
                     Renderer.GraphicsDevice.SetRenderTarget(null);
@@ -260,7 +267,7 @@ namespace FlatRedBall.Content.ContentLoaders
                 Renderer.ForceSetBlendOperation();
                 Renderer.ForceSetColorOperation(Renderer.mLastColorOperationSet);
 
-                return result as Texture2D;
+                return result;
             }
         }
 
