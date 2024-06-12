@@ -73,6 +73,14 @@ namespace FlatRedBall.Glue.Elements
         [JsonIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, List<string>> CustomGetForcedOptionFunc;
 
+        [XmlIgnore]
+        [JsonIgnore]
+        /// <summary>
+        /// Whether this variable should appear in the editor. By default this is null so the variable appears.
+        /// If this is not null, this is evaluated to determine whether to display the variable in the variable grid.
+        /// </summary>
+        public Func<GlueElement, NamedObjectSave, bool> IsVariableVisibleInEditor;
+
         // Added Jan 15 2024, default to true to match behavior 
         public bool CanBeSetInFile = true;
 

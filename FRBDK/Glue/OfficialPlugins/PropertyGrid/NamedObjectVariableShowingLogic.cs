@@ -78,7 +78,7 @@ namespace OfficialPlugins.VariableDisplay
             // on the instance, and the VariableDefinition is the root variable definition.
             // Note that the variable name will often match the VariableDefinition name, but not necessarily,
             // if the NamedObjectSave has tunneled the variable.
-            Dictionary<string, VariableDefinition> variableDefinitions = GetVariableDefinitions(instance, ati);
+            Dictionary<string, VariableDefinition> variableDefinitions = GetVariableDefinitions(instance, ati, container);
 
             foreach (var kvp in variableDefinitions)
             {
@@ -113,16 +113,26 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static Dictionary<string, VariableDefinition> GetVariableDefinitions(NamedObjectSave instance, AssetTypeInfo ati)
+        private static Dictionary<string, VariableDefinition> GetVariableDefinitions(NamedObjectSave instance, AssetTypeInfo ati, GlueElement container)
         {
             Dictionary<string, VariableDefinition> variableDefinitions = new Dictionary<string, VariableDefinition>();
 
             if (ati?.VariableDefinitions.Count > 0)
             {
+
                 foreach (var definition in ati.VariableDefinitions)
                 {
-                    variableDefinitions[definition.Name] = definition;
+                    var shouldAdd = true;
 
+                    if(definition.IsVariableVisibleInEditor != null)
+                    {
+                        shouldAdd = definition.IsVariableVisibleInEditor(container, instance);
+                    }
+
+                    if(shouldAdd)
+                    {
+                        variableDefinitions[definition.Name] = definition;
+                    }
                 }
             }
             else if(instance.SourceType == SourceType.Entity)
@@ -266,7 +276,7 @@ namespace OfficialPlugins.VariableDisplay
             else
             {
                 var ati = instance.GetAssetTypeInfo();
-                Dictionary<string, VariableDefinition> variableDefinitions = GetVariableDefinitions(instance, ati);
+                Dictionary<string, VariableDefinition> variableDefinitions = GetVariableDefinitions(instance, ati, container);
 
                 for (int i = 0; i < grid.Categories.Count; i++)
                 {

@@ -50,6 +50,11 @@ public static class IElementExtensionMethods
         return rfs;
     }
 
+    /// <summary>
+    /// Returns all referenced files in this and base elements.
+    /// </summary>
+    /// <param name="instance">The element to search</param>
+    /// <returns>All referenced file saves from this and base elements.</returns>
     public static IEnumerable<ReferencedFileSave> GetAllReferencedFileSavesRecursively(this IElement instance)
     {
         foreach (ReferencedFileSave rfs in instance.ReferencedFiles)
@@ -60,7 +65,7 @@ public static class IElementExtensionMethods
         if (!string.IsNullOrEmpty(instance.BaseElement))
         {
 
-            IElement baseElement = GlueState.CurrentGlueProject.GetElement(instance.BaseElement);
+            var baseElement = GlueState.CurrentGlueProject.GetElement(instance.BaseElement);
             if (baseElement != null)
             {
                 foreach (ReferencedFileSave rfs in baseElement.GetAllReferencedFileSavesRecursively())
