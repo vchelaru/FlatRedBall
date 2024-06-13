@@ -28,3 +28,4 @@ storage.ide
 FRBDK/AnimationEditor/PreviewProject/bin/Debug/AESettings.json
 *.settings.user.json
 Tests/GlueTestProjectDesktopGl/GlueTestProjectDesktopGl/GlueSettings/TreeViewPlugin.settings.user.json
+/Samples/BeefballCodeOnly/BeefballCodeOnly/.config

@@ -249,7 +249,30 @@ namespace FlatRedBall.Screens
 
         #region Constructor
 
+        /// <summary>
+        /// Creates a new Screen using the Global content manager
+        /// </summary>
+        public Screen()
+        {
+            DoConstructorLogic(FlatRedBallServices.GlobalContentManager);
+        }
+
+        /// <summary>
+        /// Creates a new Screen using the specified content manager name
+        /// </summary>
+        /// <param name="contentManagerName">The content manager name to use when loading content for this screen.</param>
         public Screen(string contentManagerName)
+        {
+            // June 13, 2024
+            // Added this constructor
+            // to allow code-only projects
+            // to instantiate using global if
+            // they don't care about which content
+            // manager to use.
+            DoConstructorLogic(contentManagerName);
+        }
+
+        private void DoConstructorLogic(string contentManagerName)
         {
             this.Instructions = new InstructionList();
             ShouldRemoveLayer = true;
@@ -266,7 +289,7 @@ namespace FlatRedBall.Screens
             StateManager.Current.Activating += ActivatingAction;
             StateManager.Current.Deactivating += DeactivatingAction;
 
-			if (ScreenManager.ShouldActivateScreen)
+            if (ScreenManager.ShouldActivateScreen)
             {
                 Activating();
             }

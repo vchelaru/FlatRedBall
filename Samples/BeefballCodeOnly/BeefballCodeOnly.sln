@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeefballCodeOnly", "BeefballCodeOnly\BeefballCodeOnly.csproj", "{A2BB2778-2762-4FAD-B721-0BECAE84300C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallDesktopGLNet6", "..\..\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj", "{09D81397-2BC6-4E88-AC52-1337505BAFE3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2BB2778-2762-4FAD-B721-0BECAE84300C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2BB2778-2762-4FAD-B721-0BECAE84300C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2BB2778-2762-4FAD-B721-0BECAE84300C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2BB2778-2762-4FAD-B721-0BECAE84300C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09D81397-2BC6-4E88-AC52-1337505BAFE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09D81397-2BC6-4E88-AC52-1337505BAFE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09D81397-2BC6-4E88-AC52-1337505BAFE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09D81397-2BC6-4E88-AC52-1337505BAFE3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2BB69280-5164-4BEB-A2EB-C4F99E266EC5}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{09d81397-2bc6-4e88-ac52-1337505bafe3}*SharedItemsImports = 5
+	EndGlobalSection
+EndGlobal
