@@ -178,24 +178,29 @@ public static class ProjectCreationHelper
         return generalResponse.Succeeded;
     }
 
-    
+
     private static void RenameEverything(NewProjectViewModel viewModel, string stringToReplace, string unpackDirectory)
     {
-        var newProjectName = viewModel.ProjectName;
+        RenameProject(viewModel.ProjectName, stringToReplace, viewModel.DifferentNamespace, unpackDirectory);
+    }
 
-        if(stringToReplace != newProjectName)
+
+
+    public static void RenameProject(string newProjectName, string oldProjectName, string? newNamespace, string projectRootDirectory)
+    { 
+        if(oldProjectName != newProjectName)
         {
-            RenameFiles(unpackDirectory, stringToReplace,
+            RenameFiles(projectRootDirectory, oldProjectName,
                 newProjectName);
 
-            UpdateSolutionContents(unpackDirectory, stringToReplace,
+            UpdateSolutionContents(projectRootDirectory, oldProjectName,
                 newProjectName);
         }
 
-        var newNamespace = viewModel.DifferentNamespace ?? viewModel.ProjectName;
-        if(stringToReplace != newNamespace)
+        newNamespace = newNamespace ?? newProjectName;
+        if(oldProjectName != newNamespace)
         {
-            UpdateNamespaces(unpackDirectory, stringToReplace,
+            UpdateNamespaces(projectRootDirectory, oldProjectName,
                 newNamespace);
         }
 
@@ -640,6 +645,26 @@ public static class ProjectCreationHelper
 
             FileManager.SaveText(contents, fileName);
         }
+
+        filesToFix.Clear();
+        filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "glej"));
+        filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "glsj"));
+        foreach(string fileName in filesToFix)
+        {
+            string contents = FileManager.FromFileText(fileName);
+
+            // June 15, 2024
+            // We used to do ".DataTypes" to catch references to
+            // CSVs but it misses references to NamedObjectSaves, so we
+            // need to update those. We can be more general by just looking for 
+            // the old name plus a dot at the end
+            string whatToSearchFor = stringToReplace + ".";
+            string replacement = stringToReplaceWith + ".";
+
+            contents = contents.Replace(whatToSearchFor, replacement);
+
+            FileManager.SaveText(contents, fileName);
+        }
     }
     
     /*
@@ -701,7 +726,7 @@ public static class ProjectCreationHelper
     }
 
 
-    internal static string GetWhyProjectNameIsntValid(string projectName)
+    public static string GetWhyProjectNameIsntValid(string projectName)
     {
         if (string.IsNullOrEmpty(projectName))
         {

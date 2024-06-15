@@ -53,18 +53,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         string solutionName = projectFileName;
 
-                        projectFileName = solution.ReferencedProjects.FirstOrDefault(item =>
+                        var foundProject = solution.ReferencedProjects.FirstOrDefault(item =>
                         {
-                            var isRegularProject = FileManager.GetExtension(item) == "csproj" || FileManager.GetExtension(item) == "vsproj";
+                            var isRegularProject = FileManager.GetExtension(item.Name) == "csproj" || FileManager.GetExtension(item.Name) == "vsproj";
 
                             bool hasSameName = FileManager.RemovePath(FileManager.RemoveExtension(solutionName)).ToLowerInvariant() ==
-                                FileManager.RemovePath(FileManager.RemoveExtension(item)).ToLowerInvariant();
+                                FileManager.RemovePath(FileManager.RemoveExtension(item.Name)).ToLowerInvariant();
 
 
                             return isRegularProject && hasSameName;
                         });
 
-                        projectFileName = FileManager.GetDirectory(solutionName) + projectFileName;
+                        projectFileName = FileManager.GetDirectory(solutionName) + foundProject.Name;
                     }
                     else if(extension == "gluj")
                     {

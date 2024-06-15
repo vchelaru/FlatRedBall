@@ -47,6 +47,13 @@ namespace FlatRedBall.Glue.Errors
 
         public static void ReportError(string fileName, string error, bool forceError)
         {
+
+            // Victor Chelaru
+            // June 15, 2024 
+            // Sometimes there is a CSV error reported here with an empty string. Not sure why,
+            // so I have a breakpoint here to see if I can figure it out.
+            System.Diagnostics.Debugger.Break();
+
             if (mForm == null)
             {
                 throw new Exception("Initialize must be called first");

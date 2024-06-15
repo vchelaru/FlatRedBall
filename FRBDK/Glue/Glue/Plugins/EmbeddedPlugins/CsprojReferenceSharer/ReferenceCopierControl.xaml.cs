@@ -46,11 +46,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
             foreach (var sourceProject in sourceSolution.ReferencedProjects)
             {
 
-
-                var strippedSource = FileManager.RemovePath(sourceProject);
+                var projectName = sourceProject.Name;
+                var strippedSource = FileManager.RemovePath(projectName);
 
                 var found = destinationSolution.ReferencedProjects.FirstOrDefault(item => 
-                    FileManager.RemovePath(item) == strippedSource);
+                    FileManager.RemovePath(item.Name) == strippedSource);
 
 
 

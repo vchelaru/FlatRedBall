@@ -268,13 +268,13 @@ internal static class AddSourceManager
                 // remove any old references:
                 foreach(var existingReference in referencedProjects)
                 {
-                    var strippedExisting = FileManager.RemovePath(existingReference);
+                    var strippedExisting = FileManager.RemovePath(existingReference.Name);
 
                     var willBeReplaced = necessaryReferencesStripped.Contains(strippedExisting);
 
                     if(willBeReplaced)
                     {
-                        slnProjectReferencesToRemove.Add(existingReference);
+                        slnProjectReferencesToRemove.Add(existingReference.Name);
                     }
                 }
 
@@ -422,7 +422,7 @@ internal static class AddSourceManager
         return true;
     }
 
-    private static void AddProjectReference(VSSolution sln, List<string> existingProjectReferences, VisualStudioProject proj, 
+    private static void AddProjectReference(VSSolution sln, List<CsprojReference> existingProjectReferences, VisualStudioProject proj, 
         GeneralResponse addGeneralResponse, ProjectReference reference,
         string frbRootFolder, string gumRootFolder
         )
@@ -482,11 +482,11 @@ internal static class AddSourceManager
 
 
 
-    private static bool AddProject(List<string> existingProjects, FilePath solution, FilePath project)
+    private static bool AddProject(List<CsprojReference> existingProjects, FilePath solution, FilePath project)
     {
         var relativePath = new FilePath(project.RelativeTo(solution.GetDirectoryContainingThis()));
 
-        if (existingProjects.Any(item => new FilePath(item) == relativePath))
+        if (existingProjects.Any(item => new FilePath(item.Name) == relativePath))
             return true;
 
         if (!VSSolution.AddExistingProjectWithDotNet(solution, project, out var outputMessages, out var errorMessages))
@@ -498,14 +498,14 @@ internal static class AddSourceManager
         return true;
     }
 
-    private static bool AddSharedProject(List<string> existingProjects, FilePath solution, FilePath project, Guid projectTypeId, Guid projectId, string projectName)
+    private static bool AddSharedProject(List<CsprojReference> existingProjects, FilePath solution, FilePath project, Guid projectTypeId, Guid projectId, string projectName)
     {
         var relativePath = project.RelativeTo(solution.GetDirectoryContainingThis());
 
         var standardized = FileManager.Standardize(relativePath, null, false).ToLowerInvariant();
 
         var existingStandardized =
-            existingProjects.Select(item => FileManager.Standardize(item, null, false).ToLowerInvariant()).ToArray();
+            existingProjects.Select(item => FileManager.Standardize(item.Name, null, false).ToLowerInvariant()).ToArray();
 
         if (existingStandardized.Any(item => item == standardized))
             return true;
