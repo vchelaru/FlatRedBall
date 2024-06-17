@@ -945,6 +945,7 @@ namespace FlatRedBall.Forms.Controls
             var cursor = GuiManager.Cursor;
             var primaryDown = cursor.PrimaryDown;
 
+            var isTouchScreen = cursor.LastInputDevice == InputDevice.TouchScreen;
 
             if (IsEnabled == false)
             {
@@ -968,7 +969,7 @@ namespace FlatRedBall.Forms.Controls
                 // over anything. Therefore, we only show the highlighted state if the cursor
                 // is a physical on-screen cursor
                 else if (GetIfIsOnThisOrChildVisual(cursor) &&
-                    cursor.LastInputDevice != InputDevice.TouchScreen)
+                    !isTouchScreen)
                 {
                     return "HighlightedFocused";
                 }
@@ -987,7 +988,7 @@ namespace FlatRedBall.Forms.Controls
                 // cursor got its input from a touch screen then the cursor really isn't
                 // over anything. Therefore, we only show the highlighted state if the cursor
                 // is a physical on-screen cursor
-                else if (cursor.LastInputDevice != InputDevice.TouchScreen)
+                else if (!isTouchScreen)
                 {
                     return "Highlighted";
                 }
@@ -1004,8 +1005,6 @@ namespace FlatRedBall.Forms.Controls
 
         protected string GetDesiredStateWithChecked(bool? isChecked)
         {
-            var cursor = GuiManager.Cursor;
-
             var baseState = GetDesiredState();
 
             if(isChecked == true)

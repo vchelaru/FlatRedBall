@@ -79,8 +79,6 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void UpdateState()
         {
-            var cursor = GuiManager.Cursor;
-
             const string category = "ButtonCategoryState";
 
             var state = base.GetDesiredState();
