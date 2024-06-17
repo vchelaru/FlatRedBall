@@ -55,10 +55,10 @@ namespace Gum.Wireframe
 
 
         /// <summary>
-        /// Obsolete - this does not work. Use RollOn, RollOf, or RollOver
-        /// for events raised when over an object.
+        /// Event raised when the user has grabbed the window and is dragging it.
+        /// Consider using RollOn, RollOff, and RollOver for most cases. This is similar
+        /// to RollOver, but is raised even if the cursor is not over the window.
         /// </summary>
-        [Obsolete("Use RollOn, RollOff, or RollOver")]
         public event WindowEvent DragOver;
 
         /// <summary>
