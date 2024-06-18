@@ -131,7 +131,7 @@ namespace TileGraphicsPlugin.CodeGeneration
                 }
 
                 // assign itself if there's nothing in the 
-                return $"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{effectiveName}\")" +
+                return $"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{effectiveName}\").Clone()" +
                     $" ?? new FlatRedBall.TileCollisions.TileShapeCollection(){{Name = \"{effectiveName}\" }};";
 
             }
@@ -249,7 +249,7 @@ namespace TileGraphicsPlugin.CodeGeneration
                 // If a TileShapeCollection uses custom collision shapes, then the type will create a ShapeCollection and put it in the
                 // Collisions list. But if the current map doesn't use the tile, then the shape collection won't be created, and First will
                 // crash. We should not crash here, but rather rely on FRB Editor to report errors.
-                codeBlock.Line($"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{tmxCollisionName}\")" +
+                codeBlock.Line($"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{tmxCollisionName}\").Clone()" +
                     $" ?? new FlatRedBall.TileCollisions.TileShapeCollection(){{Name = \"{tmxCollisionName}\" }};");
     
 
