@@ -131,9 +131,17 @@ namespace TileGraphicsPlugin.CodeGeneration
                 }
 
                 // assign itself if there's nothing in the 
-                return $"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{effectiveName}\").Clone()" +
+                var line = $"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{effectiveName}\").Clone()" +
                     $" ?? new FlatRedBall.TileCollisions.TileShapeCollection(){{Name = \"{effectiveName}\" }};";
+                var reposition = namedObjectSave.GetCustomVariable("AdjustRepositionDirectionsOnAddAndRemove")?.Value as bool?;
 
+
+                if (reposition == false)
+                {
+                    line += $"\nforeach(var rect in {instanceName}.Rectangles) rect.RepositionDirections = FlatRedBall.Math.Geometry.RepositionDirections.All;";
+                }
+
+                return line;
             }
             // If it comes from map collision, don't creat a new instance, we'll do a straight assignment
             else if (creationOptions == CollisionCreationOptions.FromMapCollision)
@@ -227,8 +235,9 @@ namespace TileGraphicsPlugin.CodeGeneration
                         GenerateFromTileType(namedObjectSave, ifBlock);
                         break;
                     case CollisionCreationOptions.FromLayer:
-                        // not handled:
-                        GenerateFromLayerCollision(namedObjectSave, ifBlock);
+                        // Not handled here,
+                        // Handled in the constructor call above
+                        //GenerateFromLayerCollision(namedObjectSave, ifBlock);
                         break;
                     case CollisionCreationOptions.FromMapCollision:
                         GenerateFromMapCollision(namedObjectSave, codeBlock);
@@ -249,43 +258,23 @@ namespace TileGraphicsPlugin.CodeGeneration
                 // If a TileShapeCollection uses custom collision shapes, then the type will create a ShapeCollection and put it in the
                 // Collisions list. But if the current map doesn't use the tile, then the shape collection won't be created, and First will
                 // crash. We should not crash here, but rather rely on FRB Editor to report errors.
-                codeBlock.Line($"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{tmxCollisionName}\").Clone()" +
-                    $" ?? new FlatRedBall.TileCollisions.TileShapeCollection(){{Name = \"{tmxCollisionName}\" }};");
+                var line = $"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{tmxCollisionName}\").Clone()" +
+                    $" ?? new FlatRedBall.TileCollisions.TileShapeCollection(){{Name = \"{tmxCollisionName}\" }};";
+
+                var reposition = namedObjectSave.GetCustomVariable("AdjustRepositionDirectionsOnAddAndRemove")?.Value as bool?;
+                if(reposition == false)
+                {
+
+                    line += $"\nforeach(var rect in {instanceName}.Rectangles) rect.RepositionDirections = FlatRedBall.Math.Geometry.RepositionDirections.All;";
+                }
+
+                codeBlock.Line(line);
     
 
 
             }
         }
 
-        private void GenerateFromLayerCollision(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
-        {
-            // Handled in the constructor call above
-            //T Get<T>(string name)
-            //{
-            //    return namedObjectSave.Properties.GetValue<T>(name);
-            //}
-
-            //var instanceName = namedObjectSave.FieldName;
-            //var mapName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.SourceTmxName));
-            //var layerName = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionLayerName));
-            //var typeNameInLayer = Get<string>(nameof(TileShapeCollectionPropertiesViewModel.CollisionLayerTileType));
-
-            //var effectiveName = layerName;
-            //if(!string.IsNullOrEmpty(typeNameInLayer))
-            //{
-            //    effectiveName += "_" + typeNameInLayer;
-            //}
-
-            //// assign itself if there's nothing in the 
-            //codeBlock.Line($"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{effectiveName}\")" +
-            //    $" ?? {instanceName};");
-
-            // handled in the AssetTypeInfo's GetFromFileFunc because that already has access to the referenced file save
-
-            //var tileType = namedObjectSave.Properties.GetValue<string>(
-            //    nameof(ViewModels.TileShapeCollectionPropertiesViewModel.));
-
-        }
 
         private void GenerateBorderOutline(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
         {
