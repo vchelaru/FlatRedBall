@@ -486,6 +486,15 @@ namespace FlatRedBall.Math.Geometry
 				shapeCollection.mCapsule2Ds.Add(mCapsule2Ds[i].Clone());
 			}
 
+            shapeCollection.mMaxCirclesRadius = mMaxCirclesRadius;
+            shapeCollection.mMaxLinesRadius = mMaxLinesRadius;
+            shapeCollection.mMaxSpheresRadius = mMaxSpheresRadius;
+            shapeCollection.mMaxPolygonsRadius = mMaxPolygonsRadius;
+            shapeCollection.mMaxCapsule2DsRadius = mMaxCapsule2DsRadius;
+            shapeCollection.mMaxAxisAlignedCubesRadius = mMaxAxisAlignedCubesRadius;
+            shapeCollection.mMaxAxisAlignedRectanglesRadiusX = mMaxAxisAlignedRectanglesRadiusX;
+            shapeCollection.mMaxAxisAlignedRectanglesRadiusY = mMaxAxisAlignedRectanglesRadiusY;
+
 			return shapeCollection;
 		}
 
