@@ -134,10 +134,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                             if (absolute.Exists())
                             {
-                                var startInfo = new ProcessStartInfo();
-                                startInfo.FileName = absolute.FullPath;
-                                startInfo.UseShellExecute = true;
-                                System.Diagnostics.Process.Start(startInfo);
+                                try
+                                {
+                                    var startInfo = new ProcessStartInfo();
+                                    startInfo.FileName = absolute.FullPath;
+                                    startInfo.UseShellExecute = true;
+                                    System.Diagnostics.Process.Start(startInfo);
+                                }
+                                // This can blow up on Linux if using wine:
+                                catch(Exception e)
+                                {
+                                    GlueCommands.Self.PrintError(e.ToString());
+                                }
                             }
                             handled = true;
 
