@@ -53,6 +53,11 @@ namespace FlatRedBall.Glue.SaveClasses
                 string absoluteSourceName = GlueCommands.Self.GetAbsoluteFileName(instance.SourceFile, true);
 
                 error = instance.PerformBuildOnFile(absoluteSourceName, absoluteDestinationName, runAsync);
+
+                if(!string.IsNullOrEmpty(error))
+                {
+                    System.Diagnostics.Debugger.Break();
+                }
             }
 
             return error;

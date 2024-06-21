@@ -130,7 +130,7 @@ namespace FlatRedBall
 
         static IntPtr mWindowHandle;
 
-        static int mPrimaryThreadId;
+        static int? mPrimaryThreadId = null;
 
 #if !MONOGAME && !FNA
         static System.Windows.Forms.Control mOwner;
@@ -1005,6 +1005,10 @@ namespace FlatRedBall
 
         public static bool IsThreadPrimary()
         {
+            if(mPrimaryThreadId == null)
+            {
+                throw new InvalidOperationException("Cannot determine if the thread is primary because the PrimaryThreadID is null - did you forget to initialize FlatRedBall?");
+            }
 #if UWP
             int threadId = Environment.CurrentManagedThreadId;
 #else
