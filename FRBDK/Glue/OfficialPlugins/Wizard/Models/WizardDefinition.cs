@@ -172,7 +172,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 formsData.AddTitle("GameScreen");
                 formsData.AddText("Most games have a GameScreen which is where the main gameplay happens. " +
-                    "Adding a GameScreen enables lots of automated Glue behavior");
+                    "Adding a GameScreen enables lots of FRB Editor behavior which depends on the name \"GameScreen\"");
 
 
 

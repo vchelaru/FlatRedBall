@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Content.Aseprite;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -28,7 +29,16 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 string firstAnimationName = null;
                 if(string.IsNullOrEmpty(currentChainName) && achxFullFile?.Exists() == true)
                 {
-                    var achx = AnimationChainListSave.FromFile(achxFullFile.FullPath);
+                    AnimationChainListSave achx = null;
+                    var extension = achxFullFile.Extension;
+                    if (extension == "aseprite")
+                    {
+                        achx = AsepriteAnimationChainLoader.ToAnimationChainListSave(achxFullFile.FullPath);
+                    }
+                    else
+                    {
+                        achx = AnimationChainListSave.FromFile(achxFullFile.FullPath);
+                    }
                     firstAnimationName = achx?.AnimationChains.FirstOrDefault()?.Name;
                 }
 
