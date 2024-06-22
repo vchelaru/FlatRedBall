@@ -74,15 +74,19 @@ namespace TopDownPlugin.ViewModels
                 Visibility.Collapsed;
 
 
-        public ObservableCollection<AnimationRowViewModel> AnimationRows { get; private set; } =
-            new ObservableCollection<AnimationRowViewModel>();
+        public ObservableCollection<AnimationRowViewModel> AnimationRows 
+        { 
+            get => Get<ObservableCollection<AnimationRowViewModel>>();
+            set => Set(value);
+        }
+            
 
 
 
         public TopDownEntityViewModel()
         {
             TopDownValues = new ObservableCollection<TopDownValuesViewModel>();
-
+            AnimationRows = new ObservableCollection<AnimationRowViewModel>();
 
 
             TopDownValues.CollectionChanged += HandleTopDownValuesChanged;
