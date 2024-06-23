@@ -74,17 +74,8 @@ namespace FlatRedBall.Input
         #region Methods
 
         #region Constructor
-#if FRB_MDX
-        internal Keyboard(System.Windows.Forms.Control owner)
-#else
         internal Keyboard()
-#endif
         {
-
-#if SILVERLIGHT
-            Microsoft.Xna.Framework.Input.Keyboard.CreatesNewState = false;
-#endif
-
             mKeysTyped = new bool[NumberOfKeys];
             mLastTimeKeyTyped = new double[NumberOfKeys];
             mLastTypedFromPush = new bool[NumberOfKeys];
@@ -100,41 +91,6 @@ namespace FlatRedBall.Input
 
 //                textCodes[i] = (char)0;
             }
-
-#if FRB_MDX
-			// Create a new Device with the keyboard guid
-			mKeyboardDevice = new Device(SystemGuid.Keyboard);
-
-			// Set data format to keyboard data
-            mKeyboardDevice.SetDataFormat(DeviceDataFormat.Keyboard);
-
-			// Set the cooperative level to foreground non-exclusive
-			// and deactivate windows key
-            mKeyboardDevice.SetCooperativeLevel(owner, CooperativeLevelFlags.NonExclusive | 
-				CooperativeLevelFlags.Foreground | CooperativeLevelFlags.NoWindowsKey);
-
-			// Try to access keyboard
-
-            try
-            {
-                mKeyboardDevice.Acquire();
-            }
-            catch (InputLostException)
-            {
-                int m = 3;
-            }
-            catch (OtherApplicationHasPriorityException)
-            {
-                int m = 3;
-            }
-
-            // i don't know why this doesn't work, but input still works without it.
-
-            mKeyboardDevice.Properties.BufferSize = 5;
-
-
-#endif
-
         }
 
         #endregion
