@@ -131,7 +131,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 #endregion
 
-                CreateVariableResetField(namedObjectSave, typeName, codeBlock);
+                var typeNoGlobal = typeName;
+                if(typeNoGlobal.StartsWith("global::"))
+                {
+                    typeNoGlobal = typeNoGlobal.Substring("global::".Length);
+                }
+                CreateVariableResetField(namedObjectSave, typeNoGlobal, codeBlock);
 
                 // If this NamedObjectSave has children, then create fields for those too
                 foreach (NamedObjectSave childNos in namedObjectSave.ContainedObjects)
@@ -1445,38 +1450,50 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 string variableToReset = namedObjectSave.VariablesToReset[i];
 
-                string typeOfResetVariable = "";
-                MemberInfo memberInfo = null;
+                var ati = namedObjectSave.GetAssetTypeInfo();
+                var variable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == variableToReset);
+                var typeOfResetVariable = variable?.Type;  
 
-                try
+                if(string.IsNullOrEmpty(typeOfResetVariable))
                 {
-                    memberInfo = GetMemberInfoForMember(namedObjectSave, typeName, variableToReset);
-                }
-                catch (InvalidOperationException)
-                {
-                    // If we got here that means that the object doesn't have a variable matching what was passed in.
-                    // That's okay, we can just continue...well, after we tell the user about the problem.
-                }
 
-                if (memberInfo == null)
-                {
-                    GlueGui.ShowMessageBox("Error generating code for " + namedObjectSave.ToString() + ":\nCould not find variable " + variableToReset + " in " + namedObjectSave.SourceClassType);
-                }
-                else
-                {
-                    if (memberInfo is PropertyInfo)
+                    MemberInfo memberInfo = null;
+
+                    try
                     {
-                        var memberInfoPropertyType = ((PropertyInfo)memberInfo).PropertyType;
-                        var memberInfoPropertyTypeString = ToCSharpTypeString( memberInfoPropertyType);
-                        
-                        typeOfResetVariable = TypeManager.GetCommonTypeName(memberInfoPropertyTypeString);
+                        memberInfo = GetMemberInfoForMember(namedObjectSave, typeName, variableToReset);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // If we got here that means that the object doesn't have a variable matching what was passed in.
+                        // That's okay, we can just continue...well, after we tell the user about the problem.
+                    }
+
+                    if (memberInfo == null)
+                    {
+                        GlueGui.ShowMessageBox("Error generating code for " + namedObjectSave.ToString() + ":\nCould not find variable " + variableToReset + " in " + namedObjectSave.SourceClassType);
                     }
                     else
                     {
-                        typeOfResetVariable = TypeManager.GetCommonTypeName(((FieldInfo)memberInfo).FieldType.ToString());
+                        if (memberInfo is PropertyInfo)
+                        {
+                            var memberInfoPropertyType = ((PropertyInfo)memberInfo).PropertyType;
+                            var memberInfoPropertyTypeString = ToCSharpTypeString( memberInfoPropertyType);
+                        
+                            typeOfResetVariable = TypeManager.GetCommonTypeName(memberInfoPropertyTypeString);
+                        }
+                        else
+                        {
+                            typeOfResetVariable = TypeManager.GetCommonTypeName(((FieldInfo)memberInfo).FieldType.ToString());
+
+                        }
 
                     }
 
+                }
+
+                if(!string.IsNullOrEmpty(typeOfResetVariable))
+                {
                     // 1/2/2011
                     // The following
                     // used to be protected
@@ -1486,7 +1503,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // these variables static and we'll see
                     // if this causes problems.
                     codeBlock.Line(StringHelper.SpaceStrings("static", typeOfResetVariable, namedObjectSave.InstanceName) +
-                                   variableToReset.Replace(".", "") + "Reset;");
+                                    variableToReset.Replace(".", "") + "Reset;");
                 }
             }
         }
