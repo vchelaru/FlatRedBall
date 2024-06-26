@@ -89,7 +89,6 @@ namespace FlatRedBall.Input
                 mKeysTyped[i] = false;
                 mLastTypedFromPush[i] = false;
 
-//                textCodes[i] = (char)0;
             }
         }
 
