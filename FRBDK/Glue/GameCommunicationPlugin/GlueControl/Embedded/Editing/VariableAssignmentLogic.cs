@@ -384,6 +384,18 @@ namespace GlueControl.Editing
 
             #endregion
 
+            #region Sprite.AnimationChains
+
+            if (!didAttemptToAssign && variableName == nameof(FlatRedBall.Sprite.AnimationChains) && targetInstance is FlatRedBall.Sprite sprite && variableValue == null)
+            {
+                // null is not allowed on Sprites, so we special case this and set it to an empty AnimationChainList
+                sprite.AnimationChains = new FlatRedBall.Graphics.Animation.AnimationChainList();
+                didAttemptToAssign = true;
+                response.WasVariableAssigned = true;
+            }
+
+            #endregion
+
             #region NOS Properties 
 
             if (!didAttemptToAssign)

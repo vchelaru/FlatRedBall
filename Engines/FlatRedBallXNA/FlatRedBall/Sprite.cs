@@ -856,7 +856,7 @@ namespace FlatRedBall
             }
             get
             {
-                if (mCurrentChainIndex != -1 && mAnimationChains.Count > 0 && mCurrentChainIndex < mAnimationChains.Count)
+                if (mCurrentChainIndex != -1 && mAnimationChains != null && mAnimationChains.Count > 0 && mCurrentChainIndex < mAnimationChains.Count)
                 {
                     return mAnimationChains[mCurrentChainIndex];
                 }
@@ -916,11 +916,19 @@ namespace FlatRedBall
             set
             {
 #if DEBUG
-                if (mAnimationChains == null)
+                if (mAnimationChains == null && !string.IsNullOrEmpty(value))
                 {
-                    throw new NullReferenceException("AnimationChains is null - this must be assigned first before setting the CurrentChainName?");
+                    throw new NullReferenceException("AnimationChains is null - this must be assigned first before setting the CurrentChainName. The reason is because " +
+                        "the Sprite doesn't store the CurrentChainName, only the CurrentChainIndex. Setting the CurrentChainName is a shortcut.");
                 }
 #endif
+                ///////////////////Early Out/////////////////////
+                if(string.IsNullOrEmpty(value))
+                {
+                    mCurrentChainIndex = -1;
+                    return;
+                }
+                /////////////////End Early Out//////////////////
 
                 if (mCurrentChainIndex == -1 ||
                     mCurrentChainIndex >= mAnimationChains.Count ||
