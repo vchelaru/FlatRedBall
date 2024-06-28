@@ -114,12 +114,18 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 }
                 else
                 {
+                    var dialogCommands = GlueCommands.Self.DialogCommands;
+                    dialogCommands.ShowSpinner("Waiting for tasks to complete...");
                     await TaskManager.Self.WaitForAllTasksFinished();
+                    dialogCommands.ShowSpinner("Closing Project...");
 
                     GlueCommands.Self.CloseGlueProject();
+                    dialogCommands.ShowSpinner("Performing Rename...");
 
                     string? newNamespace = null;
                     Npc.ProjectCreationHelper.RenameProject(newProjectName, oldProjectName, newNamespace, rootDirectory.FullPath);
+
+                    dialogCommands.HideSpinner();
 
                     GlueCommands.Self.DialogCommands.ShowMessageBox("The project has been renamed. You can now re-open the project.");
                 }

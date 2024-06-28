@@ -23,6 +23,8 @@ using FlatRedBall.Glue.IO;
 using System.Threading.Tasks;
 using L = Localization;
 using ShimSkiaSharp;
+using System.Threading;
+using System.Windows.Controls;
 
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
@@ -1039,6 +1041,51 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             MainPanelControl.Self.Spinner.Visibility = System.Windows.Visibility.Collapsed;
 
         }
+
+        #endregion
+
+        #region Toast
+
+        CancellationTokenSource lastToastCancellation = null;
+        public async void ShowToast(string text, TimeSpan? timeToShowToast = null)
+        {
+            var panel = MainPanelControl.Self;
+
+            panel.ToastLabel.Content = text;
+            panel.Toast.Visibility = System.Windows.Visibility.Visible;
+
+            if(lastToastCancellation != null)
+            {
+                lastToastCancellation.Cancel();
+            }
+
+            lastToastCancellation = new CancellationTokenSource();
+
+            var timeToWait = timeToShowToast ?? TimeSpan.FromSeconds(5);
+
+            var wasCancelled = false;
+            try
+            {
+                await Task.Delay(timeToWait, lastToastCancellation.Token);
+            }
+            catch(OperationCanceledException)
+            {
+                wasCancelled = true;
+            }
+
+            if(!wasCancelled)
+            {
+                // if cancelled, the next caller will hide it...
+                HideToast();
+            }
+        }
+
+        public void HideToast()
+        {
+            var panel = MainPanelControl.Self;
+            panel.Toast.Visibility = System.Windows.Visibility.Collapsed;
+        }
+
 
         #endregion
 

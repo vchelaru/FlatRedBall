@@ -67,6 +67,10 @@
                 <Label x:Name="SpinnerLabel" Content="Loading..." HorizontalAlignment="Center" FontSize="24" Foreground="White"></Label>
             </StackPanel>
         </Grid>
-        
+
+        <Border Grid.RowSpan="6"  Visibility="Collapsed" IsHitTestVisible="False" x:Name="Toast" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" MinHeight="50" MinWidth="120" BorderBrush="Black" BorderThickness="2" Background="White" CornerRadius="8" Margin="10">
+            <Label x:Name="ToastLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Toast..."></Label>
+        </Border>
+
     </Grid>
 </UserControl>

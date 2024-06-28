@@ -86,6 +86,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
+        #region Toast
+
+        /// <summary>
+        /// Shows toast for the argument amount of time. If null, the default time is used.
+        /// Calling this multiple times changes the text and resets the timer.
+        /// </summary>
+        /// <param name="text">The text to display</param>
+        /// <param name="timeToShowToast">The amount of time. If null, the default time is used.</param>
+        void ShowToast(string text, TimeSpan? timeToShowToast = null);
+
+        void HideToast();
+
+        #endregion
+
         void SetFormOwner(System.Windows.Forms.Form form);
         void FocusOnTreeView();
         void MoveToCursor(System.Windows.Window window);

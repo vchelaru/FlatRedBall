@@ -138,8 +138,11 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             control.DataContext = ViewModel;
             control.LinkToSourceClicked += async () =>
             {
+                GlueCommands.Self.DialogCommands.ShowToast("Adding Source...", TimeSpan.FromSeconds(999));
                 await AddSourceManager.HandleLinkToSourceClicked(ViewModel);
                 Tab.Hide();
+                GlueCommands.Self.DialogCommands.HideToast();
+
             };
             Tab = CreateTab(control, Localization.Texts.AddFrbSource);
         }
