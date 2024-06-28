@@ -194,7 +194,7 @@ namespace FlatRedBall.Debugging
                 ? @"hh\:mm\:ss"
                 : @"mm\:ss";
 
-#if MONOGAME && !UWP && !__IOS__
+#if MONOGAME && !UWP && !__IOS__ && !KNI
             var currentTime = song.Position.ToString(format);
 #else
             var currentTime = song == AudioManager.CurrentSong ?  Microsoft.Xna.Framework.Media.MediaPlayer.PlayPosition.ToString(format) : new TimeSpan(0).ToString(format);

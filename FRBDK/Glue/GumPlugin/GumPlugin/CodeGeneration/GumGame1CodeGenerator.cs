@@ -25,7 +25,12 @@ namespace GumPluginCore.CodeGeneration
             var fileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
             if (fileVersion >= (int)GluxVersions.HasFrameworkElementManager)
             {
-                codeBlock.Line("FlatRedBall.FlatRedBallServices.AddManager(FlatRedBall.Forms.Managers.FrameworkElementManager.Self);");
+                // Only if we have gum:
+                var gumxFile = GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => item.Name.EndsWith(".gumx"));
+                if (gumxFile != null)
+                {
+                    codeBlock.Line("FlatRedBall.FlatRedBallServices.AddManager(FlatRedBall.Forms.Managers.FrameworkElementManager.Self);");
+                }
             }
 
             if (hasSkia && fileVersion >= (int)GluxVersions.HasGame1GenerateEarly)
