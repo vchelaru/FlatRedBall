@@ -29,3 +29,6 @@ FRBDK/AnimationEditor/PreviewProject/bin/Debug/AESettings.json
 *.settings.user.json
 Tests/GlueTestProjectDesktopGl/GlueTestProjectDesktopGl/GlueSettings/TreeViewPlugin.settings.user.json
 /Samples/BeefballCodeOnly/BeefballCodeOnly/.config
+
+!/Samples/BeefballKni/**/*.Generated.Event.cs
+!/Samples/BeefballKni/**/*.Generated.cs
