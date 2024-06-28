@@ -72,11 +72,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void FocusTab(string dialogTitle);
 
+        #region Variable
 
         void ShowAddNewVariableDialog(Controls.CustomVariableType variableType = Controls.CustomVariableType.Exposed, 
             string tunnelingObject = "",
             string tunneledVariableName = "", GlueElement container = null);
+        #endregion
 
+        #region Spinners
+
+        void ShowSpinner(string text);
+        void HideSpinner();
+
+        #endregion
 
         void SetFormOwner(System.Windows.Forms.Form form);
         void FocusOnTreeView();

@@ -1026,6 +1026,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
+        #region Spinner
+
+        public void ShowSpinner(string text)
+        {
+            MainPanelControl.Self.SpinnerLabel.Content = text;
+            MainPanelControl.Self.Spinner.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        public void HideSpinner()
+        {
+            MainPanelControl.Self.Spinner.Visibility = System.Windows.Visibility.Collapsed;
+
+        }
+
+        #endregion
+
         #region State Categories
 
         public async void ShowAddNewCategoryDialog()
@@ -1215,6 +1231,5 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (MainGlueWindow.Self != null)
                 form.Owner = MainGlueWindow.Self;
         }
-
     }
 }

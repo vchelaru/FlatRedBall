@@ -38,7 +38,6 @@ namespace GlueFormsCore.Controls
         public MainPanelControl()
         {
             Self = this;
-
             InitializeComponent();
 
             InitializeThemes();

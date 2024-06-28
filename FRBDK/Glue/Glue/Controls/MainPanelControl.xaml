@@ -60,6 +60,13 @@
         <GridSplitter Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Row="4"></GridSplitter>
 
         <TabControl Grid.Row="5" x:Name="BottomTabControl" Padding="0" Margin="4,0,4,2"></TabControl>
+
+        <Grid Background="#b0000000" Grid.RowSpan="6" x:Name="Spinner" Visibility="Collapsed">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <controls:ActivitySpinner></controls:ActivitySpinner>
+                <Label x:Name="SpinnerLabel" Content="Loading..." HorizontalAlignment="Center" FontSize="24" Foreground="White"></Label>
+            </StackPanel>
+        </Grid>
         
     </Grid>
 </UserControl>
