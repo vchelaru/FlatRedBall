@@ -924,7 +924,7 @@ namespace Gum.Wireframe
         {
             // early out - this isn't technically necessary as 
             // the subscription code below can be called multiple
-            // times, but it does make debgging easier.
+            // times, but it does make debugging easier.
             if(oldBindingContext == EffectiveBindingContext)
             {
                 return;
@@ -973,7 +973,7 @@ namespace Gum.Wireframe
             }
             else
             {
-                // Do the default functionalty first...
+                // Do the default functionality first...
                 UpdateChildrenInheritedBindingContext(this.ContainedElements, EffectiveBindingContext);
                 // ... then overwrite it
                 foreach (var gue in this.ContainedElements)
