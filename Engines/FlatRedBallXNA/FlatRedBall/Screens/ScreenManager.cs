@@ -159,6 +159,12 @@ namespace FlatRedBall.Screens
         /// </remarks>
         public static event Action<Screen> AfterScreenDestroyed;
 
+        private static Type startScreen;
+        /// <summary>
+        /// Gets the screen type used when ScreenManager.Start was called.
+        /// </summary>
+        public static Type StartScreen => startScreen;
+
         #region Methods
 
         static ScreenManager()
@@ -357,7 +363,7 @@ namespace FlatRedBall.Screens
         /// <param name="screenToStartWithType">Qualified name of the class to load.</param>
         public static void Start(Type screenToStartWithType)
         {
-
+            startScreen = screenToStartWithType;
 #if WINDOWS_8 || UWP
             MainAssembly =
                 screenToStartWithType.GetTypeInfo().Assembly;

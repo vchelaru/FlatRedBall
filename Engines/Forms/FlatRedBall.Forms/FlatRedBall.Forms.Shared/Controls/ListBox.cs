@@ -305,6 +305,10 @@ namespace FlatRedBall.Forms.Controls
             {
                 Visual.SetProperty(category, "Enabled");
             }
+
+            // The default state may update the visibility of the scroll bar. Whenever setting the state
+            // we should forcefully apply the list box visibility:
+            base.UpdateVerticalScrollBarValues();
         }
 
         #region IInputReceiver Methods
