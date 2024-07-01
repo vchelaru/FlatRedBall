@@ -168,8 +168,13 @@ namespace FlatRedBall.Forms.Controls
         public event FocusUpdateDelegate FocusUpdate;
 
         /// <summary>
-        /// Event raised when the user presses a button at the top-level (if the list box has focus, but the individual items do not)
+        /// Event raised when the user presses a button, whether at the top level or internally on
+        /// an item.
         /// </summary>
+        /// <remarks>
+        /// Until July 2024 this was only firing at the top level. July 2024 version also raises
+        /// this event when a button is pushed on an item.
+        /// </remarks>
         public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
         public event Action<int> GenericGamepadButtonPushed;
 
@@ -367,6 +372,26 @@ namespace FlatRedBall.Forms.Controls
                     gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.B);
 
                 DoListItemFocusUpdate(direction, pressedButton);
+
+                void RaiseIfPushedAndEnabled(FlatRedBall.Input.Xbox360GamePad.Button button)
+                {
+                    if (IsEnabled && gamepad.ButtonPushed(button))
+                    {
+                        ControllerButtonPushed?.Invoke(button);
+                    }
+                }
+
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.A);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.B);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.X);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Y);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Start);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Back);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.DPadLeft);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.DPadRight);
+
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.LeftStickAsDPadLeft);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.LeftStickAsDPadRight);
             }
 
             var genericGamePads = GuiManager.GenericGamePadsForUiControl;
