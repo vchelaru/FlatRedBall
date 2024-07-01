@@ -92,6 +92,7 @@ namespace FlatRedBall.Gui
         /// if this is the IInputReceiver referenced by the InputManager.  This does
         /// not have to be called automatically.
         /// </summary>
+        [Obsolete("Use OnFocusUpdate intstead")]
         void ReceiveInput();
 
         void HandleKeyDown(Keys key, bool isShiftDown, bool isAltDown, bool isCtrlDown);
