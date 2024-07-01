@@ -1140,15 +1140,22 @@ namespace Gum.Wireframe
 
                         var convertedValue = ConvertValue(vmValue, uiProperty.PropertyType, binding.ToStringFormat);
 
-#if DEBUG
-                        if(convertedValue != null && uiProperty.PropertyType != convertedValue.GetType())
+                        try
                         {
-                            throw new InvalidCastException(
-                                $"Error applying binding: The bound property {convertedValue.GetType()} {vmPropertyName} with value {convertedValue} " +
-                                $"could not be converted to {uiProperty.PropertyType} which is the type of {binding.UiProperty}");
+                            uiProperty.SetValue(this, convertedValue, null);
                         }
+                        catch
+                        {
+#if DEBUG
+                            if(convertedValue != null && uiProperty.PropertyType != convertedValue.GetType())
+                            {
+                                throw new InvalidCastException(
+                                    $"Error applying binding: The bound property {convertedValue.GetType()} {vmPropertyName} with value {convertedValue} " +
+                                    $"could not be converted to {uiProperty.PropertyType} which is the type of {binding.UiProperty}");
+                            }
 #endif
-                        uiProperty.SetValue(this, convertedValue, null);
+                            throw;
+                        }
                     }
                     updated = true;
                 }
