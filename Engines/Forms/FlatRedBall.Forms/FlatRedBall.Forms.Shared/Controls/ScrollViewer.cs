@@ -127,6 +127,11 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+
+        #endregion
+
+        #region Scroll Methods
+
         private void HandleMouseWheelScroll(IWindow window, FlatRedBall.Gui.RoutedEventArgs args)
         {
             var valueBefore = verticalScrollBar.Value;
@@ -136,11 +141,6 @@ namespace FlatRedBall.Forms.Controls
 
             args.Handled = verticalScrollBar.Value != valueBefore;
         }
-
-
-        #endregion
-
-        #region Scroll Methods
 
         public void ScrollToBottom()
         {

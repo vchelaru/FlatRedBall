@@ -24,7 +24,16 @@ namespace FlatRedBall.Forms.Controls.Primitives
         /// </summary>
         protected float cursorGrabOffsetRelativeToThumb = 0;
 
+        /// <summary>
+        /// The amount to change Value when the user clicks on the track.
+        /// </summary>
         public double LargeChange { get; set; }
+
+        /// <summary>
+        /// The amount of to change Value when the user presses the up or down buttons on a scrollbar.
+        /// Also currently the amount of distance to move per mouse wheel tick - note that this may change
+        /// in future versions of FlatRedBall.Forms.
+        /// </summary>
         public double SmallChange { get; set; }
 
         double minimum = 0;
