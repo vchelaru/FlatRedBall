@@ -165,7 +165,7 @@ namespace FlatRedBall.Input
         /// <returns>The angle, or null if X and Y are 0</returns>
         public static float? GetAngle(this I2DInput instance)
         {
-            if(instance.X == 0 && instance.Y == 0
+            if( (instance.X == 0 && instance.Y == 0)
                 || float.IsInfinity(instance.X)
                 || float.IsNaN(instance.X)
                 || float.IsInfinity(instance.Y)
