@@ -60,6 +60,9 @@ namespace FlatRedBall.Input
         /// value must come under the off value.  If there was only
         /// one value then the user could hold the stick near the threshold
         /// and get rapid on/off values due to the inaccuracy of the analog stick. 
+        /// Therefore the DPadOnValue must be larger than DPadOffValue. The spread between
+        /// these values should be large enough to prevent rapid on/off values, but small enough
+        /// so the user can still release the analog stick and have it feel like a DPad.
         /// </summary>
         internal const float DPadOnValue = .550f;
         internal const float DPadOffValue = .450f;
@@ -281,6 +284,12 @@ namespace FlatRedBall.Input
             }
         }
 
+        /// <summary>
+        /// Returns whether the user has pressed a particular direction, returning true only once per push similar to a d-pad. This can be used for UI navigation.
+        /// </summary>
+        /// <seealso cref="AsDPadDown"/>
+        /// <param name="direction">The direction to test</param>
+        /// <returns>Whether the direction was pressed.</returns>
         public bool AsDPadPushed(Xbox360GamePad.DPadDirection direction)
         {
             // If the last was not down and this one is, then report a push.
