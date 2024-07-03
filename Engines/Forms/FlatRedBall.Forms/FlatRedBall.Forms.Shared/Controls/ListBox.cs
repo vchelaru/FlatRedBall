@@ -12,6 +12,7 @@ using FlatRedBall.Gui;
 using Microsoft.Xna.Framework.Input;
 using FlatRedBall.Input;
 using FlatRedBall.Math.Geometry;
+using System.Data;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -54,14 +55,39 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        bool canListItemsLoseFocus = true;
         /// <summary>
         /// Whether pressing the B button (back/cancel) should result in individual items losing focus and
         /// returning focus to the top level. This should be false if the list box is the only object in the 
         /// screen which can receive focus.
         /// </summary>
-        public bool CanListItemsLoseFocus { get; set; } = true;
+        public bool CanListItemsLoseFocus 
+        {
+            get => canListItemsLoseFocus;
+            set
+            {
+                canListItemsLoseFocus = value;
+                if(!canListItemsLoseFocus && IsFocused)
+                {
+                    DoListItemsHaveFocus = true;
+                }
+            }
+        } 
 
         int selectedIndex = -1;
+
+        public override bool IsFocused 
+        { 
+            get => base.IsFocused;
+            set
+            {
+                base.IsFocused = value;
+                if(IsFocused && canListItemsLoseFocus == false)
+                {
+                    DoListItemsHaveFocus = true;
+                }
+            }
+        }
 
         public Type ListBoxItemGumType
         {
