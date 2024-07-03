@@ -54,6 +54,13 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        /// <summary>
+        /// Whether pressing the B button (back/cancel) should result in individual items losing focus and
+        /// returning focus to the top level. This should be false if the list box is the only object in the 
+        /// screen which can receive focus.
+        /// </summary>
+        public bool CanListItemsLoseFocus { get; set; } = true;
+
         int selectedIndex = -1;
 
         public Type ListBoxItemGumType
@@ -564,7 +571,10 @@ namespace FlatRedBall.Forms.Controls
 
             if (pressedButton)
             {
-                DoListItemsHaveFocus = false;
+                if(CanListItemsLoseFocus)
+                {
+                    DoListItemsHaveFocus = false;
+                }
             }
         }
 
@@ -634,6 +644,9 @@ namespace FlatRedBall.Forms.Controls
         {
         }
 
+        /// <summary>
+        /// Removes focus from the ListBox, both at the top level and at the individual item level, even if CanListItemsLoseFocus is set to false.
+        /// </summary>
         public void LoseFocus()
         {
             IsFocused = false;
