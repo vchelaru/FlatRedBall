@@ -100,16 +100,33 @@ public partial class MainGlueWindow : Form
                 return;
             }
 
-            startInfo = new ProcessStartInfo("&\"dotnet.exe\"", "--list-sdks")
+            // This can fail for some reason, so let's try/catch it:
+            string commandToRun = "&\"dotnet.exe\"";
+            string arguments = "--list-sdks";
+            try
             {
-                RedirectStandardOutput = true,
-                WorkingDirectory = @"C:\Program Files\dotnet"
-            };
 
-            process = Process.Start(startInfo)!;
-            process.WaitForExit(1000);
+                startInfo = new ProcessStartInfo(commandToRun, arguments)
+                {
+                    RedirectStandardOutput = true,
+                    WorkingDirectory = @"C:\Program Files\dotnet"
+                };
 
-            output = process.StandardOutput.ReadToEnd();
+                process = Process.Start(startInfo)!;
+                process.WaitForExit(1000);
+
+                output = process.StandardOutput.ReadToEnd();
+            }
+            catch(Exception e)
+            {
+                var message = $"Error running command {commandToRun} {arguments}";
+
+                message += e.ToString();
+
+                GlueCommands.Self.PrintOutput(message);
+
+            }
+
         }
 
         if (String.IsNullOrEmpty(output))
