@@ -54,8 +54,7 @@ namespace OfficialPlugins.SpritePlugin.Views
         {
             AddNewFileViewModel viewModel = new ();
 
-            var achxAti = AvailableAssetTypes.Self.AllAssetTypes
-                .FirstOrDefault(item => item.Extension == "achx");
+            var achxAti = AvailableAssetTypes.CommonAtis.AnimationChainList;
             viewModel.ForcedType = achxAti;
             viewModel.SelectedAssetTypeInfo = achxAti;
 

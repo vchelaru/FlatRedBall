@@ -1,6 +1,8 @@
-﻿using FlatRedBall.Glue.Elements;
+﻿using FlatRedBall.Glue.CodeGeneration;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
@@ -35,8 +37,27 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             {
                 return null;
             }
+        }
 
+        internal AssetTypeInfo GetGumAnimationChainListAti()
+        {
+            var achxAti = AvailableAssetTypes.Self.GetAssetTypeFromExtension("achx");
 
+            var clone = FileManager.CloneObject(achxAti);
+
+            clone.FriendlyName = "Gum Animation Chain List (.achx)";
+            clone.QualifiedRuntimeTypeName = new PlatformSpecificType()
+            {
+                QualifiedType = "Gum.Graphics.Animation.AnimationChainList"
+            };
+            clone.CustomLoadFunc = (element, nos, referencedFileSave, contentManager) =>
+            {
+                var fileName = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(referencedFileSave, referencedFileSave.GetAssetTypeInfo());
+
+                return $"{referencedFileSave.GetInstanceName()} = global::Gum.Content.AnimationChain.AnimationChainListSave.FromFile(\"{fileName}\").ToAnimationChainList(\"{contentManager}\");";
+            };
+
+            return clone;
         }
     }
 }

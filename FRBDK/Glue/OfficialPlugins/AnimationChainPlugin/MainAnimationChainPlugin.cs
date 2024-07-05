@@ -142,6 +142,9 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             {
                 base.AddAssetTypeInfo(ati);
             }
+
+            // Add a Gum animation too:
+            base.AddAssetTypeInfo(AssetTypeInfoManager.Self.GetGumAnimationChainListAti());
         }
 
         private void HandleUnloadedGlux()

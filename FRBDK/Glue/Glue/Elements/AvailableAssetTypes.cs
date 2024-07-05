@@ -44,6 +44,11 @@ namespace FlatRedBall.Glue.Elements
         public AssetTypeInfo RenderTarget { get; set; }
 
         public AssetTypeInfo Screen { get; set; }
+
+        /// <summary>
+        /// AssetTypeInfo for the FlatRedBall AnimationChainList type
+        /// </summary>
+        public AssetTypeInfo AnimationChainList { get; set; }
     }
 
     public class AvailableAssetTypes
@@ -190,8 +195,8 @@ namespace FlatRedBall.Glue.Elements
 
             CommonAtis = new CommonAtis();
 
-            AssetTypeInfo GetAti(string name) =>
-                AllAssetTypes.First(item => item.FriendlyName == name);
+            AssetTypeInfo GetAti(string friendlyName) =>
+                AllAssetTypes.First(item => item.FriendlyName == friendlyName);
 
             CommonAtis.AxisAlignedRectangle = GetAti(nameof(AxisAlignedRectangle));
             CommonAtis.CapsulePolygon = GetAti(nameof(CapsulePolygon));
@@ -206,6 +211,10 @@ namespace FlatRedBall.Glue.Elements
             CommonAtis.ShapeCollection = GetAti("Shape Collection (.shcx)");
 
             CommonAtis.PositionedObjectList = GetAti("PositionedObjectList (Generic)");
+
+            
+            CommonAtis.AnimationChainList = AllAssetTypes
+                .First(item => item.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Graphics.Animation.AnimationChainList");
 
             CommonAtis.Screen = new AssetTypeInfo()
             {
