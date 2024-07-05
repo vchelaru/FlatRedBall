@@ -54,7 +54,9 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             {
                 var fileName = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(referencedFileSave, referencedFileSave.GetAssetTypeInfo());
 
-                return $"{referencedFileSave.GetInstanceName()} = global::Gum.Content.AnimationChain.AnimationChainListSave.FromFile(\"{fileName}\").ToAnimationChainList(\"{contentManager}\");";
+                // use the exe location because this internally can get confused by not using the relative directory properly. By making this use 
+                // the exe location, all ambiguity is removed
+                return $"{referencedFileSave.GetInstanceName()} = global::Gum.Content.AnimationChain.AnimationChainListSave.FromFile(global::ToolsUtilities.FileManager.ExeLocation + \"{fileName}\").ToAnimationChainList(\"{contentManager}\");";
             };
 
             return clone;

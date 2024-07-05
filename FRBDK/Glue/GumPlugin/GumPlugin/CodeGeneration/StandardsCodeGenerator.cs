@@ -39,53 +39,13 @@ namespace GumPlugin.CodeGeneration
         {
             TextCodeGenerator.Self.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
 
+            SpriteCodeGenerator.Self.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
             
             mStandardSetterReplacements.Add("SourceFile", codeBlock =>
             {
                 codeBlock.Line("this.Texture = value;");
             });
 
-            mStandardSetterReplacements.Add("Texture", (codeBlock) =>
-            {
-                //codeBlock.Line("ContainedSprite.Texture = value;");
-                //codeBlock.Line("UpdateLayout();");
-
-                // This allows the object to prevent unnecessary layouts when texture changes:
-
-
-                codeBlock.Line("var shouldUpdateLayout = false;");
-
-                codeBlock.Line("int widthBefore = -1;");
-                codeBlock.Line("int heightBefore = -1;");
-
-                codeBlock.Line("var isUsingPercentageWidthOrHeight = WidthUnits == Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile || HeightUnits == Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;");
-                codeBlock.Line("if (isUsingPercentageWidthOrHeight)");
-                codeBlock.Line("{");
-                codeBlock.Line("    if (ContainedSprite.Texture != null)");
-                codeBlock.Line("    {");
-                codeBlock.Line("        widthBefore = ContainedSprite.Texture.Width;");
-                codeBlock.Line("        heightBefore = ContainedSprite.Texture.Height;");
-                codeBlock.Line("    }");
-                codeBlock.Line("}");
-                codeBlock.Line("ContainedSprite.Texture = value;");
-
-                codeBlock.Line("if (isUsingPercentageWidthOrHeight)");
-                codeBlock.Line("{");
-                codeBlock.Line("    int widthAfter = -1;");
-                codeBlock.Line("    int heightAfter = -1;");
-                codeBlock.Line("    if (ContainedSprite.Texture != null)");
-                codeBlock.Line("    {");
-                codeBlock.Line("        widthAfter = ContainedSprite.Texture.Width;");
-                codeBlock.Line("        heightAfter = ContainedSprite.Texture.Height;");
-                codeBlock.Line("    }");
-                codeBlock.Line("    shouldUpdateLayout = widthBefore != widthAfter || heightBefore != heightAfter;");
-                codeBlock.Line("}");
-
-                codeBlock.Line("if (shouldUpdateLayout)");
-                codeBlock.Line("{");
-                codeBlock.Line("    UpdateLayout();");
-                codeBlock.Line("}");
-            });
 
             // This says what the property name is and what the contained variable name is.
             // For example:
@@ -379,13 +339,8 @@ namespace GumPlugin.CodeGeneration
             }
 
             TextCodeGenerator.Self.GenerateVariableProperties(standardElementSave, currentBlock, containedGraphicalObjectName);
-            if(standardElementSave.Name == "Sprite")
-            {
-                GenerateVariable(currentBlock, containedGraphicalObjectName,
-                    new VariableSave { Name = "Texture", Type = "Microsoft.Xna.Framework.Graphics.Texture2D" },
-                    standardElementSave);
 
-            }
+            // Sprites handle this in GenerateAdditionalMethods
         }
 
         private string CreateContainedObjectMembers(ICodeBlock currentBlock, ElementSave standardElementSave)
