@@ -32,6 +32,8 @@ namespace FlatRedBall.Forms.Controls
         GraphicalUiElement text;
         protected RenderingLibrary.Graphics.Text coreText;
 
+        internal bool IsHighlightSuppressed { get; set; } = false;
+
         #endregion
 
         #region Events
@@ -53,6 +55,7 @@ namespace FlatRedBall.Forms.Controls
             Visual.Click += this.HandleClick;
             Visual.RollOn += this.HandleRollOn;
             Visual.RollOff += this.HandleRollOff;
+            Visual.RollOver += this.HandleRollOver;
 
             // optional
             text = Visual.GetGraphicalUiElementByName("TextInstance");
@@ -65,17 +68,60 @@ namespace FlatRedBall.Forms.Controls
             base.ReactToVisualChanged();
         }
 
+
         #endregion
 
         #region Event Handlers
 
+        bool isHighlighted;
+        public bool IsHighlighted
+        {
+            get => isHighlighted;
+            set
+            {
+                if(isHighlighted != value)
+                {
+                    isHighlighted = value;
+                    UpdateState();
+                }
+            }
+        }
+
         private void HandleRollOn(IWindow window)
         {
+            var cursor = GuiManager.Cursor;
+
+            if (cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0)
+            {
+                UpdateIsHighlightedFromCursor(cursor);
+            }
+
             UpdateState();
+        }
+
+
+        private void HandleRollOver(IWindow window)
+        {
+            var cursor = GuiManager.Cursor;
+
+            if (cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0)
+            {
+                UpdateIsHighlightedFromCursor(cursor);
+            }
+
+            UpdateState();
+        }
+
+        private void UpdateIsHighlightedFromCursor(Cursor cursor)
+        {
+            IsHighlighted = cursor.LastInputDevice != InputDevice.TouchScreen &&
+                GetIfIsOnThisOrChildVisual(cursor) && IsEnabled;
         }
 
         private void HandleRollOff(IWindow window)
         {
+            IsHighlighted = false;
+
             UpdateState();
         }
 
@@ -131,9 +177,17 @@ namespace FlatRedBall.Forms.Controls
             {
                 Visual.SetProperty(category, "Selected");
             }
-            else if (cursor.LastInputDevice != InputDevice.TouchScreen && GetIfIsOnThisOrChildVisual(cursor) && IsEnabled)
+            else if (IsHighlighted)
             {
-                Visual.SetProperty(category, "Highlighted");
+                // If the cursor has moved, highlight. This prevents highlighting from
+                // happening when the cursor is not moving, and the user is moving the focus
+                // with the gamepad. 
+                // Vic says - I'm not sure if this is the solution that I like, but let's start with it...
+                if(cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0)
+                {
+                    Visual.SetProperty(category, "Highlighted");
+                }
+                // otherwise - do nothing?
             }
             else
             {

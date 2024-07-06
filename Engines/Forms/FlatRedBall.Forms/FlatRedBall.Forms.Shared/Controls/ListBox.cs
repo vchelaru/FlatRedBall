@@ -507,8 +507,15 @@ namespace FlatRedBall.Forms.Controls
         {
             var wraps = InnerPanel.WrapsChildren;
             var handledByWrapping = false;
+
+            if(direction != null)
+            {
+                LoseHighlight();
+            }
+
             if(wraps && direction != null)
             {
+
                 if(SelectedIndex > -1 && SelectedIndex < ListBoxItems.Count)
                 {
                     var currentSelection = this.ListBoxItemsInternal[SelectedIndex].Visual;
@@ -601,6 +608,15 @@ namespace FlatRedBall.Forms.Controls
                 {
                     DoListItemsHaveFocus = false;
                 }
+            }
+        }
+
+        private void LoseHighlight()
+        {
+            for(int i = 0; i < this.ListBoxItems.Count; i++)
+            {
+                var item = this.ListBoxItems[i];
+                item.IsHighlighted = false;
             }
         }
 
