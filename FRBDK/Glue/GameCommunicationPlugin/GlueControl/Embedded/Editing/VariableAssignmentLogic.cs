@@ -1155,6 +1155,13 @@ namespace GlueControl.Editing
                 var entityTypeClass = typeof(VariableAssignmentLogic).Assembly.GetTypes().FirstOrDefault(item => item.FullName.EndsWith("." + type));
                 convertedValue = entityTypeClass?.GetMethod("FromName")?.Invoke(null, new object[] { entityName });
             }
+            else if (GlueControl.Managers.ObjectFinder.Self.GetScreenSave(variableValue) != null)
+            {
+                var screen = GlueControl.Managers.ObjectFinder.Self.GetScreenSave(variableValue);
+                var screenName = FlatRedBall.IO.FileManager.RemovePath(screen.Name);
+                var screenTypeClass = typeof(VariableAssignmentLogic).Assembly.GetTypes().FirstOrDefault(item => item.FullName.EndsWith("." + type));
+                convertedValue = screenTypeClass?.GetMethod("FromName")?.Invoke(null, new object[] { screenName });
+            }
             else if (type == typeof(List<Microsoft.Xna.Framework.Vector2>).ToString() || type == "List<Vector2>")
             {
                 convertedValue = JsonConvert.DeserializeObject<List<Microsoft.Xna.Framework.Vector2>>(variableValue);

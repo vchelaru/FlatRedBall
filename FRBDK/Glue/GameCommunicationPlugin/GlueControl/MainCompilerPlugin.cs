@@ -649,11 +649,19 @@ namespace GameCommunicationPlugin.GlueControl
 
                 if(waitForResponse)
                 {
-                    var response = await GameJsonCommunicationPlugin.Common.GameConnectionManager.Self.SendItemWithResponse(whatToSend);
-
                     var toReturn = new global::ToolsUtilities.GeneralResponse<string>();
-                    toReturn.SetFrom(response);
-                    toReturn.Data = response?.Data;    
+                    try
+                    {
+                        var response = await GameJsonCommunicationPlugin.Common.GameConnectionManager.Self.SendItemWithResponse(whatToSend);
+
+                        toReturn.SetFrom(response);
+                        toReturn.Data = response?.Data;    
+                    }
+                    catch(Exception e)
+                    {
+                        toReturn.Succeeded = false;
+                        toReturn.Message = $"Failed to send packet: {e}";
+                    }
 
                     return toReturn;
                 }

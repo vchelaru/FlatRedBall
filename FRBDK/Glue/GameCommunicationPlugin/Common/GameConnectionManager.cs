@@ -221,7 +221,15 @@ namespace GameJsonCommunicationPlugin.Common
 
                                 if(response != null)
                                 {
-                                    toReturn = JsonConvert.SerializeObject(response);
+                                    try
+                                    {
+                                        toReturn = JsonConvert.SerializeObject(response);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Debug.WriteLine($"Error serializing response: {ex}");
+                                        break;
+                                    }
                                 }
 
                             }

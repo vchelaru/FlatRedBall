@@ -1090,6 +1090,21 @@ namespace FlatRedBall.Glue.Reflection
                         }
                     }
                 }
+
+                foreach (var screen in glueProject.Screens)
+                {
+                    var isBaseScreen = string.IsNullOrEmpty(screen.BaseElement);
+
+                    if (isBaseScreen)
+                    {
+                        var hasDerived = glueProject.Screens.Any(item => item.BaseElement == screen.Name);
+                        if (hasDerived)
+                        {
+                            var typeName = screen.Name.Replace("\\", ".") + typeOrVariant;
+                            toReturn.Add(typeName);
+                        }
+                    }
+                }
             }
 
             if (includeStateCategories)

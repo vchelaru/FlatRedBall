@@ -97,7 +97,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             {
                 if(dto != null)
                 {
-                    response = ReceiveDto(dto);
+                    response = await ReceiveDto(dto);
                 }
                 else
                 {
@@ -125,7 +125,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             return response;
         }
 
-        private object ReceiveDto(object dto)
+        private async Task<object> ReceiveDto(object dto)
         {
             var type = dto.GetType();
 
@@ -159,6 +159,22 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             if (method != null)
             {
                 toReturn = method.Invoke(this, new object[] { dto });
+
+                if(toReturn is Task asTask)
+                {
+                    await asTask;
+
+                    Type taskType = asTask.GetType();
+                    bool isGenericTask = taskType.IsGenericType;
+
+                    if(isGenericTask)
+                    {
+                        var resultProperty = taskType.GetProperty("Result");
+                        toReturn = resultProperty.GetValue(asTask);
+                    }
+
+                }
+
             }
 
             return toReturn;

@@ -77,8 +77,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     bool isExposedExistingMember = customVariable.GetIsExposingVariable(saveObject);
                     // Exposed
                     // variables
-                    // are variables
-                    // which automatically
+                    // automatically
                     // exist as part of the
                     // Entity.  For example the
                     // property X is part of the
@@ -898,10 +897,14 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
+        #region Activity
+
         public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
             return codeBlock;
         }
+
+        #endregion
 
         public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
