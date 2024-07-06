@@ -190,14 +190,20 @@ namespace GlueCommunication
                 StartConnecting();
             }
         }
-#endregion
+        #endregion
 
         #region publicMethods
 
-        public void SendItem(Packet item)
+        public async Task<string> SendItem(Packet item)
         {
             if (_isConnected)
-                _=SendItemImmediately(item);
+            {
+                return await SendItemImmediately(item);
+            }
+            else
+            {
+                return String.Empty;
+            }
         }
 
         private async Task<string> SendItemImmediately(Packet item)

@@ -223,7 +223,14 @@ namespace GameJsonCommunicationPlugin.Common
                                 {
                                     try
                                     {
-                                        toReturn = JsonConvert.SerializeObject(response);
+                                        if(response is string)
+                                        {
+                                            toReturn = response as string;
+                                        }
+                                        else
+                                        {
+                                            toReturn = JsonConvert.SerializeObject(response);
+                                        }
                                     }
                                     catch (Exception ex)
                                     {
@@ -236,7 +243,23 @@ namespace GameJsonCommunicationPlugin.Common
                         }
 
                         // todo - need to send the string...
-                        gameToGlueSocket.Send(new byte[] { 0 });
+                        //gameToGlueSocket.Send(new byte[] { 0 });
+                        if(toReturn != null)
+                        {
+                            var sendBytes = Encoding.ASCII.GetBytes(toReturn);
+                            long size = sendBytes.LongLength;
+
+                            //Send size
+                            gameToGlueSocket.Send(BitConverter.GetBytes(size));
+
+                            //Send payload
+                            gameToGlueSocket.Send(sendBytes);
+                        }
+                        else
+                        {
+                            gameToGlueSocket.Send(new byte[] { 0 });
+                        }
+
                     }
                 }
                 catch (Exception ex)
