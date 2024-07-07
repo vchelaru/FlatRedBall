@@ -65,9 +65,9 @@ namespace FlatRedBall.Glue.Elements
 
         List<AssetTypeInfo> mProjectSpecificAssetTypes = new List<AssetTypeInfo>();
 
-        Dictionary<string, AssetTypeInfo> QualifiedAssetTypesDictionary = new Dictionary<string, AssetTypeInfo>();
-        Dictionary<string, AssetTypeInfo> RuntimeTypeAssetTypesDictionary = new Dictionary<string, AssetTypeInfo>();
-        Dictionary<string, AssetTypeInfo> ExtensionAssetTypeDictionary = new Dictionary<string, AssetTypeInfo>();
+        Dictionary<string, List<AssetTypeInfo>> QualifiedAssetTypesDictionary = new Dictionary<string, List<AssetTypeInfo>>();
+        Dictionary<string, List<AssetTypeInfo>> RuntimeTypeAssetTypesDictionary = new Dictionary<string, List<AssetTypeInfo>>();
+        Dictionary<string, List<AssetTypeInfo>> ExtensionAssetTypeDictionary = new Dictionary<string, List<AssetTypeInfo>>();
         #endregion
 
         #region Properties
@@ -281,20 +281,47 @@ namespace FlatRedBall.Glue.Elements
             var qualified = assetTypeInfo.QualifiedRuntimeTypeName.QualifiedType;
 
             // This is going to check presence of a value so that first gets priority. 
-            if(!string.IsNullOrEmpty(qualified) && !QualifiedAssetTypesDictionary.ContainsKey(qualified))
+            if(!string.IsNullOrEmpty(qualified))
             {
-                QualifiedAssetTypesDictionary[qualified] = assetTypeInfo;
+                if (!QualifiedAssetTypesDictionary.ContainsKey(qualified))
+                {
+                    QualifiedAssetTypesDictionary[qualified] = new List<AssetTypeInfo>();
+                }
+
+                // Make sure there's no dupes:
+                if (QualifiedAssetTypesDictionary[qualified].Any(item => item.IsMatchTo(assetTypeInfo)) == false)
+                {
+                    QualifiedAssetTypesDictionary[qualified].Add(assetTypeInfo);
+                }
             }
 
             var runtimeType = assetTypeInfo.RuntimeTypeName;
-            if(!string.IsNullOrEmpty(runtimeType) && !RuntimeTypeAssetTypesDictionary.ContainsKey(runtimeType))
+            if(!string.IsNullOrEmpty(runtimeType))
             {
-                RuntimeTypeAssetTypesDictionary[runtimeType] = assetTypeInfo;
+                if(!RuntimeTypeAssetTypesDictionary.ContainsKey(runtimeType))
+                {
+                    RuntimeTypeAssetTypesDictionary[runtimeType] = new List<AssetTypeInfo>();
+                }
+
+                // Make sure there's no dupes:
+                if (RuntimeTypeAssetTypesDictionary[runtimeType].Any(item => item.IsMatchTo(assetTypeInfo)) == false)
+                {
+                    RuntimeTypeAssetTypesDictionary[runtimeType].Add(assetTypeInfo);
+                }
             }
 
-            if(!string.IsNullOrEmpty(assetTypeInfo.Extension) && !ExtensionAssetTypeDictionary.ContainsKey(assetTypeInfo.Extension))
+            if(!string.IsNullOrEmpty(assetTypeInfo.Extension))
             {
-                ExtensionAssetTypeDictionary[assetTypeInfo.Extension] = assetTypeInfo;
+                if(!ExtensionAssetTypeDictionary.ContainsKey(assetTypeInfo.Extension))
+                {
+                    ExtensionAssetTypeDictionary[assetTypeInfo.Extension] = new List<AssetTypeInfo>();
+                }
+
+                // Make sure there's no dupes:
+                if (ExtensionAssetTypeDictionary[assetTypeInfo.Extension].Any(item => item.IsMatchTo(assetTypeInfo)) == false)
+                {
+                    ExtensionAssetTypeDictionary[assetTypeInfo.Extension].Add(assetTypeInfo);
+                }
             }
         }
 
@@ -358,22 +385,20 @@ namespace FlatRedBall.Glue.Elements
 
             return;
 
-            void RemoveFromDictionary(Dictionary<string, AssetTypeInfo> dictionary)
+            void RemoveFromDictionary(Dictionary<string, List<AssetTypeInfo>> dictionary)
             {
                 List<string> toRemove = new List<string>();
                 foreach (var kvp in dictionary)
                 {
-                    if (kvp.Value == assetTypeInfo)
+                    foreach(var item in kvp.Value)
                     {
-                        toRemove.Add(kvp.Key);
+                        if(item == assetTypeInfo)
+                        {
+                            kvp.Value.Remove(item);
+                            break;
+                        }
                     }
                 }
-
-                foreach (var key in toRemove)
-                {
-                    dictionary.Remove(key);
-                }
-
             }
         }
 
@@ -381,7 +406,7 @@ namespace FlatRedBall.Glue.Elements
 		{
             if(this.ExtensionAssetTypeDictionary.ContainsKey(extension))
             {
-                return this.ExtensionAssetTypeDictionary[extension];
+                return this.ExtensionAssetTypeDictionary[extension].FirstOrDefault();
             }
             else
             {
@@ -397,11 +422,11 @@ namespace FlatRedBall.Glue.Elements
 
             if(this.QualifiedAssetTypesDictionary.ContainsKey(runtimeType))
             {
-                return this.QualifiedAssetTypesDictionary[runtimeType];
+                return this.QualifiedAssetTypesDictionary[runtimeType].FirstOrDefault();
             }
             else if(this.RuntimeTypeAssetTypesDictionary.ContainsKey(runtimeType))
             {
-                return this.RuntimeTypeAssetTypesDictionary[runtimeType];
+                return this.RuntimeTypeAssetTypesDictionary[runtimeType].FirstOrDefault();
             }
             ////////////////End Early Out///////////////////////
             else
@@ -452,17 +477,14 @@ namespace FlatRedBall.Glue.Elements
 
         public AssetTypeInfo GetAssetTypeFromExtensionAndQualifiedRuntime(string extension, string qualifiedRuntimeType)
         {
-            foreach (var assetTypeInfo in AllAssetTypes)
+            var fromExtension = ExtensionAssetTypeDictionary.ContainsKey(extension) ? ExtensionAssetTypeDictionary[extension] : null;
+
+            if(fromExtension != null)
             {
-                if (assetTypeInfo.Extension == extension &&
-                    assetTypeInfo.QualifiedRuntimeTypeName.QualifiedType == qualifiedRuntimeType)
-				{
-                    return assetTypeInfo;
-				}
-			}
+                return fromExtension.FirstOrDefault(item => item.QualifiedRuntimeTypeName.QualifiedType == qualifiedRuntimeType);
+            }
 
-			return null;
-
+            return null;
 
         }
 

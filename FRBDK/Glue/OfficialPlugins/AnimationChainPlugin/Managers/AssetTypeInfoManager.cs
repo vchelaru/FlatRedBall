@@ -41,7 +41,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
         internal AssetTypeInfo GetGumAnimationChainListAti()
         {
-            var achxAti = AvailableAssetTypes.Self.GetAssetTypeFromExtension("achx");
+            var achxAti = AvailableAssetTypes.CommonAtis.AnimationChainList;
 
             var clone = FileManager.CloneObject(achxAti);
 

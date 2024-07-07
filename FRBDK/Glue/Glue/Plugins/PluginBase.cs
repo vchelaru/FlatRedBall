@@ -805,6 +805,7 @@ namespace FlatRedBall.Glue.Plugins
             {
                 AvailableAssetTypes.Self.RemoveAssetType(ati);
             }
+            AddedAssetTypeInfos.Clear();
         }
 
         #region Tab Methods

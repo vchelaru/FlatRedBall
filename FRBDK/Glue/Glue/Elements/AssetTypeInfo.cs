@@ -353,6 +353,13 @@ namespace FlatRedBall.Glue.Elements
 
 		}
 
+        public bool IsMatchTo(AssetTypeInfo other)
+        {
+            return this.Extension == other.Extension &&
+                this.QualifiedRuntimeTypeName.QualifiedType == other.QualifiedRuntimeTypeName.QualifiedType &&
+                this.RuntimeTypeName == other.RuntimeTypeName;
+        }
+
 		public override string ToString()
 		{
 			return FriendlyName;
