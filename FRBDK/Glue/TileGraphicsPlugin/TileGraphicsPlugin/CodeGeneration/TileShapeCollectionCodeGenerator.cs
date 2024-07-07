@@ -258,7 +258,7 @@ namespace TileGraphicsPlugin.CodeGeneration
                 // If a TileShapeCollection uses custom collision shapes, then the type will create a ShapeCollection and put it in the
                 // Collisions list. But if the current map doesn't use the tile, then the shape collection won't be created, and First will
                 // crash. We should not crash here, but rather rely on FRB Editor to report errors.
-                var line = $"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{tmxCollisionName}\").Clone()" +
+                var line = $"{instanceName} = {mapName}.Collisions.FirstOrDefault(item => item.Name == \"{tmxCollisionName}\")?.Clone()" +
                     $" ?? new FlatRedBall.TileCollisions.TileShapeCollection(){{Name = \"{tmxCollisionName}\" }};";
 
                 var reposition = namedObjectSave.GetCustomVariable("AdjustRepositionDirectionsOnAddAndRemove")?.Value as bool?;
