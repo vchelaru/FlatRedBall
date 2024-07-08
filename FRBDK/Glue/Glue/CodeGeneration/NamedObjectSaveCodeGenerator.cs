@@ -1341,12 +1341,18 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (namedObjectSave.SourceType == SaveClasses.SourceType.Entity &&
                 !string.IsNullOrEmpty(namedObjectSave.SourceClassType))
             {
-
-                return "global::" + ProjectManager.ProjectNamespace + '.' + namedObjectSave.SourceClassType.Replace('\\', '.');
+                if(prefixGlobal)
+                {
+                    return "global::" + ProjectManager.ProjectNamespace + '.' + namedObjectSave.SourceClassType.Replace('\\', '.');
+                }
+                else
+                {
+                    return ProjectManager.ProjectNamespace + '.' + namedObjectSave.SourceClassType.Replace('\\', '.');
+                }
             }
             else if(namedObjectSave.IsList)
             {
-                return GetQualifiedClassType(namedObjectSave);
+                return GetQualifiedClassType(namedObjectSave, prefixGlobal);
             }
             else if ((ati = namedObjectSave.GetAssetTypeInfo()) != null)
             {
