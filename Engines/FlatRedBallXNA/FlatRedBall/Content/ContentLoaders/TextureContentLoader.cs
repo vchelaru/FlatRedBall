@@ -237,7 +237,7 @@ namespace FlatRedBall.Content.ContentLoaders
 #if MONOGAME
                     premultSpriteBatch.Begin(SpriteSortMode.Immediate, blendColor, samplerState: SamplerState.PointClamp);
 #else
-                    spriteBatch.Begin(SpriteSortMode.Immediate, blendColor, SamplerState.PointClamp, null, null);
+                    premultSpriteBatch.Begin(SpriteSortMode.Immediate, blendColor, SamplerState.PointClamp, null, null);
 #endif
                     premultSpriteBatch.Draw(file, position, Color.White);
                     premultSpriteBatch.End();
@@ -255,7 +255,7 @@ namespace FlatRedBall.Content.ContentLoaders
 #if MONOGAME
                     premultSpriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha, samplerState: SamplerState.PointClamp);
 #else
-                    spriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha, SamplerState.PointClamp, null, null);
+                    premultSpriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha, SamplerState.PointClamp, null, null);
 #endif
                     premultSpriteBatch.Draw(file, position, Color.White);
                     premultSpriteBatch.End();

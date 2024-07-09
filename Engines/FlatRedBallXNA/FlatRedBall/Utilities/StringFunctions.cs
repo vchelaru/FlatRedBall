@@ -776,12 +776,18 @@ namespace FlatRedBall.Utilities
             }
         }
 
+        /// <summary>
+        /// Adds or increments the number at the end of the nameable's Name until it is unique in the list.
+        /// </summary>
+        /// <typeparam name="T">Nameable type</typeparam>
+        /// <param name="nameable">The nameable instance</param>
+        /// <param name="list">The list of other nameables.</param>
         public static void MakeNameUnique<T>(T nameable, IEnumerable<T> list)
             where T : INameable
         {
             var count = list.Count();
 
-            for (int i = 0; i < list.Count(); i++)
+            for (int i = 0; i < count; i++)
             {
                 var atI = list.ElementAt(i);
 
