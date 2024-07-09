@@ -770,7 +770,7 @@ namespace FlatRedBall.Entities
         /// </summary>
         /// <param name="shakeRadius">The shake radius - a larger value creates more shaking.</param>
         /// <param name="taskToAwait">The task to await before shaking stops.</param>
-        public async void ShakeScreenUntil(float shakeRadius, Task taskToAwait)
+        public async Task ShakeScreenUntil(float shakeRadius, Task taskToAwait)
         {
             var random = FlatRedBallServices.Random;
             while(!taskToAwait.IsCompleted)
