@@ -125,7 +125,6 @@
     <EmbeddedResource Include="GlueControl\Embedded\Editing\SelectionLogic.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Editing\VariableAssignmentLogic.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Editing\Visuals\Arrow.cs" />
-    <EmbeddedResource Include="GlueControl\Embedded\Forms\ObjectCreationWindow.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\GlueCallsClassGenerationManager.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\GlueControlManager.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\InstanceLogic.cs" />
@@ -198,6 +197,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="GlueControl\Embedded\Forms\" />
     <Folder Include="GlueControl\Models\" />
     <Folder Include="GlueControl\Profiling\" />
   </ItemGroup>

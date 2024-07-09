@@ -92,6 +92,9 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
 
             // This was a typo in old projects:
             RemoveEmbeddedFile("Runtime/DynamicEntitys.Generated.cs", saveAfterRemoving:true);
+            // This is no longer used, so get rid of it:
+            RemoveEmbeddedFile("Forms/ObjectCreationWindow.Generated.cs", saveAfterRemoving:true);
+
 
             // this was moved:
             FilePath oldGameConnectionManagerLocation = GlueState.Self.CurrentGlueProjectDirectory + "GlueCommunication/GameConnectionManager.Generated.cs";
