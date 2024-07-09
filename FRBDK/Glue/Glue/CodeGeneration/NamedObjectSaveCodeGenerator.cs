@@ -2359,7 +2359,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             int index = 0;
             
             if (ati.AddToManagersMethod.Count > 1 && namedObject.SourceType == SourceType.FlatRedBallType &&
-                    (namedObject.SourceClassType == "Sprite" || namedObject.SourceClassType == "SpriteFrame") &&
+                    (namedObject.SourceClassType == "Sprite" || namedObject.SourceClassType == "SpriteFrame" || namedObject.SourceClassType == "FlatRedBall.Sprite") &&
                     namedObject.IsZBuffered)
             {
                 index = 1;
