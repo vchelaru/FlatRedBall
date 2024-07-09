@@ -19,7 +19,7 @@
  </layer>
  <layer id="1" name="GameplayLayer" width="75" height="27" opacity="0.5">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu3SQQqAMAwAQQv+/80ieNKUbrBotTuQc9MlZRFRjlGbrThbcbbibMXZirMVZyvOVpytOFtxtuJsxdmKs1VdqYyubBVbT7OzFTdqq6d2ie6H7DRjq4y3WrXe6r1L5n5qvtBqlJsfoVX05t9bZf53p1VmerIV12unWWcDB57V+6QfAAA=
+   H4sIAAAAAAAACu3SQQqAMAwAQQP+/80ieNKWblA06g7k5KFxSUwiYhuN2YqzFWcrzlacrThbcbbibMXZirMVZyvOVpytOFv1RWd0ZKu2eTcrW3FVW921S+t+yE5/bJXxVKvRW1fvkrmfnje0qnLzFVq13vx6q8z/nWmVmStVahXge8VWDpsFYFoJOaQfAAA=
   </data>
  </layer>
 </map>
