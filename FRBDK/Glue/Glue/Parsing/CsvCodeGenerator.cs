@@ -290,9 +290,6 @@ namespace FlatRedBall.Glue
         {
             bool succeeded = true;
 
-            bool addToOrderedLists = true;
-
-
             CustomClassSave customClass = GetCustomClassForCsv(initialRfs.Name);
 
             bool usesCustomClass = customClass != null;
