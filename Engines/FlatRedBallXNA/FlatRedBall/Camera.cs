@@ -623,6 +623,11 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// Whether this camera clears the depth buffer when rendering. If true (the default) 
+        /// this camera clears the depth buffer, z-buffered sprites write to the depth buffer,
+        /// and ordered objects render considering the depth buffer.
+        /// </summary>
         public bool ClearsDepthBuffer
         {
             get;
