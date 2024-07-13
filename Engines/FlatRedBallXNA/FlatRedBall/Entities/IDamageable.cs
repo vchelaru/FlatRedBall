@@ -92,9 +92,11 @@ namespace FlatRedBall.Entities
             // 3. Damageable CurrentHealth -= 
             // 4. Damageable.ReactToDamageReceived
             // 5. DamageArea.ReactToDamageDealt
-            // --if Damageable.CurrentHealth <= 0
-            // 6. Damageable.Died
-            // 7. DamageArea.KilledDamageable
+            // --if (Damageable.CurrentHealth <= 0)
+            // {
+            //  6. Damageable.Died
+            //  7. DamageArea.KilledDamageable
+            // }
 
             // do we destroy? I think ....hm...
 
