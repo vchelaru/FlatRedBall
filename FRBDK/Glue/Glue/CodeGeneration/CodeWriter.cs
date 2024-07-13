@@ -1410,8 +1410,11 @@ namespace FlatRedBallAddOns.Entities
         {
             if(saveObject is ScreenSave && !saveObject.InheritsFromElement())
             {
-                var foreachBlock = currentBlock.ForEach($"var item in FlatRedBall.SpriteManager.ManagedPositionedObjects");
-                var foreachIfBlock = foreachBlock.If("item is FlatRedBall.Entities.IEntity entity");
+                // The internal call could add or remove things from the FRB engine so we shouldn't foreach here. Reverse loop it instead:
+                //var foreachBlock = currentBlock.ForEach($"var item in FlatRedBall.SpriteManager.ManagedPositionedObjects");
+                var forBlock = currentBlock.For("int i = FlatRedBall.SpriteManager.ManagedPositionedObjects.Count - 1; i > -1; i--");
+                forBlock.Line("var item = FlatRedBall.SpriteManager.ManagedPositionedObjects[i];");
+                var foreachIfBlock = forBlock.If("item is FlatRedBall.Entities.IEntity entity");
                 foreachIfBlock.Line("entity.ActivityEditMode();");
             }
         }
