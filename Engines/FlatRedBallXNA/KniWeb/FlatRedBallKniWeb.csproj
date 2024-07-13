@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;MONOGAME_381;KNI</DefineConstants>
+    <DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;MONOGAME_381;KNI;WEB</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-	<Title>FlatRedBall (.NET 8 Kni DesktopGL)</Title>
+	<Title>FlatRedBall (Web)</Title>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Description>FlatRedBall Game Engine</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -16,7 +16,7 @@
   <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
 
   <ItemGroup>
-    <PackageReference Include="AsepriteDotNet" Version="1.8.1" />
-    <PackageReference Include="MonoGame.Framework.DesktopGL.9000" Version="3.12.9001" />
+    <PackageReference Include="AsepriteDotNet" Version="1.8.2" />
+    <PackageReference Include="nkast.Xna.Framework.Blazor" Version="3.12.9001" />
   </ItemGroup>
 </Project>

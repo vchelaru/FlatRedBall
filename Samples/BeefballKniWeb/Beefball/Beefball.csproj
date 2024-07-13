@@ -1,0 +1,133 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<RollForward>Major</RollForward>
+		<PublishReadyToRun>false</PublishReadyToRun>
+		<TieredCompilation>false</TieredCompilation>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+		<DefineConstants>MONOGAME;XNA4;FRB_XNA;MONOGAME_381;KNI;BLAZORGL</DefineConstants>
+		<KniPlatform>BlazorGL</KniPlatform>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<BlazorEnableTimeZoneSupport>false</BlazorEnableTimeZoneSupport>
+	</PropertyGroup>
+
+	<PropertyGroup>		
+		<RootNamespace>Beefball</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Remove="**\*.glsj" />
+		<None Remove="**\*.glej" />
+		<None Remove="**\*.gluj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="DataTypes\TileMapInfo.Generated.cs" />
+		<Compile Include="Entities\Goal.cs" />
+		<Compile Include="Entities\Goal.Generated.cs">
+			<DependentUpon>Goal.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Entities\PlayerBall.cs" />
+		<Compile Include="Entities\PlayerBall.Generated.cs">
+			<DependentUpon>PlayerBall.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Entities\Puck.cs" />
+		<Compile Include="Entities\Puck.Generated.cs">
+			<DependentUpon>Puck.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Entities\ScoreHud.cs" />
+		<Compile Include="Entities\ScoreHud.Generated.cs">
+			<DependentUpon>ScoreHud.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Factories\GoalFactory.Generated.cs" />
+		<Compile Include="Factories\PlayerBallFactory.Generated.cs" />
+		<Compile Include="Factories\PuckFactory.Generated.cs" />
+		<Compile Include="Factories\ScoreHudFactory.Generated.cs" />
+		<Compile Include="FileAliases.Generated.cs" />
+		<Compile Include="Game1.cs" />
+		<Compile Include="Game1.Generated.cs">
+			<DependentUpon>Game1.cs</DependentUpon>
+		</Compile>
+		<Compile Include="GlobalContent.Generated.cs" />
+		<Compile Include="Performance\IEntityFactory.Generated.cs" />
+		<Compile Include="Performance\PoolList.Generated.cs" />
+		<Content Include="Pages\Index.razor.cs" />
+		<Compile Include="Program.cs" />
+		<Compile Include="Screens\GameScreen.cs" />
+		<Compile Include="Screens\GameScreen.Event.cs">
+			<DependentUpon>GameScreen.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Screens\GameScreen.Generated.cs">
+			<DependentUpon>GameScreen.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Screens\GameScreen.Generated.Event.cs">
+			<DependentUpon>GameScreen.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Setup\CameraSetup.Generated.cs" />
+		<Compile Include="TileCollisions\CollidableListVsTileShapeCollectionRelationship.Generated.cs" />
+		<Compile Include="TileCollisions\CollidableVsTileShapeCollectionRelationship.Generated.cs" />
+		<Compile Include="TileCollisions\CollisionManagerTileShapeCollectionExtensions.Generated.cs" />
+		<Compile Include="TileCollisions\TileShapeCollection.Generated.cs" />
+		<Compile Include="TileEntities\TileEntityInstantiator.Generated.cs" />
+		<Compile Include="TileGraphics\AbstractMapLayer.Generated.cs" />
+		<Compile Include="TileGraphics\AnimationChainContainer.Generated.cs" />
+		<Compile Include="TileGraphics\ExternalTileset.Generated.cs" />
+		<Compile Include="TileGraphics\LayeredTileMap.Generated.cs" />
+		<Compile Include="TileGraphics\LayeredTileMapAnimation.Generated.cs" />
+		<Compile Include="TileGraphics\MapDrawableBatch.Generated.cs" />
+		<Compile Include="TileGraphics\MapLayer.Generated.cs" />
+		<Compile Include="TileGraphics\MapTileset.Generated.cs" />
+		<Compile Include="TileGraphics\MapTilesetTile.Generated.cs" />
+		<Compile Include="TileGraphics\NamedValue.Generated.cs" />
+		<Compile Include="TileGraphics\ReducedTileMapInfo.Generated.cs" />
+		<Compile Include="TileGraphics\ReducedTileMapInfo.TiledMapSave.Generated.cs" />
+		<Compile Include="TileGraphics\TileAnimation.Generated.cs" />
+		<Compile Include="TileGraphics\TileAnimationFrame.Generated.cs" />
+		<Compile Include="TileGraphics\TiledMapSave.Conversion.Generated.cs" />
+		<Compile Include="TileGraphics\TiledMapSave.Serialization.Generated.cs" />
+		<Compile Include="TileGraphics\TiledMapToShapeCollectionConverter.Generated.cs" />
+		<Compile Include="TileGraphics\TileNodeNetworkCreator.Generated.cs" />
+		<Compile Include="TileGraphics\Tileset.Generated.cs" />
+		<Compile Include="TileGraphics\TilesetExtensionMethods.Generated.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json">
+			<Version>13.0.1</Version>
+		</PackageReference>
+		<PackageReference Include="nkast.Xna.Framework.Blazor" Version="3.12.9001" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.27" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.27" PrivateAssets="all" />
+	</ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.2" PrivateAssets="all" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="Content\Shader.fx">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Content\shader.xnb">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Content\ShaderForcePoint.fx">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Content\ShaderForcePoint.xnb">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="GlueCommunication\" />
+		<Folder Include="GlueControl\Forms\" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\KniDesktopGL\FlatRedBallDesktopKniDesktopGL.csproj" />
+	</ItemGroup>
+	<Target Name="RestoreDotnetTools" BeforeTargets="Restore">
+		<Message Text="Restoring dotnet tools" Importance="High" />
+		<Exec Command="dotnet tool restore" />
+	</Target>
+</Project>

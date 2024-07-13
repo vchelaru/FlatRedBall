@@ -1859,7 +1859,11 @@ namespace FlatRedBall.Input
 #if MONOGAME_381
             // Using PlayerIndex gives us only Xbox controllers. Using int indexes gives us all:
             //gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
+
+
+#if !WEB
             gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState((int)mPlayerIndex, GamePadDeadZone.None);
+#endif
 
             if (mCapabilities.DisplayName == null || WasConnectedThisFrame)
             {
@@ -1873,12 +1877,14 @@ namespace FlatRedBall.Input
                 // or will it repeat? Not sure...
                 try
                 {
+#if !WEB
                     mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities((int)mPlayerIndex);
+#endif
                 }
                 catch (NullReferenceException) { }
             }
 #else
-            gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
+                    gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
 
             mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities(mPlayerIndex);
 #endif

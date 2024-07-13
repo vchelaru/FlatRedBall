@@ -1,5 +1,5 @@
 //#if DESKTOP_GL || WINDOWS
-#if WINDOWS || MONOGAME_381
+#if (WINDOWS || MONOGAME_381) && !WEB
 #define USE_CUSTOM_SHADER
 #endif
 
