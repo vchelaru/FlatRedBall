@@ -24,7 +24,7 @@ namespace BeefballWeb.Pages
             // init game
             if (_game == null)
             {
-                _game = new BeefballWebGame();
+                _game = new Game1();
                 _game.Run();
             }
 

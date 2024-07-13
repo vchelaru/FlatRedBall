@@ -22,9 +22,54 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Entities\Goal.cs" />
+    <Compile Include="Entities\Goal.Generated.cs" />
+    <Compile Include="Entities\PlayerBall.cs" />
+    <Compile Include="Entities\PlayerBall.Generated.cs" />
+    <Compile Include="Entities\Puck.cs" />
+    <Compile Include="Entities\Puck.Generated.cs" />
+    <Compile Include="Entities\ScoreHud.cs" />
+    <Compile Include="Entities\ScoreHud.Generated.cs" />
+    <Compile Include="Factories\GoalFactory.Generated.cs" />
+    <Compile Include="Factories\PlayerBallFactory.Generated.cs" />
+    <Compile Include="Factories\PuckFactory.Generated.cs" />
+    <Compile Include="Factories\ScoreHudFactory.Generated.cs" />
+    <Compile Include="Game1.Generated.cs" />
+    <Compile Include="GlobalContent.Generated.cs" />
     <Compile Include="Pages\Index.razor.cs" />
+    <Compile Include="Performance\IEntityFactory.Generated.cs" />
+    <Compile Include="Performance\PoolList.Generated.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="BeefballWebGame.cs" />
+    <Compile Include="Game1.cs" />
+    <Compile Include="Screens\GameScreen.cs" />
+    <Compile Include="Screens\GameScreen.Event.cs" />
+    <Compile Include="Screens\GameScreen.Generated.cs" />
+    <Compile Include="Screens\GameScreen.Generated.Event.cs" />
+    <Compile Include="Setup\CameraSetup.Generated.cs" />
+    <Compile Include="TileCollisions\CollidableListVsTileShapeCollectionRelationship.Generated.cs" />
+    <Compile Include="TileCollisions\CollidableVsTileShapeCollectionRelationship.Generated.cs" />
+    <Compile Include="TileCollisions\CollisionManagerTileShapeCollectionExtensions.Generated.cs" />
+    <Compile Include="TileCollisions\TileShapeCollection.Generated.cs" />
+    <Compile Include="TileGraphics\AbstractMapLayer.Generated.cs" />
+    <Compile Include="TileGraphics\AnimationChainContainer.Generated.cs" />
+    <Compile Include="TileGraphics\ExternalTileset.Generated.cs" />
+    <Compile Include="TileGraphics\LayeredTileMap.Generated.cs" />
+    <Compile Include="TileGraphics\LayeredTileMapAnimation.Generated.cs" />
+    <Compile Include="TileGraphics\MapDrawableBatch.Generated.cs" />
+    <Compile Include="TileGraphics\MapLayer.Generated.cs" />
+    <Compile Include="TileGraphics\MapTileset.Generated.cs" />
+    <Compile Include="TileGraphics\MapTilesetTile.Generated.cs" />
+    <Compile Include="TileGraphics\NamedValue.Generated.cs" />
+    <Compile Include="TileGraphics\ReducedTileMapInfo.Generated.cs" />
+    <Compile Include="TileGraphics\ReducedTileMapInfo.TiledMapSave.Generated.cs" />
+    <Compile Include="TileGraphics\TileAnimation.Generated.cs" />
+    <Compile Include="TileGraphics\TileAnimationFrame.Generated.cs" />
+    <Compile Include="TileGraphics\TiledMapSave.Conversion.Generated.cs" />
+    <Compile Include="TileGraphics\TiledMapSave.Serialization.Generated.cs" />
+    <Compile Include="TileGraphics\TiledMapToShapeCollectionConverter.Generated.cs" />
+    <Compile Include="TileGraphics\TileNodeNetworkCreator.Generated.cs" />
+    <Compile Include="TileGraphics\Tileset.Generated.cs" />
+    <Compile Include="TileGraphics\TilesetExtensionMethods.Generated.cs" />
   </ItemGroup>
 
   <ItemGroup>

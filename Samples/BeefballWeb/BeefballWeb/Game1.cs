@@ -14,7 +14,7 @@ namespace BeefballWeb
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public partial class BeefballWebGame : Game
+    public partial class Game1 : Game
     {
         GraphicsDeviceManager graphics;
 
@@ -25,35 +25,52 @@ namespace BeefballWeb
         partial void GeneratedDrawEarly(Microsoft.Xna.Framework.GameTime gameTime);
         partial void GeneratedDraw(Microsoft.Xna.Framework.GameTime gameTime);
 
-        public BeefballWebGame()
+        public Game1() : base()
         {
             graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
+
+#if WINDOWS_PHONE || ANDROID || IOS
+
+            // Frame rate is 30 fps by default for Windows Phone,
+            // so let's keep that for other phones too
+            TargetElapsedTime = TimeSpan.FromTicks(333333);
+            graphics.IsFullScreen = true;
+#elif WINDOWS || DESKTOP_GL
+            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = 600;
+#endif
+
+
+#if WINDOWS_8
+            FlatRedBall.Instructions.Reflection.PropertyValuePair.TopLevelAssembly = 
+            this.GetType().GetTypeInfo().Assembly;
+#endif
 
         }
 
         protected override void Initialize()
         {
+#if IOS
+            var bounds = UIKit.UIScreen.MainScreen.Bounds;
+            var nativeScale = UIKit.UIScreen.MainScreen.Scale;
+            var screenWidth = (int)(bounds.Width * nativeScale);
+            var screenHeight = (int)(bounds.Height * nativeScale);
+            graphics.PreferredBackBufferWidth = screenWidth;
+            graphics.PreferredBackBufferHeight = screenHeight;
+#endif
+
             GeneratedInitializeEarly();
 
             FlatRedBallServices.InitializeFlatRedBall(this, graphics);
 
             GeneratedInitialize();
 
-            Camera.Main.UsePixelCoordinates();
-
-            var circle = ShapeManager.AddCircle();
-            circle.Radius = 50;
-            circle.Visible = true;
-
             base.Initialize();
-
         }
 
         protected override void Update(GameTime gameTime)
         {
             FlatRedBallServices.Update(gameTime);
-
 
             FlatRedBall.Screens.ScreenManager.Activity();
 
