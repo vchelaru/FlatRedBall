@@ -763,15 +763,9 @@ namespace FlatRedBall
             // We'll make a content manager that is never disposed. At this
             // point the FRB engine is not initialized so we can't use the global
             // content manager. That should be okay as global content is never unloaded
-            // and this shader i snever exposed for any good reason in diagnostics (like
+            // and this shader is never exposed for any good reason in diagnostics (like
             // render breaks. I don't know if we'll ever need to do something different but
             // this is simple code that works well enough for now.
-            // Update August 25, 2018
-            // MonoGame 3.7 (pre-release) has at least one bug related to shaders
-            // which impact rendering. That is, point filtering isn't working.
-            // So I'm going to revert monogame back to the old way for now
-            //using Stream testStream = TitleContainer.OpenStream("Content/shader.xnb");
-
 
             var shaderFileName =
                 "Content/Shader";
