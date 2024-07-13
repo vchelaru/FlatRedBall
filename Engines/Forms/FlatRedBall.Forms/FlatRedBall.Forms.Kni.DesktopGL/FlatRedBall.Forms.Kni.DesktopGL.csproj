@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+	<DefineConstants>FNA;DESKTOP_GL;XNA4;FRB_XNA;WINDOWS</DefineConstants>
+	<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="TextCopy" Version="6.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCore.Kni.DesktopGL\GumCore.Kni.DesktopGL.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Gum\SvgPlugin\SkiaInGumShared\SkiaInGum.csproj" Condition="'$(Configuration)' == 'DebugAutoBuild' Or '$(Configuration)' == 'ReleaseAutoBuild'" />
+  </ItemGroup>
+  <Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
+</Project>

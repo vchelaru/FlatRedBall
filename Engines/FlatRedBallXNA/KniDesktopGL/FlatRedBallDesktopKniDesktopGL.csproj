@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;MONOGAME_381;KNI</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>

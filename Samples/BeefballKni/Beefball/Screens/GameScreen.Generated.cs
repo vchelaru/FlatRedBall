@@ -308,8 +308,9 @@ PuckVsGoal.CollisionOccurred += (first, second) =>
         {
             if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
             {
-                foreach (var item in FlatRedBall.SpriteManager.ManagedPositionedObjects)
+                for (int i = FlatRedBall.SpriteManager.ManagedPositionedObjects.Count - 1; i > -1; i--)
                 {
+                    var item = FlatRedBall.SpriteManager.ManagedPositionedObjects[i];
                     if (item is FlatRedBall.Entities.IEntity entity)
                     {
                         entity.ActivityEditMode();
@@ -742,12 +743,12 @@ PuckVsGoal.CollisionOccurred += (first, second) =>
         }
         public override void PauseThisScreen () 
         {
-            //StateInterpolationPlugin.TweenerManager.Self.Pause();
+            StateInterpolationPlugin.TweenerManager.Self.Pause();
             base.PauseThisScreen();
         }
         public override void UnpauseThisScreen () 
         {
-            //StateInterpolationPlugin.TweenerManager.Self.Unpause();
+            StateInterpolationPlugin.TweenerManager.Self.Unpause();
             base.UnpauseThisScreen();
         }
         private void InitializeFactoriesAndSorting () 

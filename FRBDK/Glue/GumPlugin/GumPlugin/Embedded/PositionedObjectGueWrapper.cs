@@ -203,6 +203,9 @@ namespace GumCoreShared.FlatRedBall.Embedded
         }
     }
 
+    /// <summary>
+    /// Static class containing extension methods for updating FlatRedBall objects from a GraphicalUiElement.
+    /// </summary>
     public static class GraphicalUiElementExtensions
     {
         public static void SetCollision(this GraphicalUiElement graphicalUiElement, ShapeCollection shapeCollection, PositionedObject parent, bool createMissingShapes = false)
@@ -291,6 +294,13 @@ namespace GumCoreShared.FlatRedBall.Embedded
             }
         }
 
+        /// <summary>
+        /// Updates the children sprite of the argument Paren to match the Gum object's sprites. This optionally
+        /// creates new Sprites.
+        /// </summary>
+        /// <param name="graphicalUiElement">The GraphicalUiElement from which to pull sprites.</param>
+        /// <param name="parent">The parent of the FlatRedBall Sprites.</param>
+        /// <param name="createMissingSprites">Whether to instantiate missing spriets, where the name is the property used to find matches.</param>
         public static void SetSprites(this GraphicalUiElement graphicalUiElement, PositionedObject parent, bool createMissingSprites = false)
         {
             if(graphicalUiElement.ElementSave != null)

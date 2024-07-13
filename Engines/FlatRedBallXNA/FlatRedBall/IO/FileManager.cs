@@ -1893,7 +1893,7 @@ namespace FlatRedBall.IO
             return stream;
         }
 
-
+#if !NET7_0_OR_GREATER
         public static object BinaryDeserialize(Type type, string fileName)
         {
             object objectToReturn = null;
@@ -1917,6 +1917,7 @@ namespace FlatRedBall.IO
             return objectToReturn;
 
         }
+#endif
 
         public static object XmlDeserialize(Type type, string fileName)
         {
@@ -1942,12 +1943,14 @@ namespace FlatRedBall.IO
 
 
 
+#if !NET7_0_OR_GREATER
 
 
         public static void BinarySerialize<T>(T objectToSerialize, string fileName)
         {
             BinarySerialize(typeof(T), objectToSerialize, fileName);
         }
+
 
         public static void BinarySerialize(Type type, object objectToSerialize, string fileName)
         {
@@ -1982,7 +1985,7 @@ namespace FlatRedBall.IO
             }
 
         }
-
+#endif
 
         public static void XmlSerialize(Type type, object objectToSerialize, string fileName)
         {
@@ -2112,9 +2115,9 @@ namespace FlatRedBall.IO
 			return new XElement(xmlDocument.Name.LocalName, xmlDocument.Elements().Select(el => RemoveAllNamespaces(el)));
 		}
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
         #region Internal Methods
 
