@@ -323,6 +323,7 @@ Additional Info:
                 loadCalls.Add(new PreprocessorAndFunc("DESKTOP_GL", new Version(6,0), () => new MonoGameDesktopGlNetCoreProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("DESKTOP_GL", () => new MonoGameDesktopGlNetFrameworkProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("FNA", () => new FnaDesktopProject(coreVisualStudioProject)));
+                loadCalls.Add(new PreprocessorAndFunc("BLAZORGL", () => new KniWebProject(coreVisualStudioProject)));
                 // Do XNA_4 last, since every 
                 // other project type has this 
                 // preprocessor type, so every project

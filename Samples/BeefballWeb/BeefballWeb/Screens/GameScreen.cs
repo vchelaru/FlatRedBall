@@ -1,6 +1,6 @@
 using FlatRedBall.Input;
 
-namespace Beefball.Screens
+namespace BeefballWeb.Screens
 {
     public partial class GameScreen
     {

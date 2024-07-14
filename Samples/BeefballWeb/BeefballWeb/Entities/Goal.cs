@@ -1,4 +1,4 @@
-namespace Beefball.Entities
+namespace BeefballWeb.Entities
 {
     public partial class Goal
     {

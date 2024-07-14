@@ -1,5 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
-
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
   <PropertyGroup>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <TargetFramework>net8.0</TargetFramework>
@@ -8,33 +7,41 @@
     <RootNamespace>BeefballWeb</RootNamespace>
     <AssemblyName>BeefballWeb</AssemblyName>
     <DefineConstants>$(DefineConstants);BLAZORGL</DefineConstants>
-	<KniPlatform>BlazorGL</KniPlatform>
+    <KniPlatform>BlazorGL</KniPlatform>
   </PropertyGroup>
-  
   <PropertyGroup>
     <BlazorEnableTimeZoneSupport>false</BlazorEnableTimeZoneSupport>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
   </PropertyGroup>
-
   <ItemGroup>
+    <Compile Include="DataTypes\TileMapInfo.Generated.cs" />
     <Compile Include="Entities\Goal.cs" />
-    <Compile Include="Entities\Goal.Generated.cs" />
+    <Compile Include="Entities\Goal.Generated.cs">
+      <DependentUpon>Goal.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\PlayerBall.cs" />
-    <Compile Include="Entities\PlayerBall.Generated.cs" />
+    <Compile Include="Entities\PlayerBall.Generated.cs">
+      <DependentUpon>PlayerBall.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\Puck.cs" />
-    <Compile Include="Entities\Puck.Generated.cs" />
+    <Compile Include="Entities\Puck.Generated.cs">
+      <DependentUpon>Puck.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\ScoreHud.cs" />
-    <Compile Include="Entities\ScoreHud.Generated.cs" />
+    <Compile Include="Entities\ScoreHud.Generated.cs">
+      <DependentUpon>ScoreHud.cs</DependentUpon>
+    </Compile>
     <Compile Include="Factories\GoalFactory.Generated.cs" />
     <Compile Include="Factories\PlayerBallFactory.Generated.cs" />
     <Compile Include="Factories\PuckFactory.Generated.cs" />
     <Compile Include="Factories\ScoreHudFactory.Generated.cs" />
-    <Compile Include="Game1.Generated.cs" />
+    <Compile Include="FileAliases.Generated.cs" />
+    <Compile Include="Game1.Generated.cs">
+      <DependentUpon>Game1.cs</DependentUpon>
+    </Compile>
     <Compile Include="GlobalContent.Generated.cs" />
     <Compile Include="Pages\Index.razor.cs" />
     <Compile Include="Performance\IEntityFactory.Generated.cs" />
@@ -42,14 +49,21 @@
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Screens\GameScreen.cs" />
-    <Compile Include="Screens\GameScreen.Event.cs" />
-    <Compile Include="Screens\GameScreen.Generated.cs" />
-    <Compile Include="Screens\GameScreen.Generated.Event.cs" />
+    <Compile Include="Screens\GameScreen.Event.cs">
+      <DependentUpon>GameScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\GameScreen.Generated.cs">
+      <DependentUpon>GameScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\GameScreen.Generated.Event.cs">
+      <DependentUpon>GameScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\CameraSetup.Generated.cs" />
     <Compile Include="TileCollisions\CollidableListVsTileShapeCollectionRelationship.Generated.cs" />
     <Compile Include="TileCollisions\CollidableVsTileShapeCollectionRelationship.Generated.cs" />
     <Compile Include="TileCollisions\CollisionManagerTileShapeCollectionExtensions.Generated.cs" />
     <Compile Include="TileCollisions\TileShapeCollection.Generated.cs" />
+    <Compile Include="TileEntities\TileEntityInstantiator.Generated.cs" />
     <Compile Include="TileGraphics\AbstractMapLayer.Generated.cs" />
     <Compile Include="TileGraphics\AnimationChainContainer.Generated.cs" />
     <Compile Include="TileGraphics\ExternalTileset.Generated.cs" />
@@ -71,8 +85,10 @@
     <Compile Include="TileGraphics\Tileset.Generated.cs" />
     <Compile Include="TileGraphics\TilesetExtensionMethods.Generated.cs" />
   </ItemGroup>
-
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.3</Version>
+    </PackageReference>
     <PackageReference Include="nkast.Xna.Framework" Version="3.12.9001" />
     <PackageReference Include="nkast.Xna.Framework.Content" Version="3.12.9001" />
     <PackageReference Include="nkast.Xna.Framework.Graphics" Version="3.12.9001" />
@@ -83,7 +99,6 @@
     <PackageReference Include="nkast.Xna.Framework.Blazor" Version="3.12.9001" />
     <PackageReference Include="nkast.Xna.Framework.Content.Pipeline.Builder" Version="3.12.9001" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.27" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.27" PrivateAssets="all" />
@@ -92,13 +107,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.2" PrivateAssets="all" />
   </ItemGroup>
-
   <ItemGroup>
     <KniContentReference Include="Content\BeefballWebContent.mgcb" />
   </ItemGroup>
-
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCore.Kni.Web\GumCore.Kni.Web.csproj" />
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\KniWeb\FlatRedBallKniWeb.csproj" />
   </ItemGroup>
-
 </Project>

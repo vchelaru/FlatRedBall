@@ -1,6 +1,6 @@
 using FlatRedBall.Input;
 
-namespace Beefball.Entities
+namespace BeefballWeb.Entities
 {
     public partial class PlayerBall
     {

@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeefballWeb", "BeefballWeb\BeefballWeb.csproj", "{8B3D28F5-4645-4716-91A6-A7BCE3DED633}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeefballWeb", "BeefballWeb\BeefballWeb.csproj", "{8B3D28F5-4645-4716-91A6-A7BCE3DED633}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallKniWeb", "..\..\Engines\FlatRedBallXNA\KniWeb\FlatRedBallKniWeb.csproj", "{F721C4EA-3A07-4CF6-A473-3A01734E0560}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GumCore.Kni.Web", "..\..\..\Gum\GumCore\GumCoreXnaPc\GumCore.Kni.Web\GumCore.Kni.Web.csproj", "{50026140-17A9-4975-B753-30647CBCE80B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F721C4EA-3A07-4CF6-A473-3A01734E0560}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F721C4EA-3A07-4CF6-A473-3A01734E0560}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F721C4EA-3A07-4CF6-A473-3A01734E0560}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50026140-17A9-4975-B753-30647CBCE80B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50026140-17A9-4975-B753-30647CBCE80B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50026140-17A9-4975-B753-30647CBCE80B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50026140-17A9-4975-B753-30647CBCE80B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -29,6 +35,8 @@ Global
 		SolutionGuid = {1D0A90D5-2E00-4294-85CC-2C55C3B02F61}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{50026140-17a9-4975-b753-30647cbce80b}*SharedItemsImports = 5
+		..\..\..\Gum\GumCoreShared.projitems*{50026140-17a9-4975-b753-30647cbce80b}*SharedItemsImports = 5
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{f721c4ea-3a07-4cf6-a473-3a01734e0560}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
