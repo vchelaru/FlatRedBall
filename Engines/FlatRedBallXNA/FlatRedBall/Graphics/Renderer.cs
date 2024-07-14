@@ -1204,9 +1204,14 @@ namespace FlatRedBall.Graphics
                     mCurrentEffect.FogEnabled = false;
 
 
+                    // not sure why we enable vertex color, but this
+                    // causes problems on Web, so let's disable it there
+#if WEB
+                    mCurrentEffect.VertexColorEnabled = false;
 
+#else
                     mCurrentEffect.VertexColorEnabled = true;
-                    
+#endif               
 
                     break;
                 case FlatRedBall.Graphics.ColorOperation.Add:
@@ -1238,12 +1243,10 @@ namespace FlatRedBall.Graphics
                     break;
 
                 case FlatRedBall.Graphics.ColorOperation.Modulate:
+                    mCurrentEffect.TextureEnabled = true;
+                    mCurrentEffect.FogEnabled = false;
 
                     mCurrentEffect.VertexColorEnabled = true;
-
-                    mCurrentEffect.FogEnabled = false;
-                    mCurrentEffect.TextureEnabled = true;
-
                     break;
                 default:
                     throw new InvalidOperationException("The color operation " + value + " is not supported");
@@ -1273,7 +1276,7 @@ namespace FlatRedBall.Graphics
                 mCurrentEffect.CurrentTechnique = technique;
             }
 #endif
-        }
+            }
 
 
         public static BlendState AddBlendState = new BlendState()
@@ -2307,7 +2310,6 @@ namespace FlatRedBall.Graphics
             int verticesPerVertexBuffer, int vbIndex, ref int renderBreakIndex) where T : struct
             , IVertexType
         {
-
             bool startedOnNonZeroVBIndex = vbIndex != 0;
 
             if (numberOfPrimitives == 0) return;
