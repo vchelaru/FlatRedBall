@@ -2464,11 +2464,14 @@ namespace FlatRedBall.Graphics
 
                         if (drawToOnThisVB - extraVertices != drawnOnThisVB)
                         {
+                            var start = verticesPerPrimitive * drawnOnThisVB;
+                            var count = drawToOnThisVB - drawnOnThisVB - extraVertices;
+
                             mGraphics.GraphicsDevice.DrawUserPrimitives<T>(
                                 primitiveType,
                                 vertexList[VBOn],
-                                verticesPerPrimitive * drawnOnThisVB,
-                                drawToOnThisVB - drawnOnThisVB - extraVertices);
+                                vertexOffset: start,
+                                primitiveCount: count);
                         }
                     }
 #elif XNA4
