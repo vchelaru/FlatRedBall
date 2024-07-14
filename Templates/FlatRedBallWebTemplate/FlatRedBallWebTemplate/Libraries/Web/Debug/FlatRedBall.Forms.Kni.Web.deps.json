@@ -1,0 +1,578 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "FlatRedBall.Forms.Kni.Web/1.0.0": {
+        "dependencies": {
+          "GumCore.Kni.Web": "1.0.0",
+          "TextCopy": "6.1.0"
+        },
+        "runtime": {
+          "FlatRedBall.Forms.Kni.Web.dll": {}
+        }
+      },
+      "AsepriteDotNet/1.8.2": {
+        "runtime": {
+          "lib/net8.0/AsepriteDotNet.dll": {
+            "assemblyVersion": "1.8.2.0",
+            "fileVersion": "1.8.2.0"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Authorization/8.0.2": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Metadata": "8.0.2",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Options": "8.0.2"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.AspNetCore.Authorization.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.224.6804"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Components/8.0.2": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Authorization": "8.0.2",
+          "Microsoft.AspNetCore.Components.Analyzers": "8.0.2"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.AspNetCore.Components.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.224.6804"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Components.Analyzers/8.0.2": {},
+      "Microsoft.AspNetCore.Components.Forms/8.0.2": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Components": "8.0.2"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.AspNetCore.Components.Forms.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.224.6804"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Components.Web/8.0.2": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Components": "8.0.2",
+          "Microsoft.AspNetCore.Components.Forms": "8.0.2",
+          "Microsoft.Extensions.DependencyInjection": "8.0.0",
+          "Microsoft.Extensions.Primitives": "8.0.0",
+          "Microsoft.JSInterop": "8.0.2",
+          "System.IO.Pipelines": "8.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.AspNetCore.Components.Web.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.224.6804"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Metadata/8.0.2": {
+        "runtime": {
+          "lib/net8.0/Microsoft.AspNetCore.Metadata.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.224.6804"
+          }
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection/8.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.DependencyInjection.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.0": {
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions/8.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
+      "Microsoft.Extensions.Options/8.0.2": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Primitives": "8.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Options.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.224.6711"
+          }
+        }
+      },
+      "Microsoft.Extensions.Primitives/8.0.0": {
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Primitives.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
+      "Microsoft.JSInterop/8.0.2": {
+        "runtime": {
+          "lib/net8.0/Microsoft.JSInterop.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.224.6804"
+          }
+        }
+      },
+      "Microsoft.JSInterop.WebAssembly/8.0.2": {
+        "dependencies": {
+          "Microsoft.JSInterop": "8.0.2"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.JSInterop.WebAssembly.dll": {
+            "assemblyVersion": "8.0.2.0",
+            "fileVersion": "8.0.224.6804"
+          }
+        }
+      },
+      "nkast.Wasm.Audio/8.0.0": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Components": "8.0.2",
+          "Microsoft.AspNetCore.Components.Web": "8.0.2",
+          "Microsoft.JSInterop.WebAssembly": "8.0.2",
+          "nkast.Wasm.Dom": "8.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/nkast.Wasm.Audio.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "nkast.Wasm.Canvas/8.0.0": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Components": "8.0.2",
+          "Microsoft.AspNetCore.Components.Web": "8.0.2",
+          "Microsoft.JSInterop.WebAssembly": "8.0.2",
+          "nkast.Wasm.Dom": "8.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/nkast.Wasm.Canvas.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "nkast.Wasm.Dom/8.0.0": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Components": "8.0.2",
+          "Microsoft.AspNetCore.Components.Web": "8.0.2",
+          "Microsoft.JSInterop.WebAssembly": "8.0.2"
+        },
+        "runtime": {
+          "lib/net8.0/nkast.Wasm.Dom.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "nkast.Wasm.XHR/8.0.0": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Components": "8.0.2",
+          "Microsoft.AspNetCore.Components.Web": "8.0.2",
+          "Microsoft.JSInterop.WebAssembly": "8.0.2",
+          "nkast.Wasm.Dom": "8.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/nkast.Wasm.XHR.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "nkast.Xna.Framework/3.12.9001": {
+        "runtime": {
+          "lib/net8.0/Xna.Framework.dll": {
+            "assemblyVersion": "3.12.9001.0",
+            "fileVersion": "3.12.9001.0"
+          }
+        }
+      },
+      "nkast.Xna.Framework.Audio/3.12.9001": {
+        "dependencies": {
+          "nkast.Xna.Framework": "3.12.9001",
+          "nkast.Xna.Framework.Content": "3.12.9001"
+        },
+        "runtime": {
+          "lib/net8.0/Xna.Framework.Audio.dll": {
+            "assemblyVersion": "3.12.9001.0",
+            "fileVersion": "3.12.9001.0"
+          }
+        }
+      },
+      "nkast.Xna.Framework.Blazor/3.12.9001": {
+        "dependencies": {
+          "nkast.Wasm.Audio": "8.0.0",
+          "nkast.Wasm.Canvas": "8.0.0",
+          "nkast.Wasm.Dom": "8.0.0",
+          "nkast.Wasm.XHR": "8.0.0",
+          "nkast.Xna.Framework": "3.12.9001",
+          "nkast.Xna.Framework.Audio": "3.12.9001",
+          "nkast.Xna.Framework.Content": "3.12.9001",
+          "nkast.Xna.Framework.Game": "3.12.9001",
+          "nkast.Xna.Framework.Graphics": "3.12.9001",
+          "nkast.Xna.Framework.Input": "3.12.9001",
+          "nkast.Xna.Framework.Media": "3.12.9001"
+        },
+        "runtime": {
+          "lib/net8.0/MonoGame.Framework.dll": {
+            "assemblyVersion": "3.12.9001.0",
+            "fileVersion": "3.12.9001.0"
+          }
+        }
+      },
+      "nkast.Xna.Framework.Content/3.12.9001": {
+        "dependencies": {
+          "nkast.Xna.Framework": "3.12.9001"
+        },
+        "runtime": {
+          "lib/net8.0/Xna.Framework.Content.dll": {
+            "assemblyVersion": "3.12.9001.0",
+            "fileVersion": "3.12.9001.0"
+          }
+        }
+      },
+      "nkast.Xna.Framework.Game/3.12.9001": {
+        "dependencies": {
+          "nkast.Xna.Framework": "3.12.9001",
+          "nkast.Xna.Framework.Content": "3.12.9001",
+          "nkast.Xna.Framework.Graphics": "3.12.9001",
+          "nkast.Xna.Framework.Input": "3.12.9001"
+        },
+        "runtime": {
+          "lib/net8.0/Xna.Framework.Game.dll": {
+            "assemblyVersion": "3.12.9001.0",
+            "fileVersion": "3.12.9001.0"
+          }
+        }
+      },
+      "nkast.Xna.Framework.Graphics/3.12.9001": {
+        "dependencies": {
+          "nkast.Xna.Framework": "3.12.9001",
+          "nkast.Xna.Framework.Content": "3.12.9001"
+        },
+        "runtime": {
+          "lib/net8.0/Xna.Framework.Graphics.dll": {
+            "assemblyVersion": "3.12.9001.0",
+            "fileVersion": "3.12.9001.0"
+          }
+        }
+      },
+      "nkast.Xna.Framework.Input/3.12.9001": {
+        "dependencies": {
+          "nkast.Xna.Framework": "3.12.9001",
+          "nkast.Xna.Framework.Graphics": "3.12.9001"
+        },
+        "runtime": {
+          "lib/net8.0/Xna.Framework.Input.dll": {
+            "assemblyVersion": "3.12.9001.0",
+            "fileVersion": "3.12.9001.0"
+          }
+        }
+      },
+      "nkast.Xna.Framework.Media/3.12.9001": {
+        "dependencies": {
+          "nkast.Xna.Framework": "3.12.9001",
+          "nkast.Xna.Framework.Content": "3.12.9001",
+          "nkast.Xna.Framework.Graphics": "3.12.9001"
+        },
+        "runtime": {
+          "lib/net8.0/Xna.Framework.Media.dll": {
+            "assemblyVersion": "3.12.9001.0",
+            "fileVersion": "3.12.9001.0"
+          }
+        }
+      },
+      "System.IO.Pipelines/8.0.0": {
+        "runtime": {
+          "lib/net8.0/System.IO.Pipelines.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
+      "TextCopy/6.1.0": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/TextCopy.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "FlatRedBallKniWeb/1.0.0": {
+        "dependencies": {
+          "AsepriteDotNet": "1.8.2",
+          "nkast.Xna.Framework.Blazor": "3.12.9001"
+        },
+        "runtime": {
+          "FlatRedBallKniWeb.dll": {}
+        }
+      },
+      "GumCore.Kni.Web/1.0.0": {
+        "dependencies": {
+          "StateInterpolation.Kni.Web": "1.0.0"
+        },
+        "runtime": {
+          "GumCore.Kni.Web.dll": {}
+        }
+      },
+      "StateInterpolation.Kni.Web/1.0.0": {
+        "dependencies": {
+          "FlatRedBallKniWeb": "1.0.0"
+        },
+        "runtime": {
+          "StateInterpolation.Kni.Web.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "FlatRedBall.Forms.Kni.Web/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AsepriteDotNet/1.8.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-W4KWAlJA5u2hkeRnItqVwV+gjXfM365Y8nn+KfEyTav6Mr/7Gua+CwOZRzePuybT97JQv7hgaGodRlJI27OSpQ==",
+      "path": "asepritedotnet/1.8.2",
+      "hashPath": "asepritedotnet.1.8.2.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Authorization/8.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Z4fjwzXxsdk3GpNBd1SjltifmxWD0jpS3iWCxCjeXQecoQ1+1Nbgbv1ZTbQw2uDVbuEwpfz5cTmRgocG3HBNAA==",
+      "path": "microsoft.aspnetcore.authorization/8.0.2",
+      "hashPath": "microsoft.aspnetcore.authorization.8.0.2.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Components/8.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ZDqYhmsnBrMMEyFC8fDHuwXz7MTpWzqegEr2+4gImKc0Zgbo7iaIiN0FAw5Lg5dovTrTvbZnPetRYTve2ca6rg==",
+      "path": "microsoft.aspnetcore.components/8.0.2",
+      "hashPath": "microsoft.aspnetcore.components.8.0.2.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Components.Analyzers/8.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wN8FAgVCiWGv0n2pUShnugPVlJxuTjLS+V7D/OsUxNaMPyoyhmVwp11+WrOCEWJ5sif5/WqTCJcVmUyi3aT/ZA==",
+      "path": "microsoft.aspnetcore.components.analyzers/8.0.2",
+      "hashPath": "microsoft.aspnetcore.components.analyzers.8.0.2.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Components.Forms/8.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-EIlY3Mx1N+Ag2kT5DVsxAZ9b2nKt91iutGkMWlkU293sYbEQV+JpmeHKOee4JYFdk0gjDK5XrSdKzokxQ8nmxw==",
+      "path": "microsoft.aspnetcore.components.forms/8.0.2",
+      "hashPath": "microsoft.aspnetcore.components.forms.8.0.2.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Components.Web/8.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VRgjn/vAvrPEXTroe2ulzGXNwqp2imiAeEmrtAmEK8tUC7h2WLFciHithpeo2t2nbA7uuC4bAi+4tdbBEvzDQQ==",
+      "path": "microsoft.aspnetcore.components.web/8.0.2",
+      "hashPath": "microsoft.aspnetcore.components.web.8.0.2.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Metadata/8.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1m54fAfHzui+0twvU6VtUApM+aUaBR3G3YZNWxGH+c62hOFkZQX/Tm5FzptADUcr8wCPvIaRPbGx77upepk7rw==",
+      "path": "microsoft.aspnetcore.metadata/8.0.2",
+      "hashPath": "microsoft.aspnetcore.metadata.8.0.2.nupkg.sha512"
+    },
+    "Microsoft.Extensions.DependencyInjection/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-V8S3bsm50ig6JSyrbcJJ8bW2b9QLGouz+G1miK3UTaOWmMtFwNNNzUf4AleyDWUmTrWMLNnFSLEQtxmxgNQnNQ==",
+      "path": "microsoft.extensions.dependencyinjection/8.0.0",
+      "hashPath": "microsoft.extensions.dependencyinjection.8.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-cjWrLkJXK0rs4zofsK4bSdg+jhDLTaxrkXu4gS6Y7MAlCvRyNNgwY/lJi5RDlQOnSZweHqoyvgvbdvQsRIW+hg==",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/8.0.0",
+      "hashPath": "microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Logging.Abstractions/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-arDBqTgFCyS0EvRV7O3MZturChstm50OJ0y9bDJvAcmEPJm0FFpFyjU/JLYyStNGGey081DvnQYlncNX5SJJGA==",
+      "path": "microsoft.extensions.logging.abstractions/8.0.0",
+      "hashPath": "microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Options/8.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dWGKvhFybsaZpGmzkGCbNNwBD1rVlWzrZKANLW/CcbFJpCEceMCGzT7zZwHOGBCbwM0SzBuceMj5HN1LKV1QqA==",
+      "path": "microsoft.extensions.options/8.0.2",
+      "hashPath": "microsoft.extensions.options.8.0.2.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Primitives/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-bXJEZrW9ny8vjMF1JV253WeLhpEVzFo1lyaZu1vQ4ZxWUlVvknZ/+ftFgVheLubb4eZPSwwxBeqS1JkCOjxd8g==",
+      "path": "microsoft.extensions.primitives/8.0.0",
+      "hashPath": "microsoft.extensions.primitives.8.0.0.nupkg.sha512"
+    },
+    "Microsoft.JSInterop/8.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gpzpEohjQMMYlZAqP/haXj2TeQv6p/WrVhtQCearXCz00Gr/gyFA8QlXLqVZW2XKxdQ/3eAtKKtiBFGJg39OiA==",
+      "path": "microsoft.jsinterop/8.0.2",
+      "hashPath": "microsoft.jsinterop.8.0.2.nupkg.sha512"
+    },
+    "Microsoft.JSInterop.WebAssembly/8.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WXUfnWayu7oT1Wq1/k7yZCJvZXs9SwZZPoQtF/RUl5W8URMa+obK2DTzEaWGQF9x3F92YWdYs78mT7KR23kY3g==",
+      "path": "microsoft.jsinterop.webassembly/8.0.2",
+      "hashPath": "microsoft.jsinterop.webassembly.8.0.2.nupkg.sha512"
+    },
+    "nkast.Wasm.Audio/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-L0X9+KZY0fmb3gDP+28K/SpgPQrZpu+t1gzPa0wHXePir035QLjw1lUte6OP5YIieIyLnc0nbBppOQhc+hU/rw==",
+      "path": "nkast.wasm.audio/8.0.0",
+      "hashPath": "nkast.wasm.audio.8.0.0.nupkg.sha512"
+    },
+    "nkast.Wasm.Canvas/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ozoZMPeqn1UMKHlLETV1t9gitilMyiMMD1VJkyQZsgSeTv6AoLA0KlXgjxhLiRYC7XVLxmM3Jo22Wvdm6raywA==",
+      "path": "nkast.wasm.canvas/8.0.0",
+      "hashPath": "nkast.wasm.canvas.8.0.0.nupkg.sha512"
+    },
+    "nkast.Wasm.Dom/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-L3Hty24KcgjgbXz+u83XJMrbxHqLXhhowxKwcbU2GZXWXaT5hcymqVsBpAYfuAWzgn/azwuVydI4mDOxB+9qig==",
+      "path": "nkast.wasm.dom/8.0.0",
+      "hashPath": "nkast.wasm.dom.8.0.0.nupkg.sha512"
+    },
+    "nkast.Wasm.XHR/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-rWzCj6Kx5uprNCkf9MYKuocS+TAvdxJXf+ETkK2ZmJjdDbJJN//Gjm9XvJnuthm0S/eeQKuU7EIDynE3/8V0ew==",
+      "path": "nkast.wasm.xhr/8.0.0",
+      "hashPath": "nkast.wasm.xhr.8.0.0.nupkg.sha512"
+    },
+    "nkast.Xna.Framework/3.12.9001": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-YqDYyncx0A4FyZiqBf6fJMZJqAGIw4iCZbzNALiyoUt8U1PoHSLziKjqJL+uL0c66ESFW3XxwnvGyiDIecqfBA==",
+      "path": "nkast.xna.framework/3.12.9001",
+      "hashPath": "nkast.xna.framework.3.12.9001.nupkg.sha512"
+    },
+    "nkast.Xna.Framework.Audio/3.12.9001": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-PFFmxlh09uGwqbVkRG50EbQeUIZPPLuSFALsc3qbR+MZt7Se0at1PY7GAcuqZafRwANG/A38q1gt1w+xov6g/Q==",
+      "path": "nkast.xna.framework.audio/3.12.9001",
+      "hashPath": "nkast.xna.framework.audio.3.12.9001.nupkg.sha512"
+    },
+    "nkast.Xna.Framework.Blazor/3.12.9001": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uSaVHruuX7BuUzy3UgyxGdPsuDEV3zCBmv6hTOlWcB97y/mMdcvQXE0+rqDpwugnsUMyNJWADF3IWaYFTPsCoQ==",
+      "path": "nkast.xna.framework.blazor/3.12.9001",
+      "hashPath": "nkast.xna.framework.blazor.3.12.9001.nupkg.sha512"
+    },
+    "nkast.Xna.Framework.Content/3.12.9001": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XHLIG9HB4rWl9bg/A/7TfyXBknasDBWLi0dBO19GNBs6BdD3P48ZrjMiFNdguDz2Ua+jEe418cuZxtBfpnaQvg==",
+      "path": "nkast.xna.framework.content/3.12.9001",
+      "hashPath": "nkast.xna.framework.content.3.12.9001.nupkg.sha512"
+    },
+    "nkast.Xna.Framework.Game/3.12.9001": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5DRGuCz2qEuXrZtaT0wSJWiJDmj+mTLo80zuseJCUQIdajNin4mzTluCzZX/jhUy3VMzevtioNkFqowB368cmA==",
+      "path": "nkast.xna.framework.game/3.12.9001",
+      "hashPath": "nkast.xna.framework.game.3.12.9001.nupkg.sha512"
+    },
+    "nkast.Xna.Framework.Graphics/3.12.9001": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-I1oq1nS0fe1No/tH2dmGBFjIl1Ovv08AZLq/L+UhjPV+BgZ1syoF+rJ5v5thCCk73xSvbsX36GR/6k1G2AE/+w==",
+      "path": "nkast.xna.framework.graphics/3.12.9001",
+      "hashPath": "nkast.xna.framework.graphics.3.12.9001.nupkg.sha512"
+    },
+    "nkast.Xna.Framework.Input/3.12.9001": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-h2vD7KyYru2acts4rO56qoIX3m4NSG188ReBsXRKyorBd/6Ux11bZoauYE3uOv8B5IdL/+45l8ESYo81ocCBOQ==",
+      "path": "nkast.xna.framework.input/3.12.9001",
+      "hashPath": "nkast.xna.framework.input.3.12.9001.nupkg.sha512"
+    },
+    "nkast.Xna.Framework.Media/3.12.9001": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-GF2TpVSBSkCev1EfnIAiOc3Aj7oCUTjAdukIQOt4gmZ2bVQZjBavWiFwiA5RKGAELQyUrUCdxr1if/dJD9j6MQ==",
+      "path": "nkast.xna.framework.media/3.12.9001",
+      "hashPath": "nkast.xna.framework.media.3.12.9001.nupkg.sha512"
+    },
+    "System.IO.Pipelines/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-FHNOatmUq0sqJOkTx+UF/9YK1f180cnW5FVqnQMvYUN0elp6wFzbtPSiqbo1/ru8ICp43JM1i7kKkk6GsNGHlA==",
+      "path": "system.io.pipelines/8.0.0",
+      "hashPath": "system.io.pipelines.8.0.0.nupkg.sha512"
+    },
+    "TextCopy/6.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7CxK3AOMTvACGGpRz9ZSVt0k+Ohx9tSPxGtauYKh8IdjTGZ7XzclyQh3m94E5Zk3pvWbZ3j/HjHpSHCuRUtDjA==",
+      "path": "textcopy/6.1.0",
+      "hashPath": "textcopy.6.1.0.nupkg.sha512"
+    },
+    "FlatRedBallKniWeb/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "GumCore.Kni.Web/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "StateInterpolation.Kni.Web/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

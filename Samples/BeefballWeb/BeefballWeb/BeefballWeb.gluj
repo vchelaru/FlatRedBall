@@ -35,6 +35,7 @@
   "ApplyToFixedResolutionPlatforms": true,
   "ExternallyBuiltFileDirectory": "../../",
   "FileVersion": 42,
+  "FileVersion": 55,
   "ScreenReferences": [
     {
       "Name": "Screens\\GameScreen"

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallWebTemplate", "FlatRedBallWebTemplate\FlatRedBallWebTemplate.csproj", "{D199D4B6-A98D-47F9-B616-2B897BBE0875}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D199D4B6-A98D-47F9-B616-2B897BBE0875}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D199D4B6-A98D-47F9-B616-2B897BBE0875}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D199D4B6-A98D-47F9-B616-2B897BBE0875}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D199D4B6-A98D-47F9-B616-2B897BBE0875}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6F6FA25E-80A1-4369-9243-FD3B3B0B8288}
+	EndGlobalSection
+EndGlobal
