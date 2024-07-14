@@ -1419,16 +1419,13 @@ namespace FlatRedBall
             PrintProfilingInformation();
 #endif
             }
-#if !FRB_MDX
             else
             {
                 PerformSuspendedDraw();
             }
-#endif
 
         }
 
-#if !FRB_MDX
         private static void PerformSuspendedDraw()
         {
             GraphicsDevice.Clear(Color.Black);
@@ -1460,7 +1457,6 @@ namespace FlatRedBall
                 _loadingScreenSpriteBatch.End();
             }
         }
-#endif
 
         public static void RenderAll(Section section)
         {

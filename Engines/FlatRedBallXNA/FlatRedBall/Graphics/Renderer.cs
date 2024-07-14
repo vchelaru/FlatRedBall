@@ -945,7 +945,6 @@ namespace FlatRedBall.Graphics
             #endregion
 
 
-
             #region Set device settings for rendering
 
             // do nothing???
@@ -955,7 +954,6 @@ namespace FlatRedBall.Graphics
             ForceSetTextureAddressMode(Microsoft.Xna.Framework.Graphics.TextureAddressMode.Clamp);
 
             #endregion
-
 
 
 
@@ -1133,11 +1131,6 @@ namespace FlatRedBall.Graphics
 
             for (int i = 0; i < SpriteManager.Cameras.Count; i++)
             {
-                // July 25, 2014
-                // I don't think we need to do this anymore.  This is old code that
-                // doesn't really fit the pattern.  The Camera should be passed in rather
-                // than set through this function:
-                //Camera camera = SpriteManager.SetCurrentCamera(c);
                 Camera camera = SpriteManager.Cameras[i];
 
                 lock (Renderer.Graphics.GraphicsDevice)

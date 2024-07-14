@@ -546,7 +546,10 @@ namespace FlatRedBall.Content
 				// in the dictionaries.  But whatever is held
 				// in there may not really be a file so let's check
 				// if the file exists after we check the dictionaries.
+#if !WEB
+// can't check if a file exists (for now) on web, so just skip throwing an exception...
 				FileManager.ThrowExceptionIfFileDoesntExist(assetName);
+#endif
 #endif
 
 				IDisposable loadedAsset = null;

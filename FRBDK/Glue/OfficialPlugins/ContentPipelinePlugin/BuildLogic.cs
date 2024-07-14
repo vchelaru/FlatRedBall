@@ -316,6 +316,10 @@ namespace OfficialPlugins.MonoGameContent
             {
                 platform = "WindowsStoreApp";
             }
+            else if(project is KniWebProject)
+            {
+                platform = "BlazorGL";
+            }
 
             return platform;
         }

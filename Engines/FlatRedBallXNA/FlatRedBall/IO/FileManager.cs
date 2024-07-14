@@ -2,7 +2,7 @@
 #define USE_ISOLATED_STORAGE
 #endif
 
-#if IOS || ANDROID
+#if IOS || ANDROID || WEB
 #define USES_DOT_SLASH_ABOLUTE_FILES
 #endif
 
@@ -1059,11 +1059,13 @@ namespace FlatRedBall.IO
             {
                 return false;
             }
+#if !WEB
             // If it's isolated storage, then it's not relative:
             else if (fileName.Contains(IsolatedStoragePrefix))
             {
                 return false;
             }
+#endif
             else
             {
                 return true;
@@ -1846,22 +1848,40 @@ namespace FlatRedBall.IO
             if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
                 fileName = fileName.Substring(2);
 
+            var usesIsolatedStorage = false;
 
+#if !WEB
+            usesIsolatedStorage = fileName.Contains(IsolatedStoragePrefix) || fileName.Contains(IsolatedStoragePrefix.ToLowerInvariant());
+#endif
 
-            if (fileName.Contains(IsolatedStoragePrefix) || fileName.Contains(IsolatedStoragePrefix.ToLowerInvariant()))
+            if (usesIsolatedStorage)
             {
+#if !WEB
                 fileName = GetIsolatedStorageFileName(fileName);
 
                 IsolatedStorageFileStream isfs = new IsolatedStorageFileStream(fileName, mode, mIsolatedStorageFile);
 
                 stream = isfs;
+#endif
             }
             else
             {
 
 
-#if ANDROID || IOS 
+#if ANDROID || IOS
+
+
+
                 stream = TitleContainer.OpenStream(fileName);
+#elif WEB
+
+                fileName.Replace("\\", "/");
+                if(fileName.StartsWith("/"))
+                {
+                    fileName = fileName.Substring(1);
+                }
+                stream = TitleContainer.OpenStream(fileName);
+
 #else
 
                 fileName = fileName.Replace("\\", "/");
@@ -1881,13 +1901,13 @@ namespace FlatRedBall.IO
 #endif
             }
 #else
-            // If the file is locked (like by excel) then
-            // this will fail. We only want to read it, so it shouldn't...
-            //stream = File.OpenRead(fileName);
-            // https://stackoverflow.com/questions/12942717/read-log-file-being-used-by-another-process
+                // If the file is locked (like by excel) then
+                // this will fail. We only want to read it, so it shouldn't...
+                //stream = File.OpenRead(fileName);
+                // https://stackoverflow.com/questions/12942717/read-log-file-being-used-by-another-process
 
-            //stream = File.OpenRead(fileName);
-            stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                //stream = File.OpenRead(fileName);
+                stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 #endif
 
             return stream;
