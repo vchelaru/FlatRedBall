@@ -548,6 +548,7 @@ public static class ProjectCreationHelper
     }
     private static void UpdateNamespaces(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
     {
+        #region cs/xaml/aspx/html/user/appxmanifest
         // simple replacements:
         List<string> 
             filesToFix = FileManager.GetAllFilesInDirectory(unpackDirectory, "cs");
@@ -568,6 +569,9 @@ public static class ProjectCreationHelper
             FileManager.SaveText(contents, fileName);
         }
 
+        #endregion
+
+        #region CSV
         filesToFix.Clear();
 
         filesToFix = FileManager.GetAllFilesInDirectory(unpackDirectory, "csv");
@@ -581,6 +585,9 @@ public static class ProjectCreationHelper
             FileManager.SaveText(contents, fileName);
         }
 
+        #endregion
+
+        #region CSPROJ
         filesToFix.Clear();
 
         filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "csproj"));
@@ -615,6 +622,10 @@ public static class ProjectCreationHelper
             System.IO.File.WriteAllText(fileName, contents, Encoding.UTF8);
         }
 
+        #endregion
+
+        #region contentproj
+
         filesToFix.Clear();
         filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "contentproj"));
         foreach (string fileName in filesToFix)
@@ -629,7 +640,9 @@ public static class ProjectCreationHelper
             System.IO.File.WriteAllText(fileName, contents, Encoding.UTF8);
         }
 
+        #endregion
 
+        #region GLUX/GLUJ
         filesToFix.Clear();
         filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "glux"));
         filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "gluj"));
@@ -646,6 +659,9 @@ public static class ProjectCreationHelper
             FileManager.SaveText(contents, fileName);
         }
 
+        #endregion
+
+        #region GLEJ/GLSJ
         filesToFix.Clear();
         filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "glej"));
         filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "glsj"));
@@ -665,8 +681,30 @@ public static class ProjectCreationHelper
 
             FileManager.SaveText(contents, fileName);
         }
+        #endregion
+
+        #region RAZOR
+        filesToFix.Clear();
+        filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "razor"));
+        foreach (string fileName in filesToFix)
+        {
+            string contents = FileManager.FromFileText(fileName);
+
+            // June 15, 2024
+            // We used to do ".DataTypes" to catch references to
+            // CSVs but it misses references to NamedObjectSaves, so we
+            // need to update those. We can be more general by just looking for 
+            // the old name plus a dot at the end
+            string whatToSearchFor = $"@using {stringToReplace}";
+            string replacement = $"@using {stringToReplaceWith}";
+
+            contents = contents.Replace(whatToSearchFor, replacement);
+
+            FileManager.SaveText(contents, fileName);
+        }
+        #endregion
     }
-    
+
     /*
     private static void UpdateJavaFiles(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
     {

@@ -130,6 +130,15 @@ internal static class AddSourceManager
 
     #endregion
 
+    public static List<ProjectReference> Web = new List<ProjectReference>
+    {
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.Kni.Web\\StateInterpolation.Kni.Web.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\KniWeb\\FlatRedBallKniWeb.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.Kni.Web\\FlatRedBall.Forms.Kni.Web.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCore.Kni.Web\\GumCore.Kni.Web.csproj", ProjectRootType = FrbOrGum.Gum},
+    };
+
+
     #region Android Projects
     public static List<ProjectReference> AndroidXamarin = new List<ProjectReference>
     {
@@ -193,6 +202,8 @@ internal static class AddSourceManager
 
     #endregion
 
+    #region XnaNet4 (old)
+
     public static List<ProjectReference> XnaNet4 = new List<ProjectReference>
     {
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.csproj", ProjectRootType = FrbOrGum.Frb},
@@ -200,6 +211,8 @@ internal static class AddSourceManager
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.csproj", ProjectRootType = FrbOrGum.Frb},
         new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreXnaPc.csproj", ProjectRootType = FrbOrGum.Gum},
     };
+
+    #endregion
 
     public static async Task HandleLinkToSourceClicked(AddFrbSourceViewModel viewModel)
     {
@@ -349,8 +362,13 @@ internal static class AddSourceManager
         {
             return IosNet8.Concat(SharedShprojReferences).ToList();
         }
-        else if (GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6) {
-            // When we support Android/iOS .NET 6, we need to handle those here:
+        else if(GlueState.Self.CurrentMainProject is KniWebProject)
+        {
+            return Web.Concat(SharedShprojReferences).ToList();
+        }
+        // Other projects that use .NET major > 6 are handled above here:
+        else if (GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6) 
+        {
             return GlueState.Self.CurrentMainProject is FnaDesktopProject
                 ? DesktopFNA.Concat(SharedShprojReferences).ToList()
                 : DesktopGlNet6.Concat(SharedShprojReferences).ToList();

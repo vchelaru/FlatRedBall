@@ -433,67 +433,84 @@ namespace FlatRedBall.IO
             }
             else
             {
-#if  USE_ISOLATED_STORAGE
-                bool isIsolatedStorageFile = IsInIsolatedStorage(fileName);
+                var isIsolatedStorageFile = false;
+
+#if USE_ISOLATED_STORAGE
+
+                isIsolatedStorageFile = IsInIsolatedStorage(fileName);
+#endif
 
                 if (isIsolatedStorageFile)
                 {
+#if USE_ISOLATED_STORAGE
+
                     return FileExistsInIsolatedStorage(fileName);
+#endif
+                }
+
+
+#if IOS||ANDROID||WEB
+
+
+                if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
+                    fileName = fileName.Substring(2);
+                fileName = fileName.Replace("\\", "/");
+
+
+                // I think we can make this to-lower on iOS and Android so we don't have to spread to-lowers everywhere else:
+#if !NET8_0_OR_GREATER
+                fileName = fileName.ToLowerInvariant();
+#endif
+
+#if ANDROID
+                // We may be checking for a file outside of the title container
+                if (System.IO.File.Exists(fileName))
+                {
+                    return true;
+                }
+#endif
+
+
+                Stream stream = null;
+                // This method tells us if a file exists.  I hate that we have 
+                // to do it this way - the TitleContainer should have a FileExists
+                // property to avoid having to do logic off of exceptions.  <sigh>
+                try
+                {
+#if WEB
+                    if(fileName.StartsWith("/"))
+                    {
+                        fileName = fileName.Substring(1);
+                    }
+#endif
+
+
+                    stream = TitleContainer.OpenStream(fileName);
+                }
+#if ANDROID
+                catch (Java.IO.FileNotFoundException)
+                {
+                    return false;
+                }
+#endif
+                catch (FileNotFoundException fnfe)
+                {
+                    return false;
+                }
+
+                if (stream != null)
+                {
+                    stream.Dispose();
+                    return true;
                 }
                 else
                 {
-
-                    if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
-                        fileName = fileName.Substring(2);
-                    fileName = fileName.Replace("\\", "/");
-
-
-                    // I think we can make this to-lower on iOS and Android so we don't have to spread to-lowers everywhere else:
-#if !NET8_0_OR_GREATER
-                    fileName = fileName.ToLowerInvariant();
-#endif
-
-#if ANDROID
-                    // We may be checking for a file outside of the title container
-                    if (System.IO.File.Exists(fileName))
-                    {
-                        return true;
-                    }
-#endif
-
-
-                    Stream stream = null;
-                    // This method tells us if a file exists.  I hate that we have 
-                    // to do it this way - the TitleContainer should have a FileExists
-                    // property to avoid having to do logic off of exceptions.  <sigh>
-                    try
-                    {
-                        stream = TitleContainer.OpenStream(fileName);
-                    }
-#if ANDROID
-                    catch (Java.IO.FileNotFoundException)
-                    {
-                        return false;
-                    }
-#endif
-                    catch (FileNotFoundException fnfe)
-                    {
-                        return false;
-                    }
-
-                    if (stream != null)
-                    {
-                        stream.Dispose();
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
+                
 #else
 
-                    if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
+                if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
 					fileName = fileName.Substring(2);
 
                 return System.IO.File.Exists(fileName);
@@ -994,11 +1011,11 @@ namespace FlatRedBall.IO
         {
 #if USE_ISOLATED_STORAGE
 
-    #if IOS || UWP
+#if IOS || UWP
             // I don't know if we need to get anything here
-    #else
+#else
             mIsolatedStorageFile = IsolatedStorageFile.GetUserStoreForApplication();
-    #endif
+#endif
             mHasUserFolderBeenInitialized = true;
 
 #else
@@ -1009,12 +1026,12 @@ namespace FlatRedBall.IO
 
             if (!Directory.Exists(directory))
             {
-    #if IOS
+#if IOS
                 if(directory.StartsWith("./"))
                 {
                     directory = directory.Substring(1);
                 }
-    #endif
+#endif
 
                 Directory.CreateDirectory(directory);
             }
