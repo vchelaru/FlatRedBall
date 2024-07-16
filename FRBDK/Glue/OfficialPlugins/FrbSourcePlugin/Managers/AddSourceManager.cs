@@ -130,6 +130,8 @@ internal static class AddSourceManager
 
     #endregion
 
+    #region Web Projects
+
     public static List<ProjectReference> Web = new List<ProjectReference>
     {
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.Kni.Web\\StateInterpolation.Kni.Web.csproj", ProjectRootType = FrbOrGum.Frb},
@@ -137,7 +139,7 @@ internal static class AddSourceManager
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.Kni.Web\\FlatRedBall.Forms.Kni.Web.csproj", ProjectRootType = FrbOrGum.Frb},
         new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCore.Kni.Web\\GumCore.Kni.Web.csproj", ProjectRootType = FrbOrGum.Gum},
     };
-
+    #endregion
 
     #region Android Projects
     public static List<ProjectReference> AndroidXamarin = new List<ProjectReference>
@@ -214,21 +216,11 @@ internal static class AddSourceManager
 
     #endregion
 
-    public static async Task HandleLinkToSourceClicked(AddFrbSourceViewModel viewModel)
-    {
-        var frbRootFolder = viewModel.FrbRootFolder;
-        var gumRootFolder = viewModel.GumRootFolder;
-        bool includeGumSkia = viewModel.IncludeGumSkia;
-        await LinkToSourceInternal(frbRootFolder, gumRootFolder, includeGumSkia);
-    }
+    public static async Task HandleLinkToSourceClicked(AddFrbSourceViewModel viewModel) =>
+        await LinkToSourceInternal(viewModel.FrbRootFolder, viewModel.GumRootFolder, viewModel.IncludeGumSkia);
 
-    public static async Task LinkToSourceUsingDefaults()
-    {
-        var frbRootFolder = DefaultFrbFilePath;
-        var gumRootFolder = DefaultGumFilePath;
-        bool includeGumSkia = true;
-        await LinkToSourceInternal(frbRootFolder, gumRootFolder, includeGumSkia);
-    }
+    public static async Task LinkToSourceUsingDefaults() =>
+        await LinkToSourceInternal(DefaultFrbFilePath, DefaultGumFilePath, includeGumSkia:true);
 
     private static async Task LinkToSourceInternal(string frbRootFolder, string gumRootFolder, bool includeGumSkia)
     {
@@ -322,6 +314,18 @@ internal static class AddSourceManager
 
                 if (addGeneralResponse.Succeeded)
                 {
+                    var libraryFolder = GlueState.Self.CurrentGlueProjectDirectory + "Libraries/";
+
+                    var dllNames = FileManager.GetAllFilesInDirectory(libraryFolder, ".dll");
+
+                    var dllNamesStripped = dllNames.Select(item => FileManager.RemoveExtension(FileManager.RemovePath(item))).ToHashSet();
+
+                    foreach(var dllName in dllNamesStripped)
+                    {
+                        RemoveDllReference(proj, dllName);
+                    }
+
+
                     RemoveDllReference(proj, "FlatRedBall");
                     RemoveDllReference(proj, "FlatRedBall.FNA");
                     RemoveDllReference(proj, "FlatRedBall.Forms");
