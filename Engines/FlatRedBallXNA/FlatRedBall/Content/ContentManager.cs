@@ -649,7 +649,7 @@ namespace FlatRedBall.Content
 				}
 				#endregion
 
-#region PositionedObjectList<Polygon>
+				#region PositionedObjectList<Polygon>
 
 				else if (typeof(T) == typeof(PositionedObjectList<FlatRedBall.Math.Geometry.Polygon>))
 				{
@@ -659,7 +659,7 @@ namespace FlatRedBall.Content
 					return (T)((object)polygons);
 				}
 
-#endregion
+				#endregion
 
 				#region AnimationChainList
 
@@ -705,40 +705,38 @@ namespace FlatRedBall.Content
 
                 else if (typeof(T) == typeof(SoundEffect))
                 {
-                    T soundEffect;
+                    SoundEffect soundEffect;
 
-                    if (assetName.StartsWith(@".\") || assetName.StartsWith(@"./"))
-                    {
-                        soundEffect = base.Load<T>(assetName.Substring(2));
-                    }
-                    else
-                    {
-                        soundEffect = base.Load<T>(assetName);
+					var modifiedAssetName = (assetName.StartsWith(@".\") || assetName.StartsWith(@"./")
+						? assetName.Substring(2)
+						: assetName);
 
-                    }
+					if(string.IsNullOrEmpty(extension))
+					{
+						soundEffect = base.Load<SoundEffect>(assetName.Substring(2));
+						// return here so we don't add the asset to the dictionary
+						return (T)(object)soundEffect;
+					}
+					else
+					{
+						soundEffect = SoundEffect.FromFile(assetName);
+						loadedAsset = soundEffect;
+					}
 
-                    return soundEffect;
                 }
 #endif
 
-#region RuntimeCsvRepresentation
+				#region RuntimeCsvRepresentation
 
-#if !SILVERLIGHT
                 else if (typeof(T) == typeof(RuntimeCsvRepresentation))
                 {
-#if XBOX360
-					throw new NotImplementedException("Can't load CSV from file.  Try instead to use the content pipeline.");
-#else
 
                     return (T)((object)CsvFileManager.CsvDeserializeToRuntime(assetName));
-#endif
                 }
-#endif
 
+				#endregion
 
-#endregion
-
-#region SplineList
+				#region SplineList
 
                 else if (typeof(T) == typeof(List<Spline>))
                 {
@@ -759,9 +757,9 @@ namespace FlatRedBall.Content
                     return (T)asObject;
                 }
 
-#endregion
+				#endregion
 
-#region BitmapFont
+				#region BitmapFont
 
                 else if (typeof(T) == typeof(BitmapFont))
                 {
@@ -777,7 +775,7 @@ namespace FlatRedBall.Content
                     return (T)bitmapFontAsObject;
                 }
 
-#endregion
+				#endregion
 
 
 #region Text
