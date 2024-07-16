@@ -7,7 +7,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <RootNamespace>FlatRedBallWebTemplate</RootNamespace>
     <AssemblyName>FlatRedBallWebTemplate</AssemblyName>
-    <DefineConstants>$(DefineConstants);BLAZORGL</DefineConstants>
+    <DefineConstants>$(DefineConstants);BLAZORGL;WEB</DefineConstants>
 	<KniPlatform>BlazorGL</KniPlatform>
   </PropertyGroup>
   
