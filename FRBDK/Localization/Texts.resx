@@ -394,9 +394,6 @@ for {1}?</value>
   <data name="GumProperties" xml:space="preserve">
     <value>Gum Properties</value>
   </data>
-  <data name="ErrorGumFileAssociationNotFound" xml:space="preserve">
-    <value>Could not find file association for Gum files and could not find Gum relative to the FlatRedBall Editor. Associations need to be set before attempting to rebuild font files</value>
-  </data>
   <data name="RefreshingFontCache" xml:space="preserve">
     <value>Refreshing Font Cache</value>
   </data>

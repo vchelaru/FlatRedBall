@@ -2050,15 +2050,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find file association for Gum files and could not find Gum relative to the FlatRedBall Editor. Associations need to be set before attempting to rebuild font files.
-        /// </summary>
-        public static string ErrorGumFileAssociationNotFound {
-            get {
-                return ResourceManager.GetString("ErrorGumFileAssociationNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Error loading your settings file which is located at.
         /// </summary>
         public static string ErrorLoadingSettings {

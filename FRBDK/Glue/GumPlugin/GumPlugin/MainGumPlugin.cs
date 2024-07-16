@@ -880,7 +880,17 @@ public class MainGumPlugin : PluginBase
 
         if (string.IsNullOrEmpty(executable))
         {
-            GlueCommands.Self.DialogCommands.ShowMessageBox(Localization.Texts.ErrorGumFileAssociationNotFound);
+            var message = 
+                "Could not find file association for Gum files and could not find Gum relative to the FlatRedBall Editor." +
+                "Associations need to be set before attempting to rebuild font files. Alternatively you can have Gum located at" +
+                "one of the following locations: \n\n" +
+                "As part of FRBDK (prebuilt):\n\t" +
+                GumPrebuiltLocation + "\n\n" +
+                "Built from source at default checkout locations: \n\t" +
+                GumFromSourceLocation                
+                ;
+
+            GlueCommands.Self.DialogCommands.ShowMessageBox(message);
         }
         else
         {
@@ -909,6 +919,12 @@ public class MainGumPlugin : PluginBase
         }
     }
 
+    static FilePath GumPrebuiltLocation =>
+        GlueState.Self.GlueExeDirectory + "../Gum/Data/Gum.exe";
+
+    static FilePath GumFromSourceLocation =>
+        GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+
     public static string GetGumExecutableLocation()
     {
         var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension("gumx");
@@ -918,7 +934,7 @@ public class MainGumPlugin : PluginBase
         // see if the prebuilt location exists:
         if (string.IsNullOrEmpty(executable))
         {
-            FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../Gum/Data/Gum.exe";
+            FilePath prebuiltLocation = GumPrebuiltLocation;
             if (prebuiltLocation.Exists())
             {
                 executable = prebuiltLocation.FullPath;
@@ -931,7 +947,7 @@ public class MainGumPlugin : PluginBase
             if (string.IsNullOrEmpty(executable))
             {
                 // \FlatRedBall\FRBDK\Glue\Glue\bin\x86\Debug to \Gum\Gum\bin\Debug\Data
-                FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                FilePath prebuiltLocation = GumFromSourceLocation;
                 if (prebuiltLocation.Exists())
                 {
                     executable = prebuiltLocation.FullPath;
