@@ -952,21 +952,6 @@ for {1}?</value>
   <data name="IncludeListsInGameScreen" xml:space="preserve">
     <value>Include lists in GameScreen</value>
   </data>
-  <data name="LocalFiles" xml:space="preserve">
-    <value>Local Files</value>
-  </data>
-  <data name="DownloadFile" xml:space="preserve">
-    <value>Download File</value>
-  </data>
-  <data name="HintExistingFileList" xml:space="preserve">
-    <value>The list above shows all files in the game's content folder. &lt;LineBreak&gt;&lt;/LineBreak&gt;To add files from outside of the content folder, click the Browse button. Files from outside of the content folder will be copied to the content folder.</value>
-  </data>
-  <data name="Browse" xml:space="preserve">
-    <value>Browse...</value>
-  </data>
-  <data name="EnterUrlName" xml:space="preserve">
-    <value>Enter URL Name:</value>
-  </data>
   <data name="SelectFileOrClickBrowse" xml:space="preserve">
     <value>Select a file or click the Browse button</value>
   </data>

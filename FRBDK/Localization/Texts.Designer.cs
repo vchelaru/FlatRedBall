@@ -529,15 +529,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Browse....
-        /// </summary>
-        public static string Browse {
-            get {
-                return ResourceManager.GetString("Browse", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Build.
         /// </summary>
         public static string Build {
@@ -1402,15 +1393,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download File.
-        /// </summary>
-        public static string DownloadFile {
-            get {
-                return ResourceManager.GetString("DownloadFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Duplicate.
         /// </summary>
         public static string Duplicate {
@@ -1695,15 +1677,6 @@ namespace Localization {
         public static string EnterNewTmx {
             get {
                 return ResourceManager.GetString("EnterNewTmx", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enter URL Name:.
-        /// </summary>
-        public static string EnterUrlName {
-            get {
-                return ResourceManager.GetString("EnterUrlName", resourceCulture);
             }
         }
         
@@ -3554,15 +3527,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The list above shows all files in the game&apos;s content folder. &lt;LineBreak&gt;&lt;/LineBreak&gt;To add files from outside of the content folder, click the Browse button. Files from outside of the content folder will be copied to the content folder..
-        /// </summary>
-        public static string HintExistingFileList {
-            get {
-                return ResourceManager.GetString("HintExistingFileList", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Generates code to use a gamepad if plugged in, otherwise to use the Keyboard..
         /// </summary>
         public static string HintGamepadCodeGeneration {
@@ -4585,15 +4549,6 @@ namespace Localization {
         public static string LocalCopyIfAvailable {
             get {
                 return ResourceManager.GetString("LocalCopyIfAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Local Files.
-        /// </summary>
-        public static string LocalFiles {
-            get {
-                return ResourceManager.GetString("LocalFiles", resourceCulture);
             }
         }
         

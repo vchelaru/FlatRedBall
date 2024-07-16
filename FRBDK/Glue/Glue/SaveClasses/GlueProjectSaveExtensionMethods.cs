@@ -198,7 +198,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             #endregion
 
-            if (option != null)
+            if (option != null && rfs != null)
             {
                 if (option is bool)
                 {
