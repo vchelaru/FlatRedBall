@@ -967,7 +967,10 @@ public class GluxCommands : IGluxCommands
     {
         if (toReturn.IsCsvOrTreatedAsCsv)
         {
-            toReturn.CreatesDictionary = ((string)options) == "Dictionary";
+            var optionsAsString = (string)options;
+            // If it's null, then let's default to dictionary so that 
+            // existing files default to dictionary:
+            toReturn.CreatesDictionary = string.IsNullOrEmpty(optionsAsString) || optionsAsString == "Dictionary";
         }
     }
 
