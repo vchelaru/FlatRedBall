@@ -1334,7 +1334,7 @@ namespace FlatRedBall.TileGraphics
 #endif
             lastVertIndex = System.Math.Min(lastVertIndex, mVertices.Length);
 
-            indexStart = (firstVertIndex * 3) / 2;
+            indexStart = 0;
             int indexEndExclusive = ((lastVertIndex - firstVertIndex) * 3) / 2;
 
             numberOfTriangles = (indexEndExclusive - indexStart) / 3;
@@ -1775,26 +1775,46 @@ namespace FlatRedBall.TileGraphics
                     newVerts[destinationVertIndex + 2] = layerToCopyFrom.mVertices[sourceVertIndex + 2];
                     newVerts[destinationVertIndex + 3] = layerToCopyFrom.mVertices[sourceVertIndex + 3];
 
-                    if(new32BitIndexes != null)
+                    if (new32BitIndexes != null)
                     {
-                        var firstVert = layerToCopyFrom.indices32Bit[sourceIndexIndex];
-
-                        new32BitIndexes[destinationIndexIndex] =
-                            destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex];
-                        new32BitIndexes[destinationIndexIndex + 1] =
-                            destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 1];
-                        new32BitIndexes[destinationIndexIndex + 2] =
-                            destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 2];
-                        new32BitIndexes[destinationIndexIndex + 3] =
-                            destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 3];
-                        new32BitIndexes[destinationIndexIndex + 4] =
-                            destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 4];
-                        new32BitIndexes[destinationIndexIndex + 5] =
-                            destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 5];
+                        if (layerToCopyFrom.indices32Bit != null)
+                        {
+                            var firstVert = layerToCopyFrom.indices32Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex + 1] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 1];
+                            new32BitIndexes[destinationIndexIndex + 2] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 2];
+                            new32BitIndexes[destinationIndexIndex + 3] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 3];
+                            new32BitIndexes[destinationIndexIndex + 4] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 4];
+                            new32BitIndexes[destinationIndexIndex + 5] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 5];
+                        }
+                        else
+                        {
+                            var firstVert = layerToCopyFrom.indices16Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex + 1] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 1];
+                            new32BitIndexes[destinationIndexIndex + 2] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 2];
+                            new32BitIndexes[destinationIndexIndex + 3] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 3];
+                            new32BitIndexes[destinationIndexIndex + 4] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 4];
+                            new32BitIndexes[destinationIndexIndex + 5] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 5];
+                        }
                     }
                     else
                     {
                         var firstVert = layerToCopyFrom.indices16Bit[sourceIndexIndex];
+
+                        // assume copying from 16 bit to a 16 bit, or else this will fail anyway due to length
 
                         new16BitIndexes[destinationIndexIndex] =
                             (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex]);
@@ -1933,23 +1953,44 @@ namespace FlatRedBall.TileGraphics
 
                     if (new32BitIndexes != null)
                     {
-                        var firstVert = layerToCopyFrom.indices32Bit[sourceIndexIndex];
-                        new32BitIndexes[destinationIndexIndex] =
-                            destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex];
-                        new32BitIndexes[destinationIndexIndex + 1] =
-                            destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 1];
-                        new32BitIndexes[destinationIndexIndex + 2] =
-                            destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 2];
-                        new32BitIndexes[destinationIndexIndex + 3] =
-                            destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 3];
-                        new32BitIndexes[destinationIndexIndex + 4] =
-                            destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 4];
-                        new32BitIndexes[destinationIndexIndex + 5] =
-                            destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 5];
+                        if (layerToCopyFrom.indices32Bit != null)
+                        {
+                            var firstVert = layerToCopyFrom.indices32Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex + 1] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 1];
+                            new32BitIndexes[destinationIndexIndex + 2] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 2];
+                            new32BitIndexes[destinationIndexIndex + 3] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 3];
+                            new32BitIndexes[destinationIndexIndex + 4] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 4];
+                            new32BitIndexes[destinationIndexIndex + 5] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 5];
+                        }
+                        else
+                        {
+                            var firstVert = layerToCopyFrom.indices16Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex + 1] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 1];
+                            new32BitIndexes[destinationIndexIndex + 2] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 2];
+                            new32BitIndexes[destinationIndexIndex + 3] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 3];
+                            new32BitIndexes[destinationIndexIndex + 4] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 4];
+                            new32BitIndexes[destinationIndexIndex + 5] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 5];
+                        }
                     }
                     else
                     {
                         var firstVert = layerToCopyFrom.indices16Bit[sourceIndexIndex];
+
+                        // assume copying from 16 bit to a 16 bit, or else this will fail anyway due to length
 
                         new16BitIndexes[destinationIndexIndex] =
                             (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex]);
