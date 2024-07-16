@@ -222,11 +222,11 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
             //}
             if(ati?.RuntimeTypeName == "GumIdb")
             {
-                method.Line($"{gumScreenRfs.GetInstanceName()}.Element.UpdateLayout();");
+                method.Line($"{gumScreenRfs.GetInstanceName()}?.Element.UpdateLayout();");
             }
             else
             {
-                method.Line($"{gumScreenRfs.GetInstanceName()}.UpdateLayout();");
+                method.Line($"{gumScreenRfs.GetInstanceName()}?.UpdateLayout();");
             }
 
             if(hasBase)
