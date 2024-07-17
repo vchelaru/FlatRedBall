@@ -487,6 +487,16 @@ namespace FlatRedBall.Content
 
 			}
 #else
+
+#if WEB
+			if(assetName.StartsWith("/"))
+			{
+				assetName = assetName.Substring(1);
+			}
+#endif
+
+
+
 			T asset = base.Load<T>(assetName);
 #endif
 			if (!mAssets.ContainsKey(assetName))
@@ -719,16 +729,21 @@ namespace FlatRedBall.Content
 					}
 					else
 					{
+#if WEB
+						using var stream = FileManager.GetStreamForFile(assetName);
+						soundEffect = SoundEffect.FromStream(stream);
+#else
 						soundEffect = SoundEffect.FromFile(assetName);
+#endif
 						loadedAsset = soundEffect;
-					}
+                    }
 
                 }
 #endif
 
-				#region RuntimeCsvRepresentation
+							#region RuntimeCsvRepresentation
 
-                else if (typeof(T) == typeof(RuntimeCsvRepresentation))
+				else if (typeof(T) == typeof(RuntimeCsvRepresentation))
                 {
 
                     return (T)((object)CsvFileManager.CsvDeserializeToRuntime(assetName));

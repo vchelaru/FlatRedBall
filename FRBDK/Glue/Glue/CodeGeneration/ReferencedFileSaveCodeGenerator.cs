@@ -379,6 +379,83 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
+        #region Load Static Content (Load)
+
+        public static void GetInitializationForReferencedFile(ReferencedFileSave referencedFile, IElement container,
+    ICodeBlock codeBlock, LoadType loadType)
+        {
+            #region early-outs (not loaded at runtime, loaded only when referenced)
+
+            bool shouldGenerateInitialize = GetIfShouldGenerateInitialize(referencedFile);
+
+            if (!shouldGenerateInitialize)
+            {
+                return;
+            }
+
+            #endregion
+
+            // I'm going to only do this if we're non-null so that we don't add it for global content.  Global Content may load
+            // async and cause bad data
+            if (container != null)
+            {
+                PerformancePluginCodeGenerator.GenerateStart(container, codeBlock, "LoadStaticContent" + FileManager.RemovePath(referencedFile.Name));
+            }
+            AddIfConditionalSymbolIfNecesssary(codeBlock, referencedFile);
+
+            bool directives = false;
+
+            for (int i = referencedFile.ProjectSpecificFiles.Count; i >= 0; i--)
+            {
+                bool isProjectSpecific = i != 0;
+
+                string fileName;
+                ProjectBase project;
+
+                if (isProjectSpecific)
+                {
+                    fileName = referencedFile.ProjectSpecificFiles[i - 1].File?.FullPath.ToLower().Replace("\\", "/");
+
+                    // At one point
+                    // the project specific
+                    // files were platform specific
+                    // but instead we want them to be
+                    // based off of the project name instead.
+                    // The reason for this is because a user could
+                    // create a synced project that targets the same
+                    // platform.  
+                    project = ProjectManager.GetProjectByName(referencedFile.ProjectSpecificFiles[i - 1].ProjectName);
+                }
+                else
+                {
+                    fileName = GetFileToLoadForRfs(referencedFile, referencedFile.GetAssetTypeInfo());
+
+                    project = ProjectManager.ProjectBase;
+                }
+
+                string containerName = GlobalContentCodeGenerator.GlobalContentContainerName;
+                if (container != null)
+                {
+                    containerName = container.Name;
+                }
+                AddCodeforFileLoad(referencedFile, ref codeBlock, container,
+                    ref directives, isProjectSpecific, fileName, project, loadType);
+            }
+
+            if (directives == true)
+            {
+                codeBlock = codeBlock.End()
+                    .Line("#endif");
+            }
+
+            AddEndIfIfNecessary(codeBlock, referencedFile);
+            // See above why this if-statement exists
+            if (container != null)
+            {
+                PerformancePluginCodeGenerator.GenerateEnd(container, codeBlock, "LoadStaticContent" + FileManager.RemovePath(referencedFile.Name));
+            }
+        }
+
         public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock,  IElement element)
         {
             var curBlock = codeBlock;
@@ -435,6 +512,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             return curBlock;
         }
+
+        #endregion
 
         public override ICodeBlock GenerateUnloadStaticContent(ICodeBlock codeBlock,  IElement element)
         {
@@ -949,80 +1028,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public static void GetInitializationForReferencedFile(ReferencedFileSave referencedFile, IElement container, 
-            ICodeBlock codeBlock, LoadType loadType)
-        {
-            #region early-outs (not loaded at runtime, loaded only when referenced)
 
-            bool shouldGenerateInitialize = GetIfShouldGenerateInitialize(referencedFile);
-
-            if (!shouldGenerateInitialize)
-            {
-                return;
-            }
-
-            #endregion
-
-            // I'm going to only do this if we're non-null so that we don't add it for global content.  Global Content may load
-            // async and cause bad data
-            if (container != null)
-            {
-                PerformancePluginCodeGenerator.GenerateStart(container, codeBlock, "LoadStaticContent" + FileManager.RemovePath(referencedFile.Name));
-            }
-            AddIfConditionalSymbolIfNecesssary(codeBlock, referencedFile);
-
-            bool directives = false;
-
-            for (int i = referencedFile.ProjectSpecificFiles.Count; i >= 0; i--)
-            {
-                bool isProjectSpecific = i != 0;
-
-                string fileName;
-                ProjectBase project;
-
-                if (isProjectSpecific)
-                {
-                    fileName = referencedFile.ProjectSpecificFiles[i - 1].File?.FullPath.ToLower().Replace("\\", "/");
-
-                    // At one point
-                    // the project specific
-                    // files were platform specific
-                    // but instead we want them to be
-                    // based off of the project name instead.
-                    // The reason for this is because a user could
-                    // create a synced project that targets the same
-                    // platform.  
-                    project = ProjectManager.GetProjectByName(referencedFile.ProjectSpecificFiles[i - 1].ProjectName);
-                }
-                else
-                {
-                    fileName = GetFileToLoadForRfs(referencedFile, referencedFile.GetAssetTypeInfo());
-
-                    project = ProjectManager.ProjectBase;
-                }
-
-                string containerName = GlobalContentCodeGenerator.GlobalContentContainerName;
-                if (container != null)
-                {
-                    containerName = container.Name;
-                }
-                AddCodeforFileLoad(referencedFile, ref codeBlock, container,
-                    ref directives, isProjectSpecific, fileName, project, loadType);
-            }
-
-            if (directives == true)
-            {
-                codeBlock = codeBlock.End()
-                    .Line("#endif");
-            }
-
-            AddEndIfIfNecessary(codeBlock, referencedFile);
-            // See above why this if-statement exists
-            if (container != null)
-            {
-                PerformancePluginCodeGenerator.GenerateEnd(container, codeBlock, "LoadStaticContent" + FileManager.RemovePath(referencedFile.Name));
-            }
-        }
 
         private static bool GetIfShouldGenerateInitialize(ReferencedFileSave referencedFile)
         {

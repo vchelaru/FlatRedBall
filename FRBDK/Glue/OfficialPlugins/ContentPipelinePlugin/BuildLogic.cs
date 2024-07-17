@@ -31,8 +31,11 @@ namespace OfficialPlugins.MonoGameContent
 
         static string GetCommandLineBuildExe(VisualStudioProject project)
         {
-
-            if(project.DotNetVersion?.Major >= 6)
+            if(project is KniWebProject)
+            {
+                return Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
+            }
+            else if(project.DotNetVersion?.Major >= 6)
             {
                 return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\.dotnet\tools\mgcb.exe";
             }
