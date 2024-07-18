@@ -147,7 +147,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             {
                 return extension == "fbx" || extension == "wav" || extension == "mp3";
             }
-            return false;
+            else
+            {
+
+                return extension == "wav" && rfs?.UseContentPipeline == true;
+            }
             //return targetProject.ExtensionsToIgnore.Contains(extension);
         }
     }
