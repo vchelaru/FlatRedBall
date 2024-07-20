@@ -79,6 +79,19 @@ namespace FlatRedBall.Content
         /// </summary>
         public static bool LoadFromGlobalIfExists = true;
 
+        /// <summary>
+        /// Contains file aliases which can be used to load files using an alternative name. The most common
+        /// use case for this is to add aliases for files which are using the content pipeline.
+        /// </summary>
+        /// <example>
+        /// When a file (such as a .png file) is using the content pipeline, it produces an .xnb file. This .xnb file
+        /// is loaded at runtime without the extension. For example:
+        /// var texture = ContentManager.Load&lt;Texture2D&gt;("Content/MyTexture");
+        /// If this file is loaded in generated code, the generated code knows to exclude the extension. However, if this
+        /// file is referenced by another file, such as by a Gum screen, then the Gum loading does not know to exclude the
+        /// extension. Therefore, we can add the following:
+        /// ContentManager.FileAliases.Add("c:/FullPath/Content/MyTexture.png", "c:/FullPath/Content/MyTexture");
+        /// </example>
         public static Dictionary<FilePath, FilePath> FileAliases { get; private set; } = new Dictionary<FilePath, FilePath>();
 		
 #if FRB_XNA && !MONOGAME

@@ -310,6 +310,72 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
+        public static void UpdateConditionalVisibility(DataUiGrid grid, NamedObjectSave instance, GlueElement container, AssetTypeInfo ati)
+        {
+            var needsFullRefresh = false;
+            foreach(var category in grid.Categories)
+            {
+                foreach(var member in category.Members)
+                {
+                    if(member is NamedObjectSaveVariableDataGridItem namedObjectSaveVariableDataGridItem)
+                    {
+                        if(namedObjectSaveVariableDataGridItem.VariableDefinition.IsVariableVisibleInEditor != null)
+                        {
+                            // Is it true?
+                            var shouldBeVisible = namedObjectSaveVariableDataGridItem.VariableDefinition.IsVariableVisibleInEditor(container, instance);
+                            if(!shouldBeVisible)
+                            {
+                                // this shouldn't be here, we need a refresh
+                                needsFullRefresh = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(!needsFullRefresh)
+            {
+                foreach(var variableDefinition in ati.VariableDefinitions)
+                {
+                    if(variableDefinition.IsVariableVisibleInEditor != null)
+                    {
+                        var shouldBeShown = variableDefinition.IsVariableVisibleInEditor(container, instance);
+                        if(shouldBeShown)
+                        {
+                            var wasFound = false;
+                            // This better be in one of the categories
+                            foreach(var category in grid.Categories)
+                            {
+                                foreach(var member in category.Members)
+                                {
+                                    if(member is NamedObjectSaveVariableDataGridItem namedObjectSaveVariableDataGridItem)
+                                    {
+                                        if(namedObjectSaveVariableDataGridItem.VariableDefinition.Name == variableDefinition.Name)
+                                        {
+                                            // This is good, we found it
+                                            wasFound = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if(!wasFound)
+                            {
+                                needsFullRefresh = true;
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            if(needsFullRefresh)
+            {
+                UpdateShownVariables(grid, instance, container, ati);
+            }
+        }
+
         static bool GetIfNeedsFullRefresh(MemberCategory[] oldCategories, MemberCategory[] newCategories)
         {
             if (oldCategories == null)

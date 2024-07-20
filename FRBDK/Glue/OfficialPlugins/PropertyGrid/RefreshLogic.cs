@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -57,6 +59,14 @@ namespace OfficialPlugins.VariableDisplay
                     category.Members.Remove(item);
                     category.Members.Insert(index, item);
                 }
+            }
+
+            var nos = GlueState.Self.CurrentNamedObjectSave;
+            if(nos != null)
+            {
+                var element = GlueState.Self.CurrentElement;
+                NamedObjectVariableShowingLogic.UpdateConditionalVisibility(grid, nos,
+                    element, nos.GetAssetTypeInfo());
             }
         }
 

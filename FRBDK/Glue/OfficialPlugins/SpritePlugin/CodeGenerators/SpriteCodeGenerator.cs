@@ -30,7 +30,10 @@ namespace OfficialPlugins.SpritePlugin.CodeGenerators
 
                         if(setsCollision == true)
                         {
-                            codeBlock.Line($"{nos.InstanceName}.SetCollisionFromAnimation(this);");
+                            var createMissingShapes = nos.GetCustomVariable(AssetTypeInfoManager.GetCreateMissingShapesDefinition().Name)?.Value as bool? == true
+                                ? "true" : "false";
+
+                            codeBlock.Line($"{nos.InstanceName}.SetCollisionFromAnimation(this, {createMissingShapes});");
                         }
                     }
                 }

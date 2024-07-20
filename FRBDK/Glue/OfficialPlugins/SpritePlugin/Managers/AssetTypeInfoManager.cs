@@ -220,21 +220,51 @@ namespace OfficialPlugins.SpritePlugin.Managers
             var index = ati.VariableDefinitions.IndexOf(variableToAddAfter);
             ati.VariableDefinitions.Insert(index + 1, variableDefinition);
 
+            var createNewShapes =
+                GetCreateMissingShapesDefinition();
+
+            ati.VariableDefinitions.Insert(index+2, createNewShapes);
+
         }
 
         static VariableDefinition setCollisionFromAnimationVariableDefinition;
+        const string SetCollisionFromAnimationVariableName = nameof(Sprite.SetCollisionFromAnimation);
         public static VariableDefinition GetSetCollisionFromAnimationVariableDefinition()
         {
             if(setCollisionFromAnimationVariableDefinition == null)
             {
                 setCollisionFromAnimationVariableDefinition = new VariableDefinition();
-                setCollisionFromAnimationVariableDefinition.Name = "SetCollisionFromAnimation";
+                setCollisionFromAnimationVariableDefinition.Name = SetCollisionFromAnimationVariableName;
                 setCollisionFromAnimationVariableDefinition.Category = "Animation";
                 setCollisionFromAnimationVariableDefinition.DefaultValue = "false";
                 setCollisionFromAnimationVariableDefinition.Type = "bool";
                 setCollisionFromAnimationVariableDefinition.UsesCustomCodeGeneration = true;
             }
             return setCollisionFromAnimationVariableDefinition;
+        }
+
+
+        static VariableDefinition createMissingShapesDefinition;
+        public static VariableDefinition GetCreateMissingShapesDefinition()
+        {
+            if(createMissingShapesDefinition == null)
+            {
+                createMissingShapesDefinition = new VariableDefinition();
+                createMissingShapesDefinition.Name = "CreateMissingAnimationShapes";
+                createMissingShapesDefinition.Category = "Animation";
+                createMissingShapesDefinition.DefaultValue = "false";
+                createMissingShapesDefinition.Type = "bool";
+                createMissingShapesDefinition.UsesCustomCodeGeneration = true;
+                createMissingShapesDefinition.IsVariableVisibleInEditor = (element, nos) =>
+                {
+                    // Only show this if the NOS has SetCollisionFromAnimation set to true
+                    var foundVariable = nos.GetCustomVariable(SetCollisionFromAnimationVariableName);
+
+                    return foundVariable != null && foundVariable.Value as bool? == true;
+                };
+            }
+
+            return createMissingShapesDefinition;
         }
 
         static bool AlreadyHasAddSetCollisionFromAnimation()

@@ -1976,7 +1976,7 @@ namespace FlatRedBall
         /// collidable.Collision should be created and added.</param>
         public void SetCollisionFromAnimation(ICollidable collidable, bool createMissingShapes = false)
         {
-            CurrentFrame?.ShapeCollectionSave?.SetValuesOn(collidable.Collision, this, createMissingShapes);
+            CurrentFrame?.ShapeCollectionSave?.SetValuesOn(collidable.Collision, this.TopParent, createMissingShapes);
         }
 
         /// <summary>

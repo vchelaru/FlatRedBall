@@ -30,7 +30,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             }
         }
 
-        public void GenerateFileAliasLogicCode(bool isUsingContentPipeline)
+        public void GenerateFileAliasLogicCode(bool forceUseContentPipelineOnPngs)
         {
             var glueCommands = Container.Get<IGlueCommands>();
             var glueState = Container.Get<IGlueState>();
@@ -39,7 +39,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             {
                 if(glueState.CurrentGlueProject != null)
                 {
-                    string codeFileContents = GetFileAliasLogicFileContents(isUsingContentPipeline);
+                    string codeFileContents = GetFileAliasLogicFileContents(forceUseContentPipelineOnPngs);
 
                     glueCommands.ProjectCommands.CreateAndAddCodeFile("FileAliases.Generated.cs");
      
