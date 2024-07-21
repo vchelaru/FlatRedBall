@@ -171,7 +171,8 @@ namespace FlatRedBall.Audio
 
         static Song mCurrentlyPlayingSongButUsePropertyPlease;
         /// <summary>
-        /// Represents the song that is currently playing.  If no song is playing this is null.
+        /// Represents the Microsoft.Xna.Framework.Media.Song that is currently playing.  If no Microsoft.Xna.Framework.Media.Song is playing this is null.
+        /// If this is null, a song may still be playing if CurrentlyPlayingISong is not null.
         /// </summary>
         public static Song CurrentlyPlayingSong
         {
@@ -190,7 +191,8 @@ namespace FlatRedBall.Audio
 
         static ISong mCurrentlyPlayingISongButUsePropertyPlease;
         /// <summary>
-        /// Represents the song that is currently playing.  If no song is playing this is null.
+        /// Represents the ISong that is currently playing.  If no ISong is playing this is null. 
+        /// If this is null, a song may still be playing if CurrentlyPlayingSong is not null.
         /// </summary>
         public static ISong CurrentlyPlayingISong
         {
@@ -438,7 +440,14 @@ namespace FlatRedBall.Audio
                 mCurrentISong = toPlay;
                 CurrentlyPlayingISong = mCurrentISong;
                 mIsSongUsingGlobalContent = isSongGlobalContent;
-                mCurrentISong.Play();
+                if(forceRestart)
+                {
+                    mCurrentISong.StartOver();
+                }
+                else
+                {
+                    mCurrentISong.Play();
+                }
             }
         }
 
@@ -467,6 +476,11 @@ namespace FlatRedBall.Audio
             CurrentlyPlayingSong = null;
         }
 
+        /// <summary>
+        /// Stops tand disposes the current song if its name does not match the argument nameToCompareAgainst.
+        /// </summary>
+        /// <param name="nameToCompareAgainst">The song name to cmpare against.</param>
+        /// <returns>Whether the song was disposed.</returns>
         public static bool StopAndDisposeCurrentSongIfNameDiffers(string nameToCompareAgainst)
         {
             bool wasDisposed = false;

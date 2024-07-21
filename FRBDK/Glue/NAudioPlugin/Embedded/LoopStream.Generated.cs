@@ -11,6 +11,8 @@ namespace FlatRedBall.NAudio
     {
         WaveStream sourceStream;
 
+        public event EventHandler Looped;
+
         public LoopStream(WaveStream sourceStream)
         {
             this.sourceStream = sourceStream;
@@ -51,6 +53,7 @@ namespace FlatRedBall.NAudio
                     }
                     // loop
                     sourceStream.Position = 0;
+                    Looped?.Invoke(this, null);
                 }
                 totalBytesRead += bytesRead;
             }

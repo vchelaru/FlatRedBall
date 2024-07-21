@@ -333,7 +333,7 @@ namespace OfficialPlugins.VariableDisplay
                 }
             }
 
-            if(!needsFullRefresh)
+            if(!needsFullRefresh && ati != null)
             {
                 foreach(var variableDefinition in ati.VariableDefinitions)
                 {

@@ -19,6 +19,7 @@ namespace FlatRedBall.NAudio
         LoopStream loopStream;
 
         public event EventHandler PlaybackStopped;
+        public event EventHandler Looped;
 
         //public float LoopStartSeconds
         //{
@@ -104,6 +105,9 @@ namespace FlatRedBall.NAudio
             {
                 throw new NotImplementedException($"The extension {extension} is not supported");
             }
+
+            loopStream.Looped += (not, used) => Looped?.Invoke(this, null);
+
             this.Name = fileName;
 
             waveOut = new WaveOutEvent();

@@ -12,6 +12,7 @@ namespace FlatRedBall.Audio
         float Volume { get; set; }
         event EventHandler PlaybackStopped;
         void Play();
+        void StartOver();
         void Stop();
     }
 }
