@@ -254,6 +254,7 @@ namespace FlatRedBall.Screens
                 {
                     InputManager.Xbox360GamePads[i].Clear();
                 }
+                InputManager.Keyboard.Clear();
                 if(Input.InputManager.InputReceiver != null)
                 {
                     Input.InputManager.InputReceiver = null;

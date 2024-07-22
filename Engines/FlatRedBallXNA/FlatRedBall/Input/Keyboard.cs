@@ -36,6 +36,8 @@ namespace FlatRedBall.Input
 
         bool[] mKeysIgnoredForThisFrame;
 
+        bool wasJustCleared = false;
+
         Dictionary<Keys, KeyReference> cachedKeys = new Dictionary<Keys, KeyReference>();
 
         #endregion
@@ -104,6 +106,7 @@ namespace FlatRedBall.Input
         public void Clear()
         {
             keyboardStateProcessor.Clear();
+            wasJustCleared = true;
         }
 
 
@@ -441,7 +444,16 @@ namespace FlatRedBall.Input
 			ProcessAndroidKeys();
 #endif
 
-            keyboardStateProcessor.Update();
+            if(wasJustCleared)
+            {
+                wasJustCleared = false;
+                keyboardStateProcessor.Update(useCurrentKeyboardStateAsLast:true);
+            }
+            else
+            {
+                keyboardStateProcessor.Update();
+            }
+
 
             for (int i = 0; i < NumberOfKeys; i++)
             {
