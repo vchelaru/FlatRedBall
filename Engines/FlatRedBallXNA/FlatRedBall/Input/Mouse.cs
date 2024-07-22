@@ -718,6 +718,11 @@ namespace FlatRedBall.Input
             }
         }
 
+        /// <summary>
+        /// Returns whether the mouse position is within the bounds of the game window. This may be true even
+        /// if the game window does not have focus since this is only performing a bounds check.
+        /// </summary>
+        /// <returns>Whether the mouse is within the bounds of the game window.</returns>
         public bool IsInGameWindow()
         {
 
@@ -748,6 +753,7 @@ namespace FlatRedBall.Input
 #endif
         }
 
+        [Obsolete("This method is not supported, and will be removed in future versions of FRB.")]
         public void ShowNativeWindowsCursor()
         {
 

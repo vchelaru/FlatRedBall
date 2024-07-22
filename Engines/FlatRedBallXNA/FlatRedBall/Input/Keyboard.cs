@@ -9,6 +9,10 @@ using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBall.Input
 {
+    /// <summary>
+    /// Class which stores and reports the state of the keyboard. This is typically accessed through
+    /// InputManager.Keyboard, and is automatically updated by the FlatRedBall engine.
+    /// </summary>
     public partial class Keyboard : IInputReceiverKeyboard, IInputDevice
     {
         #region Enums
@@ -98,11 +102,19 @@ namespace FlatRedBall.Input
 
         #region Public Methods
 
+        /// <summary>
+        /// Loops through all keys and checks if any have been pushed this frame.
+        /// </summary>
+        /// <returns>Whether any key has been pushed this frame.</returns>
         public bool AnyKeyPushed()
         {
             return keyboardStateProcessor.AnyKeyPushed();
         }
 
+        /// <summary>
+        /// Clears the keyboard state and stores a flag to match the previous frame to next frame as to prevent
+        /// pushes from being triggered immediately on the next frame.
+        /// </summary>
         public void Clear()
         {
             keyboardStateProcessor.Clear();
