@@ -3,8 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;MONOGAME_381;</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup>
 	<Title>FlatRedBall (.NET 6 Desktop GL)</Title>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Description>FlatRedBall Game Engine</Description>

@@ -3,8 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;MONOGAME_381;KNI;WEB;BLAZORGL</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup>
 	<Title>FlatRedBall (Web)</Title>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Description>FlatRedBall Game Engine</Description>

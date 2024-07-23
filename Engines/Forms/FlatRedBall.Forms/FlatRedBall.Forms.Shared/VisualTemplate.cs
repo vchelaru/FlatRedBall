@@ -33,6 +33,10 @@ namespace FlatRedBall.Forms
             Initialize((throwaway) => constructor.Invoke(null) as GraphicalUiElement);
         }
 
+        /// <summary>
+        /// Creates a new VisualTemplate with a Func which creates a new GraphicalUiElement.
+        /// </summary>
+        /// <param name="creationFunc">The Func to call when CreateContent is called.</param>
         public VisualTemplate(Func<GraphicalUiElement> creationFunc)
         {
             Initialize((throwaway) => creationFunc());
