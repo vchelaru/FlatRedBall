@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FlatRedBallKniWeb" Version="2024.7.23.772" />
     <PackageReference Include="nkast.Xna.Framework" Version="3.12.9001" />
     <PackageReference Include="nkast.Xna.Framework.Content" Version="3.12.9001" />
     <PackageReference Include="nkast.Xna.Framework.Graphics" Version="3.12.9001" />
@@ -60,9 +61,6 @@
   <ItemGroup>
     <Reference Include="FlatRedBall.Forms.Kni.Web">
       <HintPath>Libraries\Web\Debug\FlatRedBall.Forms.Kni.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="FlatRedBallKniWeb">
-      <HintPath>Libraries\Web\Debug\FlatRedBallKniWeb.dll</HintPath>
     </Reference>
     <Reference Include="GumCore.Kni.Web">
       <HintPath>Libraries\Web\Debug\GumCore.Kni.Web.dll</HintPath>
