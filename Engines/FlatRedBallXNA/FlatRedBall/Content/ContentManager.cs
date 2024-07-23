@@ -728,7 +728,7 @@ namespace FlatRedBall.Content
 
                 else if (typeof(T) == typeof(SoundEffect))
                 {
-                    SoundEffect soundEffect;
+                    SoundEffect soundEffect = null;
 
 					var modifiedAssetName = (assetName.StartsWith(@".\") || assetName.StartsWith(@"./")
 						? assetName.Substring(2)
@@ -745,10 +745,10 @@ namespace FlatRedBall.Content
 #if WEB
 						using var stream = FileManager.GetStreamForFile(assetName);
 						soundEffect = SoundEffect.FromStream(stream);
-#else
+#elif NET6_0_OR_GREATER
 						soundEffect = SoundEffect.FromFile(assetName);
 #endif
-						loadedAsset = soundEffect;
+                        loadedAsset = soundEffect;
                     }
 
                 }

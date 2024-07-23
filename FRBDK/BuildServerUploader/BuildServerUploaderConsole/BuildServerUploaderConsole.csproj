@@ -164,7 +164,6 @@
     <Compile Include="Data\EngineFileData.cs" />
     <Compile Include="Processes\AddRunFlatRedBallBatch.cs" />
     <Compile Include="Processes\BuildGlue.cs" />
-    <Compile Include="Processes\InjectFnaNugetAndVersion.cs" />
     <Compile Include="Processes\PublishGlue.cs" />
     <Compile Include="Processes\TraceResults.cs" />
     <Compile Include="Processes\ZipGum.cs" />
