@@ -149,8 +149,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             }
             else
             {
-
-                return extension == "wav" && rfs?.UseContentPipeline == true;
+                return rfs?.UseContentPipeline == true &&
+                    (extension == "wav" || extension == "mp3");
             }
             //return targetProject.ExtensionsToIgnore.Contains(extension);
         }

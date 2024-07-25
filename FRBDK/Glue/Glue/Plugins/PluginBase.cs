@@ -350,6 +350,10 @@ namespace FlatRedBall.Glue.Plugins
         [Obsolete("Use ReactToGlueElementVariableChanged")]
         public Action<IElement, CustomVariable> ReactToElementVariableChange { get; protected set; }
 
+        /// <summary>
+        /// Action raised when a variable changes. The GlueElement is the container of the variable, the CustomVariable is the changed variable, and
+        /// the object is the old value.
+        /// </summary>
         public Action<GlueElement, CustomVariable, object> ReactToGlueElementVariableChanged { get; protected set; }
 
         /// <summary>

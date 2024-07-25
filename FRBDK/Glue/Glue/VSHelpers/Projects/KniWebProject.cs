@@ -11,7 +11,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
     {
         public override string ProjectId { get { return "KniWeb"; } }
         public override string PrecompilerDirective { get { return "BLAZORGL"; } }
-        public override bool AllowContentCompile => true;
+        public override bool AllowContentCompile => false;
 
         public override string ContentDirectory => "Content/";
 

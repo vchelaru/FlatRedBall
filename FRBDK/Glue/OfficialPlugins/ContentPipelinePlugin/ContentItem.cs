@@ -226,13 +226,21 @@ namespace OfficialPlugins.MonoGameContent
                     // Yes it does:
                     yield return "xnb";
 
-                    if(Platform == "Android")
+                    if (Platform == "Android")
                     {
                         yield return "m4a";
                     }
-                    else if(Platform == "WindowsStoreApp")
+                    else if (Platform == "WindowsStoreApp")
                     {
                         yield return "wma";
+                    }
+                    else if (Platform == "BlazorGL")
+                    {
+                        var builtExtension = FileManager.GetExtension(BuildFileName);
+                        if (builtExtension == "mp3")
+                        {
+                            yield return "mp3";
+                        }
                     }
                     else
                     {

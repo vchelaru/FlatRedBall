@@ -1298,7 +1298,10 @@ namespace FlatRedBall.Input
         /// </summary>
         public void Clear()
         {
+#if !WEB
+// Web does not support gamepad setting vibration as of July 25, 2024, and may never...
             this.SetVibration(0, 0);
+#endif
 
             // do these before setting the states:
             for (int i = 0; i < NumberOfButtons; i++)
@@ -1330,11 +1333,11 @@ namespace FlatRedBall.Input
             }
             else
             {
-#if FNA
+#if FNA || KNI
                 mGamePadState = new GamePadState();
 #endif
 
-#if MONOGAME
+#if MONOGAME && !KNI
                 mGamePadState = GamePadState.Default;
 #endif
             }
@@ -1344,11 +1347,11 @@ namespace FlatRedBall.Input
             }
             else
             {
-#if FNA
+#if FNA || KNI
                 mLastGamePadState = new GamePadState();
 #endif
 
-#if MONOGAME
+#if MONOGAME && !KNI
                 mLastGamePadState = GamePadState.Default;
 #endif
             }
@@ -1846,7 +1849,7 @@ namespace FlatRedBall.Input
         }
 
 
-        #endregion
+#endregion
 
         #region Internal Methods
 
@@ -1861,9 +1864,7 @@ namespace FlatRedBall.Input
             //gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
 
 
-#if !WEB
             gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState((int)mPlayerIndex, GamePadDeadZone.None);
-#endif
 
             if (mCapabilities.DisplayName == null || WasConnectedThisFrame)
             {
@@ -1877,9 +1878,7 @@ namespace FlatRedBall.Input
                 // or will it repeat? Not sure...
                 try
                 {
-#if !WEB
                     mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities((int)mPlayerIndex);
-#endif
                 }
                 catch (NullReferenceException) { }
             }
