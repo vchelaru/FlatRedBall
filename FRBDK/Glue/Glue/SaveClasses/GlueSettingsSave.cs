@@ -49,6 +49,8 @@ namespace FlatRedBall.Glue.SaveClasses
         public bool IsFavorite { get; set; }
         public DateTime LastTimeAccessed { get; set; }
 
+        public string PlatformType { get; set; }
+
         public override string ToString() => $"{FileName} {LastTimeAccessed}";
     }
 
