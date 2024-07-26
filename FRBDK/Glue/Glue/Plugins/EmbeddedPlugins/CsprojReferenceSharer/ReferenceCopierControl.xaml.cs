@@ -75,7 +75,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
         private static List<VSSolution> GetSyncedSolutions()
         {
             return GlueState.Self.SyncedProjects
-                .Select(project => VSSolution.FromFile(ProjectSyncer.LocateSolution(project.FullFileName.FullPath)))
+                .Select(project => VSSolution.FromFile(ProjectSyncer.LocateSolution(project.FullFileName)))
                 .ToList();
         }
 

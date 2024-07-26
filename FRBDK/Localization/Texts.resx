@@ -1567,9 +1567,6 @@ for {1}?</value>
   <data name="PropertyString" xml:space="preserve">
     <value>String Property:</value>
   </data>
-  <data name="LinkToSource" xml:space="preserve">
-    <value>Link to Source</value>
-  </data>
   <data name="Angle" xml:space="preserve">
     <value>Angle:</value>
   </data>

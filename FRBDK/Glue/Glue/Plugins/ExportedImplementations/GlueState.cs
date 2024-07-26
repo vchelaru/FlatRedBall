@@ -285,7 +285,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         /// <summary>
         /// Returns the current Glue code project file name
         /// </summary>
-        public FilePath CurrentCodeProjectFileName { get { return ProjectManager.ProjectBase?.FullFileName; } }
+        public FilePath CurrentCodeProjectFileName => CurrentMainProject?.FullFileName; 
 
         public string CurrentGlueProjectDirectory
         {
@@ -295,7 +295,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
-        public VisualStudioProject CurrentMainProject { get { return ProjectManager.ProjectBase; } }
+        public VisualStudioProject CurrentMainProject => ProjectManager.ProjectBase;
 
         public VisualStudioProject CurrentMainContentProject { get { return ProjectManager.ContentProject; } }
 
@@ -309,8 +309,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 }
                 else
                 {
-                    return VSHelpers.ProjectSyncer.LocateSolution(CurrentCodeProjectFileName.FullPath);
+                    return VSHelpers.ProjectSyncer.LocateSolution(CurrentCodeProjectFileName);
                 }
+            }
+        }
+
+        public FilePath SlnFileForProject(VisualStudioProject vsproject)
+        {
+            if (vsproject == null)
+            {
+                return null;
+            }
+            else
+            {
+                return VSHelpers.ProjectSyncer.LocateSolution(CurrentCodeProjectFileName);
             }
         }
 

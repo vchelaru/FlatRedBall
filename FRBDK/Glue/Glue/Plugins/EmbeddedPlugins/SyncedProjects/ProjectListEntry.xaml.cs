@@ -37,7 +37,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
             try
             {
-                solutionName = ProjectSyncer.LocateSolution(project.FullFileName.FullPath);
+                solutionName = ProjectSyncer.LocateSolution(project.FullFileName);
             }
             catch(FileNotFoundException fnfe)
             {

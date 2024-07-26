@@ -97,8 +97,9 @@ namespace FlatRedBall.Glue.VSHelpers
         }
 
         
-        public static string LocateSolution(string projectFileName)
+        public static string LocateSolution(FilePath path)
         {
+            string projectFileName = path.FullPath;
             List<String> dirFileList = null;
             List<String> parentDirFileList = null;
             string directory = FileManager.GetDirectory(projectFileName);
@@ -192,7 +193,7 @@ namespace FlatRedBall.Glue.VSHelpers
         {
             ProjectBase projectBase = (ProjectBase)((ToolStripItem)sender).Tag;
 
-            string solutionName = LocateSolution(projectBase.FullFileName.FullPath);
+            string solutionName = LocateSolution(projectBase.FullFileName);
 
             if (!string.IsNullOrEmpty(solutionName))
             {

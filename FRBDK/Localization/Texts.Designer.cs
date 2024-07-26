@@ -4409,15 +4409,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Link to Source.
-        /// </summary>
-        public static string LinkToSource {
-            get {
-                return ResourceManager.GetString("LinkToSource", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to List.
         /// </summary>
         public static string List {
