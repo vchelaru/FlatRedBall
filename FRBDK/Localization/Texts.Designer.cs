@@ -5867,15 +5867,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New Synced Project.
-        /// </summary>
-        public static string ProjectNewSynced {
-            get {
-                return ResourceManager.GetString("ProjectNewSynced", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to No project loaded.
         /// </summary>
         public static string ProjectNoneLoaded {

@@ -29,14 +29,24 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
         private void AddNewProjectClick(object sender, RoutedEventArgs e)
         {
-            var newProjectVm = NewProjectHelper.CreateNewSyncedProject();
+            GlueCommands.Self.DialogCommands.ShowSpinner("Adding Projects...");
 
-            if (newProjectVm != null)
+            try
             {
-                ViewModel.CurrentProject = GlueState.Self.CurrentMainProject;
-                ViewModel.SyncedProjects = GlueState.Self.SyncedProjects;
-                ViewModel.Refresh();
+                var newProjectVm = NewProjectHelper.CreateNewSyncedProject();
+
+                if (newProjectVm != null)
+                {
+                    ViewModel.CurrentProject = GlueState.Self.CurrentMainProject;
+                    ViewModel.SyncedProjects = GlueState.Self.SyncedProjects;
+                    ViewModel.Refresh();
+                }
             }
+            finally
+            {
+                GlueCommands.Self.DialogCommands.HideSpinner();
+            }
+
         }
 
         private void AddProjectClick(object sender, RoutedEventArgs e)

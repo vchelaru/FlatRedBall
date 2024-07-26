@@ -1234,9 +1234,6 @@ for {1}?</value>
   <data name="ProjectRemove" xml:space="preserve">
     <value>Remove Project</value>
   </data>
-  <data name="ProjectNewSynced" xml:space="preserve">
-    <value>New Synced Project</value>
-  </data>
   <data name="ProjectAddExisting" xml:space="preserve">
     <value>Add Existing Project</value>
   </data>
