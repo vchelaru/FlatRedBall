@@ -13,7 +13,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public override string PrecompilerDirective { get { return "BLAZORGL"; } }
         public override bool AllowContentCompile => false;
 
-        public override string ContentDirectory => "wwwroot/Content/";
+        // This does add files to wwwroot, but it doesn't handle linked files
+        // We need the files to actually be there, so instead I'm going to use
+        // regular content and then copy the files back out from bin into wwwroot:
+        //public override string ContentDirectory => "wwwroot/Content/";
+        public override string ContentDirectory => "Content/";
+
+
+
 
         public override string FolderName => "KniWeb";
 

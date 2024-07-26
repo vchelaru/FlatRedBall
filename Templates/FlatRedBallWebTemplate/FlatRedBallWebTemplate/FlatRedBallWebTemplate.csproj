@@ -70,6 +70,6 @@
     </Reference>
   </ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="set &quot;source=Content&quot;&#xD;&#xA;set &quot;destination=wwwroot\Content&quot;&#xD;&#xA;xcopy /E /Y &quot;%25source%25&quot; &quot;%25destination%25&quot;&#xD;&#xA;&#xD;&#xA;:: FRB Editor puts XNBs in the BuiltXnbs directory&#xD;&#xA;:: These need to get copied to the wwwroot folder so&#xD;&#xA;:: they can be loaded at runtime.&#xD;&#xA;set &quot;entityxnbs=..\BuiltXnbs\BlazorGL\Entities&quot;&#xD;&#xA;set &quot;destentityxnbs=wwwroot\Content\Entities&quot;&#xD;&#xA;if exist &quot;%25entityxnbs%25&quot; (&#xD;&#xA;   xcopy /E /Y &quot;%25entityxnbs%25&quot; &quot;%25destentityxnbs%25&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;set &quot;screenxnbs=..\BuiltXnbs\BlazorGL\Screens&quot;&#xD;&#xA;set &quot;destscreenxnbs=wwwroot\Content\Screens&quot;&#xD;&#xA;if exist &quot;%25screenxnbs%25&quot; (&#xD;&#xA;   xcopy /E /Y &quot;%25screenxnbs%25&quot; &quot;%25destscreenxnbs%25&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;set &quot;globalxnbs=..\BuiltXnbs\BlazorGL\GlobalContent&quot;&#xD;&#xA;set &quot;destglobalxnbs=wwwroot\Content\GlobalContent&quot;&#xD;&#xA;if exist &quot;%25globalxnbs%25&quot; (&#xD;&#xA;   xcopy /E /Y &quot;%25globalxnbs%25&quot; &quot;%25destglobalxnbs%25&quot;&#xD;&#xA;)" />
+		<Exec Command="set &quot;source=$(TargetDir)Content&quot;&#xD;&#xA;set &quot;destination=wwwroot\Content&quot;&#xD;&#xA;xcopy /E /Y &quot;%25source%25&quot; &quot;%25destination%25&quot;" />
 	</Target>
 </Project>
