@@ -152,20 +152,20 @@ internal static class AddSourceManager
 
     public static List<ProjectReference> AndroidNet8 = new List<ProjectReference>
     {
-        new ProjectReference(){ RelativeProjectFilePath = 
-            $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.AndroidMonoGame\\StateInterpolation.AndroidMonoGame.csproj", 
+        new ProjectReference(){ RelativeProjectFilePath =
+            $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.AndroidMonoGame\\StateInterpolation.AndroidMonoGame.csproj",
             ProjectRootType = FrbOrGum.Frb},
 
-        new ProjectReference(){ RelativeProjectFilePath = 
-            $"Engines\\FlatRedBallXNA\\FlatRedBallAndroid\\FlatRedBallAndroid.csproj", 
+        new ProjectReference(){ RelativeProjectFilePath =
+            $"Engines\\FlatRedBallXNA\\FlatRedBallAndroid\\FlatRedBallAndroid.csproj",
             ProjectRootType = FrbOrGum.Frb},
 
-        new ProjectReference(){ RelativeProjectFilePath = 
-            $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.AndroidMonoGame\\FlatRedBall.Forms.AndroidMonoGame.csproj", 
+        new ProjectReference(){ RelativeProjectFilePath =
+            $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.AndroidMonoGame\\FlatRedBall.Forms.AndroidMonoGame.csproj",
             ProjectRootType = FrbOrGum.Frb},
 
-        new ProjectReference(){ RelativeProjectFilePath = 
-            $"GumCore\\GumCoreXnaPc\\GumCoreAndroid\\GumCoreAndroid.csproj", 
+        new ProjectReference(){ RelativeProjectFilePath =
+            $"GumCore\\GumCoreXnaPc\\GumCoreAndroid\\GumCoreAndroid.csproj",
             ProjectRootType = FrbOrGum.Gum},
     };
 
@@ -220,172 +220,202 @@ internal static class AddSourceManager
         await LinkToSourceInternal(viewModel.FrbRootFolder, viewModel.GumRootFolder, viewModel.IncludeGumSkia);
 
     public static async Task LinkToSourceUsingDefaults() =>
-        await LinkToSourceInternal(DefaultFrbFilePath, DefaultGumFilePath, includeGumSkia:true);
+        await LinkToSourceInternal(DefaultFrbFilePath, DefaultGumFilePath, includeGumSkia: true);
 
     private static async Task LinkToSourceInternal(string frbRootFolder, string gumRootFolder, bool includeGumSkia)
     {
+        var vsProject = GlueState.Self.CurrentMainProject;
+
+        List<VisualStudioProject> projects = new List<VisualStudioProject>();
+
+        if(GlueState.Self.CurrentMainProject != null)
+        {
+            projects.Add(GlueState.Self.CurrentMainProject);
+
+            foreach(var project in GlueState.Self.SyncedProjects)
+            {
+                if(project is VisualStudioProject asVsProject)
+                {
+                    projects.Add(asVsProject);
+                }
+            }
+        }
+
         await TaskManager.Self.AddAsync(() =>
         {
-            var vsProject = GlueState.Self.CurrentMainProject;
-            var slnFilePath = GlueState.Self.CurrentSlnFileName;
-
-            var projectReferences = GetNecessaryProjectReferencesForProject(vsProject);
-            var necessaryReferencesStripped = projectReferences.Select(item => FileManager.RemovePath(item.RelativeProjectFilePath)).ToArray();
-
-            string outerError = null;
-            string innerError;
-
-            if (!ValidateSourceFRB(frbRootFolder, projectReferences, out innerError))
+            foreach(var project in projects)
             {
-                outerError = $"Selected FlatRedBall path is not valid.  Error: {innerError}";
-            }
+                var response = LinkVsProjectToSource(frbRootFolder, gumRootFolder, includeGumSkia, project);
 
-            if (!ValidateSourceGum(gumRootFolder, projectReferences, out innerError))
-            {
-                outerError = $"Selected Gum path is not valid.  Error: {innerError}";
-            }
-
-            if (includeGumSkia)
-            {
-                if (vsProject.DotNetVersion.Major >= 6 == false)
+                if(response.Succeeded == false)
                 {
-                    outerError = "GumSkia can only be added to .NET 6 and greater projects";
-                }
-                else if (GlueState.Self.CurrentGlueProject.FileVersion < (int)GlueProjectSave.GluxVersions.HasGumSkiaElements)
-                {
-                    outerError = $"GumSkia can only be added to FlatRedBall projects (.gluj) which are version {(int)GlueProjectSave.GluxVersions.HasGumSkiaElements} or newer";
-                }
-            }
-
-            if (!string.IsNullOrEmpty(outerError))
-            {
-                GlueCommands.Self.DialogCommands.ShowMessageBox(outerError);
-                return;
-            }
-
-
-            if (!string.IsNullOrEmpty(frbRootFolder) && !string.IsNullOrEmpty(gumRootFolder))
-            {
-                //Update project references
-                var sln = VSSolution.FromFile(slnFilePath);
-
-                var referencedProjects = sln.ReferencedProjects;
-
-                List<string> slnProjectReferencesToRemove = new List<string>();
-                // remove any old references:
-                foreach(var existingReference in referencedProjects)
-                {
-                    var strippedExisting = FileManager.RemovePath(existingReference.Name);
-
-                    var willBeReplaced = necessaryReferencesStripped.Contains(strippedExisting);
-
-                    if(willBeReplaced)
-                    {
-                        slnProjectReferencesToRemove.Add(existingReference.Name);
-                    }
-                }
-
-                foreach(var referenceToRemove in  slnProjectReferencesToRemove)
-                {
-                    VSSolution.RemoveProjectReference(slnFilePath, referenceToRemove, out string _, out string _);
-                }
-
-                // references may have been removed so re-load it:
-                sln = VSSolution.FromFile(slnFilePath);
-                referencedProjects = sln.ReferencedProjects;
-
-                GeneralResponse addGeneralResponse = GeneralResponse.SuccessfulResponse;
-
-                foreach (var projectReference in projectReferences)
-                {
-                    AddProjectReference(sln, referencedProjects, vsProject, addGeneralResponse, projectReference, frbRootFolder, gumRootFolder);
-                }
-
-                var isFNA = vsProject is FnaDesktopProject;
-                if (includeGumSkia)
-                {
-                    AddProjectReference(sln, referencedProjects, vsProject, addGeneralResponse, isFNA ? GumSkiaFNA : GumSkia, frbRootFolder, gumRootFolder);
-                }
-
-                if (isFNA)
-                {
-                    AddProjectReference(sln, referencedProjects, vsProject, addGeneralResponse, FNA, frbRootFolder, gumRootFolder);
-                }
-
-                if (addGeneralResponse.Succeeded)
-                {
-                    var libraryFolder = GlueState.Self.CurrentGlueProjectDirectory + "Libraries/";
-
-                    var dllNames = FileManager.GetAllFilesInDirectory(libraryFolder, ".dll");
-
-                    var dllNamesStripped = dllNames.Select(item => FileManager.RemoveExtension(FileManager.RemovePath(item))).ToHashSet();
-
-                    foreach(var dllName in dllNamesStripped)
-                    {
-                        RemoveDllReference(vsProject, dllName);
-                    }
-
-
-                    RemoveDllReference(vsProject, "FlatRedBall");
-                    RemoveDllReference(vsProject, "FlatRedBall.FNA");
-                    RemoveDllReference(vsProject, "FlatRedBall.Forms");
-                    RemoveDllReference(vsProject, "FlatRedBall.Forms.FNA");
-                    RemoveDllReference(vsProject, "FlatRedBall.Forms.iOS");
-                    RemoveDllReference(vsProject, "FlatRedBallDesktopGL");
-                    RemoveDllReference(vsProject, "FlatRedBallAndroid");
-                    RemoveDllReference(vsProject, "FlatRedBalliOS");
-                    RemoveDllReference(vsProject, "GumCoreXnaPc");
-                    RemoveDllReference(vsProject, "GumCoreAndroid");
-                    RemoveDllReference(vsProject, "GumCoreiOS");
-                    RemoveDllReference(vsProject, "GumCore.DesktopGlNet6");
-                    RemoveDllReference(vsProject, "GumCore.FNA");
-                    RemoveDllReference(vsProject, "StateInterpolation");
-                    RemoveDllReference(vsProject, "StateInterpolation.FNA");
-                    RemoveDllReference(vsProject, "StateInterpolation.iOS");
-                    RemoveDllReference(vsProject, "SkiaInGum");
-                    RemoveDllReference(vsProject, "SkiaInGum.FNA");
-
-                    RemoveDllReference(vsProject, "FNA");
-
-                    RemoveNugetReference(vsProject, "FlatRedBallDesktopGLNet6");
-
-                    vsProject.Save(vsProject.FullFileName.FullPath);
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(response.Message);
+                    break;
                 }
             }
 
         }, "Linking game to FRB Source");
     }
 
+    private static GeneralResponse LinkVsProjectToSource(string frbRootFolder, string gumRootFolder, bool includeGumSkia, VisualStudioProject vsProject)
+    {
+        var slnFilePath = GlueState.Self.SlnFileForProject(vsProject);
+
+        var projectReferences = GetNecessaryProjectReferencesForProject(vsProject);
+        var necessaryReferencesStripped = projectReferences.Select(item => FileManager.RemovePath(item.RelativeProjectFilePath)).ToArray();
+
+        string innerError;
+        GeneralResponse addSourceResponse = GeneralResponse.SuccessfulResponse;
+
+        if (!ValidateSourceFRB(frbRootFolder, projectReferences, out innerError))
+        {
+            addSourceResponse = GeneralResponse.UnsuccessfulWith(
+                $"Selected FlatRedBall path is not valid.  Error: {innerError}");
+        }
+
+        if (!ValidateSourceGum(gumRootFolder, projectReferences, out innerError))
+        {
+            addSourceResponse = GeneralResponse.UnsuccessfulWith(
+                $"Selected Gum path is not valid.  Error: {innerError}");
+        }
+
+        if (includeGumSkia)
+        {
+            if (vsProject.DotNetVersion.Major >= 6 == false)
+            {
+                addSourceResponse = GeneralResponse.UnsuccessfulWith(
+                    "GumSkia can only be added to .NET 6 and greater projects");
+            }
+            else if (GlueState.Self.CurrentGlueProject.FileVersion < (int)GlueProjectSave.GluxVersions.HasGumSkiaElements)
+            {
+                addSourceResponse = GeneralResponse.UnsuccessfulWith(
+                    $"GumSkia can only be added to FlatRedBall projects (.gluj) which are version {(int)GlueProjectSave.GluxVersions.HasGumSkiaElements} or newer");
+            }
+        }
+
+        if (addSourceResponse.Succeeded)
+        {
+
+            //Update project references
+            var sln = VSSolution.FromFile(slnFilePath);
+
+            var referencedProjects = sln.ReferencedProjects;
+
+            List<string> slnProjectReferencesToRemove = new List<string>();
+            // remove any old references:
+            foreach (var existingReference in referencedProjects)
+            {
+                var strippedExisting = FileManager.RemovePath(existingReference.Name);
+
+                var willBeReplaced = necessaryReferencesStripped.Contains(strippedExisting);
+
+                if (willBeReplaced)
+                {
+                    slnProjectReferencesToRemove.Add(existingReference.Name);
+                }
+            }
+
+            foreach (var referenceToRemove in slnProjectReferencesToRemove)
+            {
+                VSSolution.RemoveProjectReference(slnFilePath, referenceToRemove, out string _, out string _);
+            }
+
+            // references may have been removed so re-load it:
+            sln = VSSolution.FromFile(slnFilePath);
+            referencedProjects = sln.ReferencedProjects;
+
+            GeneralResponse addGeneralResponse = GeneralResponse.SuccessfulResponse;
+
+            foreach (var projectReference in projectReferences)
+            {
+                AddProjectReference(sln, referencedProjects, vsProject, addGeneralResponse, projectReference, frbRootFolder, gumRootFolder);
+            }
+
+            var isFNA = vsProject is FnaDesktopProject;
+            if (includeGumSkia)
+            {
+                AddProjectReference(sln, referencedProjects, vsProject, addGeneralResponse, isFNA ? GumSkiaFNA : GumSkia, frbRootFolder, gumRootFolder);
+            }
+
+            if (isFNA)
+            {
+                AddProjectReference(sln, referencedProjects, vsProject, addGeneralResponse, FNA, frbRootFolder, gumRootFolder);
+            }
+
+            if (addGeneralResponse.Succeeded)
+            {
+                var libraryFolder = GlueState.Self.CurrentGlueProjectDirectory + "Libraries/";
+
+                var dllNames = FileManager.GetAllFilesInDirectory(libraryFolder, ".dll");
+
+                var dllNamesStripped = dllNames.Select(item => FileManager.RemoveExtension(FileManager.RemovePath(item))).ToHashSet();
+
+                foreach (var dllName in dllNamesStripped)
+                {
+                    RemoveDllReference(vsProject, dllName);
+                }
+
+
+                RemoveDllReference(vsProject, "FlatRedBall");
+                RemoveDllReference(vsProject, "FlatRedBall.FNA");
+                RemoveDllReference(vsProject, "FlatRedBall.Forms");
+                RemoveDllReference(vsProject, "FlatRedBall.Forms.FNA");
+                RemoveDllReference(vsProject, "FlatRedBall.Forms.iOS");
+                RemoveDllReference(vsProject, "FlatRedBallDesktopGL");
+                RemoveDllReference(vsProject, "FlatRedBallAndroid");
+                RemoveDllReference(vsProject, "FlatRedBalliOS");
+                RemoveDllReference(vsProject, "GumCoreXnaPc");
+                RemoveDllReference(vsProject, "GumCoreAndroid");
+                RemoveDllReference(vsProject, "GumCoreiOS");
+                RemoveDllReference(vsProject, "GumCore.DesktopGlNet6");
+                RemoveDllReference(vsProject, "GumCore.FNA");
+                RemoveDllReference(vsProject, "StateInterpolation");
+                RemoveDllReference(vsProject, "StateInterpolation.FNA");
+                RemoveDllReference(vsProject, "StateInterpolation.iOS");
+                RemoveDllReference(vsProject, "SkiaInGum");
+                RemoveDllReference(vsProject, "SkiaInGum.FNA");
+
+                RemoveDllReference(vsProject, "FNA");
+
+                RemoveNugetReference(vsProject, "FlatRedBallDesktopGLNet6");
+
+                vsProject.Save(vsProject.FullFileName.FullPath);
+            }
+        }
+
+        return addSourceResponse;
+    }
+
     private static List<ProjectReference> GetNecessaryProjectReferencesForProject(VisualStudioProject vsProject)
     {
-        if(vsProject is AndroidMonoGameNet8Project)
+        if (vsProject is AndroidMonoGameNet8Project)
         {
             return AndroidNet8.Concat(SharedShprojReferences).ToList();
         }
-        else if(vsProject is IosMonoGameNet8Project)
+        else if (vsProject is IosMonoGameNet8Project)
         {
             return IosNet8.Concat(SharedShprojReferences).ToList();
         }
-        else if(vsProject is KniWebProject)
+        else if (vsProject is KniWebProject)
         {
             return Web.Concat(SharedShprojReferences).ToList();
         }
         // Other projects that use .NET major > 6 are handled above here:
-        else if (vsProject.DotNetVersion.Major >= 6) 
+        else if (vsProject.DotNetVersion.Major >= 6)
         {
             return vsProject is FnaDesktopProject
                 ? DesktopFNA.Concat(SharedShprojReferences).ToList()
                 : DesktopGlNet6.Concat(SharedShprojReferences).ToList();
         }
-        else if(vsProject is AndroidProject)
+        else if (vsProject is AndroidProject)
         {
             return AndroidXamarin.Concat(SharedShprojReferences).ToList();
         }
-        else if(vsProject is IosMonogameProject)
+        else if (vsProject is IosMonogameProject)
         {
             return IosXamarin.Concat(SharedShprojReferences).ToList();
         }
-        else if(vsProject is Xna4Project)
+        else if (vsProject is Xna4Project)
         {
             return XnaNet4.Concat(SharedShprojReferences).ToList();
         }
@@ -444,7 +474,7 @@ internal static class AddSourceManager
         return true;
     }
 
-    private static void AddProjectReference(VSSolution sln, List<CsprojReference> existingProjectReferences, VisualStudioProject proj, 
+    private static void AddProjectReference(VSSolution sln, List<CsprojReference> existingProjectReferences, VisualStudioProject proj,
         GeneralResponse addGeneralResponse, ProjectReference reference,
         string frbRootFolder, string gumRootFolder
         )
@@ -496,7 +526,7 @@ internal static class AddSourceManager
     {
         var item = project.EvaluatedItems.FirstOrDefault(item => item.ItemType == "PackageReference" && item.EvaluatedInclude == referenceName);
 
-        if(item != null) 
+        if (item != null)
         {
             project.RemoveItem(item);
         }

@@ -299,20 +299,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public VisualStudioProject CurrentMainContentProject { get { return ProjectManager.ContentProject; } }
 
-        public FilePath CurrentSlnFileName
-        {
-            get
-            {
-                if(CurrentCodeProjectFileName == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return VSHelpers.ProjectSyncer.LocateSolution(CurrentCodeProjectFileName);
-                }
-            }
-        }
+        public FilePath CurrentSlnFileName => SlnFileForProject(CurrentMainProject);
 
         public FilePath SlnFileForProject(VisualStudioProject vsproject)
         {
@@ -322,7 +309,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             else
             {
-                return VSHelpers.ProjectSyncer.LocateSolution(CurrentCodeProjectFileName);
+                var csprojLocation = vsproject.FullFileName;
+                return VSHelpers.ProjectSyncer.LocateSolution(csprojLocation);
             }
         }
 
