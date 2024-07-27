@@ -67,10 +67,15 @@ namespace OfficialPlugins.RuntimeFileWatcherPlugin
 
                         var instanceName = rfs.GetInstanceName();
 
+                        ReferencedFileSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(tryBlock, rfs);
+
                         var ifStatement = tryBlock.If($"relativeFileName == \"{fileName}\"");
                         {
                             ifStatement.Line($"Reload({instanceName});");
                         }
+
+                        ReferencedFileSaveCodeGenerator.AddEndIfIfNecessary(tryBlock, rfs);
+
                     }
                 }
 

@@ -27,47 +27,6 @@ namespace FlatRedBall.Glue.CodeGeneration
     public class ReferencedFileSaveCodeGenerator : ElementComponentCodeGenerator
     {
 
-        // When Entities/Screens write themselves, they need to see if they
-        // have content which is referenced by GlobalContent.  If so, then the
-        // file in the element shouldn't load itself, but just reference the property
-        // in GlobalContent.  This allows users to put files both in GlobalContent as well
-        // as in an Element to take advantage of GlobalContent async loading.
-        // This used to be ThreadStatic but not sure why, I think we want all threads to access this
-        //[ThreadStatic]
-        public static Dictionary<string, ReferencedFileSave> GlobalContentFilesDictionary = 
-            new Dictionary<string, ReferencedFileSave>();
-
-        // See GluxVersions 55: https://docs.flatredball.com/flatredball/glue-reference/glujglux
-        // This is set when projects are loaded if using case sensitive versions 
-        public static bool GenerateCaseSensitive { get; set; } = false;
-
-        public static void RefreshGlobalContentDictionary()
-        {
-            Managers.TaskManager.Self.WarnIfNotInTask();
-
-            // may be null depending on the thread
-            if (GlobalContentFilesDictionary == null)
-            {
-                GlobalContentFilesDictionary = new Dictionary<string, ReferencedFileSave>();
-            }
-            GlobalContentFilesDictionary.Clear();
-
-            // create a new list in case this changes:
-            var globalFiles = ProjectManager.GlueProjectSave.GlobalFiles.ToList();
-            foreach (ReferencedFileSave rfs in globalFiles)
-            {
-                try
-                {
-                    GlobalContentFilesDictionary[rfs.Name] = rfs;
-                }
-                catch(Exception exception)
-                {
-                    FlatRedBall.Glue.Plugins.PluginManager.ReceiveError("The following file was found twice in the project: " + rfs.Name + "\n\nAdditional info:\n\n" + exception.ToString());
-                }
-            }
-
-        }
-
         #region Fields (Static Members)
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock,  SaveClasses.IElement element)
@@ -107,13 +66,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         public static void AppendFieldOrPropertyForReferencedFile(ICodeBlock codeBlock, ReferencedFileSave referencedFile,
-            IElement element)
-        {
-            AppendFieldOrPropertyForReferencedFile(codeBlock, referencedFile, element, "ContentManagerName");
-        }
-
-        public static void AppendFieldOrPropertyForReferencedFile(ICodeBlock codeBlock, ReferencedFileSave referencedFile,
-            IElement element, string contentManagerName)
+            IElement element, string contentManagerName = "ContentManagerName")
         {
             /////////////////////////////////////EARLY OUT//////////////////////////////////////////////
             // If the referenced file is a database for localizing, it will just be stuffed right into the localization manager
@@ -186,6 +139,139 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
+        private static void AppendPropertyForReferencedFileSave(ICodeBlock codeBlock, ReferencedFileSave referencedFile, IElement element, string contentManagerName, AssetTypeInfo ati, string variableName, string typeName)
+        {
+
+            codeBlock.Line(StringHelper.Modifiers(Static: referencedFile.IsSharedStatic, Type: typeName, Name: "m" + variableName) + ";");
+
+            // No need to use
+            // ManualResetEvents
+            // if the ReferencedFileSave
+            // is LoadedOnlyWhenReferenced.
+
+            bool shouldBlockThreads = element == null && !referencedFile.LoadedOnlyWhenReferenced;
+
+            if (shouldBlockThreads)
+            {
+                codeBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
+
+                codeBlock.Line("//Blocks the thread on request of " + variableName + " until it has been loaded");
+                codeBlock.Line("static ManualResetEvent m" + variableName + "Mre = new ManualResetEvent(false);");
+
+                codeBlock.Line("// Used to lock getter and setter so that " + variableName + " can be set on any thread even if its load is in progrss");
+                codeBlock.Line("static object m" + variableName + "_Lock = new object();");
+                codeBlock.Line("#endif");
+
+            }
+
+            string lastContentManagerVariableName = "mLastContentManagerFor" + variableName;
+            if (referencedFile.LoadedAtRuntime && element != null)
+            {
+                codeBlock.Line("static string " + lastContentManagerVariableName + ";");
+            }
+
+            // Silverlight and Windows Phone only allow reflection on public methods
+            // Since it's common practice to use reflection to reference LoadedOnlyWhenReferenced
+            // properties, we need to make them public.
+            var propBlock = codeBlock.Property(variableName, Public: true, Static: referencedFile.IsSharedStatic, Type: typeName);
+
+            var getBlock = propBlock.Get();
+
+            if (referencedFile.LoadedOnlyWhenReferenced)
+            {
+                WriteLoadedOnlyWhenReferencedPropertyBody(referencedFile, element, contentManagerName, ati, variableName, lastContentManagerVariableName, getBlock);
+            }
+            // global content
+            else if (element == null)
+            {
+                #region Write the getter
+
+
+                getBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
+
+                if (shouldBlockThreads)
+                {
+                    getBlock = getBlock.Lock("m" + variableName + "_Lock");
+                }
+
+                //Perform a WaitOne on the event with a timeout value of zero.
+                // It will return true if the event is not set, or false if the timeout occurs. 
+                // In other words, false -> event is set, true -> event is not set.
+                getBlock.Line("bool isBlocking = !m" + variableName + "Mre.WaitOne(0);");
+
+                {
+                    var ifBlock = getBlock.If("isBlocking");
+
+                    // This is our way of telling the GlobalContentManager to hurry up - we're waiting
+                    // on some content!
+                    ifBlock.Line("RequestContentLoad(\"" + referencedFile.Name + "\");");
+
+                    #region If RecordLockRecord - write the code for recording the load order so that it can be optimized
+
+                    if (ProjectManager.GlueProjectSave.GlobalContentSettingsSave.RecordLockContention)
+                    {
+                        ifBlock.Line("LockRecord.Add(\"\\n" + variableName + "\");");
+                    }
+
+                    #endregion
+                }
+
+                getBlock.Line("m" + variableName + "Mre.WaitOne();");
+                getBlock.Line("return m" + variableName + ";");
+                if (shouldBlockThreads)
+                {
+                    getBlock = getBlock.End();
+                }
+                getBlock.Line("#else");
+                WriteLoadedOnlyWhenReferencedPropertyBody(referencedFile, element, contentManagerName, ati, variableName, lastContentManagerVariableName, getBlock);
+
+
+                getBlock.Line("#endif");
+
+                #endregion
+
+                #region Write the setter
+
+
+
+                var setBlock = propBlock.Set();
+
+                setBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
+
+                if (shouldBlockThreads)
+                {
+                    setBlock = setBlock.Lock("m" + variableName + "_Lock");
+                }
+
+                WriteAssignmentAndMreSet(variableName, setBlock);
+                if (shouldBlockThreads)
+                {
+                    setBlock = setBlock.End();
+                }
+                setBlock.Line("#else");
+                setBlock.Line("m" + variableName + " = value;");
+
+
+                setBlock.Line("#endif");
+                #endregion
+
+            }
+            else
+            {
+                string fieldName = "m" + variableName;
+
+                getBlock.Line("#if REQUIRES_PRIMARY_THREAD_LOADING");
+
+                var ifBlock = getBlock.If("fieldName == null && FlatRedBall.FlatRedBallServices.IsThreadPrimary()");
+                ifBlock.Line("FlatRedBall.FlatRedBallServices.GetContentManagerByName(ContentManager).ProcessTexturesWaitingToBeLoaded();");
+
+                getBlock.Line("#endif");
+
+                getBlock.Line("return " + fieldName + ";");
+            }
+        }
+
+
         #endregion
 
         #region Initialize
@@ -208,6 +294,47 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         #endregion
+
+        // When Entities/Screens write themselves, they need to see if they
+        // have content which is referenced by GlobalContent.  If so, then the
+        // file in the element shouldn't load itself, but just reference the property
+        // in GlobalContent.  This allows users to put files both in GlobalContent as well
+        // as in an Element to take advantage of GlobalContent async loading.
+        // This used to be ThreadStatic but not sure why, I think we want all threads to access this
+        //[ThreadStatic]
+        public static Dictionary<string, ReferencedFileSave> GlobalContentFilesDictionary = 
+            new Dictionary<string, ReferencedFileSave>();
+
+        // See GluxVersions 55: https://docs.flatredball.com/flatredball/glue-reference/glujglux
+        // This is set when projects are loaded if using case sensitive versions 
+        public static bool GenerateCaseSensitive { get; set; } = false;
+
+        public static void RefreshGlobalContentDictionary()
+        {
+            Managers.TaskManager.Self.WarnIfNotInTask();
+
+            // may be null depending on the thread
+            if (GlobalContentFilesDictionary == null)
+            {
+                GlobalContentFilesDictionary = new Dictionary<string, ReferencedFileSave>();
+            }
+            GlobalContentFilesDictionary.Clear();
+
+            // create a new list in case this changes:
+            var globalFiles = ProjectManager.GlueProjectSave.GlobalFiles.ToList();
+            foreach (ReferencedFileSave rfs in globalFiles)
+            {
+                try
+                {
+                    GlobalContentFilesDictionary[rfs.Name] = rfs;
+                }
+                catch(Exception exception)
+                {
+                    FlatRedBall.Glue.Plugins.PluginManager.ReceiveError("The following file was found twice in the project: " + rfs.Name + "\n\nAdditional info:\n\n" + exception.ToString());
+                }
+            }
+
+        }
 
         public static void GenerateAddToManagersStatic(ICodeBlock codeBlock,  SaveClasses.IElement element)
         {
@@ -595,139 +722,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-
-
-        private static void AppendPropertyForReferencedFileSave(ICodeBlock codeBlock, ReferencedFileSave referencedFile, IElement element, string contentManagerName, AssetTypeInfo ati, string variableName, string typeName)
-        {
-
-            codeBlock.Line(StringHelper.Modifiers(Static: referencedFile.IsSharedStatic, Type: typeName, Name: "m" + variableName) + ";");
-
-            // No need to use
-            // ManualResetEvents
-            // if the ReferencedFileSave
-            // is LoadedOnlyWhenReferenced.
-
-            bool shouldBlockThreads = element == null && !referencedFile.LoadedOnlyWhenReferenced;
-
-            if (shouldBlockThreads)
-            {
-                codeBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
-
-                codeBlock.Line("//Blocks the thread on request of " + variableName + " until it has been loaded");
-                codeBlock.Line("static ManualResetEvent m" + variableName + "Mre = new ManualResetEvent(false);");
-
-                codeBlock.Line("// Used to lock getter and setter so that " + variableName + " can be set on any thread even if its load is in progrss");
-                codeBlock.Line("static object m" + variableName + "_Lock = new object();");
-                codeBlock.Line("#endif");
-
-            }
-
-            string lastContentManagerVariableName = "mLastContentManagerFor" + variableName;
-            if (referencedFile.LoadedAtRuntime && element != null)
-            {
-                codeBlock.Line("static string " + lastContentManagerVariableName + ";");
-            }
-
-            // Silverlight and Windows Phone only allow reflection on public methods
-            // Since it's common practice to use reflection to reference LoadedOnlyWhenReferenced
-            // properties, we need to make them public.
-            var propBlock = codeBlock.Property(variableName, Public: true, Static: referencedFile.IsSharedStatic, Type: typeName);
-
-            var getBlock = propBlock.Get();
-
-            if (referencedFile.LoadedOnlyWhenReferenced)
-            {
-                WriteLoadedOnlyWhenReferencedPropertyBody(referencedFile, element, contentManagerName, ati, variableName, lastContentManagerVariableName, getBlock);
-            }
-            // global content
-            else if (element == null)
-            {
-                #region Write the getter
-
-
-                getBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
-
-                if (shouldBlockThreads)
-                {
-                    getBlock = getBlock.Lock("m" + variableName + "_Lock");
-                }
-
-                //Perform a WaitOne on the event with a timeout value of zero.
-                // It will return true if the event is not set, or false if the timeout occurs. 
-                // In other words, false -> event is set, true -> event is not set.
-                getBlock.Line("bool isBlocking = !m" + variableName + "Mre.WaitOne(0);");
-
-                {
-                    var ifBlock = getBlock.If("isBlocking");
-
-                    // This is our way of telling the GlobalContentManager to hurry up - we're waiting
-                    // on some content!
-                    ifBlock.Line("RequestContentLoad(\"" + referencedFile.Name + "\");");
-
-                    #region If RecordLockRecord - write the code for recording the load order so that it can be optimized
-
-                    if (ProjectManager.GlueProjectSave.GlobalContentSettingsSave.RecordLockContention)
-                    {
-                        ifBlock.Line("LockRecord.Add(\"\\n" + variableName + "\");");
-                    }
-
-                    #endregion
-                }
-
-                getBlock.Line("m" + variableName + "Mre.WaitOne();");
-                getBlock.Line("return m" + variableName + ";");
-                if (shouldBlockThreads)
-                {
-                    getBlock = getBlock.End();
-                }
-                getBlock.Line("#else");
-                WriteLoadedOnlyWhenReferencedPropertyBody(referencedFile, element, contentManagerName, ati, variableName, lastContentManagerVariableName, getBlock);
-
-
-                getBlock.Line("#endif");
-
-                #endregion
-
-                #region Write the setter
-
-
-
-                var setBlock = propBlock.Set();
-
-                setBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
-
-                if (shouldBlockThreads)
-                {
-                    setBlock = setBlock.Lock("m" + variableName + "_Lock");
-                }
-
-                WriteAssignmentAndMreSet(variableName, setBlock);
-                if (shouldBlockThreads)
-                {
-                    setBlock = setBlock.End();
-                }
-                setBlock.Line("#else");
-                setBlock.Line("m" + variableName + " = value;");
-
-
-                setBlock.Line("#endif");
-                #endregion
-
-            }
-            else
-            {
-                string fieldName = "m" + variableName;
-
-                getBlock.Line("#if REQUIRES_PRIMARY_THREAD_LOADING");
-                
-                var ifBlock = getBlock.If("fieldName == null && FlatRedBall.FlatRedBallServices.IsThreadPrimary()");
-                ifBlock.Line("FlatRedBall.FlatRedBallServices.GetContentManagerByName(ContentManager).ProcessTexturesWaitingToBeLoaded();");
-                
-                getBlock.Line("#endif");
-
-                getBlock.Line("return " + fieldName + ";");
-            }
-        }
 
         public static bool NeedsFullProperty(ReferencedFileSave referencedFile, IElement container)
         {
