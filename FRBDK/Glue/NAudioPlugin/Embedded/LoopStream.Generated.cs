@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.NAudio
 {
+#if !WEB
+
     public class LoopStream : WaveStream
     {
         WaveStream sourceStream;
@@ -60,4 +62,7 @@ namespace FlatRedBall.NAudio
             return totalBytesRead;
         }
     }
+
+#endif
+
 }

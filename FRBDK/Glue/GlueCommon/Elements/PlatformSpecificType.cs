@@ -13,7 +13,9 @@ namespace FlatRedBall.Glue.Elements
         public string QualifiedType;
         public string Platform;
 
-
+        /// <summary>
+        /// An optional function which can return the qualified name. The Object is the NamedObjectSave or ReferencedFileSave.
+        /// </summary>
         [XmlIgnore]
         public Func<object, string> PlatformFunc;
     }

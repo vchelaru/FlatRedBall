@@ -7,6 +7,8 @@ using NAudio.Utils;
 
 namespace FlatRedBall.NAudio
 {
+#if !WEB
+
     public class NAudio_Song : IDisposable
 #if ISongInFrb
         , ISong
@@ -214,4 +216,7 @@ namespace FlatRedBall.NAudio
 
         public TimeSpan Duration => reader.TotalTime;
     }
+
+
+#endif
 }
