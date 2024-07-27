@@ -1,9 +1,11 @@
 ﻿$GLUE_VERSIONS$
 using FlatRedBall.Audio;
-using NAudio.Wave;
 using System;
 using System.IO;
+#if !WEB
+using NAudio.Wave;
 using NAudio.Utils;
+#endif
 
 namespace FlatRedBall.NAudio
 {

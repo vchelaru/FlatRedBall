@@ -1,4 +1,6 @@
-﻿using NAudio.Wave;
+﻿#if !WEB
+using NAudio.Wave;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;
