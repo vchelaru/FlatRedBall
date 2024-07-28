@@ -149,7 +149,17 @@ namespace OfficialPlugins.MonoGameContent
                     menuToModify.Add("Rebuild Content Pipeline File (xnb)", async (not, used) =>
                     {
                         var fullFileName = GlueCommands.Self.GetAbsoluteFileName(rfs);
+
                         await BuildLogic.Self.TryAddXnbReferencesAndBuild(fullFileName, GlueState.CurrentMainProject, false, rebuild:true);
+
+                        foreach(var project in GlueState.SyncedProjects)
+                        {
+                            if(project is VisualStudioProject vsProject)
+                            {
+                                await BuildLogic.Self.TryAddXnbReferencesAndBuild(fullFileName, vsProject, false, rebuild:true);
+                            }
+                        }
+
                     });
                 }
 

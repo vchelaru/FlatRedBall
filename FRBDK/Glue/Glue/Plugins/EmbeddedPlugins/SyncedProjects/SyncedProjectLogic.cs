@@ -17,8 +17,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
     {
         public void SyncContentFromTo(VisualStudioProject from, VisualStudioProject to)
         {
+            var evaluatedItems = ((VisualStudioProject)from.ContentProject).EvaluatedItems;
             var contentItemsToSync =
-                ((VisualStudioProject)from.ContentProject).EvaluatedItems.Where(item => IsContentFile(item, from.ContentProject, to))
+                evaluatedItems
+                .Where(item => IsContentFile(item, from.ContentProject, to))
                 .ToList();
 
             foreach (var bi in contentItemsToSync)
@@ -68,6 +70,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 }
             }
 
+            // Unevaluated could be something like *.*...
+            //var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(bi.UnevaluatedInclude);
             var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(bi.UnevaluatedInclude);
 
             if (!shouldSkipContent)
