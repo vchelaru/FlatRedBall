@@ -597,7 +597,18 @@ namespace OfficialPlugins.MonoGameContent
         {
             StringBuilder stringBuilder = new StringBuilder();
             string contentDirectory = GlueState.ContentDirectory;
-            string workingDirectory = contentDirectory;
+            string workingDirectory = "";
+            
+            if(project is KniWebProject)
+            {
+                // There's an issue with the kni content pipeline where it appends directories if you don't set the 
+                // working directory to your content file
+                workingDirectory = contentItem.BuildFileName.GetDirectoryContainingThis().FullPath;
+            }
+            else
+            {
+                workingDirectory = contentDirectory;
+            }
 
             string commandLine = contentItem.GenerateCommandLine(project, rebuild);
             var process = new Process();
@@ -607,7 +618,7 @@ namespace OfficialPlugins.MonoGameContent
             process.StartInfo.Arguments = commandLine;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.FileName = commandLineBuildExe;
-            process.StartInfo.WorkingDirectory = contentDirectory;
+            process.StartInfo.WorkingDirectory = workingDirectory;
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.RedirectStandardInput = true;
             process.StartInfo.RedirectStandardOutput = true;
@@ -616,7 +627,7 @@ namespace OfficialPlugins.MonoGameContent
 
             process.Start();
 
-            GlueCommands.PrintOutput($"Building: {commandLineBuildExe} {commandLine}");
+            GlueCommands.PrintOutput($"Building: \"{commandLineBuildExe}\" {commandLine}");
 
             // Note - the process may print errors while it is running before it reports that it has an error.
             // Therefore, if we immediately display output as it is printing from monogame, we won't
