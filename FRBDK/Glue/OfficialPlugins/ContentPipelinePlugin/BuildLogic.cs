@@ -599,16 +599,9 @@ namespace OfficialPlugins.MonoGameContent
             string contentDirectory = GlueState.ContentDirectory;
             string workingDirectory = "";
             
-            if(project is KniWebProject)
-            {
-                // There's an issue with the kni content pipeline where it appends directories if you don't set the 
-                // working directory to your content file
-                workingDirectory = contentItem.BuildFileName.GetDirectoryContainingThis().FullPath;
-            }
-            else
-            {
-                workingDirectory = contentDirectory;
-            }
+            // There's an issue with the kni content pipeline where it appends directories if you don't set the 
+            // working directory to your content file...actually this might be the normal pipeline too
+            workingDirectory = contentItem.BuildFileName.GetDirectoryContainingThis().FullPath;
 
             string commandLine = contentItem.GenerateCommandLine(project, rebuild);
             var process = new Process();
