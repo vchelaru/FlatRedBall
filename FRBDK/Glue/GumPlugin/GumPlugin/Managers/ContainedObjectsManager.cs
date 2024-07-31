@@ -127,7 +127,7 @@ namespace GumPlugin.Managers
 
                     if (GueDerivingClassCodeGenerator.Self.ShouldGenerateRuntimeFor(elementSave))
                     {
-                        gueType = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(instance, element);
+                        gueType = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(instance, element, includeGlobalPrefix:false);
                     }
                     else
                     {

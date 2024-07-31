@@ -73,6 +73,11 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 codeBlock.Line("}");
 
                 codeBlock.Line("CameraSetup.SetupCamera(FlatRedBall.Camera.Main, graphics);");
+
+                codeBlock.Line("#if WEB");
+                codeBlock.Line("global::FlatRedBall.FlatRedBallServices.ForceClientSizeUpdates();");
+                codeBlock.Line("#endif");
+
             }
         }
 

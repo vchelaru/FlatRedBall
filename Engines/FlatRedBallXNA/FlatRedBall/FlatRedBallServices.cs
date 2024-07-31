@@ -334,7 +334,7 @@ namespace FlatRedBall
                     // above
                     mGraphicsOptions.ResumeDeviceReset();
 
-#if WINDOWS || FNA
+#if WINDOWS || FNA || WEB
                     FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
 #endif
 
@@ -359,7 +359,7 @@ namespace FlatRedBall
 
             mGraphicsOptions.ResumeDeviceReset();
 
-    #if WINDOWS || FNA
+    #if WINDOWS || FNA || WEB
             FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
     #endif
             //mGraphicsOptions.ResumeDeviceReset();
