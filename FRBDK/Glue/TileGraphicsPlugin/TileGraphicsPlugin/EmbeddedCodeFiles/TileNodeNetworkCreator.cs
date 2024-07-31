@@ -1,23 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FlatRedBall.Math;
 using FlatRedBall.TileGraphics;
-using FlatRedBall.Math;
-using TMXGlueLib.DataTypes;
 using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
+using TMXGlueLib.DataTypes;
 
 namespace FlatRedBall.AI.Pathfinding
 {
     public static class TileNodeNetworkCreator
     {
         public static TileNodeNetwork CreateFrom(LayeredTileMap layeredTileMap, DirectionalType directionalType,
-            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate)
+            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate, MapDrawableBatch layer = null)
         {
             TileNodeNetwork nodeNetwork = CreateTileNodeNetwork(layeredTileMap, directionalType);
 
-            FillFromPredicate(nodeNetwork, layeredTileMap, predicate);
+            FillFromPredicate(nodeNetwork, layeredTileMap, predicate, layer);
 
             return nodeNetwork;
         }
@@ -106,7 +103,7 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
-        public static void FillFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate)
+        public static void FillFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate, MapDrawableBatch layer = null)
         {
             var dimensionHalf = layeredTileMap.WidthPerTile.Value / 2.0f;
 
@@ -119,26 +116,42 @@ namespace FlatRedBall.AI.Pathfinding
 
                 if (predicate(namedValues))
                 {
-                    foreach (var layer in layeredTileMap.MapLayers)
+                    if (layer == null)
                     {
-                        var dictionary = layer.NamedTileOrderedIndexes;
-
-                        if (dictionary.ContainsKey(name))
+                        foreach (var loopLayer in layeredTileMap.MapLayers)
                         {
-                            var indexList = dictionary[name];
-
-                            foreach (var index in indexList)
-                            {
-                                float left;
-                                float bottom;
-                                layer.GetBottomLeftWorldCoordinateForOrderedTile(index, out left, out bottom);
-
-                                var centerX = left + dimensionHalf;
-                                var centerY = bottom + dimensionHalf;
-
-                                nodeNetwork.AddAndLinkTiledNodeWorld(centerX, centerY);
-                            }
+                            AddNodesForLayer(loopLayer, name);
                         }
+                    }
+                    else if (layeredTileMap.MapLayers.Contains(layer))
+                    {
+                        AddNodesForLayer(layer, name);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Layer does not belong to this tile map.");
+                    }
+                }
+            }
+
+            void AddNodesForLayer(MapDrawableBatch layer, string name)
+            {
+                var dictionary = layer.NamedTileOrderedIndexes;
+
+                if (dictionary.ContainsKey(name))
+                {
+                    var indexList = dictionary[name];
+
+                    foreach (var index in indexList)
+                    {
+                        float left;
+                        float bottom;
+                        layer.GetBottomLeftWorldCoordinateForOrderedTile(index, out left, out bottom);
+
+                        var centerX = left + dimensionHalf;
+                        var centerY = bottom + dimensionHalf;
+
+                        nodeNetwork.AddAndLinkTiledNodeWorld(centerX, centerY);
                     }
                 }
             }
@@ -221,11 +234,11 @@ namespace FlatRedBall.AI.Pathfinding
         public static TileNodeNetwork CreateFromTilesWithoutTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, params string[] types) =>
             CreateFromTilesWithoutTypes(layeredTileMap, directionalType, (ICollection<string>)types);
 
-            public static TileNodeNetwork CreateFromTilesWithoutTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, int removalTileRadius, params string[] types) =>
-                CreateFromTilesWithoutTypes(layeredTileMap, directionalType, (ICollection<string>)types, removalTileRadius);
+        public static TileNodeNetwork CreateFromTilesWithoutTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, int removalTileRadius, params string[] types) =>
+            CreateFromTilesWithoutTypes(layeredTileMap, directionalType, (ICollection<string>)types, removalTileRadius);
 
-            public static TileNodeNetwork CreateFromTilesWithoutTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, ICollection<string> types, int removalTileRadius = 0)
-            {
+        public static TileNodeNetwork CreateFromTilesWithoutTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, ICollection<string> types, int removalTileRadius = 0)
+        {
             bool CreateFromTypesPredicate(List<NamedValue> list)
             {
                 var toReturn = false;
