@@ -1897,6 +1897,16 @@ namespace FlatRedBall.Math.Geometry
 
         #endregion
 
+        /// <summary>
+        /// Performs collision between the argument line and all of the shapes contained 
+        /// in the ShapeCollection. This method returns whether collision has occurred, and sets
+        /// the line's LastCollisionPoint to the closest collision to the line's Position.
+        /// </summary>
+        /// <param name="line">The argument line.</param>
+        /// <param name="sortAxis">The sort axis if the ShapeCollection is a TileShapeCollection. Otherwise null.</param>
+        /// <param name="gridSize">The grid size if the ShapeCollection is a TileShapeCollection. Otherwise null.</param>
+        /// <returns>Whether a collision has occurred.</returns>
+        /// <exception cref="ArgumentException">Thrown if the argument line does not have its position one of the endpoints.</exception>
         public bool CollideAgainstClosest(Line line, Axis? sortAxis, float? gridSize)
         {
             this.ClearLastCollisionLists();
