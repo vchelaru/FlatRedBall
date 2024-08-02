@@ -219,9 +219,12 @@ internal static class AddSourceManager
     public static async Task HandleLinkToSourceClicked(AddFrbSourceViewModel viewModel) =>
         await LinkToSourceInternal(viewModel.FrbRootFolder, viewModel.GumRootFolder, viewModel.IncludeGumSkia);
 
-    public static async Task LinkToSourceUsingDefaults() =>
-        await LinkToSourceInternal(DefaultFrbFilePath, DefaultGumFilePath, includeGumSkia: true);
+    public static async Task LinkToSourceUsingDefaults()
+    {
+        var includeGumSkia = GlueState.Self.CurrentMainProject is MonoGameDesktopGlNetCoreProject;
 
+        await LinkToSourceInternal(DefaultFrbFilePath, DefaultGumFilePath, includeGumSkia);
+    }
     private static async Task LinkToSourceInternal(string frbRootFolder, string gumRootFolder, bool includeGumSkia)
     {
         var vsProject = GlueState.Self.CurrentMainProject;
