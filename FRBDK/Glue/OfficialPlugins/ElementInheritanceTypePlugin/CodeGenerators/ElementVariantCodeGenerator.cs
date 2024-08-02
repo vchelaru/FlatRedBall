@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
@@ -51,10 +52,11 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             FillCreateNew("Microsoft.Xna.Framework.Vector3 position", "position.X, position.Y", element, classBlock);
             FillCreateNew("float x = 0, float y = 0", "x, y", element, classBlock);
            
+            var glueElement = (GlueElement)element;
 
             CreateVariableFields(element, classBlock);
 
-            CreateFromNameMethod(element, derivedElements, classBlock);
+            CreateFromNameMethod(glueElement, derivedElements, classBlock);
 
             foreach (var derivedElement in derivedElements)
             {
@@ -168,7 +170,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
         }
 
 
-        private static void CreateFromNameMethod(IElement element, List<GlueElement> derivedElements, ICodeBlock classBlock)
+        private static void CreateFromNameMethod(GlueElement element, List<GlueElement> derivedElements, ICodeBlock classBlock)
         {
             var glueProject = GlueState.Self.CurrentGlueProject;
 
@@ -179,6 +181,10 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             var switchBlock = fromName.Switch("name");
             foreach (var derivedElement in derivedElements)
             {
+                // need to support both fully qualified and unqualified so let's add a line:
+                
+                var fullyQualified = $"{CodeWriter.GetGlueElementNamespace(element)}.{derivedElement.ClassName}";
+                switchBlock.Line($"case \"{fullyQualified}\":");
                 switchBlock.CaseNoBreak($"\"{derivedElement.ClassName}\"")
                     .Line($"return {derivedElement.ClassName};");
             }
