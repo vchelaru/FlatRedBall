@@ -512,6 +512,8 @@ namespace OfficialPlugins.MonoGameContent
         }
 
         // todo - this can be slow - like 100 ms. This only needs to happen 1 time per run per project type.
+        static bool HasInstalledBuilder = false;
+
         private void InstallBuilderIfNecessary(VisualStudioProject visualStudioProject)
         {
             var needs3_8_1_Builder = visualStudioProject.DotNetVersion.Major >= 6;
@@ -521,7 +523,13 @@ namespace OfficialPlugins.MonoGameContent
             {
                 return;
             }
+            if(HasInstalledBuilder)
+            {
+                return;
+            }
             //////////End Early Out///////////////
+
+            HasInstalledBuilder = true;
 
             var startInfo = new ProcessStartInfo("dotnet", "tool list -g")
             {
@@ -628,7 +636,7 @@ namespace OfficialPlugins.MonoGameContent
             // This does delay the output a little, but normal output can get lost.
             while (process.HasExited == false)
             {
-                System.Threading.Thread.Sleep(100);
+                System.Threading.Thread.Sleep(50);
 
                 while (!process.StandardOutput.EndOfStream)
                 {
