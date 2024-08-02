@@ -1897,7 +1897,11 @@ namespace FlatRedBall.IO
                 {
                     fileName = fileName.Substring(1);
                 }
-                stream = TitleContainer.OpenStream(fileName);
+
+                var suffix =
+                    "?token=" + DateTime.Now.Ticks;
+
+                stream = TitleContainer.OpenStream(fileName + suffix);
 
 #else
 
