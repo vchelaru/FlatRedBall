@@ -43,6 +43,7 @@ namespace OfficialPlugins.Common.Controls
         {
             SuppressSettingProperty = true;
 
+            this.Label.Text = InstanceMember.DisplayName;
 
             object valueOnInstance;
             bool successfulGet = this.TryGetValueOnInstance(out valueOnInstance);

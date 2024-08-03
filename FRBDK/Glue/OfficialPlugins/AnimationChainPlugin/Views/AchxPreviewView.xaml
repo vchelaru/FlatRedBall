@@ -22,9 +22,11 @@
                 <ColumnDefinition Width="170"></ColumnDefinition>
                 <ColumnDefinition Width="5"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="5"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Grid>
+            <Grid x:Name="ListViewGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
                     <RowDefinition Height="5"></RowDefinition>
@@ -55,7 +57,7 @@
                           Background="#cccccc"
                           ></GridSplitter>
                 <ScrollViewer Grid.Row="2">
-                    <wpfdataui:DataUiGrid x:Name="PropertyGrid"  Instance="{Binding SelectedAnimationChain}"></wpfdataui:DataUiGrid>
+                    <wpfdataui:DataUiGrid x:Name="PropertyGrid"></wpfdataui:DataUiGrid>
                 </ScrollViewer>
             </Grid>
 
@@ -64,7 +66,7 @@
                       ></GridSplitter>
 
 
-            <Grid Grid.Column="2">
+            <Grid Grid.Column="2" x:Name="PreviewGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="223*"></RowDefinition>
                     <RowDefinition Height="5"></RowDefinition>
@@ -106,23 +108,28 @@
                           />
                 <Grid x:Name="BottomHalfGrid" Grid.Row="2" Grid.RowSpan="2">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="Auto"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding IsShowGuidesChecked}">Show Guides</CheckBox>
-                    </StackPanel>
-                    <wpf1:GumSKElement x:Name="BottomGumCanvas" Grid.Row="1"
+                    <wpf1:GumSKElement x:Name="BottomGumCanvas" Grid.Row="0"
                         MouseDown="BottomCanvas_MouseDown"
                         MouseMove="BottomCanvas_MouseMove"
                         MouseWheel="BottomCanvas_MouseWheel"
                                ></wpf1:GumSKElement>
-                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                    <StackPanel Grid.Row="1" Orientation="Horizontal">
                         <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>
                     </StackPanel>
                 </Grid>
             </Grid>
+
+            <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="3"
+                          Background="#cccccc"
+                      ></GridSplitter>
+
+            <wpfdataui:DataUiGrid Grid.Column="4" x:Name="SettingsPropertyGrid">
+                
+            </wpfdataui:DataUiGrid>
+            
         </Grid>
     </Grid>
 

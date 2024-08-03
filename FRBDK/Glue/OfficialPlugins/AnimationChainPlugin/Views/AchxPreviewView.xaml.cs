@@ -1,9 +1,11 @@
 ﻿using AsepriteDotNet;
+using FlatRedBall.Attributes;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.Managers;
 using OfficialPlugins.AnimationChainPlugin.ViewModels;
+using OfficialPlugins.Common.Controls;
 using OfficialPlugins.SpritePlugin.Managers;
 using PropertyTools.Wpf;
 using RenderingLibrary;
@@ -94,8 +96,31 @@ namespace OfficialPlugins.ContentPreview.Views
             if (ViewModel != null)
             {
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
+                InitializeSettingsPropertyGrid();
+
+                ViewModel.Settings.PropertyChanged += HandleSettingsPropertyChanged;
                 ViewModel.AnimationChainCollectionChanged += HandleAnimationChainCollectionChanged;
                 ViewModel.FrameUpdatedByUi += HandleFrameUpdated;
+            }
+        }
+
+        private void InitializeSettingsPropertyGrid()
+        {
+            this.SettingsPropertyGrid.Instance = ViewModel.Settings;
+
+            GetMember(nameof(ViewModel.Settings.BackgroundColor)).PreferredDisplayer = typeof(ColorDisplay);
+
+            WpfDataUi.DataTypes.InstanceMember GetMember(string memberName)
+            {
+                foreach (var category in SettingsPropertyGrid.Categories)
+                {
+                    var found = category.Members.FirstOrDefault(item => item.Name == memberName);
+                    if (found != null)
+                    {
+                        return found;
+                    }
+                }
+                return null;
             }
         }
 
@@ -143,10 +168,18 @@ namespace OfficialPlugins.ContentPreview.Views
                     RefreshTopWindowScrollBars();
 
                     break;
-                case nameof(ViewModel.IsShowGuidesChecked):
+            }
+        }
+
+        private void HandleSettingsPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case nameof(ViewModel.Settings.ShowGuides):
                     BottomWindowManager.RefreshBottomGuideVisibility(ViewModel);
                     break;
             }
+
         }
 
         public void ForceRefreshAchx(FilePath achxFilePath = null, bool preserveSelection = false)

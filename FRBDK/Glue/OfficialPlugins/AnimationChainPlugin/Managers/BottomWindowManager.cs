@@ -121,8 +121,9 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
         public void RefreshBottomGuideVisibility(AchxViewModel viewModel)
         {
-            BottomWindowVerticalGuide.Visible = viewModel.IsShowGuidesChecked;
-            BottomWindowHorizontalGuide.Visible = viewModel.IsShowGuidesChecked;
+            var isShowGuidesChecked = viewModel.Settings.ShowGuides;
+            BottomWindowVerticalGuide.Visible = isShowGuidesChecked;
+            BottomWindowHorizontalGuide.Visible = isShowGuidesChecked;
             BottomGumCanvas.InvalidateVisual();
         }
 

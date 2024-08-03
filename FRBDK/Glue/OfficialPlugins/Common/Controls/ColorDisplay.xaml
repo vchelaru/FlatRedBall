@@ -7,6 +7,11 @@
              mc:Ignorable="d" 
              d:DesignWidth="400">
     <Grid>
-        <pt:ColorPickerPanel x:Name="ColorPickerPanel" ShowHsvPanel="True"></pt:ColorPickerPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="Label" Text="Property Label:"/>
+        <pt:ColorPickerPanel Margin="16,0,0,0" Grid.Row="1" x:Name="ColorPickerPanel" ShowHsvPanel="True"></pt:ColorPickerPanel>
     </Grid>
 </UserControl>
