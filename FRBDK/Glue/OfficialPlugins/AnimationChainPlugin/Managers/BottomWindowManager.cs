@@ -14,11 +14,15 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using RenderingLibrary;
 using FlatRedBall.Content.AnimationChain;
+using System.ComponentModel;
+using SkiaSharp.Views.Desktop;
 
 namespace OfficialPlugins.AnimationChainPlugin.Managers
 {
     internal class BottomWindowManager
     {
+        #region Fields/Properties
+
         SpriteRuntime MainAnimationSprite;
 
         PolygonRuntime BottomWindowHorizontalGuide;
@@ -45,16 +49,23 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
         ZoomViewModel zoomViewModel;
 
+        SettingsViewModel settingsViewModel;
+
 
         SolidRectangleRuntime GumAnimationBackground { get; set; }
 
+        #endregion
 
-        public BottomWindowManager(GumSKElement bottomGumCanvas, UserControl userControl, CameraLogic cameraLogic, ZoomViewModel bottomWindowZoom)
+        public BottomWindowManager(GumSKElement bottomGumCanvas, UserControl userControl, CameraLogic cameraLogic, ZoomViewModel bottomWindowZoom, SettingsViewModel settingsViewModel)
         {
             zoomViewModel = bottomWindowZoom;
+            this.settingsViewModel = settingsViewModel;
+            this.settingsViewModel.PropertyChanged += HandleSettingsViewModelPropertyChanged;
             UserControl = userControl;
             BottomGumCanvas = bottomGumCanvas;
             CameraLogic = cameraLogic;
+
+            
 
             // background first, so it's behind the other sprites
             CreateBackground();
@@ -65,6 +76,17 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             bottomGumCanvas.SystemManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
 
             StartAnimating();
+        }
+
+        private void HandleSettingsViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case nameof(SettingsViewModel.BackgroundColor):
+                    GumAnimationBackground.Color = settingsViewModel.BackgroundColor.ToSKColor();
+                    BottomGumCanvas.InvalidateSurface();
+                    break;
+            }
         }
 
         public void RefreshAnimationPreview(AchxViewModel ViewModel)

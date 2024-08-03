@@ -12,6 +12,6 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <TextBlock x:Name="Label" Text="Property Label:"/>
-        <pt:ColorPickerPanel Margin="16,0,0,0" Grid.Row="1" x:Name="ColorPickerPanel" ShowHsvPanel="True"></pt:ColorPickerPanel>
+        <pt:ColorPickerPanel PropertyChanged="HandleColorPickerPropertyChanged"  Margin="16,0,0,0" Grid.Row="1" x:Name="ColorPickerPanel" ShowHsvPanel="True"></pt:ColorPickerPanel>
     </Grid>
 </UserControl>

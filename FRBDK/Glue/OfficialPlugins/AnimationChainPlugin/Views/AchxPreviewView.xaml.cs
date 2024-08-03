@@ -136,7 +136,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
             TopWindowManager = new TopWindowManager(TopGumCanvas, this, topWindowCameraLogic, (this.DataContext as AchxViewModel)?.TopWindowZoom);
 
-            BottomWindowManager = new BottomWindowManager(BottomGumCanvas, this, BottomWindowCameraLogic, (this.DataContext as AchxViewModel)?.BottomWindowZoom);
+            BottomWindowManager = new BottomWindowManager(BottomGumCanvas, this, BottomWindowCameraLogic, (this.DataContext as AchxViewModel)?.BottomWindowZoom, ViewModel.Settings);
         }
 
         #endregion
