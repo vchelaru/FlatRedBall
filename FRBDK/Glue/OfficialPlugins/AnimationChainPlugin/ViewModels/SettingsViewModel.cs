@@ -21,5 +21,10 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             get => Get<Color>();
             set => Set(value);
         }
+
+        public SettingsViewModel()
+        {
+            BackgroundColor = Color.FromArgb(68, 34, 136);
+        }
     }
 }

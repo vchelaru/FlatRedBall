@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="AnimationChainPlugin\Icons\Settings.png" />
     <None Remove="CollisionPlugin\Icons\NoPartitioning.png" />
     <None Remove="CollisionPlugin\Icons\PartitionEnabled.png" />
     <None Remove="Content\Icons\CopyIcon.png" />
@@ -103,6 +104,7 @@
     <EmbeddedResource Include="Wizard\EmbeddedContent\TopDown\ZoriaLicense.txt" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\TopDown\ZoriaSpritesSheetModified.png" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\TopDown\ZoriaTopDownAnimations.achx" />
+    <Resource Include="AnimationChainPlugin\Icons\Settings.png" />
     <Resource Include="Content\Icons\CopyIcon.png" />
     <EmbeddedResource Include="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>

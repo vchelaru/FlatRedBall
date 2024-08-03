@@ -1,6 +1,7 @@
 ﻿using AsepriteDotNet;
 using FlatRedBall.Attributes;
 using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Controls.DataUi;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.Managers;
@@ -134,9 +135,11 @@ namespace OfficialPlugins.ContentPreview.Views
             this.TopWindowCameraLogic = topWindowCameraLogic;
             this.BottomWindowCameraLogic = bottomWindowCameraLogic;
 
-            TopWindowManager = new TopWindowManager(TopGumCanvas, this, topWindowCameraLogic, (this.DataContext as AchxViewModel)?.TopWindowZoom);
+            TopWindowManager = new TopWindowManager(TopGumCanvas, this, topWindowCameraLogic,
+                ViewModel?.TopWindowZoom, ViewModel.Settings);
 
-            BottomWindowManager = new BottomWindowManager(BottomGumCanvas, this, BottomWindowCameraLogic, (this.DataContext as AchxViewModel)?.BottomWindowZoom, ViewModel.Settings);
+            BottomWindowManager = new BottomWindowManager(BottomGumCanvas, this, BottomWindowCameraLogic,
+                ViewModel?.BottomWindowZoom, ViewModel.Settings);
         }
 
         #endregion

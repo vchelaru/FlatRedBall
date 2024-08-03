@@ -52,11 +52,12 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
         SettingsViewModel settingsViewModel;
 
 
-        SolidRectangleRuntime GumAnimationBackground { get; set; }
+        SolidRectangleRuntime GumBackground { get; set; }
 
         #endregion
 
-        public BottomWindowManager(GumSKElement bottomGumCanvas, UserControl userControl, CameraLogic cameraLogic, ZoomViewModel bottomWindowZoom, SettingsViewModel settingsViewModel)
+        public BottomWindowManager(GumSKElement bottomGumCanvas, UserControl userControl, 
+            CameraLogic cameraLogic, ZoomViewModel bottomWindowZoom, SettingsViewModel settingsViewModel)
         {
             zoomViewModel = bottomWindowZoom;
             this.settingsViewModel = settingsViewModel;
@@ -72,10 +73,13 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             CreateAnimatedSprite();
             CreateBottomGuideLines();
 
-            CameraLogic.Initialize(userControl, bottomWindowZoom, BottomGumCanvas, this.GumAnimationBackground);
+            CameraLogic.Initialize(userControl, bottomWindowZoom, BottomGumCanvas, this.GumBackground);
             bottomGumCanvas.SystemManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
 
             StartAnimating();
+
+            // Refresh after creating the sprite
+            RefreshBackgroundColor();
         }
 
         private void HandleSettingsViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -83,10 +87,15 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             switch(e.PropertyName)
             {
                 case nameof(SettingsViewModel.BackgroundColor):
-                    GumAnimationBackground.Color = settingsViewModel.BackgroundColor.ToSKColor();
-                    BottomGumCanvas.InvalidateSurface();
+                    RefreshBackgroundColor();
                     break;
             }
+        }
+
+        private void RefreshBackgroundColor()
+        {
+            GumBackground.Color = settingsViewModel.BackgroundColor.ToSKColor();
+            BottomGumCanvas.InvalidateSurface();
         }
 
         public void RefreshAnimationPreview(AchxViewModel ViewModel)
@@ -382,13 +391,13 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
         private void CreateBackground()
         {
 
-            GumAnimationBackground = new SolidRectangleRuntime();
-            GumAnimationBackground.Color = new SKColor(68, 34, 136);
-            GumAnimationBackground.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
-            GumAnimationBackground.Width = 100;
-            GumAnimationBackground.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
-            GumAnimationBackground.Height = 100;
-            this.BottomGumCanvas.Children.Add(GumAnimationBackground);
+            GumBackground = new SolidRectangleRuntime();
+            GumBackground.Color = new SKColor(68, 34, 136);
+            GumBackground.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            GumBackground.Width = 100;
+            GumBackground.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            GumBackground.Height = 100;
+            this.BottomGumCanvas.Children.Add(GumBackground);
         }
 
 

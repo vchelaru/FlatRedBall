@@ -13,7 +13,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
+
+        <StackPanel Orientation="Horizontal" Grid.Column="0">
             <Label Content="This is the ACHX Preview window. To edit the .achx: "/>
             <Button x:Name="OpenInAnimationEditorButton" Content="Click Here" Click="OpenInAnimationEditorButton_Click"/>
         </StackPanel>
@@ -22,17 +23,17 @@
                 <ColumnDefinition Width="170"></ColumnDefinition>
                 <ColumnDefinition Width="5"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition Width="5"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Grid x:Name="ListViewGrid">
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition Height="5"></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <pt:TreeListBox x:Name="ListBox"
+            <TabControl>
+                <TabItem Header="Animations">
+                    <Grid x:Name="ListViewGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition Height="5"></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <pt:TreeListBox x:Name="ListBox"
                 HierarchySource="{Binding VisibleRoot}"
                 ChildrenPath="VisibleChildren"
                 SelectedItem="{Binding SelectedItem}"
@@ -40,26 +41,34 @@
                 PreviewKeyDown="TreeListBox_PreviewKeyDown"
                 >
 
-                    <pt:TreeListBox.ItemTemplate>
+                            <pt:TreeListBox.ItemTemplate>
 
-                        <DataTemplate>
-                            <Grid x:Name="ItemGrid">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="1" Text="{Binding Text}" />
-                            </Grid>
-                        </DataTemplate>
-                    </pt:TreeListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid x:Name="ItemGrid">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="1" Text="{Binding Text}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </pt:TreeListBox.ItemTemplate>
 
-                </pt:TreeListBox>
-                <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
+                        </pt:TreeListBox>
+                        <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
                           Background="#cccccc"
                           ></GridSplitter>
-                <ScrollViewer Grid.Row="2">
-                    <wpfdataui:DataUiGrid x:Name="PropertyGrid"></wpfdataui:DataUiGrid>
-                </ScrollViewer>
-            </Grid>
+                        <ScrollViewer Grid.Row="2">
+                            <wpfdataui:DataUiGrid x:Name="PropertyGrid"></wpfdataui:DataUiGrid>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Settings">
+                    <wpfdataui:DataUiGrid x:Name="SettingsPropertyGrid" >
+
+                    </wpfdataui:DataUiGrid>
+
+                </TabItem>
+            </TabControl>
 
             <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"
                           Background="#cccccc"
@@ -122,14 +131,7 @@
                 </Grid>
             </Grid>
 
-            <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="3"
-                          Background="#cccccc"
-                      ></GridSplitter>
 
-            <wpfdataui:DataUiGrid Grid.Column="4" x:Name="SettingsPropertyGrid">
-                
-            </wpfdataui:DataUiGrid>
-            
         </Grid>
     </Grid>
 

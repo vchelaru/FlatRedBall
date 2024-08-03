@@ -191,6 +191,7 @@
 		<PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
 		<PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
 		<PackageReference Include="ParallelExtensionsExtras.CrossPlatform" Version="1.0.0" />
+		<PackageReference Include="PixiEditor.ColorPicker" Version="3.4.1" />
 		<PackageReference Include="PropertyTools.Wpf" Version="3.1.0" />
 		<PackageReference Include="SharpSerializer" Version="3.0.1" />
 		<PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
