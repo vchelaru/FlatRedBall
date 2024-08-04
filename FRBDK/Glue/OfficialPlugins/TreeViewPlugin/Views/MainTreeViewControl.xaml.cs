@@ -617,7 +617,7 @@ public partial class MainTreeViewControl : UserControl
         if (foundSomething)
         {
             ViewModel.SearchBoxText = String.Empty;
-            SelectionLogic.CurrentNode.Focus(this);
+            SelectionLogic.CurrentNode?.Focus(this);
         }
     }
 
