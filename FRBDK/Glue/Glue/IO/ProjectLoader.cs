@@ -149,10 +149,6 @@ namespace FlatRedBall.Glue.IO
 
                 if (!glueProjectFile.Exists())
                 {
-                    if(!TaskManager.Self.IsInTask())
-                    {
-                        int m = 3;
-                    }
                     ProjectManager.GlueProjectSave = new GlueProjectSave();
 
                     ProjectManager.GlueProjectSave.FileVersion = GlueProjectSave.LatestVersion;
@@ -169,7 +165,7 @@ namespace FlatRedBall.Glue.IO
 
 
                     ProjectManager.FindGameClass();
-                    GluxCommands.Self.SaveGlueProjectImmediately();
+                    GluxCommands.Self.SaveProjectAndElementsImmediately();
 
                     // no need to do this - will do it in PerformLoadGlux:
                     //PluginManager.ReactToLoadedGlux(ProjectManager.GlueProjectSave, glueProjectFile);
@@ -188,8 +184,6 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
 
                 var verboseSectionResult = section.ToStringVerbose();
-
-                int mm = 3;
 
                 #endregion
 
@@ -573,10 +567,6 @@ namespace FlatRedBall.Glue.IO
             bool succeeded = true;
             try
             {
-                if (!TaskManager.Self.IsInTask())
-                {
-                    int m = 3;
-                }
                 ProjectManager.GlueProjectSave = GlueProjectSaveExtensions.Load(glueProjectFile);
 
                 string errors;
@@ -610,7 +600,7 @@ namespace FlatRedBall.Glue.IO
                         MessageBox.Show(e.ToString());
                         break;
                     case DialogResult.Retry:
-                        LoadProject(projectFileName);
+                        _=LoadProject(projectFileName);
                         break;
                     case DialogResult.Yes:
                         string text = FileManager.FromFileText(glueProjectFile);

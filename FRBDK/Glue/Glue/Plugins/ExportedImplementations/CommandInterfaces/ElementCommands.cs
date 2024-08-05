@@ -1556,7 +1556,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
     #region Property Set
 
-    public async Task ReactToPropertyChanged(GlueElement element, string propertyName, object oldValue)
+    public Task ReactToPropertyChanged(GlueElement element, string propertyName, object oldValue)
     {
         if(element is EntitySave entitySave)
         {
@@ -1566,6 +1566,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         {
             Container.Get<ScreenSaveSetVariableLogic>().ReactToScreenPropertyChanged(screenSave, propertyName, oldValue);
         }
+        return Task.CompletedTask;
     }
 
     #endregion

@@ -263,11 +263,12 @@ public class GluxCommands : IGluxCommands
         }
         else
         {
-            SaveGlux(taskExecutionPreference);
+            // still use this:
+            SaveProjectAndElements(taskExecutionPreference);
         }
     }
 
-    [Obsolete("Use SaveEverythingImmediately because it more clearly " +
+    [Obsolete("Use SaveProjectAndElementsImmediately because it more clearly " +
         "indicates that everything (main project and all screens/entities) are saved")]
     public void SaveGlueProjectImmediately()
     {

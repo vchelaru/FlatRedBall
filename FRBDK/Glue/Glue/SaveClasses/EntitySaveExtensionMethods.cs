@@ -195,7 +195,7 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             if (!string.IsNullOrEmpty(element.BaseElement))
             {
-                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+                var baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
                 yield return baseElement;
 
                 foreach (var found in baseElement.BaseElements())

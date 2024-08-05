@@ -547,7 +547,8 @@ namespace FlatRedBall.Glue.IO
 
                 if (shouldGenerateEntityCode)
                 {
-                    CodeWriter.GenerateCode(entity);
+                    // is this okay to save and ignore the output?
+                    _=CodeWriter.GenerateCode(entity);
                 }
             }
 

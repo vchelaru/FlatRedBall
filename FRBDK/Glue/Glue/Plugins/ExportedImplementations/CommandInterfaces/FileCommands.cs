@@ -603,7 +603,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         System.Diagnostics.Process.Start(startInfo);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     System.Windows.Forms.MessageBox.Show("Error opening " + fileName + "\nTry navigating to this file and opening it through explorer");
 
