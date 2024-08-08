@@ -219,7 +219,7 @@ public static class RightClickHelper
             {
                 EntitySave entitySave = targetNode.Tag as EntitySave;
 
-                Add(L.Texts.EntityAddDerived, () => ShowAddDerivedEntityDialog(entitySave), image: DerivedEntity);
+                Add("Add Derived Entity", () => ShowAddDerivedEntityDialog(entitySave), image: DerivedEntity);
 
                 AddSeparator();
 

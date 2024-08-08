@@ -27,6 +27,21 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        /// <summary>
+        /// The containing entity relative to the project. If blank, the Entity is added to the Entities folder. If not blank,
+        /// this should contain the Entities\\ prefix. For example, a proper value might be: "Entities\\Enemies\\".
+        /// </summary>
+        public string Directory
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public ObservableCollection<string> DirectoryOptions
+        {
+            get; set;
+        } = new ObservableCollection<string>();
+
         #region Failure/Validation
 
         [DependsOn(nameof(Name))]
@@ -373,6 +388,8 @@ namespace GlueFormsCore.ViewModels
 
             CustomTeamIndex = 2; // If the user picks "other" it shouldn't default to 0
             IncludeListsInScreens = true;
+
+            Directory = "";
         }
     }
 }

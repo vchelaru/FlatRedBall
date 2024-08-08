@@ -585,9 +585,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
     }
 
-    public async Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel, string directory = null)
+    public async Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel)
     {
         var gluxCommands = GlueCommands.Self.GluxCommands;
+
+        var directory = viewModel.Directory;
 
         var newElement = gluxCommands.EntityCommands.AddEntity(
             directory + viewModel.Name, is2D: true);

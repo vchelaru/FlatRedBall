@@ -1735,15 +1735,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add Derived Entity.
-        /// </summary>
-        public static string EntityAddDerived {
-            get {
-                return ResourceManager.GetString("EntityAddDerived", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Entities represent game objects like the player, enemies, bullets, and pick-ups..
         /// </summary>
         public static string EntityAddDescription {
@@ -1758,15 +1749,6 @@ namespace Localization {
         public static string EntityAddInstance {
             get {
                 return ResourceManager.GetString("EntityAddInstance", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Base Entity:.
-        /// </summary>
-        public static string EntityBase {
-            get {
-                return ResourceManager.GetString("EntityBase", resourceCulture);
             }
         }
         

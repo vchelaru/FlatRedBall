@@ -907,9 +907,6 @@ for {1}?</value>
   <data name="EnterNameForEntity" xml:space="preserve">
     <value>Enter a name for the new entity:</value>
   </data>
-  <data name="EntityBase" xml:space="preserve">
-    <value>Base Entity:</value>
-  </data>
   <data name="Sprite" xml:space="preserve">
     <value>Sprite</value>
   </data>
@@ -2610,9 +2607,6 @@ for {1}?</value>
   </data>
   <data name="FileOpenCs" xml:space="preserve">
     <value>Open .cs file</value>
-  </data>
-  <data name="EntityAddDerived" xml:space="preserve">
-    <value>Add Derived Entity</value>
   </data>
   <data name="ScreenLevelCreate" xml:space="preserve">
     <value>Create Level Screen</value>

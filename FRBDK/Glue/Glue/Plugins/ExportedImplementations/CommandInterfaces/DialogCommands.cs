@@ -537,14 +537,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     PluginManager.ModifyAddEntityWindow(window);
 
-                    string directory = "";
-
-                    if (GlueState.Self.CurrentTreeNode?.IsDirectoryNode() == true)
-                    {
-                        directory = GlueState.Self.CurrentTreeNode.GetRelativeFilePath();
-                        directory = directory.Replace('/', '\\');
-                    }
-
                     var result = window.ShowDialog();
 
                     if (result == true)
@@ -559,7 +551,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         }
                         else
                         {
-                            var entity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(viewModel, directory);
+                            var entity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(viewModel);
 
                             await TaskManager.Self.AddAsync(() =>
                                 PluginManager.ReactToNewEntityCreatedWithUi(entity, window),
@@ -589,7 +581,34 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             viewModel.SelectedBaseEntity = "<NONE>";
 
+            viewModel.Directory = "";
+
+            if (GlueState.Self.CurrentTreeNode?.IsDirectoryNode() == true)
+            {
+                viewModel.Directory = GlueState.Self.CurrentTreeNode.GetRelativeFilePath();
+                viewModel.Directory = viewModel.Directory.Replace('/', '\\');
+            }
+
+            viewModel.DirectoryOptions.Add("Entities\\");
+            FillViewModelWithDirectoriesRecursively("Entities\\", viewModel);
+            viewModel.Directory = viewModel.DirectoryOptions[0];
+
             return viewModel;
+        }
+
+        private void FillViewModelWithDirectoriesRecursively(string relativeDirectory, AddEntityViewModel viewModel)
+        {
+            FilePath absolute = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
+
+            foreach(var directory in System.IO.Directory.GetDirectories(absolute.FullPath))
+            {
+                string relative = FileManager.MakeRelative(directory, GlueState.Self.CurrentGlueProjectDirectory);
+                relative = relative.Replace('/', '\\');
+
+                viewModel.DirectoryOptions.Add(relative + "\\");
+
+                FillViewModelWithDirectoriesRecursively(relative, viewModel);
+            }
         }
 
         public void MoveToCursor(System.Windows.Window window)

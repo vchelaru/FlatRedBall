@@ -18,9 +18,20 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock VerticalAlignment="Center"  Text="{x:Static localization:Texts.EntityBase}"></TextBlock>
+            <TextBlock VerticalAlignment="Center"  Text="Base Entity:"></TextBlock>
             <ComboBox Grid.Column="1" Margin="2,0,2,0" ItemsSource="{Binding BaseEntityOptions}" SelectedItem="{Binding SelectedBaseEntity}"></ComboBox>
         </Grid>
+
+        <Grid Margin="0,3,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center"  Text="Folder:"></TextBlock>
+            <ComboBox Grid.Column="1" Margin="2,0,2,0" ItemsSource="{Binding DirectoryOptions}" SelectedItem="{Binding Directory}"></ComboBox>
+        </Grid>
+
+
         <GroupBox Header="{x:Static localization:Texts.Visuals}" Visibility="{Binding VisualsVisibility}">
             <StackPanel>
                 <CheckBox x:Name="SpriteCheckBox" IsChecked="{Binding IsSpriteChecked}" Content="{x:Static localization:Texts.Sprite}"></CheckBox>
