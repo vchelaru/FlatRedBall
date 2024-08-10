@@ -39,6 +39,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         {
             var dto = new Dtos.GetProfilingDataDto();
 
+            dto.IsTimestepDisabled = ProfilingViewModel.IsDisableFixedTimestepChecked;
+
             GeneralResponse<ProfilingDataDto> response;
             if(CommandSending.CommandSender.Self.GlueViewSettingsViewModel.EnableLiveEdit == false)
             {

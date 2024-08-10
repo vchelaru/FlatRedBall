@@ -448,15 +448,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Auto Take Snapshot.
-        /// </summary>
-        public static string AutoTakeSnapshot {
-            get {
-                return ResourceManager.GetString("AutoTakeSnapshot", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Axis Aligned Rectangle.
         /// </summary>
         public static string AxisAlignedRectangle {

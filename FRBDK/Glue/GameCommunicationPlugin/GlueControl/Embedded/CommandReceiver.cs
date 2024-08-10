@@ -1374,6 +1374,19 @@ namespace GlueControl
         {
             var response = new ProfilingDataDto();
 
+#if HasFrbServicesGraphicsDeviceManager || REFERENCES_FRB_SOURCE
+            var isFixed = !dto.IsTimestepDisabled;
+
+
+            FlatRedBallServices.Game.IsFixedTimeStep = isFixed;
+            if(FlatRedBallServices.GraphicsDeviceManager.SynchronizeWithVerticalRetrace !=
+                isFixed)
+            {
+                FlatRedBallServices.GraphicsDeviceManager.SynchronizeWithVerticalRetrace = isFixed;
+                FlatRedBallServices.GraphicsDeviceManager.ApplyChanges();
+            }
+#endif
+
             response.SummaryData = FlatRedBall.Debugging.Debugger.GetFullPerformanceInformation();
 
             response.CollisionData = GetCollisionDataDto();
@@ -1447,7 +1460,7 @@ namespace GlueControl
             return toReturn;
         }
 
-        #endregion
+#endregion
     }
 
 

@@ -142,6 +142,11 @@ namespace FlatRedBall
         static object mSuspendLockObject = new object();
 
         static internal GraphicsDeviceManager mGraphics = null;
+
+        /// <summary>
+        /// Provides access to the GraphicsDeviceManager used by the game.
+        /// </summary>
+        public static GraphicsDeviceManager GraphicsDeviceManager => mGraphics;
         static internal GraphicsDevice mGraphicsDevice;
 
 #if !MONOGAME

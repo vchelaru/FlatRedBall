@@ -496,9 +496,6 @@ for {1}?</value>
   <data name="IncreaseGameSpeedFastForward" xml:space="preserve">
     <value>Increases game speed (makes it run in fast-forward)</value>
   </data>
-  <data name="AutoTakeSnapshot" xml:space="preserve">
-    <value>Auto Take Snapshot</value>
-  </data>
   <data name="TakeSnapshot" xml:space="preserve">
     <value>Take Snapshot</value>
   </data>

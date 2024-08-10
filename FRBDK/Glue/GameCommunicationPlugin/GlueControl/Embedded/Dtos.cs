@@ -479,7 +479,7 @@ namespace GlueControl.Dtos
 
     public class GetProfilingDataDto
     {
-
+        public bool IsTimestepDisabled { get; set; }
     }
 
     public class ProfilingDataDto

@@ -148,6 +148,9 @@ namespace FlatRedBall.Glue.SaveClasses
             // April 8, 2024
             ScreensHaveDefaultLayer = 56,
 
+            // August 10, 2024
+            HasFrbServicesGraphicsDeviceManager = 57
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
         }
