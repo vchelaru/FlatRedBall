@@ -117,7 +117,7 @@ namespace FlatRedBall
         public int Version;
     }
 
-    [SyntaxVersion(Version=56)]
+    [SyntaxVersion(Version=57)]
     public static partial class FlatRedBallServices
     {
         internal static SingleThreadSynchronizationContext singleThreadSynchronizationContext;
