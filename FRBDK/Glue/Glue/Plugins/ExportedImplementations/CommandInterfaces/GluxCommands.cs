@@ -3181,10 +3181,19 @@ public class GluxCommands : IGluxCommands
 
         for (int i = screenToRemove.NamedObjects.Count - 1; i > -1; i--)
         {
-            NamedObjectSave nos = screenToRemove.NamedObjects[i];
+            NamedObjectSave toRemove = null;
+            if(i < screenToRemove.NamedObjects.Count)
+            {
+                toRemove= screenToRemove.NamedObjects[i];
+            }
 
-            GlueCommands.Self.GluxCommands
-                .RemoveNamedObject(nos, false, false, null);
+            if(toRemove != null)
+            {
+                GlueCommands.Self.GluxCommands
+                    .RemoveNamedObject(toRemove, false, false, null);
+
+            }
+
         }
 
         #endregion

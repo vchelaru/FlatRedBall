@@ -600,14 +600,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             FilePath absolute = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
 
-            foreach(var directory in System.IO.Directory.GetDirectories(absolute.FullPath))
+            if(absolute.Exists())
             {
-                string relative = FileManager.MakeRelative(directory, GlueState.Self.CurrentGlueProjectDirectory);
-                relative = relative.Replace('/', '\\');
+                foreach(var directory in System.IO.Directory.GetDirectories(absolute.FullPath))
+                {
+                    string relative = FileManager.MakeRelative(directory, GlueState.Self.CurrentGlueProjectDirectory);
+                    relative = relative.Replace('/', '\\');
 
-                viewModel.DirectoryOptions.Add(relative + "\\");
+                    viewModel.DirectoryOptions.Add(relative + "\\");
 
-                FillViewModelWithDirectoriesRecursively(relative, viewModel);
+                    FillViewModelWithDirectoriesRecursively(relative, viewModel);
+                }
             }
         }
 
