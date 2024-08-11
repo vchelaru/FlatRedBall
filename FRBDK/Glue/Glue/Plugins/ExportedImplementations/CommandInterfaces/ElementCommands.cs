@@ -42,6 +42,12 @@ public class ChangedNamedObjectVariable
 {
     public NamedObjectSave NamedObjectSave;
     public string VariableName;
+
+    public override string ToString()
+    {
+        var newValue = NamedObjectSave.GetCustomVariable(VariableName)?.Value?.ToString() ?? "";
+        return NamedObjectSave + "." + VariableName + " = "  + newValue;
+    }
 }
 
 public class FileChange

@@ -922,7 +922,11 @@ public class ObjectFinder : IObjectFinder
                     // have been renamed, so we just have to trust that the value matches...
                     var startsWithScreensOrEntities =
                         variable.Type.StartsWith("Screens.") || variable.Type.StartsWith("Entities.");
-                    var endsWithType = variable.Type.EndsWith("Type");
+                    var endsWithType = 
+                        // old style:
+                        variable.Type.EndsWith("Type") || 
+                        // new style:
+                        variable.Type.EndsWith("Variant");
                     if (startsWithScreensOrEntities && endsWithType && (variable.Value as string) == entityType)
                     {
                         namedObjects.Add(nos);
