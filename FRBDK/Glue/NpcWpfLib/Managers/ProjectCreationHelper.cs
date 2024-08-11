@@ -200,8 +200,7 @@ public static class ProjectCreationHelper
         newNamespace = newNamespace ?? newProjectName;
         if(oldProjectName != newNamespace)
         {
-            UpdateNamespaces(projectRootDirectory, oldProjectName,
-                newNamespace);
+            UpdateNamespaces(projectRootDirectory, oldProjectName, newNamespace);
         }
 
     }
@@ -431,6 +430,9 @@ public static class ProjectCreationHelper
         filesToReplace.AddRange(FileManager.GetAllFilesInDirectory(
             unpackDirectory, "pfx"));
 
+        filesToReplace.AddRange(FileManager.GetAllFilesInDirectory(
+            unpackDirectory, "mgcb"));
+
 
         foreach (string fileName in filesToReplace)
         {
@@ -619,6 +621,10 @@ public static class ProjectCreationHelper
             string newProjectReference = $@"<ProjectReference Include=""..\{stringToReplaceWith}Content\{stringToReplaceWith}Content.contentproj"">";
             contents = contents.Replace(originalProjectReference, newProjectReference);
 
+            string originalMgcb = $@"<KniContentReference Include=""Content\{stringToReplace}Content.mgcb"" />";
+            string newMgcb = $@"<KniContentReference Include=""Content\{stringToReplaceWith}Content.mgcb"" />";
+            contents = contents.Replace(originalMgcb, newMgcb);
+
             System.IO.File.WriteAllText(fileName, contents, Encoding.UTF8);
         }
 
@@ -700,8 +706,38 @@ public static class ProjectCreationHelper
 
             contents = contents.Replace(whatToSearchFor, replacement);
 
+            if(contents.Contains($"<PageTitle>{stringToReplace}</PageTitle>"))
+            {
+                whatToSearchFor = $"<PageTitle>{stringToReplace}</PageTitle>";
+                replacement = $"<PageTitle>{stringToReplaceWith}</PageTitle>";
+
+                contents = contents.Replace(whatToSearchFor, replacement);
+            }
+
             FileManager.SaveText(contents, fileName);
         }
+        #endregion
+
+        #region launchSettings.json
+
+        filesToFix.Clear();
+        filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "json"));
+        foreach(var fileName in filesToFix)
+        {
+            if (fileName.ToLowerInvariant().EndsWith("launchsettings.json") == false)
+            {
+                continue;
+            }
+
+            string contents = FileManager.FromFileText(fileName);
+            string whatToSearchFor = "\"" + stringToReplace + "\": {";
+            string replacement = "\"" + stringToReplaceWith + "\": {";
+
+            contents = contents.Replace(whatToSearchFor, replacement);
+
+            FileManager.SaveText(contents, fileName);
+        }
+
         #endregion
     }
 
