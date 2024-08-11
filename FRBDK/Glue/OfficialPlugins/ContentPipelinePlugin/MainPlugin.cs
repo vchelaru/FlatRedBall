@@ -86,7 +86,7 @@ namespace OfficialPlugins.MonoGameContent
             {
                 case nameof(ControlViewModel.UseContentPipelineOnPngs):
                     // so handling file changes will probably do this but let's force it so we know it happens:
-                    aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
+                    aliasCodeGenerator.GenerateFileAliasLogicCode();
                     break;
             }
         }
@@ -270,7 +270,7 @@ namespace OfficialPlugins.MonoGameContent
             viewModel.IsProjectLoaded = true;
             controller.LoadOrCreateSettings();
             viewModel.UseContentPipelineOnPngs = controller.Settings.UseContentPipelineOnAllPngs;
-            aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
+            aliasCodeGenerator.GenerateFileAliasLogicCode();
             _ = BuildLogic.Self.RefreshBuiltFilesFor(GlueState.CurrentMainProject, viewModel.UseContentPipelineOnPngs, controller);
         }
 
@@ -290,7 +290,7 @@ namespace OfficialPlugins.MonoGameContent
             }
 
 
-            aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
+            aliasCodeGenerator.GenerateFileAliasLogicCode();
 
             // See if it's a ReferencedFileSave. If so, we might want to look at that for additional properties
             var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(

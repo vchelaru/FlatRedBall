@@ -34,7 +34,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             }
         }
 
-        public void GenerateFileAliasLogicCode(bool forceUseContentPipelineOnPngs)
+        public void GenerateFileAliasLogicCode()
         {
             var glueCommands = Container.Get<IGlueCommands>();
             var glueState = Container.Get<IGlueState>();
