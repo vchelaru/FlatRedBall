@@ -5939,15 +5939,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open New Project Wizard:.
-        /// </summary>
-        public static string ProjectWizardOpen {
-            get {
-                return ResourceManager.GetString("ProjectWizardOpen", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Property:.
         /// </summary>
         public static string Property {

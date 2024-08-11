@@ -98,8 +98,8 @@
             </CheckBox>
             
             
-            <TextBlock FontWeight="Bold" Grid.Row="9" Margin="0,0,16,10" Text="{x:Static localization:Texts.ProjectWizardOpen}" />
-            <CheckBox Grid.Row="9" Grid.Column="1" IsChecked="{Binding IsOpenNewProjectWizardChecked}">
+            <TextBlock FontWeight="Bold" Grid.Row="9" Margin="0,0,16,10" Text="Open New Project Wizard" Visibility="{Binding NewProjectWizardVisibility}" />
+            <CheckBox Grid.Row="9" Grid.Column="1" IsChecked="{Binding IsOpenNewProjectWizardChecked}"  Visibility="{Binding NewProjectWizardVisibility}">
                 <CheckBox.LayoutTransform>
                     <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
                 </CheckBox.LayoutTransform>

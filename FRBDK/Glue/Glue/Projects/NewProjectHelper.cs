@@ -61,6 +61,11 @@ public static class NewProjectHelper
 
         var window = new Npc.MainWindow();
         window.ViewModel.OpenSlnFolderAfterCreation = false;
+        if(creatingSyncedProject)
+        {
+            window.ViewModel.IsOpenNewProjectWizardChecked = false;
+            window.ViewModel.NewProjectWizardVisibility = System.Windows.Visibility.Collapsed;
+        }
         window.ProcessCommandLineArguments(commandLineArguments);
 
 

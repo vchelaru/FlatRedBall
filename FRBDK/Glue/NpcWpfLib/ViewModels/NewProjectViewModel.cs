@@ -180,7 +180,11 @@ namespace Npc.ViewModels
             set => Set(value);
         }
 
-
+        public Visibility NewProjectWizardVisibility
+        {
+            get => Get<Visibility>();
+            set => Set(value);
+        }
 
         public bool IsOpenNewProjectWizardChecked
         {
@@ -201,6 +205,7 @@ namespace Npc.ViewModels
             ProjectName = "MyProject";
             UseLocalCopy = false;
             IsOpenNewProjectWizardChecked = true;
+            NewProjectWizardVisibility = Visibility.Visible;
             IsAddGitIgnoreChecked = true;
         }
 
