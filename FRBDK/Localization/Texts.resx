@@ -2380,9 +2380,6 @@ for {1}?</value>
   <data name="EventNew" xml:space="preserve">
     <value>New Event</value>
   </data>
-  <data name="HintObjectIsContainerNotApply" xml:space="preserve">
-    <value>This value may not be applied since this object has IsContainer set to true</value>
-  </data>
   <data name="Velocity" xml:space="preserve">
     <value>Velocity</value>
   </data>

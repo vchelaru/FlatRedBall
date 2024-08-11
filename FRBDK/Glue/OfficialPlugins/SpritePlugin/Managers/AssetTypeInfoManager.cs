@@ -1,6 +1,7 @@
 ﻿using FlatRedBall;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math;
 using GlueFormsCore.ViewModels;
@@ -239,6 +240,14 @@ namespace OfficialPlugins.SpritePlugin.Managers
                 setCollisionFromAnimationVariableDefinition.DefaultValue = "false";
                 setCollisionFromAnimationVariableDefinition.Type = "bool";
                 setCollisionFromAnimationVariableDefinition.UsesCustomCodeGeneration = true;
+                setCollisionFromAnimationVariableDefinition.SubtextFunc = (element, nos) =>
+                {
+                    if(element is EntitySave && element.IsICollidableRecursive() == false)
+                    {
+                        return $"{element.GetStrippedName()} must be ICollidable or must inherit from an ICollidable entity for animation collisions to be applied automatically.";
+                    }
+                    return string.Empty;
+                };
             }
             return setCollisionFromAnimationVariableDefinition;
         }

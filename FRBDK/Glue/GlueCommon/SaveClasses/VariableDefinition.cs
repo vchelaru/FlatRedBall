@@ -81,6 +81,15 @@ namespace FlatRedBall.Glue.Elements
         /// </summary>
         public Func<GlueElement, NamedObjectSave, bool> IsVariableVisibleInEditor;
 
+
+        [XmlIgnore]
+        [JsonIgnore]
+        /// <summary>
+        /// Function which can return custm subtext depending on the state of the argument GlueElement and NamedObjectSave.
+        /// If null, no subtext is returned.
+        /// </summary>
+        public Func<GlueElement, NamedObjectSave, string> SubtextFunc;
+
         // Added Jan 15 2024, default to true to match behavior 
         public bool CanBeSetInFile = true;
 

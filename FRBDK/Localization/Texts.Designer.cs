@@ -3698,15 +3698,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This value may not be applied since this object has IsContainer set to true.
-        /// </summary>
-        public static string HintObjectIsContainerNotApply {
-            get {
-                return ResourceManager.GetString("HintObjectIsContainerNotApply", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This object is not partitioned, so the collision relationship may run slowly.
         /// </summary>
         public static string HintObjectNotPartitioned {
