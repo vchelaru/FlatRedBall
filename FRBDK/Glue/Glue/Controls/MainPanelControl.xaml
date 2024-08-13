@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:FlatRedBall.Glue.Controls"
              xmlns:viewModels="clr-namespace:GlueFormsCore.ViewModels"
-             xmlns:converters="clr-namespace:FlatRedBall.Glue.MVVM.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              PreviewKeyDown="UserControl_PreviewKeyDown"
@@ -25,13 +24,9 @@
 
 
     <Grid>
-        <Grid.Resources>
-            <converters:GridLengthToVisibilityConverter x:Key="GridLengthToVisibilityConverter"/>
-        </Grid.Resources>
-        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" x:Name="ToolbarControlRow" />
-            <RowDefinition Height="{Binding TopPanelHeight, Mode=TwoWay}" />
+            <RowDefinition Height="{Binding TopPanelHeight, Mode=TwoWay, FallbackValue=0}" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto" />
@@ -52,7 +47,7 @@
             Grid.Row="2" 
             HorizontalAlignment="Stretch" 
             VerticalAlignment="Center" 
-            Visibility="{Binding TopPanelHeight, Converter={StaticResource GridLengthToVisibilityConverter}}" />
+            Visibility="{Binding TopSplitterVisibility}" />
 
         <Grid Grid.Row="3" x:Name="CenterGrid">
             <Grid.ColumnDefinitions>
@@ -84,7 +79,7 @@
                           Grid.Column="3" 
                           HorizontalAlignment="Center" 
                           VerticalAlignment="Stretch"
-                          Visibility="{Binding RightPanelWidth, Converter={StaticResource GridLengthToVisibilityConverter}}" />
+                          Visibility="{Binding RightSplitterVisibility}" />
             <TabControl x:Name="RightTabControl" 
                         Grid.Column="4" 
                         Padding="0" 
@@ -98,7 +93,7 @@
                       HorizontalAlignment="Stretch" 
                       VerticalAlignment="Center" 
                       Grid.Row="4" 
-                      Visibility="{Binding BottomPanelHeight, Converter={StaticResource GridLengthToVisibilityConverter}}" />
+                      Visibility="{Binding BottomSplitterVisibility}" />
 
         <TabControl Grid.Row="5" 
                     x:Name="BottomTabControl" 

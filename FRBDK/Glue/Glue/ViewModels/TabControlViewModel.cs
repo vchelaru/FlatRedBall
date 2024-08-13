@@ -116,15 +116,42 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        [DependsOn(nameof(TopTabItems))]
+        public Visibility TopSplitterVisibility => TopTabItems.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+
+        [DependsOn(nameof(RightTabItems))]
+        public Visibility RightSplitterVisibility => RightTabItems.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+
+        [DependsOn(nameof(BottomTabItems))]
+        public Visibility BottomSplitterVisibility => BottomTabItems.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+
         #endregion
+
+        private IReadOnlyDictionary<string, TabContainerViewModel> Containers { get; }
 
         public TabControlViewModel()
         {
-            TopTabItems.Tabs.CollectionChanged += (_, args) => AdjustGrid(TopTabItems, args);
-            LeftTabItems.Tabs.CollectionChanged += (_, args) => AdjustGrid(LeftTabItems, args);
-            RightTabItems.Tabs.CollectionChanged += (_, args) => AdjustGrid(RightTabItems, args);
-            CenterTabItems.Tabs.CollectionChanged += (_, args) => AdjustGrid(CenterTabItems, args);
-            BottomTabItems.Tabs.CollectionChanged += (_, args) => AdjustGrid(BottomTabItems, args);
+            Containers = new Dictionary<string, TabContainerViewModel>
+            {
+                { nameof(TopTabItems), TopTabItems },
+                { nameof(BottomTabItems), BottomTabItems },
+                { nameof(LeftTabItems), LeftTabItems },
+                { nameof(RightTabItems), RightTabItems },
+                { nameof(CenterTabItems), CenterTabItems }
+            };
+
+            foreach (var (name, vm) in Containers)
+            {
+                vm.Tabs.CollectionChanged += (_, args) => AdjustGrid(vm, args);
+
+                vm.PropertyChanged += (_, args) =>
+                {
+                    if (args.PropertyName == nameof(TabContainerViewModel.Count))
+                    {
+                        NotifyPropertyChanged(name);
+                    }
+                };
+            };
         }
 
         private void AdjustGrid(TabContainerViewModel tab, NotifyCollectionChangedEventArgs args)
@@ -163,12 +190,11 @@ namespace GlueFormsCore.ViewModels
         internal void UpdateToSelection(ITreeNode selectedTreeNode)
         {
             string selectedType = selectedTreeNode?.Tag?.GetType().Name ?? selectedTreeNode?.Text;
-            
-            TopTabItems.ShowMostRecentTabFor(selectedType);
-            BottomTabItems.ShowMostRecentTabFor(selectedType);
-            LeftTabItems.ShowMostRecentTabFor(selectedType);
-            CenterTabItems.ShowMostRecentTabFor(selectedType);
-            RightTabItems.ShowMostRecentTabFor(selectedType);
+
+            foreach (var (_, vm) in Containers)
+            {
+                vm.ShowMostRecentTabFor(selectedType);
+            }
         }
     }
 }
