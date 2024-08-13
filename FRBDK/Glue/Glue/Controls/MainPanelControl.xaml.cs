@@ -45,8 +45,6 @@ namespace GlueFormsCore.Controls
             ViewModel = new TabControlViewModel();
             this.DataContext = ViewModel;
 
-            SetBinding(ViewModel);
-
             PluginManager.SetTabs(ViewModel);
             PluginManager.SetToolbarTray(ToolbarControl);
 
@@ -219,30 +217,6 @@ namespace GlueFormsCore.Controls
             this.FileWatchTimer.Start();
         }
 
-        private void SetBinding(TabControlViewModel viewModel)
-        {
-            TopTabControl.SetBinding(TabControl.ItemsSourceProperty, 
-                nameof(viewModel.TopTabItems) + "." + nameof(TabContainerViewModel.Tabs));
-
-            TopTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.TopSelectedTab));
-
-            BottomTabControl.SetBinding(TabControl.ItemsSourceProperty, 
-                nameof(viewModel.BottomTabItems) + "." + nameof(TabContainerViewModel.Tabs));
-            BottomTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.BottomSelectedTab));
-
-            LeftTabControl.SetBinding(TabControl.ItemsSourceProperty, 
-                nameof(viewModel.LeftTabItems) + "." + nameof(TabContainerViewModel.Tabs));
-            LeftTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.LeftSelectedTab));
-
-            RightTabControl.SetBinding(TabControl.ItemsSourceProperty, 
-                nameof(viewModel.RightTabItems) + "." + nameof(TabContainerViewModel.Tabs));
-            RightTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.RightSelectedTab));
-
-            CenterTabControl.SetBinding(TabControl.ItemsSourceProperty, 
-                nameof(viewModel.CenterTabItems) + "." + nameof(TabContainerViewModel.Tabs));
-            CenterTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.CenterSelectedTab));
-        }
-
         private void InitializeThemes()
         {
             this.Resources.MergedDictionaries[0].Source =
@@ -304,9 +278,6 @@ namespace GlueFormsCore.Controls
             if(glueSettingsSave.LeftTabWidthPixels > 1)
             {
                 ViewModel.LeftPanelWidth = new GridLength(glueSettingsSave.LeftTabWidthPixels.Value);
-                // To prevent expansion from resetting:
-                ViewModel.LeftSplitterWidth = new GridLength(4);
-
             }
 
         }
