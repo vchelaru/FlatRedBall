@@ -591,7 +591,7 @@ namespace GlueControl.Editing
                         NamedObjectSave nos = null;
                         if (itemOver?.Name != null)
                         {
-                            nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
+                            nos = GetNosFromItemName(itemOver.Name);
                         }
 
                         if (nos != null)
@@ -614,7 +614,7 @@ namespace GlueControl.Editing
                     NamedObjectSave nos = null;
                     if (itemOver?.Name != null)
                     {
-                        nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
+                        nos = GetNosFromItemName(itemOver.Name);
                     }
                     if (nos != null)
                     {
@@ -650,7 +650,25 @@ namespace GlueControl.Editing
             }
         }
 
+        private NamedObjectSave GetNosFromItemName(string itemName)
+        {
+            NamedObjectSave nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemName);
+            if (nos == null && CurrentGlueElement != null)
+            {
+                // This could be a nos defined in a base screen and we're viewing a derived screen.
+                var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(CurrentGlueElement);
+                foreach (var baseElement in baseElements)
+                {
+                    nos = baseElement.AllNamedObjects.FirstOrDefault(nos => nos.InstanceName == itemName);
+                    if (nos != null)
+                    {
+                        break;
+                    }
+                }
+            }
 
+            return nos;
+        }
 
         private void DoReleaseLogic()
         {

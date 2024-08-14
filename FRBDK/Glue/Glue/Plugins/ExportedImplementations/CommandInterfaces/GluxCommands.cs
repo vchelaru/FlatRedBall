@@ -1822,6 +1822,14 @@ public class GluxCommands : IGluxCommands
     public async Task<List<ToolsUtilities.GeneralResponse<NamedObjectSave>>> CopyNamedObjectListIntoElement(List<NamedObjectSave> nosList, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
     {
         var toReturn = new List<ToolsUtilities.GeneralResponse<NamedObjectSave>>();
+        //////////////////////////Early Out///////////////////////////////
+        if(nosList.Count == 0)
+        {
+            return toReturn;
+        }
+        /////////////////////////End Early Out/////////////////////////////
+
+
         foreach (var originalNos in nosList)
         {
             var response = await CopyNamedObjectIntoElementInner(originalNos, targetElement, targetNos:null, performSaveAndGenerateCode:false, updateUi: false, notifyPlugins: false);

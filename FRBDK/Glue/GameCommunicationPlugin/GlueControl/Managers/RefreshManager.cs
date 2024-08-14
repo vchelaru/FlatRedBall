@@ -430,9 +430,21 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         #region NamedObject Created
 
+        public class NewObjectListPositionValues
+        {
+            public System.Numerics.Vector2? ForcedNextObjectPosition { get; set; }
+            public bool SkipPositioningForNextGroup { get; set; }
+        }
+
+        public NewObjectListPositionValues NextPositionValues { get; set; }
 
         internal async Task HandleNewObjectList(List<NamedObjectSave> newObjectList)
         {
+            var shouldSkipPositioning = NextPositionValues?.SkipPositioningForNextGroup == true;
+            if(NextPositionValues != null)
+            {
+                NextPositionValues = null;
+            }
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 var list = new Dtos.AddObjectDtoList();
@@ -454,13 +466,16 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
                 else
                 {
-                    var firstPositionedObject = newObjectList.FirstOrDefault(item =>
-                        item.SourceType == SourceType.Entity ||
-                        item.GetAssetTypeInfo()?.IsPositionedObject == true);
-
-                    if (firstPositionedObject != null)
+                    if(!shouldSkipPositioning)
                     {
-                        await AdjustNewObjectToCameraPosition(firstPositionedObject);
+                        var firstPositionedObject = newObjectList.FirstOrDefault(item =>
+                            item.SourceType == SourceType.Entity ||
+                            item.GetAssetTypeInfo()?.IsPositionedObject == true);
+
+                        if (firstPositionedObject != null)
+                        {
+                            await AdjustNewObjectToCameraPosition(firstPositionedObject, NextPositionValues?.ForcedNextObjectPosition);
+                        }
                     }
                 }
             }
@@ -496,15 +511,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             return addObjectDto;
         }
 
-        public Vector2? ForcedNextObjectPosition { get; set; }
-        private async Task AdjustNewObjectToCameraPosition(NamedObjectSave newNamedObject)
+        private async Task AdjustNewObjectToCameraPosition(NamedObjectSave newNamedObject, Vector2? forcedNextObjectPosition)
         {
             Vector2 newPosition = Vector2.Zero;
 
-            if (ForcedNextObjectPosition != null)
+            if (forcedNextObjectPosition != null)
             {
-                newPosition = ForcedNextObjectPosition.Value;
-                ForcedNextObjectPosition = null;
+                newPosition = forcedNextObjectPosition.Value;
+                forcedNextObjectPosition = null;
             }
             else
             {

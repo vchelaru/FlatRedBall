@@ -94,7 +94,38 @@ namespace GlueControl.Editing
             }
 #endif
 
-            CopiedObjectsOwner = GlueState.Self.CurrentElement;
+            // The objects could be contained in the current object, or it could be in the base object.
+            // Eventually we want the pasting to be smart enough to paste in the base or derived, but for now
+            // let's at least make it smart enough to see if any objects are in the derived:
+            var foundInCurrent = false;
+            if (GlueState.Self.CurrentElement != null)
+            {
+                foundInCurrent = GlueState.Self.CurrentElement.AllNamedObjects.Any(item => selectedNamedObjects.Contains(item));
+            }
+
+            if (foundInCurrent)
+            {
+                CopiedObjectsOwner = GlueState.Self.CurrentElement;
+            }
+            if (!foundInCurrent)
+            {
+                var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(GlueState.Self.CurrentElement);
+
+                foreach (var baseElement in baseElements)
+                {
+                    if (baseElement.AllNamedObjects.Any(item => selectedNamedObjects.Contains(item)))
+                    {
+                        CopiedObjectsOwner = baseElement;
+                        break;
+                    }
+                }
+            }
+
+            // as a backup if we didn't find any owner, then just put it in the current:
+            if (CopiedObjectsOwner == null)
+            {
+                CopiedObjectsOwner = GlueState.Self.CurrentElement;
+            }
         }
 
         #endregion

@@ -846,6 +846,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 object methodResponse = null;
                 try
                 {
+                    HandleBeforeRunningReceivedMethod(incomingDto);
                     methodResponse = method.Invoke(target, parameters.ToArray());
                 }
                 catch(TargetParameterCountException)
@@ -903,6 +904,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 toReturn = null;
             }
             return toReturn;
+        }
+
+        private void HandleBeforeRunningReceivedMethod(FacadeCommandBase incomingDto)
+        {
+            if (incomingDto.Method == nameof(GlueCommands.Self.GluxCommands.CopyNamedObjectListIntoElement))
+            {
+                _refreshManager.NextPositionValues = new RefreshManager.NewObjectListPositionValues
+                {
+                    SkipPositioningForNextGroup = true
+                };
+            }
         }
 
         //private async Task<ResponseWithContentDto> SendResponseBackToGame(FacadeCommandBase dto, object contentToGame)

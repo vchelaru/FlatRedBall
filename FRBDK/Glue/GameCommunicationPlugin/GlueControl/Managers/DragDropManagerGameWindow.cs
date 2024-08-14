@@ -142,7 +142,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         ref worldX, ref worldY, 0, camera,
                         FlatRedBall.Camera.CoordinateRelativity.RelativeToWorld);
 
-                    _refreshManager.ForcedNextObjectPosition = new System.Numerics.Vector2(worldX, worldY);
+                    _refreshManager.NextPositionValues = new RefreshManager.NewObjectListPositionValues();
+                    _refreshManager.NextPositionValues.ForcedNextObjectPosition = new System.Numerics.Vector2(worldX, worldY);
                     var newTreeNode = await DragDropManager.Self.DropEntityOntoElement(entityToDrop, element);
                     newNamedObject = newTreeNode?.Tag as NamedObjectSave;
                 }

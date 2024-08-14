@@ -155,7 +155,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get => snapshot.CurrentNamedObjectSaves;
             set
             {
-                if( value == null)
+                if( value == null || value.Count == 0)
                 {
                     CurrentTreeNode = null;
                 }
