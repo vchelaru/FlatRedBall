@@ -1,13 +1,15 @@
-﻿<UserControl x:Class="GlueFormsCore.Controls.MainPanelControl"
+<UserControl x:Class="GlueFormsCore.Controls.MainPanelControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:FlatRedBall.Glue.Controls"
+             xmlns:viewModels="clr-namespace:GlueFormsCore.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              PreviewKeyDown="UserControl_PreviewKeyDown"
              MouseDown="UserControl_MouseDown"
+             d:DataContext="{d:DesignInstance Type=viewModels:TabControlViewModel, IsDesignTimeCreatable=True}"
              >
     <UserControl.Resources>
         <ResourceDictionary>
@@ -22,44 +24,84 @@
 
 
     <Grid>
-        
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" x:Name="ToolbarControlRow"></RowDefinition>
-            <RowDefinition Height="{Binding TopPanelHeight, Mode=TwoWay}"></RowDefinition>
-
-            <RowDefinition Height="{Binding TopSplitterHeight, Mode=TwoWay, FallbackValue=3}"></RowDefinition>
-            
-            <RowDefinition></RowDefinition>
-
-            <RowDefinition Height="{Binding BottomSplitterHeight, Mode=TwoWay,FallbackValue=3}"></RowDefinition>
-
-            <RowDefinition Height="{Binding BottomPanelHeight, Mode=TwoWay}"></RowDefinition>
+            <RowDefinition Height="Auto" x:Name="ToolbarControlRow" />
+            <RowDefinition Height="{Binding TopPanelHeight, Mode=TwoWay, FallbackValue=0}" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="{Binding BottomPanelHeight, Mode=TwoWay}" />
         </Grid.RowDefinitions>
 
-        <controls:ToolbarControl x:Name="ToolbarControl"></controls:ToolbarControl>
+        <controls:ToolbarControl x:Name="ToolbarControl" />
 
-        <TabControl x:Name="TopTabControl" Grid.Row="1" Padding="0"></TabControl>
+        <TabControl x:Name="TopTabControl" 
+                    Grid.Row="1" 
+                    Padding="0" 
+                    DataContext="{Binding TopTabItems}" 
+                    ItemsSource="{Binding Tabs}" 
+                    SelectedItem="{Binding SelectedTab}" />
 
-        <GridSplitter Height="4" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" ></GridSplitter>
-        
+        <GridSplitter 
+            Height="4" 
+            Grid.Row="2" 
+            HorizontalAlignment="Stretch" 
+            VerticalAlignment="Center" 
+            Visibility="{Binding TopSplitterVisibility}" />
+
         <Grid Grid.Row="3" x:Name="CenterGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="{Binding LeftPanelWidth, Mode=TwoWay}" ></ColumnDefinition>
-                <ColumnDefinition Width="{Binding LeftSplitterWidth, Mode=TwoWay, FallbackValue=3}"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="290"></ColumnDefinition>
+                <ColumnDefinition Width="{Binding LeftPanelWidth, Mode=TwoWay}" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="{Binding RightPanelWidth, Mode=TwoWay}" />
             </Grid.ColumnDefinitions>
-            <TabControl x:Name="LeftTabControl" Padding="0" Margin="4,2,2,2"></TabControl>
-            <GridSplitter Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"></GridSplitter>
-            <TabControl x:Name="CenterTabControl" Grid.Column="2" Padding="0" Margin="2"></TabControl>
-            <GridSplitter Width="4" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Stretch"></GridSplitter>
-            <TabControl x:Name="RightTabControl" Grid.Column="4" Padding="0" Margin="2,2,4,2"></TabControl>
+
+            <TabControl x:Name="LeftTabControl" 
+                        Padding="0" 
+                        Margin="4,2,2,2" 
+                        DataContext="{Binding LeftTabItems}" 
+                        ItemsSource="{Binding Tabs}" 
+                        SelectedItem="{Binding SelectedTab}" />
+            <GridSplitter Width="4" 
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Stretch" 
+                          Grid.Column="1"/>
+            <TabControl x:Name="CenterTabControl" 
+                        Grid.Column="2" 
+                        Padding="0" 
+                        Margin="2" 
+                        DataContext="{Binding CenterTabItems}" 
+                        ItemsSource="{Binding Tabs}" 
+                        SelectedItem="{Binding SelectedTab}" />
+            <GridSplitter Width="4" 
+                          Grid.Column="3" 
+                          HorizontalAlignment="Center" 
+                          VerticalAlignment="Stretch"
+                          Visibility="{Binding RightSplitterVisibility}" />
+            <TabControl x:Name="RightTabControl" 
+                        Grid.Column="4" 
+                        Padding="0" 
+                        Margin="2,2,4,2" 
+                        DataContext="{Binding RightTabItems}" 
+                        ItemsSource="{Binding Tabs}" 
+                        SelectedItem="{Binding SelectedTab}" />
         </Grid>
 
-        <GridSplitter Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Row="4"></GridSplitter>
+        <GridSplitter Height="4" 
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Center" 
+                      Grid.Row="4" 
+                      Visibility="{Binding BottomSplitterVisibility}" />
 
-        <TabControl Grid.Row="5" x:Name="BottomTabControl" Padding="0" Margin="4,0,4,2"></TabControl>
+        <TabControl Grid.Row="5" 
+                    x:Name="BottomTabControl" 
+                    Padding="0" 
+                    Margin="4,0,4,2" 
+                    DataContext="{Binding BottomTabItems}" 
+                    ItemsSource="{Binding Tabs}" 
+                    SelectedItem="{Binding SelectedTab}" />
 
         <Grid Background="#b0000000" Grid.RowSpan="6" x:Name="Spinner" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
