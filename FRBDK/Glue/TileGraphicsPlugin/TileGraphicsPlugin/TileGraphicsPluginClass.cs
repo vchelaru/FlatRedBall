@@ -688,18 +688,6 @@ public class TileGraphicsPluginClass : PluginBase
             }
         }
 
-        if (this.PluginTab != null && this.PluginTab.Parent != null && fileName == mLastFile)
-        {
-            if (changesToIgnore == 0)
-            {
-                //mControl?.LoadFile(fileName);
-            }
-            else
-            {
-                changesToIgnore--;
-            }
-        }
-
         if(shouldRefreshErrors)
         {
             GlueCommands.Self.RefreshCommands.RefreshErrors();
