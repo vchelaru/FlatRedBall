@@ -16,37 +16,41 @@ namespace GlueFormsCore.ViewModels
 
     public class TabContainerViewModel : ViewModel
     {
-        public PluginTabPage this[int index]
+        public PluginTab this[int index]
         {
             get => Tabs[index];
             set => Tabs[index] = value;
         }
-        public void Add(PluginTabPage item) => Tabs.Add(item);
-        public void Remove(PluginTabPage item) => Tabs.Remove(item);
+        public void Add(PluginTab item) => Tabs.Add(item);
+        public void Remove(PluginTab item) => Tabs.Remove(item);
 
-        public PluginTabPage? SelectedTab
+        public PluginTab SelectedTab
         {
-            get => Get<PluginTabPage>();
+            get => Get<PluginTab>();
             set => Set(value);
         }
+
+        [DependsOn(nameof(Count))]
+        public Visibility Visibility => Count == 0 ? Visibility.Collapsed : Visibility.Visible;
 
         public TabLocation Location { get; init; }
 
         public int Count => Tabs.Count;
-        public ObservableCollection<PluginTabPage> Tabs { get; private set; } = new ObservableCollection<PluginTabPage>();
+        public ObservableCollection<PluginTab> Tabs { get; private set; } = new ObservableCollection<PluginTab>();
 
-        public Dictionary<string, PluginTabPage> TabsForTypes { get; private set; } = new Dictionary<string, PluginTabPage>();
+        public Dictionary<string, PluginTab> TabsForTypes { get; private set; } = new Dictionary<string, PluginTab>();
 
         public TabContainerViewModel()
         {
-            Tabs.CollectionChanged += (_, _) =>
+            Tabs.CollectionChanged += (_, args) =>
             {
                 NotifyPropertyChanged(nameof(Count));
+                args.NewItems?.OfType<PluginTab>().ToList().ForEach(tab => tab.ParentContainer = this);
                 SelectedTab ??= Tabs.FirstOrDefault();
             };
         }
 
-        public void SetTabForCurrentType(PluginTabPage tab)
+        public void SetTabForCurrentType(PluginTab tab)
         {
             var treeNode = GlueState.Self.CurrentTreeNode;
             var selectedType = treeNode?.Tag?.GetType()?.Name ?? treeNode?.Text;
@@ -59,14 +63,14 @@ namespace GlueFormsCore.ViewModels
 
         public void ShowMostRecentTabFor(string typeName)
         {
-            if (Count < 2)
+            if (Count < 2 || typeName is null)
             {
                 return;
             }
 
-            if (!TabsForTypes.TryGetValue(typeName, out PluginTabPage tab)) 
+            if (!TabsForTypes.TryGetValue(typeName, out PluginTab tab)) 
             { 
-                List<PluginTabPage> ordered = Tabs
+                List<PluginTab> ordered = Tabs
                     .OrderBy(item => !item.IsPreferredDisplayerForType(typeName))
                     .ThenByDescending(item => item.LastTimeClicked)
                     .ToList();

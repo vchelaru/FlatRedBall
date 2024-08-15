@@ -24,7 +24,7 @@ namespace GlueFormsCore.Controls
 
         //public static string AppTheme = "Dark";
         public static string AppTheme = "Light";
-        public static ResourceDictionary ResourceDictionary { get; private set; }
+        public static ResourceDictionary ResourceDictionary { get; private set; } = new();
         public static bool IsExiting { get; private set; }
 
         public static TabControlViewModel ViewModel { get; private set; }
@@ -280,6 +280,14 @@ namespace GlueFormsCore.Controls
                 ViewModel.LeftPanelWidth = new GridLength(glueSettingsSave.LeftTabWidthPixels.Value);
             }
 
+        }
+
+        private void TabItem_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Source is TabItem { DataContext: PluginTab tab })
+            {
+                tab.OnMouseEvent(e);
+            }
         }
     }
 }
