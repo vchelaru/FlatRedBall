@@ -197,7 +197,10 @@ namespace GlueFormsCore.ViewModels
 
             foreach (var (_, vm) in Containers)
             {
-                vm.ShowMostRecentTabFor(selectedType);
+                if(selectedTreeNode != null)
+                {
+                    vm.ShowMostRecentTabFor(selectedType);
+                }
             }
         }
     }
