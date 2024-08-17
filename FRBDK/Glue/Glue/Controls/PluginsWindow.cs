@@ -251,10 +251,10 @@ namespace FlatRedBall.Glue.Controls
             {
                 string text = "Version: " + container.Plugin.Version + "\n";
 
-                string fileName = container.AssemblyLocation;
-                if (System.IO.File.Exists(fileName))
+                var fileName = container.AssemblyLocation;
+                if (fileName.Exists())
                 {
-                    text += "Created: " + System.IO.File.GetCreationTime(fileName).ToShortDateString() + "\n";
+                    text += "Created: " + System.IO.File.GetCreationTime(fileName.FullPath).ToShortDateString() + "\n";
 
                     text += "Location: " + fileName + "\n";
                 }
@@ -384,13 +384,13 @@ namespace FlatRedBall.Glue.Controls
 
         private void RespondToLoadOnStartupChange(PluginContainer pluginContainer, bool shouldBeLoaded)
         {
-            string pluginFolder = FileManager.GetDirectory(SelectedPlugin.AssemblyLocation);
+            var pluginFolder = SelectedPlugin.AssemblyLocation.GetDirectoryContainingThis();
 
             var pluginSettings = GlueState.Self.CurrentPluginSettings;
             bool shouldSave = false;
             if (shouldBeLoaded && !IsLoadedOnStartup(pluginContainer))
             {
-                pluginSettings.PluginsToIgnore.Remove(pluginFolder);
+                pluginSettings.PluginsToIgnore.Remove(pluginFolder.FullPath);
 
                 if (pluginContainer.Plugin is NotLoadedPlugin)
                 {
@@ -401,7 +401,7 @@ namespace FlatRedBall.Glue.Controls
             }
             else if (!shouldBeLoaded && IsLoadedOnStartup(pluginContainer))
             {
-                pluginSettings.PluginsToIgnore.Add(pluginFolder);
+                pluginSettings.PluginsToIgnore.Add(pluginFolder.FullPath);
 
                 if (pluginContainer.Plugin is NotLoadedPlugin)
                 {
@@ -448,9 +448,9 @@ namespace FlatRedBall.Glue.Controls
             }
             else
             {
-                string pluginFolder = FileManager.GetDirectory(SelectedPlugin.AssemblyLocation);
+                var pluginFolder = SelectedPlugin.AssemblyLocation.GetDirectoryContainingThis();
 
-                return GlueState.Self.CurrentPluginSettings.PluginsToIgnore.Contains(pluginFolder) == false;
+                return GlueState.Self.CurrentPluginSettings.PluginsToIgnore.Contains(pluginFolder.FullPath) == false;
             }
         }
 

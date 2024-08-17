@@ -47,7 +47,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
 
                     ExportPluginLogic exportPluginLogic = new ExportPluginLogic();
 
-                    string pluginFolder = FileManager.GetDirectory(pluginContainer.AssemblyLocation);
+                    string pluginFolder = pluginContainer.AssemblyLocation.GetDirectoryContainingThis().FullPath;
 
                     exportPluginLogic.CreatePluginFromDirectory(
                         sourceDirectory: pluginFolder, destinationFileName: filename,
@@ -67,7 +67,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
         {
             if(DataContext != null)
             {
-                var directoryToDelete = FileManager.GetDirectory( pluginContainer.AssemblyLocation);
+                var directoryToDelete = pluginContainer.AssemblyLocation.GetDirectoryContainingThis().FullPath;
 
                 // try deleteing it, probably won't be able to because the plugin is in-use
                 try
@@ -91,7 +91,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
                 ProcessStartInfo psi = new ProcessStartInfo
                 {
                     UseShellExecute = true,
-                    FileName = FileManager.GetDirectory(pluginContainer.AssemblyLocation)
+                    FileName = pluginContainer.AssemblyLocation.GetDirectoryContainingThis().FullPath
                 };
 
                 Process.Start(psi);

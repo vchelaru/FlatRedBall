@@ -330,6 +330,14 @@ namespace FlatRedBall.Glue.Plugins
                         message += $"\nProject Plugin Location: {projectSpecificPlugin.Value.AssemblyLocation}";
 
 
+                        message += "\n* If you would like to continue using the global plugin, you can delete the project-specific plugin from its location above.";
+                        if(projectSpecificPlugin.Value.AssemblyLocation.FullPath.Contains(copiedPluginDirectoryPrefix))
+                        {
+                            message += "\n - Note that the project-specific plugin is in a temporary location which is created by the FRB editor when it runs. You must delete the .dll from its location above, plus delete the associated .plug file";
+                        }
+                        message += "\n* If you would like to use the project-specific plugin, delete the global plugin from the location above.";
+
+
                         PluginManager.PrintError(
                             message,
                             (PluginManager)globalPluginsManager);
@@ -447,8 +455,7 @@ namespace FlatRedBall.Glue.Plugins
                             foreach(var instance in mInstances)
                             {
                                 existingInstallLocations.AddRange(instance.PluginContainers
-                                    .Select(item => new FilePath(item.Value.AssemblyLocation)
-                                        .GetDirectoryContainingThis()
+                                    .Select(item => item.Value.AssemblyLocation.GetDirectoryContainingThis()
                                         ));
                             }
 
@@ -556,6 +563,7 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        const string copiedPluginDirectoryPrefix = ".running";
         /// <summary>
         /// Project specific plugins should be updatable while Glue has the project active.  Since loading the
         /// assemblies locks the dlls we can't just load project specific plugins from the plugin directory root,
@@ -565,7 +573,6 @@ namespace FlatRedBall.Glue.Plugins
         /// <returns>The path to the directory containing the copied and loadable plugins</returns>
         private static FilePath CopyProjectPluginsToRunnableDirectory(FilePath pluginDirectory)
         {
-            const string directoryPrefix = ".running";
 
             if (!Directory.Exists(pluginDirectory.FullPath)) // Directory.Exists as FilePath.Exits is only for files
             {
@@ -575,7 +582,7 @@ namespace FlatRedBall.Glue.Plugins
             
             // Delete all previously created runnable directories to try and prevent a pileup
             var prevFolders = Directory.GetDirectories(pluginDirectory.FullPath)
-                .Where(x => Path.GetFileName(x).StartsWith(directoryPrefix))
+                .Where(x => Path.GetFileName(x).StartsWith(copiedPluginDirectoryPrefix))
                 .ToArray();
             
             foreach (var folder in prevFolders)
@@ -596,7 +603,7 @@ namespace FlatRedBall.Glue.Plugins
             // cleaned up or updated.  This also provides the advantage is that every project load has a fresh copy
             // of all plugins in, so if a plugin is removed we don't need logic to detect that and delete those dlls.
 
-            var tempDirectory = Path.Combine(pluginDirectory.FullPath, $"{directoryPrefix}-{Path.GetRandomFileName()}");
+            var tempDirectory = Path.Combine(pluginDirectory.FullPath, $"{copiedPluginDirectoryPrefix}-{Path.GetRandomFileName()}");
             var runnablePath = new FilePath(tempDirectory);
 
             Directory.CreateDirectory(runnablePath.FullPath);
