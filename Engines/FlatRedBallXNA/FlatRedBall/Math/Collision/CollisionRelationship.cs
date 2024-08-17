@@ -62,6 +62,10 @@ namespace FlatRedBall.Math.Collision
         /// </summary>
         public bool CollidedThisFrame { get; protected set; }
 
+        /// <summary>
+        /// The number of individual shape vs shape checks performed this frame. This value is affected by partitioning so it may be lower
+        /// than the number of collisions which would have occurred if partitioning is not set.
+        /// </summary>
         public int DeepCollisionsThisFrame { get; set; }
 
         public CollisionLimit CollisionLimit { get; set; }

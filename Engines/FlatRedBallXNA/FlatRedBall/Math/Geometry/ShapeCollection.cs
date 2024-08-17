@@ -47,6 +47,11 @@ namespace FlatRedBall.Math.Geometry
 		internal List<AxisAlignedCube> mLastCollisionAxisAlignedCubes = new List<AxisAlignedCube>();
 		internal List<Capsule2D> mLastCollisionCapsule2Ds = new List<Capsule2D>();
 
+        /// <summary>
+        /// The number of deep checks performed in the last CollideAgainst call. If partitioned this may be less than the number of shapes in the ShapeCollection.
+        /// </summary>
+        public int LastCollisionCallDeepCheckCount { get; set; }
+
         #endregion
 
         #region Properties
@@ -1233,15 +1238,19 @@ namespace FlatRedBall.Math.Geometry
 
         #endregion
 
-		#region Generated collision calling code
+		#region Collision methods
+        // These were generated at one time but now I think they're maintained by hand because 
+        // I'm not sure where the tool for generating them lies.
 
         public bool CollideAgainst(AxisAlignedRectangle axisAlignedRectangle)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, axisAlignedRectangle, false, Axis.X);
         }
 
         public bool CollideAgainst(AxisAlignedRectangle axisAlignedRectangle, bool considerPartitioning, Axis axisToUse)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, axisAlignedRectangle, considerPartitioning, axisToUse);
 
         }
@@ -1249,12 +1258,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainst(Circle circle)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, circle, false, Axis.X);
 
         }
 
         public bool CollideAgainst(Circle circle, bool considerPartitioning, Axis axisToUse)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, circle, considerPartitioning, axisToUse);
 
         }
@@ -1262,12 +1273,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainst(Polygon polygon)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, polygon, false, Axis.X);
 
         }
 
         public bool CollideAgainst(Polygon polygon, bool considerPartitioning, Axis axisToUse)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, polygon, considerPartitioning, axisToUse);
 
         }
@@ -1275,12 +1288,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainst(Line line)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, line, false, Axis.X);
 
         }
 
         public bool CollideAgainst(Line line, bool considerPartitioning, Axis axisToUse)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, line, considerPartitioning, axisToUse);
 
         }
@@ -1288,12 +1303,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainst(Capsule2D capsule2D)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, capsule2D, false, Axis.X);
 
         }
 
         public bool CollideAgainst(Capsule2D capsule2D, bool considerPartitioning, Axis axisToUse)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, capsule2D, considerPartitioning, axisToUse);
 
         }
@@ -1301,12 +1318,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainst(Sphere sphere)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, sphere, false, Axis.X);
 
         }
 
         public bool CollideAgainst(Sphere sphere, bool considerPartitioning, Axis axisToUse)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, sphere, considerPartitioning, axisToUse);
 
         }
@@ -1314,12 +1333,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainst(AxisAlignedCube axisAlignedCube)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, axisAlignedCube, false, Axis.X);
 
         }
 
         public bool CollideAgainst(AxisAlignedCube axisAlignedCube, bool considerPartitioning, Axis axisToUse)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, axisAlignedCube, considerPartitioning, axisToUse);
 
         }
@@ -1328,12 +1349,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMove(AxisAlignedRectangle axisAlignedRectangle, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, axisAlignedRectangle, false, Axis.X, otherMass, thisMass);
 
         }
 
         public bool CollideAgainstMove(AxisAlignedRectangle axisAlignedRectangle, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, axisAlignedRectangle, considerPartitioning, axisToUse, otherMass, thisMass);
 
         }
@@ -1342,12 +1365,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMove(Circle circle, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, circle, false, Axis.X, otherMass, thisMass);
 
         }
 
         public bool CollideAgainstMove(Circle circle, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, circle, considerPartitioning, axisToUse, otherMass, thisMass);
 
         }
@@ -1356,12 +1381,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMove(Polygon polygon, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, polygon, false, Axis.X, otherMass, thisMass);
 
         }
 
         public bool CollideAgainstMove(Polygon polygon, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, polygon, considerPartitioning, axisToUse, otherMass, thisMass);
 
         }
@@ -1370,12 +1397,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMove(Line line, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, line, false, Axis.X, otherMass, thisMass);
 
         }
 
         public bool CollideAgainstMove(Line line, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, line, considerPartitioning, axisToUse, otherMass, thisMass);
 
         }
@@ -1384,12 +1413,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMove(Capsule2D capsule2D, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, capsule2D, false, Axis.X, otherMass, thisMass);
 
         }
 
         public bool CollideAgainstMove(Capsule2D capsule2D, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, capsule2D, considerPartitioning, axisToUse, otherMass, thisMass);
 
         }
@@ -1398,12 +1429,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMove(Sphere sphere, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, sphere, false, Axis.X, otherMass, thisMass);
 
         }
 
         public bool CollideAgainstMove(Sphere sphere, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, sphere, considerPartitioning, axisToUse, otherMass, thisMass);
 
         }
@@ -1412,12 +1445,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMove(AxisAlignedCube axisAlignedCube, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, axisAlignedCube, false, Axis.X, otherMass, thisMass);
 
         }
 
         public bool CollideAgainstMove(AxisAlignedCube axisAlignedCube, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, axisAlignedCube, considerPartitioning, axisToUse, otherMass, thisMass);
 
         }
@@ -1425,12 +1460,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounce(AxisAlignedRectangle axisAlignedRectangle, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, axisAlignedRectangle, false, Axis.X, otherMass, thisMass, elasticity);
 
         }
 
         public bool CollideAgainstBounce(AxisAlignedRectangle axisAlignedRectangle, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, axisAlignedRectangle, considerPartitioning, axisToUse, otherMass, thisMass, elasticity);
 
         }
@@ -1438,12 +1475,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounce(Circle circle, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, circle, false, Axis.X, otherMass, thisMass, elasticity);
 
         }
 
         public bool CollideAgainstBounce(Circle circle, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, circle, considerPartitioning, axisToUse, otherMass, thisMass, elasticity);
 
         }
@@ -1451,12 +1490,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounce(Polygon polygon, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, polygon, false, Axis.X, otherMass, thisMass, elasticity);
 
         }
 
         public bool CollideAgainstBounce(Polygon polygon, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, polygon, considerPartitioning, axisToUse, otherMass, thisMass, elasticity);
 
         }
@@ -1464,12 +1505,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounce(Line line, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, line, false, Axis.X, otherMass, thisMass, elasticity);
 
         }
 
         public bool CollideAgainstBounce(Line line, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, line, considerPartitioning, axisToUse, otherMass, thisMass, elasticity);
 
         }
@@ -1477,12 +1520,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounce(Capsule2D capsule2D, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, capsule2D, false, Axis.X, otherMass, thisMass, elasticity);
 
         }
 
         public bool CollideAgainstBounce(Capsule2D capsule2D, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, capsule2D, considerPartitioning, axisToUse, otherMass, thisMass, elasticity);
 
         }
@@ -1490,12 +1535,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounce(Sphere sphere, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, sphere, false, Axis.X, otherMass, thisMass, elasticity);
 
         }
 
         public bool CollideAgainstBounce(Sphere sphere, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, sphere, considerPartitioning, axisToUse, otherMass, thisMass, elasticity);
 
         }
@@ -1503,12 +1550,14 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounce(AxisAlignedCube axisAlignedCube, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, axisAlignedCube, false, Axis.X, otherMass, thisMass, elasticity);
 
         }
 
         public bool CollideAgainstBounce(AxisAlignedCube axisAlignedCube, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, axisAlignedCube, considerPartitioning, axisToUse, otherMass, thisMass, elasticity);
 
         }
@@ -1516,12 +1565,16 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainst(ShapeCollection shapeCollection)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
+            shapeCollection.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, shapeCollection, false, Axis.X);
 
         }
 
         public bool CollideAgainst(ShapeCollection shapeCollection, bool considerPartitioning, Axis axisToUse)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
+            shapeCollection.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThis(this, shapeCollection, considerPartitioning, axisToUse);
 
         }
@@ -1530,12 +1583,16 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMove(ShapeCollection shapeCollection, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
+            shapeCollection.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, shapeCollection, false, Axis.X, otherMass, thisMass);
 
         }
 
         public bool CollideAgainstMove(ShapeCollection shapeCollection, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
+            shapeCollection.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, shapeCollection, considerPartitioning, axisToUse, otherMass, thisMass);
 
         }
@@ -1543,12 +1600,16 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounce(ShapeCollection shapeCollection, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
+            shapeCollection.LastCollisionCallDeepCheckCount = 0;
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, shapeCollection, false, Axis.X, otherMass, thisMass, elasticity);
 
         }
 
         public bool CollideAgainstBounce(ShapeCollection shapeCollection, bool considerPartitioning, Axis axisToUse, float thisMass, float otherMass, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
+            shapeCollection.LastCollisionCallDeepCheckCount = 0;
             this.ClearLastCollisionLists();
             return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, shapeCollection, considerPartitioning, axisToUse, otherMass, thisMass, elasticity);
         }
@@ -1557,6 +1618,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMoveWithoutSnag(AxisAlignedRectangle axisAlignedRectangle)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return CollideWithoutSnag2D(delegate() {return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, axisAlignedRectangle, false, Axis.X, 0, 1);}
                                                     , delegate(Vector2 lastMovePosition) 
                                                     {
@@ -1569,6 +1631,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMoveWithoutSnag(AxisAlignedRectangle axisAlignedRectangle, bool considerPartitioning, Axis axisToUse)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return CollideWithoutSnag2D(delegate() {return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, axisAlignedRectangle, considerPartitioning, axisToUse, 0, 1);}
                                                     , delegate(Vector2 lastMovePosition)
                                                     {
@@ -1583,6 +1646,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMoveWithoutSnag(Circle circle)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return CollideWithoutSnag2D(delegate() { return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, circle, false, Axis.X, 0, 1); }
                                                     , delegate(Vector2 lastMovePosition)
                                                     {
@@ -1595,6 +1659,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMoveWithoutSnag(Circle circle, bool considerPartitioning, Axis axisToUse)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return CollideWithoutSnag2D(delegate() { return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, circle, considerPartitioning, axisToUse, 0, 1); }
                                                     , delegate(Vector2 lastMovePosition)
                                                     {
@@ -1609,6 +1674,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMoveWithoutSnag(Polygon polygon)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return CollideWithoutSnag2D(delegate() { return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, polygon, false, Axis.X, 0, 1); }
                                         , delegate(Vector2 lastMovePosition)
                                         {
@@ -1621,6 +1687,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMoveWithoutSnag(Polygon polygon, bool considerPartitioning, Axis axisToUse)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return CollideWithoutSnag2D(delegate() { return ShapeCollectionCollision.CollideShapeAgainstThisMove(this, polygon, considerPartitioning, axisToUse, 0, 1); }
                                         , delegate(Vector2 lastMovePosition)
                                         {
@@ -1635,6 +1702,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounceWithoutSnag(AxisAlignedRectangle axisAlignedRectangle, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return CollideWithoutSnag2D(delegate() {return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, axisAlignedRectangle, false, Axis.X, 0, 1, elasticity);}
                                         , delegate(Vector2 lastMovePosition)
                                         {
@@ -1647,6 +1715,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounceWithoutSnag(AxisAlignedRectangle axisAlignedRectangle, bool considerPartitioning, Axis axisToUse, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return CollideWithoutSnag2D(delegate() {return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, axisAlignedRectangle, considerPartitioning, axisToUse, 0, 1, elasticity);}
                                                     , delegate(Vector2 lastMovePosition)
                                                     {
@@ -1660,6 +1729,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounceWithoutSnag(Circle circle, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return CollideWithoutSnag2D(delegate() { return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, circle, false, Axis.X, 0, 1, elasticity); }
                                                     , delegate(Vector2 lastMovePosition)
                                                     {
@@ -1672,6 +1742,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounceWithoutSnag(Circle circle, bool considerPartitioning, Axis axisToUse, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return CollideWithoutSnag2D(delegate() { return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, circle, considerPartitioning, axisToUse, 0, 1, elasticity); }
                                                     , delegate(Vector2 lastMovePosition)
                                                     {
@@ -1685,6 +1756,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstBounceWithoutSnag(Polygon polygon, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return CollideWithoutSnag2D(delegate() { return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, polygon, false, Axis.X, 0, 1, elasticity); }
                                         , delegate(Vector2 lastMovePosition)
                                         {
@@ -1705,6 +1777,7 @@ namespace FlatRedBall.Math.Geometry
         /// <returns>Whether collision has occurred.</returns>
         public bool CollideAgainstBounceWithoutSnag(Polygon polygon, bool considerPartitioning, Axis axisToUse, float elasticity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             return CollideWithoutSnag2D(delegate() { return ShapeCollectionCollision.CollideShapeAgainstThisBounce(this, polygon, considerPartitioning, axisToUse, 0, 1, elasticity); }
                                         , delegate(Vector2 lastMovePosition)
                                         {
@@ -1717,6 +1790,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMoveSoft(ShapeCollection shapeCollection, float thisMass, float otherMass, float separationVelocity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             mSuppressLastCollisionClear = true;
             bool returnValue = false;
 
@@ -1803,6 +1877,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMovePositionSoft(ShapeCollection shapeCollection, float thisMass, float otherMass, float separationVelocity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             mSuppressLastCollisionClear = true;
             bool returnValue = false;
 
@@ -1859,6 +1934,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMovePositionSoft(Polygon polygon, float thisMass, float otherMass, float separationVelocity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             mSuppressLastCollisionClear = true;
             bool returnValue = false;
 
@@ -1878,6 +1954,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstMovePositionSoft(AxisAlignedRectangle rectangle, float thisMass, float otherMass, float separationVelocity)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             mSuppressLastCollisionClear = true;
             bool returnValue = false;
 
@@ -1895,8 +1972,6 @@ namespace FlatRedBall.Math.Geometry
             return returnValue;
         }
 
-        #endregion
-
         /// <summary>
         /// Performs collision between the argument line and all of the shapes contained 
         /// in the ShapeCollection. This method returns whether collision has occurred, and sets
@@ -1909,6 +1984,7 @@ namespace FlatRedBall.Math.Geometry
         /// <exception cref="ArgumentException">Thrown if the argument line does not have its position one of the endpoints.</exception>
         public bool CollideAgainstClosest(Line line, Axis? sortAxis, float? gridSize)
         {
+            this.LastCollisionCallDeepCheckCount = 0;
             this.ClearLastCollisionLists();
             line.LastCollisionPoint = new Point(double.NaN, double.NaN);
 
@@ -2177,6 +2253,8 @@ namespace FlatRedBall.Math.Geometry
 
             return collidedObject != null;
         }
+
+        #endregion
 
         private static void CollideAgainstSegments(Line line, ref Segment a, List<Segment> currentShapeSegments, ref object collidedShape, ref Point? intersectionPoint, ref Segment? intersectionSegment, object currentShape)
         {

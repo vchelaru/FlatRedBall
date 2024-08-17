@@ -34,7 +34,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
 
@@ -62,7 +62,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
                 // SET THIS:
@@ -71,7 +71,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mAxisAlignedRectangles[i]))
                 {
@@ -80,15 +80,15 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-            #endregion
-
+			#endregion
+			thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
 		    #region vs. Circles
 
 		    GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -97,7 +97,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mCircles[i]))
                 {
@@ -107,14 +107,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -123,7 +123,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mPolygons[i]))
                 {
@@ -133,14 +133,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -149,7 +149,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mLines[i]))
                 {
@@ -159,14 +159,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -175,7 +175,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mCapsule2Ds[i]))
                 {
@@ -185,7 +185,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 
@@ -200,7 +200,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
 
@@ -231,7 +231,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -240,7 +240,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mAxisAlignedRectangles[i]))
                 {
@@ -250,14 +250,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -266,7 +266,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mCircles[i]))
                 {
@@ -276,14 +276,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -292,7 +292,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mPolygons[i]))
                 {
@@ -302,14 +302,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -318,7 +318,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mLines[i]))
                 {
@@ -328,14 +328,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -344,7 +344,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mCapsule2Ds[i]))
                 {
@@ -354,7 +354,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, Polygon shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
@@ -367,8 +367,8 @@ namespace FlatRedBall.Math.Geometry
             #region Declare variables used for this method
             bool returnValue = false;
 
-            int startIndex;
-            int endIndex;
+            int startIndex=0;
+            int endIndexExclusive=0;
 
             #endregion
             #region Get the boundStartPosition
@@ -434,7 +434,7 @@ namespace FlatRedBall.Math.Geometry
 					considerAxisBasedPartitioning, 
 					axisToUse, 
 					out startIndex, 
-					out endIndex, 
+					out endIndexExclusive, 
 					averagePosition, 
 					width,
                     // SET THIS:
@@ -446,7 +446,7 @@ namespace FlatRedBall.Math.Geometry
 				var doOld = false;
 				if(doOld)
                 {
-					for (int i = startIndex; i < endIndex; i++)
+					for (int i = startIndex; i < endIndexExclusive; i++)
 					{
 						var rectangle = thisShapeCollection.mAxisAlignedRectangles[i];
 						if (shapeToCollideAgainstThis.CollideAgainst(rectangle))
@@ -471,7 +471,7 @@ namespace FlatRedBall.Math.Geometry
                         segment.Point2.X = secondPosition.X;
                         segment.Point2.Y = secondPosition.Y;
 
-                        var newValue = DoSegmentVsRectangles(thisShapeCollection, startIndex, endIndex, segment);
+                        var newValue = DoSegmentVsRectangles(thisShapeCollection, startIndex, endIndexExclusive, segment);
 
 						if (newValue)
 						{
@@ -484,14 +484,14 @@ namespace FlatRedBall.Math.Geometry
 
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -500,7 +500,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mCircles[i]))
                 {
@@ -510,14 +510,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -526,7 +526,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mPolygons[i]))
                 {
@@ -536,14 +536,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -552,7 +552,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mLines[i]))
                 {
@@ -562,14 +562,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -578,7 +578,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mCapsule2Ds[i]))
                 {
@@ -588,7 +588,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 
@@ -693,7 +693,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
 
@@ -731,7 +731,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    lineStartPosition,
 				lineHalfWidthOrHeight,
 			    // SET THIS:
@@ -740,7 +740,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mAxisAlignedRectangles[i]))
                 {
@@ -750,14 +750,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    lineStartPosition,
 				lineHalfWidthOrHeight,
 			    // SET THIS:
@@ -766,7 +766,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mCircles[i]))
                 {
@@ -776,14 +776,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    lineStartPosition,
 				lineHalfWidthOrHeight,
 			    // SET THIS:
@@ -792,7 +792,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mPolygons[i]))
                 {
@@ -802,14 +802,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    lineStartPosition,
 				lineHalfWidthOrHeight,
 			    // SET THIS:
@@ -818,7 +818,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mLines[i]))
                 {
@@ -828,14 +828,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    lineStartPosition,
 				lineHalfWidthOrHeight,
 			    // SET THIS:
@@ -844,7 +844,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mCapsule2Ds[i]))
                 {
@@ -854,7 +854,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, Capsule2D shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
@@ -868,7 +868,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
 
@@ -896,7 +896,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -905,7 +905,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mAxisAlignedRectangles[i]))
                 {
@@ -915,14 +915,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -931,7 +931,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mCircles[i]))
                 {
@@ -941,14 +941,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -957,7 +957,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mPolygons[i]))
                 {
@@ -967,14 +967,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -983,7 +983,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mLines[i]))
                 {
@@ -993,14 +993,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1009,7 +1009,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mCapsule2Ds[i]))
                 {
@@ -1019,7 +1019,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, Sphere shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
@@ -1033,7 +1033,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
             #region Get the boundStartPosition
@@ -1060,7 +1060,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1069,7 +1069,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mSpheres[i]))
                 {
@@ -1079,14 +1079,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. AxisAlignedCubes
 
-		    #region vs. AxisAlignedCubes
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1095,7 +1095,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mAxisAlignedCubes[i]))
                 {
@@ -1105,7 +1105,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThis(ShapeCollection thisShapeCollection, AxisAlignedCube shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse)
@@ -1119,7 +1119,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
             #region Get the boundStartPosition
@@ -1146,7 +1146,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1155,7 +1155,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mSpheres[i]))
                 {
@@ -1165,14 +1165,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. AxisAlignedCubes
 
-		    #region vs. AxisAlignedCubes
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1181,7 +1181,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainst(thisShapeCollection.mAxisAlignedCubes[i]))
                 {
@@ -1191,7 +1191,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 
@@ -1206,7 +1206,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
 			#endregion
 			var positionBefore = shapeToCollideAgainstThis.Position;
@@ -1235,7 +1235,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1244,7 +1244,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass))
                 {
@@ -1255,14 +1255,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1271,7 +1271,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCircles[i], shapeMass, collectionMass))
                 {
@@ -1282,14 +1282,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1298,7 +1298,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mPolygons[i], shapeMass, collectionMass))
                 {
@@ -1309,14 +1309,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1325,7 +1325,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mLines[i], shapeMass, collectionMass))
                 {
@@ -1336,14 +1336,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1352,7 +1352,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass))
                 {
@@ -1362,9 +1362,9 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-			#endregion
-
-			shapeToCollideAgainstThis.mLastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore).ToVector2();
+            #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            shapeToCollideAgainstThis.mLastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore).ToVector2();
 
 			return returnValue;
 		}
@@ -1379,7 +1379,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
 			#endregion
 			var positionBefore = shapeToCollideAgainstThis.Position;
@@ -1408,7 +1408,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1417,7 +1417,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass))
                 {
@@ -1428,14 +1428,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1444,7 +1444,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCircles[i], shapeMass, collectionMass))
                 {
@@ -1455,14 +1455,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1471,7 +1471,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mPolygons[i], shapeMass, collectionMass))
                 {
@@ -1482,14 +1482,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1498,7 +1498,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mLines[i], shapeMass, collectionMass))
                 {
@@ -1509,14 +1509,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1525,7 +1525,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass))
                 {
@@ -1535,9 +1535,9 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-			#endregion
-
-			shapeToCollideAgainstThis.LastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore).ToVector2();
+            #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            shapeToCollideAgainstThis.LastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore).ToVector2();
 
 			return returnValue;
 		}
@@ -1552,7 +1552,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
 			#endregion
 			var positionBefore = shapeToCollideAgainstThis.Position;
@@ -1581,7 +1581,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1590,7 +1590,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass))
                 {
@@ -1601,14 +1601,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1617,7 +1617,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCircles[i], shapeMass, collectionMass))
                 {
@@ -1628,14 +1628,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1644,7 +1644,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mPolygons[i], shapeMass, collectionMass))
                 {
@@ -1655,14 +1655,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1671,7 +1671,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mLines[i], shapeMass, collectionMass))
                 {
@@ -1683,14 +1683,14 @@ namespace FlatRedBall.Math.Geometry
 
 			#endregion
 			shapeToCollideAgainstThis.mLastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore);
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-			#region vs. Capsule2Ds
-
-			GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1699,7 +1699,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass))
                 {
@@ -1710,7 +1710,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, Line shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
@@ -1724,7 +1724,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
 
@@ -1752,7 +1752,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1761,7 +1761,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass))
                 {
@@ -1772,14 +1772,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1788,7 +1788,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCircles[i], shapeMass, collectionMass))
                 {
@@ -1799,14 +1799,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1815,7 +1815,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mPolygons[i], shapeMass, collectionMass))
                 {
@@ -1826,14 +1826,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1842,7 +1842,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mLines[i], shapeMass, collectionMass))
                 {
@@ -1853,14 +1853,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1869,7 +1869,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass))
                 {
@@ -1880,7 +1880,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, Capsule2D shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
@@ -1894,7 +1894,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
 
@@ -1922,7 +1922,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1931,7 +1931,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass))
                 {
@@ -1942,14 +1942,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1958,7 +1958,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCircles[i], shapeMass, collectionMass))
                 {
@@ -1969,14 +1969,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -1985,7 +1985,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mPolygons[i], shapeMass, collectionMass))
                 {
@@ -1996,14 +1996,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2012,7 +2012,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mLines[i], shapeMass, collectionMass))
                 {
@@ -2023,14 +2023,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2039,7 +2039,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass))
                 {
@@ -2050,7 +2050,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, Sphere shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
@@ -2064,7 +2064,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
             #region Get the boundStartPosition
@@ -2091,7 +2091,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2100,7 +2100,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mSpheres[i], shapeMass, collectionMass))
                 {
@@ -2111,14 +2111,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. AxisAlignedCubes
 
-		    #region vs. AxisAlignedCubes
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2127,7 +2127,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedCubes[i], shapeMass, collectionMass))
                 {
@@ -2138,7 +2138,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, AxisAlignedCube shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
@@ -2152,7 +2152,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
             #region Get the boundStartPosition
@@ -2179,7 +2179,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2188,7 +2188,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mSpheres[i], shapeMass, collectionMass))
                 {
@@ -2199,14 +2199,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. AxisAlignedCubes
 
-		    #region vs. AxisAlignedCubes
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2215,7 +2215,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstMove(thisShapeCollection.mAxisAlignedCubes[i], shapeMass, collectionMass))
                 {
@@ -2226,7 +2226,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 
@@ -2241,7 +2241,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
 			#endregion
 
@@ -2271,7 +2271,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2280,7 +2280,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2291,14 +2291,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2307,7 +2307,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCircles[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2318,14 +2318,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2334,7 +2334,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mPolygons[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2345,14 +2345,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2361,7 +2361,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mLines[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2372,14 +2372,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2388,7 +2388,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2398,9 +2398,9 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-			#endregion
-
-			shapeToCollideAgainstThis.mLastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore).ToVector2();
+            #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            shapeToCollideAgainstThis.mLastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore).ToVector2();
 
             return returnValue;
 		}
@@ -2415,7 +2415,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
 			#endregion
 
@@ -2445,7 +2445,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2454,7 +2454,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2465,14 +2465,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2481,7 +2481,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCircles[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2492,14 +2492,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2508,7 +2508,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mPolygons[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2519,14 +2519,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2535,7 +2535,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mLines[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2546,14 +2546,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2562,7 +2562,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2572,9 +2572,9 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-			#endregion
-
-			shapeToCollideAgainstThis.LastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore).ToVector2();
+            #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            shapeToCollideAgainstThis.LastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore).ToVector2();
 
 			return returnValue;
 		}
@@ -2589,7 +2589,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
 			#endregion
 
@@ -2619,7 +2619,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2628,7 +2628,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2639,14 +2639,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2655,7 +2655,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCircles[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2666,14 +2666,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2682,7 +2682,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mPolygons[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2693,14 +2693,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2709,7 +2709,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mLines[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2720,14 +2720,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2736,7 +2736,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2746,9 +2746,9 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-			#endregion
-
-			shapeToCollideAgainstThis.mLastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore);
+            #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            shapeToCollideAgainstThis.mLastMoveCollisionReposition = (shapeToCollideAgainstThis.Position - positionBefore);
 
 			return returnValue;
 		}
@@ -2763,7 +2763,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
 
@@ -2791,7 +2791,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2800,7 +2800,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2811,14 +2811,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2827,7 +2827,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCircles[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2838,14 +2838,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2854,7 +2854,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mPolygons[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2865,14 +2865,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2881,7 +2881,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mLines[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2892,14 +2892,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2908,7 +2908,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2919,7 +2919,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, Capsule2D shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
@@ -2933,7 +2933,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
 
@@ -2962,7 +2962,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
                 // SET THIS:
@@ -2971,7 +2971,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedRectangles[i], shapeMass, collectionMass, elasticity))
                 {
@@ -2982,14 +2982,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Circles
 
-		    #region vs. Circles
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -2998,7 +2998,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCircles[i], shapeMass, collectionMass, elasticity))
                 {
@@ -3009,14 +3009,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Polygons
 
-		    #region vs. Polygons
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -3025,7 +3025,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mPolygons[i], shapeMass, collectionMass, elasticity))
                 {
@@ -3036,14 +3036,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Lines
 
-		    #region vs. Lines
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -3052,7 +3052,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mLines[i], shapeMass, collectionMass, elasticity))
                 {
@@ -3063,14 +3063,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. Capsule2Ds
 
-		    #region vs. Capsule2Ds
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -3079,7 +3079,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mCapsule2Ds[i], shapeMass, collectionMass, elasticity))
                 {
@@ -3090,7 +3090,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, Sphere shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
@@ -3104,7 +3104,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
             #region Get the boundStartPosition
@@ -3131,7 +3131,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -3140,7 +3140,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mSpheres[i], shapeMass, collectionMass, elasticity))
                 {
@@ -3151,14 +3151,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. AxisAlignedCubes
 
-		    #region vs. AxisAlignedCubes
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -3167,7 +3167,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedCubes[i], shapeMass, collectionMass, elasticity))
                 {
@@ -3178,7 +3178,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, AxisAlignedCube shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
@@ -3192,7 +3192,7 @@ namespace FlatRedBall.Math.Geometry
             bool returnValue = false;
 
             int startIndex;
-            int endIndex;
+            int endIndexExclusive;
 
             #endregion
             #region Get the boundStartPosition
@@ -3219,7 +3219,7 @@ namespace FlatRedBall.Math.Geometry
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -3228,7 +3228,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mSpheres[i], shapeMass, collectionMass, elasticity))
                 {
@@ -3239,14 +3239,14 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
+            #region vs. AxisAlignedCubes
 
-		    #region vs. AxisAlignedCubes
-
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
-			    out endIndex, 
+			    out endIndexExclusive, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
@@ -3255,7 +3255,7 @@ namespace FlatRedBall.Math.Geometry
 			    // END OF SET
 			    );
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i < endIndexExclusive; i++)
             {
                 if (shapeToCollideAgainstThis.CollideAgainstBounce(thisShapeCollection.mAxisAlignedCubes[i], shapeMass, collectionMass, elasticity))
                 {
@@ -3266,7 +3266,7 @@ namespace FlatRedBall.Math.Geometry
             }
 
             #endregion
-
+            thisShapeCollection.LastCollisionCallDeepCheckCount += endIndexExclusive - startIndex;
             return returnValue;
 		}
 
@@ -3353,8 +3353,9 @@ namespace FlatRedBall.Math.Geometry
 					returnValue = true;
                 }
             }
+            shapeToCollideAgainstThis.LastCollisionCallDeepCheckCount = thisShapeCollection.LastCollisionCallDeepCheckCount;
 
-			thisShapeCollection.mSuppressLastCollisionClear = false;
+            thisShapeCollection.mSuppressLastCollisionClear = false;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, ShapeCollection shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
@@ -3412,8 +3413,9 @@ namespace FlatRedBall.Math.Geometry
 
                 returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisMove(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass);
             }
+            shapeToCollideAgainstThis.LastCollisionCallDeepCheckCount = thisShapeCollection.LastCollisionCallDeepCheckCount;
 
-			thisShapeCollection.mSuppressLastCollisionClear = false;
+            thisShapeCollection.mSuppressLastCollisionClear = false;
             return returnValue;
 		}
 		internal static bool CollideShapeAgainstThisBounce(ShapeCollection thisShapeCollection, ShapeCollection shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass, float elasticity)
@@ -3471,8 +3473,9 @@ namespace FlatRedBall.Math.Geometry
 
                 returnValue |= ShapeCollectionCollision.CollideShapeAgainstThisBounce(thisShapeCollection, shape, considerAxisBasedPartitioning, axisToUse, shapeMass, collectionMass, elasticity);
             }
+            shapeToCollideAgainstThis.LastCollisionCallDeepCheckCount = thisShapeCollection.LastCollisionCallDeepCheckCount;
 
-			thisShapeCollection.mSuppressLastCollisionClear = false;
+            thisShapeCollection.mSuppressLastCollisionClear = false;
             return returnValue;
 		}
 
