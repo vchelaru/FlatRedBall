@@ -149,7 +149,10 @@ namespace FlatRedBall.Glue.SaveClasses
             ScreensHaveDefaultLayer = 56,
 
             // August 10, 2024
-            HasFrbServicesGraphicsDeviceManager = 57
+            HasFrbServicesGraphicsDeviceManager = 57,
+
+            // August 17, 2024
+            ShapeCollectionHasLastCollisionCallDeepCheckCount = 58
 
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
@@ -159,7 +162,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.ScreensHaveDefaultLayer;
+        public const int LatestVersion = (int)GluxVersions.ShapeCollectionHasLastCollisionCallDeepCheckCount;
 
         public int FileVersion { get; set; }
 
