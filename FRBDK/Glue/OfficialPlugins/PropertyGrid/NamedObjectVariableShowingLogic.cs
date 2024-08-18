@@ -221,7 +221,7 @@ namespace OfficialPlugins.VariableDisplay
 
 
             List<MemberCategory> categories = new List<MemberCategory>();
-            var defaultCategory = new MemberCategory(Localization.Texts.Variables);
+            var defaultCategory = new MemberCategory("Variables");
             defaultCategory.FontSize = 14;
             categories.Add(defaultCategory);
 

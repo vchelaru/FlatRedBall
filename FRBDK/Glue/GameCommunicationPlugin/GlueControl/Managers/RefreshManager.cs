@@ -29,6 +29,7 @@ using CompilerLibrary.ViewModels;
 using static FlatRedBall.Glue.Plugins.PluginManager;
 using CompilerLibrary.Error;
 using FlatRedBall;
+using FlatRedBall.Content.Instructions;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -879,11 +880,53 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 var container = ObjectFinder.Self.GetElementContaining(category);
 
                 var dto = new UpdateStateSaveCategory();
-                dto.Category = category.Clone();
+                StateSaveCategory clone = CreateCloneWithPropagatedVariables(category);
+
+                dto.Category = clone;
                 dto.ElementNameGame = GetGameTypeFor(container);
 
                 await CommandSender.Self.Send(dto);
             }
+        }
+
+        private static StateSaveCategory CreateCloneWithPropagatedVariables(StateSaveCategory category)
+        {
+            var owner = ObjectFinder.Self.GetElementContaining(category);
+
+            var clone = category.Clone();
+
+            if (owner != null)
+            {
+                foreach (var variable in owner.CustomVariables)
+                {
+                    if (!clone.ExcludedVariables.Contains(variable.Name))
+                    {
+                        // for now let's make sure it's not a state:
+                        var isState = owner.GetCustomVariableRecursively(variable.Name)?.GetIsVariableState() == true;
+
+                        if(!isState)
+                        {
+                            // find any states that don't have this variable assigned, then assign it:
+                            foreach(var state in clone.States)
+                            {
+                                var existingVariable= state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
+
+                                if(existingVariable == null)
+                                {
+                                    // need to create a new one:
+                                    var instruction = new InstructionSave();
+                                    // todo - this may need to be recursive....
+                                    instruction.Value = variable.DefaultValue;
+                                    instruction.Member = variable.Name;
+                                    instruction.Type = variable.Type;
+                                    state.InstructionSaves.Add(instruction);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return clone;
         }
 
         #endregion

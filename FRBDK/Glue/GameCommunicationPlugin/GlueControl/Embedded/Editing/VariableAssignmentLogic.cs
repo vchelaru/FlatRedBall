@@ -27,147 +27,15 @@ namespace GlueControl.Editing
 
         public static GlueVariableSetDataResponse SetVariable(GlueVariableSetData data, PositionedObject forcedItem = null)
         {
-            object variableValue = ConvertVariableValue(data);
-
             var response = new GlueVariableSetDataResponse();
+
+            object convertedValue = ConvertVariableValue(data);
+            var elementGameType = data.InstanceOwnerGameType;
+            var variableName = data.VariableName;
 
             try
             {
-                var screen =
-                    FlatRedBall.Screens.ScreenManager.CurrentScreen;
-
-                var elementGameType = data.InstanceOwnerGameType;
-                var ownerGameType = typeof(VariableAssignmentLogic).Assembly.GetType(data.InstanceOwnerGameType);
-                Models.GlueElement ownerElement = null;
-                if (InstanceLogic.Self.CustomGlueElements.ContainsKey(elementGameType))
-                {
-                    ownerElement = InstanceLogic.Self.CustomGlueElements[elementGameType];
-                }
-                else if (!string.IsNullOrEmpty(data.InstanceOwnerGameType))
-                {
-                    var glueType = CommandReceiver.GameElementTypeToGlueElement(data.InstanceOwnerGameType);
-                    ownerElement = Managers.ObjectFinder.Self.GetElement(glueType);
-                }
-
-
-                var isStatic = false;
-
-                string strippedVariableName = null;
-
-                if (ownerElement != null)
-                {
-                    // strip off "this"
-                    var nameWithoutThis = data.VariableName;
-                    if (nameWithoutThis.StartsWith("this."))
-                    {
-                        nameWithoutThis = nameWithoutThis.Substring("this.".Length);
-                    }
-                    var startsWith = nameWithoutThis.StartsWith(data.InstanceOwnerGameType);
-
-                    if (startsWith)
-                    {
-                        //                                                                                   + 1 to handle the '.'
-                        strippedVariableName = nameWithoutThis.Substring(data.InstanceOwnerGameType.Length + 1);
-                        var customVariable = ownerElement.CustomVariables.Find(item => item.Name == strippedVariableName);
-
-                        isStatic = customVariable?.IsShared == true;
-                    }
-                }
-
-
-                if (isStatic)
-                {
-                    var reflectedElementGameType = typeof(VariableAssignmentLogic).Assembly.GetType(elementGameType);
-                    if (reflectedElementGameType != null)
-                    {
-                        var property = reflectedElementGameType.GetProperty(strippedVariableName);
-                        if (property != null)
-                        {
-                            property.SetValue(null, variableValue);
-                        }
-                        else
-                        {
-                            var field = reflectedElementGameType.GetField(strippedVariableName);
-                            field?.SetValue(null, variableValue);
-                        }
-                    }
-                }
-                else
-                {
-                    // The variable could be
-                    // * Set on an entity, such as changing the Radius on a collision circle.
-                    // * Set on an instance, such as setting the X position of an enemy in a Screen.
-                    // If forcedItem is null, that means that we are re-running all variable assignments,
-                    // which happens whenever a screen is restarted. 
-
-                    var setOnEntity =
-                        (ownerGameType != null && typeof(PositionedObject).IsAssignableFrom(ownerGameType))
-                        ||
-                        ownerElement is Models.EntitySave;
-
-                    if (setOnEntity)
-                    {
-                        var variableNameOnObjectInInstance = data.VariableName.Substring("this.".Length);
-                        if (forcedItem != null)
-                        {
-                            if (CommandReceiver.DoTypesMatch(forcedItem, data.InstanceOwnerGameType, ownerGameType))
-                            {
-                                screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, forcedItem);
-                            }
-                        }
-                        else
-                        {
-                            var splitVariable = data.VariableName.Split('.');
-                            var variableName = splitVariable.Last();
-
-                            // Loop through all objects in the SpriteManager. If we are viewing a single 
-                            // entity in the entity screen, then this will only loop 1 time and will set 1 value.
-                            // If we are in a screen where multiple instances of the entity are around, then we set the 
-                            // value on all instances
-                            foreach (var item in SpriteManager.ManagedPositionedObjects)
-                            {
-                                if (CommandReceiver.DoTypesMatch(item, data.InstanceOwnerGameType, ownerGameType))
-                                {
-                                    //var targetInstance = GetTargetInstance(data, ref variableValue, screen);
-                                    object targetInstance = null;
-                                    // If there's 2 variables, then it's like "this.Width"
-                                    if (setOnEntity && splitVariable.Length == 2)
-                                    {
-                                        targetInstance = item;
-                                    }
-                                    else
-                                    {
-                                        targetInstance = screen.GetInstance(splitVariable[1] + ".Whatever", item);
-                                        if (targetInstance != null && !(targetInstance is INameable))
-                                        {
-                                            // wrap it
-                                            targetInstance = new NameableWrapper() { Name = splitVariable[1], ContainedObject = targetInstance };
-                                        }
-                                    }
-
-                                    SetValueOnObjectInElement(variableValue, response, screen, splitVariable[1], variableName, targetInstance as INameable);
-                                    //SetValueOnObjectInScreen(variableNameOnObjectInInstance, variableValue, item);
-                                    //screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
-                                }
-                            }
-                            response.WasVariableAssigned = true;
-                        }
-                    }
-                    // See comment by setOnEntity about why we check for forcedItem.
-                    else if (forcedItem == null)
-                    {
-                        var elementNameGlue = string.Join("\\", data.InstanceOwnerGameType.Split('.').Skip(1).ToArray());
-                        if (CommandReceiver.GetIfMatchesCurrentScreen(elementNameGlue))
-                        {
-                            variableValue = SetValueOnObjectInScreen(data, variableValue, response, screen);
-                        }
-                        else
-                        {
-                            // it's not the current screen, so we don't know if it will assign, but we'll tell Glue "yes" so it doesn't restart
-                            response.WasVariableAssigned = true;
-                        }
-                    }
-                }
+                convertedValue = SetVariable(variableName, convertedValue, forcedItem, elementGameType, response);
             }
             catch (Exception e)
             {
@@ -178,33 +46,178 @@ namespace GlueControl.Editing
             return response;
         }
 
+
+        public static object SetVariable(string variableName, object convertedValue, PositionedObject forcedItem, string instanceOwnerElementGameType, GlueVariableSetDataResponse response)
+        {
+            var screen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
+
+            var ownerGameType = typeof(VariableAssignmentLogic).Assembly.GetType(instanceOwnerElementGameType);
+            Models.GlueElement ownerElement = null;
+            if (InstanceLogic.Self.CustomGlueElements.ContainsKey(instanceOwnerElementGameType))
+            {
+                ownerElement = InstanceLogic.Self.CustomGlueElements[instanceOwnerElementGameType];
+            }
+            else if (!string.IsNullOrEmpty(instanceOwnerElementGameType))
+            {
+                var glueType = CommandReceiver.GameElementTypeToGlueElement(instanceOwnerElementGameType);
+                ownerElement = Managers.ObjectFinder.Self.GetElement(glueType);
+            }
+
+
+            var isStatic = false;
+
+            string strippedVariableName = null;
+
+            if (ownerElement != null)
+            {
+                // strip off "this"
+                var nameWithoutThis = variableName;
+                if (nameWithoutThis.StartsWith("this."))
+                {
+                    nameWithoutThis = nameWithoutThis.Substring("this.".Length);
+                }
+                var startsWith = nameWithoutThis.StartsWith(instanceOwnerElementGameType);
+
+                if (startsWith)
+                {
+                    //                                                                                   + 1 to handle the '.'
+                    strippedVariableName = nameWithoutThis.Substring(instanceOwnerElementGameType.Length + 1);
+                    var customVariable = ownerElement.CustomVariables.Find(item => item.Name == strippedVariableName);
+
+                    isStatic = customVariable?.IsShared == true;
+                }
+            }
+
+
+            if (isStatic)
+            {
+                var reflectedElementGameType = typeof(VariableAssignmentLogic).Assembly.GetType(instanceOwnerElementGameType);
+                if (reflectedElementGameType != null)
+                {
+                    var property = reflectedElementGameType.GetProperty(strippedVariableName);
+                    if (property != null)
+                    {
+                        property.SetValue(null, convertedValue);
+                    }
+                    else
+                    {
+                        var field = reflectedElementGameType.GetField(strippedVariableName);
+                        field?.SetValue(null, convertedValue);
+                    }
+                }
+            }
+            else
+            {
+                // The variable could be
+                // * Set on an entity, such as changing the Radius on a collision circle.
+                // * Set on an instance, such as setting the X position of an enemy in a Screen.
+                // If forcedItem is null, that means that we are re-running all variable assignments,
+                // which happens whenever a screen is restarted. 
+
+                var setOnEntity =
+                    (ownerGameType != null && typeof(PositionedObject).IsAssignableFrom(ownerGameType))
+                    ||
+                    ownerElement is Models.EntitySave;
+
+                if (setOnEntity)
+                {
+                    var variableNameOnObjectInInstance = variableName;
+                    if (variableName?.StartsWith("this.") == true)
+                    {
+                        variableNameOnObjectInInstance = variableName.Substring("this.".Length);
+                    }
+                    if (forcedItem != null)
+                    {
+                        if (CommandReceiver.DoTypesMatch(forcedItem, instanceOwnerElementGameType, ownerGameType))
+                        {
+                            screen.ApplyVariable(variableNameOnObjectInInstance, convertedValue, forcedItem);
+                        }
+                    }
+                    else
+                    {
+                        var splitVariable = variableName.Split('.');
+                        var lastVariableNameAfterSplit = splitVariable.Last();
+
+                        // Loop through all objects in the SpriteManager. If we are viewing a single 
+                        // entity in the entity screen, then this will only loop 1 time and will set 1 value.
+                        // If we are in a screen where multiple instances of the entity are around, then we set the 
+                        // value on all instances
+                        foreach (var item in SpriteManager.ManagedPositionedObjects)
+                        {
+                            if (CommandReceiver.DoTypesMatch(item, instanceOwnerElementGameType, ownerGameType))
+                            {
+                                //var targetInstance = GetTargetInstance(data, ref variableValue, screen);
+                                object targetInstance = null;
+                                // If there's 2 variables, then it's like "this.Width"
+                                if (setOnEntity && splitVariable.Length == 2)
+                                {
+                                    targetInstance = item;
+                                }
+                                else
+                                {
+                                    targetInstance = screen.GetInstance(splitVariable[1] + ".Whatever", item);
+                                    if (targetInstance != null && !(targetInstance is INameable))
+                                    {
+                                        // wrap it
+                                        targetInstance = new NameableWrapper() { Name = splitVariable[1], ContainedObject = targetInstance };
+                                    }
+                                }
+
+                                SetValueOnObjectInElement(convertedValue, response, screen, splitVariable[1], lastVariableNameAfterSplit, targetInstance as INameable);
+                                //SetValueOnObjectInScreen(variableNameOnObjectInInstance, variableValue, item);
+                                //screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
+                            }
+                        }
+                        response.WasVariableAssigned = true;
+                    }
+                }
+                // See comment by setOnEntity about why we check for forcedItem.
+                else if (forcedItem == null)
+                {
+                    var elementNameGlue = string.Join("\\", instanceOwnerElementGameType.Split('.').Skip(1).ToArray());
+                    if (CommandReceiver.GetIfMatchesCurrentScreen(elementNameGlue))
+                    {
+                        convertedValue = SetValueOnObjectInScreen(variableName, convertedValue, response, screen);
+                    }
+                    else
+                    {
+                        // it's not the current screen, so we don't know if it will assign, but we'll tell Glue "yes" so it doesn't restart
+                        response.WasVariableAssigned = true;
+                    }
+                }
+            }
+
+            return convertedValue;
+        }
+
+
         static string ExceptionWithJson(Exception e, object data)
         {
             return $"{e.ToString()}\n{data?.GetType().Name}:\n{JsonConvert.SerializeObject(data, Formatting.Indented)}";
         }
 
 
-        private static object SetValueOnObjectInScreen(GlueVariableSetData data, object variableValue, GlueVariableSetDataResponse response, FlatRedBall.Screens.Screen screen)
+        private static object SetValueOnObjectInScreen(string variableName, object variableValue, GlueVariableSetDataResponse response, FlatRedBall.Screens.Screen screen)
         {
             response.WasVariableAssigned = false;
-            var splitVariable = data.VariableName.Split('.');
+            var splitVariable = variableName.Split('.');
 
             try
             {
                 // If this is set on an instance it might be "this.InstanceName.VariableName"
                 // If it's set on the screen itself it might be "this.ScreenVariableName"
                 // In either case, the variable name is the last
-                var variableName = splitVariable.Last();
+                var variableNameAfterSplit = splitVariable.Last();
 
-                var targetInstance = GetTargetInstance(data, ref variableValue, screen);
+                var targetInstance = GetTargetInstance(variableName, ref variableValue, screen);
 
-                SetValueOnObjectInElement(variableValue, response, screen, splitVariable[1], variableName, targetInstance);
+                SetValueOnObjectInElement(variableValue, response, screen, splitVariable[1], variableNameAfterSplit, targetInstance);
 
             }
             catch (Exception e)
             {
                 response.WasVariableAssigned = false;
-                response.Exception = ExceptionWithJson(e, data);
+                response.Exception = ExceptionWithJson(e, $"{variableName}={variableValue}");
             }
 
 
@@ -511,9 +524,9 @@ namespace GlueControl.Editing
             return variableName;
         }
 
-        private static FlatRedBall.Utilities.INameable GetTargetInstance(GlueVariableSetData data, ref object variableValue, FlatRedBall.Screens.Screen screen)
+        private static FlatRedBall.Utilities.INameable GetTargetInstance(string variableName, ref object variableValue, FlatRedBall.Screens.Screen screen)
         {
-            var splitVariable = data.VariableName.Split('.');
+            var splitVariable = variableName.Split('.');
 
             FlatRedBall.Utilities.INameable targetInstance = null;
             // this searches for a name. we need to force it on a type too so newly-added objects can have their variables set....

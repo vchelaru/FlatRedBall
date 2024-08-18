@@ -322,6 +322,10 @@ namespace FlatRedBall.Glue.Plugins
         public ReactToTreeViewRightClickDelegate ReactToTreeViewRightClickHandler { get; protected set; }
 
         public Action<StateSave, StateSaveCategory> ReactToStateCreated { get; protected set; }
+
+        /// <summary>
+        /// Delegate raised whenever a state variable is changed. The first argument is the StateSave, the second is the StateSaveCategory, and the third is the name of the variable that changed.
+        /// </summary>
         public Action<StateSave, StateSaveCategory, string> ReactToStateVariableChanged { get; protected set; }
         public ReactToStateNameChangeDelegate ReactToStateNameChangeHandler { get; protected set; }
         public ReactToStateRemovedDelegate ReactToStateRemovedHandler { get; protected set; }

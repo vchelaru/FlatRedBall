@@ -103,7 +103,21 @@ namespace OfficialPlugins.StateDataPlugin
             }
             tab.Show();
 
+            var existing = control.DataContext as StateCategoryViewModel;
+
             var viewModel = new StateCategoryViewModel(currentStateSaveCategory, GlueState.Self.CurrentElement);
+
+            if(existing != null)
+            {
+                // This code can trigger as a result of the state changing in the UI itself, so we need to make sure 
+                // we preserve variables beteween vm recreation.
+                viewModel.VariableManagementVisibility = existing.VariableManagementVisibility;
+                viewModel.TopSectionHeight = existing.TopSectionHeight;
+                viewModel.SelectedIndex = existing.SelectedIndex;
+                viewModel.SelectedIncludedVariable = existing.SelectedIncludedVariable;
+                viewModel.SelectedExcludedVariable = existing.SelectedExcludedVariable;
+                viewModel.SelectedState = existing.SelectedState;
+            }
 
             var variablesToConsider = GlueState.Self.CurrentElement.CustomVariables
                 .Where(item=> VariableInclusionManager.ShouldIncludeVariable(item, currentStateSaveCategory))

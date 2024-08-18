@@ -6911,15 +6911,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to State.
-        /// </summary>
-        public static string State {
-            get {
-                return ResourceManager.GetString("State", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add State.
         /// </summary>
         public static string StateAdd {
@@ -7555,24 +7546,6 @@ namespace Localization {
         public static string VariableResetEdit {
             get {
                 return ResourceManager.GetString("VariableResetEdit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Variables.
-        /// </summary>
-        public static string Variables {
-            get {
-                return ResourceManager.GetString("Variables", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Excluded Variables.
-        /// </summary>
-        public static string VariablesExcluded {
-            get {
-                return ResourceManager.GetString("VariablesExcluded", resourceCulture);
             }
         }
         

@@ -120,6 +120,8 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
         public StateCategoryViewModel(StateSaveCategory category, GlueElement element)
         {
+            this.ignoreExcludedVariableChanges = true;
+
             this.VariableManagementVisibility = Visibility.Collapsed;
             this.Element = element;
             this.category = category;
@@ -148,6 +150,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             this.Name = category.Name;
 
             this.PropertyChanged += HandlePropertyChanged;
+            this.ignoreExcludedVariableChanges = false;
         }
 
         private void RefreshExcludedAndIncludedVariables()
@@ -498,16 +501,37 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             }
         }
 
-        private void HandleExcludedVariablesChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private async void HandleExcludedVariablesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            // Probably easier to just blast and refresh the list:
-            var needToAdd = this.ExcludedVariables.Except(category.ExcludedVariables).Any();
-            var needToRemove = category.ExcludedVariables.Except(this.ExcludedVariables).Any();
+            //////////////////////Early Out///////////////////////////
+            if(ignoreExcludedVariableChanges)
+            {
+                return;
+            }
+            ////////////////////End Early Out/////////////////////////
 
-            if (!ignoreExcludedVariableChanges && ( needToAdd || needToRemove))
+
+            // Probably easier to just blast and refresh the list:
+            var newlyExcludedVariables = this.ExcludedVariables.Except(category.ExcludedVariables).ToArray();
+            var newlyIncludedVariables = category.ExcludedVariables.Except(this.ExcludedVariables).ToArray();
+
+            var addedNewExclusions = newlyExcludedVariables.Length > 0;
+            var addedNewInclusions = newlyIncludedVariables.Length > 0;
+
+            if (addedNewExclusions || addedNewInclusions)
             {
                 category.ExcludedVariables.Clear();
                 category.ExcludedVariables.AddRange(this.ExcludedVariables);
+
+                foreach(var newExclusion in newlyExcludedVariables)
+                {
+                    await PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(category, newExclusion, StateCategoryVariableAction.Excluded);
+                }
+                foreach(var newInclusion in newlyIncludedVariables)
+                {
+                    await PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(category, newInclusion, StateCategoryVariableAction.Included);
+                }
+                //PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync()
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 GlueCommands.Self.GluxCommands.SaveProjectAndElements();

@@ -1714,12 +1714,6 @@ for {1}?</value>
   <data name="TextureSize" xml:space="preserve">
     <value>Texture Size</value>
   </data>
-  <data name="Variables" xml:space="preserve">
-    <value>Variables</value>
-  </data>
-  <data name="VariablesExcluded" xml:space="preserve">
-    <value>Excluded Variables</value>
-  </data>
   <data name="CollapseAll" xml:space="preserve">
     <value>Collapse All</value>
   </data>
@@ -2100,9 +2094,6 @@ for {1}?</value>
   </data>
   <data name="Volume" xml:space="preserve">
     <value>Volume</value>
-  </data>
-  <data name="State" xml:space="preserve">
-    <value>State</value>
   </data>
   <data name="TmxCreationOptions" xml:space="preserve">
     <value>TMX Creation Options</value>

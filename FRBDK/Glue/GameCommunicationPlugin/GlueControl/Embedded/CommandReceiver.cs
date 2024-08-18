@@ -592,26 +592,29 @@ namespace GlueControl
             }
             /////////////End Early Out/////////////////////
 
-            var entityType = entity.GetType();
+            // always give dynamics preferential treatment:
+            var wasSetByRuntimeState = SelectStateAddedAtRuntime(stateName, stateCategoryName, entity, GlueState.Self.CurrentElement);
 
-            var stateTypeName = entityType.FullName + "+" + stateCategoryName ?? "VariableState";
-
-            var stateType = entityType.Assembly.GetType(stateTypeName);
-
-            if (stateType != null)
+            if (!wasSetByRuntimeState)
             {
-                SelectStateByType(stateName, stateCategoryName, entity, stateType);
-            }
-            else
-            {
-                // this should be in the dynamic list of states
-                SelectStateAddedAtRuntime(stateName, stateCategoryName, entity);
+                // if there is no runtime replacement for a state, then try to set the
+                // normal state through reflection:
+
+                var entityType = entity.GetType();
+                var stateTypeName = entityType.FullName + "+" + stateCategoryName ?? "VariableState";
+                var stateType = entityType.Assembly.GetType(stateTypeName);
+                if (stateType != null)
+                {
+                    SelectStateByType(stateName, stateCategoryName, entity, stateType);
+                }
             }
         }
 
-        private static void SelectStateAddedAtRuntime(string stateName, string stateCategoryName, PositionedObject entity)
+        private static bool SelectStateAddedAtRuntime(string stateName, string stateCategoryName, PositionedObject entity, GlueElement owner)
         {
             var entityType = entity.GetType();
+
+            var gameElementType = CommandReceiver.GlueToGameElementName(owner.Name);
 
             StateSaveCategory category = null;
             if (InstanceLogic.Self.StatesAddedAtRuntime.ContainsKey(entityType.FullName))
@@ -630,11 +633,27 @@ namespace GlueControl
 
             if (stateSave != null)
             {
+                GlueVariableSetDataResponse throwawayResponse = new GlueVariableSetDataResponse();
                 foreach (var instruction in stateSave.InstructionSaves)
                 {
-                    InstanceLogic.Self.AssignVariable(entity, instruction, convertFileNamesToObjects: true);
+                    var value = instruction.Value;
+                    string conversionReport = "";
+                    bool convertFileNamesToObjects = true;
+                    if (instruction.Value is string valueAsString)
+                    {
+                        value = VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, false, out conversionReport, convertFileNamesToObjects);
+                        //value = GlueControl.Editing.VariableAssignmentLogic.ConvertStringToValue(asString, instruction.Member.Type);
+                    }
+
+                    //InstanceLogic.Self.AssignVariable(entity, instruction, convertFileNamesToObjects: true, owner:owner);
+                    GlueControl.Editing.VariableAssignmentLogic.SetVariable(
+                        instruction.Member,
+                        value, entity,
+                        gameElementType, throwawayResponse);
                 }
             }
+
+            return stateSave != null;
         }
 
         private static void SelectStateByType(string stateName, string stateCategoryName, PositionedObject entity, Type stateType)
@@ -990,14 +1009,30 @@ namespace GlueControl
                     allStates[newStateSave.Name] = existingState;
                 }
 
-                // what if a value has been nulled out?
-                // Categories require all values to be set
-                // so it won't matter there, and Vic thinks we
-                // should phase out uncategorized states so maybe
-                // there's no need to handle that here?
+                GlueVariableSetDataResponse throwawayResponse = new GlueVariableSetDataResponse();
+
+
+                PositionedObject topLevelObject = null;
+                if (ScreenManager.CurrentScreen is GlueControl.Screens.EntityViewingScreen entityViewingScreen)
+                {
+                    topLevelObject = entityViewingScreen.CurrentEntity as PositionedObject;
+                }
+
                 foreach (var instruction in newStateSave.InstructionSaves)
                 {
-                    InstanceLogic.Self.AssignVariable(existingState, instruction, convertFileNamesToObjects: false);
+                    var value = instruction.Value;
+                    string conversionReport = "";
+                    bool convertFileNamesToObjects = true;
+                    if (instruction.Value is string valueAsString)
+                    {
+                        value = VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, false, out conversionReport, convertFileNamesToObjects);
+                        //value = GlueControl.Editing.VariableAssignmentLogic.ConvertStringToValue(asString, instruction.Member.Type);
+                    }
+
+                    GlueControl.Editing.VariableAssignmentLogic.SetVariable(
+                        instruction.Member,
+                        value, topLevelObject,
+                        elementGameType, throwawayResponse);
                 }
             }
         }

@@ -811,7 +811,7 @@ namespace GlueControl
 
         #endregion
 
-        public void AssignVariable(object newRuntimeInstance, FlatRedBall.Content.Instructions.InstructionSave instruction, bool convertFileNamesToObjects, NamedObjectSave nos = null)
+        public void AssignVariable(object newRuntimeInstance, FlatRedBall.Content.Instructions.InstructionSave instruction, bool convertFileNamesToObjects, NamedObjectSave nos = null, GlueElement owner = null)
         {
             string variableName = instruction.Member;
             object variableValue = instruction.Value;
@@ -989,7 +989,30 @@ namespace GlueControl
                 }
                 else
                 {
-                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(newRuntimeInstance, variableName, variableValue);
+                    // What if this is a brand new variable? How do we assign that?....
+                    var didSucceed = false;
+
+                    try
+                    {
+                        didSucceed = FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(newRuntimeInstance, variableName, variableValue);
+                    }
+                    catch (MemberAccessException)
+                    {
+                        // succeed = false
+                    }
+                    catch (ExecutionEngineException)
+                    {
+
+                    }
+
+                    if (!didSucceed)
+                    {
+                        // this could be a new exposed variable. If so, try to assign it using the actual type:
+                        if (nos == null)
+                        {
+                            int m = 3;
+                        }
+                    }
                 }
             }
             catch (MemberAccessException)

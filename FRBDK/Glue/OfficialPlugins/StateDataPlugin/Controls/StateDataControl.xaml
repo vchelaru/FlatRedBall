@@ -42,7 +42,7 @@
             </Grid.RowDefinitions>
             <Rectangle VerticalAlignment="Top" Height="1" Grid.ColumnSpan="3" Fill="Black"></Rectangle>
 
-            <TextBlock Margin="0,1,0,0" Text="{x:Static localization:Texts.Variables}" />
+            <TextBlock Margin="0,1,0,0" Text="Variables" />
             <ListBox Grid.Row="1" SelectedItem="{Binding SelectedIncludedVariable}" ItemsSource="{Binding IncludedVariables}"></ListBox>
             <StackPanel Grid.Column="1" Grid.Row="1">
                 <Button Click="ExcludeButtonClick">&gt;&gt;</Button>
@@ -53,7 +53,7 @@
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock  Margin="0,1,0,0" Grid.Column="0" Grid.ColumnSpan="2"  Text="{x:Static localization:Texts.VariablesExcluded}" />
+                <TextBlock  Margin="0,1,0,0" Grid.Column="0" Grid.ColumnSpan="2"  Text="Excluded Variables" />
                 <Button Grid.Column="1" Width="20" Click="CollapseVariableManagementClick">X</Button>
             </Grid>
             <ListBox Grid.Row="1" SelectedItem="{Binding SelectedExcludedVariable}" ItemsSource="{Binding ExcludedVariables}" Grid.Column="2" Grid.ColumnSpan="2"></ListBox>
@@ -74,7 +74,7 @@
                   KeyDown="DataGridInstance_KeyDown"
                   PreviewKeyDown="DataGridInstance_PreviewKeyDown">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="{x:Static localization:Texts.State}" Binding="{Binding Name, UpdateSourceTrigger=LostFocus}">
+                <DataGridTextColumn Header="State" Binding="{Binding Name, UpdateSourceTrigger=LostFocus}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
                             <Style.Triggers>
