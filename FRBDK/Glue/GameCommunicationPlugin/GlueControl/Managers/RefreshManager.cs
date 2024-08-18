@@ -873,6 +873,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             if (excludedOrIncluded == StateCategoryVariableAction.Excluded)
             {
+                // todo - this would require detecting what is compiled in and if we remove a compiled- in value, we need to 
+                // explicitly unset it. For now, let's just restart
                 CreateStopAndRestartTask($"Restarting because variable {variableName} removed from category {category}, and codegen currently assigns that value");
             }
             else

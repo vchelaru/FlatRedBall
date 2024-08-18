@@ -330,6 +330,8 @@ namespace FlatRedBall.Glue.Plugins
         public ReactToStateNameChangeDelegate ReactToStateNameChangeHandler { get; protected set; }
         public ReactToStateRemovedDelegate ReactToStateRemovedHandler { get; protected set; }
 
+        public Action<StateSaveCategory, string, StateCategoryVariableAction> ReactToStateCategoryExcludedVariablesChanged;
+
         public Action<IElement, ReferencedFileSave> ReactToFileRemoved { get; protected set; }
 
         /// <summary>
@@ -502,7 +504,6 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action ReactToGlobalTimer;
 
-        public Action<StateSaveCategory, string, StateCategoryVariableAction> ReactToStateCategoryExcludedVariablesChanged;
 
         public Action<string, string> ReactToScreenJsonSave;
         public Action<string, string> ReactToEntityJsonSave;
