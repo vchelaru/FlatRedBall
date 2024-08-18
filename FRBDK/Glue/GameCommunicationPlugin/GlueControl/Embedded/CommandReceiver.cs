@@ -647,8 +647,10 @@ namespace GlueControl
 
                     //InstanceLogic.Self.AssignVariable(entity, instruction, convertFileNamesToObjects: true, owner:owner);
                     GlueControl.Editing.VariableAssignmentLogic.SetVariable(
-                        instruction.Member,
-                        value, entity,
+                        // prefix "this." so that the underlying system knows that it's a variable on the entity
+                        // This is just how it's done...
+                        "this." + instruction.Member,
+                        value, null,
                         gameElementType, throwawayResponse);
                 }
             }
@@ -1012,12 +1014,6 @@ namespace GlueControl
                 GlueVariableSetDataResponse throwawayResponse = new GlueVariableSetDataResponse();
 
 
-                PositionedObject topLevelObject = null;
-                if (ScreenManager.CurrentScreen is GlueControl.Screens.EntityViewingScreen entityViewingScreen)
-                {
-                    topLevelObject = entityViewingScreen.CurrentEntity as PositionedObject;
-                }
-
                 foreach (var instruction in newStateSave.InstructionSaves)
                 {
                     var value = instruction.Value;
@@ -1030,8 +1026,10 @@ namespace GlueControl
                     }
 
                     GlueControl.Editing.VariableAssignmentLogic.SetVariable(
-                        instruction.Member,
-                        value, topLevelObject,
+                        // prefix "this." so that the underlying system knows that it's a variable on the entity
+                        // This is just how it's done...
+                        "this." + instruction.Member,
+                        value, null,
                         elementGameType, throwawayResponse);
                 }
             }
