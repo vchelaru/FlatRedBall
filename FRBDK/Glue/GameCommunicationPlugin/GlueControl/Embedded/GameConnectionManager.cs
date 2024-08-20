@@ -206,20 +206,33 @@ namespace GlueCommunication
             }
         }
 
+        // we can't have multiple sends overlap, so use a semaphore to prevent that:
+        SemaphoreSlim sendSemaphore = new SemaphoreSlim(1, 1);
+
         private async Task<string> SendItemImmediately(Packet item)
         {
-            var packet = JsonConvert.SerializeObject(item);
-            var sendBytes = Encoding.ASCII.GetBytes(packet);
-            long size = sendBytes.LongLength;
 
-            //Send size
-            gameToGlueSocket.Send(BitConverter.GetBytes(size));
+            await sendSemaphore.WaitAsync();
 
-            //Send payload
-            gameToGlueSocket.Send(sendBytes);
+            try
+            {
+                var packet = JsonConvert.SerializeObject(item);
+                var sendBytes = Encoding.ASCII.GetBytes(packet);
+                long size = sendBytes.LongLength;
 
-            string responseString = await ReceiveString(gameToGlueSocket);
-            return responseString;
+                //Send size
+                gameToGlueSocket.Send(BitConverter.GetBytes(size));
+
+                //Send payload
+                gameToGlueSocket.Send(sendBytes);
+
+                string responseString = await ReceiveString(gameToGlueSocket);
+                return responseString;
+            }
+            finally
+            {
+                sendSemaphore.Release();
+            }
         }
 
         private static async Task<string> ReceiveString(Socket socket)
