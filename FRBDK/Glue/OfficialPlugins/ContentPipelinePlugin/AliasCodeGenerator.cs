@@ -89,8 +89,8 @@ namespace OfficialPlugins.ContentPipelinePlugin
                 string withExtension = relativeFile;
                 string noExtension = FileManager.RemoveExtension(relativeFile);
                 var line =
-                    $"global::FlatRedBall.Content.ContentManager.FileAliases.Add(global::FlatRedBall.IO.FileManager.Standardize(\"{withExtension}\"), " +
-                    $"global::FlatRedBall.IO.FileManager.Standardize(\"{noExtension}\"));";
+                    $"global::FlatRedBall.Content.ContentManager.FileAliases[global::FlatRedBall.IO.FileManager.Standardize(\"{withExtension}\")] = " +
+                    $"global::FlatRedBall.IO.FileManager.Standardize(\"{noExtension}\");";
                 codeBlock.Line(line);
             }
 
