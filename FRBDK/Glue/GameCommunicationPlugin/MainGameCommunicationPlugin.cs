@@ -16,6 +16,8 @@ using GameCommunicationPlugin.GlueControl.ViewModels;
 using OfficialPluginsCore.Compiler.CommandReceiving;
 using System.Collections.Generic;
 using GameCommunicationPlugin.GlueControl;
+using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace GameCommunicationPlugin
 {
@@ -92,5 +94,9 @@ namespace GameCommunicationPlugin
             return toReturn;
         }
 
+        public void AddReflectionStateAssignmentCode(ICodeBlock codeBlock, StateSaveCategory category)
+        {
+            ReflectionBasedStateCodeGenerator.AddReflectionStateAssignmentCode(codeBlock, category);
+        }
     }
 }

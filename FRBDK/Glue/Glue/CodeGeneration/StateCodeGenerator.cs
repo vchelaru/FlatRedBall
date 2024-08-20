@@ -13,6 +13,8 @@ using System.Linq;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.TypeConversions;
 using Microsoft.Xna.Framework.Graphics;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -270,7 +272,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // states became an object which held their
             // own values. This means that users can now
             // define their own states dynamically and change
-            // a state at runtime (not sure why, but it's possible).
+            // a state at runtime (or load them in live edit mode).
             // Since states now store their own values, we no longer need
             // codegen to explicitly assign variables. Sure, assigning hard
             // values is faster, but having conditionals is slower so...does
@@ -290,8 +292,26 @@ namespace FlatRedBall.Glue.CodeGeneration
             //    GenerateVariableAssignmentForState(element, setBlock, stateSave, category, isElse);
             //    isElse = true;
             //}
+            // Update August 19, 2024
+            // For live edit we want to
+            // use true dynamic states. This
+            // means that not only can individual
+            // values change, but it also means we
+            // will run custom code completely if a
+            // state has been updated. This allows states
+            // to have new variables added which did not even
+            // exist during compile time.
+            setBlock.Line("bool assignedThroughReflection = false;");
 
-            GenerateVariableAssignmentForDynamicState(element, setBlock, category);
+            if(category != null)
+            {
+                PluginManager.CallPluginMethod("Game Communication Plugin", "AddReflectionStateAssignmentCode",
+                    setBlock, category);
+            }
+
+            var ifInternal = setBlock.If("!assignedThroughReflection");
+
+            GenerateVariableAssignmentForDynamicState(element, ifInternal, category);
 
 
             if ((enumType == "VariableState" && DoesBaseHaveUncategorizedStates(element)) ||
@@ -620,6 +640,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
+        #region Set State (dynamic)
+
+        // only do this for categorized states since non-categorized are not recommended
+
+
+        #endregion
 
         public static List<StateSave> GetSharedVariableStates(SaveClasses.IElement element)
         {
