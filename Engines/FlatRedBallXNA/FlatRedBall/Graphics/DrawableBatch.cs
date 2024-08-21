@@ -17,7 +17,7 @@ namespace FlatRedBall.Graphics
         float X
         {
             get;
-            set;
+            //set;
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace FlatRedBall.Graphics
         float Y
         {
             get;
-            set;
+            //set;
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace FlatRedBall.Graphics
         float Z
         {
             get;
-            set;
+            //set;
         }
 
         /// <summary>
