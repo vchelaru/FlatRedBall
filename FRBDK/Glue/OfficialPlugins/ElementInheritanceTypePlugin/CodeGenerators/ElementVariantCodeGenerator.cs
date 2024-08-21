@@ -63,6 +63,9 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
                 CreateDerivedVariantClass(element, typeOrVariant, classBlock, derivedElement);
             }
 
+            // The base class itself may need a variant so the user can access variables on it:
+            CreateDerivedVariantClass(element, typeOrVariant, classBlock, element as GlueElement);
+
             classBlock.Line($"public static List<{element.ClassName}{typeOrVariant}> All = new List<{element.ClassName}{typeOrVariant}>{{");
             var innerList = classBlock.CodeBlockIndented();
             foreach (var derivedElement in derivedElements)
@@ -188,6 +191,16 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
                 switchBlock.CaseNoBreak($"\"{derivedElement.ClassName}\"")
                     .Line($"return {derivedElement.ClassName};");
             }
+
+            // In case the user wants to access variables on the base type:
+            {
+                var fullyQualified = $"{CodeWriter.GetGlueElementNamespace(element)}.{element.ClassName}";
+                switchBlock.Line($"case \"{fullyQualified}\":");
+                switchBlock.CaseNoBreak($"\"{element.ClassName}\"")
+                    .Line($"return {element.ClassName};");
+            }
+
+
             fromName.Line("return null;");
         }
 
