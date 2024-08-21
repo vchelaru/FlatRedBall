@@ -33,7 +33,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Windows;
 using System.Windows.Media;
+using FlatRedBall.Glue.MVVM;
 using WpfDataUi.DataTypes;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -69,14 +73,48 @@ namespace FlatRedBall.Glue.Plugins
     #endregion
 
     #region PluginTab
-    public class PluginTab
+    public class PluginTab : ViewModel
     {
         public event EventHandler AfterHide;
 
         public string Title
         {
-            get => Page.Title;
-            set => Page.Title = value;
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public TabContainerViewModel ParentContainer
+        {
+            get => Get<TabContainerViewModel>();
+            set
+            {
+                if (ParentContainer is not null)
+                {
+                    ParentContainer.PropertyChanged -= OnParentContainerChanged;
+                }
+                if (value is not null)
+                {
+                    value.PropertyChanged += OnParentContainerChanged;
+                }
+                Set(value);
+            }
+        }
+        private void OnParentContainerChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(TabContainerViewModel.SelectedTab))
+            {
+                NotifyPropertyChanged(nameof(IsSelected));
+            }
+        }
+
+        [DependsOn(nameof(ParentContainer))]
+        public TabLocation CurrentLocation => ParentContainer?.Location ?? TabLocation.Center;
+
+        public FrameworkElement Content { get; set; }
+
+        public DateTime LastTimeClicked
+        {
+            get; private set;
         }
 
         public TabLocation SuggestedLocation
@@ -84,76 +122,80 @@ namespace FlatRedBall.Glue.Plugins
             get; set;
         } = TabLocation.Center;
 
-        PluginTabPage page;
-        internal PluginTabPage Page
+        public bool IsSelected
         {
-            get => page;
+            get => ParentContainer?.SelectedTab == this;
             set
             {
-                if (page != value)
+                if (value)
                 {
-                    page = value;
-                    page.TabSelected = RaiseTabShown;
+                    if (ParentContainer is not null)
+                    {
+                        ParentContainer.SelectedTab = this;
+                    }
+                    RecordLastClick();
                 }
             }
         }
-
-        public void RaiseTabShown() => TabShown?.Invoke();
 
         public event Action TabShown;
 
         public void Hide()
         {
-            var items = Page.ParentTabControl;
-            items?.Remove(Page);
-            Page.ParentTabControl = null;
+            ParentContainer?.Remove(this);
+            ParentContainer = null;
             AfterHide?.Invoke(this, null);
         }
 
-        public bool IsShown => Page.ParentTabControl != null;
+        public bool IsShown => ParentContainer != null;
 
         public void Show()
         {
-            if (Page.ParentTabControl == null)
+            if (ParentContainer == null)
             {
-                var items = GetTabContainerFromLocation(SuggestedLocation);
-                items.Add(Page);
-                Page.ParentTabControl = items;
-                Page.RefreshRightClickCommands();
-
+                var container = GetTabContainerFromLocation(SuggestedLocation);
+                container.Add(this);
+                TabShown?.Invoke();
             }
         }
 
         /// <summary>
         /// Selects this tab so it is visible in its tab group.
         /// </summary>
-        public void Focus()
-        {
-            GlueCommands.Self.DoOnUiThread(() => Page.Focus());
-            Page.RecordLastClick();
-        }
+        public void Focus() => IsSelected = true;
 
         public bool CanClose
         {
-            get => Page.DrawX;
-            set => Page.DrawX = value;
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public PluginTab()
+        {
+            CanClose = true;
+            CloseCommand = new (Hide, nameof(CanClose), this);
+            MoveTabCommand = new (MoveTab, nameof(CanMoveTo), nameof(CurrentLocation), this);
+        }
+
+        public void RecordLastClick()
+        {
+            if (GlueFormsCore.ViewModels.TabControlViewModel.IsRecordingSelection)
+            {
+                LastTimeClicked = DateTime.Now;
+                ParentContainer?.SetTabForCurrentType(this);
+            }
         }
 
         public void ForceLocation(TabLocation tabLocation)
         {
             var desiredTabControl = GetTabContainerFromLocation(tabLocation);
-            var parentTabControl = Page.ParentTabControl;
+            var parentTabControl = ParentContainer;
 
             if (desiredTabControl != parentTabControl)
             {
-                if (parentTabControl != null)
-                {
-                    parentTabControl.Remove(Page);
-                }
+                parentTabControl?.Remove(this);
 
-                desiredTabControl.Add(Page);
-                Page.ParentTabControl = desiredTabControl;
-                Page.RefreshRightClickCommands();
+                desiredTabControl.Add(this);
             }
         }
 
@@ -173,12 +215,39 @@ namespace FlatRedBall.Glue.Plugins
             return tabContainer;
         }
 
-        public Func<string, bool> IsPreferredDisplayerForType
+        public Func<string, bool> IsPreferredDisplayerForType { get; set; } = _ => false;
+
+        public void OnMouseEvent(MouseButtonEventArgs args)
         {
-            get => page.IsPreferredDisplayerForType;
-            set => page.IsPreferredDisplayerForType = value;
+            if (args.MiddleButton == MouseButtonState.Pressed && CanClose)
+            {
+                Hide();
+            }
         }
-    }
+
+        public CommandBase CloseCommand { get; }
+        public CommandBase<string> MoveTabCommand { get; }
+
+        private void MoveTab(string location)
+        {
+            if (Enum.TryParse<TabLocation>(location, true, out var tabLocation))
+            {
+                ForceLocation(tabLocation);
+                SuggestedLocation = tabLocation;
+                Focus();
+            }
+        }
+
+        private bool CanMoveTo(string location)
+        {
+            if (Enum.TryParse<TabLocation>(location, true, out var tabLocation))
+            {
+                return tabLocation != CurrentLocation;
+            }
+            return true;
+        }
+
+}
     #endregion
 
     #region VariableChangeArguments
@@ -216,8 +285,6 @@ namespace FlatRedBall.Glue.Plugins
         public virtual string GithubRepoOwner => null;
         public virtual string GithubRepoName => null;
         public virtual bool CheckGithubForNewRelease => false;
-
-        protected PluginTabPage PluginTab { get; private set; } // This is the tab that will hold our control
 
         List<AssetTypeInfo> AddedAssetTypeInfos = new List<AssetTypeInfo>();
 
@@ -827,23 +894,10 @@ namespace FlatRedBall.Glue.Plugins
             //wpfHost.Child = control;
 
             //return CreateTab(wpfHost, tabName);
-            var page = new PluginTabPage();
-            page.Resources = MainPanelControl.ResourceDictionary;
-
-            page.Title = tabName;
-            page.Content = control;
-            control.Resources = MainPanelControl.ResourceDictionary;
 
             PluginTab pluginTab = new PluginTab();
-            pluginTab.Page = page;
-            page.MoveToTabSelected += async (newLocation) =>
-            {
-                pluginTab.ForceLocation(newLocation);
-                pluginTab.SuggestedLocation = newLocation;
-                pluginTab.Focus();
-
-                await GlueCommands.Self.UpdateGlueSettingsFromCurrentGlueStateAsync();
-            };
+            pluginTab.Title = tabName;
+            pluginTab.Content = control;
 
             var settings = GlueState.Self.GlueSettingsSave;
             if (settings.TopTabs.Contains(tabName))
@@ -870,12 +924,6 @@ namespace FlatRedBall.Glue.Plugins
             {
                 pluginTab.SuggestedLocation = defaultLocation;
             }
-
-            page.ClosedByUser += (sender) =>
-            {
-                pluginTab.Hide();
-                //OnClosedByUser(sender);
-            };
 
             return pluginTab;
 

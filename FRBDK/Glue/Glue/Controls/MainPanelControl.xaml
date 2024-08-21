@@ -5,11 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:FlatRedBall.Glue.Controls"
              xmlns:viewModels="clr-namespace:GlueFormsCore.ViewModels"
+             xmlns:plugins="clr-namespace:FlatRedBall.Glue.Plugins"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              PreviewKeyDown="UserControl_PreviewKeyDown"
              MouseDown="UserControl_MouseDown"
-             d:DataContext="{d:DesignInstance Type=viewModels:TabControlViewModel, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance Type=viewModels:TabControlViewModel, IsDesignTimeCreatable=False}"
              >
     <UserControl.Resources>
         <ResourceDictionary>
@@ -17,11 +18,119 @@
                 <!--<ResourceDictionary Source="/Themes/Dark.xaml" />-->
                 <ResourceDictionary Source="/Themes/Light.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate x:Key="TabItemTemplate" DataType="{x:Type plugins:PluginTab}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Title}" />
+                    <Button Height="10" Margin="7,0,0,0" Command="{Binding CloseCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <TextBlock Text="x" Margin="0,-7,0,0" Padding="0" FontWeight="Bold"/>
+                    </Button>
+                </StackPanel>
+            </DataTemplate>
+
+            <DataTemplate x:Key="TabContentTemplate" DataType="{x:Type plugins:PluginTab}">
+                <ContentPresenter Content="{Binding Content}"/>
+            </DataTemplate>
+
+            <Style x:Key="TabItemStyle"  TargetType="{x:Type TabItem}">
+                <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                <Setter Property="Header" Value="{Binding}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TabItem}">
+                            <ControlTemplate.Resources>
+                                <LinearGradientBrush x:Key="NeutralBackground"  StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#f0f0f0" Offset="0.0" />
+                                    <GradientStop Color="#e5e5e5" Offset="1.0" />
+                                </LinearGradientBrush>
+                                <SolidColorBrush x:Key="SelectedBackground" Color="white" />
+                                <SolidColorBrush x:Key="BorderBrush" Color="#c3c3c3"/>
+                            </ControlTemplate.Resources>
+                            <Grid x:Name="Root" >
+                                <Border x:Name="Border"
+                BorderThickness="1,1,1,1"
+                Padding="0,3"
+                BorderBrush ="{DynamicResource BorderBrush}"
+                Background="{DynamicResource NeutralBackground}">
+                                    <ContentPresenter x:Name="ContentSite"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                ContentSource="Header"
+                                Margin="12,2,12,2"
+                                RecognizesAccessKey="True" />
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Move To">
+                                                <MenuItem.Resources>
+                                                    <Style TargetType="MenuItem">
+                                                        <Setter Property="Command" Value="{Binding MoveTabCommand}"/>
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                    <Image x:Key="TopImage" Source="pack://application:,,,/Resources/Icons/MoveTabs/TopTab.png"/>
+                                                    <Image x:Key="BottomImage" Source="pack://application:,,,/Resources/Icons/MoveTabs/BottomTab.png"/>
+                                                    <Image x:Key="LeftImage" Source="pack://application:,,,/Resources/Icons/MoveTabs/LeftTab.png"/>
+                                                    <Image x:Key="RightImage" Source="pack://application:,,,/Resources/Icons/MoveTabs/RightTab.png"/>
+                                                    <Image x:Key="CenterImage" Source="pack://application:,,,/Resources/Icons/MoveTabs/CenterTab.png"/>
+                                                </MenuItem.Resources>
+                                                <MenuItem Header="Top" 
+                                              Icon="{StaticResource TopImage}"
+                                              CommandParameter="Top"/>
+                                                <MenuItem Header="Left" 
+                                              Icon="{StaticResource LeftImage}"
+                                              CommandParameter="Left"/>
+                                                <MenuItem Header="Center" 
+                                              Icon="{StaticResource CenterImage}"
+                                              CommandParameter="Center"/>
+                                                <MenuItem Header="Right" 
+                                              Icon="{StaticResource RightImage}"
+                                              CommandParameter="Right"/>
+                                                <MenuItem Header="Bottom" 
+                                              Icon="{StaticResource BottomImage}"
+                                              CommandParameter="Bottom"/>
+                                            </MenuItem>
+                                            <!--<Separator Margin="0,2"/>
+            <MenuItem Header="Close" Command="{Binding CloseCommand}"/>-->
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Panel.ZIndex" Value="100" />
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource SelectedBackground}" />
+                                    <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,0" />
+                                    <Setter TargetName="Border" Property="Margin" Value="-2" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <EventSetter Event="MouseDown" Handler="TabItem_MouseDown" />
+            </Style>
+
+            <Style x:Key="TabControlStyle"  TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
+                <Style.Resources>
+                    <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource TabItemStyle}"/>
+                </Style.Resources>
+                <Setter Property="ItemTemplate" Value="{StaticResource TabItemTemplate}" />
+                <Setter Property="ContentTemplate" Value="{StaticResource TabContentTemplate}" />
+            </Style>
+
         </ResourceDictionary>
     </UserControl.Resources>
-
-
-
 
     <Grid>
         <Grid.RowDefinitions>
@@ -38,6 +147,7 @@
         <TabControl x:Name="TopTabControl" 
                     Grid.Row="1" 
                     Padding="0" 
+                    Style="{StaticResource TabControlStyle}"
                     DataContext="{Binding TopTabItems}" 
                     ItemsSource="{Binding Tabs}" 
                     SelectedItem="{Binding SelectedTab}" />
@@ -61,6 +171,7 @@
             <TabControl x:Name="LeftTabControl" 
                         Padding="0" 
                         Margin="4,2,2,2" 
+                        Style="{StaticResource TabControlStyle}"
                         DataContext="{Binding LeftTabItems}" 
                         ItemsSource="{Binding Tabs}" 
                         SelectedItem="{Binding SelectedTab}" />
@@ -72,6 +183,7 @@
                         Grid.Column="2" 
                         Padding="0" 
                         Margin="2" 
+                        Style="{StaticResource TabControlStyle}"
                         DataContext="{Binding CenterTabItems}" 
                         ItemsSource="{Binding Tabs}" 
                         SelectedItem="{Binding SelectedTab}" />
@@ -84,6 +196,7 @@
                         Grid.Column="4" 
                         Padding="0" 
                         Margin="2,2,4,2" 
+                        Style="{StaticResource TabControlStyle}"
                         DataContext="{Binding RightTabItems}" 
                         ItemsSource="{Binding Tabs}" 
                         SelectedItem="{Binding SelectedTab}" />
@@ -99,6 +212,7 @@
                     x:Name="BottomTabControl" 
                     Padding="0" 
                     Margin="4,0,4,2" 
+                    Style="{StaticResource TabControlStyle}"
                     DataContext="{Binding BottomTabItems}" 
                     ItemsSource="{Binding Tabs}" 
                     SelectedItem="{Binding SelectedTab}" />
