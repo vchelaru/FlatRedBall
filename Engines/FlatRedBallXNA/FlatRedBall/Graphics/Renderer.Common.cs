@@ -260,6 +260,11 @@ namespace FlatRedBall.Graphics
             public float PrimarySortValue;
             public float SecondarySortValue;
 
+            public override string ToString()
+            {
+                return $"{PrimarySortValue} ({SecondarySortValue})";
+            }
+
             // Overloading the '<' operator
             public static bool operator <(SortValues left, SortValues right)
             {
@@ -375,7 +380,8 @@ namespace FlatRedBall.Graphics
             int indexOfNextSpriteToReposition = 0;
 
 
-            GetNextZValuesByCategory(mVisibleSprites, sortType, mVisibleTexts, mVisibleBatches, camera, ref spriteIndex, ref textIndex, ref nextSpriteSortValue, ref nextTextSortValue, ref nextBatchSortValue);
+            GetNextZValuesByCategory(mVisibleSprites, sortType, mVisibleTexts, mVisibleBatches, camera, ref spriteIndex, ref textIndex, 
+                ref nextSpriteSortValue, ref nextTextSortValue, ref nextBatchSortValue);
 
             int numberToDraw = 0;
             // This is used as a temporary variable for Z or distance from camera
@@ -702,6 +708,11 @@ namespace FlatRedBall.Graphics
                             if (sortType == SortType.Z || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
                             {
                                 nextBatchSortValue.PrimarySortValue = batchAtIndex.Z;
+
+                                if(sortType == SortType.ZSecondaryParentY)
+                                {
+                                    nextBatchSortValue.SecondarySortValue = -batchAtIndex.Y;
+                                }
                             }
                             else if (sortType == SortType.DistanceAlongForwardVector)
                             {
@@ -791,7 +802,7 @@ namespace FlatRedBall.Graphics
                     {
                         nextSpriteSortValue.PrimarySortValue = spriteList[spriteNumber].Z;
                         nextSpriteSortValue.SecondarySortValue = sortType == SortType.ZSecondaryParentY
-                            ? spriteList[spriteNumber].TopParent.Y
+                            ? -spriteList[spriteNumber].TopParent.Y
                             : 0;
                         spriteIndex = spriteNumber;
                         break;
@@ -811,9 +822,9 @@ namespace FlatRedBall.Graphics
                         // to this code.
                         nextBatchSortValue.PrimarySortValue = batches[0].Z;
 
-                        // todo - what about parent Y? We should add that...
-                        nextSpriteSortValue.SecondarySortValue = sortType == SortType.ZSecondaryParentY
-                            ? batches[0].Y
+                        // Y value is the sorting value, so use that
+                        nextBatchSortValue.SecondarySortValue = sortType == SortType.ZSecondaryParentY
+                            ? -batches[0].Y
                             : 0;
                     }
                     else
