@@ -254,6 +254,35 @@ namespace FlatRedBall.Graphics
         static List<Sprite> mVisibleSprites = new List<Sprite>();
         static List<Text> mVisibleTexts = new List<Text>();
         static List<IDrawableBatch> mVisibleBatches = new List<IDrawableBatch>();
+        
+        struct SortValues
+        {
+            public float PrimarySortValue;
+            public float SecondarySortValue;
+
+            // Overloading the '<' operator
+            public static bool operator <(SortValues left, SortValues right)
+            {
+                return left.PrimarySortValue < right.PrimarySortValue ||
+                    (left.PrimarySortValue == right.PrimarySortValue && left.SecondarySortValue < right.SecondarySortValue);
+            }
+
+            public static bool operator >(SortValues left, SortValues right)
+            {
+                return left.PrimarySortValue > right.PrimarySortValue ||
+                    (left.PrimarySortValue == right.PrimarySortValue && left.SecondarySortValue > right.SecondarySortValue);
+            }
+
+            public static bool operator <=(SortValues left, SortValues right)
+            {
+                return (left.PrimarySortValue == right.PrimarySortValue && left.SecondarySortValue == right.SecondarySortValue) || left < right;
+            }
+
+            public static bool operator >=(SortValues left, SortValues right)
+            {
+                return (left.PrimarySortValue == right.PrimarySortValue && left.SecondarySortValue == right.SecondarySortValue) || left > right;
+            }
+        }
 
         private static void DrawMixed(SpriteList spriteListUnfiltered, SortType sortType,
             PositionedObjectList<Text> textListUnfiltered, List<IDrawableBatch> batches,
@@ -280,9 +309,9 @@ namespace FlatRedBall.Graphics
             // camera.  Therefore, to fix this problem if these values
             // represent distance from camera, they will be multiplied by
             // negative 1.
-            float nextSpriteSortValue = float.PositiveInfinity;
-            float nextTextSortValue = float.PositiveInfinity;
-            float nextBatchSortValue = float.PositiveInfinity;
+            SortValues nextSpriteSortValue = new SortValues { PrimarySortValue = float.PositiveInfinity };
+            SortValues nextTextSortValue = new SortValues { PrimarySortValue = float.PositiveInfinity };
+            SortValues nextBatchSortValue = new SortValues { PrimarySortValue = float.PositiveInfinity };
 
 
 
@@ -350,7 +379,7 @@ namespace FlatRedBall.Graphics
 
             int numberToDraw = 0;
             // This is used as a temporary variable for Z or distance from camera
-            float sortingValue = 0;
+            SortValues sortingValue = new SortValues();
             Section performDrawingSection = null;
             if (section != null)
             {
@@ -490,10 +519,15 @@ namespace FlatRedBall.Graphics
                     #region Count how many Sprites to draw and store it in numberToDraw
                     numberToDraw = 0;
 
+                    sortingValue.SecondarySortValue = 0;
                     if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
-                        sortingValue = mVisibleSprites[spriteIndex + numberToDraw].Position.Z;
+                    {
+                        sortingValue.PrimarySortValue = mVisibleSprites[spriteIndex + numberToDraw].Position.Z;
+                    }
                     else
-                        sortingValue = -(camera.Position - mVisibleSprites[spriteIndex + numberToDraw].Position).LengthSquared();
+                    {
+                        sortingValue.PrimarySortValue = -(camera.Position - mVisibleSprites[spriteIndex + numberToDraw].Position).LengthSquared();
+                    }
 
                     while (sortingValue <= nextTextSortValue &&
                            sortingValue <= nextBatchSortValue)
@@ -503,12 +537,16 @@ namespace FlatRedBall.Graphics
                         {
                             break;
                         }
+                        sortingValue.SecondarySortValue = 0;
 
                         if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
-                            sortingValue = mVisibleSprites[spriteIndex + numberToDraw].Position.Z;
+                        {
+                            sortingValue.PrimarySortValue = mVisibleSprites[spriteIndex + numberToDraw].Position.Z;
+                        }
                         else
-                            sortingValue = -(camera.Position - mVisibleSprites[spriteIndex + numberToDraw].Position).LengthSquared();
-
+                        {
+                            sortingValue.PrimarySortValue = -(camera.Position - mVisibleSprites[spriteIndex + numberToDraw].Position).LengthSquared();
+                        }
                     }
                     #endregion
 
@@ -536,14 +574,20 @@ namespace FlatRedBall.Graphics
 
                     if (spriteIndex >= mVisibleSprites.Count)
                     {
-                        nextSpriteSortValue = float.PositiveInfinity;
+                        nextSpriteSortValue.PrimarySortValue = float.PositiveInfinity;
                     }
                     else
                     {
+                        nextSpriteSortValue.SecondarySortValue = 0;
+
                         if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
-                            nextSpriteSortValue = mVisibleSprites[spriteIndex].Position.Z;
+                        {
+                            nextSpriteSortValue.PrimarySortValue = mVisibleSprites[spriteIndex].Position.Z;
+                        }
                         else
-                            nextSpriteSortValue = -(camera.Position - mVisibleSprites[spriteIndex].Position).LengthSquared();
+                        {
+                            nextSpriteSortValue.PrimarySortValue = -(camera.Position - mVisibleSprites[spriteIndex].Position).LengthSquared();
+                        }
                     }
                 }
 
@@ -565,9 +609,9 @@ namespace FlatRedBall.Graphics
                     numberToDraw = 0;
 
                     if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector)
-                        sortingValue = mVisibleTexts[textIndex + numberToDraw].Position.Z;
+                        sortingValue.PrimarySortValue = mVisibleTexts[textIndex + numberToDraw].Position.Z;
                     else
-                        sortingValue = -(camera.Position - mVisibleTexts[textIndex + numberToDraw].Position).LengthSquared();
+                        sortingValue.PrimarySortValue = -(camera.Position - mVisibleTexts[textIndex + numberToDraw].Position).LengthSquared();
 
 
                     while (sortingValue <= nextSpriteSortValue &&
@@ -580,9 +624,9 @@ namespace FlatRedBall.Graphics
                         }
 
                         if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector)
-                            sortingValue = mVisibleTexts[textIndex + numberToDraw].Position.Z;
+                            sortingValue.PrimarySortValue = mVisibleTexts[textIndex + numberToDraw].Position.Z;
                         else
-                            sortingValue = -(camera.Position - mVisibleTexts[textIndex + numberToDraw].Position).LengthSquared();
+                            sortingValue.PrimarySortValue = -(camera.Position - mVisibleTexts[textIndex + numberToDraw].Position).LengthSquared();
 
                     }
 
@@ -599,13 +643,13 @@ namespace FlatRedBall.Graphics
                     textIndex += numberToDraw;
 
                     if (textIndex == mVisibleTexts.Count)
-                        nextTextSortValue = float.PositiveInfinity;
+                        nextTextSortValue.PrimarySortValue = float.PositiveInfinity;
                     else
                     {
                         if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
-                            nextTextSortValue = mVisibleTexts[textIndex].Position.Z;
+                            nextTextSortValue.PrimarySortValue = mVisibleTexts[textIndex].Position.Z;
                         else
-                            nextTextSortValue = -(camera.Position - mVisibleTexts[textIndex].Position).LengthSquared();
+                            nextTextSortValue.PrimarySortValue = -(camera.Position - mVisibleTexts[textIndex].Position).LengthSquared();
                     }
 
                 }
@@ -645,9 +689,11 @@ namespace FlatRedBall.Graphics
 
                         batchIndex++;
 
+                        nextBatchSortValue.SecondarySortValue = 0;
+
                         if (batchIndex == mVisibleBatches.Count)
                         {
-                            nextBatchSortValue = float.PositiveInfinity;
+                            nextBatchSortValue.PrimarySortValue = float.PositiveInfinity;
                         }
                         else
                         {
@@ -655,7 +701,7 @@ namespace FlatRedBall.Graphics
 
                             if (sortType == SortType.Z || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
                             {
-                                nextBatchSortValue = batchAtIndex.Z;
+                                nextBatchSortValue.PrimarySortValue = batchAtIndex.Z;
                             }
                             else if (sortType == SortType.DistanceAlongForwardVector)
                             {
@@ -669,11 +715,11 @@ namespace FlatRedBall.Graphics
 
                                 Vector3.Dot(ref vectorDifference, ref forwardVector, out firstDistance);
 
-                                nextBatchSortValue = -firstDistance;
+                                nextBatchSortValue.PrimarySortValue = -firstDistance;
                             }
                             else
                             {
-                                nextBatchSortValue = -(batchAtIndex.Z * batchAtIndex.Z);
+                                nextBatchSortValue.PrimarySortValue = -(batchAtIndex.Z * batchAtIndex.Z);
                             }
                         }
                     }
@@ -728,7 +774,8 @@ namespace FlatRedBall.Graphics
             SetCurrentEffect(mEffect, SpriteManager.Camera);
         }
 
-        private static void GetNextZValuesByCategory(List<Sprite> spriteList, SortType sortType, List<Text> textList, List<IDrawableBatch> batches, Camera camera, ref int spriteIndex, ref int textIndex, ref float nextSpriteSortValue, ref float nextTextSortValue, ref float nextBatchSortValue)
+        private static void GetNextZValuesByCategory(List<Sprite> spriteList, SortType sortType, List<Text> textList, List<IDrawableBatch> batches, 
+            Camera camera, ref int spriteIndex, ref int textIndex, ref SortValues nextSpriteSortValue, ref SortValues nextTextSortValue, ref SortValues nextBatchSortValue)
         {
             #region find out the initial Z values of the 3 categories of objects to know which to render first
 
@@ -742,14 +789,17 @@ namespace FlatRedBall.Graphics
                     int spriteNumber = 0;
                     while (spriteNumber < spriteList.Count)
                     {
-                        nextSpriteSortValue = spriteList[spriteNumber].Z;
+                        nextSpriteSortValue.PrimarySortValue = spriteList[spriteNumber].Z;
+                        nextSpriteSortValue.SecondarySortValue = sortType == SortType.ZSecondaryParentY
+                            ? spriteList[spriteNumber].TopParent.Y
+                            : 0;
                         spriteIndex = spriteNumber;
                         break;
                     }
                 }
 
                 if (textList != null && textList.Count != 0)
-                    nextTextSortValue = textList[0].Position.Z;
+                    nextTextSortValue.PrimarySortValue = textList[0].Position.Z;
                 else if (textList != null)
                     textIndex = textList.Count;
 
@@ -759,7 +809,12 @@ namespace FlatRedBall.Graphics
                     {
                         // The Z value of the current batch is used.  Batches are always visible
                         // to this code.
-                        nextBatchSortValue = batches[0].Z;
+                        nextBatchSortValue.PrimarySortValue = batches[0].Z;
+
+                        // todo - what about parent Y? We should add that...
+                        nextSpriteSortValue.SecondarySortValue = sortType == SortType.ZSecondaryParentY
+                            ? batches[0].Y
+                            : 0;
                     }
                     else
                     {
@@ -773,7 +828,7 @@ namespace FlatRedBall.Graphics
 
                         Vector3.Dot(ref vectorDifference, ref forwardVector, out firstDistance);
 
-                        nextBatchSortValue = -firstDistance;
+                        nextBatchSortValue.PrimarySortValue = -firstDistance;
 
                     }
                 }
@@ -792,7 +847,7 @@ namespace FlatRedBall.Graphics
                     int spriteNumber = 0;
                     while (spriteNumber < spriteList.Count)
                     {
-                        nextSpriteSortValue =
+                        nextSpriteSortValue.PrimarySortValue =
                             -(camera.Position - spriteList[spriteNumber].Position).LengthSquared();
                         spriteIndex = spriteNumber;
                         break;
@@ -801,7 +856,7 @@ namespace FlatRedBall.Graphics
 
                 if (textList != null && textList.Count != 0)
                 {
-                    nextTextSortValue = -(camera.Position - textList[0].Position).LengthSquared();
+                    nextTextSortValue.PrimarySortValue = -(camera.Position - textList[0].Position).LengthSquared();
                 }
                 else if (textList != null)
                 {
@@ -813,7 +868,7 @@ namespace FlatRedBall.Graphics
                 if (batches != null && batches.Count != 0)
                 {
                     // workign with squared length, so use that here
-                    nextBatchSortValue = -(batches[0].Z * batches[0].Z);
+                    nextBatchSortValue.PrimarySortValue = -(batches[0].Z * batches[0].Z);
                 }
             }
 
