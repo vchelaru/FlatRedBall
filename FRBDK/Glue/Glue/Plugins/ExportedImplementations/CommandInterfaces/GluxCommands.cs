@@ -2197,7 +2197,9 @@ public class GluxCommands : IGluxCommands
             foreach (var variable in objectsToRemove.CustomVariables)
             {
                 removalInformation.AppendLine("Removed variable " + variable.ToString());
-                element.CustomVariables.Remove(variable);
+                //element.CustomVariables.Remove(variable);
+                // We should use the full removal to update all necessary objects in response to the variable removal:
+                RemoveCustomVariable(variable);
             }
             #endregion
 
