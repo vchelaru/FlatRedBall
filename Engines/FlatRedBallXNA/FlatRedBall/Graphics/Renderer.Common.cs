@@ -529,6 +529,11 @@ namespace FlatRedBall.Graphics
                     if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
                     {
                         sortingValue.PrimarySortValue = mVisibleSprites[spriteIndex + numberToDraw].Position.Z;
+
+                        if(sortType == SortType.ZSecondaryParentY)
+                        {
+                            sortingValue.SecondarySortValue = -mVisibleSprites[spriteIndex + numberToDraw].TopParent.Y;
+                        }
                     }
                     else
                     {
@@ -548,6 +553,11 @@ namespace FlatRedBall.Graphics
                         if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
                         {
                             sortingValue.PrimarySortValue = mVisibleSprites[spriteIndex + numberToDraw].Position.Z;
+
+                            if(sortType == SortType.ZSecondaryParentY)
+                            {
+                                sortingValue.SecondarySortValue = -mVisibleSprites[spriteIndex + numberToDraw].TopParent.Y;
+                            }
                         }
                         else
                         {
@@ -589,6 +599,11 @@ namespace FlatRedBall.Graphics
                         if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
                         {
                             nextSpriteSortValue.PrimarySortValue = mVisibleSprites[spriteIndex].Position.Z;
+
+                            if(sortType == SortType.ZSecondaryParentY)
+                            {
+                                nextSpriteSortValue.SecondarySortValue = -mVisibleSprites[spriteIndex].TopParent.Y;
+                            }
                         }
                         else
                         {
