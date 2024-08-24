@@ -53,7 +53,28 @@ namespace FlatRedBall.Math
             else
             {
                 int index = GetFirstAfter(attachableToAdd.Z, Axis.Z, 0, this.Count);
-                this.Insert(index, attachableToAdd);
+
+                var attachableZ = attachableToAdd.Z;
+
+                var found = false;
+                for(int i = index; i < this.Count; i++)
+                {
+                    if (this[i].Z > attachableZ)
+                    {
+                        index = i;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if(found)
+                {
+                    this.Insert(index, attachableToAdd);
+                }
+                else
+                {
+                    this.Add(attachableToAdd);
+                }
             }
         }
 
