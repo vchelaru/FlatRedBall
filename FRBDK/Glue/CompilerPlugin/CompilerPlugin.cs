@@ -250,7 +250,9 @@ namespace CompilerPlugin
 
         public async Task DoRun(bool preventFocus, string runArguments, GeneralResponse generalResponse)
         {
-            var response = await _runner.Run(preventFocus, runArguments);
+
+
+            var response = await _runner.Run(preventFocus, runArguments, numberOfSecondsToWait:20);
             generalResponse.SetFrom(response);
         }
 

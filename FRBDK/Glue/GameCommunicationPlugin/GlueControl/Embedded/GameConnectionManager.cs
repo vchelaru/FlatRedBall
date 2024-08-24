@@ -257,7 +257,11 @@ namespace GlueCommunication
                 // Also by not making this async we might
                 // be able to track down other desyncs better
                 // so I'm going to leave it like this for now.
-                string responseString = ReceiveString(gameToGlueSocket);
+                // Update - by making this not async, we do solve
+                // the problem of selecting one screen then the other
+                // but we break being able to launch the game and view
+                // it in the editor, so it must be async
+                string responseString = await ReceiveStringAsync(gameToGlueSocket);
                 return responseString;
             }
             finally

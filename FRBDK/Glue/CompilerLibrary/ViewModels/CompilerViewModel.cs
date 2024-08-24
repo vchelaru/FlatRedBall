@@ -403,6 +403,7 @@ namespace CompilerLibrary.ViewModels
         public Visibility CommandParameterCheckboxVisibility =>
             (ShowCommandsCheckboxVisibility == Visibility.Visible && IsPrintEditorToGameCheckboxChecked).ToVisibility();
 
+
         public bool IsShowParametersChecked
         {
             get => Get<bool>();
