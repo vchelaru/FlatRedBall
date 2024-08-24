@@ -6,6 +6,8 @@
     <Platforms>AnyCPU</Platforms>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <RootNamespace>GameCommunicationPlugin</RootNamespace>
+	  <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -94,6 +96,55 @@
     <None Remove="GlueControl\Icons\SlowMotion.png" />
     <None Remove="GlueControl\Icons\stop.png" />
     <None Remove="GlueControl\Icons\Unpause.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="CodeGeneration\EmbeddedCodeManager.cs" />
+    <Compile Include="CodeGeneration\Game1GlueCommunicationGenerator.cs" />
+    <Compile Include="CodeGeneration\ReflectionBasedStateCodeGenerator.cs" />
+    <Compile Include="Common\GameCommunicationHelper.cs" />
+    <Compile Include="Common\GameConnectionManager.cs" />
+    <Compile Include="GlueControl\CodeGeneration\CompilerPluginElementCodeGenerator.cs" />
+    <Compile Include="GlueControl\CodeGeneration\EmbeddedCodeManager.cs" />
+    <Compile Include="GlueControl\CodeGeneration\Game1GlueControlGenerator.cs" />
+    <Compile Include="GlueControl\CodeGeneration\GlueCalls\GenerationConfiguration\Editing_Managers_GlueState.cs" />
+    <Compile Include="GlueControl\CodeGeneration\GlueCalls\GenerationConfiguration\Editing_Managers_GluxCommands.cs" />
+    <Compile Include="GlueControl\CodeGeneration\GlueCalls\GenerationOptions.cs" />
+    <Compile Include="GlueControl\CodeGeneration\GlueCalls\GlueCallsCodeGenerator.cs" />
+    <Compile Include="GlueControl\CodeGeneration\GlueCalls\Method.cs" />
+    <Compile Include="GlueControl\CodeGeneration\GlueCalls\Parameter.cs" />
+    <Compile Include="GlueControl\CodeGeneration\GlueCalls\Property.cs" />
+    <Compile Include="GlueControl\CodeGeneration\GlueControlCodeGenerator.cs" />
+    <Compile Include="GlueControl\CodeGeneration\InstanceLogicCodeGenerator.cs" />
+    <Compile Include="GlueControl\CommandReceiving\CommandReceiver.cs" />
+    <Compile Include="GlueControl\CommandSending\CommandSender.cs" />
+    <Compile Include="GlueControl\Dtos\Dtos.cs" />
+    <Compile Include="GlueControl\Dtos\GeneratePreviewDto.cs" />
+    <Compile Include="GlueControl\MainCompilerPlugin.cs" />
+    <Compile Include="GlueControl\Managers\DragDropManagerGameWindow.cs" />
+    <Compile Include="GlueControl\Managers\FileChangeManager.cs" />
+    <Compile Include="GlueControl\Managers\GameHostController.cs" />
+    <Compile Include="GlueControl\Managers\Output.cs" />
+    <Compile Include="GlueControl\Managers\ProfilingManager.cs" />
+    <Compile Include="GlueControl\Managers\RefreshManager.cs" />
+    <Compile Include="GlueControl\Managers\ToolbarController.cs" />
+    <Compile Include="GlueControl\Managers\ToolbarEntityViewModelManager.cs" />
+    <Compile Include="GlueControl\Managers\VariableSendingManager.cs" />
+    <Compile Include="GlueControl\ViewModels\GlueViewSettingsViewModel.cs" />
+    <Compile Include="GlueControl\ViewModels\ProfilingControlViewModel.cs" />
+    <Compile Include="GlueControl\ViewModels\RunnerToolbarViewModel.cs" />
+    <Compile Include="GlueControl\ViewModels\TestViewModel.cs" />
+    <Compile Include="GlueControl\Views\AirspacePopup.cs" />
+    <Compile Include="GlueControl\Views\BottomStatusBar.xaml.cs" />
+    <Compile Include="GlueControl\Views\EditingToolsView.xaml.cs" />
+    <Compile Include="GlueControl\Views\GameHostView.xaml.cs" />
+    <Compile Include="GlueControl\Views\GlueViewSettings.xaml.cs" />
+    <Compile Include="GlueControl\Views\ProfilingControl.xaml.cs" />
+    <Compile Include="GlueControl\Views\Toolbar.xaml.cs" />
+    <Compile Include="GlueControl\Views\WhileRunningView.xaml.cs" />
+    <Compile Include="JsonManager\GlueJsonManager.cs" />
+    <Compile Include="JsonManager\JsonManager.cs" />
+    <Compile Include="MainGameCommunicationPlugin.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,6 +11,7 @@
         <CheckBox IsChecked="{Binding LogPluginCalls}" VerticalContentAlignment="Center">Log Plugin Calls</CheckBox>
         <CheckBox IsChecked="{Binding LogFileWatch}" VerticalContentAlignment="Center">Log File Watch</CheckBox>
         <CheckBox IsChecked="{Binding LogGameCommunication}" VerticalContentAlignment="Center">Log FRB->Game Commands</CheckBox>
+        <CheckBox IsChecked="{Binding LogGameToFrbCommands}" VerticalContentAlignment="Center">Log Game->FRB Commands</CheckBox>
         <Button Content="Copy Task List to Clipboard" Width="200" HorizontalAlignment="Left" Click="Button_Click" />
         <Button Content="Add temp tasks" Width="200" HorizontalAlignment="Left" Click="AddTempTasksClicked" />
 

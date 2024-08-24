@@ -1041,6 +1041,11 @@ namespace GameCommunicationPlugin.GlueControl
             CompilerViewModel.IsPrintEditorToGameCheckboxChecked = isLoggingSentCommands;
         }
 
+        public void SetIsLoggingReceivedCommands(bool isLoggingReceivedCommands)
+        {
+            CompilerViewModel.IsPrintGameToEditorCheckboxChecked = isLoggingReceivedCommands;
+        }
+
 
         private void HandleGrabbedTreeNodeChanged(ITreeNode treeNode, TreeNodeAction action)
         {

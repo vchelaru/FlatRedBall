@@ -122,6 +122,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             },
             outputText);
 
+            PrintOutput($" returning for {dtoTypeName}");
+
             return response;
         }
 
@@ -139,7 +141,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
                 else
                 {
-                    PrintOutput(dto.ToString());
+                    PrintOutput(DateTime.Now + " " + dto.ToString());
                 }
             }
 
@@ -176,6 +178,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
 
             }
+
+            PrintOutput($"  {DateTime.Now} returning {toReturn ?? "<null>"}");
 
             return toReturn;
         }

@@ -460,7 +460,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 var response = await CommandSender.Self.Send<AddObjectDtoListResponse>(list);
 
                 if (response.Succeeded == false ||
-                    response.Data.Data == null ||
+                    response.Data?.Data == null ||
                     response.Data.Data.Any(item => item.CreationResponse.Succeeded == false))
                 {
                     CreateStopAndRestartTask("Restarting because the add object group failed");

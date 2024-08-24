@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using FlatRedBall.Glue.Plugins;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -238,14 +240,15 @@ namespace GameJsonCommunicationPlugin.Common
                                         break;
                                     }
                                 }
-
                             }
                         }
 
+
                         // todo - need to send the string...
                         //gameToGlueSocket.Send(new byte[] { 0 });
-                        if(toReturn != null)
+                        if (toReturn != null)
                         {
+                            PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", $"Sending back {toReturn}");
                             var sendBytes = Encoding.ASCII.GetBytes(toReturn);
                             long size = sendBytes.LongLength;
 
@@ -257,7 +260,11 @@ namespace GameJsonCommunicationPlugin.Common
                         }
                         else
                         {
-                            gameToGlueSocket.Send(new byte[] { 0 });
+                            PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", $"   Sending back bytes for (long)0");
+
+                            var sentBytes = gameToGlueSocket.Send(BitConverter.GetBytes((long)0));
+                            PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", $"   ...and successfully sent {sentBytes} bytes");
+
                         }
 
                     }
