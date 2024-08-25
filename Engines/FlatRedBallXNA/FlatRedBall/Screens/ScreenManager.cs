@@ -264,7 +264,13 @@ namespace FlatRedBall.Screens
                 // silent accumulation. Do we warn or just destroy?
                 Instructions.InstructionManager.Instructions.Clear();
 
-                FlatRedBallServices.singleThreadSynchronizationContext.Clear();
+
+                // Don't clear anymore, we instead cancel to get rid of any tasks that are running
+                // which use the cancellation token. All FRB calls like AnimateAsync are handled by 
+                // TimeManager.ClearTasks.
+                //FlatRedBallServices.singleThreadSynchronizationContext.Clear();
+                mCurrentScreen.CancellationTokenSource.Cancel();
+
                 TimeManager.ClearTasks();
 
                 //mCurrentScreen.Destroy();
