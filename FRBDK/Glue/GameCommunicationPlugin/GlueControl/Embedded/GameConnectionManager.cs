@@ -261,7 +261,11 @@ namespace GlueCommunication
                 // the problem of selecting one screen then the other
                 // but we break being able to launch the game and view
                 // it in the editor, so it must be async
+#if ScreenHasCancellationToken || REFERENCES_FRB_SOURCE
+                string responseString = await ReceiveStringBackFromGame(gameToGlueSocket);
+#else
                 string responseString = await ReceiveStringAsync(gameToGlueSocket);
+#endif
                 return responseString;
             }
             finally
@@ -271,41 +275,49 @@ namespace GlueCommunication
             }
         }
 
-        private string ReceiveString(Socket socket)
+#if ScreenHasCancellationToken || REFERENCES_FRB_SOURCE
+        private async Task<string> ReceiveStringBackFromGame(Socket socket)
         {
             byte[] bufferSize = new byte[sizeof(long)];
             ArraySegment<byte> buffer = new ArraySegment<byte>(bufferSize);
             lastSendStatus = SendStatus.GettingResponseBytes;
 
-            socket.Receive(buffer, SocketFlags.None);
-
-            var packetSize = BitConverter.ToInt64(bufferSize, 0);
-
             string responseString = null;
-
-            if (packetSize > 0)
+            try
             {
-                lastSendStatus = SendStatus.GettingResponseBody;
+                var token = FlatRedBall.Screens.ScreenManager.CurrentScreen.CancellationTokenSource.Token;
+                await socket.ReceiveAsync(buffer,
+                    SocketFlags.None,
+                    token);
+                var packetSize = BitConverter.ToInt64(bufferSize, 0);
 
-                using (MemoryStream stream = new MemoryStream())
+                if (packetSize > 0)
                 {
-                    var remainingBytes = packetSize;
-                    while (remainingBytes > 0)
-                    {
-                        var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
-                        byte[] bufferData = new byte[pullSize];
-                        socket.Receive(bufferData);
-                        stream.Write(bufferData, 0, bufferData.Length);
-                        remainingBytes -= pullSize;
-                    }
+                    lastSendStatus = SendStatus.GettingResponseBody;
 
-                    responseString = Encoding.ASCII.GetString(stream.ToArray());
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        var remainingBytes = packetSize;
+                        while (remainingBytes > 0)
+                        {
+                            var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
+                            byte[] bufferData = new byte[pullSize];
+                            socket.Receive(bufferData);
+                            stream.Write(bufferData, 0, bufferData.Length);
+                            remainingBytes -= pullSize;
+                        }
+
+                        responseString = Encoding.ASCII.GetString(stream.ToArray());
+                    }
                 }
+            }
+            catch (OperationCanceledException)
+            {
             }
 
             return responseString;
         }
-
+#endif
         private async Task<string> ReceiveStringAsync(Socket socket)
         {
             byte[] bufferSize = new byte[sizeof(long)];
@@ -363,7 +375,7 @@ namespace GlueCommunication
             try { glueToGameSocket?.Dispose(); } catch { }
         }
 
-        #endregion
+#endregion
 
         #region classes
         public class Packet

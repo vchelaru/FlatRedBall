@@ -37,6 +37,11 @@ namespace FlatRedBall.Screens
     {
         #region Fields
 
+        /// <summary>
+        /// Cancellation token source which can be used by any async call to cancel whenever the screen is destroyed.
+        /// </summary>
+        public CancellationTokenSource CancellationTokenSource { get; private set; } = new CancellationTokenSource();
+
         int mNumberOfThreadsBeforeAsync = -1;
 
         public bool IsPaused { get; private set; } = false;

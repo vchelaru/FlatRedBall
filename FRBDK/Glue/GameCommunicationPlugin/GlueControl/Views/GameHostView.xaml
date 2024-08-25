@@ -30,7 +30,7 @@
                     <Button.ToolTip>
                         <ToolTip>
                             <StackPanel>
-                                <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.RunEditMode}"></TextBlock>
+                                <TextBlock FontWeight="Bold" Text="Run In Edit Mode"></TextBlock>
                                 <TextBlock Text="{x:Static localization:Texts.StartGameInEditMode}"></TextBlock>
                             </StackPanel>
                         </ToolTip>

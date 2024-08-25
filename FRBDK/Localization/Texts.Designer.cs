@@ -6290,15 +6290,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Run In Edit Mode.
-        /// </summary>
-        public static string RunEditMode {
-            get {
-                return ResourceManager.GetString("RunEditMode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string Save {

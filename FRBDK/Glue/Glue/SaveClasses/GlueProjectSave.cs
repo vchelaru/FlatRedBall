@@ -152,7 +152,10 @@ namespace FlatRedBall.Glue.SaveClasses
             HasFrbServicesGraphicsDeviceManager = 57,
 
             // August 17, 2024
-            ShapeCollectionHasLastCollisionCallDeepCheckCount = 58
+            ShapeCollectionHasLastCollisionCallDeepCheckCount = 58,
+
+            // August 25, 2024
+            ScreenHasCancellationToken = 59
 
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
@@ -162,7 +165,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.ShapeCollectionHasLastCollisionCallDeepCheckCount;
+        public const int LatestVersion = (int)GluxVersions.ScreenHasCancellationToken;
 
         public int FileVersion { get; set; }
 

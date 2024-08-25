@@ -421,9 +421,6 @@ for {1}?</value>
   <data name="EnableGameEmbedInSettings" xml:space="preserve">
     <value>Enable Game Embed and Edit in Settings</value>
   </data>
-  <data name="RunEditMode" xml:space="preserve">
-    <value>Run In Edit Mode</value>
-  </data>
   <data name="StartGameInEditMode" xml:space="preserve">
     <value>Starts the game in edit mode on the startup screen.</value>
   </data>
