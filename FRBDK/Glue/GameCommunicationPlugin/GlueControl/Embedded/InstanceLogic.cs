@@ -796,14 +796,21 @@ namespace GlueControl
 
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
-            var screenType = screen.GetType().FullName;
-            var glueType = CommandReceiver.GameElementTypeToGlueElement(screenType);
-            // pass the screen names:
+
+            string glueType;
+            if (screen is GlueControl.Screens.EntityViewingScreen entityViewingScreen)
+            {
+                var entityType = entityViewingScreen.CurrentEntity.GetType().FullName;
+                glueType = CommandReceiver.GameElementTypeToGlueElement(entityType);
+            }
+            else
+            {
+                var screenType = screen.GetType().FullName;
+                glueType = CommandReceiver.GameElementTypeToGlueElement(screenType);
+            }
             for (int i = 0; i < instances.Count; i++)
             {
-
                 dto.ElementNamesGlue.Add(glueType);
-
             }
 
             GlueControlManager.Self.SendToGlue(dto);

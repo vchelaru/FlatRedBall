@@ -239,7 +239,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
 
         public override string ToString()
         {
-            return $"Add NOS {NamedObjectSave.InstanceName} ({NamedObjectSave.SourceClassType})";
+            return $"Add NOS {NamedObjectSave.InstanceName} ({NamedObjectSave.SourceClassType}) to {ElementNameGame}";
         }
     }
     #endregion
