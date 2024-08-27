@@ -134,7 +134,27 @@ namespace GlueControl.Editing
                     {
                         if (CommandReceiver.DoTypesMatch(forcedItem, instanceOwnerElementGameType, ownerGameType))
                         {
-                            screen.ApplyVariable(variableNameOnObjectInInstance, convertedValue, forcedItem);
+                            var splitVariable = variableName.Split('.');
+                            var lastVariableNameAfterSplit = splitVariable.Last();
+
+                            object targetInstance = null;
+                            // If there's 2 variables, then it's like "this.Width"
+                            if (setOnEntity && splitVariable.Length == 2)
+                            {
+                                targetInstance = forcedItem;
+                            }
+                            else
+                            {
+                                targetInstance = screen.GetInstance(splitVariable[1] + ".Whatever", forcedItem);
+                                if (targetInstance != null && !(targetInstance is INameable))
+                                {
+                                    // wrap it
+                                    targetInstance = new NameableWrapper() { Name = splitVariable[1], ContainedObject = targetInstance };
+                                }
+                            }
+
+                            SetValueOnObjectInElement(convertedValue, response, screen, splitVariable[1], lastVariableNameAfterSplit, targetInstance as INameable);
+                            //screen.ApplyVariable(variableNameOnObjectInInstance, convertedValue, forcedItem);
                         }
                     }
                     else

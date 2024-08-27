@@ -246,6 +246,9 @@ namespace FlatRedBall.Screens
         Action ActivatingAction;
         Action DeactivatingAction;
 
+        /// <summary>
+        /// Event raised before CustomInitialize is called.
+        /// </summary>
         public Action BeforeCustomInitialize;
 
         #endregion

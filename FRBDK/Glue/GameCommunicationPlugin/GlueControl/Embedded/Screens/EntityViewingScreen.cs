@@ -38,12 +38,13 @@ namespace GlueControl.Screens
 
             CreateFactoryLists();
 
+            // do this before add to managers so that the events are +='ed on the factories.S
+            BeforeCustomInitialize?.Invoke();
+
             if (addToManagers)
             {
                 AddToManagers();
             }
-
-            BeforeCustomInitialize?.Invoke();
         }
 
         private void CreateFactoryLists()
