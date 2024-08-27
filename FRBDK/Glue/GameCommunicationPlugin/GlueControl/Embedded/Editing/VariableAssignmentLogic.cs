@@ -29,6 +29,10 @@ namespace GlueControl.Editing
         {
             var response = new GlueVariableSetDataResponse();
 
+            // If the value is Points on a polygon, it may be a List<Vector2>. 
+            // ConvertVariableValue converts purely based on the type of the variable
+            // in data without looking at the target. The conversion to List<Point> is
+            // done in SetValueOnObjectInElement which considers the target type.
             object convertedValue = ConvertVariableValue(data);
             var elementGameType = data.InstanceOwnerGameType;
             var variableName = data.VariableName;
