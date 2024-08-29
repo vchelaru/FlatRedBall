@@ -123,8 +123,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public string DotNetVersionString { get; private set; }
 
         public Version DotNetVersion { get; private set; }
-        public Version XamarinVersion { get; private set; }
 
+        public Version XamarinVersion { get; private set; }
 
 
         public decimal? DotNetVersionNumber { get; private set; }

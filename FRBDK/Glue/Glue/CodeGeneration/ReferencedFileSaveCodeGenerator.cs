@@ -827,7 +827,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 FileManager.GetExtension(fileNameToLoad) != extension && extension == "png";
 
             if (GlueState.Self.CurrentMainProject is FnaDesktopProject) {
-              shouldAddExtensionOnNonXnaPlatforms = shouldAddExtensionOnNonXnaPlatforms || extension == "wav";
+              shouldAddExtensionOnNonXnaPlatforms = shouldAddExtensionOnNonXnaPlatforms || (extension == "wav" && rfs.UseContentPipeline);
             }
 
             if(!string.IsNullOrEmpty(formattableLine))

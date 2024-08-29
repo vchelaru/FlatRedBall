@@ -114,7 +114,7 @@ namespace OfficialPlugins.MonoGameContent
             {
                 newFiles = await TryAddXnbReferencesAndBuild(referencedFile, project, save:true);
             }
-            else
+            else if(DoesProjectSupportContentPipeline(project))
             {
                 TryRemoveXnbReferences(project, referencedFile);
 
@@ -287,6 +287,15 @@ namespace OfficialPlugins.MonoGameContent
                     FileManager.GetDirectory(FileManager.RemoveExtension(relativeToContent), RelativeType.Relative));
             }
             return contentItem;
+        }
+
+        private static bool DoesProjectSupportContentPipeline(ProjectBase project)
+        {
+            if(project is FnaDesktopProject)
+            {
+                return false;
+            }
+            return true;
         }
 
         private static string GetPipelinePlatformNameFor(ProjectBase project)
