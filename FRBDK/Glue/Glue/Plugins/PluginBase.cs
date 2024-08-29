@@ -479,6 +479,10 @@ namespace FlatRedBall.Glue.Plugins
         public Func<FilePath, List<FilePath>, GeneralResponse> FillWithReferencedFiles { get; protected set; }
         public Action<FilePath, GeneralResponse> ReactToFileReadError { get; protected set; }
 
+        /// <summary>
+        /// Returns all files needed on disk by the argument file. Files on disk include built files such as content pipeline, or files 
+        /// built by command line tools such as .csv files built from .ods files.
+        /// </summary>
         public Action<string, List<FilePath>> GetFilesNeededOnDiskBy { get; protected set; }
 
         public Action ResolutionChanged { get; protected set; }

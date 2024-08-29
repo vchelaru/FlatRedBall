@@ -18,6 +18,8 @@ namespace GlueControl.Editing
     {
         #region Fields/Properties
 
+        public bool IsSuppressingPunchThrough => false;
+
         List<AxisAlignedRectangle> pointRectangles = new List<AxisAlignedRectangle>();
 
         Microsoft.Xna.Framework.Vector3 UnsnappedPosition;

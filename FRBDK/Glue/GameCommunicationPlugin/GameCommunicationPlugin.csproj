@@ -99,6 +99,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="CodeGeneration\ApplyEditorCommandsCodeGenerator.cs" />
     <Compile Include="CodeGeneration\EmbeddedCodeManager.cs" />
     <Compile Include="CodeGeneration\Game1GlueCommunicationGenerator.cs" />
     <Compile Include="CodeGeneration\ReflectionBasedStateCodeGenerator.cs" />

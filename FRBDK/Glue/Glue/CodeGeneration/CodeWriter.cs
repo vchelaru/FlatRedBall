@@ -1125,7 +1125,14 @@ namespace FlatRedBallAddOns.Entities
 
         foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators
             .OrderBy(item => (int)item.CodeLocation)
-            .Where(item => item.CodeLocation != CodeLocation.AfterStandardGenerated))
+            .Where(item => item.CodeLocation == CodeLocation.BeforeStandardGenerated))
+        {
+            codeGenerator.GenerateAddToManagers(currentBlock, saveObject);
+        }
+
+        foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators
+            .OrderBy(item => (int)item.CodeLocation)
+            .Where(item => item.CodeLocation == CodeLocation.StandardGenerated))
         {
             codeGenerator.GenerateAddToManagers(currentBlock, saveObject);
         }

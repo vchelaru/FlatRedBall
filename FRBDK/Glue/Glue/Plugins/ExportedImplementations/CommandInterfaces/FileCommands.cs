@@ -470,7 +470,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             if (String.Equals(extension, "csv", StringComparison.OrdinalIgnoreCase) ||
-                String.Equals(extension, "xml", StringComparison.OrdinalIgnoreCase))
+                String.Equals(extension, "xml", StringComparison.OrdinalIgnoreCase) ||
+                String.Equals(extension, "xnb", StringComparison.OrdinalIgnoreCase) 
+                )
             {
                 return true;
             }
