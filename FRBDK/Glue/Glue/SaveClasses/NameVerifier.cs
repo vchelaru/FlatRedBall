@@ -305,7 +305,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     });
                 if (existingRfs != null)
                 {
-                    whyItIsntValid += $"{container.Name} is trying to add {name} but name is already in use here: {existingRfs.Name}";
+                    whyItIsntValid += $"{container.Name} is trying to add {name} but that name is already in use here: {existingRfs.Name}";
                 }
             }
         }
