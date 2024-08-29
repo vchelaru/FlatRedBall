@@ -68,20 +68,11 @@ namespace GlueFormsCore.ViewModels
                 return;
             }
 
-            if (!TabsForTypes.TryGetValue(typeName, out PluginTab tab)) 
-            { 
-                List<PluginTab> ordered = Tabs
-                    .OrderBy(item => !item.IsPreferredDisplayerForType(typeName))
+            SelectedTab = TabsForTypes.TryGetValue(typeName, out PluginTab tab)
+                ? tab
+                : Tabs.OrderByDescending(item => !item.IsPreferredDisplayerForType(typeName))
                     .ThenByDescending(item => item.LastTimeClicked)
-                    .ToList();
-
-                if (ordered[0].LastTimeClicked != ordered[1].LastTimeClicked)
-                {
-                    tab = ordered[0];
-                }
-            }
-
-            SelectedTab = tab;
+                    .First();
         }
     }
 
