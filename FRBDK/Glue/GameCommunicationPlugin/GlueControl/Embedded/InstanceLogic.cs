@@ -484,12 +484,6 @@ namespace GlueControl
                 DestroyablesAddedAtRuntime.Add(dynamicEntityInstance);
 
                 newEntity = dynamicEntityInstance;
-
-                if (!isMainEntityInScreen)
-                {
-                    // If it is, then the game screen will run all the commands. No need to do it here and have 2x the commands run.
-                    ApplyEditorCommandsToNewEntity(newEntity, currentAddObjectIndex);
-                }
             }
             else
             {
@@ -537,11 +531,6 @@ namespace GlueControl
                     DestroyablesAddedAtRuntime.Add(asDestroyable);
                 }
                 newEntity = newPositionedObject;
-
-                if (factory == null)
-                {
-                    ApplyEditorCommandsToNewEntity(newEntity, currentAddObjectIndex);
-                }
             }
 
 

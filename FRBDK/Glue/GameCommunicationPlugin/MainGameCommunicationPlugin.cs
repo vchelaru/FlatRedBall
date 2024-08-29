@@ -28,6 +28,7 @@ namespace GameCommunicationPlugin
 
         private GameConnectionManager _gameCommunicationManager;
         private Game1GlueCommunicationGenerator game1GlueCommunicationGenerator;
+        private ApplyEditorCommandsCodeGenerator applyEditorCommandsCodeGenerator;
 
         public override string FriendlyName => "Game Communication Plugin";
 
@@ -57,6 +58,9 @@ namespace GameCommunicationPlugin
             game1GlueCommunicationGenerator = new Game1GlueCommunicationGenerator(true, 8888);
             RegisterCodeGenerator(game1GlueCommunicationGenerator);
 
+            applyEditorCommandsCodeGenerator = new ApplyEditorCommandsCodeGenerator();
+            RegisterCodeGenerator(applyEditorCommandsCodeGenerator);
+
             //Task.Run(() =>
             //{
             //    while (true)
@@ -77,6 +81,8 @@ namespace GameCommunicationPlugin
             _gameCommunicationManager.DoConnections = doConnections;
             game1GlueCommunicationGenerator.PortNumber = _gameCommunicationManager.Port;
             game1GlueCommunicationGenerator.IsGameCommunicationEnabled = _gameCommunicationManager.DoConnections;
+
+            applyEditorCommandsCodeGenerator.IsGameCommunicationEnabled = _gameCommunicationManager.DoConnections;
         }
 
         private async Task<object> HandleOnPacketReceived(GameConnectionManager.Packet packet)

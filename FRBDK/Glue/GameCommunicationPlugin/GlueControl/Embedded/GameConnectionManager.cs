@@ -285,11 +285,11 @@ namespace GlueCommunication
             string responseString = null;
             try
             {
-                var token = FlatRedBall.Screens.ScreenManager.CurrentScreen.CancellationTokenSource.Token;
-                await socket.ReceiveAsync(buffer,
-                    SocketFlags.None,
-                    token);
+                var amountReceived = await socket.ReceiveAsync(buffer,
+                    SocketFlags.None);
                 var packetSize = BitConverter.ToInt64(bufferSize, 0);
+
+                System.Diagnostics.Debug.WriteLine($"{DateTime.Now}-Received {amountReceived}, body size {packetSize}");
 
                 if (packetSize > 0)
                 {
@@ -302,9 +302,9 @@ namespace GlueCommunication
                         {
                             var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
                             byte[] bufferData = new byte[pullSize];
-                            socket.Receive(bufferData);
+                            var amountRead = socket.Receive(bufferData);
                             stream.Write(bufferData, 0, bufferData.Length);
-                            remainingBytes -= pullSize;
+                            remainingBytes -= amountRead;
                         }
 
                         responseString = Encoding.ASCII.GetString(stream.ToArray());

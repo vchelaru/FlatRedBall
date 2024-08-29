@@ -167,30 +167,41 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 // may make modifications to objects that are created by glue commands (such as assigning acceleration to objects
                 // in a list), but it is unlikely that scripts will make modifications to objects created in CustomInitialize because
                 // objects created in CustomInitialize cannot be modified by level editor.
-                codeBlock.Line("FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += (newScreen) => ");
-                var innerBlock = codeBlock.Block();
+                // Update August 28, 2024
+                // By running glue commands
+                // globally, order is important
+                // and it can get super confusing.
+                // Instead, we're going to run commands
+                // at the Screen/Entity level for only things
+                // that need that Screen/Entity. 
+                //codeBlock.Line("FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += (newScreen) => ");
+                //var innerBlock = codeBlock.Block();
 
-                innerBlock.Line("// for info on why we have this if-check, see this issue: https://github.com/vchelaru/FlatRedBall/issues/1046");
-                innerBlock.If("newScreen.GetType().Name != \"EntityViewingScreen\"")
-                    .Line("glueControlManager.ReRunAllGlueToGameCommands();");
-                var isFirst = true;
-                foreach (var entity in GlueState.Self.CurrentGlueProject.Entities)
-                {
-                    if (entity.CreatedByOtherEntities && !entity.IsAbstract)
-                    {
-                        if (isFirst)
-                        {
-                            innerBlock.Line("// These get nulled out when screens are destroyed so we have to re-assign them");
-                        }
-                        // this has a factory, so we should += the 
-                        // turns out we don't qualify factories in namespaces.....well maybe we should but not going to bother with that now.
-                        // If this ever changes, we'll have to tie it to a new gluj version.
-                        var entityClassName = entity.ClassName;
-                        innerBlock.Line($"Factories.{entityClassName.Replace("\\", ".").Replace("/", ".")}Factory.EntitySpawned += (newEntity) =>  GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(newEntity);");
-                        isFirst = false;
-                    }
-                }
-                codeBlock.Line(";");
+                //innerBlock.Line("// for info on why we have this if-check, see this issue: https://github.com/vchelaru/FlatRedBall/issues/1046");
+                //innerBlock.If("newScreen.GetType().Name != \"EntityViewingScreen\"")
+                //    .Line("glueControlManager.ReRunAllGlueToGameCommands();");
+                //var isFirst = true;
+                //foreach (var entity in GlueState.Self.CurrentGlueProject.Entities)
+                //{
+                //    if (entity.CreatedByOtherEntities && !entity.IsAbstract)
+                //    {
+                //        if (isFirst)
+                //        {
+                //            innerBlock.Line("// These get nulled out when screens are destroyed so we have to re-assign them");
+                //        }
+                //        // this has a factory, so we should += the 
+                //        // turns out we don't qualify factories in namespaces.....well maybe we should but not going to bother with that now.
+                //        // If this ever changes, we'll have to tie it to a new gluj version.
+                //        var entityClassName = entity.ClassName;
+                //        innerBlock.Line($"Factories.{entityClassName.Replace("\\", ".").Replace("/", ".")}Factory.EntitySpawned += (newEntity) =>  GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(newEntity);");
+                //        isFirst = false;
+                //    }
+                //}
+                //codeBlock.Line(";");
+
+
+
+
                 EndIfDebug(codeBlock);
 
                 if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasScreenManagerAfterScreenDestroyed)
