@@ -2536,15 +2536,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Find all references to this.
-        /// </summary>
-        public static string FindAllReferences {
-            get {
-                return ResourceManager.GetString("FindAllReferences", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Find file references....
         /// </summary>
         public static string FindFileReferences {

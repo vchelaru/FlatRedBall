@@ -2512,9 +2512,6 @@ for {1}?</value>
   <data name="ViewSourceExplorer" xml:space="preserve">
     <value>View source file in explorer</value>
   </data>
-  <data name="FindAllReferences" xml:space="preserve">
-    <value>Find all references to this</value>
-  </data>
   <data name="VariableAdd" xml:space="preserve">
     <value>Add variable</value>
   </data>

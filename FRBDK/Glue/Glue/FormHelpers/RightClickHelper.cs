@@ -188,7 +188,7 @@ public static class RightClickHelper
 
                 AddSeparator();
 
-                AddEvent(L.Texts.FindAllReferences, FindAllReferencesClick);
+                AddEvent("Find all references to this", FindAllReferencesClick);
                 AddItem(mRefreshTreeNodesMenuItem);
 
                 if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
@@ -881,7 +881,7 @@ public static class RightClickHelper
         mViewSourceInExplorer = new GeneralToolStripMenuItem(L.Texts.ViewSourceExplorer);
         mViewSourceInExplorer.Click += ViewSourceInExplorerClick;
 
-        mFindAllReferences = new GeneralToolStripMenuItem(L.Texts.FindAllReferences);
+        mFindAllReferences = new GeneralToolStripMenuItem("Find all references to this");
         mFindAllReferences.Click += FindAllReferencesClick;
 
         mDuplicate = new GeneralToolStripMenuItem(L.Texts.Duplicate);

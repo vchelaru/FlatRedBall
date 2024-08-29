@@ -871,6 +871,12 @@ public class ObjectFinder : IObjectFinder
     }
 
 
+    /// <summary>
+    /// Returns all NamedObjectSaves which have any reference to the argument entity. This includes references such as
+    /// variant variables.
+    /// </summary>
+    /// <param name="entity">The entity to find the references for</param>
+    /// <returns>The NamedObjects that reference the entity.</returns>
     public List<NamedObjectSave> GetAllNamedObjectsThatUseEntity(EntitySave entity)
     {
         return GetAllNamedObjectsThatUseEntity(entity.Name);
@@ -976,7 +982,17 @@ public class ObjectFinder : IObjectFinder
                     listToAddTo.Add(nos);
                 }
             }
-
+            else
+            {
+                foreach(var variable in nos.InstructionSaves)
+                {
+                    if(variable.Type.StartsWith("Entities.") && variable.Value is string asString && asString == name)
+                    {
+                        listToAddTo.Add(nos);
+                        break;
+                    }
+                }
+            }
             GetAllNamedObjectsThatUseElement(nos.ContainedObjects, listToAddTo, name, sourceType, parentGlueElement);
         }
 
