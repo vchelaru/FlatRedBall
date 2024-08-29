@@ -366,7 +366,7 @@ namespace FlatRedBall.Glue.VSHelpers
         {
             var currentFileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
 
-            var toReturn = "";
+            var toReturn = "// The following #defines come from the version of your GLUJ/GLUX file. For more information see https://docs.flatredball.com/flatredball/glue-reference/glujglux\n";
 
             // start at version 1, there is no version 0
             //for(int i = 1; i <= version; i++)

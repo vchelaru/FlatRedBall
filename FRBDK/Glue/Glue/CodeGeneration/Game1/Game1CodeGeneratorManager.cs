@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.VSHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,8 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
         public static string GetGame1GeneratedContents()
         {
             var topBlock = new CodeDocument(0);
+            var predefines = CodeBuildItemAdder.GetGlueVersionsString();
+            topBlock.Line(predefines);
             topBlock.Line("using System.Linq;");
 
             var namespaceBlock = topBlock.Namespace( GlueState.Self.ProjectNamespace);

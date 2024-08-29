@@ -538,8 +538,8 @@ namespace FlatRedBall.Screens
                 // We want to set time factor back to non-zero if in edit mode so objects can move and update
                 if (IsInEditMode || ( mCurrentScreen.ActivityCallCount == 1 && mWasFixedTimeStep.HasValue))
                 {
-                    FlatRedBallServices.Game.IsFixedTimeStep = mWasFixedTimeStep.Value;
-                    TimeManager.TimeFactor = mLastTimeFactor.Value;
+                    FlatRedBallServices.Game.IsFixedTimeStep = mWasFixedTimeStep ?? IsInEditMode;
+                    TimeManager.TimeFactor = mLastTimeFactor ?? 1;
                 }
 
                 ScreenLoaded?.Invoke(mCurrentScreen);

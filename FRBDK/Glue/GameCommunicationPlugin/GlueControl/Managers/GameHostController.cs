@@ -70,7 +70,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 var screenName = await CommandSender.Self.GetScreenName();
                 // ...but we may not want to restart on this screen if it's the edit entity screen:
                 var isEntityViewingScreen = screenName == "GlueControl.Screens.EntityViewingScreen";
-                string commandLineArgs = await GetCommandLineArgs(isRunning:true);
+                string commandLineArgs = await GetCommandLineArgs(isRunning:true, 
+                    // todo - may need to look into this:
+                    isInEditMode:false);
 
                 compilerViewModel.IsPaused = false;
                 await PluginManager.CallPluginMethodAsync("Compiler Plugin", "KillGameProcess");
@@ -167,7 +169,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             };
         }
 
-        private async Task<string> GetCommandLineArgs(bool isRunning)
+        private async Task<string> GetCommandLineArgs(bool isRunning, bool isInEditMode)
         {
             string args = null;
             if (isRunning)
@@ -199,6 +201,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
             }
 
+
+
             // This prevents the game from stretching to the game tab in .NET 6, so don't do this in .net 6:
             var is6OrGreater = GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6;
             if (!is6OrGreater)
@@ -226,6 +230,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
             }
 
+            if (isInEditMode)
+            {
+                if (!string.IsNullOrEmpty(args))
+                {
+                    args += " ";
+                }
+                args += "IsInEditMode=true";
+            }
+
             return args;
         }
 
@@ -238,7 +251,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 var succeeded = await Compile();
                 if (succeeded)
                 {
-                    string commandLineArgs = await GetCommandLineArgs(isRunning:false);
+                    string commandLineArgs = await GetCommandLineArgs(isRunning:false, isInEditMode:true);
 
                     GeneralResponse response = new GeneralResponse();
                     await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun", 

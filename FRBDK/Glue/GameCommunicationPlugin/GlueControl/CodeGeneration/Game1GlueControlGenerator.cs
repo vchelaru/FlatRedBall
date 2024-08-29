@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using GameCommunicationPlugin.GlueControl.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,6 +78,21 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 codeBlock.Line("#if WEB");
                 codeBlock.Line("global::FlatRedBall.FlatRedBallServices.ForceClientSizeUpdates();");
                 codeBlock.Line("#endif");
+
+                codeBlock.Line("#if GameCanStartInEditMode || REFERENCES_FRB_SOURCE");
+                codeBlock.Line("var isInEditMode = args.FirstOrDefault(item => item.StartsWith(\"IsInEditMode=\"));");
+                codeBlock.Line("if (!string.IsNullOrEmpty(isInEditMode))");
+                codeBlock.Line("{");
+                
+                codeBlock.Line("    //I started working on this, but decided to drop it because it's more complicated than simply setting");
+                codeBlock.Line("    //IsNextScreenInEditMode. The code that handles SetEditMode dto needs to run, which is a bigger refator. ");
+                codeBlock.Line("    //I'll keep this code in here for now, and return later when I'm ready to do a bigger refactor. ");
+                codeBlock.Line("    //var afterEqual = isInEditMode.Split('=')[1];");
+                codeBlock.Line("    //FlatRedBall.Screens.ScreenManager.IsNextScreenInEditMode = bool.Parse(afterEqual);");
+                codeBlock.Line("    //this.IsMouseVisible = true;");
+                codeBlock.Line("}");
+                codeBlock.Line("#endif");
+
 
             }
         }

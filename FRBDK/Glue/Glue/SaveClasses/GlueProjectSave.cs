@@ -155,17 +155,21 @@ namespace FlatRedBall.Glue.SaveClasses
             ShapeCollectionHasLastCollisionCallDeepCheckCount = 58,
 
             // August 25, 2024
-            ScreenHasCancellationToken = 59
+            ScreenHasCancellationToken = 59,
+
+            // August 29, 2024
+            GameCanStartInEditMode = 60
 
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
+            // and update the docs
         }
 
         #endregion
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.ScreenHasCancellationToken;
+        public const int LatestVersion = (int)GluxVersions.GameCanStartInEditMode;
 
         public int FileVersion { get; set; }
 
