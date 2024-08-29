@@ -25,7 +25,7 @@ using FlatRedBall.Glue.Elements;
 namespace OfficialPlugins.MonoGameContent
 {
     [Export(typeof (PluginBase))]
-    public class MainPlugin : PluginBase
+    public class MainContentPipelinePlugin : PluginBase
     {
         #region Fields/Properties
 
@@ -72,7 +72,7 @@ namespace OfficialPlugins.MonoGameContent
 
         #region Constructor/Initialize
 
-        public MainPlugin()
+        public MainContentPipelinePlugin()
         {
             viewModel = new ContentPipelinePlugin.ControlViewModel();
             viewModel.PropertyChanged += HandleViewModelPropertyChanged;
@@ -129,6 +129,25 @@ namespace OfficialPlugins.MonoGameContent
             this.GetIfUsesContentPipeline += HandleGetIfUsesContentPipeline;
             this.ReactToTreeViewRightClickHandler += HandleTreeViewRightClick;
             this.ReactToFileBuildCommand += HandleReactToFileBuildCommand;
+            this.GetFilesNeededOnDiskBy += HandleGetFilesNeededOnDiskBy;
+        }
+
+        private void HandleGetFilesNeededOnDiskBy(string fileName, List<FilePath> list)
+        {
+            var filePath = new FilePath(fileName);
+            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(filePath);
+            if(HandleGetIfUsesContentPipeline(fileName) || rfs?.UseContentPipeline == true)
+            {
+                list.AddRange(BuildLogic.Self.GetDestinationBuiltFilesFor(filePath, GlueState.CurrentMainProject));
+
+                foreach(var syncedProject in GlueState.SyncedProjects)
+                {
+                    if(syncedProject is VisualStudioProject vsProject)
+                    {
+                        list.AddRange(BuildLogic.Self.GetDestinationBuiltFilesFor(filePath, vsProject));
+                    }
+                }
+            }
         }
 
         private void HandleReactToFileBuildCommand(ReferencedFileSave rfs)

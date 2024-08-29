@@ -222,13 +222,13 @@ namespace OfficialPlugins.MonoGameContent
             return GetContentItem(fullFileName, project, createEvenIfProjectTypeNotSupported);
         }
 
-        private static ContentItem GetContentItem(string fullFileName, ProjectBase project, bool createEvenIfProjectTypeNotSupported)
+        private static ContentItem GetContentItem(FilePath filePath, ProjectBase project, bool createEvenIfProjectTypeNotSupported)
         {
             var contentDirectory = GlueState.ContentDirectory;
 
-            var relativeToContent = FileManager.MakeRelative(fullFileName, contentDirectory);
+            var relativeToContent = filePath.RelativeTo(contentDirectory);
 
-            string extension = FileManager.GetExtension(fullFileName);
+            string extension = filePath.Extension;
 
             ContentItem contentItem = null;
 
@@ -271,13 +271,13 @@ namespace OfficialPlugins.MonoGameContent
 
             if (contentItem != null)
             {
-                var outputDirectory = GetXnbDestinationDirectory(fullFileName, project);
+                var outputDirectory = GetXnbDestinationDirectory(filePath.FullPath, project);
 
                 string projectDirectory = GlueState.CurrentGlueProjectDirectory;
                 // The user may have multiple monogame projects synced. If so we need to build to different
                 // folders so that one platform doesn't override the other:
                 string builtXnbRoot = FileManager.RemoveDotDotSlash( $"{projectDirectory}../BuiltXnbs/{platform}/");
-                contentItem.BuildFileName = fullFileName;
+                contentItem.BuildFileName = filePath;
 
                 // remove the trailing slash:
                 contentItem.OutputDirectory = outputDirectory;
@@ -517,6 +517,38 @@ namespace OfficialPlugins.MonoGameContent
                 "Building MonoGame Content " + rfsFilePath);
             }
 
+            return toReturn;
+        }
+
+        public List<FilePath> GetDestinationBuiltFilesFor(ReferencedFileSave rfs, VisualStudioProject project)
+        {
+            var sourceFullFileName = GlueCommands.FileCommands.GetFilePath(rfs);
+            return GetDestinationBuiltFilesFor(sourceFullFileName, project);
+        }
+
+        public List<FilePath> GetDestinationBuiltFilesFor(FilePath filePath, VisualStudioProject project)
+        { 
+            var contentItem = GetContentItem(filePath, project, createEvenIfProjectTypeNotSupported: false);
+            var toReturn = new List<FilePath>(); 
+            if (contentItem == null)
+            {
+                return toReturn;
+            }
+            var contentDirectory = GlueState.ContentDirectory;
+
+            var relativeToContent = filePath.RelativeTo(contentDirectory);
+
+            var extensions = contentItem.GetBuiltExtensions();
+
+            var destinationDirectory = GetXnbDestinationDirectory(filePath, project);
+
+
+            foreach (var extension in extensions)
+            {
+                var destination = destinationDirectory + filePath.NoPathNoExtension + "." + extension;
+
+                toReturn.Add(destination);
+            }
             return toReturn;
         }
 

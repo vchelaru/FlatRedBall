@@ -116,14 +116,17 @@ namespace FlatRedBall.Glue.Managers
 
                     string contentDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
 
-                    List<FilePath> referencedFiles = null;
+                    HashSet<FilePath> referencedFiles = null;
 
                     try
                     {
                         referencedFiles = GlueCommands.Self.FileCommands.GetAllReferencedFilePaths()
-                            .Distinct()
-                            .OrderBy(item => item.FullPath)
-                            .ToList();
+                            .ToHashSet();
+
+
+                        var filesOnDisk = GlueCommands.Self.FileCommands.GetAllFilesNeededOnDisk();
+                        referencedFiles.AddRange(filesOnDisk);
+
                     }
                     catch
                     {
@@ -148,7 +151,7 @@ namespace FlatRedBall.Glue.Managers
                         // Added this here to make it easier to debug. This isn't necessary for function, as
                         // internally it does a IsContent check
                         var contentItems = ((VisualStudioProject)project.ContentProject).EvaluatedItems
-                            .Where(item => GlueCommands.Self.FileCommands.IsContent(item.UnevaluatedInclude.Replace(@"\", @"/")))
+                            .Where(item => item.ItemType != "PackageReference" && GlueCommands.Self.FileCommands.IsContent(item.UnevaluatedInclude.Replace(@"\", @"/")))
                             .ToList();
 
                         foreach (var evaluatedItem in contentItems)
@@ -185,7 +188,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        static bool GetIfIsUnreferenced(ProjectItem item, ProjectBase project, List<FilePath> referencedFiles, out string nameToInclude)
+        static bool GetIfIsUnreferenced(ProjectItem item, ProjectBase project, HashSet<FilePath> referencedFiles, out string nameToInclude)
         {
             bool isUnreferenced = false;
 
@@ -208,7 +211,7 @@ namespace FlatRedBall.Glue.Managers
             return isUnreferenced;
         }
 
-        private static void AddIfUnreferenced(ProjectItem item, ProjectBase project, List<FilePath> referencedFiles, List<ProjectSpecificFile> unreferencedFiles)
+        private static void AddIfUnreferenced(ProjectItem item, ProjectBase project, HashSet<FilePath> referencedFiles, List<ProjectSpecificFile> unreferencedFiles)
         {
             string nameToInclude;
             bool isUnreferenced = GetIfIsUnreferenced(item, project, referencedFiles, out nameToInclude);

@@ -20,11 +20,17 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin;
+using EditorObjects.IoC;
 
 namespace FlatRedBall.Glue.SetVariable
 {
     public class ReferencedFileSaveSetPropertyManager
     {
+        internal void ReactToChangedReferencedFile(string changedMember, object oldValue)
+        {
+            var throwaway = false;
+            ReactToChangedReferencedFile(changedMember, oldValue, ref throwaway);
+        }
         internal void ReactToChangedReferencedFile(string changedMember, object oldValue, ref bool updateTreeView)
         {
             ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
@@ -32,7 +38,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region Opens With
 
-            if (changedMember == "OpensWith")
+            if (changedMember == nameof(ReferencedFileSave.OpensWith))
             {
                 if (rfs.OpensWith == "New Application...")
                 {
@@ -53,7 +59,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region Name
 
-            else if (changedMember == "Name")
+            else if (changedMember == nameof(ReferencedFileSave.Name))
             {
                 if ((string)oldValue != rfs.Name && ProjectManager.GlueProjectSave != null)
                 {
@@ -68,7 +74,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region LoadedAtRuntime
 
-            if (changedMember == "LoadedAtRuntime")
+            if (changedMember == nameof(ReferencedFileSave.LoadedAtRuntime))
             {
 
                 updateTreeView = false;
@@ -78,7 +84,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region Loaded only when referenced
 
-            else if (changedMember == "LoadedOnlyWhenReferenced")
+            else if (changedMember == nameof(ReferencedFileSave.LoadedOnlyWhenReferenced))
             {
                 updateTreeView = false;
                 if (rfs.LoadedOnlyWhenReferenced)
@@ -95,7 +101,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region Has public property
 
-            else if (changedMember == "HasPublicProperty")
+            else if (changedMember == nameof(ReferencedFileSave.HasPublicProperty))
             {
                 updateTreeView = false;
                 // GetMember and GetStaticMember
@@ -121,7 +127,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region IsSharedStatic
 
-            else if (changedMember == "IsSharedStatic")
+            else if (changedMember == nameof(ReferencedFileSave.IsSharedStatic))
             {
                 updateTreeView = false;
                 // If this is made IsSharedStatic, that means that the file will not be added to managers
@@ -189,7 +195,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region UseContentPipeline
 
-            else if (changedMember == "UseContentPipeline")
+            else if (changedMember == nameof(ReferencedFileSave.UseContentPipeline))
             {
                 ContentPipelineHelper.ReactToUseContentPipelineChange(rfs);
 
@@ -317,7 +323,41 @@ namespace FlatRedBall.Glue.SetVariable
 
             #endregion
 
+            #region RuntimeType
+
+            else if (changedMember == nameof(ReferencedFileSave.RuntimeType))
+            {
+                ReactToChangedRuntimeType(rfs, oldValue, element);
+            }
+
+            #endregion
+
             PluginManager.ReactToReferencedFileChangedValue(changedMember, oldValue);
+        }
+
+        private void ReactToChangedRuntimeType(ReferencedFileSave rfs, object oldValue, GlueElement element)
+        {
+            var fullFileName = GlueCommands.Self.FileCommands.GetFilePath(rfs);
+            FileReferenceManager.Self.ClearFileCache(fullFileName);
+            GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
+
+            var ati = rfs.GetAssetTypeInfo();
+            if(ati?.MustBeAddedToContentPipeline == true && rfs.UseContentPipeline == false)
+            {
+                // We swapped to something that must use the content pipeline, so let's set it to true
+                rfs.UseContentPipeline = true;
+                Container.Get<ReferencedFileSaveSetPropertyManager>().ReactToChangedReferencedFile(
+                    nameof(rfs.UseContentPipeline), oldValue:false);
+
+            }
+            else if(ati?.CanBeAddedToContentPipeline == false && rfs.UseContentPipeline)
+            {
+                // we swapped to something that does not use the content pipeline, so let's set it to false
+                rfs.UseContentPipeline = false;
+                Container.Get<ReferencedFileSaveSetPropertyManager>().ReactToChangedReferencedFile(
+                    nameof(rfs.UseContentPipeline), oldValue: true);
+            }
+
         }
 
         public static void ReactToRenamedReferencedFile(string oldName, string newName, ReferencedFileSave rfs, IElement container)
