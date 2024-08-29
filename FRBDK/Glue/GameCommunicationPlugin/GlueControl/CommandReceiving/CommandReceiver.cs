@@ -122,7 +122,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             },
             outputText);
 
-            PrintOutput($" returning for {dtoTypeName}");
 
             return response;
         }

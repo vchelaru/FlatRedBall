@@ -484,6 +484,8 @@ namespace GlueControl
                 DestroyablesAddedAtRuntime.Add(dynamicEntityInstance);
 
                 newEntity = dynamicEntityInstance;
+
+                GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(newEntity);
             }
             else
             {
