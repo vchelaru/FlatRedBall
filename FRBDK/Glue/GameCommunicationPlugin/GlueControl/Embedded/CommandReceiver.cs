@@ -991,6 +991,11 @@ namespace GlueControl
 
             category.States.Add(newStateSave);
 
+            foreach (var instruction in newStateSave.InstructionSaves)
+            {
+                instruction.Value = GlueControl.Models.IElementExtensionMethods.FixValue(instruction.Value, instruction.Type);
+            }
+
             // If there is already a runtime State object, we need to update that object's properties
             // in case those are set through code directly. Direct assignments in game code do not use the InstanceLogic.Self.StatesAddedAtRuntime
             var stateType = VariableAssignmentLogic.TryGetStateType(elementGameType + "." + (categoryName ?? "VariableState"));

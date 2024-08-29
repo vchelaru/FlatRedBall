@@ -633,7 +633,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             // Let's look at the possible variables that are added:
             // * New variables - which by default have no functionality until code is written for them
             // * Exposed variables - these do have functionality but they ultimately are just setting other variables
-            // If it's a new variable, we are going to restart. Otherwise if it's expoed, send that to the game to use 
+            // If it's a new variable, we are going to restart. Otherwise if it's exposed, send that to the game to use 
             // for assigning real values
             var isTunneled = !string.IsNullOrWhiteSpace(newVariable.SourceObject) &&
                 !string.IsNullOrWhiteSpace(newVariable.SourceObjectProperty);
@@ -642,7 +642,26 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 // send this down to the game
                 var dto = new AddVariableDto();
-                dto.CustomVariable = newVariable;
+                // clone it because we may modify it...
+                dto.CustomVariable = newVariable.Clone();
+
+                var property =
+                    dto.CustomVariable.SourceObjectProperty;
+                if (property is "X" or "Y" or "Z" or "RotationX" or "RotationY" or "RotationZ")
+                {
+                    // If this thing is attached, then let's use relatives:
+                    var owner = ObjectFinder.Self.GetElementContaining(newVariable);
+
+                    var instance = owner?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == newVariable.SourceObject);
+                    if(instance?.AttachToContainer == true && owner is EntitySave)
+                    {
+                        var instanceAti = instance?.GetAssetTypeInfo();
+                        if(instanceAti?.IsPositionedObject == true)
+                        {
+                            dto.CustomVariable.SourceObjectProperty = "Relative" + dto.CustomVariable.SourceObjectProperty;
+                        }
+                    }
+                }
 
                 var variableOwner = ObjectFinder.Self.GetElementContaining(newVariable);
 
