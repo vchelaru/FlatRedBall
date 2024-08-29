@@ -40,6 +40,10 @@ namespace GlueControl.Editing
         public static void GetItemsOver(List<INameable> currentEntities, List<INameable> itemsOverToFill, List<ISelectionMarker> currentSelectionMarkers,
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
+            if(punchThrough && currentSelectionMarkers.Any(item => item.IsSuppressingPunchThrough))
+            {
+                punchThrough = false;
+            }
             if (itemsOverToFill.Count > 0)
             {
                 itemsOverToFill.Clear();

@@ -56,6 +56,7 @@ namespace GlueControl.Editing
         bool CanMoveItem { get; set; }
         Vector3 LastUpdateMovement { get; }
         bool UsesRightMouseButton { get; }
+        bool IsSuppressingPunchThrough { get; }
 
         INameable Owner { get; }
 
@@ -523,6 +524,7 @@ namespace GlueControl.Editing
         #region Fields/Properties
 
         bool IsGrabbed = false;
+        public bool IsSuppressingPunchThrough => false;
 
         public bool UsesRightMouseButton => false;
 
