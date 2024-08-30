@@ -1026,12 +1026,6 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToElementRenamed != null);
         }
 
-        [Obsolete("Use ReactToNewObjectListAsync since that does all the proper fallbacks")]
-        public static void ReactToNewObject(NamedObjectSave newObject) =>
-            CallMethodOnPlugin(
-                plugin => plugin.ReactToNewObjectHandler(newObject),
-                plugin => plugin.ReactToNewObjectHandler != null);
-
         internal static bool IsHandlingHotkeys()
         {
             var toReturn = false;
@@ -1053,23 +1047,21 @@ namespace FlatRedBall.Glue.Plugins
         {
             return CallMethodOnPluginAsync(async (plugin) =>
             {
-                var handledByList = false;
                 if (plugin.ReactToNewObjectList != null)
                 {
                     plugin.ReactToNewObjectList(newObjectList);
-                    handledByList = true;
                 }
 
                 if (plugin.ReactToNewObjectListAsync != null)
                 {
                     await plugin.ReactToNewObjectListAsync(newObjectList);
-                    handledByList = true;
                 }
 
+                // Previously we would only call ReactToNewObjectHandler if the lists didn't handle it.
                 // We need to call this even if not handled by list. Some plugins, like the live edit system,
                 // subscribe to both events to differentiate between copy/paste and 
                 //if(!handledByList)
-                if(plugin.ReactToNewObjectHandler != null)
+                if (plugin.ReactToNewObjectHandler != null)
                 {
                     foreach(var nos in newObjectList)
                     {

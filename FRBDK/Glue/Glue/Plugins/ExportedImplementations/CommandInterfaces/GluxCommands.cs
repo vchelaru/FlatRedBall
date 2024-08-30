@@ -2911,6 +2911,12 @@ public class GluxCommands : IGluxCommands
                 GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(newEntitySave);
             }
 
+            // notify plugins that new objects were added. Even though we didn't go through the normal
+            // call to add objects (since it's handled by paste), we need to let plugins know that new objects
+            // were added. 
+            var newNamedObjects = newElement.AllNamedObjects.ToList();
+            await PluginManager.ReactToNewObjectListAsync(newNamedObjects);
+
         }, $"Adding copy of {original}");
     }
 
