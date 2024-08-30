@@ -985,28 +985,22 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        internal static void ReactToFileRemoved(IElement element, ReferencedFileSave file)
-        {
+        internal static void ReactToFileRemoved(IElement element, ReferencedFileSave file) =>
             CallMethodOnPlugin(
                 (plugin) => plugin.ReactToFileRemoved(element, file),
                 (plugin) => plugin.ReactToFileRemoved != null,
                 nameof(ReactToFileRemoved));
-        }
 
-        internal static void ReactToEntityRemoved(EntitySave entity, List<string> filesToRemove)
-        {
+        internal static void ReactToEntityRemoved(EntitySave entity, List<string> filesToRemove) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToEntityRemoved(entity, filesToRemove),
                 plugin => plugin.ReactToEntityRemoved != null,
                 nameof(ReactToEntityRemoved));
-        }
 
-        internal static void ReactToScreenRemoved(ScreenSave screenSave, List<string> filesToRemove)
-        {
+        internal static void ReactToScreenRemoved(ScreenSave screenSave, List<string> filesToRemove) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToScreenRemoved(screenSave, filesToRemove),
                 plugin => plugin.ReactToScreenRemoved != null);
-        }
 
         internal static void ReactToElementVariableChange(GlueElement element, CustomVariable variable, object oldValue)
         {
@@ -1092,12 +1086,10 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToObjectRemoved != null);
         
 
-        public static void TryAssignPreferredDisplayerFromName(CustomVariable customVariable)
-        {
+        public static void TryAssignPreferredDisplayerFromName(CustomVariable customVariable) =>
             CallMethodOnPlugin(
                 plugin => plugin.TryAssignPreferredDisplayerFromName(customVariable),
                 plugin => plugin.TryAssignPreferredDisplayerFromName != null);
-        }
 
         internal static Task ReactToObjectListRemovedAsync(List<GlueElement> ownerList, List<NamedObjectSave> removedObjects)
         {
@@ -1128,46 +1120,37 @@ namespace FlatRedBall.Glue.Plugins
             plugin => plugin.ReactToObjectRemoved != null || plugin.ReactToObjectListRemoved != null);
         }
 
-        internal static async Task ReactToNewScreenCreated(ScreenSave screen)
-        {
+        internal static async Task ReactToNewScreenCreated(ScreenSave screen) =>
             await CallMethodOnPluginAsync(
                 plugin => plugin.NewScreenCreated(screen),
                 plugin => plugin.NewScreenCreated != null);
-        }
 
         /// <summary>
         /// Called any time an entity is created. ReactToNewEntityCreatedWithUi may also get called.
         /// </summary>
         /// <param name="entitySave"></param>
-        internal static void ReactToNewEntityCreated(EntitySave entitySave)
-        {
+        internal static void ReactToNewEntityCreated(EntitySave entitySave) =>
             CallMethodOnPlugin(
                 plugin => plugin.NewEntityCreated(entitySave),
                 plugin => plugin.NewEntityCreated != null);
-        }
 
-        internal static void ReactToNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window)
-        {
+        internal static void ReactToNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window) =>
             CallMethodOnPlugin(
                 plugin => plugin.NewEntityCreatedWithUi(entitySave, window),
                 plugin => plugin.NewEntityCreatedWithUi != null);
-        }
 
-        internal static Task ReactToNewScreenCreatedWithUiAsync(ScreenSave screen, AddScreenWindow addScreenWindow)
-        {
-            return CallMethodOnPluginAsync(
+        internal static Task ReactToNewScreenCreatedWithUiAsync(ScreenSave screen, AddScreenWindow addScreenWindow) =>
+            CallMethodOnPluginAsync(
                 plugin => plugin.NewScreenCreatedWithUi(screen, addScreenWindow),
                 plugin => plugin.NewScreenCreatedWithUi != null);
-        }
 
         internal static void ReactToResolutionChanged()
         {
-            CallMethodOnPlugin((plugin) =>
+            CallMethodOnPlugin(plugin =>
             {
                 plugin.ResolutionChanged();
             },
-            plugin => plugin.ResolutionChanged != null,
-            nameof(ReactToResolutionChanged));
+            plugin => plugin.ResolutionChanged != null);
         }
 
         public static async Task<NamedObjectSave> ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)

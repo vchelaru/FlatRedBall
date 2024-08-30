@@ -21,13 +21,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
     {
         #region AddEntity
 
-        SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false);
+        SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false, bool notifyPluginsOfNewEntity = true);
 
         Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel);
 
-        void AddEntity(EntitySave entitySave);
-        void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage);
-
+        void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage = false, bool notifyPluginsOfNewEntity = true);
 
         #endregion
 

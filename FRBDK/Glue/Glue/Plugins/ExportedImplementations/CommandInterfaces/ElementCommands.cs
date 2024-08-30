@@ -560,7 +560,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
     #region Add Entity
 
-    public SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false)
+    public SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false, bool notifyPluginsOfNewEntity = true)
     {
 
         string fileName = entityName + ".cs";
@@ -585,7 +585,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             entitySave.CustomVariables.Add(new CustomVariable() { Name = "Z", Type = "float", SetByDerived = true });
         }
 
-        AddEntity(entitySave);
+        AddEntity(entitySave, notifyPluginsOfNewEntity);
 
         return entitySave;
 
@@ -598,7 +598,9 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         var directory = viewModel.Directory;
 
         var newElement = gluxCommands.EntityCommands.AddEntity(
-            directory + viewModel.Name, is2D: true);
+            directory + viewModel.Name, is2D: true,
+            // Don't notify, we'll do so lower in this method after applying the ViewModel's properties.
+            notifyPluginsOfNewEntity: false);
 
         // Why select it here? This causes the tree view to not yet show the inherited variables.
         // Maybe this was done because the property ReactToPropertyChanged required it to be selected?
@@ -1021,12 +1023,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         return pairs;
     }
 
-    public void AddEntity(EntitySave entitySave)
-    {
-        AddEntity(entitySave, false);
-    }
-
-    public void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage)
+    public void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage = false, bool notifyPluginsOfNewEntity = true)
     {
 
         entitySave.Tags.Add("GLUE");
@@ -1071,6 +1068,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(generatedFileName, true);
 
         #endregion
+
+        if(notifyPluginsOfNewEntity)
+        {
+            PluginManager.ReactToNewEntityCreated(entitySave);
+        }
 
         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entitySave);
 
