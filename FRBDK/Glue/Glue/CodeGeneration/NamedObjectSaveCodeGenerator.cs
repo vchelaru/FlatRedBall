@@ -1484,7 +1484,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         var stringBuilder = new StringBuilder();
                         stringBuilder.AppendLine("Error generating code for " + namedObjectSave.ToString() + " because the AssetTypeInfo could not be found. The following asset type infos are used:");
 
-                        foreach(var existingAti in AvailableAssetTypes.Self.AllAssetTypes)
+                        foreach(var existingAti in AvailableAssetTypes.Self.AllAssetTypes.OrderBy(item => item.FriendlyName))
                         {
                             stringBuilder.AppendLine($"{existingAti.FriendlyName} ({existingAti.QualifiedRuntimeTypeName})");
                         }
