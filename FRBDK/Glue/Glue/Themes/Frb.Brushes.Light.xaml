@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Palette.xaml" />
+        <ResourceDictionary>
+            <StaticResource x:Key="Frb.Colors.Foreground" ResourceKey="Gray800" />
+            <StaticResource x:Key="Frb.Colors.Foreground.Subtle" ResourceKey="Gray600" />
+            <StaticResource x:Key="Frb.Colors.Border" ResourceKey="Gray500" />
+            <StaticResource x:Key="Frb.Colors.Background" ResourceKey="Gray250" />
+            <StaticResource x:Key="Frb.Colors.Surface01" ResourceKey="Gray200" />
+            <StaticResource x:Key="Frb.Colors.Surface02" ResourceKey="Gray150" />
+            <StaticResource x:Key="Frb.Colors.Surface03" ResourceKey="Gray100" />
+            <StaticResource x:Key="Frb.Colors.Surface04" ResourceKey="Gray50" />
+            <Color x:Key="Frb.Colors.ThemeContrast">Black</Color>
+
+            <SolidColorBrush x:Key="Darken" Color="Black" Opacity="0.05"/>
+            <SolidColorBrush x:Key="Darken02" Color="Black" Opacity="0.1"/>
+            <SolidColorBrush x:Key="Darken03" Color="Black" Opacity="0.15"/>
+
+            <SolidColorBrush x:Key="Frb.Brushes.TextBox.Background" Color="{DynamicResource Frb.Colors.Surface04}" />
+        </ResourceDictionary>
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

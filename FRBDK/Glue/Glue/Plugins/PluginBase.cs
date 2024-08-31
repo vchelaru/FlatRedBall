@@ -752,10 +752,6 @@ namespace FlatRedBall.Glue.Plugins
                 control.Margin = new System.Windows.Thickness(3, 0, 3, 0);
             }
 
-            // Remove default color for background
-            control.Background = ToolbarBackgroundBrush;
-            control.BorderBrush = ToolbarBackgroundBrush;
-
             if(control.Parent == null)
             {
                 toAddTo.Items.Add(control);
@@ -780,10 +776,6 @@ namespace FlatRedBall.Glue.Plugins
             {
                 mainPanelBorder.Margin = new Thickness(0);
             }
-
-            // Remove default color for background
-            toolBar.Background = ToolbarBackgroundBrush;
-            toolBar.BorderBrush = ToolbarBackgroundBrush;
         }
 
         protected bool RemoveFromToolbar(System.Windows.Controls.UserControl control, string toolbarName)

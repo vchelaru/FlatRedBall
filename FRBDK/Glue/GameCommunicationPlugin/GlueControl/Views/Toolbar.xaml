@@ -11,7 +11,7 @@
             <Image ToolTip="Run Game" Source="/GameCommunicationPlugin;component/GlueControl/Icons/play.png"></Image>
         </Button>-->
 
-        <xctk:SplitButton x:Name="SplitButton" Width="148" Height="22" 
+        <xctk:SplitButton x:Name="SplitButton" Width="148" 
                           HorizontalContentAlignment="Left"
                           Visibility="{Binding PlayVisibility}"
                           Click="HandleButtonClick"

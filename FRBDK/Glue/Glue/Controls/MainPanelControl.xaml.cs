@@ -5,6 +5,7 @@ using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Themes;
 using Glue;
 using GlueFormsCore.ViewModels;
 using System;
@@ -12,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace GlueFormsCore.Controls
 {
@@ -138,6 +140,35 @@ namespace GlueFormsCore.Controls
             }
         }
 
+        public static void SwitchThemes()
+        {
+            Switch(Self.Resources);
+
+            void Switch(ResourceDictionary resource)
+            {
+                if (resource.Source != null)
+                {
+                    var source = resource.Source.OriginalString;
+
+                    if (source.Contains("Dark"))
+                    {
+                        resource.Source = new Uri(source.Replace("Dark", "Light"), UriKind.RelativeOrAbsolute);
+                    }
+                    else if (source.Contains("Light"))
+                    {
+                        resource.Source = new Uri(source.Replace("Light", "Dark"), UriKind.RelativeOrAbsolute);
+                    }
+                }
+
+                foreach (var mergedResource in resource.MergedDictionaries)
+                {
+                    Switch(mergedResource);
+                }
+
+                MainGlueWindow.Self.SyncMenuStripWithTheme(Self);
+            }
+        }
+
         private static bool WaitForAllTaksToFinish(InitializationWindowWpf initWindow)
         {
             bool didWait = false;
@@ -219,17 +250,17 @@ namespace GlueFormsCore.Controls
 
         private void InitializeThemes()
         {
-            this.Resources.MergedDictionaries[0].Source =
-                new Uri($"/Themes/{AppTheme}.xaml", UriKind.Relative);
+            //this.Resources.MergedDictionaries[0].Source =
+            //    new Uri($"/Themes/{AppTheme}.xaml", UriKind.Relative);
 
 
-            Style style = this.TryFindResource("UserControlStyle") as Style;
-            if (style != null)
-            {
-                this.Style = style;
-            }
+            //Style style = this.TryFindResource("UserControlStyle") as Style;
+            //if (style != null)
+            //{
+            //    this.Style = style;
+            //}
 
-            ResourceDictionary = Resources;
+            //ResourceDictionary = Resources;
         }
 
         private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)

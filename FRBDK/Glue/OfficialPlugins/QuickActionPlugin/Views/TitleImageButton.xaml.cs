@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace OfficialPluginsCore.QuickActionPlugin.Views
@@ -43,6 +44,21 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Clicked?.Invoke(this, e);
+        }
+
+        private void Button_MouseEnter(object sender, MouseEventArgs e)
+        {
+            DetailsIcon.Visibility = Visibility.Visible;
+        }
+
+        private void Button_MouseLeave(object sender, MouseEventArgs e)
+        {
+            DetailsIcon.Visibility = Visibility.Collapsed;
+        }
+
+        private void Button_MouseEnter_1(object sender, MouseEventArgs e)
+        {
+
         }
     }
 }

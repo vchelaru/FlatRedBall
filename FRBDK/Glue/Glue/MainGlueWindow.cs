@@ -33,6 +33,10 @@ using Newtonsoft.Json;
 using System.Threading;
 using System.IO;
 using System.ServiceModel.Channels;
+using System.Windows.Media;
+using FlatRedBall.Glue.Themes;
+using System.Reflection;
+using Wpf = System.Windows;
 
 namespace Glue;
 
@@ -213,6 +217,23 @@ public partial class MainGlueWindow : Form
         CreateMainWpfPanel();
         // so docking works
         this.Controls.Add(this.mMenu);
+    }
+
+    public void SyncMenuStripWithTheme(System.Windows.Controls.UserControl control)
+    {
+        if (control.TryFindResource("Frb.Colors.Surface02") is Color bgColor &&
+            control.TryFindResource("Frb.Colors.Foreground") is Color fgColor &&
+            control.TryFindResource("Frb.Colors.Primary") is Color primaryColor)
+        {
+            System.Drawing.Color bg = System.Drawing.Color.FromArgb(bgColor.A, bgColor.R, bgColor.G, bgColor.B);
+            System.Drawing.Color fg = System.Drawing.Color.FromArgb(fgColor.A, fgColor.R, fgColor.G, fgColor.B);
+            System.Drawing.Color primary = System.Drawing.Color.FromArgb(primaryColor.A, primaryColor.R, primaryColor.G, primaryColor.B);
+
+            FrbMenuStripRenderer renderer = new FrbMenuStripRenderer(bg, fg, primary);
+
+            Self.MainMenuStrip.Renderer = renderer;
+            Self.MainMenuStrip.Invalidate();
+        }
     }
 
     private async void StartUpGlue(object sender, EventArgs e)
@@ -403,9 +424,33 @@ public partial class MainGlueWindow : Form
         var wpfHost = new ElementHost();
         wpfHost.Dock = DockStyle.Fill;
         MainWpfControl = new MainPanelControl();
+        MainWpfControl.Resources.MergedDictionaries.Add(GenerateWindowStyles());
+        SyncMenuStripWithTheme(MainWpfControl);
         wpfHost.Child = MainWpfControl;
         this.Controls.Add(wpfHost);
         this.PerformLayout();
+        var app = new Wpf.Application();
+        app.Resources = MainWpfControl.Resources;
+
+        Wpf.ResourceDictionary GenerateWindowStyles()
+        {
+            Wpf.ResourceDictionary resourceDictionary = new();
+
+            var windowTypes = Assembly.GetExecutingAssembly().GetTypes()
+                .Where(t => t.IsSubclassOf(typeof(Wpf.Window)) && !t.IsAbstract);
+
+            foreach (var windowType in windowTypes)
+            {
+                var style = new Wpf.Style
+                {
+                    TargetType = windowType,
+                    BasedOn = (Wpf.Style)MainWpfControl.TryFindResource(typeof(Wpf.Window))
+                };
+                resourceDictionary.Add(windowType, style);
+            }
+
+            return resourceDictionary;
+        }
     }
 
     public new void Invoke(Action action)
@@ -613,4 +658,8 @@ public partial class MainGlueWindow : Form
 
         GlueCommands.Self.CloseGlue();
     }
+
+    #region Styling
+
+    #endregion
 }

@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.ErrorPlugin.Views"
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid HorizontalAlignment="Stretch">
@@ -13,27 +14,25 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button Margin="1" Command="{Binding CopySingleCommand}">
+            <Button Margin="1" Command="{Binding CopySingleCommand}" Content="{materialDesign:PackIcon Kind=ClipboardOutline}" Style="{DynamicResource ToolIcon}">
                 <Button.ToolTip>
                     <TextBlock Text="{x:Static localization:Texts.ErrorCopyCurrent}" />
                 </Button.ToolTip>
-                <Image Source="/OfficialPluginsCore;component/ErrorPlugin/Icons/CopySingle.png"></Image>
             </Button>
-            <Button Margin="1" Command="{Binding CopyAllCommand}">
+            <Button Margin="1" Command="{Binding CopyAllCommand}" Content="{materialDesign:PackIcon Kind=ClipboardTextOutline}" Style="{DynamicResource ToolIcon}">
                 <Button.ToolTip>
                     <TextBlock Text="{x:Static localization:Texts.ErrorCopyAll}" />
                 </Button.ToolTip>
-                <Image Source="/OfficialPluginsCore;component/ErrorPlugin/Icons/CopyAll.png"></Image>
             </Button>
-            <Button Margin="1" Command="{Binding RefreshCommand}">
+            <Button Margin="1" Command="{Binding RefreshCommand}" Content="{materialDesign:PackIcon Kind=Refresh}" Style="{DynamicResource ToolIcon}">
                 <Button.ToolTip>
                     <TextBlock Text="{x:Static localization:Texts.ErrorRefresh}" />
                 </Button.ToolTip>
-                <Image Source="/OfficialPluginsCore;component/ErrorPlugin/Icons/Refresh.png"></Image>
             </Button>
             <CheckBox Margin="8,0,0,0" VerticalContentAlignment="Center" IsChecked="{Binding IsOutputErrorCheckingDetailsChecked}" Content="{x:Static localization:Texts.ErrorCheckingDetails}" />
         </StackPanel>
         <ListBox Grid.Row="1" x:Name="ListBox" ItemsSource="{Binding Errors}" 
+                 Margin="0,2,0,0"
                  SelectedItem="{Binding SelectedError}" 
                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" 
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False">

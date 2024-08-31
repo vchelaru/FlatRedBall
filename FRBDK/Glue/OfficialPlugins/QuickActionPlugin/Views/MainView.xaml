@@ -10,9 +10,9 @@
              d:DesignWidth="800">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel x:Name="MainStackPanel">
-            <glue:StyledGroupBox Header="{x:Static localization:Texts.CurrentScreen}">
+            <GroupBox Header="{x:Static localization:Texts.CurrentScreen}">
                 
-                <WrapPanel HorizontalAlignment="Center" Margin="0,0,10,10">
+                <WrapPanel HorizontalAlignment="Center">
                     <local:TitleImageButton
                         x:Name="AddObjectToScreenButton"
                         Title="{x:Static localization:Texts.ObjectAdd}"
@@ -29,9 +29,9 @@
 
 
                 </WrapPanel>
-            </glue:StyledGroupBox>
-            <glue:StyledGroupBox Header="{x:Static localization:Texts.EntityCurrent}">
-                <WrapPanel HorizontalAlignment="Center" Margin="0,0,10,10">
+            </GroupBox>
+            <GroupBox Header="{x:Static localization:Texts.EntityCurrent}">
+                <WrapPanel HorizontalAlignment="Center">
                     <local:TitleImageButton
                         x:Name="AddObjectToEntityButton"
                         Title="{x:Static localization:Texts.ObjectAdd}"
@@ -69,9 +69,9 @@
                         Clicked="AddEntityFactory_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Factory for Entity.png">
                     </local:TitleImageButton>
                 </WrapPanel>
-            </glue:StyledGroupBox>
-            <glue:StyledGroupBox Header="{x:Static localization:Texts.ProjectCommands}">
-                <WrapPanel HorizontalAlignment="Center" Margin="0,0,10,10">
+            </GroupBox>
+            <GroupBox Header="{x:Static localization:Texts.ProjectCommands}">
+                <WrapPanel HorizontalAlignment="Center">
                     <local:TitleImageButton
                         x:Name="RunWizardButton"
                         Title="{x:Static localization:Texts.GlueWizardRun}"
@@ -122,7 +122,7 @@
                         Clicked="AddEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Entity.png">
                     </local:TitleImageButton>
                 </WrapPanel>
-            </glue:StyledGroupBox>
+            </GroupBox>
 
         </StackPanel>
     </ScrollViewer>

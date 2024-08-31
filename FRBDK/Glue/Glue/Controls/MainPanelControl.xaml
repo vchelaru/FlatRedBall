@@ -6,6 +6,8 @@
              xmlns:controls="clr-namespace:FlatRedBall.Glue.Controls"
              xmlns:viewModels="clr-namespace:GlueFormsCore.ViewModels"
              xmlns:plugins="clr-namespace:FlatRedBall.Glue.Plugins"
+             xmlns:controls1="clr-namespace:GlueFormsCore.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              PreviewKeyDown="UserControl_PreviewKeyDown"
@@ -15,58 +17,38 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!--<ResourceDictionary Source="/Themes/Dark.xaml" />-->
-                <ResourceDictionary Source="/Themes/Light.xaml" />
+                <ResourceDictionary Source="/Themes/Frb.Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <DataTemplate x:Key="TabItemTemplate" DataType="{x:Type plugins:PluginTab}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Title}" />
-                    <Button Height="10" Margin="7,0,0,0" Command="{Binding CloseCommand}">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Style.Triggers>
-                                    <Trigger Property="IsEnabled" Value="False">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <TextBlock Text="x" Margin="0,-7,0,0" Padding="0" FontWeight="Bold"/>
-                    </Button>
-                </StackPanel>
-            </DataTemplate>
-
-            <DataTemplate x:Key="TabContentTemplate" DataType="{x:Type plugins:PluginTab}">
+            <DataTemplate x:Key="MainTabControl.ContentTemplate" DataType="{x:Type plugins:PluginTab}">
                 <ContentPresenter Content="{Binding Content}"/>
             </DataTemplate>
 
-            <Style x:Key="TabItemStyle"  TargetType="{x:Type TabItem}">
+
+
+            <Style x:Key="MainTabControl.MainTabItem.Style" 
+                   TargetType="{x:Type TabItem}">
                 <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Foreground.Subtle}"/>
                 <Setter Property="Header" Value="{Binding}" />
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="Margin" Value="0"></Setter>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type TabItem}">
-                            <ControlTemplate.Resources>
-                                <LinearGradientBrush x:Key="NeutralBackground"  StartPoint="0,0" EndPoint="0,1">
-                                    <GradientStop Color="#f0f0f0" Offset="0.0" />
-                                    <GradientStop Color="#e5e5e5" Offset="1.0" />
-                                </LinearGradientBrush>
-                                <SolidColorBrush x:Key="SelectedBackground" Color="white" />
-                                <SolidColorBrush x:Key="BorderBrush" Color="#c3c3c3"/>
-                            </ControlTemplate.Resources>
-                            <Grid x:Name="Root" >
+                            <Grid x:Name="Root">
                                 <Border x:Name="Border"
-                BorderThickness="1,1,1,1"
-                Padding="0,3"
-                BorderBrush ="{DynamicResource BorderBrush}"
-                Background="{DynamicResource NeutralBackground}">
+                                        BorderThickness="0,2,0,0"
+                                        BorderBrush="Transparent"
+                                        CornerRadius="2,2,0,0"
+                                        Padding="0,1,0,5"
+                                        Margin="0,0,0,-2"
+                                        Background="Transparent">
                                     <ContentPresenter x:Name="ContentSite"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Center"
-                                ContentSource="Header"
-                                Margin="12,2,12,2"
-                                RecognizesAccessKey="True" />
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Center"
+                                                        ContentSource="Header"
+                                                        RecognizesAccessKey="True" />
                                     <Border.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Move To">
@@ -86,147 +68,219 @@
                                                     <Image x:Key="CenterImage" Source="pack://application:,,,/Resources/Icons/MoveTabs/CenterTab.png"/>
                                                 </MenuItem.Resources>
                                                 <MenuItem Header="Top" 
-                                              Icon="{StaticResource TopImage}"
-                                              CommandParameter="Top"/>
+                                  Icon="{StaticResource TopImage}"
+                                  CommandParameter="Top"/>
                                                 <MenuItem Header="Left" 
-                                              Icon="{StaticResource LeftImage}"
-                                              CommandParameter="Left"/>
+                                  Icon="{StaticResource LeftImage}"
+                                  CommandParameter="Left"/>
                                                 <MenuItem Header="Center" 
-                                              Icon="{StaticResource CenterImage}"
-                                              CommandParameter="Center"/>
+                                  Icon="{StaticResource CenterImage}"
+                                  CommandParameter="Center"/>
                                                 <MenuItem Header="Right" 
-                                              Icon="{StaticResource RightImage}"
-                                              CommandParameter="Right"/>
+                                  Icon="{StaticResource RightImage}"
+                                  CommandParameter="Right"/>
                                                 <MenuItem Header="Bottom" 
-                                              Icon="{StaticResource BottomImage}"
-                                              CommandParameter="Bottom"/>
+                                  Icon="{StaticResource BottomImage}"
+                                  CommandParameter="Bottom"/>
                                             </MenuItem>
-                                            <!--<Separator Margin="0,2"/>
-            <MenuItem Header="Close" Command="{Binding CloseCommand}"/>-->
+                                            <Separator Margin="0,2"/>
+                                            <MenuItem Header="Close" Command="{Binding CloseCommand}"/>
                                         </ContextMenu>
                                     </Border.ContextMenu>
                                 </Border>
                             </Grid>
                             <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource Frb.Surface03}"/>
+
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary.Dark}"></Setter>
+                                </Trigger>
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="Panel.ZIndex" Value="100" />
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource SelectedBackground}" />
-                                    <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,0" />
-                                    <Setter TargetName="Border" Property="Margin" Value="-2" />
+                                    <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Foreground}" />
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource Frb.Surface02}"></Setter>
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary}"></Setter>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-                <EventSetter Event="MouseDown" Handler="TabItem_MouseDown" />
+                <!--<EventSetter Event="MouseDown" Handler="TabItem_MouseDown" />-->
             </Style>
 
-            <Style x:Key="TabControlStyle"  TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
+            <DataTemplate x:Key="MainTabControl.ItemTemplate" DataType="{x:Type plugins:PluginTab}">
+
+                <StackPanel Orientation="Horizontal" Margin="6,0,6,0" SnapsToDevicePixels="True">
+                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="0,0"/>
+                    <Button Command="{Binding CloseCommand}" 
+                            SnapsToDevicePixels="True"
+                            Width="14"
+                            Height="14"
+                            BorderThickness="0"
+                            Margin="6,0,-1,0"
+                            Padding="0"
+                            Content="{materialDesign:PackIcon close}">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource IconButton}">
+                                <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground.Subtle}"></Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </DataTemplate>
+
+            <Style x:Key="MainTabControl.Style" TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
                 <Style.Resources>
-                    <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource TabItemStyle}"/>
+                    <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource MainTabControl.MainTabItem.Style}"/>
                 </Style.Resources>
-                <Setter Property="ItemTemplate" Value="{StaticResource TabItemTemplate}" />
-                <Setter Property="ContentTemplate" Value="{StaticResource TabContentTemplate}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Darken}"/>
+                <Setter Property="ItemTemplate" Value="{DynamicResource MainTabControl.ItemTemplate}" />
+                <Setter Property="ContentTemplate" Value="{StaticResource MainTabControl.ContentTemplate}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabControl">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TabPanel 
+                                    Name="HeaderPanel" 
+                                    IsItemsHost="True"
+                                    Background="Transparent" />
+
+                                 <!--Define the TabPanel and ItemsPresenter here as needed--> 
+                                <Border Grid.Row="1" x:Name="PART_SelectedContentHost"
+                                        Background="{DynamicResource Frb.Surface02}" 
+                                        BorderBrush="{DynamicResource Darken}" 
+                                        BorderThickness="0"
+                                        Padding="4"
+                                        CornerRadius="3">
+                                    <ContentPresenter 
+                                        ContentSource="SelectedContent"/>
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
         </ResourceDictionary>
     </UserControl.Resources>
 
+    <!--<UserControl.Style>
+        --><!--<Style TargetType="{x:Type controls1:MainPanelControl}" BasedOn="{StaticResource TopLevelControl}"/>--><!--
+    </UserControl.Style>-->
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" x:Name="ToolbarControlRow" />
-            <RowDefinition Height="{Binding TopPanelHeight, Mode=TwoWay, FallbackValue=0}" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="{Binding BottomPanelHeight, Mode=TwoWay}" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+        <controls:ToolbarControl Height="24" VerticalContentAlignment="Center" x:Name="ToolbarControl" Grid.Row="0"/>
 
-        <controls:ToolbarControl x:Name="ToolbarControl" />
+        <Grid Grid.Row="1" Margin="3">
+            <Grid.RowDefinitions>
 
-        <TabControl x:Name="TopTabControl" 
-                    Grid.Row="1" 
-                    Padding="0" 
-                    Style="{StaticResource TabControlStyle}"
+                <RowDefinition Height="{Binding TopPanelHeight, Mode=TwoWay}" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="{Binding BottomPanelHeight, Mode=TwoWay}" />
+            </Grid.RowDefinitions>
+
+            <TabControl x:Name="TopTabControl" 
+                    Grid.Row="0" 
+                    Style="{StaticResource MainTabControl.Style}"
                     DataContext="{Binding TopTabItems}" 
                     ItemsSource="{Binding Tabs}" 
-                    SelectedItem="{Binding SelectedTab}" />
+                    SelectedItem="{Binding SelectedTab}" 
+                    Visibility="{Binding Visibility}"/>
 
-        <GridSplitter 
-            Height="4" 
-            Grid.Row="2" 
+            <GridSplitter 
+            Height="6" 
+            Grid.Row="1" 
             HorizontalAlignment="Stretch" 
             VerticalAlignment="Center" 
+            Background="Transparent"
             Visibility="{Binding TopSplitterVisibility}" />
 
-        <Grid Grid.Row="3" x:Name="CenterGrid">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="{Binding LeftPanelWidth, Mode=TwoWay}" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="{Binding RightPanelWidth, Mode=TwoWay}" />
-            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="2" x:Name="CenterGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{Binding LeftPanelWidth, Mode=TwoWay}" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="{Binding RightPanelWidth, Mode=TwoWay}" />
+                </Grid.ColumnDefinitions>
 
-            <TabControl x:Name="LeftTabControl" 
-                        Padding="0" 
-                        Margin="4,2,2,2" 
-                        Style="{StaticResource TabControlStyle}"
+                <TabControl x:Name="LeftTabControl" 
+                        Style="{StaticResource MainTabControl.Style}"
                         DataContext="{Binding LeftTabItems}" 
                         ItemsSource="{Binding Tabs}" 
-                        SelectedItem="{Binding SelectedTab}" />
-            <GridSplitter Width="4" 
+                        SelectedItem="{Binding SelectedTab}" 
+                        Visibility="{Binding Visibility}"/>
+                <GridSplitter Width="6" 
                           HorizontalAlignment="Center"
                           VerticalAlignment="Stretch" 
-                          Grid.Column="1"/>
-            <TabControl x:Name="CenterTabControl" 
+                          Grid.Column="1"
+                          Background="Transparent"/>
+                <TabControl x:Name="CenterTabControl" 
                         Grid.Column="2" 
-                        Padding="0" 
-                        Margin="2" 
-                        Style="{StaticResource TabControlStyle}"
+                        Style="{StaticResource MainTabControl.Style}"
                         DataContext="{Binding CenterTabItems}" 
                         ItemsSource="{Binding Tabs}" 
-                        SelectedItem="{Binding SelectedTab}" />
-            <GridSplitter Width="4" 
+                        SelectedItem="{Binding SelectedTab}" 
+                        Visibility="{Binding Visibility}"/>
+                <GridSplitter Width="6" 
                           Grid.Column="3" 
                           HorizontalAlignment="Center" 
                           VerticalAlignment="Stretch"
+                          Background="Transparent"
                           Visibility="{Binding RightSplitterVisibility}" />
-            <TabControl x:Name="RightTabControl" 
+                <TabControl x:Name="RightTabControl" 
                         Grid.Column="4" 
-                        Padding="0" 
-                        Margin="2,2,4,2" 
-                        Style="{StaticResource TabControlStyle}"
+                        Style="{StaticResource MainTabControl.Style}"
                         DataContext="{Binding RightTabItems}" 
                         ItemsSource="{Binding Tabs}" 
-                        SelectedItem="{Binding SelectedTab}" />
-        </Grid>
+                        SelectedItem="{Binding SelectedTab}" 
+                        Visibility="{Binding Visibility}" />
+            </Grid>
 
-        <GridSplitter Height="4" 
+            <GridSplitter Height="6" 
                       HorizontalAlignment="Stretch" 
                       VerticalAlignment="Center" 
-                      Grid.Row="4" 
-                      Visibility="{Binding BottomSplitterVisibility}" />
+                      Grid.Row="3" 
+                      Background="Transparent"
+                      Visibility="{Binding BottomSplitterVisibility}"/>
 
-        <TabControl Grid.Row="5" 
+            <TabControl Grid.Row="4" 
                     x:Name="BottomTabControl" 
-                    Padding="0" 
-                    Margin="4,0,4,2" 
-                    Style="{StaticResource TabControlStyle}"
+                    Style="{DynamicResource MainTabControl.Style}"
                     DataContext="{Binding BottomTabItems}" 
                     ItemsSource="{Binding Tabs}" 
-                    SelectedItem="{Binding SelectedTab}" />
+                    SelectedItem="{Binding SelectedTab}" 
+                    Visibility="{Binding Visibility}"/>
 
-        <Grid Background="#b0000000" Grid.RowSpan="6" x:Name="Spinner" Visibility="Collapsed">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <controls:ActivitySpinner></controls:ActivitySpinner>
-                <Label x:Name="SpinnerLabel" Content="Loading..." HorizontalAlignment="Center" FontSize="24" Foreground="White"></Label>
-            </StackPanel>
+            <Grid Grid.Row="0"  Background="#b0000000" Grid.RowSpan="5" x:Name="Spinner" Visibility="Collapsed">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <controls:ActivitySpinner></controls:ActivitySpinner>
+                    <Label x:Name="SpinnerLabel" Content="Loading..." HorizontalAlignment="Center" FontSize="24" Foreground="White"></Label>
+                </StackPanel>
+            </Grid>
+
+            <Border Grid.Row="1" Grid.RowSpan="4"  Visibility="Collapsed" IsHitTestVisible="False" x:Name="Toast"  HorizontalAlignment="Center" VerticalAlignment="Top" MinHeight="50" MinWidth="120" BorderBrush="Black" BorderThickness="2" Background="White" CornerRadius="8" Margin="10">
+                <Label x:Name="ToastLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Toast..."></Label>
+            </Border>
+
         </Grid>
 
-        <Border Grid.RowSpan="6"  Visibility="Collapsed" IsHitTestVisible="False" x:Name="Toast" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" MinHeight="50" MinWidth="120" BorderBrush="Black" BorderThickness="2" Background="White" CornerRadius="8" Margin="10">
-            <Label x:Name="ToastLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Toast..."></Label>
-        </Border>
 
     </Grid>
 </UserControl>

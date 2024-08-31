@@ -90,6 +90,10 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
                     Localization.Texts.Preferences,
                     () => new PreferencesWindow().Show());
 
+                Settings.Add(
+                    "Switch Theme",
+                    () => MainPanelControl.SwitchThemes());
+
                 Settings.DropDownItems.Add(new ToolStripSeparator());
 
                 Settings.Add(

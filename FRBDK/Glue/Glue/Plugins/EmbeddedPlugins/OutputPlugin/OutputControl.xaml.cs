@@ -9,7 +9,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
 {
     struct ColoredTextWpf
     {
-        public SolidColorBrush Brush;
+        public Brush Brush;
         public string Text;
     }
 
@@ -23,7 +23,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
         private readonly System.Windows.Threading.DispatcherTimer _timer;
 
         private readonly SolidColorBrush _error;
-        private readonly SolidColorBrush _normal;
+        private Brush _normal;
 
         public OutputControl()
         {
@@ -35,20 +35,29 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
             _timer.Start();
 
             _error = new SolidColorBrush(Color.FromRgb(255, 0, 0));
-            _normal = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+            _normal = TextBox.Foreground;
         }
 
         private void HandleTimerTick(object sender, EventArgs e)
         {
             lock (mBuffer)
             {
+                if (_normal != TextBox.Foreground)
+                {
+                    ForegroundChanged(_normal, TextBox.Foreground);
+                    _normal = TextBox.Foreground;
+                }
+
                 if (mBuffer.Count != 0)
                 {
                     for (int i = 0; i < mBuffer.Count; i++)
                     {
                         var block = new Paragraph();
                         block.Margin = new Thickness(0);
-                        block.Foreground = mBuffer[i].Brush;
+                        if (mBuffer[i].Brush != _normal)
+                        {
+                            block.Foreground = mBuffer[i].Brush;
+                        }
                         block.Inlines.Add(mBuffer[i].Text);
                         this.TextBox.Document.Blocks.Add(block);
 
@@ -74,7 +83,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
             AppendText(output, _error);
         }
 
-        private void AppendText(string output, SolidColorBrush brush)
+        private void AppendText(string output, Brush brush)
         {
             lock (mBuffer)
             {
@@ -108,6 +117,21 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
             if(int.TryParse(MaxLinesTextBox.Text, out int parsedValue))
             {
                 MaxLinesOfText = parsedValue;
+            }
+        }
+
+        private void ForegroundChanged(Brush oldValue, Brush newValue)
+        {
+            // Loop through all the paragraphs and update their foreground if not an error
+            foreach (var block in TextBox.Document.Blocks)
+            {
+                if (block is Paragraph paragraph)
+                {
+                    if (paragraph.Foreground == oldValue) // Avoid changing error paragraphs
+                    {
+                        paragraph.Foreground = newValue;
+                    }
+                }
             }
         }
     }

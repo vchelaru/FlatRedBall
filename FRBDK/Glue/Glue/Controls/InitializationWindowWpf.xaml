@@ -4,7 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
-             mc:Ignorable="d" Title="{x:Static localization:Texts.FrbEditor}" WindowStyle="SingleBorderWindow" ResizeMode="NoResize"
+             mc:Ignorable="d" Title="{x:Static localization:Texts.FrbEditor}" 
+        WindowStyle="None" 
+        ResizeMode="NoResize"
              Height="240" Width="550" WindowStartupLocation="CenterScreen" Icon="/Content/Icons/Icon.png">
     <Grid>
         <Grid.ColumnDefinitions>
