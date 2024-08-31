@@ -178,7 +178,7 @@ namespace OfficialPlugins.ContentPreview.Views
         {
             switch(e.PropertyName)
             {
-                case nameof(ViewModel.Settings.ShowGuides):
+                case nameof(ViewModel.Settings.IsShowingGuides):
                     BottomWindowManager.RefreshBottomGuideVisibility(ViewModel);
                     break;
             }
