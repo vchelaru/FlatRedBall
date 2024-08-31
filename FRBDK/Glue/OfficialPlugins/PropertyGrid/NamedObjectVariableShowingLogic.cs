@@ -823,13 +823,13 @@ namespace OfficialPlugins.VariableDisplay
 
                 }
 
-                if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Math.Geometry.AxisAlignedRectangle")
+                if (ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle)
                 {
                     return name == "ScaleX" || name == "ScaleY" || name == "Top" || name == "Bottom" ||
                         name == "Left" || name == "Right";
                 }
 
-                if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Graphics.Text")
+                if (ati == AvailableAssetTypes.CommonAtis.Text)
                 {
                     return
                         name == "AlphaRate" || name == "RedRate" || name == "GreenRate" || name == "BlueRate" ||
@@ -837,32 +837,33 @@ namespace OfficialPlugins.VariableDisplay
                         name == "ScaleXVelocity" || name == "ScaleYVelocity" ||
                         // These used to be the standard way to size text, but now we just
                         // use "TextureScale"
+                        // Note that these can still be exposed - see the Text 
                         name == "Scale" || name == "Spacing" || name == "NewLineDistance"
 
                         ;
                 }
 
-                if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Camera")
+                if (ati == AvailableAssetTypes.CommonAtis.Camera)
                 {
                     return
                         name == "AspectRatio" || name == "DestinationRectangle" || name == "CameraModelCullMode";
 
                 }
 
-                if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Math.Geometry.Polygon")
+                if (ati == AvailableAssetTypes.CommonAtis.Polygon)
                 {
                     return
                         name == "RotationX" || name == "RotationY" || name == "Points";
                 }
 
 
-                if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Graphics.Layer")
+                if (ati == AvailableAssetTypes.CommonAtis.Layer)
                 {
                     return
                         name == "LayerCameraSettings";
                 }
 
-                if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Sprite")
+                if (ati == AvailableAssetTypes.CommonAtis.Sprite)
                 {
                     return
                         name == "AlphaRate" || name == "RedRate" || name == "GreenRate" || name == "BlueRate" ||
