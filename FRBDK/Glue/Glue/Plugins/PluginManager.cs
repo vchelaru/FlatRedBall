@@ -1019,12 +1019,10 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToElementVariableChange != null || plugin.ReactToGlueElementVariableChanged != null);
         }
 
-        internal static void ReactToElementRenamed(IElement elementToRename, string oldName)
-        {
+        internal static void ReactToElementRenamed(IElement elementToRename, string oldName) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToElementRenamed(elementToRename, oldName),
                 plugin => plugin.ReactToElementRenamed != null);
-        }
 
         internal static bool IsHandlingHotkeys()
         {

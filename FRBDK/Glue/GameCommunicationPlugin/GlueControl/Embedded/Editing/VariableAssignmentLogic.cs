@@ -34,7 +34,7 @@ namespace GlueControl.Editing
             // in data without looking at the target. The conversion to List<Point> is
             // done in SetValueOnObjectInElement which considers the target type.
             object convertedValue = ConvertVariableValue(data);
-            var elementGameType = data.InstanceOwnerGameType;
+            var elementGameType = CommandReceiver.GlueToGameElementName(data.InstanceOwnerGlueType);
             var variableName = data.VariableName;
 
             try

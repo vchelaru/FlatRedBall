@@ -391,6 +391,27 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         #endregion
 
+        #region Entity Renamed
+
+
+        internal async void HandleElementRenamed(GlueElement element, string oldName)
+        {
+            if(element is ScreenSave)
+            {
+                // this is a big deal, we don't currently handle this, so need to return an error to restart
+            }
+
+            var asEntity = (EntitySave)element;
+
+            var dto = new RenameElementDto();
+            dto.OldName = oldName;
+            dto.NewName = element.Name;
+
+            await CommandSender.Self.Send(dto);
+        }
+
+        #endregion
+
         #region State Created
 
         internal async void HandleStateCreated(StateSave state, StateSaveCategory category)
@@ -1218,5 +1239,6 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         {
             ViewModel.IsHotReloadAvailable = ShouldRestartOnChange;
         }
+
     }
 }

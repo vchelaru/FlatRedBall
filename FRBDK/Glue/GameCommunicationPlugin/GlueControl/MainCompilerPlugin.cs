@@ -151,7 +151,7 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToNewFileHandler += _refreshManager.HandleNewFile;
             this.ReactToFileChange += manager.HandleFileChanged;
             this.ReactToCodeFileChange += _refreshManager.HandleFileChanged;
-            this.ReactToElementRenamed += ToolbarController.Self.HandleScreenRenamed;
+            this.ReactToElementRenamed += HanleElementRenamed;
 
             this.ReactToChangedPropertyHandler += HandlePropertyChanged;
 
@@ -206,6 +206,13 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToSelectedSubIndexChanged += (index) => _refreshManager.ReactToSelectedSubIndexChanged(index);
 
             this.ReactToObjectReordered += _refreshManager.HandleObjectReordered;
+        }
+
+        private void HanleElementRenamed(IElement elementAsIElement, string oldName)
+        {
+            var element = (GlueElement)elementAsIElement;
+            ToolbarController.Self.HandleScreenRenamed(element, element.Name);
+            _refreshManager.HandleElementRenamed(element, oldName);
         }
 
         private void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> listToAddTo)

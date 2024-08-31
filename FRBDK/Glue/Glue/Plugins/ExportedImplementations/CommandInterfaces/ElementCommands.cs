@@ -91,7 +91,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
     #endregion
 
-    #region GlueElement (both screens and entities)
+    #region RenameElement (both screens and entities)
 
     /// <summary>
     /// Performs all logic related to renaming an element. The name should not have the "Screens\\" or "Entities\\" prefix, nor any prefixes

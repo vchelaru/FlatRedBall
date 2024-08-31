@@ -851,17 +851,53 @@ namespace GlueControl
 
         #region Rename
 
+
+        static Dictionary<string, string> GameElementTypeToGlueRenames = new Dictionary<string, string>();
+        static Dictionary<string, string> GlueToGameElementRenames = new Dictionary<string, string>();
+
+        private static void HandleDto(RenameElementDto renameElementDto)
+        {
+            var oldElementName = renameElementDto.OldName;
+            var newElementName = renameElementDto.NewName;
+
+            var gameElementName = GlueToGameElementName(oldElementName);
+
+            var element = ObjectFinder.Self.GetElement(oldElementName);
+            if (element != null)
+            {
+                element.Name = newElementName;
+            }
+
+            // todo - we probably need to get the entire gluj
+
+            GameElementTypeToGlueRenames[gameElementName] = newElementName;
+            GlueToGameElementRenames[newElementName] = gameElementName;
+        }
+
         public static string GlueToGameElementName(string elementName)
         {
-            
-            return $"{ProjectNamespace}.{elementName.Replace("\\", ".")}";
+            if (GlueToGameElementRenames.ContainsKey(elementName))
+            {
+                return GlueToGameElementRenames[elementName];
+            }
+            else
+            {
+                return $"LiveEditTest.{elementName.Replace("\\", ".")}";
+            }
         }
 
         public static string GameElementTypeToGlueElement(string gameType)
         {
-            var strings = gameType.Split('.');
+            if (GameElementTypeToGlueRenames.ContainsKey(gameType))
+            {
+                return GameElementTypeToGlueRenames[gameType];
+            }
+            else
+            {
+                var strings = gameType.Split('.');
 
-            return string.Join("\\", strings.Skip(1).ToArray());
+                return string.Join("\\", strings.Skip(1).ToArray());
+            }
         }
 
         #endregion

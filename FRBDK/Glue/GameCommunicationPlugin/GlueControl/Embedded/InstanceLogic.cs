@@ -616,9 +616,10 @@ namespace GlueControl
                 }
                 else // Vic says - but what if we have entities inside of entities? Skipping this logic may result in those subentities not being set up correctly?
                 {
-
-                    foreach (var item in SpriteManager.ManagedPositionedObjects)
+                    // Must do a for loop since items can get removed from the list
+                    for(int i = 0; i < SpriteManager.ManagedPositionedObjects.Count; i++)
                     {
+                        var item = SpriteManager.ManagedPositionedObjects[i];
                         if (CommandReceiver.DoTypesMatch(item, elementGameType, ownerType))
                         {
                             // try to remove this object from here...

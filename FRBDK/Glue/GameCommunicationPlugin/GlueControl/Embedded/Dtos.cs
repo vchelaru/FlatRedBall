@@ -67,6 +67,16 @@ namespace GlueControl.Dtos
 
     #endregion
 
+    #region RenameElementDto
+
+    public class RenameElementDto
+    {
+        public string OldName { get; set; }
+        public string NewName { get; set; }
+    }
+
+    #endregion
+
     #region SetEditMode
     class SetEditMode
     {
@@ -142,10 +152,7 @@ namespace GlueControl.Dtos
     public class GlueVariableSetData : UpdateCurrentElementDto
     {
         public AssignOrRecordOnly AssignOrRecordOnly { get; set; }
-        /// <summary>
-        /// The owner of the NamedObjectSave, which is either the current screen or the current entity save
-        /// </summary>
-        public string InstanceOwnerGameType { get; set; }
+        public string InstanceOwnerGlueType { get; set; }
         public string VariableName { get; set; }
         public string VariableValue { get; set; }
         public string Type { get; set; }
