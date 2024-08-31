@@ -128,41 +128,38 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         }, $"Renaming {elementToRename} to {newFullElementName}");
     }
 
-    private void DoRenameInner(GlueElement elementToRename, string newNameFull, bool showRenameWindow)
+    private void DoRenameInner(GlueElement elementToRename, string newElementName, bool showRenameWindow)
     {
         RenameModifications renameModifications = new RenameModifications();
 
-        string oldNameFull = elementToRename.Name;
+        string oldElementName = elementToRename.Name;
         var fileNameBeforeMove = GlueCommands.Self.FileCommands.GetJsonFilePath(elementToRename);
 
         var oldFileNames = CodeWriter.GetAllCodeFilesFor(elementToRename);
 
-        var changeClassNamesResponse = ChangeClassNamesAndNamespaceInCodeAndFileName(oldFileNames, oldNameFull, newNameFull);
+        var changeClassNamesResponse = ChangeClassNamesAndNamespaceInCodeAndFileName(oldFileNames, oldElementName, newElementName);
 
-        var oldDirectory = FileManager.GetDirectory(oldNameFull, RelativeType.Relative);
-        var newDirectory = FileManager.GetDirectory(newNameFull, RelativeType.Relative);
+        var oldDirectory = FileManager.GetDirectory(oldElementName, RelativeType.Relative);
+        var newDirectory = FileManager.GetDirectory(newElementName, RelativeType.Relative);
         var didChangeDirectory = oldDirectory != newDirectory;
 
-        if(didChangeDirectory)
+        if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
         {
-            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
-            {
-                // delete the old file (put it in recycle bin)
-                // From https://stackoverflow.com/questions/2342628/deleting-file-to-recycle-bin-on-windows-x64-in-c-sharp
+            // delete the old file (put it in recycle bin)
+            // From https://stackoverflow.com/questions/2342628/deleting-file-to-recycle-bin-on-windows-x64-in-c-sharp
 
-                if (fileNameBeforeMove?.Exists() == true)
+            if (fileNameBeforeMove?.Exists() == true)
+            {
+                try
                 {
-                    try
-                    {
-                        Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(
-                            fileNameBeforeMove.FullPath,
-                            Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
-                            Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
-                    }
-                    catch (Exception e)
-                    {
-                        GlueCommands.Self.PrintError(e.ToString());
-                    }
+                    Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(
+                        fileNameBeforeMove.FullPath,
+                        Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
+                        Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+                }
+                catch (Exception e)
+                {
+                    GlueCommands.Self.PrintError(e.ToString());
                 }
             }
         }
@@ -174,7 +171,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             // Set the name first because that's going
             // to be used by code that follows to modify
             // inheritance.
-            elementToRename.Name = newNameFull;
+            elementToRename.Name = newElementName;
 
             var elementsToRegenerate = new HashSet<GlueElement>();
 
@@ -187,28 +184,28 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                 for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
                 {
                     var entitySave = ProjectManager.GlueProjectSave.Entities[i];
-                    if (entitySave.BaseElement == oldNameFull)
+                    if (entitySave.BaseElement == oldElementName)
                     {
-                        entitySave.BaseEntity = newNameFull;
+                        entitySave.BaseEntity = newElementName;
                         renameModifications.ElementsWithChangedBaseType.Add(entitySave);
                     }
                 }
 
                 // Change any NamedObjects that use this as their type (whether in Entity, or as a generic class)
-                List<NamedObjectSave> namedObjectsWithElementSourceClassType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldNameFull);
+                List<NamedObjectSave> namedObjectsWithElementSourceClassType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldElementName);
 
                 foreach (NamedObjectSave nos in namedObjectsWithElementSourceClassType)
                 {
                     elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
-                    if (nos.SourceType == SourceType.Entity && nos.SourceClassType == oldNameFull)
+                    if (nos.SourceType == SourceType.Entity && nos.SourceClassType == oldElementName)
                     {
-                        nos.SourceClassType = newNameFull;
+                        nos.SourceClassType = newElementName;
                         renameModifications.ObjectsWithChangedBaseEntity.Add(nos);
                         nos.UpdateCustomProperties();
                     }
-                    else if (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassGenericType == oldNameFull)
+                    else if (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassGenericType == oldElementName)
                     {
-                        nos.SourceClassGenericType = newNameFull;
+                        nos.SourceClassGenericType = newElementName;
                         renameModifications.ObjectsWithChangedGenericBaseEntity.Add(nos);
 
                     }
@@ -226,16 +223,16 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                     }
                 }
 
-                List<NamedObjectSave> namedObjectsWithElementAsVariableType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntityAsVariableType(oldNameFull);
+                List<NamedObjectSave> namedObjectsWithElementAsVariableType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntityAsVariableType(oldElementName);
                 foreach (var nos in namedObjectsWithElementAsVariableType)
                 {
                     elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
 
                     foreach (var variable in nos.InstructionSaves)
                     {
-                        if ((variable.Value as string) == oldNameFull)
+                        if ((variable.Value as string) == oldElementName)
                         {
-                            variable.Value = newNameFull;
+                            variable.Value = newElementName;
 
                             renameModifications.ChangedNamedObjectVariables.Add(new ChangedNamedObjectVariable
                             {
@@ -268,35 +265,35 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                 for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
                 {
                     var screenSave = ProjectManager.GlueProjectSave.Screens[i];
-                    if (screenSave.BaseScreen == oldNameFull)
+                    if (screenSave.BaseScreen == oldElementName)
                     {
-                        screenSave.BaseScreen = newNameFull;
+                        screenSave.BaseScreen = newElementName;
 
                         renameModifications.ElementsWithChangedBaseType.Add(screenSave);
 
                     }
                 }
 
-                if (GlueCommands.Self.GluxCommands.StartUpScreenName == oldNameFull)
+                if (GlueCommands.Self.GluxCommands.StartUpScreenName == oldElementName)
                 {
-                    GlueCommands.Self.GluxCommands.StartUpScreenName = newNameFull;
-                    renameModifications.StartupScreenChange = newNameFull;
+                    GlueCommands.Self.GluxCommands.StartUpScreenName = newElementName;
+                    renameModifications.StartupScreenChange = newElementName;
 
                 }
                 // Don't do anything with NamedObjects and Screens since they can't (currently) be named objects
             }
 
-            var variablesReferencingElement = ObjectFinder.Self.GetVariablesReferencingElementType(oldNameFull);
+            var variablesReferencingElement = ObjectFinder.Self.GetVariablesReferencingElementType(oldElementName);
 
             var newVariantName = elementToRename.Name.Replace("\\", ".") + "Variant";
-            var oldVariantName = oldNameFull.Replace("\\", ".") + "Variant";
+            var oldVariantName = oldElementName.Replace("\\", ".") + "Variant";
 
             foreach (var variable in variablesReferencingElement)
             {
 
-                if((variable.DefaultValue as string) == oldNameFull)
+                if((variable.DefaultValue as string) == oldElementName)
                 {
-                    variable.DefaultValue = newNameFull;
+                    variable.DefaultValue = newElementName;
                 }
                 if(variable.Type == oldVariantName)
                 {
@@ -325,7 +322,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToRename);
 
-            PluginManager.ReactToElementRenamed(elementToRename, oldNameFull);
+            PluginManager.ReactToElementRenamed(elementToRename, oldElementName);
 
             if(showRenameWindow)
             {
