@@ -1477,7 +1477,19 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if (memberInfo == null)
                     {
-                        GlueGui.ShowMessageBox("Error generating code for " + namedObjectSave.ToString() + ":\nCould not find variable " + variableToReset + " in " + namedObjectSave.SourceClassType);
+                        GlueGui.ShowMessageBox("Error generating code for " + namedObjectSave.ToString() + ":\n" +
+                            "Could not find variable " + variableToReset + " in " + namedObjectSave.SourceClassType+ "\n" +
+                            "See the output window for more info");
+
+                        var stringBuilder = new StringBuilder();
+                        stringBuilder.AppendLine("Error generating code for " + namedObjectSave.ToString() + " because the AssetTypeInfo could not be found. The following asset type infos are used:");
+
+                        foreach(var existingAti in AvailableAssetTypes.Self.AllAssetTypes)
+                        {
+                            stringBuilder.AppendLine($"{existingAti.FriendlyName} ({existingAti.QualifiedRuntimeTypeName})");
+                        }
+
+                        GlueCommands.Self.PrintError(stringBuilder.ToString());
                     }
                     else
                     {
