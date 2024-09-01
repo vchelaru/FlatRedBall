@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Properties;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Themes;
 using Glue;
@@ -140,7 +141,7 @@ namespace GlueFormsCore.Controls
             }
         }
 
-        public static void SwitchThemes()
+        public static void SwitchThemes(string mode = null, Color? accent = null)
         {
             Switch(Self.Resources);
 
@@ -150,11 +151,24 @@ namespace GlueFormsCore.Controls
                 {
                     var source = resource.Source.OriginalString;
 
-                    if (source.Contains("Dark"))
+                    if (accent is not null && source.Contains("Accent"))
+                    {
+                        resource.Remove("Frb.Colors.Primary");
+                        resource.Remove("Frb.Colors.Primary.Dark");
+                        resource.Remove("Frb.Colors.Primary.Light");
+                        resource.Remove("Frb.Colors.Primary.Contrast");
+
+                        resource.Add("Frb.Colors.Primary", accent.Value);
+                        resource.Add("Frb.Colors.Primary.Dark", MaterialDesignColors.ColorManipulation.ColorAssist.Darken(accent.Value));
+                        resource.Add("Frb.Colors.Primary.Light", MaterialDesignColors.ColorManipulation.ColorAssist.Lighten(accent.Value));
+                        resource.Add("Frb.Colors.Primary.Contrast", MaterialDesignColors.ColorManipulation.ColorAssist.ContrastingForegroundColor(MaterialDesignColors.ColorManipulation.ColorAssist.Darken(accent.Value)));
+                    }
+                    
+                    if (mode is "Light" && source.Contains("Dark"))
                     {
                         resource.Source = new Uri(source.Replace("Dark", "Light"), UriKind.RelativeOrAbsolute);
                     }
-                    else if (source.Contains("Light"))
+                    else if (mode is "Dark" && source.Contains("Light"))
                     {
                         resource.Source = new Uri(source.Replace("Light", "Dark"), UriKind.RelativeOrAbsolute);
                     }

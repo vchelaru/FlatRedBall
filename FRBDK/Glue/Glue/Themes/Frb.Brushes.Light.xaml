@@ -8,10 +8,9 @@
             <StaticResource x:Key="Frb.Colors.Foreground.Subtle" ResourceKey="Gray600" />
             <StaticResource x:Key="Frb.Colors.Border" ResourceKey="Gray500" />
             <StaticResource x:Key="Frb.Colors.Background" ResourceKey="Gray250" />
-            <StaticResource x:Key="Frb.Colors.Surface01" ResourceKey="Gray200" />
+            <StaticResource x:Key="Frb.Colors.Surface01" ResourceKey="Gray100" />
             <StaticResource x:Key="Frb.Colors.Surface02" ResourceKey="Gray150" />
-            <StaticResource x:Key="Frb.Colors.Surface03" ResourceKey="Gray100" />
-            <StaticResource x:Key="Frb.Colors.Surface04" ResourceKey="Gray50" />
+            
             <Color x:Key="Frb.Colors.ThemeContrast">Black</Color>
 
             <SolidColorBrush x:Key="Darken" Color="Black" Opacity="0.05"/>

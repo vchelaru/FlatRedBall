@@ -221,7 +221,7 @@ public partial class MainGlueWindow : Form
 
     public void SyncMenuStripWithTheme(System.Windows.Controls.UserControl control)
     {
-        if (control.TryFindResource("Frb.Colors.Surface02") is Color bgColor &&
+        if (control.TryFindResource("Frb.Colors.Surface01") is Color bgColor &&
             control.TryFindResource("Frb.Colors.Foreground") is Color fgColor &&
             control.TryFindResource("Frb.Colors.Primary") is Color primaryColor)
         {

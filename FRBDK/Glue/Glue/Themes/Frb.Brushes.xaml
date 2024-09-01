@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Frb.Accents.xaml" />
-        <ResourceDictionary Source="/Themes/Frb.Brushes.Dark.xaml" />
+        <ResourceDictionary Source="/Themes/Frb.Brushes.Light.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <SolidColorBrush x:Key="Lighten" Color="White" Opacity="0.1"/>
@@ -18,18 +18,17 @@
     <SolidColorBrush x:Key="Frb.Brushes.Foreground" Color="{DynamicResource Frb.Colors.Foreground}" />
     <SolidColorBrush x:Key="Frb.Brushes.Foreground.Subtle" Color="{DynamicResource Frb.Colors.Foreground.Subtle}" />
     <SolidColorBrush x:Key="Frb.Brushes.Foreground.Disabled" Color="{DynamicResource Frb.Colors.Foreground}" Opacity="0.5" />
+    
     <SolidColorBrush x:Key="Frb.Brushes.Border" Color="{DynamicResource Frb.Colors.Border}" />
 
     <SolidColorBrush x:Key="Frb.Brushes.Background" Color="{DynamicResource Frb.Colors.Background}" />
 
     <SolidColorBrush x:Key="Frb.Surface01" Color="{DynamicResource Frb.Colors.Surface01}" />
     <SolidColorBrush x:Key="Frb.Surface02" Color="{DynamicResource Frb.Colors.Surface02}" />
-    <SolidColorBrush x:Key="Frb.Surface03" Color="{DynamicResource Frb.Colors.Surface03}" />
-    <SolidColorBrush x:Key="Frb.Surface04" Color="{DynamicResource Frb.Colors.Surface04}" />
 
-    <SolidColorBrush x:Key="Frb.Brushes.Contrast01" Color="{DynamicResource Frb.Colors.ThemeContrast}" Opacity="0.2" />
-    <SolidColorBrush x:Key="Frb.Brushes.Contrast02" Color="{DynamicResource Frb.Colors.ThemeContrast}" Opacity="0.3" />
-    <SolidColorBrush x:Key="Frb.Brushes.Contrast03" Color="{DynamicResource Frb.Colors.ThemeContrast}" Opacity="0.4" />
-    <SolidColorBrush x:Key="Frb.Brushes.Contrast04" Color="{DynamicResource Frb.Colors.ThemeContrast}" Opacity="0.5" />
+    <SolidColorBrush x:Key="Frb.Brushes.Contrast01" Color="{DynamicResource Frb.Colors.Foreground}" Opacity="0.2" />
+    <SolidColorBrush x:Key="Frb.Brushes.Contrast02" Color="{DynamicResource Frb.Colors.Foreground}" Opacity="0.3" />
+    <SolidColorBrush x:Key="Frb.Brushes.Contrast03" Color="{DynamicResource Frb.Colors.Foreground}" Opacity="0.4" />
+    <SolidColorBrush x:Key="Frb.Brushes.Contrast04" Color="{DynamicResource Frb.Colors.Foreground}" Opacity="0.5" />
 
 </ResourceDictionary>

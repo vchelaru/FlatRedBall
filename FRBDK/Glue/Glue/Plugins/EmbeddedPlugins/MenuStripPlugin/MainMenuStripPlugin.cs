@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using FlatRedBall.Glue.Themes;
 
 namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 {
@@ -91,8 +92,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
                     () => new PreferencesWindow().Show());
 
                 Settings.Add(
-                    "Switch Theme",
-                    () => MainPanelControl.SwitchThemes());
+                    "Theming",
+                    () => new ThemeWindow().Show());
 
                 Settings.DropDownItems.Add(new ToolStripSeparator());
 

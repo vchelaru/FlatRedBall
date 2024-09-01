@@ -24,8 +24,6 @@
                 <ContentPresenter Content="{Binding Content}"/>
             </DataTemplate>
 
-
-
             <Style x:Key="MainTabControl.MainTabItem.Style" 
                    TargetType="{x:Type TabItem}">
                 <Setter Property="IsSelected" Value="{Binding IsSelected}" />
@@ -92,14 +90,15 @@
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource Frb.Surface03}"/>
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource Frb.Surface01}"/>
 
-                                    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary.Dark}"></Setter>
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Surface01}"></Setter>
+                                    <Setter TargetName="Border" Property="CornerRadius" Value="0"/>
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="Panel.ZIndex" Value="100" />
                                     <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Foreground}" />
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource Frb.Surface02}"></Setter>
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource Frb.Surface01}"></Setter>
                                     <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary}"></Setter>
                                 </Trigger>
                             </ControlTemplate.Triggers>
@@ -157,7 +156,7 @@
 
                                  <!--Define the TabPanel and ItemsPresenter here as needed--> 
                                 <Border Grid.Row="1" x:Name="PART_SelectedContentHost"
-                                        Background="{DynamicResource Frb.Surface02}" 
+                                        Background="{DynamicResource Frb.Surface01}" 
                                         BorderBrush="{DynamicResource Darken}" 
                                         BorderThickness="0"
                                         Padding="4"

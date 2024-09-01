@@ -18,18 +18,12 @@
         <ResourceDictionary Source="/Themes/Frb.Buttons.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
-    <!--<SolidColorBrush x:Key="Surface01" Color="#FF1E1E1E" />
-    <SolidColorBrush x:Key="Surface02" Color="#FF2E2E2E" />
-    <SolidColorBrush x:Key="Surface03" Color="#FF3E3E3E" />
-    <SolidColorBrush x:Key="Surface04" Color="#FF4E4E4E" />
-    <SolidColorBrush x:Key="Surface05" Color="#FF5E5E5E" />-->
-
     <!-- This is a clone of a style that normally would be applied to a Window. 
     However, we don't have a Window control to apply it to -->
     <!--<StaticResource x:Key="{x:Static SystemColors.WindowColor}" ResourceKey="Green"/>-->
     <SolidColorBrush x:Key="{x:Static SystemColors.WindowColor}" Color="Green"/>
     <Style x:Key="TopLevelControl" TargetType="{x:Type Control}">
-        <Setter Property="Background" Value="{DynamicResource Frb.Surface02}" />
+        <Setter Property="Background" Value="{DynamicResource Frb.Surface01}" />
         <Setter Property="FontFamily" Value="Verdana" />
         <Setter Property="TextElement.FontSize" Value="13" />
         <Setter Property="TextElement.FontWeight" Value="Regular" />
@@ -112,7 +106,7 @@
     </Style>
 
     <Style TargetType="{x:Type ToolBarTray}">
-        <Setter Property="Background" Value="{DynamicResource Frb.Surface02}"></Setter>
+        <Setter Property="Background" Value="{DynamicResource Frb.Surface01}"></Setter>
     </Style>
 
     <Style TargetType="{x:Type ToolBar}">
@@ -422,7 +416,7 @@
                                         MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
                                         BorderBrush="{DynamicResource Frb.Brushes.Contrast03}" 
-                                        Background="{DynamicResource Frb.Surface02}" 
+                                        Background="{DynamicResource Frb.Surface01}" 
                                         CornerRadius="3"
                                         Padding="4">
 
@@ -605,7 +599,7 @@
     </Style>
 
     <Style TargetType="{x:Type ToolTip}">
-        <Setter Property="Background" Value="{DynamicResource Frb.Surface02}"></Setter>
+        <Setter Property="Background" Value="{DynamicResource Frb.Surface01}"></Setter>
         <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast02}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"></Setter>
     </Style>
@@ -800,7 +794,7 @@
                     <Border BorderThickness="1"
                             x:Name="Border"
                             Padding="4"
-                            Background="{DynamicResource Frb.Surface02}"
+                            Background="{DynamicResource Frb.Surface01}"
                             CornerRadius="2"
                             BorderBrush="{DynamicResource Frb.Brushes.Contrast03}">
                         <StackPanel ClipToBounds="True"
@@ -939,7 +933,7 @@
                        PopupAnimation="Slide">
                     <Border Name="SubmenuBorder"
                             SnapsToDevicePixels="True"
-                            Background="{DynamicResource Frb.Surface02}"
+                            Background="{DynamicResource Frb.Surface01}"
                             BorderBrush="{DynamicResource Frb.Brushes.Contrast03}"
                             BorderThickness="1">
                         <StackPanel IsItemsHost="True"
