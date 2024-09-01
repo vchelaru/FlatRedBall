@@ -103,8 +103,8 @@
                     <Border CornerRadius="4"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="0"
-                        Width="8"
-                        Margin="-1,0,-2,0" >
+                        Width="Auto"
+                        Margin="0,0,0,0" >
                         <Border.Style>
                             <Style TargetType="{x:Type Border}">
                                 <Setter Property="Background" Value="{DynamicResource Frb.Brushes.Contrast01}"/>
@@ -138,7 +138,7 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="0"
                         Height="8"
-                        Margin="0,2,-2,0">
+                        Margin="0,-2,-2,0">
                         <Border.Style>
                             <Style TargetType="{x:Type Border}">
                                 <Setter Property="Background" Value="{DynamicResource Frb.Brushes.Contrast01}"/>
@@ -157,7 +157,7 @@
 
     <ControlTemplate x:Key="VerticalScrollBar"
                  TargetType="{x:Type ScrollBar}">
-        <Grid Margin="-8,0,0,0">
+        <Grid Margin="0,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition MaxHeight="0" />
                 <RowDefinition Height="0.00001*" />
@@ -180,7 +180,7 @@
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
                     <Thumb Style="{StaticResource ScrollBarThumb}"
-                       Margin="1,0,1,0"
+                       Margin="0,0,0,0"
                        Background="{StaticResource HorizontalNormalBrush}"
                        BorderBrush="{StaticResource HorizontalNormalBorderBrush}" />
                 </Track.Thumb>
@@ -222,7 +222,7 @@
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
                     <Thumb Style="{StaticResource ScrollBarThumbHor}"
-                       Margin="0,1,0,1"
+                       Margin="0,0,0,-2"
                        Background="{StaticResource HorizontalNormalBrush}"
                        BorderBrush="{StaticResource HorizontalNormalBorderBrush}" />
                 </Track.Thumb>
@@ -251,14 +251,14 @@
                 <Setter Property="Width"
                     Value="Auto" />
                 <Setter Property="Height"
-                    Value="12" />
+                    Value="8" />
                 <Setter Property="Template"
                     Value="{StaticResource HorizontalScrollBar}" />
             </Trigger>
             <Trigger Property="Orientation"
                  Value="Vertical">
                 <Setter Property="Width"
-                    Value="0" />
+                    Value="8" />
                 <Setter Property="Height"
                     Value="Auto" />
                 <Setter Property="Template"

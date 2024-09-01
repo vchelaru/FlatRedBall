@@ -26,7 +26,8 @@
 
     <!-- This is a clone of a style that normally would be applied to a Window. 
     However, we don't have a Window control to apply it to -->
-    
+    <!--<StaticResource x:Key="{x:Static SystemColors.WindowColor}" ResourceKey="Green"/>-->
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowColor}" Color="Green"/>
     <Style x:Key="TopLevelControl" TargetType="{x:Type Control}">
         <Setter Property="Background" Value="{DynamicResource Frb.Surface02}" />
         <Setter Property="FontFamily" Value="Verdana" />
@@ -597,6 +598,10 @@
     <Style x:Key="ToolIcon" TargetType="{x:Type Button}" BasedOn="{StaticResource IconButton}">
         <Setter Property="Width" Value="18"/>
         <Setter Property="Height" Value="18"/>
+    </Style>
+
+    <Style TargetType="{x:Type materialDesign:PackIcon}" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
+        <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
     </Style>
 
     <Style TargetType="{x:Type ToolTip}">

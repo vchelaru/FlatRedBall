@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
              xmlns:views="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              
              d:Width="250">
@@ -83,13 +84,13 @@
                     <WrapPanel>
                         <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding Is2D}" Margin="6">
                             <StackPanel>
-                                <Image Source="/Plugins/EmbeddedPlugins/CameraPlugin/Icons/2DIcon.png" MaxWidth="40"></Image>
+                                <materialDesign:PackIcon Kind="SquareOutline" Width="40" Height="40"/>
                                 <TextBlock HorizontalAlignment="Center">2D</TextBlock>
                             </StackPanel>
                         </RadioButton>
                         <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding Is3D}" Margin="6">
                             <StackPanel>
-                                <Image Source="/Plugins/EmbeddedPlugins/CameraPlugin/Icons/3DIcon.png" MaxWidth="40"></Image>
+                                <materialDesign:PackIcon Kind="CubeOutline" Height="40" Width="40"/>
                                 <TextBlock HorizontalAlignment="Center">3D</TextBlock>
                             </StackPanel>
                         </RadioButton>

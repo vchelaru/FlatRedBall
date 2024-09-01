@@ -424,33 +424,40 @@ public partial class MainGlueWindow : Form
         var wpfHost = new ElementHost();
         wpfHost.Dock = DockStyle.Fill;
         MainWpfControl = new MainPanelControl();
-        MainWpfControl.Resources.MergedDictionaries.Add(GenerateWindowStyles());
+        TryGenerateImplicitWindowStylesFor(Assembly.GetCallingAssembly());
         SyncMenuStripWithTheme(MainWpfControl);
         wpfHost.Child = MainWpfControl;
         this.Controls.Add(wpfHost);
         this.PerformLayout();
         var app = new Wpf.Application();
         app.Resources = MainWpfControl.Resources;
+    }
 
-        Wpf.ResourceDictionary GenerateWindowStyles()
+    HashSet<Assembly> _checked = new();
+
+    public void TryGenerateImplicitWindowStylesFor(Assembly assembly)
+    {
+        if (!_checked.Add(assembly))
         {
-            Wpf.ResourceDictionary resourceDictionary = new();
-
-            var windowTypes = Assembly.GetExecutingAssembly().GetTypes()
-                .Where(t => t.IsSubclassOf(typeof(Wpf.Window)) && !t.IsAbstract);
-
-            foreach (var windowType in windowTypes)
-            {
-                var style = new Wpf.Style
-                {
-                    TargetType = windowType,
-                    BasedOn = (Wpf.Style)MainWpfControl.TryFindResource(typeof(Wpf.Window))
-                };
-                resourceDictionary.Add(windowType, style);
-            }
-
-            return resourceDictionary;
+            return;
         }
+
+        Wpf.ResourceDictionary resourceDictionary = new();
+
+        var windowTypes = assembly.GetTypes()
+            .Where(t => t.IsSubclassOf(typeof(Wpf.Window)) && !t.IsAbstract);
+
+        foreach (var windowType in windowTypes)
+        {
+            var style = new Wpf.Style
+            {
+                TargetType = windowType,
+                BasedOn = (Wpf.Style)MainWpfControl.TryFindResource(typeof(Wpf.Window))
+            };
+            resourceDictionary.Add(windowType, style);
+        }
+
+        MainWpfControl.Resources.MergedDictionaries.Add(resourceDictionary);
     }
 
     public new void Invoke(Action action)

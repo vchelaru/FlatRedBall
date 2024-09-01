@@ -7,11 +7,12 @@
             <StaticResource x:Key="Frb.Colors.Foreground" ResourceKey="Gray100" />
             <StaticResource x:Key="Frb.Colors.Foreground.Subtle" ResourceKey="Gray300" />
             <StaticResource x:Key="Frb.Colors.Border" ResourceKey="Gray400" />
-            <StaticResource x:Key="Frb.Colors.Background" ResourceKey="Gray750" />
+            <StaticResource x:Key="Frb.Colors.Background" ResourceKey="Gray700" />
             <StaticResource x:Key="Frb.Colors.Surface01" ResourceKey="Gray700" />
             <StaticResource x:Key="Frb.Colors.Surface02" ResourceKey="Gray650" />
             <StaticResource x:Key="Frb.Colors.Surface03" ResourceKey="Gray600" />
             <StaticResource x:Key="Frb.Colors.Surface04" ResourceKey="Gray550" />
+            
             <Color x:Key="Frb.Colors.ThemeContrast">White</Color>
 
             <SolidColorBrush x:Key="Darken" Color="Black" Opacity="0.1"/>
