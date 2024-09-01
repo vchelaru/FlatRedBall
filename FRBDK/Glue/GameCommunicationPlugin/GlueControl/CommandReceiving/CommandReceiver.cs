@@ -178,8 +178,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
             }
 
-            PrintOutput($"  {DateTime.Now} returning {toReturn ?? "<null>"}");
-
             return toReturn;
         }
 

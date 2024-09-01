@@ -882,7 +882,7 @@ namespace GlueControl
             }
             else
             {
-                return $"LiveEditTest.{elementName.Replace("\\", ".")}";
+                return $"{ProjectNamespace}.{elementName.Replace("\\", ".")}";
             }
         }
 
