@@ -18,5 +18,10 @@ namespace FlatRedBall.Glue.SaveClasses
             get;
             set;
         }
+
+        public bool GenerateLoadGlobalContentCode
+        {
+            get; set;
+        } = true;
     }
 }

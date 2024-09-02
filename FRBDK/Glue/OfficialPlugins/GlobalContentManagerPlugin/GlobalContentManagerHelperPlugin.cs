@@ -10,112 +10,64 @@ using FlatRedBall.Glue.Plugins;
 using Glue;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.FormHelpers;
+using OfficialPlugins.GlobalContentManagerPlugin.Views;
 
 namespace PluginTestbed.GlobalContentManagerPlugins
 {
-    [Export(typeof(IMenuStripPlugin))]
-    public class GlobalContentManagerHelperPlugin : IMenuStripPlugin
+    [Export(typeof(PluginBase))]
+    public class GlobalContentManagerHelperPlugin : PluginBase
     {
-        [Import("GlueCommands")]
-        public IGlueCommands GlueCommands
-        {
-            get;
-            set;
-        }
-
         ToolStripMenuItem mMenuItem;
         MenuStrip mMenuStrip;
+        PluginTab GlobalContentPropertiesTab;
 
-#pragma warning disable CS0067 // Needed for interface
-        public event Action<IPlugin, string, string> ReactToPluginEventAction;
-#pragma warning restore CS0067 // The event 'GlobalContentManagerHelperPlugin.ReactToPluginEventAction' is never used
+        GlobalContentPropertiesView GlobalContentPropertiesView;
 
-
-#pragma warning disable CS0067 // Needed for interface
-        public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
-#pragma warning restore CS0067 // The event 'GlobalContentManagerHelperPlugin.ReactToPluginEventWithReturnAction' is never used
-
-        #region IPlugin Members
-
-        public string FriendlyName
+        public override string FriendlyName
         {
             get { return "Global ContentManager Helper Plugin"; }
         }
 
-        public Version Version
+        public override void StartUp()
         {
-            get { return new Version(1,0); }
+            this.AddMenuItemTo("GlobalContent Membership", "GlobalContent Membership", mMenuItem_Click, "Content");
+
+            this.ReactToItemsSelected += HandleItemsSelected;
         }
 
-        public string GithubRepoOwner => null;
-        public string GithubRepoName => null;
-        public bool CheckGithubForNewRelease => false;
-
-        public void StartUp()
+        private void HandleItemsSelected(List<ITreeNode> list)
         {
-            
+            if(list.Any(item => item.IsGlobalContentContainerNode()))
+            {
+                ShowGlobalContentPropertiesTab();
+            }
+            else
+            {
+                GlobalContentPropertiesTab?.Hide();
+            }
         }
 
-        public bool ShutDown(PluginShutDownReason shutDownReason)
+        private void ShowGlobalContentPropertiesTab()
         {
-            ToolStripMenuItem itemToAddTo = GetItem(Localization.MenuIds.ContentId);
-
-            itemToAddTo.DropDownItems.Remove(mMenuItem);
-
-            return true;
+            if(GlobalContentPropertiesView== null)
+            {
+                GlobalContentPropertiesView = new GlobalContentPropertiesView();
+                GlobalContentPropertiesTab = this.CreateAndAddTab(GlobalContentPropertiesView, "GlobalContent Properties");
+            }
+            this.GlobalContentPropertiesView.Refresh();
+            GlobalContentPropertiesTab.Show();
         }
 
-        #endregion
-
-        #region IMenuStripPlugin Members
-
-        public void InitializeMenu(MenuStrip menuStrip)
-        {
-            mMenuStrip = menuStrip;
-
-            mMenuItem = new ToolStripMenuItem(Localization.Texts.GlobalContentMembership);
-            ToolStripMenuItem itemToAddTo = GetItem(Localization.MenuIds.ContentId);
-
-            itemToAddTo.DropDownItems.Add(mMenuItem);
-            mMenuItem.Click += mMenuItem_Click;
-        }
-
-        void mMenuItem_Click(object sender, EventArgs e)
+        void mMenuItem_Click()
         {
             PluginForm pluginForm = new PluginForm();
-            pluginForm.GlueCommands = GlueCommands;
+            pluginForm.GlueCommands = GlueCommands.Self;
             pluginForm.RefreshElements();
 
             pluginForm.ShowDialog(MainGlueWindow.Self);
 
         }
-
-        ToolStripMenuItem GetItem(string name)
-        {
-            foreach (ToolStripMenuItem item in mMenuStrip.Items)
-            {
-                if (item.Name == name)
-                {
-                    return item;
-                }
-            }
-
-            return null;
-        }
-
-        public void HandleEvent(string eventName, string payload)
-        {
-        }
-
-        public Task<string> HandleEventWithReturn(string eventName, string payload)
-        {
-            return Task.FromResult((string)null);
-        }
-
-        public void HandleEventResponseWithReturn(string payload)
-        {
-        }
-
-        #endregion
     }
 }

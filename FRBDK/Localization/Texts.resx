@@ -805,9 +805,6 @@ for {1}?</value>
   <data name="GitignoreAdd" xml:space="preserve">
     <value>Add .gitignore:</value>
   </data>
-  <data name="GlobalContentMembership" xml:space="preserve">
-    <value>GlobalContent Membership</value>
-  </data>
   <data name="UpdateLibraries" xml:space="preserve">
     <value>Update Libraries</value>
   </data>

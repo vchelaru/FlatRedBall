@@ -338,6 +338,7 @@ namespace FlatRedBall.Glue.Plugins
         /// Delegate raised when a tree node is selected. If multiple tree nodes are selected, only the first is passed
         /// to this delegate. For multi-select support, use ReactToItemsSelected;
         /// </summary>
+        [Obsolete("Use ReactToItemsSelected which properly handles multiple tree nodes")]
         public ReactToItemSelectDelegate ReactToItemSelectHandler { get; protected set; }
 
         /// <summary>
@@ -698,7 +699,11 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (ToolStripMenuItem item in GlueGui.MenuStrip.Items)
             {
-                if (item.Name == name)
+                if (
+                    // This depends on localization...
+                    item.Name == name || 
+                    // ...and this not, since localization is getting removed as of Sept 2024
+                    item.Text == name)
                 {
                     return item;
                 }

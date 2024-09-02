@@ -2986,15 +2986,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GlobalContent Membership.
-        /// </summary>
-        public static string GlobalContentMembership {
-            get {
-                return ResourceManager.GetString("GlobalContentMembership", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Glue is unable to communicate with your game. To enable this communication, click the &quot;Generate GlueControlManager in Game1&quot; checkbox and restart the game.
         /// </summary>
         public static string GlueCannotCommunicateWithGame {

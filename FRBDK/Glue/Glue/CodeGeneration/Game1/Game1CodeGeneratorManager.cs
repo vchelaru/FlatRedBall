@@ -77,7 +77,8 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
 
             // Should this go in a generator?
             var gluxVersion = GlueState.Self.CurrentGlueProject.FileVersion;
-            if(gluxVersion>= (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly)
+            if(gluxVersion>= (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly && 
+                GlueState.Self.CurrentGlueProject.GlobalContentSettingsSave.GenerateLoadGlobalContentCode)
             {
                 method.Line($"global::{GlueState.Self.ProjectNamespace}.GlobalContent.Initialize();");
             }
