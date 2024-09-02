@@ -330,11 +330,9 @@ namespace FlatRedBall
             get { return mListsBelongingTo; }
         }
 
-        #region XML Docs
         /// <summary>
         /// The instance's name.
         /// </summary>
-        #endregion
         public string Name
         {
             get { return mName; }
