@@ -69,6 +69,12 @@
       <HintPath>Libraries\Web\Debug\StateInterpolation.Kni.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Content\Shader.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="set &quot;source=$(TargetDir)Content&quot;&#xD;&#xA;set &quot;destination=wwwroot\Content&quot;&#xD;&#xA;mkdir &quot;%25source%25&quot; 2&gt;nul&#xD;&#xA;xcopy /E /Y &quot;%25source%25&quot; &quot;%25destination%25&quot;" />
 	</Target>
