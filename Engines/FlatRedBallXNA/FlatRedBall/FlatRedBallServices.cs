@@ -763,7 +763,7 @@ namespace FlatRedBall
 #endif
 
             // eventually we can look into this on iOS
-#if MONOGAME_381 && !WEB
+#if MONOGAME_381
 
             // We'll make a content manager that is never disposed. At this
             // point the FRB engine is not initialized so we can't use the global

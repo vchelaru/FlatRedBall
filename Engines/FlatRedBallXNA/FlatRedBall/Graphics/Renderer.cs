@@ -1,5 +1,5 @@
 //#if DESKTOP_GL || WINDOWS
-#if (WINDOWS || MONOGAME_381) && !WEB
+#if (WINDOWS || MONOGAME_381)
 #define USE_CUSTOM_SHADER
 #endif
 
@@ -2477,11 +2477,19 @@ namespace FlatRedBall.Graphics
 
                         if (drawToOnThisVB - extraVertices != drawnOnThisVB)
                         {
-                            mGraphics.GraphicsDevice.DrawUserPrimitives<T>(
-                                primitiveType,
-                                vertexList[VBOn],
-                                verticesPerPrimitive * drawnOnThisVB,
-                                drawToOnThisVB - drawnOnThisVB - extraVertices);
+                            try
+                            {
+                                mGraphics.GraphicsDevice.DrawUserPrimitives<T>(
+                                    primitiveType,
+                                    vertexList[VBOn],
+                                    verticesPerPrimitive * drawnOnThisVB,
+                                    drawToOnThisVB - drawnOnThisVB - extraVertices);
+
+                            }
+                            catch (Exception e)
+                            {
+                                int m = 3;
+                            }
                         }
                     }
 #endif
