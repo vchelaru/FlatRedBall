@@ -18,164 +18,10 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Themes/Frb.Styles.xaml" />
+                <ResourceDictionary Source="/Controls/MainPanelControl.Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <DataTemplate x:Key="MainTabControl.ContentTemplate" DataType="{x:Type plugins:PluginTab}">
-                <ContentPresenter Content="{Binding Content}"/>
-            </DataTemplate>
-
-            <Style x:Key="MainTabControl.MainTabItem.Style" 
-                   TargetType="{x:Type TabItem}">
-                <Setter Property="IsSelected" Value="{Binding IsSelected}" />
-                <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Foreground.Subtle}"/>
-                <Setter Property="Header" Value="{Binding}" />
-                <Setter Property="SnapsToDevicePixels" Value="True"/>
-                <Setter Property="Margin" Value="0"></Setter>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type TabItem}">
-                            <Grid x:Name="Root">
-                                <Border x:Name="Border"
-                                        BorderThickness="0,2,0,0"
-                                        BorderBrush="Transparent"
-                                        CornerRadius="2,2,0,0"
-                                        Padding="0,1,0,5"
-                                        Margin="0,0,0,-2"
-                                        Background="Transparent">
-                                    <ContentPresenter x:Name="ContentSite"
-                                                        VerticalAlignment="Center"
-                                                        HorizontalAlignment="Center"
-                                                        ContentSource="Header"
-                                                        RecognizesAccessKey="True" />
-                                    <Border.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Move To">
-                                                <MenuItem.Resources>
-                                                    <Style TargetType="MenuItem">
-                                                        <Setter Property="Command" Value="{Binding MoveTabCommand}"/>
-                                                        <Style.Triggers>
-                                                            <Trigger Property="IsEnabled" Value="False">
-                                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                            </Trigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                    <Image x:Key="TopImage" Source="pack://application:,,,/Resources/Icons/MoveTabs/TopTab.png"/>
-                                                    <Image x:Key="BottomImage" Source="pack://application:,,,/Resources/Icons/MoveTabs/BottomTab.png"/>
-                                                    <Image x:Key="LeftImage" Source="pack://application:,,,/Resources/Icons/MoveTabs/LeftTab.png"/>
-                                                    <Image x:Key="RightImage" Source="pack://application:,,,/Resources/Icons/MoveTabs/RightTab.png"/>
-                                                    <Image x:Key="CenterImage" Source="pack://application:,,,/Resources/Icons/MoveTabs/CenterTab.png"/>
-                                                </MenuItem.Resources>
-                                                <MenuItem Header="Top" 
-                                  Icon="{StaticResource TopImage}"
-                                  CommandParameter="Top"/>
-                                                <MenuItem Header="Left" 
-                                  Icon="{StaticResource LeftImage}"
-                                  CommandParameter="Left"/>
-                                                <MenuItem Header="Center" 
-                                  Icon="{StaticResource CenterImage}"
-                                  CommandParameter="Center"/>
-                                                <MenuItem Header="Right" 
-                                  Icon="{StaticResource RightImage}"
-                                  CommandParameter="Right"/>
-                                                <MenuItem Header="Bottom" 
-                                  Icon="{StaticResource BottomImage}"
-                                  CommandParameter="Bottom"/>
-                                            </MenuItem>
-                                            <Separator Margin="0,2"/>
-                                            <MenuItem Header="Close" Command="{Binding CloseCommand}"/>
-                                        </ContextMenu>
-                                    </Border.ContextMenu>
-                                </Border>
-                            </Grid>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource Frb.Surface01}"/>
-
-                                    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Surface01}"></Setter>
-                                    <Setter TargetName="Border" Property="CornerRadius" Value="0"/>
-                                </Trigger>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Panel.ZIndex" Value="100" />
-                                    <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Foreground}" />
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource Frb.Surface01}"></Setter>
-                                    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary}"></Setter>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <!--<EventSetter Event="MouseDown" Handler="TabItem_MouseDown" />-->
-            </Style>
-
-            <DataTemplate x:Key="MainTabControl.ItemTemplate" DataType="{x:Type plugins:PluginTab}">
-
-                <StackPanel Orientation="Horizontal" Margin="6,0,6,0" SnapsToDevicePixels="True">
-                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="0,0"/>
-                    <Button Command="{Binding CloseCommand}" 
-                            SnapsToDevicePixels="True"
-                            Width="14"
-                            Height="14"
-                            BorderThickness="0"
-                            Margin="6,0,-1,0"
-                            Padding="0"
-                            Content="{materialDesign:PackIcon close}">
-                        <Button.Style>
-                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource IconButton}">
-                                <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground.Subtle}"></Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsEnabled" Value="False">
-                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                </StackPanel>
-            </DataTemplate>
-
-            <Style x:Key="MainTabControl.Style" TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
-                <Style.Resources>
-                    <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource MainTabControl.MainTabItem.Style}"/>
-                </Style.Resources>
-                <Setter Property="BorderBrush" Value="{DynamicResource Darken}"/>
-                <Setter Property="ItemTemplate" Value="{DynamicResource MainTabControl.ItemTemplate}" />
-                <Setter Property="ContentTemplate" Value="{StaticResource MainTabControl.ContentTemplate}" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="TabControl">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <TabPanel 
-                                    Name="HeaderPanel" 
-                                    IsItemsHost="True"
-                                    Background="Transparent" />
-
-                                 <!--Define the TabPanel and ItemsPresenter here as needed--> 
-                                <Border Grid.Row="1" x:Name="PART_SelectedContentHost"
-                                        Background="{DynamicResource Frb.Surface01}" 
-                                        BorderBrush="{DynamicResource Darken}" 
-                                        BorderThickness="0"
-                                        Padding="4"
-                                        CornerRadius="3">
-                                    <ContentPresenter 
-                                        ContentSource="SelectedContent"/>
-                                </Border>
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
         </ResourceDictionary>
     </UserControl.Resources>
-
-    <!--<UserControl.Style>
-        --><!--<Style TargetType="{x:Type controls1:MainPanelControl}" BasedOn="{StaticResource TopLevelControl}"/>--><!--
-    </UserControl.Style>-->
 
     <Grid>
         <Grid.RowDefinitions>
@@ -261,7 +107,7 @@
 
             <TabControl Grid.Row="4" 
                     x:Name="BottomTabControl" 
-                    Style="{DynamicResource MainTabControl.Style}"
+                    Style="{StaticResource MainTabControl.Style}"
                     DataContext="{Binding BottomTabItems}" 
                     ItemsSource="{Binding Tabs}" 
                     SelectedItem="{Binding SelectedTab}" 

@@ -30,10 +30,13 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
     [Export(typeof(PluginBase))]
     public class MainMenuStripPlugin : EmbeddedPlugin
     {
+        ThemeWindowViewModel _themeWindowViewModel = new();
+
         public MainMenuStripPlugin() : base()
         {
             DesiredOrder = DesiredOrder.Critical;
         }
+
         public override void StartUp()
         {
             var File = AddTopLevelMenuItem(Localization.Texts.File, Localization.MenuIds.FileId);
@@ -93,7 +96,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
                 Settings.Add(
                     "Theming",
-                    () => new ThemeWindow().Show());
+                    () =>
+                    {
+                        ThemeWindow window = new();
+                        window.DataContext = _themeWindowViewModel;
+                        window.ShowDialog();
+                    });
 
                 Settings.DropDownItems.Add(new ToolStripSeparator());
 

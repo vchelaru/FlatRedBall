@@ -6,69 +6,64 @@
         xmlns:local="clr-namespace:FlatRedBall.Glue.Themes"
         mc:Ignorable="d"
         WindowStyle="ToolWindow"
-        Title="ThemeWindow" Height="450" Width="800">
-    <Window.Resources>
-        <!-- List of hardcoded Material Design Colors -->
-        <x:Array x:Key="MaterialBrushes" Type="{x:Type SolidColorBrush}">
-            <!-- Primary Colors -->
-            <SolidColorBrush Color="#F44336" />
-            <!-- Red -->
-            <SolidColorBrush Color="#E91E63" />
-            <!-- Pink -->
-            <SolidColorBrush Color="#9C27B0" />
-            <!-- Purple -->
-            <SolidColorBrush Color="#673AB7" />
-            <!-- Deep Purple -->
-            <SolidColorBrush Color="#3F51B5" />
-            <!-- Indigo -->
-            <SolidColorBrush Color="#2196F3" />
-            <!-- Blue -->
-            <SolidColorBrush Color="#03A9F4" />
-            <!-- Light Blue -->
-            <SolidColorBrush Color="#00BCD4" />
-            <!-- Cyan -->
-            <SolidColorBrush Color="#009688" />
-            <!-- Teal -->
-            <SolidColorBrush Color="#4CAF50" />
-            <!-- Green -->
-            <SolidColorBrush Color="#8BC34A" />
-            <!-- Light Green -->
-            <SolidColorBrush Color="#CDDC39" />
-            <!-- Lime -->
-            <SolidColorBrush Color="#FFEB3B" />
-            <!-- Yellow -->
-            <SolidColorBrush Color="#FFC107" />
-            <!-- Amber -->
-            <SolidColorBrush Color="#FF9800" />
-            <!-- Orange -->
-            <SolidColorBrush Color="#FF5722" />
-            <!-- Deep Orange -->
-            <SolidColorBrush Color="#795548" />
-            <!-- Brown -->
-            <SolidColorBrush Color="#9E9E9E" />
-            <!-- Grey -->
-            <SolidColorBrush Color="#607D8B" />
-            <!-- Blue Grey -->
-        </x:Array>
-    </Window.Resources>
-    <StackPanel>
-        <ComboBox x:Name="LightDarkBox"  Width="150" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center"
-                  SelectedIndex="0" SelectionChanged="LightDarkChanged">
-            <!-- Default to Light -->
-            <ComboBoxItem Content="Light" />
-            <ComboBoxItem Content="Dark" />
-        </ComboBox>
+        Title="ThemeWindow" 
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight"
+        d:DataContext="{d:DesignInstance Type=local:ThemeWindowViewModel, IsDesignTimeCreatable=False}">
+    
+    <Window.CommandBindings>
+        <!-- Bind ApplicationCommands.Close to a handler -->
+        <CommandBinding Command="ApplicationCommands.Close" Executed="CloseCommand_Executed"/>
+    </Window.CommandBindings>
+    
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="Theme Mode" 
+               HorizontalAlignment="Left" 
+               VerticalAlignment="Center" 
+               Grid.Row="0" 
+               Grid.Column="0"/>
+        <Label Content="Accent Color"
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Center" 
+                Grid.Row="1" 
+                Grid.Column="0"/>
         
-        <ComboBox x:Name="AccentBox"  Width="50" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center"
-                  ItemsSource="{StaticResource MaterialBrushes}" SelectionChanged="AccentChanged">
+        <ComboBox Grid.Row="0"
+                  Grid.Column="1"
+                  HorizontalAlignment="Right" 
+                  VerticalAlignment="Center" 
+                  ItemsSource="{Binding ThemeModes}" 
+                  SelectedItem="{Binding CurrentMode}"
+                  Text="{Binding CurrentMode}"/>
+
+        <ComboBox Grid.Row="1"
+                  Grid.Column="1"
+                  Width="60"
+                  HorizontalAlignment="Right" 
+                  VerticalAlignment="Center"
+                  ItemsSource="{Binding AccentOptions}" 
+                  SelectedItem="{Binding CurrentAccent}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <!-- Color preview -->
-                        <Rectangle Width="16" Height="16" Fill="{Binding}" Margin="0,0,5,0"/>
-                    </StackPanel>
+                    <Border Height="12" Width="50"  Background="{Binding}"/>
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
-    </StackPanel>
+
+        <Button Grid.Row="2"
+                Grid.Column="1"
+                Content="Close"
+                Margin="0,12,0,0"
+                Command="ApplicationCommands.Close"/>
+
+    </Grid>
 </Window>

@@ -141,7 +141,7 @@ namespace GlueFormsCore.Controls
             }
         }
 
-        public static void SwitchThemes(string mode = null, Color? accent = null)
+        public static void SwitchThemes(ThemeMode? mode = null, Color? accent = null)
         {
             Switch(Self.Resources);
 
@@ -164,11 +164,11 @@ namespace GlueFormsCore.Controls
                         resource.Add("Frb.Colors.Primary.Contrast", MaterialDesignColors.ColorManipulation.ColorAssist.ContrastingForegroundColor(MaterialDesignColors.ColorManipulation.ColorAssist.Darken(accent.Value)));
                     }
                     
-                    if (mode is "Light" && source.Contains("Dark"))
+                    if (mode is ThemeMode.Light && source.Contains("Dark"))
                     {
                         resource.Source = new Uri(source.Replace("Dark", "Light"), UriKind.RelativeOrAbsolute);
                     }
-                    else if (mode is "Dark" && source.Contains("Light"))
+                    else if (mode is ThemeMode.Dark && source.Contains("Light"))
                     {
                         resource.Source = new Uri(source.Replace("Light", "Dark"), UriKind.RelativeOrAbsolute);
                     }
