@@ -340,7 +340,14 @@ namespace FlatRedBall.Content
 
 			assetName = FileManager.Standardize(assetName);
 
-			var assetNameNoExtension = FileManager.RemoveExtension(assetName);
+#if WEB
+            if(assetName.StartsWith("./"))
+			{
+				assetName = assetName.Substring(1);
+			}
+#endif
+
+            var assetNameNoExtension = FileManager.RemoveExtension(assetName);
 
 			string combinedName = assetName + typeof(T).Name;
 
@@ -532,6 +539,13 @@ namespace FlatRedBall.Content
 				assetName = FileManager.RelativeDirectory + assetName;
 			}
 
+			// on web we don't prefix a period before the forward slash, so check if it does start with "./" and make it just start with "/"
+#if WEB
+			if(assetName.StartsWith("./"))
+            {
+                assetName = assetName.Substring(1);
+            }
+#endif
 
 
 			string fullNameWithType = assetName + typeof(T).Name;
@@ -552,7 +566,11 @@ namespace FlatRedBall.Content
 			}
 			else if (mNonDisposableDictionary.ContainsKey(fullNameStandardizeWithType))
 			{
-				return ((T)mNonDisposableDictionary[fullNameStandardizeWithType]);
+#if PROFILE
+				mHistory.Add(new ContentLoadHistory(
+					TimeManager.CurrentTime, typeof(T).Name, fullNameWithType, ContentLoadDetail.Cached));
+#endif
+                return ((T)mNonDisposableDictionary[fullNameStandardizeWithType]);
 			}
 			else
 			{
@@ -983,10 +1001,13 @@ namespace FlatRedBall.Content
 
 			mHistory.Add(history);
 		}
+#endif
 
-		public static void SaveContentLoadingHistory(string fileToSaveTo)
+		public static string GetContentLoadingHistoryText()
 		{
 			StringBuilder stringBuilder = new StringBuilder();
+#if PROFILE
+
 			foreach (ContentLoadHistory clh in mHistory)
 			{
 				if (!string.IsNullOrEmpty(clh.SpecialEvent))
@@ -1005,18 +1026,25 @@ namespace FlatRedBall.Content
 					stringBuilder.AppendLine();
 				}
 			}
-
-			FileManager.SaveText(stringBuilder.ToString(), fileToSaveTo);
+#endif
+			return stringBuilder.ToString();
 		}
 
-#endif
+		public static void SaveContentLoadingHistory(string fileToSaveTo)
+		{
+			var text = GetContentLoadingHistoryText();
+
+
+			FileManager.SaveText(text, fileToSaveTo);
+		}
+
 
 #endregion
 
 		#region Internal Methods
 
-		// Vic says: I don't think we need this anymore
-		internal void RefreshTextureOnDeviceLost()
+        // Vic says: I don't think we need this anymore
+        internal void RefreshTextureOnDeviceLost()
 		{
 			//List<string> texturesToReload = new List<string>();
 
