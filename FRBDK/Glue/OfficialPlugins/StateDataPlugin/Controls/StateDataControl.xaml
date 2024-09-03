@@ -72,7 +72,8 @@
                   AutoGenerateColumns="False" 
                   SelectionUnit="CellOrRowHeader"
                   KeyDown="DataGridInstance_KeyDown"
-                  PreviewKeyDown="DataGridInstance_PreviewKeyDown">
+                  PreviewKeyDown="DataGridInstance_PreviewKeyDown"
+                  HeadersVisibility="Column">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="State" Binding="{Binding Name, UpdateSourceTrigger=LostFocus}">
                     <DataGridTextColumn.ElementStyle>

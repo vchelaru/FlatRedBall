@@ -12,7 +12,6 @@
         <ResourceDictionary Source="/Themes/Frb.Brushes.xaml"/>
         <ResourceDictionary Source="Frb.ScrollBar.xaml"/>
 
-        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ComboBox.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBox.xaml" />
 
         <ResourceDictionary Source="/Themes/Frb.Buttons.xaml"/>
@@ -20,7 +19,6 @@
 
     <!-- This is a clone of a style that normally would be applied to a Window. 
     However, we don't have a Window control to apply it to -->
-    <!--<StaticResource x:Key="{x:Static SystemColors.WindowColor}" ResourceKey="Green"/>-->
     
     <Style x:Key="TopLevelControl" TargetType="{x:Type Control}">
         <Setter Property="Background" Value="{DynamicResource Frb.Surface01}" />
@@ -39,49 +37,24 @@
         <Setter Property="Background" Value="{DynamicResource Frb.Brushes.Background}" />
     </Style>
 
-    <Style TargetType="{x:Type TabControl}">
-        <Setter Property="Background" Value="{DynamicResource Frb.Surface01}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="0" />
-    </Style>
-
-    <Style TargetType="{x:Type TabItem}">
-        <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
-        <Setter Property="Background" Value="{DynamicResource Frb.Surface01}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="4" />
+    <Style TargetType="{x:Type Thumb}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type TabItem}">
-                    <Grid>
-                        <Border x:Name="Border" 
-                                BorderThickness="{TemplateBinding BorderThickness}" 
-                                BorderBrush="{TemplateBinding BorderBrush}" 
-                                Background="{TemplateBinding Background}" 
-                                CornerRadius="2">
-                            <ContentPresenter x:Name="ContentSite" 
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Center" 
-                                              ContentSource="Header" 
-                                              RecognizesAccessKey="True" />
-                        </Border>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary}"/>
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource Frb.Brushes.Primary.Transparent}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Border x:Name="PART_Border"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <!--<Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignFilledTextBox}"/>-->
+
     <Style TargetType="{x:Type RichTextBox}">
         <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"></Setter>
         <Setter Property="Background" Value="{DynamicResource Darken02}"></Setter>
@@ -1012,6 +985,178 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
-                       
+
+    <Style TargetType="{x:Type TabControl}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabControl}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" BorderBrush="{DynamicResource Frb.Brushes.Primary}" BorderThickness="0">
+
+                            <TabPanel Panel.ZIndex="1" IsItemsHost="True" Background="Transparent" ></TabPanel>
+                        </Border>
+                        <Border Grid.Row="1" BorderBrush="{DynamicResource Frb.Brushes.Contrast01}" BorderThickness="1" Background="{TemplateBinding Background}" CornerRadius="0,0,2,2">
+                            <ContentPresenter ContentSource="SelectedContent"></ContentPresenter>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+    </Style>
+    <Style TargetType="{x:Type TabItem}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabItem}">
+                    <Grid>
+                        <Border x:Name="Border" BorderThickness="0,0,0,2" BorderBrush="Transparent" CornerRadius="0,0,0,0" Padding="8,2,8,2" Margin="0,0,0,0" Background="Transparent">
+                            <ContentPresenter x:Name="ContentSite" TextElement.Foreground="{TemplateBinding TextElement.Foreground}" TextElement.FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" RecognizesAccessKey="True"></ContentPresenter>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="False">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="Transparent" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource Frb.Brushes.Primary.Transparent}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary.Transparent}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary}" />
+                            <Setter TargetName="Border" Property="Background" Value="Transparent" />
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style TargetType="{x:Type DataGrid}">
+
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="RowBackground" Value="Transparent" />
+        <Setter Property="AlternatingRowBackground" Value="{DynamicResource Darken01}" />
+        <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource Frb.Brushes.Contrast01}" />
+        <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource Frb.Brushes.Contrast01}" />
+
+        
+        <Setter Property="materialDesign:DataGridAssist.AutoGeneratedEditingTextStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type TextBox}">
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
+                    <Setter Property="Background" Value="{DynamicResource Frb.Brushes.Primary.Transparent}"/>
+                </Style>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="ColumnHeaderStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Style.Resources>
+
+                        <Style TargetType="Thumb" BasedOn="{StaticResource {x:Type Thumb}}">
+                            <Setter Property="Width" Value="8"/>
+                            <Setter Property="Cursor" Value="SizeWE"/>
+                            <Setter Property="Padding" Value="0"/>
+                        </Style>
+                    </Style.Resources>
+                    <Setter Property="Background" Value="{DynamicResource Frb.Brushes.Primary}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Primary.Contrast}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Primary.Contrast}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}" />
+                    <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                    <Setter Property="Padding" Value="5,2" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+                                <Grid Background="Transparent">
+                                    <Border Padding="{TemplateBinding Padding}"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}">
+                                        <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
+                                            <ContentPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                              RecognizesAccessKey="True"
+                                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                                                <ContentPresenter.Resources>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="TextTrimming" Value="WordEllipsis" />
+                                                    </Style>
+                                                </ContentPresenter.Resources>
+                                            </ContentPresenter>
+                                        </Grid>
+                                    </Border>
+                                    <Thumb x:Name="PART_LeftHeaderGripper"
+                                           HorizontalAlignment="Left" />
+                                    <Thumb x:Name="PART_RightHeaderGripper"
+                                           HorizontalAlignment="Right"/>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource Frb.Brushes.Primary.Light}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+        
+        <Setter Property="RowHeaderStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type DataGridRowHeader}">
+                    <Setter Property="Background" Value="{DynamicResource Frb.Brushes.Primary}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Primary.Contrast}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}" />
+                    <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                    <Setter Property="Padding" Value="5,2" />
+                </Style>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="RowStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}" />
+                </Style>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="CellStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type DataGridCell}">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="materialDesign:DataGridAssist.ApplyMaterialDesignColumnStyles" Value="True" />
+    </Style>
 
 </ResourceDictionary>
