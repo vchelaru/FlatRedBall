@@ -14,7 +14,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using GlueFormsCore.Controls;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System.Windows.Threading;
 
+#nullable enable
 namespace FlatRedBall.Glue.Themes
 {
     /// <summary>
@@ -31,22 +34,45 @@ namespace FlatRedBall.Glue.Themes
         {
             this.Close();
         }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            if (DataContext is ThemeWindowViewModel viewModel)
+            {
+                viewModel.SaveConfig();
+            }
+            base.OnClosed(e);
+        }
     }
 
     public class ThemeWindowViewModel : ViewModel
     {
         public ThemeWindowViewModel()
         {
-            PropertyChanged += (sender, args) =>
+
+
+            if (GlueState.Self.GlueSettingsSave.ThemeConfig is { } savedConfig)
             {
-                if (args.PropertyName == nameof(CurrentMode) && CurrentMode is { } mode)
+
+                CurrentAccent = savedConfig.Accent is { } accent ? 
+                    AccentOptions.FirstOrDefault(x => x.Color == accent) ?? new(accent) : null;
+                CurrentMode = savedConfig.Mode ?? default;
+            }
+
+            PropertyChanged += (_, args) =>
+            {
+                ThemeConfig? config = args.PropertyName switch
                 {
-                    MainPanelControl.SwitchThemes(mode);
-                }
-                else if (args.PropertyName == nameof(CurrentAccent) && CurrentAccent is { } accent)
+                    nameof(CurrentMode) => new(CurrentMode, null),
+                    nameof(CurrentAccent) => new(null, CurrentAccent?.Color),
+                    _ => null
+                };
+
+                if (config is not null)
                 {
-                    MainPanelControl.SwitchThemes(null, accent.Color);
+                    MainPanelControl.Self.SwitchThemes(config);
                 }
+                
             };
         }
 
@@ -56,13 +82,13 @@ namespace FlatRedBall.Glue.Themes
             set => Set(value);
         }
 
-        public SolidColorBrush CurrentAccent
+        public SolidColorBrush? CurrentAccent
         {
             get => Get<SolidColorBrush>();
             set => Set(value);
         }
 
-        public string[] ThemeModes { get; } = Enum.GetNames<ThemeMode>();
+        public Array ThemeModes { get; } = Enum.GetValues(typeof(ThemeMode));
         public List<SolidColorBrush> AccentOptions { get; } = new ()
         {
             new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F44336")), // Red
@@ -85,6 +111,12 @@ namespace FlatRedBall.Glue.Themes
             new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9E9E9E")), // Grey
             new SolidColorBrush((Color)ColorConverter.ConvertFromString("#607D8B"))  // Blue Grey
         };
+
+        public void SaveConfig()
+        {
+             GlueState.Self.GlueSettingsSave.ThemeConfig = new(CurrentMode, CurrentAccent?.Color);
+             GlueState.Self.GlueSettingsSave.Save();
+        }
     }
 
     public enum ThemeMode
@@ -92,4 +124,10 @@ namespace FlatRedBall.Glue.Themes
         Light,
         Dark
     }
+
+    public record ThemeConfig(ThemeMode? Mode = null, Color? Accent = null)
+    {
+        public ThemeConfig() : this(null, null) { }
+    }
 }
+#nullable disable

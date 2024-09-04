@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Themes;
 using Glue;
 using GlueFormsCore.ViewModels;
 using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -42,8 +43,6 @@ namespace GlueFormsCore.Controls
         {
             Self = this;
             InitializeComponent();
-
-            InitializeThemes();
 
             ViewModel = new TabControlViewModel();
             this.DataContext = ViewModel;
@@ -141,36 +140,37 @@ namespace GlueFormsCore.Controls
             }
         }
 
-        public static void SwitchThemes(ThemeMode? mode = null, Color? accent = null)
+        public void SwitchThemes(ThemeConfig config)
         {
-            Switch(Self.Resources);
-
+            Switch(Resources);
+            
             void Switch(ResourceDictionary resource)
             {
                 if (resource.Source != null)
                 {
-                    var source = resource.Source.OriginalString;
+                    string source = resource.Source.OriginalString;
 
-                    if (accent is not null && source.Contains("Accent"))
+                    if (config.Mode is not null && Regex.IsMatch(source, @"Frb\.Brushes\.(Dark|Light)\.xaml$"))
+                    {
+                        resource.Source = config.Mode switch
+                        {
+                            ThemeMode.Light => new Uri(source.Replace("Dark", "Light"), UriKind.RelativeOrAbsolute),
+                            ThemeMode.Dark => new Uri(source.Replace("Light", "Dark"), UriKind.RelativeOrAbsolute),
+                            _ => throw new NotImplementedException()
+                        };
+                    }
+
+                    if (config.Accent is { } accent && source.Contains("Frb.Accents.xaml"))
                     {
                         resource.Remove("Frb.Colors.Primary");
                         resource.Remove("Frb.Colors.Primary.Dark");
                         resource.Remove("Frb.Colors.Primary.Light");
                         resource.Remove("Frb.Colors.Primary.Contrast");
 
-                        resource.Add("Frb.Colors.Primary", accent.Value);
-                        resource.Add("Frb.Colors.Primary.Dark", MaterialDesignColors.ColorManipulation.ColorAssist.Darken(accent.Value));
-                        resource.Add("Frb.Colors.Primary.Light", MaterialDesignColors.ColorManipulation.ColorAssist.Lighten(accent.Value));
-                        resource.Add("Frb.Colors.Primary.Contrast", MaterialDesignColors.ColorManipulation.ColorAssist.ContrastingForegroundColor(MaterialDesignColors.ColorManipulation.ColorAssist.Darken(accent.Value)));
-                    }
-                    
-                    if (mode is ThemeMode.Light && source.Contains("Dark"))
-                    {
-                        resource.Source = new Uri(source.Replace("Dark", "Light"), UriKind.RelativeOrAbsolute);
-                    }
-                    else if (mode is ThemeMode.Dark && source.Contains("Light"))
-                    {
-                        resource.Source = new Uri(source.Replace("Light", "Dark"), UriKind.RelativeOrAbsolute);
+                        resource.Add("Frb.Colors.Primary", accent);
+                        resource.Add("Frb.Colors.Primary.Dark", MaterialDesignColors.ColorManipulation.ColorAssist.Darken(accent));
+                        resource.Add("Frb.Colors.Primary.Light", MaterialDesignColors.ColorManipulation.ColorAssist.Lighten(accent));
+                        resource.Add("Frb.Colors.Primary.Contrast", MaterialDesignColors.ColorManipulation.ColorAssist.ContrastingForegroundColor(MaterialDesignColors.ColorManipulation.ColorAssist.Darken(accent)));
                     }
                 }
 
@@ -260,21 +260,6 @@ namespace GlueFormsCore.Controls
             this.FileWatchTimer.Interval = 400;
             this.FileWatchTimer.Elapsed += this.FileWatchTimer_Tick;
             this.FileWatchTimer.Start();
-        }
-
-        private void InitializeThemes()
-        {
-            //this.Resources.MergedDictionaries[0].Source =
-            //    new Uri($"/Themes/{AppTheme}.xaml", UriKind.Relative);
-
-
-            //Style style = this.TryFindResource("UserControlStyle") as Style;
-            //if (style != null)
-            //{
-            //    this.Style = style;
-            //}
-
-            //ResourceDictionary = Resources;
         }
 
         private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)

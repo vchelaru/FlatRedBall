@@ -240,6 +240,12 @@ public partial class MainGlueWindow : Form
     {
         // We need to load the glue settings before loading the plugins so that we can shut off plugins according to settings
         GlueCommands.Self.LoadGlueSettings();
+
+        if (GlueState.Self.GlueSettingsSave.ThemeConfig is { } config)
+        {
+            MainWpfControl.SwitchThemes(config);
+        }
+
         var mainCulture = GlueState.Self.GlueSettingsSave.CurrentCulture;
         if(mainCulture != null)
         {
