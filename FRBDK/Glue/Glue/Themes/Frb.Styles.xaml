@@ -150,7 +150,8 @@
     </Style>
 
     <Style TargetType="{x:Type xctk:SplitButton}">
-        <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast02}"></Setter>
+        <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}"></Setter>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type xctk:SplitButton}">
@@ -165,6 +166,7 @@
                             <Button x:Name="PART_ActionButton"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="0,0,1,0"
+                                TextElement.Foreground="{TemplateBinding TextElement.Foreground}"
                                 themes:FrbButton.BorderCornerRadius="0"
                                 Padding="3,1,3,1"
                                     Margin="0"
@@ -218,7 +220,7 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast03}"></Setter>
+                <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary}"></Setter>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -413,8 +415,8 @@
                                      CaretBrush="{DynamicResource Frb.Brushes.Primary}"
                                      Foreground="{TemplateBinding Foreground}"
                                      Grid.Column="0"
-                                     VerticalAlignment="Center"
-                                     Margin="0,-2,0,-3"
+                                     VerticalAlignment="Stretch"
+                                     Margin="0,0,0,-1"
                                      Background="Transparent"
                                      BorderThickness="0"
                                      Text="{TemplateBinding Text}"/>
@@ -483,7 +485,7 @@
         <Setter Property="materialDesign:TextFieldAssist.UnderlineBrush" Value="{DynamicResource Frb.Brushes.Primary}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"></Setter>
         <Setter Property="Background" Value="{DynamicResource Darken02}"></Setter>
-        <Setter Property="Padding" Value="3"></Setter>
+        <Setter Property="Padding" Value="3,0,3,1"></Setter>
         <Setter Property="BorderThickness" Value="1"></Setter>
         <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}"></Setter>
     </Style>
@@ -1157,6 +1159,39 @@
         </Setter>
 
         <Setter Property="materialDesign:DataGridAssist.ApplyMaterialDesignColumnStyles" Value="True" />
+    </Style>
+
+    <Style TargetType="{x:Type RadioButton}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RadioButton}">
+                    <Grid Background="Transparent">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid VerticalAlignment="Center">
+                                <Ellipse x:Name="OuterEllipse" Width="12" Height="12" VerticalAlignment="Center" HorizontalAlignment="Center"  Fill="Transparent" Stroke="{DynamicResource Frb.Brushes.Foreground}" StrokeThickness="1"/>
+                                <Ellipse x:Name="InnerEllipse" Width="6" Height="6" VerticalAlignment="Center" HorizontalAlignment="Center"  Fill="Transparent" StrokeThickness="0"/>
+                        </Grid>
+                           <ContentPresenter Grid.Column="1" Margin="4,0,0,0" VerticalAlignment="Center" ContentSource="Content"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="OuterEllipse" Property="Stroke" Value="{DynamicResource Frb.Brushes.Primary}"/>
+                            <Setter TargetName="OuterEllipse" Property="Fill" Value="{DynamicResource Frb.Brushes.Primary.Transparent}"/>
+                        </Trigger>
+                        
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="InnerEllipse" Property="Fill" Value="{DynamicResource Frb.Brushes.Primary}"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 </ResourceDictionary>

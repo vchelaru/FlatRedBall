@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:FlatRedBall.PlatformerPlugin.Views"
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
              xmlns:b="clr-namespace:FlatRedBall.PlatformerPlugin.WpfBehaviors"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              
              d:DesignHeight="250">
@@ -26,7 +27,7 @@
         </Grid.ColumnDefinitions>
 
 
-        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="5" VerticalAlignment="Stretch" Fill="LightGray" />
+        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="6" VerticalAlignment="Stretch" Fill="{DynamicResource Frb.Brushes.Contrast01}" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Left" Width="1" Fill="Gray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Left" Width="1" Fill="Gray" />
         <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" HorizontalAlignment="Left" Width="1" Fill="Gray" />
@@ -260,17 +261,16 @@
             
         </StackPanel>
 
-        <Button Grid.Column="6" Width="24" Click="HandleXClick" Visibility="{Binding DeleteButtonVisibility}" >
+        <Button Grid.Column="6" Click="HandleXClick" Visibility="{Binding DeleteButtonVisibility}"  Content="{materialDesign:PackIcon CloseCircle}" Style="{DynamicResource ToolIcon}">
             <Button.ToolTip>
                 <Label Content="{x:Static localization:Texts.HintDeletesMovementValues}"/>
             </Button.ToolTip>
-            X</Button>
+        </Button>
 
         <StackPanel Grid.Column="6" Grid.Row="1">
-            <Button x:Name="MoveUpButton" Click="HandleMoveUpClicked" Margin="0,5,0,0" Width="24">^</Button>
-            <Button x:Name="MoveDownButton" Click="HandleMoveDownClicked" Width="24">v</Button>
-            <Button x:Name="DuplicateButton" Click="HandleDuplicateClicked" Width="24" Margin="0,5,0,0">
-                <Image Source="/PlatformerPluginCore;component/Content/Icons/icon_duplicate.png"></Image>
+            <Button x:Name="MoveUpButton" Click="HandleMoveUpClicked" Margin="-2" Content="{materialDesign:PackIcon Kind=MenuUp}" Style="{DynamicResource IconButton}"/>
+            <Button x:Name="MoveDownButton" Click="HandleMoveDownClicked" Content="{materialDesign:PackIcon Kind=MenuDown}" Style="{DynamicResource IconButton}" Margin="-2"/>
+            <Button x:Name="DuplicateButton" Click="HandleDuplicateClicked" Margin="0,5,0,0" Width="16"  Content="{materialDesign:PackIcon Kind=ContentDuplicate}" Style="{DynamicResource ToolIcon}">
                 <Button.ToolTip>
                     <Label Content="{x:Static localization:Texts.HintDuplicateMovementValues}"/>
                 </Button.ToolTip>
