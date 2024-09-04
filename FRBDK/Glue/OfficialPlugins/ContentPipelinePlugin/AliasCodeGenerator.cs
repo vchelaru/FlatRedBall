@@ -11,6 +11,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using EditorObjects.IoC;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace OfficialPlugins.ContentPipelinePlugin
 {
@@ -78,7 +79,17 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
             var codeBlock = classBlock.Function("public static void", "SetFileAliases", "");
 
-            var fileNamesRelative = ObjectFinder.Self.GetAllReferencedFiles().Where(item => item.UseContentPipeline)
+            var fileNamesRelative = ObjectFinder.Self.GetAllReferencedFiles()
+                .Where(item =>
+                {
+                    if(item.UseContentPipeline)
+                    {
+                        // but can it really use th content pipeline?
+                        var ati = item.GetAssetTypeInfo();
+                        return ati == null || ati.CanBeAddedToContentPipeline;
+                    }
+                    return false;
+                })
                 .Select(item => item.Name).ToHashSet();
 
             var contentFolder = glueState.ContentDirectory;
