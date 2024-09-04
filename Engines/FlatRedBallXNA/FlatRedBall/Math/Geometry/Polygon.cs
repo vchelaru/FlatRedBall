@@ -1835,7 +1835,7 @@ namespace FlatRedBall.Math.Geometry
         /// For concave polygons, consider using GetRandomPositionInThisSlow.
         /// </summary>
         /// <returns>A random position in this shape.</returns>
-        /// <exception cref="NotImplementedException">This method cannot get random points in a concave Polygon.</exception>
+        /// <exception cref="InvalidOperationException">This method cannot get random points in a concave Polygon.</exception>
         /// <exception cref="InvalidOperationException">Cannot get random points in a Polygon with fewer than three vertices</exception>
         public Vector3 GetRandomPositionInThis()
         {
@@ -1849,13 +1849,13 @@ namespace FlatRedBall.Math.Geometry
         /// <param name="overrideConcaveWarning">Whether to get a point that may not actually be inside 
         /// the polygon if the polygon is concave.</param>
         /// <returns>A point which may not be inside if the polygon is concave</returns>
-        /// <exception cref="NotImplementedException">An exception thrown for concave polygons if the warning isn't overridden.</exception>
+        /// <exception cref="InvalidOperationException">An exception thrown for concave polygons if the warning isn't overridden.</exception>
         /// <exception cref="InvalidOperationException">An exception thrown when the polygon has insufficient vertices.</exception>
         private Vector3 GetRandomPositionInThisWithOverride(bool overrideConcaveWarning = false)
         {
             if (IsConcave() && overrideConcaveWarning == false)
             {
-                throw new NotImplementedException("Cannot get random points inside a concave Polygon. Consider using GetRandomPositionInThisSlow.");
+                throw new InvalidOperationException("Cannot get random points inside a concave Polygon with this algorithm. Consider using GetRandomPositionInThisSlow.");
             }
 
             if (mPoints.Length < 4)
