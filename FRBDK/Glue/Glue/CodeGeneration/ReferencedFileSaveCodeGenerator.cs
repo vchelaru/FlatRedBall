@@ -1204,9 +1204,21 @@ namespace FlatRedBall.Glue.CodeGeneration
                 loadsUsingGlobalContentManager = container.UseGlobalContent;
             }
 
-            if (containedByGlobalContentFiles && 
+            var shouldUseGlobalContentReference =
+                containedByGlobalContentFiles &&
                 loadsUsingGlobalContentManager &&
-                referencedFileContainerType != ContainerType.None)
+                referencedFileContainerType != ContainerType.None;
+
+            if(shouldUseGlobalContentReference)
+            {
+                // we only want to use the global content if the ATIs are the same:
+                var fileInGlobalContent = GlobalContentFilesDictionary[referencedFileName];
+                var atiInGlobalContent = fileInGlobalContent.GetAssetTypeInfo();
+                var areAtisTheSame = atiInGlobalContent == ati;
+                shouldUseGlobalContentReference = areAtisTheSame;
+            }
+
+            if (shouldUseGlobalContentReference)
             {
                 string globalRfsVariable = GlobalContentFilesDictionary[referencedFile.Name].GetInstanceName();
 
