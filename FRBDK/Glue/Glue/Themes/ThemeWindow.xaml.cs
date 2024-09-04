@@ -91,6 +91,7 @@ namespace FlatRedBall.Glue.Themes
         public Array ThemeModes { get; } = Enum.GetValues(typeof(ThemeMode));
         public List<SolidColorBrush> AccentOptions { get; } = new ()
         {
+            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3E9ECE")), // Default FRB Blue
             new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F44336")), // Red
             new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E91E63")), // Pink
             new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9C27B0")), // Purple
