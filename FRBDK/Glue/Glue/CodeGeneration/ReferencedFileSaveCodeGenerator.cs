@@ -1757,8 +1757,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 curBlock.If("FlatRedBall.Screens.ScreenManager.CurrentScreen != null && FlatRedBall.FlatRedBallServices.IsThreadPrimary()" +
                     " && FlatRedBall.Screens.ScreenManager.CurrentScreen.ActivityCallCount > 0 && !FlatRedBall.Screens.ScreenManager.CurrentScreen.IsActivityFinished")
-                            .Line("throw new System.InvalidOperationException(\"Content is being loaded after the current Screen is initialized.  " + 
-                            "This exception is being thrown because of a setting in Glue.\");")
+                            .Line("throw new System.InvalidOperationException(\"Content is being loaded after the current Screen is initialized.  " +
+                            "This exception is being thrown because of the ThrowExceptionOnPostInitializeContentLoad setting in the FRB Editor.\");")
                             .End();
                 //curBlock.Line("#endif");
             }
