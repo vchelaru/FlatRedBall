@@ -28,6 +28,9 @@ namespace FlatRedBall.Glue.Themes
         public ThemeWindow()
         {
             InitializeComponent();
+
+                        
+            Loaded += (_,_) => GlueCommands.Self.DialogCommands.MoveToCursor(this);
         }
 
         private void CloseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
