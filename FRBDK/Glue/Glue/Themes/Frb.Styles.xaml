@@ -336,8 +336,7 @@
         <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="Height" Value="20"/>
+        <Setter Property="Padding" Value="0,1"/>
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="ComboBoxItem">
@@ -378,6 +377,7 @@
                             Background="{TemplateBinding Background}"
                             Padding="{TemplateBinding Padding}"
                             Margin="{TemplateBinding Margin}"
+                            Height="{TemplateBinding Height}"
                             ClipToBounds="True"
                             CornerRadius="2">
                         <Grid>
@@ -388,8 +388,7 @@
                             <ToggleButton x:Name="DropDownToggle"
                                           Grid.Column="1"
                                           VerticalAlignment="Stretch"
-                                          Margin="0"
-                                          Height="Auto"
+                                          Width="18"
                                           IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,
             RelativeSource={RelativeSource TemplatedParent}}"
                                           themes:FrbButton.BorderCornerRadius="0">
@@ -417,6 +416,7 @@
                                      Grid.Column="0"
                                      VerticalAlignment="Stretch"
                                      Margin="0,0,0,-1"
+                                     Padding="3,0,0,0"
                                      Background="Transparent"
                                      BorderThickness="0"
                                      Text="{TemplateBinding Text}"/>
@@ -632,18 +632,22 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" Margin="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Border Grid.Column="0" Width="10" BorderThickness="0,1,0,0" CornerRadius="2"  Margin="0"  BorderBrush="{TemplateBinding BorderBrush}"/>
-                                <ContentPresenter Grid.Column="1"  ContentSource="Header" Margin="2,-10,4,0" VerticalAlignment="Top" TextElement.Foreground="{TemplateBinding Foreground}"/>
-                                <Border Grid.Column="2" BorderThickness="0,1,0,0" CornerRadius="2"  BorderBrush="{TemplateBinding BorderBrush}"/>
-                            </Grid>
-                            
-                            <ContentPresenter Grid.Row="1" Margin="{TemplateBinding Padding}"/>
+                        <Grid Grid.Row="0" Margin="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Width="10" BorderThickness="0,1,0,0" CornerRadius="2"  Margin="0"  BorderBrush="{TemplateBinding BorderBrush}"/>
+                            <ContentPresenter Grid.Column="1"  ContentSource="Header" VerticalAlignment="Top" TextElement.Foreground="{TemplateBinding Foreground}" MinWidth="0">
+                                <ContentPresenter.RenderTransform>
+                                    <TranslateTransform X="0" Y="-10"/>
+                                </ContentPresenter.RenderTransform>
+                            </ContentPresenter>
+                            <Border Grid.Column="2" BorderThickness="0,1,0,0" CornerRadius="2"  BorderBrush="{TemplateBinding BorderBrush}"/>
+                        </Grid>
+                        
+                        <ContentPresenter Grid.Row="1" Margin="{TemplateBinding Padding}"/>
                     </Grid>
                 </Border>
             </ControlTemplate>
