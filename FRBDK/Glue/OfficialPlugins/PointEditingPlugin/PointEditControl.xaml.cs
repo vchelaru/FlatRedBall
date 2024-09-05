@@ -158,6 +158,29 @@ namespace OfficialPlugins.PointEditingPlugin
             }
         }
 
+        private void HandleCloseShapeClicked(object sender, RoutedEventArgs e)
+        {
+            ////////////////////////Early Out/////////////////////////////
+            if(ViewModel.Points?.Count > 2 == false)
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox("Polygon must have at least 3 points to be closed");
+                return;
+            }
+            //////////////////////End Early Out///////////////////////////
+
+            var firstPoint = ViewModel.Points[0];
+            var lastPoint = ViewModel.Points[ViewModel.Points.Count - 1];
+
+            var threshold = 0.1f;
+            var areClose = Math.Abs(firstPoint.X - lastPoint.X) < threshold && Math.Abs(firstPoint.Y - lastPoint.Y) < threshold;
+
+            if(!areClose)
+            {
+                ViewModel.Points.Add(ViewModel.Points[0]);
+
+            }
+        }
+
         private void AddRectanglePoints()
         {
 

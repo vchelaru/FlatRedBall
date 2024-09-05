@@ -51,6 +51,12 @@
                     </Button.ToolTip>
                     <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/AddPolygonPoints.png"></Image>
                 </Button>
+                <Button Height="24" Click="HandleCloseShapeClicked" Style="{DynamicResource IconButton}">
+                    <Button.ToolTip>
+                        <Label Content="Adds a point to close the shape." />
+                    </Button.ToolTip>
+                    <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/CloseShape.png"></Image>
+                </Button>
                 <Button Height="24" Click="MovePointUp" Margin="4,0,0,0" IsEnabled="{Binding IsMoveUpEnabled}" Style="{DynamicResource IconButton}">
                     <Button.ToolTip>
                         <Label Content="Moves the selected point up in the list." />
