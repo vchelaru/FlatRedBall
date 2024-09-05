@@ -42,6 +42,11 @@ namespace FlatRedBall.Gui
         DelegateBasedPressableInput mSecondaryButton;
         DelegateBasedPressableInput mMiddleButton;
 
+        /// <summary>
+        /// Gets the main cursor. If multiple Cursors have been added, returns the first one.
+        /// </summary>
+        public static Cursor Main => GuiManager.Cursor;
+
         IWindow mWindowPushed;
 
         /// <summary>
@@ -195,18 +200,27 @@ namespace FlatRedBall.Gui
         internal bool mLastSecondaryDown;
         //double mLastTimeSecondaryClick;
 
+        /// <summary>
+        /// Whether the middle mouse button is down this frame.
+        /// </summary>
         public bool MiddleDown
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Whether the middle mouse button was pushed this frame (not down last frame but down this frame).
+        /// </summary>
         public bool MiddlePush
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Whether the middle mouse button was clicked (released) this frame.
+        /// </summary>
         public bool MiddleClick
         {
             get;
