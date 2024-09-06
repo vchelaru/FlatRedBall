@@ -28,6 +28,7 @@ namespace GlueControl.Editing
 
         int? PointIndexGrabbed;
         public int? PointIndexHighlighted { get; private set; }
+        public int? PointIndexSelected { get; set; }
 
         public bool Visible { get; set; }
 
@@ -78,12 +79,19 @@ namespace GlueControl.Editing
 
             UpdatePointsToItem(itemAsPolygon, selectionMarker);
 
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+            // Update the SubIndex even if the game is not active because we want the game to respond to clicks on the Points list box in FRB 
+            if (!cursor.PrimaryDown || FlatRedBallServices.Game.IsActive == false)
+            {
+                this.PointIndexSelected = GlueState.Self.SelectedSubIndex;
+            }
+
             ///////////Early Out//////////////
             if (!Visible || selectionMarker.CanMoveItem == false || FlatRedBallServices.Game.IsActive == false)
                 return;
             ////////End Early Out/////////////
 
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
 
             if (cursor.PrimaryPush)
@@ -132,8 +140,12 @@ namespace GlueControl.Editing
 
                 asPolygon.ForceUpdateDependencies();
 
+                // handledLast prevents us from having to make changes to the last
+                // point
                 var handledLast = false;
-                // for now assume polygons have the last point overlapping:
+                var isLastPointOverlapping = points.Count > 1 && 
+                    System.Math.Abs(points[0].X - points[points.Count - 1].X) < .1 &&
+                    System.Math.Abs(points[0].Y - points[points.Count - 1].Y) < .1 ;
                 for (int i = 0; i < points.Count; i++)
                 {
                     var point = points[i];
@@ -146,24 +158,57 @@ namespace GlueControl.Editing
 
                     rectangle.Position = position;
 
+
                     if (i < points.Count - 1 || !handledLast)
                     {
-                        if (i == PointIndexHighlighted)
+                        var shouldFadeInAndOut = i == PointIndexSelected;
+
+                        if ( (i == PointIndexHighlighted || i == PointIndexSelected) && isLastPointOverlapping)
                         {
-                            rectangle.Width = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
-                            rectangle.Height = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
+                            var size = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
+
+                            if (i != PointIndexHighlighted)
+                            {
+                                size = ResizeHandles.DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
+                            }
+
+                            rectangle.Width = size;
+                            rectangle.Height = size;
                             if (i == 0)
                             {
                                 rectangle = pointRectangles.LastOrDefault();
-                                rectangle.Width = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
-                                rectangle.Height = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
+                                rectangle.Width = size;
+                                rectangle.Height = size;
                                 handledLast = true;
+
                             }
                         }
                         else
                         {
                             rectangle.Width = ResizeHandles.DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
                             rectangle.Height = ResizeHandles.DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
+                        }
+
+
+                        if (shouldFadeInAndOut)
+                        {
+                            float value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime) * 5)) / 2;
+
+                            var brightColor = Color.White;
+
+                            rectangle.Color = new Color(
+                                value * brightColor.R / 255.0f,
+                                value * brightColor.G / 255.0f,
+                                value * brightColor.B / 255.0f);
+
+                            if (i == 0 && handledLast)
+                            {
+                                pointRectangles.Last().Color = rectangle.Color;
+                            }
+                        }
+                        else
+                        {
+                            rectangle.Color = Color.Gray;
                         }
                     }
                 }
@@ -221,6 +266,10 @@ namespace GlueControl.Editing
                     }
                 }
             }
+
+            PointIndexSelected = PointIndexGrabbed;
+
+            _ = GlueState.Self.SetSelectedSubIndex(PointIndexSelected);
         }
 
         private void DoCursorDownActivity(Polygon polygon)
