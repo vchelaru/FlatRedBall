@@ -79,10 +79,12 @@
                     </Image.ToolTip>
                 </Image>
 
-                <Grid Visibility="{Binding MessageAboutEditModeDisabledVisibility}">
-                    <Frame  Margin="0,3,0,3" BorderBrush="DarkGray" BorderThickness="1"/>
-                    <TextBlock Margin="3" VerticalAlignment="Center" Text="{x:Static localization:Texts.EnableGameEmbedInSettings}"></TextBlock>
-                </Grid>
+                <materialDesign:PackIcon Kind="alertoctagram" Foreground="Orange" VerticalAlignment="Center" Visibility="{Binding MessageAboutEditModeDisabledVisibility}" ToolTipService.InitialShowDelay="0">
+                    <materialDesign:PackIcon.ToolTip>
+                        <TextBlock>Game is not in edit mode. Enable in settings.</TextBlock>
+                    </materialDesign:PackIcon.ToolTip>
+                </materialDesign:PackIcon>
+                
                 <Button VerticalAlignment="Center" Height="20" Click="GlueViewSettingsButtonClicked" Margin="2,0,0,0" Style="{DynamicResource IconButton}" Content="{materialDesign:PackIcon Cog}"/>
             </StackPanel>
         </Grid>
