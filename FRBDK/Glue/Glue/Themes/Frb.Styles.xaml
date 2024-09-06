@@ -10,12 +10,14 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Themes/Frb.Brushes.xaml"/>
-        <ResourceDictionary Source="Frb.ScrollBar.xaml"/>
+        <ResourceDictionary Source="/Themes/Frb.Buttons.xaml"/>
 
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBox.xaml" />
-
-        <ResourceDictionary Source="/Themes/Frb.Buttons.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ScrollViewer.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ScrollBar.xaml" />
     </ResourceDictionary.MergedDictionaries>
+
+    <SolidColorBrush x:Key="MaterialDesign.Brush.Foreground" Color="{DynamicResource Frb.Colors.Foreground}" />
 
     <!-- This is a clone of a style that normally would be applied to a Window. 
     However, we don't have a Window control to apply it to -->
@@ -28,6 +30,21 @@
         <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Foreground}" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
         <Setter Property="TextOptions.TextRenderingMode" Value="Auto" />
+    </Style>
+
+    <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource MaterialDesignScrollViewer}" />
+
+    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource MaterialDesignScrollBar}">
+        <Style.Resources>
+            <system:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">8</system:Double>
+            <system:Double x:Key="{x:Static SystemParameters.HorizontalScrollBarHeightKey}">8</system:Double>
+        </Style.Resources>
+        <Setter Property="Foreground" Value="Green"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="MinWidth" Value="8"/>
+        <Setter Property="Width" Value="8"/>
+        <Setter Property="materialDesign:ScrollBarAssist.ThumbCornerRadius" Value="4"/>
+        <Setter Property="materialDesign:ScrollBarAssist.ButtonsVisibility" Value="Collapsed"/>
     </Style>
 
     <Style TargetType="{x:Type Window}" BasedOn="{StaticResource TopLevelControl}">
@@ -53,7 +70,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 
     <Style TargetType="{x:Type RichTextBox}">
         <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"></Setter>
