@@ -227,12 +227,19 @@ namespace GlueControl.Editing
             pointRectangles.Add(rectangle);
         }
 
-        Microsoft.Xna.Framework.Input.Keys addKey = Microsoft.Xna.Framework.Input.Keys.OemPlus;
+        Microsoft.Xna.Framework.Input.Keys[] addKeys = new Microsoft.Xna.Framework.Input.Keys[]
+        {
+            Microsoft.Xna.Framework.Input.Keys.OemPlus,
+            Microsoft.Xna.Framework.Input.Keys.Add
+        };
 
         private void DoCursorPushActivity(Polygon polygon)
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-            if (FlatRedBall.Input.InputManager.Keyboard.KeyDown(addKey))
+
+            var isAddKeyDown = addKeys.Any(item => FlatRedBall.Input.InputManager.Keyboard.KeyDown(item));
+
+            if (isAddKeyDown)
             {
                 var points = polygon.Points.ToList();
 
@@ -399,17 +406,19 @@ namespace GlueControl.Editing
 
         public bool HandleDelete(Polygon polygon)
         {
-            // for now we'll just delete the grabbed point
-            if (PointIndexGrabbed != null)
+            var whatToDelete = PointIndexGrabbed ?? PointIndexSelected;
+
+            if (whatToDelete != null)
             {
                 var points = polygon.Points.ToList();
-                points.RemoveAt(PointIndexGrabbed.Value);
+                points.RemoveAt(whatToDelete.Value);
 
+                PointIndexSelected = null;
                 PointIndexGrabbed = null;
                 PointIndexHighlighted = null;
                 polygon.Points = points;
 
-                SendPolygonPointsToGlue(polygon);
+                _ = SendPolygonPointsToGlue(polygon);
 
                 return true;
             }
