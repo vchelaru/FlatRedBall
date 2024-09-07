@@ -18,8 +18,8 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" >
-            <GroupBox Header="{x:Static localization:Texts.InputMovementType}" IsEnabled="{Binding CanUserSelectMovementType}">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+            <GroupBox Header="{x:Static localization:Texts.InputMovementType}" IsEnabled="{Binding CanUserSelectMovementType}" Margin="0,0,2,0">
                 <GroupBox.ToolTip><Label Content="{x:Static localization:Texts.HintSetInputMovementType}" /> </GroupBox.ToolTip>
                 <StackPanel>
                     <RadioButton IsChecked="{Binding IsNoneRadioChecked}" >
