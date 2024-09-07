@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
@@ -21,16 +22,20 @@ namespace OfficialPlugins.PointEditingPlugin
     [Export(typeof(PluginBase))]
     public class MainPointEditingPlugin : EmbeddedPlugin
     {
+        #region Fields/Properties
+
         PointEditControl pointEditControl; // This is the control we created
         PluginTab mTab; // This is the tab that will hold our control
         PointEditingViewModel ViewModel;
         bool IsReactingToGluePropertyChangeEvent = true;
 
+        #endregion
+
         public override void StartUp()
         {
-            this.ReactToItemSelectHandler += HandleItemSelected;
-
+            this.ReactToItemsSelected += HandleItemsSelected;
             this.ReactToNamedObjectChangedValue += HandleNamedObjectValueChange;
+            this.ReactToSelectedSubIndexChanged += HandleSelectedSubIndexChanged;
 
             InitializeTab();
         }
@@ -47,17 +52,18 @@ namespace OfficialPlugins.PointEditingPlugin
             }
         }
 
-        private void HandleItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> list)
         {
-            NamedObjectSave namedObjectSave = null;
+            var firstNos = list.FirstOrDefault(item => item.Tag is NamedObjectSave)?.Tag as NamedObjectSave;
 
-            if (selectedTreeNode != null)
-            {
-                namedObjectSave = selectedTreeNode.Tag as NamedObjectSave;
-            }
-
-            RefreshToNamedObject(namedObjectSave);
+            RefreshToNamedObject(firstNos);
         }
+
+        private void HandleSelectedSubIndexChanged(int? nullable)
+        {
+            ViewModel.SelectedIndex = nullable ?? -1;
+        }
+
 
         private void RefreshToNamedObject(NamedObjectSave namedObjectSave)
         {
@@ -84,9 +90,25 @@ namespace OfficialPlugins.PointEditingPlugin
                 }
                 respondToVmChanges = false;
                 {
-                    ViewModel.Points.Clear();
+                    // if the points have changed (like from live edit) but not in count, then we should only 
+                    // update the individual points rather than clearing them:
                     var pointsToAdd = instructions.Value as List<Vector2>;
-                    ViewModel.Points.AddRange(pointsToAdd);
+                    var hasCountChanged = ViewModel.Points.Count != pointsToAdd.Count;
+                    if(hasCountChanged)
+                    {
+                        ViewModel.Points.Clear();
+                        ViewModel.Points.AddRange(pointsToAdd);
+                    }
+                    else
+                    {
+                        // Changing the points seems to wipe out the selected index, so preserve the selected index:
+                        var indexBefore = ViewModel.SelectedIndex;
+                        for (int i = 0; i < pointsToAdd.Count; i++)
+                        {
+                            ViewModel.Points[i] = pointsToAdd[i];
+                        }
+                        ViewModel.SelectedIndex = indexBefore;
+                    }
                 }
                 respondToVmChanges = true;
 
@@ -114,23 +136,31 @@ namespace OfficialPlugins.PointEditingPlugin
         bool respondToVmChanges = true;
         private void HandleDataChanged(object sender, PropertyChangedEventArgs e)
         {
-            var shouldRespondToProperty = e.PropertyName == nameof(ViewModel.Points);
-            //GlueCommands.Self.GluxCommands.SetVariableOn
-            // there is no old value, the object is the same as before so just pass
-            // the object:
-            var nos = GlueState.Self.CurrentNamedObjectSave;
-            if(nos != null && respondToVmChanges && shouldRespondToProperty)
+            switch(e.PropertyName)
             {
-                TaskManager.Self.Add(async () =>
-                {
-                    var newValue = ViewModel.Points.ToList();
-                    IsReactingToGluePropertyChangeEvent = false;
-                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
-                        nos, "Points", newValue);
-                    IsReactingToGluePropertyChangeEvent = true;
+                case nameof(ViewModel.Points):
+                    //GlueCommands.Self.GluxCommands.SetVariableOn
+                    // there is no old value, the object is the same as before so just pass
+                    // the object:
+                    var nos = GlueState.Self.CurrentNamedObjectSave;
+                    if(nos != null && respondToVmChanges)
+                    {
+                        TaskManager.Self.Add(async () =>
+                        {
+                            var newValue = ViewModel.Points.ToList();
+                            IsReactingToGluePropertyChangeEvent = false;
+                            await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                                nos, "Points", newValue);
+                            IsReactingToGluePropertyChangeEvent = true;
 
-                }, $"Responding to property changed {e.PropertyName}");
+                        }, $"Responding to property changed {e.PropertyName}");
+                    }
 
+                    break;
+                    case nameof(ViewModel.SelectedIndex):
+                        GlueState.Self.SelectedSubIndex = ViewModel.SelectedIndex;
+
+                        break;
             }
         }
 

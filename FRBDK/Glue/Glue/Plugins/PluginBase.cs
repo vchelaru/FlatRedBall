@@ -585,6 +585,11 @@ namespace FlatRedBall.Glue.Plugins
         public Action<string, string> ReactToEntityJsonLoad;
         public Action<string> ReactToGlueJsonLoad;
 
+        /// <summary>
+        /// Event raised when an index is selected inside an object which has multiple parts. This is not 
+        /// raised for list objects, but rather objects which do not display multiple objects in the tree view, such
+        /// as points in a Polygon, or segments of a Path.
+        /// </summary>
         public Action<int?> ReactToSelectedSubIndexChanged;
 
         public event Action<IPlugin, string, string> ReactToPluginEventAction;

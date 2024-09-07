@@ -1284,12 +1284,10 @@ namespace FlatRedBall.Glue.Plugins
             TabControlViewModel.IsRecordingSelection = true;
         }
 
-        internal static void ReactToSelectedSubIndexChanged(int? selectedSubIndex)
-        {
+        internal static void ReactToSelectedSubIndexChanged(int? selectedSubIndex) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToSelectedSubIndexChanged(selectedSubIndex),
                 plugin => plugin.ReactToSelectedSubIndexChanged != null);
-        }
 
         internal static void ReactToPropertyGridRightClick(System.Windows.Forms.PropertyGrid rightClickedPropertyGrid, ContextMenuStrip menuToModify)
         {
