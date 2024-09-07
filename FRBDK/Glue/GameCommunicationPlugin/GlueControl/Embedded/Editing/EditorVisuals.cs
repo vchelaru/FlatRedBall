@@ -305,16 +305,16 @@ namespace GlueControl.Editing
             return rectangle;
         }
 
-        public static Circle Circle(float radius, Vector3 position)
+        public static Circle Circle(float radius, Vector3 position, Color? color = null)
         {
             if (position.Z == Camera.Main.Z)
             {
                 position.Z = 0;
             }
 
-            Color color = Color.White;
+            Color circleColor = color ?? Color.White;
 
-            // This screen is cleaning up, so don't make anymore objects:
+            // This screen is cleaning up, so don't make any more objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new FlatRedBall.Math.Geometry.Circle();
@@ -334,7 +334,7 @@ namespace GlueControl.Editing
             circle.Visible = true;
             circle.Radius = radius;
             circle.Position = position;
-            circle.Color = color;
+            circle.Color = circleColor;
             nextCircle++;
 
             return circle;

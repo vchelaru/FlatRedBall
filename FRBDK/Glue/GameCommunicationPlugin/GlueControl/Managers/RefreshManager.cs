@@ -659,13 +659,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             var isTunneled = !string.IsNullOrWhiteSpace(newVariable.SourceObject) &&
                 !string.IsNullOrWhiteSpace(newVariable.SourceObjectProperty);
 
+            // send this down to the game
+            var dto = new AddVariableDto();
+            // clone it because we may modify it...
+            dto.CustomVariable = newVariable.Clone();
+            var variableOwner = ObjectFinder.Self.GetElementContaining(newVariable);
+            dto.ElementGameType = GetGameTypeFor(variableOwner ?? GlueState.Self.CurrentElement);
+
             if (isTunneled)
             {
-                // send this down to the game
-                var dto = new AddVariableDto();
-                // clone it because we may modify it...
-                dto.CustomVariable = newVariable.Clone();
-
                 var property =
                     dto.CustomVariable.SourceObjectProperty;
                 if (property is "X" or "Y" or "Z" or "RotationX" or "RotationY" or "RotationZ")
@@ -683,18 +685,16 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         }
                     }
                 }
-
-                var variableOwner = ObjectFinder.Self.GetElementContaining(newVariable);
-
-                dto.ElementGameType = GetGameTypeFor(variableOwner ?? GlueState.Self.CurrentElement);
-
-                await CommandSender.Self.Send(dto);
             }
             else
             {
                 // it's a brand new variable, so let's restart it...
-                CreateStopAndRestartTask($"Restarting because of added variable {newVariable}");
+                // Update - why restart? Users can still assign it, but
+                // they'll have to restart if they want to make changes in 
+                // code or make it functional. I don't see a reason to restart.
+                //CreateStopAndRestartTask($"Restarting because of added variable {newVariable}");
             }
+            await CommandSender.Self.Send(dto);
         }
 
         #endregion
