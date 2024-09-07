@@ -309,8 +309,6 @@ namespace OfficialPlugins.CollisionPlugin
             var shouldShowControl = false;
             if (selectedNos?.IsCollisionRelationship() == true)
             {
-                RefreshViewModelTo(selectedNos);
-
                 shouldShowControl = true;
             }
 
