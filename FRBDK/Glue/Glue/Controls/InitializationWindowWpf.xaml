@@ -8,16 +8,20 @@
         WindowStyle="None" 
         ResizeMode="NoResize"
              Height="240" Width="550" WindowStartupLocation="CenterScreen" Icon="/Content/Icons/Icon.png">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="6*" />
-        </Grid.ColumnDefinitions>
-        <Image Source="/Content/Icons/Icon.png" VerticalAlignment="Top" Margin="15,14" />
-        <Rectangle Width="1" Fill="DarkGray" Margin="0,7" HorizontalAlignment="Left" Grid.Column="1" />
-        <StackPanel Margin="12,6,12,12" Grid.Column="1">
-            <TextBlock x:Name="TopLevelLabel" TextWrapping="Wrap" FontSize="22" Text="{x:Static localization:Texts.PleaseWait}" />
-            <TextBlock Margin="0,8,0,0" x:Name="SubLabel" TextWrapping="Wrap"></TextBlock>
-        </StackPanel>
-    </Grid>
+    <Border Padding="0,32">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="6*" />
+            </Grid.ColumnDefinitions>
+            <Image Source="/Content/Icons/Icon.png" VerticalAlignment="Top" Margin="16,0"/>
+            <Rectangle Width="1" Fill="DarkGray" HorizontalAlignment="Left" Grid.Column="1" />
+            <StackPanel Grid.Column="2" Margin="16,0">
+                <TextBlock x:Name="TopLevelLabel" TextWrapping="Wrap" FontSize="22" Text="{x:Static localization:Texts.PleaseWait}" />
+                <TextBlock Margin="0,8,0,0" x:Name="SubLabel" TextWrapping="Wrap"></TextBlock>
+            </StackPanel>
+        </Grid>
+    </Border>
+
 </Window>

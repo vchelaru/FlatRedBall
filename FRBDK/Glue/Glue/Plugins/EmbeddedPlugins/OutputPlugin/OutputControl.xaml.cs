@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Media;
 
@@ -25,6 +26,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
         private readonly SolidColorBrush _error;
         private Brush _normal;
 
+        private Binding _foregroundBinding;
+
         public OutputControl()
         {
             InitializeComponent();
@@ -36,18 +39,18 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
 
             _error = new SolidColorBrush(Color.FromRgb(255, 0, 0));
             _normal = TextBox.Foreground;
+
+            _foregroundBinding = new Binding("Foreground")
+            {
+                Source = TextBox,
+                Mode = BindingMode.OneWay
+            };
         }
 
         private void HandleTimerTick(object sender, EventArgs e)
         {
             lock (mBuffer)
             {
-                if (_normal != TextBox.Foreground)
-                {
-                    ForegroundChanged(_normal, TextBox.Foreground);
-                    _normal = TextBox.Foreground;
-                }
-
                 if (mBuffer.Count != 0)
                 {
                     for (int i = 0; i < mBuffer.Count; i++)
@@ -58,6 +61,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
                         {
                             block.Foreground = mBuffer[i].Brush;
                         }
+                        else
+                        {
+                            BindingOperations.SetBinding(block, ForegroundProperty, _foregroundBinding);
+                        }
+
                         block.Inlines.Add(mBuffer[i].Text);
                         this.TextBox.Document.Blocks.Add(block);
 
@@ -117,21 +125,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
             if(int.TryParse(MaxLinesTextBox.Text, out int parsedValue))
             {
                 MaxLinesOfText = parsedValue;
-            }
-        }
-
-        private void ForegroundChanged(Brush oldValue, Brush newValue)
-        {
-            // Loop through all the paragraphs and update their foreground if not an error
-            foreach (var block in TextBox.Document.Blocks)
-            {
-                if (block is Paragraph paragraph)
-                {
-                    if (paragraph.Foreground == oldValue) // Avoid changing error paragraphs
-                    {
-                        paragraph.Foreground = newValue;
-                    }
-                }
             }
         }
     }

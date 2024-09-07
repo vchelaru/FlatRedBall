@@ -22,20 +22,20 @@
         </Grid.ColumnDefinitions>
 
 
-        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="3" VerticalAlignment="Stretch" Fill="LightGray" />
+        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="3" VerticalAlignment="Stretch" Fill="{DynamicResource Frb.Brushes.Contrast01}" />
 
-        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Left" Width="1" Fill="Gray" />
-        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Left" Width="1" Fill="Gray" />
-        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" HorizontalAlignment="Left" Width="1" Fill="Gray" />
-        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" HorizontalAlignment="Left" Width="1" Fill="Gray" />
-        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" HorizontalAlignment="Left" Width="1" Fill="Gray" />
-        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" HorizontalAlignment="Right" Width="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Left" Width="1" Fill="{DynamicResource Frb.Brushes.Contrast02}" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Left" Width="1" Fill="{DynamicResource Frb.Brushes.Contrast02}" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" HorizontalAlignment="Left" Width="1" Fill="{DynamicResource Frb.Brushes.Contrast02}" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" HorizontalAlignment="Left" Width="1" Fill="{DynamicResource Frb.Brushes.Contrast02}" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" HorizontalAlignment="Left" Width="1" Fill="{DynamicResource Frb.Brushes.Contrast02}" />
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" HorizontalAlignment="Right" Width="1" Fill="{DynamicResource Frb.Brushes.Contrast02}" />
 
 
         <Rectangle Grid.Row="0" Grid.ColumnSpan="5" VerticalAlignment="Top" Height="1" Fill="Black" />
-        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
+        <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Height="1" Fill="{DynamicResource Frb.Brushes.Contrast02}" />
 
-        <Rectangle Grid.Row="1" Grid.ColumnSpan="5" Grid.Column="0" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
+        <Rectangle Grid.Row="1" Grid.ColumnSpan="5" Grid.Column="0" VerticalAlignment="Bottom" Height="1" Fill="{DynamicResource Frb.Brushes.Contrast02}" />
 
 
         <!--Name-->

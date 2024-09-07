@@ -10,12 +10,14 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Themes/Frb.Brushes.xaml"/>
-        <ResourceDictionary Source="Frb.ScrollBar.xaml"/>
+        <ResourceDictionary Source="/Themes/Frb.Buttons.xaml"/>
 
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBox.xaml" />
-
-        <ResourceDictionary Source="/Themes/Frb.Buttons.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ScrollViewer.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ScrollBar.xaml" />
     </ResourceDictionary.MergedDictionaries>
+
+    <SolidColorBrush x:Key="MaterialDesign.Brush.Foreground" Color="{DynamicResource Frb.Colors.Foreground}" />
 
     <!-- This is a clone of a style that normally would be applied to a Window. 
     However, we don't have a Window control to apply it to -->
@@ -28,6 +30,21 @@
         <Setter Property="TextElement.Foreground" Value="{DynamicResource Frb.Brushes.Foreground}" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
         <Setter Property="TextOptions.TextRenderingMode" Value="Auto" />
+    </Style>
+
+    <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource MaterialDesignScrollViewer}" />
+
+    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource MaterialDesignScrollBar}">
+        <Style.Resources>
+            <system:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">8</system:Double>
+            <system:Double x:Key="{x:Static SystemParameters.HorizontalScrollBarHeightKey}">8</system:Double>
+        </Style.Resources>
+        <Setter Property="Foreground" Value="Green"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="MinWidth" Value="8"/>
+        <Setter Property="Width" Value="8"/>
+        <Setter Property="materialDesign:ScrollBarAssist.ThumbCornerRadius" Value="4"/>
+        <Setter Property="materialDesign:ScrollBarAssist.ButtonsVisibility" Value="Collapsed"/>
     </Style>
 
     <Style TargetType="{x:Type Window}" BasedOn="{StaticResource TopLevelControl}">
@@ -53,7 +70,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 
     <Style TargetType="{x:Type RichTextBox}">
         <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"></Setter>
@@ -620,45 +636,54 @@
     </Style>
 
     <Style TargetType="{x:Type GroupBox}">
-        <Setter Property="Template">
-            <Setter.Value>
-            <ControlTemplate TargetType="{x:Type GroupBox}">
+
+        <Style.Resources>
+            <ControlTemplate x:Key="template"  TargetType="{x:Type GroupBox}">
+                <ControlTemplate.Resources>
+
+                </ControlTemplate.Resources>
                 <Border BorderBrush="{TemplateBinding BorderBrush}" 
                         BorderThickness="{TemplateBinding BorderThickness}" 
-                        Background="{TemplateBinding Background}" CornerRadius="2"
-                        Margin="0,5,0,0">
+                        Background="{TemplateBinding Background}" 
+                        CornerRadius="0"
+                        SnapsToDevicePixels="True">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Grid Grid.Row="0" Margin="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" Width="10" BorderThickness="0,1,0,0" CornerRadius="2"  Margin="0"  BorderBrush="{TemplateBinding BorderBrush}"/>
-                            <ContentPresenter Grid.Column="1"  ContentSource="Header" VerticalAlignment="Top" TextElement.Foreground="{TemplateBinding Foreground}" MinWidth="0">
-                                <ContentPresenter.RenderTransform>
-                                    <TranslateTransform X="0" Y="-10"/>
-                                </ContentPresenter.RenderTransform>
+                        <Border Grid.Row="0" Padding="4,0,4,2"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                Background="{TemplateBinding BorderBrush}"
+                                HorizontalAlignment="Stretch">
+                            <ContentPresenter 
+                                ContentSource="Header"
+                                TextElement.Foreground="{TemplateBinding Foreground}">
+                                <ContentPresenter.Resources>
+                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type GroupBox}}}"/>
+                                        <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType={x:Type GroupBox}}}"/>
+                                    </Style>
+                                </ContentPresenter.Resources>
                             </ContentPresenter>
-                            <Border Grid.Column="2" BorderThickness="0,1,0,0" CornerRadius="2"  BorderBrush="{TemplateBinding BorderBrush}"/>
-                        </Grid>
-                        
+                        </Border>
                         <ContentPresenter Grid.Row="1" Margin="{TemplateBinding Padding}"/>
                     </Grid>
                 </Border>
             </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        </Style.Resources>
+        <!--<Setter Property="Template" Value="{x:Null}"/>-->
+
+        
         <!-- Default Style Properties -->
-        <Setter Property="Padding" Value="6,0,6,4"/>
-        <Setter Property="Margin" Value="0,5,0,0"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast03}"/>
-        <Setter Property="BorderThickness" Value="1,0,1,1"/>
-        <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground.Subtle}"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Template" Value="{StaticResource template}"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
+        <Setter Property="FontSize" Value="12" />
     </Style>
 
     <Style TargetType="{x:Type TreeViewItem}">

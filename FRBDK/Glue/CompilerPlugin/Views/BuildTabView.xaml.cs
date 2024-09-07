@@ -39,6 +39,8 @@ namespace CompilerPlugin.Views
 
         #endregion
 
+        private Binding _foregroundBinding;
+
         public BuildTabView()
         {
             outputParser = new OutputParser();
@@ -46,6 +48,12 @@ namespace CompilerPlugin.Views
             InitializeComponent();
 
             TextBox.Document.Blocks.Add(new Paragraph());
+
+            _foregroundBinding = new Binding("Foreground")
+            {
+                Source = TextBox,
+                Mode = BindingMode.OneWay
+            };
         }
 
         private void HandleCompileClick()
@@ -91,8 +99,17 @@ namespace CompilerPlugin.Views
                             var outputType = outputParser.GetOutputType(line);
                             if(outputType != OutputType.Warning)
                             {
-                                var color = outputType == OutputType.Error ? Brushes.Red : Brushes.Black;
-                                paragraph.Inlines.Add(new Run(line + "\r\n") { Foreground = color});
+                                Run run = new Run(line + "\r\n");
+                                paragraph.Inlines.Add(run);
+
+                                if (outputType == OutputType.Error)
+                                {
+                                    run.Foreground = Brushes.Red;
+                                } 
+                                else
+                                {
+                                    BindingOperations.SetBinding(run, ForegroundProperty, _foregroundBinding);
+                                }
                             }
                         }
                     }
