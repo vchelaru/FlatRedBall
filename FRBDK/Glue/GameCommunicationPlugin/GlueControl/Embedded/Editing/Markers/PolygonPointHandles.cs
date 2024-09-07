@@ -343,7 +343,9 @@ namespace GlueControl.Editing
                 }
             }
 
-            if (FlatRedBall.Input.InputManager.Keyboard.KeyDown(addKey) && cursor.IsOn(polygon))
+            var isAddKeyDown = addKeys.Any(item => FlatRedBall.Input.InputManager.Keyboard.KeyDown(item));
+
+            if (isAddKeyDown && cursor.IsOn(polygon))
             {
                 var vector = polygon.VectorFrom(cursor.WorldX, cursor.WorldY);
 
