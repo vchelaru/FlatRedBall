@@ -197,6 +197,10 @@ public partial class MainGlueWindow : Form
 
     public MainGlueWindow()
     {
+        // Because we are hosting in a WinForms application, we need to ensure Application.Current is set
+        // This is required for various aspects of WPF controls to work correctly.
+        _ = new Wpf.Application() { ShutdownMode = Wpf.ShutdownMode.OnExplicitShutdown };
+
         // Vic says - this makes Glue use the latest MSBuild environments
         // Running on AnyCPU means we run in 64 bit and can load VS 22 64 bit libs.
         SetMsBuildEnvironmentVariable();
@@ -431,12 +435,11 @@ public partial class MainGlueWindow : Form
         wpfHost.Dock = DockStyle.Fill;
         MainWpfControl = new MainPanelControl();
         TryGenerateImplicitWindowStylesFor(Assembly.GetCallingAssembly());
+        Wpf.Application.Current.Resources = MainWpfControl.Resources;
         SyncMenuStripWithTheme(MainWpfControl);
         wpfHost.Child = MainWpfControl;
         this.Controls.Add(wpfHost);
         this.PerformLayout();
-        var app = new Wpf.Application();
-        app.Resources = MainWpfControl.Resources;
     }
 
     HashSet<Assembly> _checked = new();
