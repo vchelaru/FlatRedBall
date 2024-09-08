@@ -21,7 +21,11 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
         public string Details
         {
             get => DetailsTextBlock.Text;
-            set => DetailsTextBlock.Text = value;
+            set 
+            {
+                DetailsTextBlock.Text = value;
+                DetailsTooltipTextBlock.Text = value;
+            }
         }
 
         public ImageSource Image
@@ -36,6 +40,18 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             set => ImageColumn.Width = new GridLength(value, GridUnitType.Star);
         }
 
+        public static readonly DependencyProperty DescribeInTooltipProperty = DependencyProperty.Register(
+            nameof(DescribeInToolTip),
+            typeof(bool),
+            typeof(TitleImageButton),
+            new PropertyMetadata(false));
+
+        public bool DescribeInToolTip 
+        {
+            get => (bool)GetValue(DescribeInTooltipProperty);
+            set => SetValue(DescribeInTooltipProperty, value);
+        }
+
         public TitleImageButton()
         {
             InitializeComponent();
@@ -44,16 +60,6 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Clicked?.Invoke(this, e);
-        }
-
-        private void Button_MouseEnter(object sender, MouseEventArgs e)
-        {
-            DetailsIcon.Visibility = Visibility.Visible;
-        }
-
-        private void Button_MouseLeave(object sender, MouseEventArgs e)
-        {
-            DetailsIcon.Visibility = Visibility.Collapsed;
         }
 
         private void Button_MouseEnter_1(object sender, MouseEventArgs e)
