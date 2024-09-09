@@ -491,10 +491,17 @@ namespace GumPlugin.Managers
         string GetGumxLoadCode(IElement element, NamedObjectSave nos, ReferencedFileSave rfs, string contentManagerName)
         {
             string fileNameToLoad = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs, mGumxAti);
-            var fieldName = "m" + rfs.GetInstanceName();
             string toReturn = $"FlatRedBall.Gum.GumIdb.StaticInitialize(\"{fileNameToLoad}\"); " +
                         "FlatRedBall.Gum.GumIdbExtensions.RegisterTypes();  " +
-                        $"FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false; {fieldName} = FlatRedBall.Gum.GumIdb.Self;";
+                        $"FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false;";
+
+            var shouldAddFieldAssignment = false;
+
+            if(element == null && GlueState.Self.CurrentGlueProject.GlobalContentSettingsSave.LoadAsynchronously)
+            {
+                var fieldName = "m" + rfs.GetInstanceName();
+                toReturn += $" {fieldName} = FlatRedBall.Gum.GumIdb.Self;";
+            }
 
             var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
 
