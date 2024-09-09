@@ -30,7 +30,7 @@ namespace FlatRedBall.Gum
 
         GraphicalUiElement element;
 
-        public static GumIdb Self { get; private set;}
+        public static GumIdb Self { get; private set; }
 
         #endregion
 
@@ -131,58 +131,57 @@ namespace FlatRedBall.Gum
 
         public static void StaticInitialize(string projectFileName)
         {
-            if (mManagers == null)
+            if (mManagers != null) return;
+
+            mManagers = new SystemManagers();
+            mManagers.Initialize(FlatRedBallServices.GraphicsDevice);
+            mManagers.Renderer.Camera.AbsoluteLeft = 0;
+            mManagers.Renderer.Camera.AbsoluteTop = 0;
+
+
+            // Need to do the zoom here in response to the FRB camera vs. the Gum camera
+            mManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
+            mManagers.Renderer.Camera.X = 0;
+            mManagers.Renderer.Camera.Y = 0;
+
+            SystemManagers.Default = mManagers;
+            FlatRedBallServices.AddManager(RenderingLibrary.SystemManagers.Default);
+
+            RenderingLibrary.Graphics.Text.RenderBoundaryDefault = false;
+            // FlatRedBall uses premult alpha.
+            RenderingLibrary.Graphics.Renderer.NormalBlendState =
+                global::Gum.BlendState.AlphaBlend;
+            //Microsoft.Xna.Framework.Graphics.BlendState.AlphaBlend;
+
+            // August 31 - I don't know if we should do this:
+            UpdateDisplayToMainFrbCamera();
+            // or this:
+            // GraphicalUiElement.CanvasWidth = ObjectFinder.Self.GumProjectSave.DefaultCanvasWidth;
+            // GraphicalUiElement.CanvasHeight = ObjectFinder.Self.GumProjectSave.DefaultCanvasHeight;
+            // UpdatedisplayToMainFrbCamera is more convenient but it's lets "accurate", as the canvas
+            // width/height values is how the UI was designed in the tool.
+            // For now we'll have Glue override these values, but we may eventually change it.
+
+            var idb = new GumIdb();
+            idb.Name = "Static (global) Gum IDB";
+            // We don't want the UI to be at Z=0 because it will render 
+            // at the same Z along with FRB entities and environments so UI might 
+            // be hidden. The proper way to solve this is to use Layers, but
+            // this shouldn't be creating new Layers, that's up to the user.
+            // Let's make it have a positive Z so it draws in more things at once 
+            idb.Z = 10;
+
+            // This could be called on a secondary thread, like if called by GlobalContent, so we
+            // want this to happen on the primary thread:
+            Action primaryThreadAction = () =>
             {
-                mManagers = new SystemManagers();
-                mManagers.Initialize(FlatRedBallServices.GraphicsDevice);
-                mManagers.Renderer.Camera.AbsoluteLeft = 0;
-                mManagers.Renderer.Camera.AbsoluteTop = 0;
+                FlatRedBall.SpriteManager.AddDrawableBatch(idb);
+                FlatRedBall.Screens.ScreenManager.PersistentDrawableBatches.Add(idb);
+            };
 
-
-                // Need to do the zoom here in response to the FRB camera vs. the Gum camera
-                mManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
-                mManagers.Renderer.Camera.X = 0;
-                mManagers.Renderer.Camera.Y = 0;
-
-                SystemManagers.Default = mManagers;
-                FlatRedBallServices.AddManager(RenderingLibrary.SystemManagers.Default);
-
-                RenderingLibrary.Graphics.Text.RenderBoundaryDefault = false;
-                // FlatRedBall uses premult alpha.
-                RenderingLibrary.Graphics.Renderer.NormalBlendState =
-                    global::Gum.BlendState.AlphaBlend;
-                    //Microsoft.Xna.Framework.Graphics.BlendState.AlphaBlend;
-
-                // August 31 - I don't know if we should do this:
-                UpdateDisplayToMainFrbCamera();
-                // or this:
-                // GraphicalUiElement.CanvasWidth = ObjectFinder.Self.GumProjectSave.DefaultCanvasWidth;
-                // GraphicalUiElement.CanvasHeight = ObjectFinder.Self.GumProjectSave.DefaultCanvasHeight;
-                // UpdatedisplayToMainFrbCamera is more convenient but it's lets "accurate", as the canvas
-                // width/height values is how the UI was designed in the tool.
-                // For now we'll have Glue override these values, but we may eventually change it.
-
-                var idb = new GumIdb();
-                idb.Name = "Static (global) Gum IDB";
-                // We don't want the UI to be at Z=0 because it will render 
-                // at the same Z along with FRB entities and environments so UI might 
-                // be hidden. The proper way to solve this is to use Layers, but
-                // this shouldn't be creating new Layers, that's up to the user.
-                // Let's make it have a positive Z so it draws in more things at once 
-                idb.Z = 10;
-
-                // This could be called on a secondary thread, like if called by GlobalContent, so we
-                // want this to happen on the primary thread:
-                Action primaryThreadAction = () =>
-                {
-                    FlatRedBall.SpriteManager.AddDrawableBatch(idb);
-                    FlatRedBall.Screens.ScreenManager.PersistentDrawableBatches.Add(idb);
-                };
-
-                var instruction = new FlatRedBall.Instructions.DelegateInstruction(primaryThreadAction);
-                FlatRedBall.Instructions.InstructionManager.AddSafe(instruction);
-                Self = idb;
-            }
+            var instruction = new FlatRedBall.Instructions.DelegateInstruction(primaryThreadAction);
+            FlatRedBall.Instructions.InstructionManager.AddSafe(instruction);
+            Self = idb;
 
             if (projectFileName == null)
             {
@@ -206,12 +205,12 @@ namespace FlatRedBall.Gum
             ObjectFinder.Self.GumProjectSave = GumProjectSave.Load(mProjectFileName, out result);
 
 #if DEBUG
-            if(ObjectFinder.Self.GumProjectSave == null)
+            if (ObjectFinder.Self.GumProjectSave == null)
             {
                 throw new Exception("Could not find Gum project at " + mProjectFileName);
             }
 
-            if(!string.IsNullOrEmpty(result.ErrorMessage))
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
             {
                 throw new Exception(result.ErrorMessage);
 
@@ -488,7 +487,7 @@ namespace FlatRedBall.Gum
         {
             mManagers.Activity(TimeManager.CurrentTime);
 
-            if(lastTimeTimeManagerUpdateCalled != FlatRedBall.TimeManager.CurrentTime)
+            if (lastTimeTimeManagerUpdateCalled != FlatRedBall.TimeManager.CurrentTime)
             {
                 global::Gum.Wireframe.TimeManager.Self.Activity();
                 lastTimeTimeManagerUpdateCalled = FlatRedBall.TimeManager.CurrentTime;
@@ -583,7 +582,7 @@ namespace FlatRedBall.Gum
             mFrbToGumLayers.Clear();
 
         }
-#endregion
+        #endregion
 
         #region RenderingLibrary.Graphics.IVisible
 
@@ -636,6 +635,6 @@ namespace FlatRedBall.Gum
             Parent = newParent;
         }
 
-#endregion
+        #endregion
     }
 }

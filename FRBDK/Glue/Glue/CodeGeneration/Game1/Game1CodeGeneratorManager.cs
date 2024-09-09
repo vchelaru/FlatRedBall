@@ -92,7 +92,7 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
                 if(startupScreen?.IsBeforeGlobalContentLoaded == true)
                 {
                     shouldGenerateGlobalContentInitialize = false;
-                    method.Line("// The startup screen is set to load before GlobalContent, so we won't load GlobalContent here");
+                    method.Line($"// The startup screen {startupScreenName} is set to load before GlobalContent, so we won't load GlobalContent here");
                 }
             }
 
