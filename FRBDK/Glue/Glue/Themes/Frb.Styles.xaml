@@ -174,7 +174,7 @@
                     <Border Background="Transparent" BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="2">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
@@ -223,10 +223,10 @@
                                StaysOpen="False"
                                    AllowsTransparency="True"
                                    IsOpen="{Binding IsChecked, ElementName=PART_DropDownButton}">
-                                <Border Background="{DynamicResource Frb.Surface01}" BorderBrush="Gray" BorderThickness="1" Padding="4,8" CornerRadius="2" >
-                                    <StackPanel>
+                                <Border Background="{DynamicResource Frb.Surface01}" MaxHeight="{TemplateBinding MaxDropDownHeight}"  BorderBrush="Gray" BorderThickness="1" Padding="4,8" CornerRadius="2" >
+                                    <ScrollViewer>
                                         <ContentPresenter ContentSource="DropDownContent" />
-                                    </StackPanel>
+                                    </ScrollViewer>
                                 </Border>
                             </Popup>
                         </Grid>
@@ -442,7 +442,8 @@
                                    AllowsTransparency="True"
                                  Opacity="1">
                                 <Border x:Name="PopupBorder"
-                                        HorizontalAlignment="Stretch" Height="Auto"
+                                        HorizontalAlignment="Stretch" 
+                                        Height="Auto"
                                         MinWidth="{TemplateBinding ActualWidth}"
                                         MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
