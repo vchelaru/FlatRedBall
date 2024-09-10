@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers;
@@ -77,8 +78,25 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
 
             // Should this go in a generator?
             var gluxVersion = GlueState.Self.CurrentGlueProject.FileVersion;
-            if(gluxVersion>= (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly && 
-                GlueState.Self.CurrentGlueProject.GlobalContentSettingsSave.GenerateLoadGlobalContentCode)
+
+            var shouldGenerateGlobalContentInitialize =
+                gluxVersion >= (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly &&
+                GlueState.Self.CurrentGlueProject.GlobalContentSettingsSave.GenerateLoadGlobalContentCode;
+
+            if(shouldGenerateGlobalContentInitialize)
+            {
+                // if the startup screen has IsBeforeGlobalContentLoaded, set this to false
+                var startupScreenName = GlueState.Self.CurrentGlueProject.StartUpScreen;
+                var startupScreen = ObjectFinder.Self.GetScreenSave(startupScreenName);
+
+                if(startupScreen?.IsBeforeGlobalContentLoaded == true)
+                {
+                    shouldGenerateGlobalContentInitialize = false;
+                    method.Line($"// The startup screen {startupScreenName} is set to load before GlobalContent, so we won't load GlobalContent here");
+                }
+            }
+
+            if (shouldGenerateGlobalContentInitialize)
             {
                 method.Line($"global::{GlueState.Self.ProjectNamespace}.GlobalContent.Initialize();");
             }

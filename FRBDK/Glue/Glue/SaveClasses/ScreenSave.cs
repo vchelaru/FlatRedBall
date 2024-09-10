@@ -22,27 +22,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Properties
 
-
-
-
-        // Broadcasting has been removed
-//        [Browsable(false)]
-//        [BroadcastAttribute(BroadcastStaticOrInstance.Internal)]
-//        public string InitializeBroadcast
-//        {
-//            get;
-//            set;
-//        }
-
-//        // Broadcasting has been removed 
-//        [Browsable(false)]
-//        [BroadcastAttribute(BroadcastStaticOrInstance.Internal)]
-//        public string DestroyBroadcast
-//        {
-//            get;
-//            set;
-//        }
-
         [DefaultValue(false)]
         [Obsolete("Don't use this anymore. As of April 2024 - this is very old and is likely not used anymore in modern projects." +
             " We now use explicit layers.")]
@@ -87,19 +66,6 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
             }
         }
-
-        //[Browsable(false)]
-        //public List<BehaviorSave> Behaviors
-        //{
-        //    get;
-        //    set;
-        //}
-        //public bool ShouldSerializeBehaviors()
-        //{
-        //    return Behaviors != null && Behaviors.Count != 0;
-        //}
-
-
 
         [XmlIgnore]
         [JsonIgnore]
@@ -178,6 +144,11 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 Properties.SetValue("IsLoadingScreen", value);
             }
+        }
+
+        public bool IsBeforeGlobalContentLoaded
+        {
+            get; set;
         }
 
         #endregion
@@ -283,7 +254,5 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         #endregion
-
-
     }
 }

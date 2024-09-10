@@ -417,10 +417,14 @@ namespace FlatRedBall.Gui
         static public void AddDominantWindow(IWindow window)
         {
 #if DEBUG
-
             if (!FlatRedBallServices.IsThreadPrimary())
             {
                 throw new InvalidOperationException("Dominant windows can only be added or modified on the primary thread");
+            }
+
+            if(window  == null)
+            {
+                throw new ArgumentNullException(nameof(window));
             }
 #endif
             // Let's make these tolerant

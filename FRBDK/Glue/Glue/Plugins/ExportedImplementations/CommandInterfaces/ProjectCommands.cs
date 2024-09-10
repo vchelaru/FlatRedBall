@@ -191,13 +191,15 @@ class ProjectCommands : IProjectCommands
     /// <param name="shouldLink"></param>
     /// <param name="parentFile"></param>
     /// <returns>Whether the project was modified.</returns>
-    public bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null, ReferencedFileSave fileRfs = null)
+    public bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink, 
+        string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null, ReferencedFileSave fileRfs = null)
     {
         bool wasProjectModified = false;
         ///////////////////Early Out/////////////////////
         if (project == null || GlueState.Self.CurrentMainProject == null) return wasProjectModified;
 
         /////////////////End Early Out//////////////////
+        bool preserveCase = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CaseSensitiveLoading;
 
         string fileToAddAbsolute = fileName.FullPath;
 
@@ -242,9 +244,22 @@ class ProjectCommands : IProjectCommands
 
             isFileAlreadyPartOfProject = project.ContentProject.IsFilePartOfProject(fileRelativeToContent, bimt);
 
+            // If we care about case sensitivity, we need to make sure the file is added with the right case or else it won't work on case-sensitive platforms.
+            ProjectItem buildItem = null;
+            if (preserveCase && isFileAlreadyPartOfProject)
+            {
+                buildItem = ((VisualStudioProject)project.ContentProject).GetItem(fileRelativeToContent);
+
+                if (buildItem != null && buildItem.EvaluatedInclude != fileRelativeToContent)
+                {
+                    // treat it as if it's not part of the project already
+                    isFileAlreadyPartOfProject = false;
+                }
+            }
+
             if (!isFileAlreadyPartOfProject)
             {
-                var buildItem = ((VisualStudioProject)project.ContentProject).GetItem(fileRelativeToContent);
+                buildItem = ((VisualStudioProject)project.ContentProject).GetItem(fileRelativeToContent);
                 if (buildItem != null)
                 {
                     // The item is here but it's using the wrong build types.  Let's

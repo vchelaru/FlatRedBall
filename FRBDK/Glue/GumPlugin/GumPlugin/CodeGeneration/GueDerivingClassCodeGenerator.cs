@@ -239,6 +239,7 @@ namespace GumPlugin.CodeGeneration
 
         public string GetFullRuntimeNamespaceFor(bool isStandardElement, string elementName, bool prefixGlobal = true)
         {
+            elementName = elementName.Replace("\\", "/");
             string subNamespace = null;
             if (isStandardElement == false && (elementName.Contains('/')))
             {

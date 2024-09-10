@@ -1045,21 +1045,17 @@ namespace FlatRedBall
 #endif
 )
             {
-                if (contentManagerName != GlobalContentManager &&
-                    IsLoaded<T>(assetName, GlobalContentManager))
+                if (IsLoaded<T>(assetName, GlobalContentManager))
                 {
-
-                    if (FlatRedBall.Content.ContentManager.LoadFromGlobalIfExists)
-                    {
-                        return GetContentManagerByName(GlobalContentManager).Load<T>(assetName);
-                    }
 #if DEBUG
-                    if (FlatRedBall.Content.ContentManager.ThrowExceptionOnGlobalContentLoadedInNonGlobal)
+                    if (FlatRedBall.Content.ContentManager.ThrowExceptionOnGlobalContentLoadedInNonGlobal&& contentManagerName != GlobalContentManager)
                     {
                         throw new Exception("The file " + assetName + " is already loaded in the Global ContentManager.  " +
                             "The game is attempting to load it in the following ContentManager: " + contentManagerName);
                     }
 #endif
+
+                    return GetContentManagerByName(GlobalContentManager).Load<T>(assetName);
                 }
 
             }
