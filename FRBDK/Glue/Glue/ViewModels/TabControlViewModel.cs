@@ -71,7 +71,7 @@ namespace GlueFormsCore.ViewModels
 
             SelectedTab = TabsForTypes.TryGetValue(typeName, out PluginTab tab)
                 ? tab
-                : Tabs.OrderByDescending(item => !item.IsPreferredDisplayerForType(typeName))
+                : Tabs.OrderByDescending(item => item.IsPreferredDisplayerForType(typeName))
                     .ThenByDescending(item => item.LastTimeClicked)
                     .First();
         }
