@@ -10,6 +10,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace GlueFormsCore.ViewModels
 {
@@ -155,7 +156,12 @@ namespace GlueFormsCore.ViewModels
 
             if (args.NewItems is not null && tab.Count == 1)
             {
-                int length = tab.Location == TabLocation.Left ? 230 : 200;
+                double length = tab.Location switch
+                {
+                    TabLocation.Left => GlueState.Self.GlueSettingsSave.LeftTabWidthPixels ?? 230,
+                    _ => 230
+                };
+
                 gridLength = new GridLength(length, GridUnitType.Pixel);
             }
             else if (tab.Count == 0)
