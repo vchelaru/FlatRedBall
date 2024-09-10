@@ -174,7 +174,7 @@
                     <Border Background="Transparent" BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="2">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
