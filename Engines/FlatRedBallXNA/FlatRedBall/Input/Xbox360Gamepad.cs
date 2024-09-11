@@ -398,7 +398,9 @@ namespace FlatRedBall.Input
 
         /// <summary>
         /// Returns whether the current Xbox360GamePad hardware is connected, or if 
-        /// the FakeIsConnected property is set to true.
+        /// the FakeIsConnected property is set to true. For FlatRedBall Web this property returns
+        /// false even if the Gamepad is connected until input is detected. Other platforms properly
+        /// return true before any input is detected.
         /// </summary>
         /// <seealso cref="FakeIsConnected"/>
         public bool IsConnected
