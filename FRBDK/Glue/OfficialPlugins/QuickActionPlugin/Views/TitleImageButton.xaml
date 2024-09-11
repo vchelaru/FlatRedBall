@@ -28,9 +28,10 @@
                            Foreground="{DynamicResource Frb.Brushes.Foreground}">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Setter Property="FontWeight" Value="Bold"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding DescribeInToolTip, RelativeSource={RelativeSource AncestorType=views:TitleImageButton}}" Value="True">
-                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="FontWeight" Value="Normal"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
