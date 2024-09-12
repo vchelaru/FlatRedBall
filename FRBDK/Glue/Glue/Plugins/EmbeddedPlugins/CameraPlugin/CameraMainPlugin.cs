@@ -99,6 +99,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                 {
                     PluginManager.ReactToResolutionChanged();
                 }
+
+                if(propertyName == nameof(viewModel.ScaleGum))
+                {
+                   PluginManager.ReactToScaleGumChanged();
+                }
             }
         } 
 

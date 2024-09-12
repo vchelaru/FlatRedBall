@@ -302,11 +302,16 @@ namespace GumPlugin.Managers
                 {
                     var gumProject = AppState.Self.GumProjectSave;
 
-                    if(gumProject.DefaultCanvasWidth != displaySettings.ResolutionWidth ||
-                        gumProject.DefaultCanvasHeight != displaySettings.ResolutionHeight)
+                    var gumScale = displaySettings.ScaleGum;
+
+                    var effectiveWidth = 100 * displaySettings.ResolutionWidth / (decimal)gumScale;
+                    var effectiveHeight = 100 * displaySettings.ResolutionHeight / (decimal)gumScale;
+
+                    if (gumProject.DefaultCanvasWidth != effectiveWidth ||
+                        gumProject.DefaultCanvasHeight != effectiveHeight)
                     {
-                        gumProject.DefaultCanvasWidth = displaySettings.ResolutionWidth;
-                        gumProject.DefaultCanvasHeight = displaySettings.ResolutionHeight;
+                        gumProject.DefaultCanvasWidth = (int) effectiveWidth;
+                        gumProject.DefaultCanvasHeight = (int) effectiveHeight;
 
                         await GumPluginCommands.Self.SaveGumxAsync();
                     }

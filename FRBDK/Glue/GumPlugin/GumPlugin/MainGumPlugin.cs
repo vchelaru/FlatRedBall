@@ -397,6 +397,8 @@ public class MainGumPlugin : PluginBase
         this.GetAvailableAssetTypes = HandleGetAvailableAssetTypes;
 
         this.ResolutionChanged += HandleResolutionChanged;
+
+        this.ScaleGumChanged += HandleScaleGumChanged;
     }
 
 
@@ -405,6 +407,14 @@ public class MainGumPlugin : PluginBase
     #region Methods
 
     private void HandleResolutionChanged()
+    {
+        if (viewModel?.IsMatchGameResolutionInGumChecked == true)
+        {
+            GumPluginCommands.Self.UpdateGumToGlueResolution();
+        }
+    }
+
+    private void HandleScaleGumChanged()
     {
         if (viewModel?.IsMatchGameResolutionInGumChecked == true)
         {

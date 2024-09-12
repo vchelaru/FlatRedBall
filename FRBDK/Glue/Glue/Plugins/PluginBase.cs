@@ -489,6 +489,11 @@ namespace FlatRedBall.Glue.Plugins
         public Action ResolutionChanged { get; protected set; }
 
         /// <summary>
+        /// Events raised when Gum Scale values change.
+        /// </summary>
+        public Action ScaleGumChanged { get; protected set; }
+
+        /// <summary>
         /// Responsible for returning whether the argument file can return content.  The file shouldn't be opened
         /// here, only the extension should be investigated to see if the file can potentially reference content.
         /// </summary>
