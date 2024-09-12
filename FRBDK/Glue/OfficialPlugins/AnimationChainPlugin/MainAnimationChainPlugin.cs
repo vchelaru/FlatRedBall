@@ -175,11 +175,11 @@ namespace OfficialPluginsCore.AnimationChainPlugin
         {
             var file = GlueState.Self.CurrentReferencedFileSave;
 
-            AchxManager.HideTab();
 
             /////////////////Early Out///////////////////
             if (file == null)
             {
+                AchxManager.HideTab();
                 return;
             }
             ///////////////End Early Out/////////////////
@@ -192,6 +192,9 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             {
                 case "achx":
                     AchxManager.ShowTab(filePath);
+                    break;
+                default:
+                    AchxManager.HideTab();
                     break;
             }
         }
