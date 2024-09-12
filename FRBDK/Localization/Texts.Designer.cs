@@ -1078,15 +1078,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Copyright.
-        /// </summary>
-        public static string Copyright {
-            get {
-                return ResourceManager.GetString("Copyright", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Can not create a new Synced Project because there is no open project..
         /// </summary>
         public static string CouldNotCreateSyncedProject {
@@ -2734,15 +2725,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FlatRedBall Glue Version.
-        /// </summary>
-        public static string FrbGlueVersion {
-            get {
-                return ResourceManager.GetString("FrbGlueVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to FRB, Gum, and Game.
         /// </summary>
         public static string FrbGumAndGame {
@@ -3009,15 +2991,6 @@ namespace Localization {
         public static string GlueGroup {
             get {
                 return ResourceManager.GetString("GlueGroup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Glue Project Version.
-        /// </summary>
-        public static string GlueProjectVersion {
-            get {
-                return ResourceManager.GetString("GlueProjectVersion", resourceCulture);
             }
         }
         
@@ -4225,15 +4198,6 @@ namespace Localization {
         public static string Label {
             get {
                 return ResourceManager.GetString("Label", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Latest Version.
-        /// </summary>
-        public static string LatestVersion {
-            get {
-                return ResourceManager.GetString("LatestVersion", resourceCulture);
             }
         }
         
