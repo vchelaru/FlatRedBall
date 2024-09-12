@@ -88,7 +88,11 @@ namespace TileGraphicsPlugin.Managers
                 };
             }
 
-            var directory = FileManager.GetDirectory(tsxFile.Standardized);
+            var tsxFileStandardized = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CaseSensitiveLoading ?
+                tsxFile.StandardizedCaseSensitive :
+                tsxFile.Standardized;
+
+            var directory = FileManager.GetDirectory(tsxFileStandardized);
 
             if (external?.Images != null && external.Images.Length != 0)
             {
@@ -134,7 +138,11 @@ namespace TileGraphicsPlugin.Managers
                 {
                     var referencedFiles = tms.GetReferencedFiles();
 
-                    string directory = FileManager.GetDirectory(fileName.Standardized);
+                    var standardFileName = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CaseSensitiveLoading
+                        ? fileName.StandardizedCaseSensitive
+                        : fileName.Standardized;
+
+                    string directory = FileManager.GetDirectory(standardFileName);
                     for (int i = 0; i < referencedFiles.Count; i++)
                     {
                         referencedFiles[i] = directory + referencedFiles[i];
