@@ -82,6 +82,7 @@ namespace FlatRedBall.Glue.Plugins
             get => Get<string>();
             set => Set(value);
         }
+        public override string ToString() => Title;
 
         public TabContainerViewModel ParentContainer
         {

@@ -45,9 +45,29 @@ namespace GlueFormsCore.ViewModels
         {
             Tabs.CollectionChanged += (_, args) =>
             {
+                bool forceSet = false;
+                if (args.Action == NotifyCollectionChangedAction.Remove)
+                {
+                    // see if any of the removed items are the SelectedTab.
+                    foreach(var item in args.OldItems)
+                    {
+                        if(item == SelectedTab)
+                        {
+                            // deselect it - it'll get re-set down below
+                            forceSet = true;
+                            break;
+                        }
+                    }
+                }
+
                 NotifyPropertyChanged(nameof(Count));
                 args.NewItems?.OfType<PluginTab>().ToList().ForEach(tab => tab.ParentContainer = this);
-                SelectedTab ??= Tabs.FirstOrDefault();
+
+
+                if(SelectedTab == null || forceSet)
+                {
+                    SelectedTab = Tabs.FirstOrDefault();
+                }
             };
         }
 
