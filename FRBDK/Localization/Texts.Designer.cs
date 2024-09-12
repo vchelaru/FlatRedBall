@@ -5507,15 +5507,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Preferences.
-        /// </summary>
-        public static string Preferences {
-            get {
-                return ResourceManager.GetString("Preferences", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Preserve Stretch Area.
         /// </summary>
         public static string PreserveStretchArea {

@@ -258,9 +258,6 @@
   <data name="PerformanceSettings" xml:space="preserve">
     <value>Performance Settings</value>
   </data>
-  <data name="Preferences" xml:space="preserve">
-    <value>Preferences</value>
-  </data>
   <data name="CustomGameClass" xml:space="preserve">
     <value>Custom Game Class</value>
   </data>

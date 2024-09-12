@@ -86,9 +86,6 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
                     Localization.Texts.PerformanceSettings,
                     () => new PerformanceSettingsWindow().ShowDialog(MainGlueWindow.Self));
 
-                Settings.Add(
-                    Localization.Texts.Preferences,
-                    () => new PreferencesWindow().Show());
 
                 Settings.DropDownItems.Add(new ToolStripSeparator());
 
