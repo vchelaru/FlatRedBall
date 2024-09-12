@@ -39,8 +39,6 @@ namespace GlueFormsCore.ViewModels
         public int Count => Tabs.Count;
         public ObservableCollection<PluginTab> Tabs { get; private set; } = new ObservableCollection<PluginTab>();
 
-        public Dictionary<string, PluginTab> TabsForTypes { get; private set; } = new Dictionary<string, PluginTab>();
-
         public TabContainerViewModel()
         {
             Tabs.CollectionChanged += OnTabsCollectionChanged;
@@ -56,17 +54,6 @@ namespace GlueFormsCore.ViewModels
             }
         }
 
-        public void SetTabForCurrentType(PluginTab tab)
-        {
-            var treeNode = GlueState.Self.CurrentTreeNode;
-            var selectedType = treeNode?.Tag?.GetType()?.Name ?? treeNode?.Text;
-
-            if(selectedType != null)
-            {
-                TabsForTypes[selectedType] = tab;
-            }
-        }
-
         public void ShowMostRecentTabFor(string typeName)
         {
             if (Count == 0 || typeName is null)
@@ -74,10 +61,8 @@ namespace GlueFormsCore.ViewModels
                 return;
             }
 
-            SelectedTab = TabsForTypes.TryGetValue(typeName, out PluginTab tab)
-                ? tab
-                : Tabs.OrderByDescending(item => item.IsPreferredDisplayerForType(typeName))
-                    .ThenByDescending(item => item.LastTimeClicked)
+            SelectedTab = Tabs.OrderByDescending(item => item.LastTimeClicked)
+                    .ThenByDescending(item => item.IsPreferredDisplayerForType(typeName))
                     .First();
         }
     }

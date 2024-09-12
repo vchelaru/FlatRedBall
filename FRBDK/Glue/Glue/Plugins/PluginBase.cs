@@ -183,7 +183,6 @@ namespace FlatRedBall.Glue.Plugins
             if (GlueFormsCore.ViewModels.TabControlViewModel.IsRecordingSelection)
             {
                 LastTimeClicked = DateTime.Now;
-                ParentContainer?.SetTabForCurrentType(this);
             }
         }
 
