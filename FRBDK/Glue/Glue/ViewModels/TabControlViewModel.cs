@@ -43,32 +43,17 @@ namespace GlueFormsCore.ViewModels
 
         public TabContainerViewModel()
         {
-            Tabs.CollectionChanged += (_, args) =>
+            Tabs.CollectionChanged += OnTabsCollectionChanged;
+        }
+
+        private void OnTabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            NotifyPropertyChanged(nameof(Count));
+            e.NewItems?.OfType<PluginTab>().ToList().ForEach(tab => tab.ParentContainer = this);
+            if (Count == 1)
             {
-                bool forceSet = false;
-                if (args.Action == NotifyCollectionChangedAction.Remove)
-                {
-                    // see if any of the removed items are the SelectedTab.
-                    foreach(var item in args.OldItems)
-                    {
-                        if(item == SelectedTab)
-                        {
-                            // deselect it - it'll get re-set down below
-                            forceSet = true;
-                            break;
-                        }
-                    }
-                }
-
-                NotifyPropertyChanged(nameof(Count));
-                args.NewItems?.OfType<PluginTab>().ToList().ForEach(tab => tab.ParentContainer = this);
-
-
-                if(SelectedTab == null || forceSet)
-                {
-                    SelectedTab = Tabs.FirstOrDefault();
-                }
-            };
+                SelectedTab = Tabs.FirstOrDefault();
+            }
         }
 
         public void SetTabForCurrentType(PluginTab tab)
@@ -84,7 +69,7 @@ namespace GlueFormsCore.ViewModels
 
         public void ShowMostRecentTabFor(string typeName)
         {
-            if (Count < 2 || typeName is null)
+            if (Count == 0 || typeName is null)
             {
                 return;
             }
