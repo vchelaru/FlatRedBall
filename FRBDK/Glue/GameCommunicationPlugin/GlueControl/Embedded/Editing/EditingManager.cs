@@ -220,6 +220,9 @@ namespace GlueControl.Editing
 
         bool wasPushedInWindow;
 
+        public bool IsEmbeddedInActiveGlue => EmbeddedWindowLogic.IsParentGlueFocused;
+
+        public bool IsGameOrGlueActive => IsEmbeddedInActiveGlue || FlatRedBallServices.Game.IsActive;
 
         #endregion
 
@@ -263,7 +266,7 @@ namespace GlueControl.Editing
             HighlightMarker.ExtraPaddingInPixels = 4;
             // do we want to show multiple highlights? Probably?
             HighlightMarker.Owner = itemsOver.FirstOrDefault();
-            HighlightMarker.Update(!wasGameActive && FlatRedBallServices.Game.IsActive);
+            HighlightMarker.Update(!wasGameActive && IsGameOrGlueActive);
 
             UpdateSelectedMarkers();
 
@@ -284,7 +287,7 @@ namespace GlueControl.Editing
                 var marker = SelectedMarkers[i];
                 var item = itemsSelected[i];
 
-                marker.Update(!wasGameActive && FlatRedBallServices.Game.IsActive);
+                marker.Update(!wasGameActive && IsGameOrGlueActive);
 
                 if (item == itemGrabbed)
                 {
@@ -448,7 +451,7 @@ namespace GlueControl.Editing
                 }
 
                 // Vic says - not sure how much should be inside the IsActive check
-                if (FlatRedBallServices.Game.IsActive && mouse.IsInGameWindow())
+                if (IsGameOrGlueActive && mouse.IsInGameWindow())
                 {
                     if (itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false))
                     {
@@ -486,7 +489,7 @@ namespace GlueControl.Editing
                 var didChangeItemOver = itemsOverLastFrame.Any(item => !itemsOver.Contains(item)) ||
                     itemsOver.Any(item => !itemsOverLastFrame.Contains(item));
 
-                if (FlatRedBallServices.Game.IsActive)
+                if (IsGameOrGlueActive)
                 {
                     if (mouse.IsInGameWindow())
                     {
@@ -1355,5 +1358,59 @@ namespace GlueControl.Editing
 
         #endregion
     }
+
+
+    internal class EmbeddedWindowLogic
+    {
+
+        static DateTime lastUpdate;
+
+        public static bool IsEmbedded { get; set; }
+
+        static System.Diagnostics.Process glueProcess;
+
+        public static bool IsParentGlueFocused
+        {
+            get
+            {
+                if (DateTime.Now - lastUpdate > TimeSpan.FromSeconds(5))
+                {
+                    lastUpdate = DateTime.Now;
+                    RefreshGlueProcess();
+                }
+                return IsEmbedded 
+                    && glueProcess?.MainWindowHandle == GetForegroundWindow()
+                    ;
+            }
+        }
+
+#if WINDOWS
+
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+
+#else
+        static extern IntPtr GetForegroundWindow() => IntPtr.Zero;
+
+
+#endif
+        private static void RefreshGlueProcess()
+        {
+            glueProcess = null;
+
+            var processes = System.Diagnostics.Process.GetProcesses();
+            // see if the foreground window is Glue:
+            foreach (var process in processes)
+            {
+                if (process.ProcessName == "GlueFormsCore")
+                {
+                    glueProcess = process;
+                    break;
+                }
+            }
+        }
+    }
+
 
 }

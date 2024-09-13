@@ -1391,8 +1391,9 @@ namespace GlueControl
             FlatRedBallServices.Game.Window.IsBorderless = dto.IsBorderless;
 #elif FNA
             FlatRedBallServices.Game.Window.IsBorderlessEXT = dto.IsBorderless;
-
 #endif
+            // FRB Editor sets this to true to embed the game:
+            EmbeddedWindowLogic.IsEmbedded = dto.IsBorderless;
         }
 
         #endregion
