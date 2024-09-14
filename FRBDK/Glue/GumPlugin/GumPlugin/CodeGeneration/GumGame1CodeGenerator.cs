@@ -18,6 +18,9 @@ namespace GumPluginCore.CodeGeneration
         bool hasSkia => GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasGumSkiaElements &&
             AppState.Self.HasAddedGumSkiaElements;
 
+        public bool HasGum() => AppState.Self.GumProjectSave != null;
+
+
         public GumGame1CodeGeneratorEarly() => CodeLocation = FlatRedBall.Glue.Plugins.Interfaces.CodeLocation.BeforeStandardGenerated;
 
         public override void GenerateInitializeEarly(ICodeBlock codeBlock)
@@ -45,14 +48,16 @@ namespace GumPluginCore.CodeGeneration
                 GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
             if (hasCommon)
             {
-                codeBlock.Line("global::GumRuntime.ElementSaveExtensions.CustomCreateGraphicalComponentFunc = GetRenderable;");
+                if(HasGum())
+                {
+                    codeBlock.Line("global::GumRuntime.ElementSaveExtensions.CustomCreateGraphicalComponentFunc = GetRenderable;");
 
-                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.SetPropertyOnRenderable = global::Gum.Wireframe.CustomSetPropertyOnRenderable.SetPropertyOnRenderable;");
-                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.UpdateFontFromProperties = global::Gum.Wireframe.CustomSetPropertyOnRenderable.UpdateToFontValues;");
-                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.ThrowExceptionsForMissingFiles = global::Gum.Wireframe.CustomSetPropertyOnRenderable.ThrowExceptionsForMissingFiles;");
-                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.AddRenderableToManagers = global::Gum.Wireframe.CustomSetPropertyOnRenderable.AddRenderableToManagers;");
-                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.RemoveRenderableFromManagers = global::Gum.Wireframe.CustomSetPropertyOnRenderable.RemoveRenderableFromManagers;");
-
+                    codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.SetPropertyOnRenderable = global::Gum.Wireframe.CustomSetPropertyOnRenderable.SetPropertyOnRenderable;");
+                    codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.UpdateFontFromProperties = global::Gum.Wireframe.CustomSetPropertyOnRenderable.UpdateToFontValues;");
+                    codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.ThrowExceptionsForMissingFiles = global::Gum.Wireframe.CustomSetPropertyOnRenderable.ThrowExceptionsForMissingFiles;");
+                    codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.AddRenderableToManagers = global::Gum.Wireframe.CustomSetPropertyOnRenderable.AddRenderableToManagers;");
+                    codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.RemoveRenderableFromManagers = global::Gum.Wireframe.CustomSetPropertyOnRenderable.RemoveRenderableFromManagers;");
+                }
             }
             else
             {
@@ -75,6 +80,8 @@ namespace GumPluginCore.CodeGeneration
 
     internal class GumGame1CodeGenerator : Game1CodeGenerator
     {
+        public bool HasGum() => AppState.Self.GumProjectSave != null;
+
         bool hasSkia => GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasGumSkiaElements &&
             AppState.Self.HasAddedGumSkiaElements;
 
@@ -99,7 +106,6 @@ namespace GumPluginCore.CodeGeneration
 
         public override void GenerateClassScope(ICodeBlock codeBlock)
         {
-            
             if (hasSkia)
             {
                 var function = codeBlock.Function("RenderingLibrary.Graphics.IRenderable", "GetSkiaType", "string name");
@@ -113,7 +119,7 @@ namespace GumPluginCore.CodeGeneration
 
             var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
                 GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
-            if (hasCommon)
+            if (hasCommon && HasGum() )
             {
                 var function = codeBlock.Function("RenderingLibrary.Graphics.IRenderable", "GetRenderable", "string name, global::RenderingLibrary.ISystemManagers managers");
                 function.Line("var asBaseType = Gum.Wireframe.RuntimeObjectCreator.TryHandleAsBaseType(name, managers);");
