@@ -386,8 +386,6 @@ namespace FlatRedBall.Screens
             }
             else
             {
-                StateManager.Current.Initialize();
-
                 if (ShouldActivateScreen && RehydrateAction != null)
                 {
 					RehydrateAction(screenToStartWith);

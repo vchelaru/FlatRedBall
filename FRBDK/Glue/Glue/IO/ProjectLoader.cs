@@ -344,7 +344,10 @@ namespace FlatRedBall.Glue.IO
                 IdentifyAdditionalAssetTypes();
 
                 SetInitWindowText("Finding and fixing .glux errors", initializationWindow);
-                ProjectManager.GlueProjectSave.FixErrors(true);
+
+                ChangedObjects changedObjects = new ChangedObjects();
+
+                ProjectManager.GlueProjectSave.FixErrors(true, changedObjects);
                 ProjectManager.GlueProjectSave.RemoveInvalidStatesFromNamedObjects(true);
 
                 SetUnsetValues();
@@ -393,6 +396,8 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
                 
                 var allReferencedFileSaves = ObjectFinder.Self.GetAllReferencedFiles();
+
+                // This is going to do it in a task after the load finishes, so we will not pass the ChangedObjects
                 Managers.TaskManager.Self.Add(() =>
                 {
                     var wasAnythingModified = false;
@@ -487,6 +492,19 @@ namespace FlatRedBall.Glue.IO
                 GlueState.Self.CurrentGlueProject.FixAllTypesPostLoad();
                 ReferencedFileSaveCodeGenerator.GenerateCaseSensitive =
                     GlueState.Self.CurrentGlueProject.FileVersion >= (int)SaveClasses.GlueProjectSave.GluxVersions.CaseSensitiveLoading;
+
+                if(changedObjects.DidGlobalContentChange)
+                {
+                    GlueCommands.Self.GluxCommands.SaveGlujFile();
+                }
+                foreach(var entity in changedObjects.ChangedEntitiySaves)
+                {
+                    GlueCommands.Self.GluxCommands.SaveElementAsync(entity);
+                }
+                foreach (var screen in changedObjects.ChangedScreenSaves)
+                {
+                    GlueCommands.Self.GluxCommands.SaveElementAsync(screen);
+                }
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 Section.EndContextAndTime();

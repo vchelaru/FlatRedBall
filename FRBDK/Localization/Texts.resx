@@ -258,9 +258,6 @@
   <data name="PerformanceSettings" xml:space="preserve">
     <value>Performance Settings</value>
   </data>
-  <data name="Preferences" xml:space="preserve">
-    <value>Preferences</value>
-  </data>
   <data name="CustomGameClass" xml:space="preserve">
     <value>Custom Game Class</value>
   </data>
@@ -1054,20 +1051,8 @@ for {1}?</value>
   <data name="DeleteQuestion" xml:space="preserve">
     <value>Are you sure you want to delete?</value>
   </data>
-  <data name="FrbGlueVersion" xml:space="preserve">
-    <value>FlatRedBall Glue Version</value>
-  </data>
-  <data name="LatestVersion" xml:space="preserve">
-    <value>Latest Version</value>
-  </data>
   <data name="InstallUpdate" xml:space="preserve">
     <value>Install Update</value>
-  </data>
-  <data name="Copyright" xml:space="preserve">
-    <value>Copyright</value>
-  </data>
-  <data name="GlueProjectVersion" xml:space="preserve">
-    <value>Glue Project Version</value>
   </data>
   <data name="InheritFromGameScreen" xml:space="preserve">
     <value>Inherit from GameScreen</value>

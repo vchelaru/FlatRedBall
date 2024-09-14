@@ -294,9 +294,6 @@ namespace FlatRedBall.Screens
             ActivatingAction = new Action(Activating);
             DeactivatingAction = new Action(OnDeactivating);
 
-            StateManager.Current.Activating += ActivatingAction;
-            StateManager.Current.Deactivating += DeactivatingAction;
-
             if (ScreenManager.ShouldActivateScreen)
             {
                 Activating();
@@ -309,18 +306,18 @@ namespace FlatRedBall.Screens
         public virtual void Activating()
         {
             this.PreActivate();// for generated code to override, to reload the statestack
-            this.OnActivate(PlatformServices.State);// for user created code
+            this.OnActivate();// for user created code
         }
 
         private void OnDeactivating()
         {
             this.PreDeactivate();// for generated code to override, to save the statestack
-            this.OnDeactivate(PlatformServices.State);// for user generated code;
+            this.OnDeactivate();// for user generated code;
         }
 
         #region Activation Methods
 #if !FRB_MDX
-        protected virtual void OnActivate(StateManager state)
+        protected virtual void OnActivate()
         {
         }
 
@@ -328,7 +325,7 @@ namespace FlatRedBall.Screens
         {
         }
 
-        protected virtual void OnDeactivate(StateManager state)
+        protected virtual void OnDeactivate()
         {
         }
 
@@ -455,9 +452,6 @@ namespace FlatRedBall.Screens
         /// </summary>
         public virtual void Destroy()
         {
-
-		    StateManager.Current.Activating -= ActivatingAction;
-            StateManager.Current.Deactivating -= DeactivatingAction;
 
             if (mLastLoadedScene != null)
             {

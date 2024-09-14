@@ -1140,14 +1140,15 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.NewScreenCreatedWithUi(screen, addScreenWindow),
                 plugin => plugin.NewScreenCreatedWithUi != null);
 
-        internal static void ReactToResolutionChanged()
-        {
+        internal static void ReactToResolutionChanged() =>
             CallMethodOnPlugin(plugin =>
-            {
-                plugin.ResolutionChanged();
-            },
-            plugin => plugin.ResolutionChanged != null);
-        }
+                plugin.ResolutionChanged(),
+                plugin => plugin.ResolutionChanged != null);
+        
+        internal static void ReactToScaleGumChanged() =>
+            CallMethodOnPlugin(plugin =>
+                plugin.ScaleGumChanged(),
+                plugin => plugin.ScaleGumChanged != null);
 
         public static async Task<NamedObjectSave> ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)
         {

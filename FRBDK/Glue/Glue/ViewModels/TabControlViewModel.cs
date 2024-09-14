@@ -39,40 +39,30 @@ namespace GlueFormsCore.ViewModels
         public int Count => Tabs.Count;
         public ObservableCollection<PluginTab> Tabs { get; private set; } = new ObservableCollection<PluginTab>();
 
-        public Dictionary<string, PluginTab> TabsForTypes { get; private set; } = new Dictionary<string, PluginTab>();
-
         public TabContainerViewModel()
         {
-            Tabs.CollectionChanged += (_, args) =>
-            {
-                NotifyPropertyChanged(nameof(Count));
-                args.NewItems?.OfType<PluginTab>().ToList().ForEach(tab => tab.ParentContainer = this);
-                SelectedTab ??= Tabs.FirstOrDefault();
-            };
+            Tabs.CollectionChanged += OnTabsCollectionChanged;
         }
 
-        public void SetTabForCurrentType(PluginTab tab)
+        private void OnTabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            var treeNode = GlueState.Self.CurrentTreeNode;
-            var selectedType = treeNode?.Tag?.GetType()?.Name ?? treeNode?.Text;
-
-            if(selectedType != null)
+            NotifyPropertyChanged(nameof(Count));
+            e.NewItems?.OfType<PluginTab>().ToList().ForEach(tab => tab.ParentContainer = this);
+            if (Count == 1)
             {
-                TabsForTypes[selectedType] = tab;
+                SelectedTab = Tabs.FirstOrDefault();
             }
         }
 
         public void ShowMostRecentTabFor(string typeName)
         {
-            if (Count < 2 || typeName is null)
+            if (Count == 0 || typeName is null)
             {
                 return;
             }
 
-            SelectedTab = TabsForTypes.TryGetValue(typeName, out PluginTab tab)
-                ? tab
-                : Tabs.OrderByDescending(item => item.IsPreferredDisplayerForType(typeName))
-                    .ThenByDescending(item => item.LastTimeClicked)
+            SelectedTab = Tabs.OrderByDescending(item => item.LastTimeClicked)
+                    .ThenByDescending(item => item.IsPreferredDisplayerForType(typeName))
                     .First();
         }
     }

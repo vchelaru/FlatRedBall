@@ -82,6 +82,7 @@ namespace FlatRedBall.Glue.Plugins
             get => Get<string>();
             set => Set(value);
         }
+        public override string ToString() => Title;
 
         public TabContainerViewModel ParentContainer
         {
@@ -182,7 +183,6 @@ namespace FlatRedBall.Glue.Plugins
             if (GlueFormsCore.ViewModels.TabControlViewModel.IsRecordingSelection)
             {
                 LastTimeClicked = DateTime.Now;
-                ParentContainer?.SetTabForCurrentType(this);
             }
         }
 
@@ -487,6 +487,11 @@ namespace FlatRedBall.Glue.Plugins
         public Action<string, List<FilePath>> GetFilesNeededOnDiskBy { get; protected set; }
 
         public Action ResolutionChanged { get; protected set; }
+
+        /// <summary>
+        /// Events raised when Gum Scale values change.
+        /// </summary>
+        public Action ScaleGumChanged { get; protected set; }
 
         /// <summary>
         /// Responsible for returning whether the argument file can return content.  The file shouldn't be opened

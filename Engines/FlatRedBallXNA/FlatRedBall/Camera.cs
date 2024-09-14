@@ -1599,12 +1599,6 @@ namespace FlatRedBall
         {
             mView = GetLookAtMatrix(false);
             mViewRelative = GetLookAtMatrix(true);
-			//NOTE: Certain objects need to be rendered "Pixel Perfect" on screen.
-			//  However, DX9 (and by extension XNA) has an "issue" moving from texel space to pixel space.
-			//  http://msdn.microsoft.com/en-us/library/bb219690(v=vs.85).aspx
-			//  if an object needs to be pixel perfect, it needs to have it's projection matrix shifted by -.5 x and -.5 y
-			//EXAMPLE:
-			//  mProjection = Matrix.CreateTranslation(-0.5f, -0.5f, 0) * GetProjectionMatrix();
 			mProjection = GetProjectionMatrix();
 
             if (updateFrustum)
