@@ -26,14 +26,6 @@ namespace FlatRedBall
 
 #endif
 
-        public static StateManager State
-        {
-            get
-            {
-                return StateManager.Current;
-            }
-        }
-
         public static void Initialize()
         {
 
