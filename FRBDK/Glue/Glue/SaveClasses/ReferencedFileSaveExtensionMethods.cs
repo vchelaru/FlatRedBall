@@ -138,7 +138,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         /// <summary>
-        /// Returns the name of variable generated in code.
+        /// Returns the name of (property) variable generated in code. This does not return the field.
         /// </summary>
         /// <param name="instance">The ReferencedFileSave to generate.</param>
         /// <returns>The name as generated.</returns>

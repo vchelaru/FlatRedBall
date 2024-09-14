@@ -16,6 +16,13 @@
             <xctk:SplitButton.DropDownContent>
                 <StackPanel>
                     <CheckBox IsChecked="{Binding IsOpenVisualStudioAutomaticallyChecked}">Open Visual Studio Automatically</CheckBox>
+                    <ItemsControl ItemsSource="{Binding ProjectItems}" Margin="0,5,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding DisplayName}" Command="{Binding OpenSlnCommand}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
             </xctk:SplitButton.DropDownContent>
             <Grid Background="Transparent">
