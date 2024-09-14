@@ -1391,7 +1391,7 @@ namespace GlueControl.Editing
         static extern IntPtr GetForegroundWindow();
 
 #else
-        static extern IntPtr GetForegroundWindow() => IntPtr.Zero;
+        static IntPtr GetForegroundWindow() => IntPtr.Zero;
 
 
 #endif
