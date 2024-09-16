@@ -1837,6 +1837,14 @@ namespace FlatRedBall.IO
             return GetStreamForFile(fileName, FileMode.Open);
         }
 
+        /// <summary>
+        /// A dictionary containing byte arrays by file name, allowing games to pre-load
+        /// data and store it here for faster access. This is especially important for
+        /// web games.
+        /// </summary>
+        public static Dictionary<string, byte[]> StreamByteDictionary { get; private set; } =
+            new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
+
         public static Stream GetStreamForFile(string fileName, FileMode mode)
         {
             // This used to
@@ -1860,6 +1868,13 @@ namespace FlatRedBall.IO
             {
                 fileName = fileName.Substring(2);
             }
+
+            if (StreamByteDictionary.ContainsKey(fileName))
+            {
+                var bytes = StreamByteDictionary[fileName];
+                return new System.IO.MemoryStream(bytes);
+            }
+
             Stream stream = null;
 #if USES_DOT_SLASH_ABOLUTE_FILES
             if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
