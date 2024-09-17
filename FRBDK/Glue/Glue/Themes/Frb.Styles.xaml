@@ -505,6 +505,7 @@
         <Setter Property="Padding" Value="3,0,3,1"></Setter>
         <Setter Property="BorderThickness" Value="1"></Setter>
         <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}"></Setter>
+        <Setter Property="CaretBrush" Value="{DynamicResource Frb.Brushes.Primary}" />
     </Style>
 
     <Style x:Key="ExpandCollapseToggleStyle" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource IconToggleButton}">
