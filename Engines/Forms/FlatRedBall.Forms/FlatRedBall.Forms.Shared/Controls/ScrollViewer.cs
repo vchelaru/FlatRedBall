@@ -28,6 +28,8 @@ namespace FlatRedBall.Forms.Controls
 
     public class ScrollViewer : FrameworkElement
     {
+        public const string VerticalScrollBarInstanceName = "VerticalScrollBarInstance";
+
         #region Fields/Properties
 
         bool reactToInnerPanelPositionOrSizeChanged = true;
@@ -78,7 +80,7 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void ReactToVisualChanged()
         {
-            var scrollBarVisual = Visual.GetGraphicalUiElementByName("VerticalScrollBarInstance"); 
+            var scrollBarVisual = Visual.GetGraphicalUiElementByName(VerticalScrollBarInstanceName); 
             if(scrollBarVisual.FormsControlAsObject == null)
             {
                 verticalScrollBar = new ScrollBar(scrollBarVisual);
