@@ -533,6 +533,12 @@ namespace GlueControl.Editing
         private static string TryConvertVariableNameToExposedVariableName(string variableName, INameable targetInstance)
         {
             var targetInstanceType = targetInstance.GetType().FullName;
+
+            if (targetInstance is GlueControl.Runtime.DynamicEntity dynamicEntity)
+            {
+                targetInstanceType = dynamicEntity.EditModeType;
+            }
+
             if (InstanceLogic.Self.CustomVariablesAddedAtRuntime.ContainsKey(targetInstanceType))
             {
                 var variablesForThisType = InstanceLogic.Self.CustomVariablesAddedAtRuntime[targetInstanceType];
