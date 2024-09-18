@@ -857,21 +857,53 @@ namespace GlueControl
 
         private static void HandleDto(RenameElementDto renameElementDto)
         {
-            var oldElementName = renameElementDto.OldName;
-            var newElementName = renameElementDto.NewName;
+            var oldGlueElementName = renameElementDto.OldName;
+            var newGlueElementName = renameElementDto.NewName;
 
-            var gameElementName = GlueToGameElementName(oldElementName);
+            var gameElementName = GlueToGameElementName(oldGlueElementName);
 
-            var element = ObjectFinder.Self.GetElement(oldElementName);
+            var element = ObjectFinder.Self.GetElement(oldGlueElementName);
             if (element != null)
             {
-                element.Name = newElementName;
+                element.Name = newGlueElementName;
+            }
+            // todo - do we need to update any BaseElement references?
+
+            // do this instead of relying on the dictionary because names can repeat and that can result
+            // in incorrect behavior.
+            foreach (var item in CommandReceiver.GlobalGlueToGameCommands)
+            {
+                if (item is Dtos.AddObjectDto addObjectDtoReplay)
+                {
+                    if (addObjectDtoReplay.ElementNameGlue == oldGlueElementName)
+                    {
+                        addObjectDtoReplay.ElementNameGlue = newGlueElementName;
+                    }
+                }
+                else if (item is Dtos.GlueVariableSetData glueVariableSetDataRerun)
+                {
+                    if (glueVariableSetDataRerun.ElementNameGlue == oldGlueElementName)
+                    {
+                        glueVariableSetDataRerun.ElementNameGlue = newGlueElementName;
+                    }
+                }
+                else if (item is RemoveObjectDto removeObjectDtoRerun)
+                {
+                    for (int i = 0; i < removeObjectDtoRerun.ElementNamesGlue.Count; i++)
+                    {
+                        if (removeObjectDtoRerun.ElementNamesGlue[i] == oldGlueElementName)
+                        {
+                            removeObjectDtoRerun.ElementNamesGlue[i] = newGlueElementName;
+                        }
+                    }
+                }
             }
 
             // todo - we probably need to get the entire gluj
 
-            GameElementTypeToGlueRenames[gameElementName] = newElementName;
-            GlueToGameElementRenames[newElementName] = gameElementName;
+            GameElementTypeToGlueRenames[gameElementName] = newGlueElementName;
+            GlueToGameElementRenames[newGlueElementName] = gameElementName;
+
         }
 
         public static string GlueToGameElementName(string elementName)
@@ -962,7 +994,7 @@ namespace GlueControl
             ApplyNewNamedObjects(dto);
 
             var createdObject =
-                GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto, GlobalGlueToGameCommands.Count, forcedParent: null);
+                GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto, forcedParent: null);
 
             var response = new OptionallyAttemptedGeneralResponse();
             response.Succeeded = createdObject != null;

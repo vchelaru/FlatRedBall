@@ -84,12 +84,10 @@ namespace GlueControl
 
         #region Create Instance from Glue
 
-        public OptionallyAttemptedGeneralResponse HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto, int currentAddObjectIndex, PositionedObject forcedParent = null)
+        public OptionallyAttemptedGeneralResponse HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto, PositionedObject forcedParent = null)
         {
             var toReturn = new OptionallyAttemptedGeneralResponse();
-            //var glueName = dto.ElementName;
-            // this comes in as the game name not glue name
-            var elementGameType = dto.ElementNameGame; // CommandReceiver.GlueToGameElementName(glueName);
+            var elementGameType = CommandReceiver.GlueToGameElementName(dto.ElementNameGlue);
             var ownerType = this.GetType().Assembly.GetType(elementGameType);
             GlueElement ownerElement = null;
             if (CustomGlueElements.ContainsKey(elementGameType))
@@ -110,7 +108,7 @@ namespace GlueControl
                 {
                     if (CommandReceiver.DoTypesMatch(forcedParent, elementGameType))
                     {
-                        newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, forcedParent);
+                        newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, forcedParent);
                     }
                 }
                 else
@@ -121,7 +119,7 @@ namespace GlueControl
                         var item = SpriteManager.ManagedPositionedObjects[i];
                         if (CommandReceiver.DoTypesMatch(item, elementGameType))
                         {
-                            newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, item);
+                            newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, item);
                         }
                     }
                 }
@@ -132,7 +130,7 @@ namespace GlueControl
                 toReturn.DidAttempt = true;
 
                 // it's added to the base screen, so just add it to null
-                newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, null);
+                newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, null);
             }
             // did not attempt
 
@@ -148,7 +146,7 @@ namespace GlueControl
             return toReturn;
         }
 
-        private object HandleCreateInstanceCommandFromGlueInner(Models.NamedObjectSave deserialized, int currentAddObjectIndex, PositionedObject owner)
+        private object HandleCreateInstanceCommandFromGlueInner(Models.NamedObjectSave deserialized, PositionedObject owner)
         {
             // The owner is the
             // PositionedObject which
@@ -165,7 +163,7 @@ namespace GlueControl
 
             if (deserialized.SourceType == GlueControl.Models.SourceType.Entity)
             {
-                newPositionedObject = CreateEntity(deserialized, currentAddObjectIndex);
+                newPositionedObject = CreateEntity(deserialized);
             }
             else if (deserialized.SourceType == GlueControl.Models.SourceType.FlatRedBallType &&
                 deserialized.IsCollisionRelationship())
@@ -418,38 +416,23 @@ namespace GlueControl
         }
 
 
-        public PositionedObject CreateEntity(Models.NamedObjectSave deserialized, int currentAddObjectIndex)
+        public PositionedObject CreateEntity(Models.NamedObjectSave deserialized)
         {
             var entityNameGlue = deserialized.SourceClassType;
-            var newEntity = CreateEntity(CommandReceiver.GlueToGameElementName(entityNameGlue), currentAddObjectIndex);
+            var newEntity = CreateEntity(CommandReceiver.GlueToGameElementName(entityNameGlue));
 
             return newEntity;
         }
 
-        public void ApplyEditorCommandsToNewEntity(PositionedObject newEntity, int currentAddObjectIndex = -1)
+        public void ApplyEditorCommandsToNewEntity(PositionedObject newEntity, string elementNameGlue)
         {
-            currentAddObjectIndex = currentAddObjectIndex > 0
-                ? currentAddObjectIndex
-                : CommandReceiver.GlobalGlueToGameCommands.Count;
-            for (int i = 0; i < currentAddObjectIndex; i++)
-            {
-                var dto = CommandReceiver.GlobalGlueToGameCommands[i];
-                if (dto is Dtos.AddObjectDto addObjectDtoRerun)
-                {
-                    HandleCreateInstanceCommandFromGlue(addObjectDtoRerun, currentAddObjectIndex, newEntity);
-                }
-                else if (dto is Dtos.GlueVariableSetData glueVariableSetDataRerun)
-                {
-                    GlueControl.Editing.VariableAssignmentLogic.SetVariable(glueVariableSetDataRerun, newEntity);
-                }
-                else if (dto is RemoveObjectDto removeObjectDtoRerun)
-                {
-                    HandleDeleteInstanceCommandFromGlue(removeObjectDtoRerun, newEntity);
-                }
-            }
+            CommandReplayLogic.ApplyEditorCommandsToNewElement(newEntity, elementNameGlue);
         }
 
-        public PositionedObject CreateEntity(string entityNameGameType, int currentAddObjectIndex = -1, bool isMainEntityInScreen = false)
+
+
+
+        public PositionedObject CreateEntity(string entityNameGameType, bool isMainEntityInScreen = false)
         {
             var containsKey =
                 CustomGlueElements.ContainsKey(entityNameGameType);
@@ -485,7 +468,7 @@ namespace GlueControl
 
                 newEntity = dynamicEntityInstance;
 
-                GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(newEntity);
+                GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(newEntity, CommandReceiver.GameElementTypeToGlueElement(entityNameGameType));
             }
             else
             {
@@ -583,7 +566,7 @@ namespace GlueControl
             return response;
         }
 
-        private void HandleDeleteObject(PositionedObject forcedItem, string elementNameGlue, string objectName, RemoveObjectDtoResponse response)
+        public void HandleDeleteObject(PositionedObject forcedItem, string elementNameGlue, string objectName, RemoveObjectDtoResponse response)
         {
             var elementGameType = CommandReceiver.GlueToGameElementName(elementNameGlue);
 

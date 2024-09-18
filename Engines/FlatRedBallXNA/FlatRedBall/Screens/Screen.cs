@@ -589,6 +589,13 @@ namespace FlatRedBall.Screens
             }
         }
 
+        /// <summary>
+        /// Returns the instance of the object represented by the variable name. This must begin with "this.". For example, 
+        /// passing "this.PlayerInstance" will return the PlayerInstance object.
+        /// </summary>
+        /// <param name="variableName"></param>
+        /// <param name="container"></param>
+        /// <returns></returns>
         public object GetInstanceRecursive(string variableName, object container = null)
         {
             if(variableName.Contains("."))
@@ -597,8 +604,8 @@ namespace FlatRedBall.Screens
 
                 return GetInstanceRecursive(afterDot, instance);
             }
-
             return container;
+
         }
 
         /// <summary>

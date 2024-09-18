@@ -986,7 +986,7 @@ public class ObjectFinder : IObjectFinder
             {
                 foreach(var variable in nos.InstructionSaves)
                 {
-                    if(variable.Type.StartsWith("Entities.") && variable.Value is string asString && asString == name)
+                    if(variable.Type?.StartsWith("Entities.") == true && variable.Value is string asString && asString == name)
                     {
                         listToAddTo.Add(nos);
                         break;

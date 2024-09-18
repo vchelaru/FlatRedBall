@@ -34,7 +34,7 @@ namespace GlueControl.Editing
             // in data without looking at the target. The conversion to List<Point> is
             // done in SetValueOnObjectInElement which considers the target type.
             object convertedValue = ConvertVariableValue(data);
-            var elementGameType = CommandReceiver.GlueToGameElementName(data.InstanceOwnerGlueType);
+            var elementGameType = CommandReceiver.GlueToGameElementName(data.ElementNameGlue);
             var variableName = data.VariableName;
 
             try
@@ -196,7 +196,11 @@ namespace GlueControl.Editing
                     }
                 }
                 // See comment by setOnEntity about why we check for forcedItem.
-                else if (forcedItem == null)
+                // See comment by setOnEntity about why we check for forcedItem.
+                // Update 9/17/2024 - I don't think we should check this anymore. If we do
+                // we prevent instances of DynamicEntities from having their dynamic tunneled 
+                // variables set.
+                else// if (forcedItem == null)
                 {
                     var elementNameGlue = string.Join("\\", instanceOwnerElementGameType.Split('.').Skip(1).ToArray());
                     if (CommandReceiver.GetIfMatchesCurrentScreen(elementNameGlue))
@@ -464,7 +468,22 @@ namespace GlueControl.Editing
 
             if (!didAttemptToAssign)
             {
-                targetInstance = targetInstance ?? screen.GetInstanceRecursive(variableName) as INameable;
+                // why is this using variableName, why not instanceName?
+                //targetInstance = targetInstance ?? screen.GetInstanceRecursive(variableName) as INameable;
+                var effectiveInstanceName = variableName;
+                if (!variableName?.StartsWith("this.") == true && !string.IsNullOrEmpty(instanceName))
+                {
+                    if (instanceName.StartsWith("this."))
+                    {
+                        effectiveInstanceName = instanceName;
+                    }
+                    else
+                    {
+                        effectiveInstanceName = "this." + instanceName;
+                    }
+                }
+                targetInstance = targetInstance ?? screen.GetInstanceRecursive(effectiveInstanceName) as INameable;
+
                 if (targetInstance == null)
                 {
                     response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue);
