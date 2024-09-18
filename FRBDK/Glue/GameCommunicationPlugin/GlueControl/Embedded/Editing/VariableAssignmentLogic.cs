@@ -564,7 +564,9 @@ namespace GlueControl.Editing
 
                 var customVariable = variablesForThisType.FirstOrDefault(item => item.Name == variableName);
 
-                if (customVariable != null)
+                if (customVariable != null &&
+                    // This could be a new non-tunneled variable, like a variable assigning a state
+                    !string.IsNullOrEmpty(customVariable.SourceObject))
                 {
                     variableName = customVariable.SourceObject + "." + customVariable.SourceObjectProperty;
                 }

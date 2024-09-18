@@ -1100,7 +1100,14 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             var categoryOwner = ObjectFinder.Self.GetElementContaining(category);
 
             var name = category.Name;
-            if(categoryOwner != null && categoryOwner != element)
+
+            // Update September 17, 2024
+            // We want to fully-qualify the
+            // type even if the new variable
+            // is in the same element as the category.
+            // This is required for live edit.
+            //if(categoryOwner != null && categoryOwner != element)
+            if(categoryOwner != null)
             {
                 name = categoryOwner.Name.Replace("\\", ".") + "." + name;
             }
