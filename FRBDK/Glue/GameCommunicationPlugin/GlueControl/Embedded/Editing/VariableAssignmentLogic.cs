@@ -466,6 +466,33 @@ namespace GlueControl.Editing
 
             #endregion
 
+            #region Dynamic states
+            if (!didAttemptToAssign && variableValue is StateSave stateSave)
+            {
+                var throwawayResponse = new global::GlueControl.Dtos.GlueVariableSetDataResponse();
+                var throwawayConversion = string.Empty;
+
+                var elementGameType = targetInstance?.GetType().FullName ?? screen.GetType().FullName;
+
+                foreach (var instruction in stateSave.InstructionSaves)
+                {
+                    var stateValue = instruction.Value;
+                    bool convertFileNamesToObjects = true;
+                    if (instruction.Value is string valueAsString)
+                    {
+                        stateValue = global::GlueControl.Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, false, out throwawayConversion, convertFileNamesToObjects);
+                    }
+                    GlueControl.Editing.VariableAssignmentLogic.SetVariable(
+                        "this." + instruction.Member,
+                    stateValue, targetInstance as PositionedObject,
+                    elementGameType, throwawayResponse);
+                }
+
+                didAttemptToAssign = true;
+            }
+
+            #endregion
+
             if (!didAttemptToAssign)
             {
                 // why is this using variableName, why not instanceName?
@@ -1540,7 +1567,31 @@ namespace GlueControl.Editing
             }
             else
             {
-                return null;
+                // this could be a dynamic state
+                if (type.Contains("."))
+                {
+                    var lastDot = type.LastIndexOf('.');
+                    var beforeLastDot = type.Substring(0, lastDot);
+
+                    // If this is a new state on an entity and we are viewing the entity, then it will
+                    // not have the namespace prefix. If it is on an instance, it will have the namespace prefix.
+                    // Tolerate both since it would be complicated to fix this.
+                    var qualifiedName = InstanceLogic.Self.StatesAddedAtRuntime.ContainsKey(beforeLastDot)
+                        ? beforeLastDot
+                        : CommandReceiver.ProjectNamespace + "." + beforeLastDot;
+
+                    if (InstanceLogic.Self.StatesAddedAtRuntime.ContainsKey(qualifiedName))
+                    {
+                        var categories = InstanceLogic.Self.StatesAddedAtRuntime[qualifiedName];
+
+                        var categoryName = type.Substring(lastDot + 1);
+                        var category = categories.FirstOrDefault(item => item.Name == categoryName);
+                        var value = category?.States.FirstOrDefault(item => item.Name == variableValue);
+
+                        return value;
+                    }
+                }
+                return variableValue;
             }
         }
 
