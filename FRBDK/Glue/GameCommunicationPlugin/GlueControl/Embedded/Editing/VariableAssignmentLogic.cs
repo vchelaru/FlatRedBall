@@ -43,9 +43,15 @@ namespace GlueControl.Editing
             }
             catch (Exception e)
             {
-                response.Exception = ExceptionWithJson(e, data);
-
-                response.WasVariableAssigned = false;
+                if (data.IsState && data.VariableValue == null)
+                {
+                    // no biggie, we're just setting a dynamic state back to null, no need to complain
+                }
+                else
+                {
+                    response.Exception = ExceptionWithJson(e, data);
+                    response.WasVariableAssigned = false;
+                }
             }
             return response;
         }
