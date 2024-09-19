@@ -24,6 +24,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
             <Label Content="FlatRedBall Editor Version" />
@@ -43,6 +44,10 @@
 
             <Label Grid.Row="4" Content="Main Project Type" />
             <Label Grid.Row="4" Grid.Column="1" Content="{Binding MainProjectTypeText}" />
+            
+            <Label Grid.Row="5" Content="DLL version" />
+            <Label Grid.Row="5" Grid.Column="1" Content="{Binding DllSyntaxVersionToShow}" />
+            
 
 
         </Grid>
