@@ -126,7 +126,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
                         var response = JsonConvert.DeserializeObject<GetCommandsDtoResponse>(generalResponse.Data);
 
                         var listMessageBox = new ListBoxWindowWpf();
-
+                        listMessageBox.Message = "Commands for the current element:";
                         foreach(var item in response.Commands)
                         {
                             listMessageBox.AddItem(item);

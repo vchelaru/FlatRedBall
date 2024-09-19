@@ -13,7 +13,7 @@ namespace GlueControl
 {
     internal class CommandReplayLogic
     {
-        public static void ApplyEditorCommandsToNewElement(PositionedObject newEntity, string elementNameGlue)
+        public static List<object> GetDtosToReplayFor(string elementNameGlue)
         {
             var element = GlueControl.Managers.ObjectFinder.Self.GetElement(elementNameGlue);
             HashSet<string> allElementNames = new HashSet<string>();
@@ -46,6 +46,27 @@ namespace GlueControl
                     }
                     return false;
                 }).ToList();
+
+            return dtosToReplay;
+        }
+        public static void ApplyEditorCommandsToNewElement(PositionedObject newEntity, string elementNameGlue)
+        {
+            var element = GlueControl.Managers.ObjectFinder.Self.GetElement(elementNameGlue);
+            HashSet<string> allElementNames = new HashSet<string>();
+            allElementNames.Add(elementNameGlue);
+
+            if (element != null)
+            {
+                var baseElements = GlueControl.Managers.ObjectFinder.Self.GetAllBaseElementsRecursively(element);
+                foreach (var baseElement in baseElements)
+                {
+                    allElementNames.Add(baseElement.Name);
+                }
+            }
+
+
+
+            List<object> dtosToReplay = GetDtosToReplayFor(elementNameGlue);
 
             for (int i = 0; i < dtosToReplay.Count; i++)
             {

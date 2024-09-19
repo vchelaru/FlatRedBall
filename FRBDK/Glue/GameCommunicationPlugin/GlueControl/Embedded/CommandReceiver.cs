@@ -1402,12 +1402,49 @@ namespace GlueControl
             var responseDto = new GetCommandsDtoResponse();
 #if SupportsEditMode
 
-            var arrayCopy = GlobalGlueToGameCommands.ToArray();
+            var elementNameGlue = GlueState.Self.CurrentElement?.Name;
 
-            foreach(var item in arrayCopy)
+            if(elementNameGlue != null)
             {
-                var combined = item.GetType().Name + ":" + JsonConvert.SerializeObject(item);
-                responseDto.Commands.Add(combined);
+                var element = GlueControl.Managers.ObjectFinder.Self.GetElement(elementNameGlue);
+                HashSet<string> allElementNames = new HashSet<string>();
+                allElementNames.Add(elementNameGlue);
+
+                if (element != null)
+                {
+                    var baseElements = GlueControl.Managers.ObjectFinder.Self.GetAllBaseElementsRecursively(element);
+                    foreach (var baseElement in baseElements)
+                    {
+                        allElementNames.Add(baseElement.Name);
+                    }
+                }
+
+                var arrayCopy = CommandReplayLogic.GetDtosToReplayFor(elementNameGlue).ToArray();
+
+                foreach(var item in arrayCopy)
+                {
+                    if(item is RemoveObjectDto removeObjectDto)
+                    {
+                        RemoveObjectDtoResponse response = new RemoveObjectDtoResponse();
+
+                        for (int j = 0; j < removeObjectDto.ObjectNames.Count; j++)
+                        {
+                            var shouldRerun = allElementNames.Contains(removeObjectDto.ElementNamesGlue[j]);
+
+                            if (shouldRerun)
+                            {
+                                var objectName = removeObjectDto.ObjectNames[j];
+                                var removeObjectElement = removeObjectDto.ElementNamesGlue[j];
+                                responseDto.Commands.Add($"Remove {objectName}");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        responseDto.Commands.Add(item.ToString());
+                    }
+                }
+
             }
 #endif
 
