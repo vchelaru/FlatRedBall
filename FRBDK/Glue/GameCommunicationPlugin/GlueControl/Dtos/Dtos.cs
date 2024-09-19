@@ -347,6 +347,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     public class SetCameraAspectRatioDto
     {
         public decimal? AspectRatio { get; set; }
+        public decimal? AspectRatio2 { get; set; }
     }
 
     #endregion

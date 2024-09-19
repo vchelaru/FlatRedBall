@@ -816,6 +816,7 @@ namespace GlueControl
         private static void HandleDto(SetCameraAspectRatioDto dto)
         {
             CameraSetup.Data.AspectRatio = dto.AspectRatio;
+            CameraSetup.Data.AspectRatio2 = dto.AspectRatio2;
 
             CameraSetup.ResetCamera();
 
