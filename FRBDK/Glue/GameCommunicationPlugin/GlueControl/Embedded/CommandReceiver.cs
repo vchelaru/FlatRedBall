@@ -268,6 +268,20 @@ namespace GlueControl
                 dto.AssignOrRecordOnly = AssignOrRecordOnly.Assign;
             }
 
+            // remove any existing variable assignments which set the same variable in the same element, preventing
+            // an accumulation of unnecessary variable assignments
+            for (int i = GlobalGlueToGameCommands.Count - 1; i > -1; i--)
+            {
+                if (GlobalGlueToGameCommands[i] is GlueVariableSetData existingSetData)
+                {
+                    if (existingSetData.ElementNameGlue == dto.ElementNameGlue &&
+                        existingSetData.VariableName == dto.VariableName)
+                    {
+                        GlobalGlueToGameCommands.RemoveAt(i);
+                    }
+                }
+            }
+
             GlobalGlueToGameCommands.Add(dto);
 
             return response;
