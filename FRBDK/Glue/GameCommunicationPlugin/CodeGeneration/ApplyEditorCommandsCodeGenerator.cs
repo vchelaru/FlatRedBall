@@ -28,11 +28,11 @@ namespace GameCommunicationPlugin.CodeGeneration
             {
                 if(element is EntitySave)
                 {
-                    codeBlock.Line($"GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(this);");
+                    codeBlock.Line($"GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(this, GlueControl.CommandReceiver.GameElementTypeToGlueElement(this.GetType().FullName));");
                 }
                 else // screen save
                 {
-                    codeBlock.Line($"GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(null);");
+                    codeBlock.Line($"GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(null, GlueControl.CommandReceiver.GameElementTypeToGlueElement(this.GetType().FullName));");
                 }
             }
             return codeBlock;

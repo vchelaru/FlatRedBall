@@ -649,21 +649,15 @@ public class DragDropManager : Singleton<DragDropManager>
     {
         if (targetNode.IsRootCustomVariablesNode() || targetNode.IsCustomVariable())
         {
-            // The user drag+dropped a state category into the variables
-            // Let's make sure that it's all in the same Element though:
-            // Update December 30, 2021 - Glue now supports variables which
-            // are a state category which comes from a different entity/screen.
-            // I don't want to uncomment this right now because that may require
-            // some additional testing, but I'm putting this comment here so that
-            // in the future it's clear that this was an old rule which could be removed
-            // with proper testing.
-            // July 23, 2023 - removing this if-check now.
-            //if (targetNode.GetContainingElementTreeNode() == nodeMoving.GetContainingElementTreeNode())
-            {
-                StateSaveCategory category = nodeMoving.Tag as StateSaveCategory;
-                var element = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
+            StateSaveCategory category = nodeMoving.Tag as StateSaveCategory;
+            var element = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
 
-                await GlueCommands.Self.GluxCommands.ElementCommands.AddStateCategoryCustomVariableToElementAsync(category, element);
+            var response = await GlueCommands.Self.GluxCommands.ElementCommands.AddStateCategoryCustomVariableToElementAsync(category, element);
+
+            if(response.Succeeded == false)
+            {
+                GlueCommands.Self.DialogCommands.ShowToast(response.Message, TimeSpan.FromSeconds(4));
+                GlueCommands.Self.PrintError(response.Message);
             }
         }
     }

@@ -30,6 +30,15 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+    /// <summary>
+    /// Represents a command which is performed in a specific element. The ElementNameGlue is used to determine
+    /// if a command should be execited when a specific element is created;
+    /// </summary>
+    public interface IInElementCommand
+    {
+        public string ElementNameGlue { get; set; }
+    }
+
     #region RemoveObjectDto
     public class RemoveObjectDto : UpdateCurrentElementDto
     {
@@ -149,10 +158,10 @@ namespace GlueControl.Dtos
         public List<GlueVariableSetData> Data { get; set; } = new List<GlueVariableSetData>();
     }
 
-    public class GlueVariableSetData : UpdateCurrentElementDto
+    public class GlueVariableSetData : UpdateCurrentElementDto, IInElementCommand
     {
         public AssignOrRecordOnly AssignOrRecordOnly { get; set; }
-        public string InstanceOwnerGlueType { get; set; }
+        public string ElementNameGlue { get; set; }
         public string VariableName { get; set; }
         public string VariableValue { get; set; }
         public string Type { get; set; }
@@ -238,17 +247,17 @@ namespace GlueControl.Dtos
         public List<AddObjectDto> Data { get; set; } = new List<AddObjectDto>();
     }
 
-    public class AddObjectDto : UpdateCurrentElementDto
+    public class AddObjectDto : UpdateCurrentElementDto, IInElementCommand
     {
         public NamedObjectSave NamedObjectSave { get; set; }
 
         public string CopyOriginalName { get; set; }
-        public string ElementNameGame { get; set; }
+        public string ElementNameGlue { get; set; }
         public bool SelectNewObject { get; set; }
 
         public override string ToString()
         {
-            return $"Add NOS {NamedObjectSave.InstanceName} ({NamedObjectSave.SourceClassType}) to {ElementNameGame}";
+            return $"Add NOS {NamedObjectSave.InstanceName} ({NamedObjectSave.SourceClassType}) to {ElementNameGlue}";
         }
     }
     #endregion
@@ -325,6 +334,7 @@ namespace GlueControl.Dtos
     public class SetCameraAspectRatioDto
     {
         public decimal? AspectRatio { get; set; }
+        public decimal? AspectRatio2 { get; set; }
     }
 
     #endregion

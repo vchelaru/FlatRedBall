@@ -877,16 +877,21 @@ namespace GameCommunicationPlugin.GlueControl
             if (inEditMode)
             {
                 setCameraAspectRatioDto.AspectRatio = null;
+
             }
             else
             {
                 if(displaySettings != null &&
                     displaySettings.AspectRatioHeight > 0 &&
-                    // need to reearch at some time - do we want to worry about variable aspect ratio?
-                    displaySettings.AspectRatioBehavior == AspectRatioBehavior.FixedAspectRatio)
+                    displaySettings.AspectRatioBehavior != AspectRatioBehavior.NoAspectRatio)
                 {
-                    setCameraAspectRatioDto.AspectRatio = GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioWidth /
-                        GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioHeight;
+                    setCameraAspectRatioDto.AspectRatio = displaySettings.AspectRatioWidth /
+                        displaySettings.AspectRatioHeight;
+
+                    if(displaySettings.AspectRatioBehavior == AspectRatioBehavior.RangedAspectRatio)
+                    {
+                        setCameraAspectRatioDto.AspectRatio2 = displaySettings.AspectRatioWidth2 / displaySettings.AspectRatioHeight2;
+                    }
                 }
             }
                     

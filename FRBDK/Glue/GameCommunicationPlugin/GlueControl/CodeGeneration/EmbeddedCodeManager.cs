@@ -16,6 +16,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
         static List<string> filesToSave = new List<string>
         {
             "CommandReceiver.cs",
+            "CommandReplayLogic.cs",
             
             "Dtos.cs",
             "GameConnectionManager.cs",
@@ -59,10 +60,10 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
             //SaveEmbeddedFile("Forms.ObjectCreationWindow.cs");
             
             "GlueControlManager.cs",
-            
+
             "InstanceLogic.cs",
-            
-            
+
+
             "Models.CustomVariable.cs",
             "Models.GlueElement.cs",
             "Models.GlueElementFileReference.cs",

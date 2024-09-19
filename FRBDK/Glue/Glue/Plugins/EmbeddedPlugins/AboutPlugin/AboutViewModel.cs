@@ -80,6 +80,15 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
             set => Set(value);
         }
 
+        public int? DllSyntaxVersion
+        {
+            get => Get<int?>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(DllSyntaxVersion))]
+        public string DllSyntaxVersionToShow => DllSyntaxVersion?.ToString() ?? "Unknown";
+
         public string MainProjectTypeText
         {
             get => Get<string>();

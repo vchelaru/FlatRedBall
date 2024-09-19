@@ -34,7 +34,7 @@ namespace GlueControl.Editing
             // in data without looking at the target. The conversion to List<Point> is
             // done in SetValueOnObjectInElement which considers the target type.
             object convertedValue = ConvertVariableValue(data);
-            var elementGameType = CommandReceiver.GlueToGameElementName(data.InstanceOwnerGlueType);
+            var elementGameType = CommandReceiver.GlueToGameElementName(data.ElementNameGlue);
             var variableName = data.VariableName;
 
             try
@@ -43,9 +43,15 @@ namespace GlueControl.Editing
             }
             catch (Exception e)
             {
-                response.Exception = ExceptionWithJson(e, data);
-
-                response.WasVariableAssigned = false;
+                if (data.IsState && data.VariableValue == null)
+                {
+                    // no biggie, we're just setting a dynamic state back to null, no need to complain
+                }
+                else
+                {
+                    response.Exception = ExceptionWithJson(e, data);
+                    response.WasVariableAssigned = false;
+                }
             }
             return response;
         }
@@ -196,7 +202,11 @@ namespace GlueControl.Editing
                     }
                 }
                 // See comment by setOnEntity about why we check for forcedItem.
-                else if (forcedItem == null)
+                // See comment by setOnEntity about why we check for forcedItem.
+                // Update 9/17/2024 - I don't think we should check this anymore. If we do
+                // we prevent instances of DynamicEntities from having their dynamic tunneled 
+                // variables set.
+                else// if (forcedItem == null)
                 {
                     var elementNameGlue = string.Join("\\", instanceOwnerElementGameType.Split('.').Skip(1).ToArray());
                     if (CommandReceiver.GetIfMatchesCurrentScreen(elementNameGlue))
@@ -462,9 +472,51 @@ namespace GlueControl.Editing
 
             #endregion
 
+            #region Dynamic states
+            if (!didAttemptToAssign && variableValue is StateSave stateSave)
+            {
+                var throwawayResponse = new global::GlueControl.Dtos.GlueVariableSetDataResponse();
+                var throwawayConversion = string.Empty;
+
+                var elementGameType = targetInstance?.GetType().FullName ?? screen.GetType().FullName;
+
+                foreach (var instruction in stateSave.InstructionSaves)
+                {
+                    var stateValue = instruction.Value;
+                    bool convertFileNamesToObjects = true;
+                    if (instruction.Value is string valueAsString)
+                    {
+                        stateValue = global::GlueControl.Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, false, out throwawayConversion, convertFileNamesToObjects);
+                    }
+                    GlueControl.Editing.VariableAssignmentLogic.SetVariable(
+                        "this." + instruction.Member,
+                    stateValue, targetInstance as PositionedObject,
+                    elementGameType, throwawayResponse);
+                }
+
+                didAttemptToAssign = true;
+            }
+
+            #endregion
+
             if (!didAttemptToAssign)
             {
-                targetInstance = targetInstance ?? screen.GetInstanceRecursive(variableName) as INameable;
+                // why is this using variableName, why not instanceName?
+                //targetInstance = targetInstance ?? screen.GetInstanceRecursive(variableName) as INameable;
+                var effectiveInstanceName = variableName;
+                if (!variableName?.StartsWith("this.") == true && !string.IsNullOrEmpty(instanceName))
+                {
+                    if (instanceName.StartsWith("this."))
+                    {
+                        effectiveInstanceName = instanceName;
+                    }
+                    else
+                    {
+                        effectiveInstanceName = "this." + instanceName;
+                    }
+                }
+                targetInstance = targetInstance ?? screen.GetInstanceRecursive(effectiveInstanceName) as INameable;
+
                 if (targetInstance == null)
                 {
                     response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue);
@@ -545,7 +597,9 @@ namespace GlueControl.Editing
 
                 var customVariable = variablesForThisType.FirstOrDefault(item => item.Name == variableName);
 
-                if (customVariable != null)
+                if (customVariable != null &&
+                    // This could be a new non-tunneled variable, like a variable assigning a state
+                    !string.IsNullOrEmpty(customVariable.SourceObject))
                 {
                     variableName = customVariable.SourceObject + "." + customVariable.SourceObjectProperty;
                 }
@@ -1519,7 +1573,31 @@ namespace GlueControl.Editing
             }
             else
             {
-                return null;
+                // this could be a dynamic state
+                if (type.Contains("."))
+                {
+                    var lastDot = type.LastIndexOf('.');
+                    var beforeLastDot = type.Substring(0, lastDot);
+
+                    // If this is a new state on an entity and we are viewing the entity, then it will
+                    // not have the namespace prefix. If it is on an instance, it will have the namespace prefix.
+                    // Tolerate both since it would be complicated to fix this.
+                    var qualifiedName = InstanceLogic.Self.StatesAddedAtRuntime.ContainsKey(beforeLastDot)
+                        ? beforeLastDot
+                        : CommandReceiver.ProjectNamespace + "." + beforeLastDot;
+
+                    if (InstanceLogic.Self.StatesAddedAtRuntime.ContainsKey(qualifiedName))
+                    {
+                        var categories = InstanceLogic.Self.StatesAddedAtRuntime[qualifiedName];
+
+                        var categoryName = type.Substring(lastDot + 1);
+                        var category = categories.FirstOrDefault(item => item.Name == categoryName);
+                        var value = category?.States.FirstOrDefault(item => item.Name == variableValue);
+
+                        return value;
+                    }
+                }
+                return variableValue;
             }
         }
 

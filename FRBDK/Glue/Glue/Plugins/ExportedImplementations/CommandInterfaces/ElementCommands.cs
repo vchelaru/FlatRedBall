@@ -34,6 +34,7 @@ using System.Windows.Data;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.Refactoring.Views;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 using Microsoft.VisualBasic;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
@@ -1090,29 +1091,51 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         AddCustomVariableToElementImmediate(newVariable, element, save);
     }
 
-    public async Task AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true)
+    public async Task<GeneralResponse> AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true)
     {
+        GeneralResponse response = new GeneralResponse();
+
         await TaskManager.Self.AddAsync(() =>
         {
-            // expose a variable that exposes the category
-            CustomVariable customVariable = new CustomVariable();
-
-            var categoryOwner = ObjectFinder.Self.GetElementContaining(category);
-
-            var name = category.Name;
-            if(categoryOwner != null && categoryOwner != element)
+            // This creates an exposed variable which must have a specific name:
+            var requiredName = "Current" + category.Name + "State";
+            // ...if there is already a variable with this name, we should not add it again
+            if (element.GetCustomVariableRecursively(requiredName) != null)
             {
-                name = categoryOwner.Name.Replace("\\", ".") + "." + name;
+                response.Succeeded = false;
+                response.Message = $"The variable {requiredName} already exists in {element}.";
+            }
+            else
+            {
+                // expose a variable that exposes the category
+                CustomVariable customVariable = new CustomVariable();
+
+                var categoryOwner = ObjectFinder.Self.GetElementContaining(category);
+
+                var name = category.Name;
+
+                // Update September 17, 2024
+                // We want to fully-qualify the
+                // type even if the new variable
+                // is in the same element as the category.
+                // This is required for live edit.
+                //if(categoryOwner != null && categoryOwner != element)
+                if(categoryOwner != null)
+                {
+                    name = categoryOwner.Name.Replace("\\", ".") + "." + name;
+                }
+
+                customVariable.Type = name;
+                customVariable.Name = requiredName;
+                customVariable.SetByDerived = true;
+
+                AddCustomVariableToElementImmediate(
+                    customVariable, element, save);
+                response.Succeeded = true;
             }
 
-            customVariable.Type = name;
-            customVariable.Name = "Current" + category.Name + "State";
-            customVariable.SetByDerived = true;
-
-            AddCustomVariableToElementImmediate(
-                customVariable, element, save);
-
         }, $"Adding category {category} as variable to {element}");
+        return response;
     }
 
     void AddCustomVariableToElementImmediate(CustomVariable newVariable, GlueElement element, bool save = true)

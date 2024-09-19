@@ -516,11 +516,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             var addObjectDto = new AddObjectDto();
             addObjectDto.NamedObjectSave = nosCopy;
+
             var containerElement = ObjectFinder.Self.GetElementContaining(newNamedObject);
             NamedObjectSave nosList = null;
             if (containerElement != null)
             {
-                addObjectDto.ElementNameGame = GetGameTypeFor(containerElement);
+                addObjectDto.ElementNameGlue = containerElement.Name;
                 nosList = containerElement.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(newNamedObject));
             }
 
@@ -679,7 +680,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     if(instance?.AttachToContainer == true && owner is EntitySave)
                     {
                         var instanceAti = instance?.GetAssetTypeInfo();
-                        if(instanceAti?.IsPositionedObject == true)
+                        if(instanceAti?.IsPositionedObject == true || instance.SourceType == SourceType.Entity)
                         {
                             dto.CustomVariable.SourceObjectProperty = "Relative" + dto.CustomVariable.SourceObjectProperty;
                         }

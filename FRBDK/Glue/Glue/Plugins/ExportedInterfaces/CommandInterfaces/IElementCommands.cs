@@ -7,6 +7,7 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
 using GlueFormsCore.ViewModels;
+using ToolsUtilities;
 using static FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
@@ -61,7 +62,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #endregion
 
         #region Add CustomVariable
-        Task AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true);
+        Task<GeneralResponse> AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true);
 
 
         void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true);

@@ -696,7 +696,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 throw new ArgumentNullException(nameof(currentElement));
             }
             var data = new GlueVariableSetData();
-            data.InstanceOwnerGlueType = currentElement.Name;
+            data.ElementNameGlue = currentElement.Name;
             data.Type = type;
             data.VariableValue = value;
             data.VariableName = rawMemberName;

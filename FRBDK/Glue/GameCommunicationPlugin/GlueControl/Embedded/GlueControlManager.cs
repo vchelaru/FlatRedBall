@@ -306,17 +306,6 @@ namespace GlueControl
             return CommandReceiver.Receive(message);
         }
 
-        public void ReRunAllGlueToGameCommands()
-        {
-            var toProcess = CommandReceiver.GlobalGlueToGameCommands.ToArray();
-            CommandReceiver.GlobalGlueToGameCommands.Clear();
-
-            foreach (var dto in toProcess)
-            {
-                CommandReceiver.ReceiveDto(dto);
-            }
-        }
-
         private bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
         {
             var topNamespace = ProjectNamespace;
