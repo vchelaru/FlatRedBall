@@ -421,6 +421,7 @@
                                 <ContentPresenter x:Name="ContentPresenter" 
                                                   Margin="3,0,0,0"
                                                   VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left"
                                                   Content="{TemplateBinding SelectionBoxItem}"
                                                   ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                                   ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" />
@@ -777,42 +778,77 @@
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}"/>
         <Setter Property="ExpandDirection" Value="Down"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Expander">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <StackPanel>
-                            <Grid x:Name="HeaderSite" Margin="{TemplateBinding Padding}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <ToggleButton 
-                                              Grid.Column="0"
+                        <StackPanel >
+                            <ToggleButton x:Name="Header"
+                                            HorizontalAlignment="Stretch"
+                                          HorizontalContentAlignment="Left"
+                                              themes:FrbButton.BorderCornerRadius="0"
                                               FontSize="{TemplateBinding FontSize}"
-                                              FontWeight="Bold"
                                               Background="Transparent"
+                                              Foreground="{DynamicResource Frb.Brushes.Foreground}"
                                               BorderThickness="0"
-                                              IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
-                                    <ToggleButton.Style>
-                                        <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource ExpandCollapseToggleStyle}">
-                                        </Style>
-                                    </ToggleButton.Style>
-                                </ToggleButton>
-                                <ContentPresenter Grid.Column="1" TextElement.FontSize="{TemplateBinding FontSize}"  TextElement.Foreground="{TemplateBinding Foreground}" Content="{TemplateBinding Header}"/>
-                            </Grid>
+                                              IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                            <ContentPresenter x:Name="ContentSite"
-                                              Margin="0,10,0,0"
-                                              Visibility="Collapsed"/>
+                                    <materialDesign:PackIcon x:Name="ExpandIcon" Grid.Column="0" Foreground="{TemplateBinding Foreground}"  Height="16" Kind="ChevronRight" Margin="4,0,4,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center">
+                                        <materialDesign:PackIcon.RenderTransform>
+                                            <RotateTransform Angle="0" />
+                                        </materialDesign:PackIcon.RenderTransform>
+                                    </materialDesign:PackIcon>
+                                    <ContentPresenter Grid.Column="1"  Content="{TemplateBinding Header}" TextElement.FontSize="14" TextElement.Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}" VerticalAlignment="Center"/>
+                                </Grid>
+                            </ToggleButton>
+
+                            <Border Padding="{TemplateBinding Padding}">
+                                <ContentPresenter x:Name="ContentSite"
+                                                  Margin="0,2,0,0"
+                                                  Visibility="Collapsed"
+                                                  Focusable="False"/>
+                            </Border>
+
                         </StackPanel>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsExpanded" Value="True">
                             <Setter TargetName="ContentSite" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger SourceName="Header" Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary}"/>
+                            <Setter TargetName="Header" Property="Background" Value="{DynamicResource Frb.Brushes.Primary.Transparent}"/>
+                        </Trigger>
+                        <Trigger Property="IsExpanded" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation From="0" To="90" Duration="0:0:0.15"
+                                                         Storyboard.TargetName="ExpandIcon"
+                                                         Storyboard.TargetProperty="(FrameworkElement.RenderTransform).(RotateTransform.Angle)" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation From="90" To="0" Duration="0:0:0.15"
+                                                         Storyboard.TargetName="ExpandIcon"
+                                                         Storyboard.TargetProperty="(FrameworkElement.RenderTransform).(RotateTransform.Angle)" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
