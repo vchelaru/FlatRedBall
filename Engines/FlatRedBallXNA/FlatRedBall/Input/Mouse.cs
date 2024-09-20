@@ -1,17 +1,10 @@
+using FlatRedBall.Math;
+using FlatRedBall.Math.Geometry;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
-
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
-
-using FlatRedBall;
-using FlatRedBall.Math;
-using FlatRedBall.Math.Geometry;
-
-using FlatRedBall.Graphics;
 
 namespace FlatRedBall.Input
 {
@@ -39,6 +32,12 @@ namespace FlatRedBall.Input
 
         public const int NumberOfButtons = (int)MouseButtons.XButton2 + 1;
 
+        /// <summary>
+        /// The maximum duration between clicks for it to be considered a double
+        /// click instead of two single clicks.
+        /// 
+        /// TODO: make this a property that developers can configure
+        /// </summary>
         public const float MaximumSecondsBetweenClickForDoubleClick = .25f;
         #endregion
 
@@ -360,6 +359,12 @@ namespace FlatRedBall.Input
 
         #region Button state methods (pushed, down, released, double clicked)
       
+        /// <summary>
+        /// Whether the provided button was just pushed. This is only true for
+        /// the first frame after a button is Down having been Up in the previous frame.
+        /// </summary>
+        /// <param name="button">The button to check</param>
+        /// <returns>Boolean indicating whether the provided button was just pressed in this frame.</returns>
         public bool ButtonPushed(MouseButtons button)
         {
 #if !XBOX360
@@ -417,6 +422,12 @@ namespace FlatRedBall.Input
 #endif
         }
 
+        /// <summary>
+        /// Whether the provided button was just released. This is only true for the first frame after
+        /// a button enters Up having been Down in the previous frame.
+        /// </summary>
+        /// <param name="button">The button to check</param>
+        /// <returns>Boolean indicating whether the provided button was just released in this frame.</returns>
         public bool ButtonReleased(MouseButtons button)
         {
             bool isMouseStateNull = false;
@@ -443,7 +454,11 @@ namespace FlatRedBall.Input
             }
         }
 
-
+        /// <summary>
+        /// Whether the provided button is Down
+        /// </summary>
+        /// <param name="button">The button to check.</param>
+        /// <returns>Boolean indicating whether the provided button is down.</returns>
         public bool ButtonDown(MouseButtons button)
         {
             if (mActive == false)
@@ -469,12 +484,23 @@ namespace FlatRedBall.Input
 #if !XBOX360
 
 
-
+        /// <summary>
+        /// Whether the provided button was just pressed and released twice. Will only be true for the
+        /// frame immediately following the double click event.
+        /// </summary>
+        /// <param name="button">The button to check</param>
+        /// <returns>Boolean indicating whether the provieded button was just double clicked.</returns>
         public bool ButtonDoubleClicked(MouseButtons button)
         {
             return mActive && !InputManager.CurrentFrameInputSuspended && mDoubleClick[(int)button];
         }
 
+        /// <summary>
+        /// Whether the provided button was pressed, released, and pressed again (but not yet released).
+        /// Will only be true for the frame immediately following the double press event.
+        /// </summary>
+        /// <param name="button">The button to check</param>
+        /// <returns>Boolean indicating whether the provided button was just double pushed.</returns>
         public bool ButtonDoublePushed(MouseButtons button)
         {
             return mActive && !InputManager.CurrentFrameInputSuspended && mDoublePush[(int)button];
