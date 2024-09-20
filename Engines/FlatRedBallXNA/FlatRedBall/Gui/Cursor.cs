@@ -611,9 +611,31 @@ namespace FlatRedBall.Gui
             }
         }
 
+        /// <summary>
+        /// A shortcut property for WorldXAt(0) providing the world X coordinate of the cursor.
+        ///
+        /// Safe for orthogonal 2D games or 3D games where gameplay happens at 0 on
+        /// the Z axis. For accurate cursor picking in 3D games, use WorldXAt(z) with the Z coordinate
+        /// you need to check.
+        /// </summary>
         public float WorldX => WorldXAt(0);
+
+        /// <summary>
+        /// A shortcut property for WorldYAt(0) providing the world Y coordinate of the cursor.
+        ///
+        /// Safe for orthogonal 2D games or 3D games where gameplay happens at 0 on
+        /// the Z axis. For accurate cursor picking in 3D games, use WorldYAt(z) with the Z coordinate
+        /// you need to check.
+        /// </summary>
         public float WorldY => WorldYAt(0);
 
+        /// <summary>
+        /// Shortcut vector to get the X and Y coordinates of the cursor in world space at
+        /// a Z index of 0.
+        /// 
+        /// Safe for orthogonal 2D games or 3D games where you only need to track the cursor
+        /// at a Z coordinate of 0. Use WorldXAt(z) and WorldYAt(z) if 3D picking is needed.
+        /// </summary>
         public Vector2 WorldPosition => new Vector2(WorldX, WorldY);
 
         /// <summary>
@@ -1978,12 +2000,14 @@ namespace FlatRedBall.Gui
         }
 
         /// <summary>
-        /// Returns the X world coordinate of the cursor at the argument Z position. 
+        /// Returns the X world coordiante of the cursor at the argument Z position.
         /// This method requires a Z value to properly work with perspective cameras.
         /// This method assumes an unrotated camera.
+        /// 
+        /// For 2D games, the Z value is usually always 0.
         /// </summary>
         /// <param name="zPosition">The world Z to check at.</param>
-        /// <returns>The world X coordinate.</returns>
+        /// <returns>The world X coordiante.</returns>
         public float WorldXAt(float zPosition)
         {
             return Camera.WorldXAt(this.ScreenX, zPosition, Camera.Orthogonal, Camera.OrthogonalWidth);
@@ -2009,6 +2033,8 @@ namespace FlatRedBall.Gui
         /// Returns the Y world coordiante of the cursor at the argument Z position.
         /// This method requires a Z value to properly work with perspective cameras.
         /// This method assumes an unrotated camera.
+        /// 
+        /// For 2D games, the Z value is usually always 0.
         /// </summary>
         /// <param name="zPosition">The world Z to check at.</param>
         /// <returns>The world Y coordiante.</returns>
