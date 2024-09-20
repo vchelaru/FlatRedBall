@@ -32,13 +32,6 @@ namespace FlatRedBall.Input
 
         public const int NumberOfButtons = (int)MouseButtons.XButton2 + 1;
 
-        /// <summary>
-        /// The maximum duration between clicks for it to be considered a double
-        /// click instead of two single clicks.
-        /// 
-        /// TODO: make this a property that developers can configure
-        /// </summary>
-        public const float MaximumSecondsBetweenClickForDoubleClick = .25f;
         #endregion
 
         MouseState mMouseState;
@@ -105,6 +98,12 @@ namespace FlatRedBall.Input
             return valueToReturn;
         }
 
+
+        /// <summary>
+        /// The maximum duration between clicks for it to be considered a double
+        /// click instead of two single clicks.
+        /// </summary>
+        public float MaximumSecondsBetweenClickForDoubleClick { get; set; } = .25f;
 
         public MouseState MouseState => mMouseState;
 
