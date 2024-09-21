@@ -434,6 +434,8 @@ public partial class MainGlueWindow : Form
         var wpfHost = new ElementHost();
         wpfHost.Dock = DockStyle.Fill;
         MainWpfControl = new MainPanelControl();
+        MainWpfControl.Resources.MergedDictionaries.Add(_implicitWindowTypeDictionary);
+
         TryGenerateImplicitWindowStylesFor(Assembly.GetCallingAssembly());
         Wpf.Application.Current.Resources = MainWpfControl.Resources;
         SyncMenuStripWithTheme(MainWpfControl);
@@ -442,31 +444,67 @@ public partial class MainGlueWindow : Form
         this.PerformLayout();
     }
 
-    HashSet<Assembly> _checked = new();
+    private readonly HashSet<string> _checkedAssemblies = new();
+    private readonly HashSet<string> _addedWindowTypes = new();
+    private readonly Wpf.ResourceDictionary _implicitWindowTypeDictionary = new();
 
     public void TryGenerateImplicitWindowStylesFor(Assembly assembly)
     {
-        if (!_checked.Add(assembly))
+        if (!_checkedAssemblies.Add(assembly.FullName))
         {
             return;
         }
 
-        Wpf.ResourceDictionary resourceDictionary = new();
+        List<Type> windowTypes = GetAllReferencedAssemblies(assembly)
+            .Concat(new[] { assembly })
+            .SelectMany(x => x.GetTypes())
+            .Where(t => t.IsSubclassOf(typeof(Wpf.Window)) && !t.IsAbstract && _addedWindowTypes.Add(t.AssemblyQualifiedName))
+            .ToList();
 
-        var windowTypes = assembly.GetTypes()
-            .Where(t => t.IsSubclassOf(typeof(Wpf.Window)) && !t.IsAbstract);
 
-        foreach (var windowType in windowTypes)
+        foreach (Type windowType in windowTypes)
         {
-            var style = new Wpf.Style
+            Wpf.Style style = new ()
             {
                 TargetType = windowType,
                 BasedOn = (Wpf.Style)MainWpfControl.TryFindResource(typeof(Wpf.Window))
             };
-            resourceDictionary.Add(windowType, style);
+            _implicitWindowTypeDictionary.Add(windowType, style);
         }
 
-        MainWpfControl.Resources.MergedDictionaries.Add(resourceDictionary);
+
+        IEnumerable<Assembly> GetAllReferencedAssemblies(Assembly assembly)
+        {
+            HashSet<string> visitedAssemblies = new();
+            Queue<Assembly> assembliesToCheck = new();
+
+            assembliesToCheck.Enqueue(assembly);
+
+            while (assembliesToCheck.Count > 0)
+            {
+                Assembly currentAssembly = assembliesToCheck.Dequeue();
+
+                if (!visitedAssemblies.Add(currentAssembly.FullName)) continue;
+
+                yield return currentAssembly;
+
+                foreach (AssemblyName referencedAssemblyName in currentAssembly.GetReferencedAssemblies())
+                {
+                    try
+                    {
+                        Assembly referencedAssembly = Assembly.Load(referencedAssemblyName);
+                        if (!visitedAssemblies.Contains(referencedAssembly.FullName))
+                        {
+                            assembliesToCheck.Enqueue(referencedAssembly);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        _ = e;
+                    }
+                }
+            }
+        }
     }
 
     public new void Invoke(Action action)
