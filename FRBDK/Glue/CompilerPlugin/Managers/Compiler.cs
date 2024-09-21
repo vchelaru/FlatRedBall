@@ -145,7 +145,7 @@ namespace CompilerPlugin.Managers
             }
         }
 
-        internal async Task<CompileGeneralResponse> Compile(Action<string> printOutput, Action<string> printError,
+        internal async Task<CompileGeneralResponse> Compile(Action<string> printOutput, Action<string> printError, bool shouldDoNugetRestore,
             string configuration = "Debug", bool printMsBuildCommand = false)
         {
             var toReturn = new CompileGeneralResponse();
@@ -213,38 +213,15 @@ namespace CompilerPlugin.Managers
 
                         Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", null);
 
-                        #region Restore Nuget
-
+                        if(shouldDoNugetRestore)
                         {
-                            string startOutput = "Nuget Restore started at " + DateTime.Now.ToLongTimeString();
-                            string endOutput = "Nuget Restore succeeded";
-
-                            // For info on parameters:
-                            // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
-                            // \m uses multiple cores
-                            string arguments =
-                                additionalArgumentPrefix +
-                                $"\"{projectFileName}\" -t:restore " +
-                                "/nologo " +
-                                "/verbosity:minimal";
-
-                            if (printMsBuildCommand)
-                            {
-                                if(msBuildPath == "dotnet")
-                                {
-                                    // no need to put quotes around "dotnet"
-                                    printOutput?.Invoke($"{msBuildPath} {arguments}");
-                                }
-                                else
-                                {
-                                    printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
-                                }
-                            }
-
-                            succeeded = StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
+                            succeeded = DoNugetRestore(printOutput, printError, printMsBuildCommand, projectFileName, msBuildPath, additionalArgumentPrefix);
                         }
-
-                        #endregion
+                        else
+                        {
+                            // treat it as if it has succeeded
+                            succeeded = true; 
+                        }
 
                         #region Build
 
@@ -318,6 +295,41 @@ namespace CompilerPlugin.Managers
                 _compilerViewModel.IsCompiling = false;
             }
             return toReturn;
+        }
+
+        private bool DoNugetRestore(Action<string> printOutput, Action<string> printError, bool printMsBuildCommand, FilePath projectFileName, string msBuildPath, string additionalArgumentPrefix)
+        {
+            bool succeeded;
+            {
+                string startOutput = "Nuget Restore started at " + DateTime.Now.ToLongTimeString();
+                string endOutput = "Nuget Restore succeeded";
+
+                // For info on parameters:
+                // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
+                // \m uses multiple cores
+                string arguments =
+                    additionalArgumentPrefix +
+                    $"\"{projectFileName}\" -t:restore " +
+                    "/nologo " +
+                    "/verbosity:minimal";
+
+                if (printMsBuildCommand)
+                {
+                    if (msBuildPath == "dotnet")
+                    {
+                        // no need to put quotes around "dotnet"
+                        printOutput?.Invoke($"{msBuildPath} {arguments}");
+                    }
+                    else
+                    {
+                        printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
+                    }
+                }
+
+                succeeded = StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
+            }
+
+            return succeeded;
         }
 
         private bool StartMsBuildWithParameters(Action<string> printOutput, Action<string> printError, string startOutput, string endOutput, string arguments, string msbuildLocation)

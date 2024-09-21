@@ -248,7 +248,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                             {
                                 printOutput($"Telling game to restart screen");
 
-                                GlueCommands.Self.PrintOutput($"Restarting at {TimeManager.CurrentTime}");
+                                GlueCommands.Self.PrintOutput($"Telling game to restart screen {DateTime.Now}");
 
                                 var dto = new RestartScreenDto();
                                 dto.ReloadGlobalContent = isGlobalContent;

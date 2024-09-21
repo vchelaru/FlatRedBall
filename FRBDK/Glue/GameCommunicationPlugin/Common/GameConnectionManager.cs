@@ -249,7 +249,8 @@ namespace GameJsonCommunicationPlugin.Common
                         //gameToGlueSocket.Send(new byte[] { 0 });
                         if (toReturn != null)
                         {
-                            PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", $"Sending back {toReturn}");
+                            // This is a little noisy, but can be uncommented for more diagnostic info:
+                            //PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", $"Sending back {toReturn}");
                             var sendBytes = Encoding.ASCII.GetBytes(toReturn);
                             long size = sendBytes.LongLength;
 
