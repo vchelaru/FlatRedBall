@@ -39,11 +39,12 @@
 
             <Label Grid.Row="2"  Content="Copyright" />
             <Label Grid.Row="2" Grid.Column="1" Content="{Binding CopyrightText}" />
-            <Label Grid.Row="3" Content="FlatRedBall Project Version" />
-            <Label Grid.Row="3" Grid.Column="1" Content="{Binding GluxVersionText}" />
 
-            <Label Grid.Row="4" Content="Main Project Type" />
-            <Label Grid.Row="4" Grid.Column="1" Content="{Binding MainProjectTypeText}" />
+            <Label Grid.Row="3" Content="Main Project Type" />
+            <Label Grid.Row="3" Grid.Column="1" Content="{Binding MainProjectTypeText}" />
+
+            <Label Grid.Row="4" Content="FlatRedBall Project Version" />
+            <Label Grid.Row="4" Grid.Column="1" Content="{Binding GluxVersionText}" />
             
             <Label Grid.Row="5" Content="DLL version" />
             <Label Grid.Row="5" Grid.Column="1" Content="{Binding DllSyntaxVersionToShow}" />

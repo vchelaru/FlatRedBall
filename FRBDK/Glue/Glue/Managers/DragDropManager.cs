@@ -42,14 +42,14 @@ public class DragDropManager : Singleton<DragDropManager>
             NamedObjectSave targetNos = targetNode.Tag as NamedObjectSave;
             NamedObjectSave movingNos = treeNodeMoving.Tag as NamedObjectSave;
 
-            bool succeeded = false;
+            bool shouldRegenerateAndSave = false;
             if (targetNode == null)
             {
                 // Didn't move on to anything
             }
             else if (targetNode.IsRootNamedObjectNode())
             {
-                succeeded = await MoveObjectOnObjectsRoot(treeNodeMoving, targetNode, movingNos, succeeded);
+                shouldRegenerateAndSave = await MoveObjectOnObjectsRoot(treeNodeMoving, targetNode, movingNos);
             }
             else if (targetNode.IsRootCustomVariablesNode())
             {
@@ -57,18 +57,21 @@ public class DragDropManager : Singleton<DragDropManager>
             }
             else if (targetNode.Tag is GlueElement glueElement)
             {
-                succeeded = await DragDropNosIntoElement(movingNos, glueElement);
+                shouldRegenerateAndSave = await DragDropNosIntoElement(movingNos, glueElement);
             }
             else if (targetNode.IsRootEventsNode())
             {
-                succeeded = DragDropNosOnRootEventsNode(treeNodeMoving, targetNode);
+                shouldRegenerateAndSave = DragDropNosOnRootEventsNode(treeNodeMoving, targetNode);
             }
             else if (targetNos?.SourceType == SourceType.FlatRedBallType || 
                 // could be collidable:
                 targetNos?.SourceType == SourceType.Entity)
             {
-                succeeded = await DragDropNosOnNos(treeNodeMoving, targetNode, targetNos, movingNos, succeeded);
-
+                // This handles success internally so that it can be done on a task:
+                _ = TaskManager.Self.AddAsync(() =>
+                {
+                    return DragDropNosOnNos(treeNodeMoving, targetNode, targetNos, movingNos);
+                }, $"Drag+dropping {treeNodeMoving} onto {targetNode}", TaskExecutionPreference.Asap, doOnUiThread: true);
             }
             else
             {
@@ -76,29 +79,35 @@ public class DragDropManager : Singleton<DragDropManager>
             }
 
 
-            if (succeeded)
+            if (shouldRegenerateAndSave)
             {
-                var element = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
-                if (element != null)
-                {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                }
-                else
-                {
-                    GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
-                }
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-                GluxCommands.Self.SaveProjectAndElements();
+                GenerateAndSaveAfterDragDrop(targetNode);
             }
         }
+    }
+
+    private static void GenerateAndSaveAfterDragDrop(ITreeNode targetNode)
+    {
+        var element = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+        if (element != null)
+        {
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+        }
+        else
+        {
+            GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
+        }
+        GlueCommands.Self.ProjectCommands.SaveProjects();
+        GluxCommands.Self.SaveProjectAndElements();
     }
 
     #endregion
 
     #region ... on other Named Object
 
-    private async Task<bool> DragDropNosOnNos(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos, bool succeeded)
+    private async Task DragDropNosOnNos(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)
     {
+        bool succeeded = false;
         var targetAti = targetNos.GetAssetTypeInfo();
         string targetClassType = targetAti?.FriendlyName;
 
@@ -282,9 +291,12 @@ public class DragDropManager : Singleton<DragDropManager>
         {
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
             GlueState.Self.CurrentNamedObjectSave = movingNos;
+
+            GenerateAndSaveAfterDragDrop(targetNode);
+
         }
 
-        return succeeded;
+
     }
 
     #endregion
@@ -308,8 +320,9 @@ public class DragDropManager : Singleton<DragDropManager>
 
     #region ... into/out of lists
 
-    private static async Task<bool> MoveObjectOnObjectsRoot(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave movingNos, bool succeeded)
+    private static async Task<bool> MoveObjectOnObjectsRoot(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave movingNos)
     {
+        bool succeeded = false;
         // Dropped it on the "Objects" tree node
 
         // Let's see if it's the Objects that contains node or another one
