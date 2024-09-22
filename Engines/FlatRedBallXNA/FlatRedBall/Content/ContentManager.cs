@@ -883,6 +883,32 @@ namespace FlatRedBall.Content
 			}
 		}
 
+        protected override Stream OpenStream(string assetName)
+        {
+#if WEB
+            // When we go to TitleContainer.OpenStream, we normally don't want a / prefix.
+			// But "/" is the absolute prefix for web projects so we have to add it back.
+            if (assetName.StartsWith("/") == false)
+			{
+				assetName = "/" + assetName;
+            }
+#endif
+
+
+			if(FileManager.StreamByteDictionary.ContainsKey(assetName))
+			{
+                return new MemoryStream(FileManager.StreamByteDictionary[assetName]);
+            }
+			else if(FileManager.StreamByteDictionary.ContainsKey(assetName + ".xnb"))
+			{
+				return new MemoryStream(FileManager.StreamByteDictionary[assetName + ".xnb"]);
+            }
+			else
+			{
+                return base.OpenStream(assetName);
+			}
+        }
+
         /// <summary>
         /// Removes an IDisposable from the ContentManager.  This method does not call Dispose on the argument Disposable.  It 
         /// must be disposed 
@@ -1065,7 +1091,7 @@ namespace FlatRedBall.Content
 
 		#endregion
 
-#region Private Methods
+		#region Private Methods
 
 		private T AdjustNewAsset<T>(T asset, string assetName)
 		{
@@ -1088,8 +1114,8 @@ namespace FlatRedBall.Content
 
 		}
 
-#endregion
+		#endregion
 
-#endregion
+		#endregion
 	}
 }

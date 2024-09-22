@@ -477,13 +477,18 @@ namespace FlatRedBall.IO
                 // property to avoid having to do logic off of exceptions.  <sigh>
                 try
                 {
+                    // Currently StreamByteDictionary does have prefix of / for web, so we need to check
+                    // that before going to OpenStream
+                    if (StreamByteDictionary.ContainsKey(fileName))
+                    {
+                        return true;
+                    }
 #if WEB
                     if(fileName.StartsWith("/"))
                     {
                         fileName = fileName.Substring(1);
                     }
 #endif
-
 
                     stream = TitleContainer.OpenStream(fileName);
                 }
