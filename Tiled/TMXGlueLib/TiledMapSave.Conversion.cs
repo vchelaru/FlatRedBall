@@ -1352,6 +1352,9 @@ namespace TMXGlueLib
                 fileName = FileManager.RelativeDirectory + fileName;
             }
 
+            fileName = FileManager.RemoveDotDotSlash(fileName);
+
+
             // I believe the relative directory of the TMS must be its own directory so that
             // image references can be tracked on XML deserialization
             string oldRelativeDirectory = FileManager.RelativeDirectory;
