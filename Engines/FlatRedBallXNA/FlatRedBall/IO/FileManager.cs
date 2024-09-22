@@ -477,12 +477,22 @@ namespace FlatRedBall.IO
                 // property to avoid having to do logic off of exceptions.  <sigh>
                 try
                 {
+                    fileName = RemoveDotDotSlash(fileName);
                     // Currently StreamByteDictionary does have prefix of / for web, so we need to check
                     // that before going to OpenStream
+
+#if WEB
+                    if(!fileName.StartsWith('/'))
+                    {
+                        fileName = "/" + fileName;
+                    }
+#endif
+
                     if (StreamByteDictionary.ContainsKey(fileName))
                     {
                         return true;
                     }
+
 #if WEB
                     if(fileName.StartsWith("/"))
                     {
@@ -1357,6 +1367,8 @@ namespace FlatRedBall.IO
                     directory = FileManager.MakeAbsolute(directory);
                 }
 
+
+
                 if (System.IO.Directory.Exists(directory))
                 {
                     // See if the file without extension exists
@@ -1770,10 +1782,7 @@ namespace FlatRedBall.IO
             if (FileManager.IsRelative(fileName))
                 fileName = FileManager.RelativeDirectory + fileName;
 
-            // Do this check before removing the ./ at the end of the file name
-
             ThrowExceptionIfFileDoesntExist(fileName);
-
 
             bool handled = false;
 
@@ -1872,6 +1881,19 @@ namespace FlatRedBall.IO
             if (fileName.StartsWith("./"))
             {
                 fileName = fileName.Substring(2);
+            }
+
+            var streamName = fileName;
+#if WEB
+            if(!streamName.StartsWith("/"))
+            {
+                streamName = "/" + streamName;
+            }
+#endif
+            if (StreamByteDictionary.ContainsKey(streamName))
+            {
+                var bytes = StreamByteDictionary[streamName];
+                return new System.IO.MemoryStream(bytes);
             }
 
             if (StreamByteDictionary.ContainsKey(fileName))
