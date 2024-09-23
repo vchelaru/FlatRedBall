@@ -80,7 +80,7 @@
                         <Style TargetType="{x:Type TextBlock}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsNameInvalid}" Value="True">
-                                    <Setter Property="Background" Value="Red"/>
+                                    <Setter Property="Background" Value="{DynamicResource Frb.Brushes.Error}"/>
 
                                 </DataTrigger>
                             </Style.Triggers>

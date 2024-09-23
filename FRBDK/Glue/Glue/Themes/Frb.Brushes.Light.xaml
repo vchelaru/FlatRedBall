@@ -8,18 +8,19 @@
             <StaticResource x:Key="Frb.Colors.Foreground.Subtle" ResourceKey="Gray600" />
             <StaticResource x:Key="Frb.Colors.Border" ResourceKey="Gray500" />
             <StaticResource x:Key="Frb.Colors.Background" ResourceKey="Gray250" />
+
             <StaticResource x:Key="Frb.Colors.Surface01" ResourceKey="Gray100" />
             <StaticResource x:Key="Frb.Colors.Surface02" ResourceKey="Gray200" />
 
             <Color x:Key="Frb.Colors.Error">#D32F2F</Color>
             
             <Color x:Key="Frb.Colors.ThemeContrast">Black</Color>
+            
+            <StaticResource x:Key="Frb.Colors.Field.Background" ResourceKey="Gray50"/>
 
             <SolidColorBrush x:Key="Darken" Color="Black" Opacity="0.05"/>
             <SolidColorBrush x:Key="Darken02" Color="Black" Opacity="0.1"/>
             <SolidColorBrush x:Key="Darken03" Color="Black" Opacity="0.15"/>
-
-            <SolidColorBrush x:Key="Frb.Brushes.TextBox.Background" Color="{DynamicResource Frb.Colors.Surface04}" />
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 
