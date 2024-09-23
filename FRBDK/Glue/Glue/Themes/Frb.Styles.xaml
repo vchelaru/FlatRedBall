@@ -1057,6 +1057,7 @@
 
     <Style TargetType="{x:Type TabControl}">
         <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabControl}">
@@ -1069,7 +1070,7 @@
 
                             <TabPanel Panel.ZIndex="1" IsItemsHost="True" Background="Transparent" ></TabPanel>
                         </Border>
-                        <Border Grid.Row="1" BorderBrush="{DynamicResource Frb.Brushes.Contrast01}" BorderThickness="1" Background="{TemplateBinding Background}" CornerRadius="0,0,2,2">
+                        <Border Grid.Row="1" BorderBrush="{DynamicResource Frb.Brushes.Contrast01}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
                             <ContentPresenter ContentSource="SelectedContent"></ContentPresenter>
                         </Border>
                     </Grid>

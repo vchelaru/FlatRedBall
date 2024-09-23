@@ -19,7 +19,7 @@
             <Button Margin="7,5,0,0" Width="220" HorizontalAlignment="Left" Click="RegenerateFontsClicked" Content="{x:Static localization:Texts.FontsRegenerate}" />
             <Button Margin="7,5,0,0" Width="220" HorizontalAlignment="Left" Click="RemoveOrphanCustomCodeClicked" Content="{x:Static localization:Texts.CustomRuntimeFilesRemoveOrphaned}" />
 
-            <GroupBox Header="{x:Static localization:Texts.ProjectGumManagement}">
+            <GroupBox Header="{x:Static localization:Texts.ProjectGumManagement}" Margin="0,4">
                 <StackPanel>
                     <CheckBox x:Name="AutoCreateGumScreens" VerticalContentAlignment="Center" 
                           Content="{x:Static localization:Texts.GumAutoCreateForGlue}" 
@@ -29,7 +29,7 @@
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Header="{x:Static localization:Texts.GumCoreAddition}" Visibility="{Binding GumCoreFileUiVisibility}">
+            <GroupBox Header="{x:Static localization:Texts.GumCoreAddition}" Visibility="{Binding GumCoreFileUiVisibility}" Margin="0,0,0,4">
                 <StackPanel >
                     <RadioButton GroupName="AdditionType" x:Name="IncludeNoFilesRadio" 
                              VerticalContentAlignment="Center" Content="{x:Static localization:Texts.FilesIncludeNoneUseDllsOrSource}" IsChecked="{Binding IncludeNoFiles, FallbackValue=true, Mode=TwoWay}"/>
@@ -41,40 +41,28 @@
 
             </GroupBox>
 
-            <GroupBox Header="FlatRedBall.Forms">
-                <StackPanel>
-                    <StackPanel x:Name="Basic" Visibility="{Binding BasicVisibility}">
-                        <Button HorizontalAlignment="Left" Margin="0,5,0,0" Width="260" Click="HandleAddAllForms">
-                            <StackPanel>
-                                <Label HorizontalAlignment="Center" Content="{x:Static localization:Texts.ProjectFormsAddUpdate}"  />
-                                <Label HorizontalAlignment="Center" FontSize="9" Content="{x:Static localization:Texts.FormClickAgainReAdd}"  />
-                            </StackPanel>
-                            </Button>
+            <GroupBox Header="FlatRedBall.Forms" Padding="0">
+                <TabControl BorderThickness="0,1,0,0">
+                    <TabItem Header="Basic">
+                        <StackPanel x:Name="Basic" Margin="4">
+                            <Button HorizontalAlignment="Left" Width="Auto" Click="HandleAddAllForms" Content="{x:Static localization:Texts.ProjectFormsAddUpdate}" />
+                            <TextBlock FontSize="9" Text="{x:Static localization:Texts.FormClickAgainReAdd}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Advanced">
+                        <StackPanel x:Name="Advanced" Margin="4">
 
-                        <TextBlock>           
-                            <Hyperlink Click="AdvancedClick">
-                                Advanced>>
-                            </Hyperlink>
-                        </TextBlock>
+                            <CheckBox VerticalContentAlignment="Center"
+                                      Content="{x:Static localization:Texts.FormsIncludeComponents}" IsChecked="{Binding IncludeFormsInComponents, Mode=TwoWay}"></CheckBox>
 
-                    </StackPanel>
-                    <StackPanel x:Name="Advanced" Visibility="{Binding AdvancedVisibility}">
-
-                        <CheckBox VerticalContentAlignment="Center"
-                                  Content="{x:Static localization:Texts.FormsIncludeComponents}" IsChecked="{Binding IncludeFormsInComponents, Mode=TwoWay}"></CheckBox>
-
-                        <CheckBox VerticalContentAlignment="Center"
-                                  Content="{x:Static localization:Texts.FormsAddDefaultToGum}" IsChecked="{Binding IncludeComponentToFormsAssociation, Mode=TwoWay}"></CheckBox>
-                        <Button HorizontalAlignment="Left" Margin="0,10,0,0" Width="220" Click="HandleGenerateBehaviors" Content="{x:Static localization:Texts.FrbGenerateBehaviors}" />
-                        <Button HorizontalAlignment="Left" Margin="0,5,0,0" Width="220" 
-                                Click="HandleAddFormsComponentsClick" Content="{x:Static localization:Texts.GumFormComponentsAddRefresh}" />
-                        <TextBlock>           
-                            <Hyperlink Click="SimpleClick">
-                                &lt;&lt; Simple
-                            </Hyperlink>
-                        </TextBlock>
-                    </StackPanel>
-                </StackPanel>
+                            <CheckBox VerticalContentAlignment="Center"
+                                      Content="{x:Static localization:Texts.FormsAddDefaultToGum}" IsChecked="{Binding IncludeComponentToFormsAssociation, Mode=TwoWay}"></CheckBox>
+                            <Button HorizontalAlignment="Left" Margin="0,10,0,0" Width="220" Click="HandleGenerateBehaviors" Content="{x:Static localization:Texts.FrbGenerateBehaviors}" />
+                            <Button HorizontalAlignment="Left" Margin="0,5,0,0" Width="220" 
+                                    Click="HandleAddFormsComponentsClick" Content="{x:Static localization:Texts.GumFormComponentsAddRefresh}" />
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
             </GroupBox>
         </StackPanel>
     </ScrollViewer>

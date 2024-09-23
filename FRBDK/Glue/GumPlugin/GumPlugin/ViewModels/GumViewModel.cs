@@ -128,17 +128,6 @@ namespace GumPlugin.ViewModels
             set => SetAndPersist(value);
         }
 
-        public bool ShowAdvanced
-        {
-            get => Get<bool>();
-            set => Set(value); 
-        }
-
-        [DependsOn(nameof(ShowAdvanced))]
-        public Visibility BasicVisibility => ShowAdvanced ? Visibility.Collapsed : Visibility.Visible;
-        [DependsOn(nameof(ShowAdvanced))]
-        public Visibility AdvancedVisibility => ShowAdvanced ? Visibility.Visible : Visibility.Collapsed;
-
         public void SetFrom(GumProjectSave gumProjectSave, ReferencedFileSave referencedFileSave)
         {
             backingGumProject = gumProjectSave;
