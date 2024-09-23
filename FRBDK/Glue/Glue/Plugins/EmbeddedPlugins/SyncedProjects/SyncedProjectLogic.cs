@@ -118,6 +118,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
         public bool GetIfHandledByContentPipelinePlugin(VisualStudioProject targetProject, string extension, ReferencedFileSave rfs)
         {
+            if(rfs?.GetAssetTypeInfo()?.CanBeAddedToContentPipeline == false)
+            {
+                return false;
+            }
+
             // this depends on the type of project:
             if(targetProject is AndroidProject or AndroidMonoGameNet8Project)
             {

@@ -454,12 +454,6 @@ namespace FlatRedBall.Glue.IO
 
                 GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
 
-                // Screens and Entities have the membership of their files
-                // automatically updated when the tree nodes are created. This
-                // is bad. GlobalContent does this better by requiring the call
-                // to be explicitly made:
-                UpdateGlobalContentFileProjectMembership();
-
                 // I think this is handled automatically when regenerating all code...
                 // Yes, down in GenerateAllCodeTask
                 //GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
@@ -509,24 +503,6 @@ namespace FlatRedBall.Glue.IO
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 Section.EndContextAndTime();
 
-            }
-        }
-
-
-        private void UpdateGlobalContentFileProjectMembership()
-        {
-            bool wasAnythingAdded = false;
-            foreach(var file in GlueState.Self.CurrentGlueProject.GlobalFiles)
-            {
-                if (GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(file))
-                {
-                    wasAnythingAdded = true;
-                }
-            }
-            if(wasAnythingAdded)
-            {
-                // save the projects:
-                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }
 
