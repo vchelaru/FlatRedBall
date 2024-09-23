@@ -159,7 +159,13 @@ class ProjectCommands : IProjectCommands
 
 
             bool useContentPipeline = referencedFileSave.UseContentPipeline || (assetTypeInfo != null && assetTypeInfo.MustBeAddedToContentPipeline);
-
+            if(assetTypeInfo != null && useContentPipeline)
+            {
+                if(!assetTypeInfo.CanBeAddedToContentPipeline)
+                {
+                    useContentPipeline = false;
+                }
+            }
             var projectName = GlueState.Self.CurrentMainProject.Name;
             var isExcludedFromProject = referencedFileSave.ProjectsToExcludeFrom.Contains(projectName);
             if (!isExcludedFromProject)
@@ -366,7 +372,8 @@ class ProjectCommands : IProjectCommands
         bool useContentPipeline = false;
         if (rfs != null && rfs.UseContentPipeline)
         {
-            useContentPipeline = true;
+            var ati = rfs.GetAssetTypeInfo();
+            useContentPipeline = ati == null || ati.CanBeAddedToContentPipeline == true;
         }
 
         if (!useContentPipeline)
