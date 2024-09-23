@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="600">
     <Grid>
@@ -159,7 +160,7 @@
         <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3"  Text="{x:Static localization:Texts.PropsAdd}" />
         <wpfdataui:DataUiGrid x:Name="DataGrid" Grid.Row="1" Grid.Column="3"  IsEnabled="{Binding IsEditable}"></wpfdataui:DataUiGrid>
 
-        <Button Grid.Column="4" Width="24" Click="HandleXClick" Visibility="{Binding DeleteButtonVisibility}" >X</Button>
+        <Button Grid.Column="4" Width="24" Click="HandleXClick" Visibility="{Binding DeleteButtonVisibility}" Content="{materialDesign:PackIcon CloseCircle}" Style="{DynamicResource ToolIcon}"/>
 
     </Grid>
 </UserControl>
