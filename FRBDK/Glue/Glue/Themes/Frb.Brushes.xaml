@@ -31,4 +31,6 @@
     <SolidColorBrush x:Key="Frb.Brushes.Contrast03" Color="{DynamicResource Frb.Colors.Foreground}" Opacity="0.4" />
     <SolidColorBrush x:Key="Frb.Brushes.Contrast04" Color="{DynamicResource Frb.Colors.Foreground}" Opacity="0.5" />
 
+    <SolidColorBrush x:Key="Frb.Brushes.Error" Color="{DynamicResource Frb.Colors.Error}" />
+
 </ResourceDictionary>

@@ -97,7 +97,7 @@
                 <TextBox x:Name="NewVariableTextBox" 
                          Text="{Binding NewVariableName, UpdateSourceTrigger=PropertyChanged}" 
                          KeyDown="TextBox_KeyDown" Margin="0,0,0,0"></TextBox>
-                <TextBlock x:Name="FailureTextBlock" Margin="3,0,3,3" Foreground="DarkRed" 
+                <TextBlock x:Name="FailureTextBlock" Margin="3,0,3,3" Foreground="{DynamicResource Frb.Brushes.Error}" 
                    Visibility="{Binding FailureTextVisibility}" Text="{Binding FailureText}" TextWrapping="Wrap"></TextBlock>
 
                 <Label Margin="0,0,0,-4" Content="{x:Static localization:Texts.Category}" />

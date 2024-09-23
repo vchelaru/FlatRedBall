@@ -10,6 +10,8 @@
             <StaticResource x:Key="Frb.Colors.Background" ResourceKey="Gray250" />
             <StaticResource x:Key="Frb.Colors.Surface01" ResourceKey="Gray100" />
             <StaticResource x:Key="Frb.Colors.Surface02" ResourceKey="Gray200" />
+
+            <Color x:Key="Frb.Colors.Error">#D32F2F</Color>
             
             <Color x:Key="Frb.Colors.ThemeContrast">Black</Color>
 

@@ -12,6 +12,8 @@
             <StaticResource x:Key="Frb.Colors.Surface01" ResourceKey="Gray600" />
             <StaticResource x:Key="Frb.Colors.Surface02" ResourceKey="Gray650" />
 
+            <Color x:Key="Frb.Colors.Error">#F44336</Color>
+
             <Color x:Key="Frb.Colors.ThemeContrast">White</Color>
 
             <SolidColorBrush x:Key="Darken" Color="Black" Opacity="0.1"/>
