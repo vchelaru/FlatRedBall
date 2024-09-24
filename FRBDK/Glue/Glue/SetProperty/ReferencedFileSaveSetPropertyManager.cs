@@ -21,6 +21,7 @@ using FlatRedBall.Glue.Plugins;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin;
 using EditorObjects.IoC;
+using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -568,30 +569,89 @@ namespace FlatRedBall.Glue.SetVariable
 
         private static void UpdateBuildItemsForRenamedRfs(string oldName, string newName)
         {
-            if (ProjectManager.ContentProject != null)
+            //////////////Early Out//////////////
+            if(ProjectManager.ContentProject == null)
             {
-                var oldNameWithContentPrefix = "content\\" + oldName.ToLower().Replace("/", "\\");
-                var item = ProjectManager.ContentProject.GetItem(oldNameWithContentPrefix);
+                return;
+            }
+            ///////////End Early Out/////////////
+            
+            var isCaseSensitive = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CaseSensitiveLoading;
 
-                // The item could be null if this file is excluded from the project
-                if (item != null)
+            UpdateBuildItemsForRenameInProject(ProjectManager.ContentProject);
+
+            // todo - update synced projects too
+            foreach(var project in GlueState.Self.SyncedProjects)
+            {
+                UpdateBuildItemsForRenameInProject(project.ContentProject as VisualStudioProject);
+            }
+
+            void UpdateBuildItemsForRenameInProject(VisualStudioProject project)
+            {
+                if (project != null)
                 {
-                    if (newName.Replace("/", "\\").StartsWith(@"content\", StringComparison.OrdinalIgnoreCase))
+                    var contentPrefix = isCaseSensitive ? "Content\\" : "content\\";
+
+                    string oldNameWithContentPrefix= isCaseSensitive 
+                        ? contentPrefix + oldName.Replace("/", "\\")
+                        : contentPrefix + oldName.ToLower().Replace("/", "\\");
+
+                    string projectRelativePath = "";
+
+                    if (project != GlueState.Self.CurrentMainContentProject)
                     {
-                        newName = newName.Substring(@"content\".Length);
+                        var thisDirectory = project.Directory;
+                        var mainDirectory = GlueState.Self.CurrentMainContentProject.Directory;
+
+                        projectRelativePath = FileManager.MakeRelative(mainDirectory, thisDirectory).Replace("/", "\\");
                     }
 
-                    var newNameWithContentPrefix = "content\\" + newName.ToLowerInvariant().Replace("/", "\\");
-                    item.UnevaluatedInclude = newNameWithContentPrefix;
+                    var item = project.GetItem(projectRelativePath + oldNameWithContentPrefix);
 
-                    string nameWithoutExtensions = FileManager.RemovePath(FileManager.RemoveExtension(newName));
+                    // The item could be null if this file is excluded from the project
+                    if (item != null)
+                    {
+                        if (newName.Replace("/", "\\").StartsWith(contentPrefix, StringComparison.OrdinalIgnoreCase))
+                        {
+                            newName = newName.Substring(contentPrefix.Length);
+                        }
 
-                    item.SetMetadataValue("Name", nameWithoutExtensions);
 
+                        string newNameWithContentPrefix;
+                        if (isCaseSensitive)
+                        {
+                            newNameWithContentPrefix = contentPrefix + newName.Replace("/", "\\");
+                        }
+                        else
+                        {
+                            newNameWithContentPrefix = contentPrefix + newName.ToLowerInvariant().Replace("/", "\\");
+                        }
+                        item.UnevaluatedInclude = projectRelativePath + newNameWithContentPrefix;
 
-                    ProjectManager.ContentProject.RenameInDictionary(oldNameWithContentPrefix, newNameWithContentPrefix, item);
+                        string nameWithoutExtensions = FileManager.RemovePath(FileManager.RemoveExtension(newName));
+
+                        item.SetMetadataValue("Name", nameWithoutExtensions);
+
+                        /* For linked files, they would look something like this:
+    <None Include="..\..\CrankyChibiCthulu\Content\Screens\GameScreen\Ren2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Ren2</Name>
+      <Link>Content\Screens\GameScreen\Ren2.png</Link>
+    </None>
+                        So we need to have the name use it with the the ..\ prefixes, but the link does not have the ..\'s
+                        */
+
+                        var link = item.Metadata.FirstOrDefault(item => item.Name == "Link");
+                        if (link != null && link.UnevaluatedValue == oldNameWithContentPrefix)
+                        {
+                            item.SetMetadataValue("Link", newNameWithContentPrefix);
+                        }
+
+                        project.RenameInDictionary(projectRelativePath + oldNameWithContentPrefix, projectRelativePath + newNameWithContentPrefix, item);
+                    }
                 }
             }
+
         }
 
         private static async Task RegenerateCodeAndUpdateUiAccordingToRfsRename(string oldName, string newName, ReferencedFileSave fileSave)
