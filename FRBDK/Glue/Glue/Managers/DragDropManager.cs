@@ -563,25 +563,43 @@ public class DragDropManager : Singleton<DragDropManager>
 
     #endregion
 
+    #region ... On State Category
+
     private static void MoveVariableOnStateCategory(CustomVariable customVariable, StateSaveCategory stateSaveCategory)
     {
-        TaskManager.Self.AddOrRunIfTasked(() =>
+        _=TaskManager.Self.AddAsync(() =>
         {
-            if (stateSaveCategory.ExcludedVariables.Contains(customVariable.Name))
+            var owner = ObjectFinder.Self.GetElementContaining(customVariable);
+
+            var canBeIncludedResponse =
+                GlueCommands.Self.GluxCommands.ElementCommands.CanVariableBeIncludedInStates(
+                    customVariable.Name, owner);
+
+            if(!canBeIncludedResponse.Succeeded)
             {
-                stateSaveCategory.ExcludedVariables.Remove(customVariable.Name);
+                GlueCommands.Self.DialogCommands.ShowMessageBox(canBeIncludedResponse.Message, "Cannot include variable");
+
             }
-            var container = ObjectFinder.Self.GetElementContaining(stateSaveCategory);
+            else
+            {
+                if (stateSaveCategory.ExcludedVariables.Contains(customVariable.Name))
+                {
+                    stateSaveCategory.ExcludedVariables.Remove(customVariable.Name);
+                }
+                var container = ObjectFinder.Self.GetElementContaining(stateSaveCategory);
 
-            PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(stateSaveCategory, customVariable.Name, StateCategoryVariableAction.Included);
+                PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(stateSaveCategory, customVariable.Name, StateCategoryVariableAction.Included);
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
-            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
-            GlueCommands.Self.PrintOutput($"Including variable {customVariable.Name} in category {stateSaveCategory.Name}");
+                GlueCommands.Self.PrintOutput($"Including variable {customVariable.Name} in category {stateSaveCategory.Name}");
+            }
         }, $"Including variable {customVariable.Name} in category {stateSaveCategory.Name}", TaskExecutionPreference.Asap);
     }
+
+    #endregion
 
     private static void MoveCustomVariable(ITreeNode nodeMoving, ITreeNode targetNode)
     {

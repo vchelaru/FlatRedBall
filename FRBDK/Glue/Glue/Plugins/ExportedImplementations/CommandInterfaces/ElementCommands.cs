@@ -1257,7 +1257,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
     #endregion
 
-    #region Add StateSaveCategory
+    #region StateSaveCategory
 
     public async Task AddStateSaveCategoryAsync(string categoryName, GlueElement element)
     {
@@ -1295,6 +1295,32 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             GluxCommands.Self.SaveProjectAndElements();
         }, nameof(AddStateSaveCategoryAsync));
+    }
+
+    public GeneralResponse CanVariableBeIncludedInStates(string variableName, GlueElement element)
+    {
+        var variable = element.GetCustomVariableRecursively(variableName);
+
+        if(variable == null)
+        {
+            return GeneralResponse.UnsuccessfulWith("Variable does not exist, so it cannot be included");
+        }
+        else if(variable.SourceObject != null)
+        {
+            var rootVariable = ObjectFinder.Self.GetRootCustomVariable(variable);
+
+            if(rootVariable?.Name == "Points")
+            {
+                // for now we assume this is for a polygon, and we don't allow it:
+                return GeneralResponse.UnsuccessfulWith("Cannot include Points which is a list.");
+            }
+            else if(rootVariable?.Type.StartsWith("List<") == true)
+            {
+                return GeneralResponse.UnsuccessfulWith($"Variables of list types ({rootVariable?.Type}) cannot be included in states.");
+
+            }
+        }
+        return GeneralResponse.SuccessfulResponse;
     }
 
     #endregion
