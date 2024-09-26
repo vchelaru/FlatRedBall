@@ -28,7 +28,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <controls:ToolbarControl Height="24" VerticalContentAlignment="Center" x:Name="ToolbarControl" Grid.Row="0"/>
+        <controls:ToolbarControl VerticalContentAlignment="Center" x:Name="ToolbarControl" Grid.Row="0"/>
 
         <Grid Grid.Row="1" Margin="3">
             <Grid.RowDefinitions>
