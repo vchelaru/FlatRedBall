@@ -27,7 +27,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         /// </summary>
         bool ignoreExcludedVariableChanges;
 
-        public IElement Element { get; private set; }
+        public GlueElement Element { get; private set; }
         StateSaveCategory category;
 
         public ObservableCollection<StateViewModel> States
@@ -353,17 +353,29 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 var oldSelectedIndex = ExcludedVariables.IndexOf(SelectedExcludedVariable);
 
                 var whatToMove = SelectedExcludedVariable;
-                IncludedVariables.Add(whatToMove);
-                ExcludedVariables.Remove(whatToMove);
-                SelectedIncludedVariable = whatToMove;
 
-                if(oldSelectedIndex < ExcludedVariables.Count)
+                var canBeIncludedResponse =
+                    GlueCommands.Self.GluxCommands.ElementCommands.CanVariableBeIncludedInStates(
+                        whatToMove, Element);
+
+                if(!canBeIncludedResponse.Succeeded)
                 {
-                    SelectedExcludedVariable = ExcludedVariables[oldSelectedIndex];
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(canBeIncludedResponse.Message, "Cannot include variable");
                 }
-                else if(ExcludedVariables.Count > 0)
+                else
                 {
-                    SelectedExcludedVariable = ExcludedVariables[ExcludedVariables.Count - 1];
+                    IncludedVariables.Add(whatToMove);
+                    ExcludedVariables.Remove(whatToMove);
+                    SelectedIncludedVariable = whatToMove;
+
+                    if(oldSelectedIndex < ExcludedVariables.Count)
+                    {
+                        SelectedExcludedVariable = ExcludedVariables[oldSelectedIndex];
+                    }
+                    else if(ExcludedVariables.Count > 0)
+                    {
+                        SelectedExcludedVariable = ExcludedVariables[ExcludedVariables.Count - 1];
+                    }
                 }
             }
         }
