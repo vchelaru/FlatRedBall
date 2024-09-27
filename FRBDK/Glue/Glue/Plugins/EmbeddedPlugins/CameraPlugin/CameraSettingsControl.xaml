@@ -9,6 +9,14 @@
              mc:Ignorable="d" 
              
              d:Width="250">
+    <UserControl.Resources>
+        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Background" Value="{DynamicResource Frb.Brushes.Field.Background}"></Setter>
+        </Style>
+        <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+            <Setter Property="Margin" Value="0,2,4,2"></Setter>
+        </Style>
+    </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <Grid Margin="2">
@@ -19,12 +27,8 @@
                 </Grid.ColumnDefinitions>
                 <ComboBox SelectedItem="{Binding SelectedOption}" 
                           ItemsSource="{Binding AvailableOptions}" ></ComboBox>
-                <Button Grid.Column="1" Width="26" Click="SaveClicked" Margin="2,0,0,0">
-                    <Image Source="/Content/Icons/SaveIcon.png"></Image>
-                </Button>
-                <Button Grid.Column="2" Width="26" Click="DeleteClicked"  Margin="2,0,0,0">
-                    <Image Source="/Content/Icons/Delete.png"></Image>
-                </Button>
+                <Button Grid.Column="1" Width="26" Click="SaveClicked" Margin="2,0,0,0" Style="{DynamicResource IconButton}" Content="{materialDesign:PackIcon ContentSave}" />
+                <Button Grid.Column="2" Width="26" Click="DeleteClicked"  Margin="2,0,0,0" Style="{DynamicResource IconButton}" Content="{materialDesign:PackIcon Delete}" />
             </Grid>
             <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding GenerateDisplayCode}" Content="{x:Static localization:Texts.GenerateDisplayCode}" />
                 <StackPanel Visibility="{Binding AllPropertiesVisibility}">
@@ -40,35 +44,29 @@
                                 <Label Width="50" Content="Height"/>
                                 <TextBox Width="40" Height="18" Text="{Binding ResolutionHeight}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"/>
                             </StackPanel>
-                            <MenuItem Width="19" Height="22" Padding="0" Margin="0">
-                                <MenuItem.Icon>
-                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                        <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-3,-3,0,-3" Click="PresetResolutionDropdownClick">
-                                            <Polygon HorizontalAlignment="Center" VerticalAlignment="Center" Points="0,0 10,0, 5,6" Stroke="Black" Fill="Black" />
-                                        </Button>                                    
-                                    </Grid>
-                                </MenuItem.Icon>
-                                <MenuItem.ContextMenu>
-                                    <ContextMenu x:Name="ResolutionDropdown">
-
-                                    </ContextMenu>
-                                </MenuItem.ContextMenu>
-                            </MenuItem>
+                            <Button Style="{DynamicResource ToolIcon}" Click="PresetResolutionDropdownClick" Content="{materialDesign:PackIcon ChevronDown}">
+                                <Button.ContextMenu>
+                                    <ContextMenu x:Name="ResolutionDropdown"/>
+                                </Button.ContextMenu>
+                            </Button>
                             
                         </WrapPanel>
                         <RadioButton IsChecked="{Binding IsVariableAspectRatio}" Content="{x:Static localization:Texts.AspectRatioVariable}" />
                         <RadioButton IsChecked="{Binding IsFixedAspectRatio}" Content="{x:Static localization:Texts.AspectRatioFixed}" />
                         <RadioButton IsChecked="{Binding IsRangedAspectRatio}" Content="{x:Static localization:Texts.AspectRatioRanged}" />
                         <!--<CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" Content="Fixed Aspect Ratio" IsChecked="{Binding FixedAspectRatio}"/>-->
-                        <StackPanel Orientation="Horizontal">
-                            <views:AspectRatioSelectionView DataContext="{Binding AspectRatio1}"></views:AspectRatioSelectionView>
-                            <TextBlock Margin="5,0,5,0" Visibility="{Binding DashVisibility}">-</TextBlock>
-                            <views:AspectRatioSelectionView  DataContext="{Binding AspectRatio2}"></views:AspectRatioSelectionView>
-                            <!--<CheckBox>Aspect Ratio Range</CheckBox>-->
-                            
-                        </StackPanel>
+
                         <!--This only shows if the user's aspect ratio doesn't match the entered resolution aspect ratio-->
-                        <GroupBox Margin="20,0,0,0" Background="LightYellow" Visibility="{Binding ShowAspectRatioMismatch}">
+                        <GroupBox Margin="14,0,0,0"  Visibility="{Binding ShowAspectRatioMismatch}">
+                            <GroupBox.Header>
+                                <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                    <views:AspectRatioSelectionView DataContext="{Binding AspectRatio1}"></views:AspectRatioSelectionView>
+                                    <TextBlock Margin="5,0,5,0" Visibility="{Binding DashVisibility}">-</TextBlock>
+                                    <views:AspectRatioSelectionView  DataContext="{Binding AspectRatio2}"></views:AspectRatioSelectionView>
+                                    <!--<CheckBox>Aspect Ratio Range</CheckBox>-->
+
+                                </StackPanel>
+                            </GroupBox.Header>
                             <StackPanel>
                                 <TextBlock TextWrapping="Wrap" Text="{Binding WidthHeightSelectionText}"></TextBlock>
                                 <RadioButton IsChecked="{Binding UseWidthInternalCoordinates}" VerticalContentAlignment="Center" Content="{Binding KeepResolutionWidthConstantMessage}"></RadioButton>
@@ -121,14 +119,13 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="{x:Static localization:Texts.Scale}" />
-                            <Button Width="20" Margin="5" Click="ScaleMinusClicked" IsEnabled="{Binding IsScaleUiEnabled}">-</Button>
-                            <TextBox Width="40" Height="18" Text="{Binding Scale}" IsEnabled="{Binding IsScaleUiEnabled}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"></TextBox>
-                            <Button Width="20" Margin="5,5,0,5" Click="ScalePlusClicked" IsEnabled="{Binding IsScaleUiEnabled}">+</Button>
-                            <Label>%</Label>
+                            <Button Width="20" Margin="5" Click="ScaleMinusClicked" Style="{DynamicResource ToolIcon}" IsEnabled="{Binding IsScaleUiEnabled}" Content="{materialDesign:PackIcon Minus}"/>
+                            <TextBox MinWidth="64" HorizontalContentAlignment="Right" Height="18" Text="{Binding Scale}"  IsEnabled="{Binding IsScaleUiEnabled}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp" materialDesign:TextFieldAssist.SuffixText="%"></TextBox>
+                            <Button Width="20" Margin="5,5,0,5" Click="ScalePlusClicked" Style="{DynamicResource ToolIcon}" IsEnabled="{Binding IsScaleUiEnabled}" Content="{materialDesign:PackIcon Plus}"/>
                         </StackPanel>
                         <Label FontSize="10" Margin="8, -10, 0,0" Visibility="{Binding GameResolutionLabelVisibility}" Content="{Binding GameDisplayResolutionText}"></Label>
 
-                        <GroupBox Margin="20,0,0,0" Background="LightYellow" Visibility="{Binding FullScreenScaleMessageVisibility}">
+                        <GroupBox Margin="20,0,0,0" Visibility="{Binding FullScreenScaleMessageVisibility}">
                             <StackPanel>
                                 <TextBlock TextWrapping="Wrap" Text="{x:Static localization:Texts.HintGameZoomGlueCannotSet}" />
                             </StackPanel>
@@ -136,8 +133,7 @@
 
                         <StackPanel Orientation="Horizontal" Visibility="{Binding GumScaleVisibility}">
                             <Label>Scale (Gum)</Label>
-                            <TextBox Width="40" Height="18" Text="{Binding ScaleGum}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"></TextBox>
-                            <Label>%</Label>
+                            <TextBox MinWidth="64" HorizontalContentAlignment="Right" Width="40" Height="18" Text="{Binding ScaleGum}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp" materialDesign:TextFieldAssist.SuffixText="%"/>
                         </StackPanel>
                         <Label FontSize="10" Margin="8,-10,0,0" Visibility="{Binding EffectiveGumScaleVisibility}" Content="{Binding EffectiveFontScaleContent, FallbackValue=EffectiveGumScale}">
                             
