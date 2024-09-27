@@ -96,6 +96,11 @@ namespace FlatRedBall.Input
                 mLastTypedFromPush[i] = false;
 
             }
+
+            DefaultUpPressable = GetKey(Keys.W);
+            DefaultDownPressable = GetKey(Keys.S);
+            DefaultLeftPressable = GetKey(Keys.A);
+            DefaultRightPressable = GetKey(Keys.D);
         }
 
         #endregion
@@ -678,10 +683,10 @@ namespace FlatRedBall.Input
             }
         }
 
-        IRepeatPressableInput IInputDevice.DefaultUpPressable => GetKey(Keys.W);
-        IRepeatPressableInput IInputDevice.DefaultDownPressable => GetKey(Keys.S);
-        IRepeatPressableInput IInputDevice.DefaultLeftPressable => GetKey(Keys.A);
-        IRepeatPressableInput IInputDevice.DefaultRightPressable => GetKey(Keys.D); 
+        public IRepeatPressableInput DefaultUpPressable { get; set; }
+        public IRepeatPressableInput DefaultDownPressable { get; set; }
+        public IRepeatPressableInput DefaultLeftPressable { get; set; }
+        public IRepeatPressableInput DefaultRightPressable { get; set; }
 
         I1DInput IInputDevice.DefaultHorizontalInput => Get1DInput(Keys.A, Keys.D);
 
