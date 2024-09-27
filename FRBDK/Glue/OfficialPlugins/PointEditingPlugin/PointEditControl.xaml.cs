@@ -6,6 +6,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
 
 namespace OfficialPlugins.PointEditingPlugin
 {
@@ -50,9 +51,39 @@ namespace OfficialPlugins.PointEditingPlugin
         {
             if (ViewModel.Points != null)
             {
-                ViewModel.Points.Add(new Vector2());
+                if(ViewModel.Points.Count < 2)
+                {
+                    ViewModel.Points.Add(new Vector2());
 
-                ListBox.SelectedIndex = ListBox.Items.Count - 1;
+                    ListBox.SelectedIndex = ListBox.Items.Count - 1;
+                }
+                else
+                {
+                    // There's at least 2 points. 
+                    // add between the current index and the next. If the current is the last, then
+                    // add between the last and the previous
+                    int insertionIndex = ViewModel.SelectedIndex + 1;
+                    if(insertionIndex == 0)
+                    {
+                        insertionIndex = 1;
+                    }
+                    if(ViewModel.SelectedIndex == ViewModel.Points.Count-1)
+                    {
+                        insertionIndex = ViewModel.SelectedIndex;
+                    }
+
+                    var pointBefore = ViewModel.Points[insertionIndex - 1];
+                    var pointAfter = ViewModel.Points[insertionIndex];
+
+                    var newPoint = new Vector2(
+                        (pointBefore.X + pointAfter.X) / 2,
+                        (pointBefore.Y + pointAfter.Y) / 2);
+
+                    ViewModel.Points.Insert(insertionIndex, newPoint);
+
+                    ListBox.SelectedIndex = insertionIndex;
+
+                }
             }
         }
 
