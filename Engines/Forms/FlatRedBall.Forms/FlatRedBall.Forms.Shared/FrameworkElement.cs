@@ -752,6 +752,30 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        protected void HandleInputDeviceNavigation(IInputDevice inputDevice)
+        {
+            var wasUpPressed = inputDevice.DefaultUpPressable.WasJustPressedOrRepeated ||
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && inputDevice.DefaultLeftPressable.WasJustPressedOrRepeated);
+
+            var wasDownPressed = inputDevice.DefaultDownPressable.WasJustPressedOrRepeated ||
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && inputDevice.DefaultRightPressable.WasJustPressedOrRepeated);
+
+            if (wasDownPressed)
+            {
+                this.HandleTab(TabDirection.Down, this);
+            }
+            else if (wasUpPressed)
+            {
+                this.HandleTab(TabDirection.Up, this);
+            }
+        }
+
+        /// <summary>
+        /// Shifts focus to the next or previous element in the tab depending on the tabDirection argument.
+        /// </summary>
+        /// <param name="tabDirection">The direction to tab</param>
+        /// <param name="requestingElement">The element which is requesting the tab. This can be a parent of the current element. If null is passed, then this element is 
+        /// treated as the origin of the tab action.</param>
         public void HandleTab(TabDirection tabDirection = TabDirection.Down, FrameworkElement requestingElement = null)
         {
             if(requestingElement == null)

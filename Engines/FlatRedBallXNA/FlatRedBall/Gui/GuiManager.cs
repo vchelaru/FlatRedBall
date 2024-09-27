@@ -296,6 +296,11 @@ namespace FlatRedBall.Gui
             get; private set;
         } = new List<GenericGamePad>();
 
+        public static List<IInputDevice> InputDevicesForUiControl
+        {
+            get; private set;
+        } = new List<IInputDevice>();
+
         #endregion
 
 	
