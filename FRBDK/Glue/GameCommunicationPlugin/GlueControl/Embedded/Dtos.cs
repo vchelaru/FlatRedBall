@@ -91,6 +91,8 @@ namespace GlueControl.Dtos
     {
         public bool IsInEditMode { get; set; }
         public string AbsoluteGlueProjectFilePath { get; set; }
+        public string CurrentGlueElementName { get; set; }
+
     }
     #endregion
 

@@ -295,6 +295,10 @@ namespace GlueControl
         {
             var value = setEditMode.IsInEditMode;
 #if SupportsEditMode
+
+
+
+
             var response = new Dtos.GeneralCommandResponse
             {
                 Succeeded = true,
@@ -356,6 +360,15 @@ namespace GlueControl
             {
                 response.Succeeded = false;
                 response.Message = $"Unexpected error:\n{ex.ToString()}";
+            }
+
+            if( !string.IsNullOrEmpty(setEditMode.CurrentGlueElementName))
+            {
+                var element = ObjectFinder.Self.GetElement(setEditMode.CurrentGlueElementName);
+                if(element != null)
+                {
+                    Editing.EditingManager.Self.SetCurrentGlueElement(element);
+                }
             }
 
             return response;
