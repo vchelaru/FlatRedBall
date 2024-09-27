@@ -509,16 +509,5 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             RefreshColumns();
         }
 
-        private void ExpandVariableManagementClick(object sender, RoutedEventArgs e)
-        {
-            ViewModel.ExpandVariableManagement();
-
-        }
-
-        private void CollapseVariableManagementClick(object sender, RoutedEventArgs e)
-        {
-            ViewModel.CollapseVariableManagement();
-
-        }
     }
 }

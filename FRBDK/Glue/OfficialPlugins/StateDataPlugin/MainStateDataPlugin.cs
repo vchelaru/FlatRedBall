@@ -111,7 +111,7 @@ namespace OfficialPlugins.StateDataPlugin
             {
                 // This code can trigger as a result of the state changing in the UI itself, so we need to make sure 
                 // we preserve variables beteween vm recreation.
-                viewModel.VariableManagementVisibility = existing.VariableManagementVisibility;
+                viewModel.IsVariableManagementVisible = existing.IsVariableManagementVisible;
                 viewModel.TopSectionHeight = existing.TopSectionHeight;
                 viewModel.SelectedIndex = existing.SelectedIndex;
                 viewModel.SelectedIncludedVariable = existing.SelectedIncludedVariable;
