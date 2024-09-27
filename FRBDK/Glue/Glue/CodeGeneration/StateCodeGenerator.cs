@@ -88,20 +88,46 @@ namespace FlatRedBall.Glue.CodeGeneration
             return currentBlock;
         }
 
-        private static bool ShouldIncludeVariable(StateSaveCategory category, GlueElement element, CustomVariable item)
+        private static bool ShouldIncludeVariable(StateSaveCategory category, GlueElement element, CustomVariable customVariable)
         {
+            var shouldInclude = true;
             if (category == null)
             {
-                var isState = item.GetIsVariableState(element);
+                var isState = customVariable.GetIsVariableState(element);
 
                 // states setting other states causes lots of problems. Since uncategorized states can't exclude variables in the StateData world, we just won't
                 // set other states
-                return !isState;
+                shouldInclude = !isState;
             }
             else
             {
-                return category?.ExcludedVariables.Contains(item.Name) == false;
+                shouldInclude = category?.ExcludedVariables.Contains(customVariable.Name) == false;
             }
+
+            if(shouldInclude)
+            {
+                VariableDefinition variableDefinition = null;
+                if (!string.IsNullOrEmpty(customVariable.SourceObject))
+                {
+                    var owner = element.GetNamedObjectRecursively(customVariable.SourceObject);
+                    var nosAti = owner.GetAssetTypeInfo();
+                    variableDefinition = nosAti?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
+                }
+                else
+                {
+                    var elementAti = element.GetAssetTypeInfo();
+                    variableDefinition = elementAti?.VariableDefinitions.Find(item => item.Name == customVariable.Name);
+                }
+
+                if(variableDefinition != null)
+                {
+                    // If it uses custom code generation, all bets are off for whether the type is the same.
+                    // We could support this in the future but Vic doesn't want to continue advancing State tech...
+                    shouldInclude = !variableDefinition.UsesCustomCodeGeneration;
+                }
+            }
+
+            return shouldInclude;
         }
 
         private static void CreatePredefinedStateInstances(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, GlueElement element, string categoryClassName, CustomVariable[] includedVariables)

@@ -43,6 +43,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         Task AddStateSaveCategoryAsync(string categoryName, GlueElement element);
 
+        GeneralResponse CanVariableBeIncludedInStates(string variableName, GlueElement element);
+
+
         #endregion
 
         #region GlueElement

@@ -796,12 +796,18 @@ namespace GameCommunicationPlugin.GlueControl
 
         private async Task ReactToPlayOrEditSet()
         {
-            var inEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
+            var isInEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
             var dto = new Dtos.SetEditMode 
             { 
-                IsInEditMode = inEditMode ,
+                IsInEditMode = isInEditMode ,
                 AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName?.FullPath
             };
+
+            if(isInEditMode)
+            {
+                dto.CurrentGlueElementName = GlueState.Self.CurrentElement?.Name ?? GlueState.Self.CurrentGlueProject.StartUpScreen;
+            }
+
             var response = await CommandSender.Self.Send<Dtos.GeneralCommandResponse>(dto, SendImportance.RetryOnFailure);
 
             if (response?.Succeeded != true)
@@ -823,7 +829,7 @@ namespace GameCommunicationPlugin.GlueControl
             {
                 var message = $"Failed to set game/edit mode to {CompilerViewModel.PlayOrEdit} because the game is not connected.";
             }
-            else if (inEditMode)
+            else if (isInEditMode)
             {
                 var currentEntity = GlueState.Self.CurrentEntitySave;
                 if (currentEntity != null)
@@ -874,7 +880,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
 
-            if (inEditMode)
+            if (isInEditMode)
             {
                 setCameraAspectRatioDto.AspectRatio = null;
 
