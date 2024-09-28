@@ -1552,21 +1552,6 @@ for {1}?</value>
   <data name="Remove" xml:space="preserve">
     <value>Remove</value>
   </data>
-  <data name="PolygonToRectangle" xml:space="preserve">
-    <value>Adds or replaces all points on the polygon to create a rectangle.</value>
-  </data>
-  <data name="PolygonToMultiSided" xml:space="preserve">
-    <value>Adds or replaces all points on the polygon to create a multi-sided polygon.</value>
-  </data>
-  <data name="HintMovePointUpList" xml:space="preserve">
-    <value>Moves the selected point up in the list.</value>
-  </data>
-  <data name="HintMovePointDownList" xml:space="preserve">
-    <value>Moves the selected point down in the list.</value>
-  </data>
-  <data name="HintResizePolygon" xml:space="preserve">
-    <value>Resize the polygon by moving the contained points.</value>
-  </data>
   <data name="ClearPointsAddRectangle" xml:space="preserve">
     <value>Would you like to clear the points and replace them with points for a rectangle shape?</value>
   </data>

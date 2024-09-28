@@ -86,26 +86,10 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             set { Set(value); }
         }
 
-        public Visibility VariableManagementVisibility
+        public bool IsVariableManagementVisible
         {
-            get { return Get<Visibility>(); }
-            set { Set(value); }
-        }
-
-        [DependsOn(nameof(VariableManagementVisibility))]
-        public Visibility ExpandVariableManagementButtonVisibility
-        {
-            get
-            {
-                if(VariableManagementVisibility == Visibility.Collapsed)
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
-            }
+            get => Get<bool>();
+            set => Set(value);
         }
 
         public GridLength TopSectionHeight
@@ -122,7 +106,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         {
             this.ignoreExcludedVariableChanges = true;
 
-            this.VariableManagementVisibility = Visibility.Collapsed;
+            this.IsVariableManagementVisible = false;
             this.Element = element;
             this.category = category;
 
@@ -550,19 +534,6 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 // I guess this isn't needed because the states in the tree view didn't change
                 //GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
             }
-        }
-
-        public void ExpandVariableManagement()
-        {
-            VariableManagementVisibility = Visibility.Visible;
-            TopSectionHeight = new GridLength(100);
-        }
-
-        public void CollapseVariableManagement()
-        {
-            VariableManagementVisibility = Visibility.Collapsed;
-            TopSectionHeight = new GridLength(1);
-
         }
     }
 }

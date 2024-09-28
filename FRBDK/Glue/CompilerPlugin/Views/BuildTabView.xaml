@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:views="clr-namespace:CompilerPlugin.Views"
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500">
     <Grid>
@@ -14,11 +15,10 @@
         </Grid.RowDefinitions>
 
         <WrapPanel Orientation="Horizontal" Visibility="{Binding EntireUiVisibility}">
-            <Button Click="Button_Click" Height="19" Width="19" Margin="3,0,0,0">
+            <Button Click="Button_Click" Content="{materialDesign:PackIcon TextBoxRemove}" Style="{DynamicResource ToolIcon}">
                 <Button.ToolTip>
                     <TextBlock>Clear Output</TextBlock>
                 </Button.ToolTip>
-                <Image IsHitTestVisible="False" Width="25" Source="/CompilerPlugin;component/Icons/DeleteOutput.png" ></Image>
             </Button>
             <views:WhileStoppedView
                 Visibility="{Binding WhileStoppedViewVisibility}"

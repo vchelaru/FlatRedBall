@@ -45,6 +45,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using WpfDataUi.DataTypes;
 using EditorObjects.IoC;
+using Glue;
 //using Gum.Wireframe;
 //using Gum.Converters;
 
@@ -158,7 +159,10 @@ namespace FlatRedBall.Glue.Plugins
             foreach (var pluginList in allPlugins)
             {
                 foreach (var plugin in pluginList)
+                {
+                    MainGlueWindow.Self.TryGenerateImplicitWindowStylesFor(plugin.GetType().Assembly);
                     StartupPlugin(plugin);
+                }
             }
 
             var embedded = ImportedPlugins
@@ -169,6 +173,7 @@ namespace FlatRedBall.Glue.Plugins
                 .ToArray();
             foreach (var plugin in sortedEmbedded)
             {
+                MainGlueWindow.Self.TryGenerateImplicitWindowStylesFor(plugin.GetType().Assembly);
                 StartupPlugin(plugin);
 
                 // did it fail?
@@ -182,6 +187,7 @@ namespace FlatRedBall.Glue.Plugins
             var normal = ImportedPlugins.Except(embedded);
             foreach (var plugin in normal)
             {
+                MainGlueWindow.Self.TryGenerateImplicitWindowStylesFor(plugin.GetType().Assembly);
                 StartupPlugin(plugin);
 
                 // did it fail?

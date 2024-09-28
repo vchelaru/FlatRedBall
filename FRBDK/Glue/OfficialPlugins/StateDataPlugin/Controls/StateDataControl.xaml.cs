@@ -307,9 +307,31 @@ namespace OfficialPlugins.StateDataPlugin.Controls
                         BindingOperations.SetBinding(textBox, TextBox.TextProperty, myBinding);
                     }
 
-                    textBox.SetBinding(TextBox.ForegroundProperty, 
-                        $"Variables[{i}].{nameof(StateVariableViewModel.TextColor)}");
+                    MultiDataTrigger multiTrigger = new()
+                    {
+                        Conditions =
+                        {
+                            new()
+                            {
+                                Binding = new Binding($"Variables[{i}].{nameof(StateVariableViewModel.IsDefaultValue)}"),
+                                Value = true
+                            },
+                            new()
+                            {
+                                Binding = new Binding($"Variables[{i}].{nameof(StateVariableViewModel.IsFocused)}"),
+                                Value = false
+                            }
+                        },
+                        Setters = { new Setter(TextBox.ForegroundProperty, StateVariableViewModel.IsDefaultBrush) }
+                    };
 
+                    textBox.Style = new (typeof(TextBox),
+                        (Style)Application.Current.FindResource(typeof(TextBox)))
+                    {
+                        Triggers = { multiTrigger }
+                    };
+                    textBox.Background = Brushes.Transparent;
+                    
                     textBox.BorderThickness = new Thickness(0);
                     textBox.BorderBrush = Brushes.Transparent;
 
@@ -487,16 +509,5 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             RefreshColumns();
         }
 
-        private void ExpandVariableManagementClick(object sender, RoutedEventArgs e)
-        {
-            ViewModel.ExpandVariableManagement();
-
-        }
-
-        private void CollapseVariableManagementClick(object sender, RoutedEventArgs e)
-        {
-            ViewModel.CollapseVariableManagement();
-
-        }
     }
 }

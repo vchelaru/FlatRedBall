@@ -5,14 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects.Controls"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 
              mc:Ignorable="d" >
     <StackPanel Orientation="Horizontal">
         <xctk:SplitButton
             Visibility="{Binding VisualStudioButtonVisibility}"
             Click="VisualStudioButtonClick" 
-             ToolTip="Open Project in Visual Studio"
-             Height="22" Width="40">
+             ToolTip="Open Project in Visual Studio">
             <xctk:SplitButton.DropDownContent>
                 <StackPanel>
                     <CheckBox IsChecked="{Binding IsOpenVisualStudioAutomaticallyChecked}">Open Visual Studio Automatically</CheckBox>
@@ -25,15 +25,23 @@
                     </ItemsControl>
                 </StackPanel>
             </xctk:SplitButton.DropDownContent>
-            <Image Source="/Plugins/EmbeddedPlugins/SyncedProjects/Images/VsIcon.png"></Image>
+            <Grid Background="Transparent">
+                <Image Source="/Plugins/EmbeddedPlugins/SyncedProjects/Images/VsIcon.png"/>
+                <Rectangle Fill="#a97cce" Opacity="0.7">
+                    <Rectangle.OpacityMask>
+                        <!-- Use the image's alpha (transparency) as the mask -->
+                        <ImageBrush ImageSource="/Plugins/EmbeddedPlugins/SyncedProjects/Images/VsIcon.png" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Grid>
+
         </xctk:SplitButton>
 
-        <Button Click="FolderButtonClick" 
+        <Button Click="FolderButtonClick" Content="{materialDesign:PackIcon Kind=FolderOutline}"
             Visibility="{Binding FolderButtonVisibility}"
-                
-             ToolTip="Open Project Folder"
-             Height="22" Width="22" Margin="2,0,0,0">
-            <Image Source="/Plugins/EmbeddedPlugins/SyncedProjects/Images/OpenFolder.png"></Image>
+                Style="{DynamicResource IconButton}"
+             ToolTip="Open Project Folder" Margin="6,0,0,0"
+                VerticalAlignment="Top">
         </Button>
         
     </StackPanel>

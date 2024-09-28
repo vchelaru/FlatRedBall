@@ -6,6 +6,7 @@
              xmlns:pt="http://propertytools.org/wpf" 
              xmlns:wpf1="clr-namespace:SkiaGum.Wpf;assembly=SkiaGum.Wpf.Net6" 
              xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+             xmlns:themes="clr-namespace:FlatRedBall.Glue.Themes;assembly=GlueFormsCore"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -25,8 +26,9 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TabControl>
-                <TabItem Header="Animations">
+            <TabControl themes:FrbTabControl.PreferTabTruncation="True">
+                <TabItem Header="Animations"
+                         themes:FrbTabControl.TruncationIcon="RunFast">
                     <Grid x:Name="ListViewGrid">
                         <Grid.RowDefinitions>
                             <RowDefinition></RowDefinition>
@@ -54,15 +56,14 @@
                             </pt:TreeListBox.ItemTemplate>
 
                         </pt:TreeListBox>
-                        <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
-                          Background="#cccccc"
-                          ></GridSplitter>
+                        <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"/>
                         <ScrollViewer Grid.Row="2">
                             <wpfdataui:DataUiGrid x:Name="PropertyGrid"></wpfdataui:DataUiGrid>
                         </ScrollViewer>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Settings">
+                <TabItem Header="Settings" 
+                         themes:FrbTabControl.TruncationIcon="Gear">
                     <wpfdataui:DataUiGrid x:Name="SettingsPropertyGrid" >
 
                     </wpfdataui:DataUiGrid>
@@ -70,9 +71,7 @@
                 </TabItem>
             </TabControl>
 
-            <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"
-                          Background="#cccccc"
-                      ></GridSplitter>
+            <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"/>
 
 
             <Grid Grid.Column="2" x:Name="PreviewGrid">
@@ -94,21 +93,18 @@
                         <RowDefinition Height="Auto"></RowDefinition>
                     </Grid.RowDefinitions>
 
+
                     <wpf1:GumSKElement x:Name="TopGumCanvas"
                         MouseDown="TopGumCanvas_MouseDown"
                         MouseMove="TopGumCanvas_MouseMove"
                         MouseWheel="TopGumCanvas_MouseWheel"
-                        SizeChanged="TopGumCanvas_SizeChanged" Margin="0,0,0,16" Grid.RowSpan="3"
+                        SizeChanged="TopGumCanvas_SizeChanged" Margin="0,0,0,8" Grid.RowSpan="3"
                                    ></wpf1:GumSKElement>
-                    <ScrollBar Grid.Column="1" x:Name="TopWindowVerticalSrollBar" ValueChanged="TopWindowVerticalSrollBar_ValueChanged" Margin="0,0,0,16" Grid.RowSpan="3">
-                    </ScrollBar>
-                    <ScrollBar Orientation="Horizontal" Grid.Row="2" x:Name="TopWindowHorizontalScrollBar" ValueChanged="TopWindowHorizontalScrollBar_ValueChanged">
-
-                    </ScrollBar>
+                    <ScrollBar Grid.Column="1" x:Name="TopWindowVerticalSrollBar" ValueChanged="TopWindowVerticalSrollBar_ValueChanged" Grid.RowSpan="3"/>
+                    <ScrollBar Orientation="Horizontal" Grid.Row="2" x:Name="TopWindowHorizontalScrollBar" ValueChanged="TopWindowHorizontalScrollBar_ValueChanged"/>
 
                 </Grid>
                 <GridSplitter Grid.Row="1"
-                          Background="#cccccc"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Center"
                           ResizeBehavior="PreviousAndNext"

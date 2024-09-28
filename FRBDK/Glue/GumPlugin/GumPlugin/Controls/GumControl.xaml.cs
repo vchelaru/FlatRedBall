@@ -132,20 +132,6 @@ namespace GumPlugin.Controls
             }
         }
 
-
-
-        private void AdvancedClick(object sender, RoutedEventArgs e)
-        {
-            var viewModel = DataContext as GumViewModel;
-            viewModel.ShowAdvanced = true;
-        }
-
-        private void SimpleClick(object sender, RoutedEventArgs e)
-        {
-            var viewModel = DataContext as GumViewModel;
-            viewModel.ShowAdvanced = false;
-        }
-
         private void RegenerateFontsClicked(object sender, RoutedEventArgs e)
         {
             RebuildFontsClicked?.Invoke();

@@ -28,54 +28,7 @@
 
             <ListBox 
                     ItemsSource="{Binding LeftSideItems}"
-                    SelectedIndex="{Binding SelectedLeftSideIndex}">
-                <!--From https://blog.jsinh.in/change-background-color-of-selected-listboxitem-listbox-in-wpf/#.XdjCiehKiUk-->
-                <ListBox.Resources>
-                    <Style TargetType="{x:Type ListBoxItem}">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                    <Border x:Name="Bd"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        Background="{TemplateBinding Background}"
-                                        Padding="{TemplateBinding Padding}"
-                                        SnapsToDevicePixels="true">
-                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <MultiTrigger>
-                                            <MultiTrigger.Conditions>
-                                                <Condition Property="Selector.IsSelectionActive"
-                                            Value="False" />
-                                                <Condition Property="IsSelected"
-                                            Value="True" />
-                                            </MultiTrigger.Conditions>
-                                            <Setter Property="Background"
-                                    TargetName="Bd"
-                                    Value="DarkOrange" />
-                                        </MultiTrigger>
-                                        <MultiTrigger>
-                                            <MultiTrigger.Conditions>
-                                                <Condition Property="Selector.IsSelectionActive"
-                                            Value="True" />
-                                                <Condition Property="IsSelected"
-                                            Value="True" />
-                                            </MultiTrigger.Conditions>
-                                            <Setter Property="Background"
-                                    TargetName="Bd"
-                                    Value="OrangeRed" />
-                                        </MultiTrigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListBox.Resources>
-
-            </ListBox>
+                    SelectedIndex="{Binding SelectedLeftSideIndex}" />
 
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 

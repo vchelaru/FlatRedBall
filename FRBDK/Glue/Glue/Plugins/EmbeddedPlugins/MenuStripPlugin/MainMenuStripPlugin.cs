@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using FlatRedBall.Glue.Themes;
 
 namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 {
@@ -29,10 +30,13 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
     [Export(typeof(PluginBase))]
     public class MainMenuStripPlugin : EmbeddedPlugin
     {
+        ThemeWindowViewModel _themeWindowViewModel = new();
+
         public MainMenuStripPlugin() : base()
         {
             DesiredOrder = DesiredOrder.Critical;
         }
+
         public override void StartUp()
         {
             var File = AddTopLevelMenuItem(Localization.Texts.File, Localization.MenuIds.FileId);
@@ -86,6 +90,15 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
                     Localization.Texts.PerformanceSettings,
                     () => new PerformanceSettingsWindow().ShowDialog(MainGlueWindow.Self));
 
+
+                Settings.Add(
+                    "Theming",
+                    () =>
+                    {
+                        ThemeWindow window = new();
+                        window.DataContext = _themeWindowViewModel;
+                        window.ShowDialog();
+                    });
 
                 Settings.DropDownItems.Add(new ToolStripSeparator());
 

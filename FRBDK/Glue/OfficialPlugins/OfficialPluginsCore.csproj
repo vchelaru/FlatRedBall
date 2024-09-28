@@ -38,6 +38,7 @@
     <None Remove="ErrorPlugin\Icons\Refresh.png" />
     <None Remove="PointEditingPlugin\Content\AddPolygonPoints.png" />
     <None Remove="PointEditingPlugin\Content\AddRectanglePoints.png" />
+    <None Remove="PointEditingPlugin\Content\CloseShape.png" />
     <None Remove="PointEditingPlugin\Content\MoveDown.png" />
     <None Remove="PointEditingPlugin\Content\MoveUp.png" />
     <None Remove="PointEditingPlugin\Content\ResizePolygon.png" />
@@ -140,6 +141,7 @@
     <Resource Include="ErrorPlugin\Icons\Refresh.png" />
     <Resource Include="PointEditingPlugin\Content\AddPolygonPoints.png" />
     <Resource Include="PointEditingPlugin\Content\AddRectanglePoints.png" />
+    <Resource Include="PointEditingPlugin\Content\CloseShape.png" />
     <Resource Include="PointEditingPlugin\Content\MoveDown.png" />
     <Resource Include="PointEditingPlugin\Content\MoveUp.png" />
     <Resource Include="PointEditingPlugin\Content\ResizePolygon.png" />

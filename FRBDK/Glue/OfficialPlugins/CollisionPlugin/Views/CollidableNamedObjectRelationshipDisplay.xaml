@@ -28,26 +28,29 @@
                         </GroupBox>
                         <GroupBox Header="{x:Static localization:Texts.PartitionWidthHeight}">
                             <StackPanel>
+                                <StackPanel x:Name="AutomaticRadioButtonStack">
                                 <RadioButton IsChecked="{Binding IsAutomaticPartitionSizeChecked}">
-                                    <StackPanel x:Name="AutomaticRadioButtonStack">
+                                    <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding AutomaticRadioButtonText, FallbackValue=Automatic}"></TextBlock>
                                         <TextBlock Text="{Binding CalculatedPartitionWidthHeightSource, FallbackValue=ByXXXX}" FontSize="9"></TextBlock>
-                                        <TextBlock TextWrapping="Wrap" FontSize="9" Visibility="{Binding AutomaticInfoVisibility}"
-                                            Width="175" HorizontalAlignment="Left"   Text="{x:Static localization:Texts.HintAutoPartitionDoesNotConsider}" />
                                     </StackPanel>
                                 </RadioButton>
-                                <RadioButton IsChecked="{Binding IsManualPartitionSizeChecked}">
-                                    <StackPanel x:Name="ManualRadioButtonStack">
+                                    <TextBlock TextWrapping="Wrap" FontSize="9" Visibility="{Binding AutomaticInfoVisibility}"
+                                               Width="175" HorizontalAlignment="Left" Text="{x:Static localization:Texts.HintAutoPartitionDoesNotConsider}" />
+                                </StackPanel>
+                                
+                                <StackPanel x:Name="ManualRadioButtonStack" Margin="0,2,0,0">
+                                    <RadioButton IsChecked="{Binding IsManualPartitionSizeChecked}">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{x:Static localization:Texts.Manual}" />
+                                            <TextBlock Text="{x:Static localization:Texts.Manual}" VerticalAlignment="Center"/>
                                             <TextBox Margin="4,0,0,0" Text="{Binding PartitionWidthHeight}" IsEnabled="{Binding IsManualTextBoxEnabled}" 
-                                                     VerticalContentAlignment="Center" Width="48"></TextBox>
-                                        
+                                                 VerticalAlignment="Center" Width="48"></TextBox>
+
                                         </StackPanel>
-                                        <TextBlock TextWrapping="Wrap" FontSize="9" Visibility="{Binding ManualInfoVisibility}"
-                                            Width="175" Text="{x:Static localization:Texts.HintPartitioningEnterWidthHeight}" />
-                                    </StackPanel>
-                                </RadioButton>
+                                    </RadioButton>
+                                    <TextBlock TextWrapping="Wrap" FontSize="9" Visibility="{Binding ManualInfoVisibility}"
+                                               Width="175" Text="{x:Static localization:Texts.HintPartitioningEnterWidthHeight}" HorizontalAlignment="Left"/>
+                                </StackPanel>
                             </StackPanel>
                         </GroupBox>
                         <StackPanel Orientation="Horizontal">

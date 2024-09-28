@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Media;
 
@@ -9,7 +10,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
 {
     struct ColoredTextWpf
     {
-        public SolidColorBrush Brush;
+        public Brush Brush;
         public string Text;
     }
 
@@ -23,7 +24,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
         private readonly System.Windows.Threading.DispatcherTimer _timer;
 
         private readonly SolidColorBrush _error;
-        private readonly SolidColorBrush _normal;
+        private Brush _normal;
+
+        private Binding _foregroundBinding;
 
         public OutputControl()
         {
@@ -35,7 +38,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
             _timer.Start();
 
             _error = new SolidColorBrush(Color.FromRgb(255, 0, 0));
-            _normal = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+            _normal = TextBox.Foreground;
+
+            _foregroundBinding = new Binding("Foreground")
+            {
+                Source = TextBox,
+                Mode = BindingMode.OneWay
+            };
         }
 
         private void HandleTimerTick(object sender, EventArgs e)
@@ -48,7 +57,15 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
                     {
                         var block = new Paragraph();
                         block.Margin = new Thickness(0);
-                        block.Foreground = mBuffer[i].Brush;
+                        if (mBuffer[i].Brush != _normal)
+                        {
+                            block.Foreground = mBuffer[i].Brush;
+                        }
+                        else
+                        {
+                            BindingOperations.SetBinding(block, ForegroundProperty, _foregroundBinding);
+                        }
+
                         block.Inlines.Add(mBuffer[i].Text);
                         this.TextBox.Document.Blocks.Add(block);
 
@@ -74,7 +91,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
             AppendText(output, _error);
         }
 
-        private void AppendText(string output, SolidColorBrush brush)
+        private void AppendText(string output, Brush brush)
         {
             lock (mBuffer)
             {

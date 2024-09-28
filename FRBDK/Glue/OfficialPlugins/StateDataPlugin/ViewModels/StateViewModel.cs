@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace OfficialPlugins.StateDataPlugin.ViewModels
@@ -93,30 +94,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             }
         }
 
-        static Brush GreenBrush;
-
-        [DependsOn(nameof(IsDefaultValue))]
-        [DependsOn(nameof(IsFocused))]
-        public Brush TextColor
-        {
-            get
-            {
-                if(IsDefaultValue && IsFocused == false)
-                {
-                    if(GreenBrush == null)
-                    {
-                        GreenBrush =
-                            new SolidColorBrush(Color.FromRgb(0, 200, 0));
-                    }
-
-                    return GreenBrush;
-                }
-                else
-                {
-                    return Brushes.Black;
-                }
-            }
-        }
+        public static Brush IsDefaultBrush = new SolidColorBrush(Color.FromRgb(0, 200, 0));
 
         public string VariableName { get; set; }
 

@@ -4,58 +4,84 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameCommunicationPlugin.GlueControl.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:Height="28"
              Width="Auto">
     <StackPanel Orientation="Horizontal">
 
-        <Grid Visibility="{Binding GlueViewCommandUiVisibility}" >
-            <Button IsHitTestVisible="False">
-            
-            </Button>
-            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="3,2,3,2">
+        <Border Visibility="{Binding GlueViewCommandUiVisibility}" Margin="3,2,3,2" 
+                BorderBrush="{DynamicResource Frb.Brushes.Contrast01}"
+                BorderThickness="1,1,1,0"
+                CornerRadius="2">
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" >
+                <StackPanel.Resources>
+                    <Style x:Key="ActiveToggleUnderline"  TargetType="{x:Type Border}">
+                        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}" Value="False">
+                                <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Contrast01}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}" Value="True">
+                                <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                        <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground.Subtle}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Primary}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Foreground}" />
+                                <Setter Property="Cursor" Value="Arrow"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
 
-            <ToggleButton IsChecked="{Binding IsEditChecked}" Margin="0,0,0,0" Width="24" 
-                        Background="Transparent" BorderBrush="Transparent"
-                        VerticalContentAlignment="Stretch">
-                <ToggleButton.ToolTip>
-                    <ToolTip>
-                        <StackPanel>
-                            <TextBlock FontWeight="Bold">Edit Mode</TextBlock>
-                            <TextBlock>The game will run in edit mode enabling live editing of screens and entities.</TextBlock>
-                        </StackPanel>
-                    </ToolTip>
-                </ToggleButton.ToolTip>
-                <Grid VerticalAlignment="Stretch">
-                    <Image Source="/GameCommunicationPlugin;component/GlueControl/Icons/Edit.png" Margin="0,0,0,0"/>
-                    <Rectangle Height="1" Fill="#3978A8" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Visibility="{Binding EditIconVisibility}"></Rectangle>
-                </Grid>
-            </ToggleButton>
-            <ToggleButton IsChecked="{Binding IsPlayChecked}" Width="24" 
-                        Background="Transparent" BorderBrush="Transparent"
-                        VerticalContentAlignment="Stretch">
-                <ToggleButton.ToolTip>
-                    <ToolTip>
-                        <StackPanel>
-                            <TextBlock FontWeight="Bold">Running Mode</TextBlock>
-                            <TextBlock>The game will run regularly with no editor interaction.</TextBlock>
-                        </StackPanel>
-                    </ToolTip>
-                </ToggleButton.ToolTip>
-                <Grid>
-                        <Image Source="/GameCommunicationPlugin;component/GlueControl/Icons/Run.png" Margin="0,0,0,0"/>
-                    <Rectangle Height="1" Fill="#3978A8" HorizontalAlignment="Stretch"  VerticalAlignment="Bottom" Visibility="{Binding RunIconVisibility}"></Rectangle>
-                </Grid>
-            </ToggleButton>
-        </StackPanel>
-            
-        </Grid>
-
-        <Button Width="24" VerticalAlignment="Stretch" Margin="2,0,0,0" MinWidth="24" 
+                </StackPanel.Resources>
+                
+                <ToggleButton IsChecked="{Binding IsEditChecked}" Margin="0,0,0,0" 
+                                  Padding="0"
+                              >
+                    <Border Style="{StaticResource ActiveToggleUnderline}">
+                        <materialDesign:PackIcon Kind="Wrench" Margin="3"/>
+                    </Border>
+                    <ToggleButton.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock FontWeight="Bold">Edit Mode</TextBlock>
+                                <TextBlock>The game will run in edit mode enabling live editing of screens and entities.</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </ToggleButton.ToolTip>
+                </ToggleButton>
+                <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource Frb.Brushes.Contrast01}" VerticalAlignment="Stretch"/>
+                <ToggleButton IsChecked="{Binding IsPlayChecked}"
+                                  Background="Transparent" BorderBrush="Transparent"
+                                  VerticalContentAlignment="Stretch">
+                    <Border Style="{StaticResource ActiveToggleUnderline}">
+                        <materialDesign:PackIcon Kind="Play"/>
+                    </Border>
+                    <ToggleButton.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock FontWeight="Bold">Running Mode</TextBlock>
+                                <TextBlock>The game will run regularly with no editor interaction.</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </ToggleButton.ToolTip>
+                </ToggleButton>
+            </StackPanel>
+        </Border>
+        <Button Width="24" Margin="2,0,0,0" MinWidth="24" 
                 Visibility="{Binding PauseButtonVisibility}"
                 Click="HandlePauseClicked"
+                Style="{DynamicResource IconButton}"
+                Content="{materialDesign:PackIcon Pause}"
             >
-            <Image Source="/GameCommunicationPlugin;component/GlueControl/Icons/Pause.png" Margin="0"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -66,12 +92,13 @@
             </Button.ToolTip>
 
         </Button>
-        <Button VerticalAlignment="Center" Style="{DynamicResource ButtonStyleDark}" Margin="2,0,0,0" MinWidth="22"
+        <Button VerticalAlignment="Center" Margin="2,0,0,0" MinWidth="22"
                 Visibility="{Binding UnpauseButtonVisibility}"
                 
                 Click="HandleUnpauseClicked"
+                Style="{DynamicResource IconButton}"
+                Content="{materialDesign:PackIcon Play}"
             >
-            <Image Source="/GameCommunicationPlugin;component/GlueControl/Icons/Unpause.png" Margin="3"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -85,8 +112,9 @@
         <Button VerticalAlignment="Center" Margin="2,0,0,0" MinWidth="22"
                 Visibility="{Binding UnpauseButtonVisibility}"
                 Click="HandleAdvanceOneFrameClicked"
+                Style="{DynamicResource IconButton}"
+                Content="{materialDesign:PackIcon SkipNext}"
         >
-            <Image Source="/GameCommunicationPlugin;component/GlueControl/Icons/AdvanceOneFrame.png" Margin="0"></Image>
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -96,41 +124,10 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
-        <!--We used to only show the speed up/slow down UI when the game was running (not paused), but it's common
-            to pause the game and change the speed so it runs slower when unpausing-->
-        <Grid Margin="2,0,0,0">
-            <Button IsHitTestVisible="False"></Button>
-            <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal" Margin="3,0,3,0" >
-                <Button Height="18" Width="18" Click="SpeedDecreaseClicked" Background="Transparent" BorderBrush="Transparent">
-                    <Button.ToolTip>
-                        <ToolTip>
-                            <StackPanel>
-                                <TextBlock FontWeight="Bold">Slow Down</TextBlock>
-                                <TextBlock>Reudces game speed (makes it run in slow-motion)</TextBlock>
-                            </StackPanel>
-                        </ToolTip>
-                    </Button.ToolTip>
-                    <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/icon_minus.png"></Image>
-                </Button>
-                <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/SlowMotion.png" Height="16" Margin="0,0,-3,0"></Image>
-                <TextBlock VerticalAlignment="Center" Text="{Binding CurrentGameSpeed, FallbackValue=100%}" Margin="0,0,2,0"></TextBlock>
-                <Button Height="18" Width="18" Click="SpeedIncreaseClicked" Background="Transparent" BorderBrush="Transparent">
-                    <Button.ToolTip>
-                        <ToolTip>
-                            <StackPanel>
-                                <TextBlock FontWeight="Bold">Speed Up</TextBlock>
-                                <TextBlock>Increases game speed (makes it run in fast-forward)</TextBlock>
-                            </StackPanel>
-                        </ToolTip>
-                    </Button.ToolTip>
-                    <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/icon_plus.png"></Image>
-                </Button>
-            </StackPanel>
-            
-        </Grid>
 
-        <Button VerticalAlignment="Center" Margin="2,0,0,0" Click="HandleStopClicked">
-            <Image Source="/GameCommunicationPlugin;component/GlueControl/Icons/stop.png" Margin="1"></Image>
+        <Button VerticalAlignment="Center" Margin="2,0,0,0" Click="HandleStopClicked"
+                Style="{DynamicResource IconButton}"
+                Content="{materialDesign:PackIcon Stop}">
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -142,8 +139,9 @@
         </Button>
 
         <Button VerticalAlignment="Center" Margin="2,0,0,0" Click="HandleRestartGameCurrentScreenClicked"
-                Visibility="{Binding WhileRunningViewVisibility}">
-            <Image Source="/GameCommunicationPlugin;component/GlueControl/Icons/RestartGameOnCurrentScreen.png" Margin="0"></Image>
+                Visibility="{Binding WhileRunningViewVisibility}"
+                Style="{DynamicResource IconButton}"
+                Content="{materialDesign:PackIcon Kind=SkipBackward}">
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -156,8 +154,10 @@
 
 
         <Button VerticalAlignment="Center"  Margin="2,0,0,0" Click="HandleRestartScreenClicked"
-                Visibility="{Binding GlueViewCommandUiVisibility}">
-            <Image Source="/GameCommunicationPlugin;component/GlueControl/Icons/RestartScreen.png" Margin="1"></Image>
+                Visibility="{Binding GlueViewCommandUiVisibility}"
+                Style="{DynamicResource IconButton}"
+                Content="{materialDesign:PackIcon Restart}"
+                Padding="3,4,3,2">
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -167,5 +167,40 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
+       
+        <!--We used to only show the speed up/slow down UI when the game was running (not paused), but it's common
+            to pause the game and change the speed so it runs slower when unpausing-->
+        <Grid Margin="2,0,0,0" VerticalAlignment="Center">
+
+            <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal" Margin="3,0,3,0" >
+                <Button Height="16" Click="SpeedDecreaseClicked" Background="Transparent" BorderBrush="Transparent"
+                        Style="{DynamicResource IconButton}"
+                        Content="{materialDesign:PackIcon Minus}">
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock FontWeight="Bold">Slow Down</TextBlock>
+                                <TextBlock>Reudces game speed (makes it run in slow-motion)</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </Button.ToolTip>
+                </Button>
+                <materialDesign:PackIcon Kind="Run" VerticalAlignment="Center"/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding CurrentGameSpeed, FallbackValue=100%}" Margin="0,0,2,0"></TextBlock>
+                <Button Height="16" Click="SpeedIncreaseClicked" 
+                        Style="{DynamicResource IconButton}"
+                        Content="{materialDesign:PackIcon Plus}">
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock FontWeight="Bold">Speed Up</TextBlock>
+                                <TextBlock>Increases game speed (makes it run in fast-forward)</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </Button.ToolTip>
+                </Button>
+            </StackPanel>
+
+        </Grid>
     </StackPanel>
 </UserControl>

@@ -3617,24 +3617,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Moves the selected point down in the list..
-        /// </summary>
-        public static string HintMovePointDownList {
-            get {
-                return ResourceManager.GetString("HintMovePointDownList", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Moves the selected point up in the list..
-        /// </summary>
-        public static string HintMovePointUpList {
-            get {
-                return ResourceManager.GetString("HintMovePointUpList", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Every game needs at least one screen. Usually the game logic is in a screen called GameScreen..
         /// </summary>
         public static string HintNeedAtLeastOneScreen {
@@ -3712,15 +3694,6 @@ namespace Localization {
         public static string HintPressDownThroughClouds {
             get {
                 return ResourceManager.GetString("HintPressDownThroughClouds", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Resize the polygon by moving the contained points..
-        /// </summary>
-        public static string HintResizePolygon {
-            get {
-                return ResourceManager.GetString("HintResizePolygon", resourceCulture);
             }
         }
         
@@ -5476,24 +5449,6 @@ namespace Localization {
         public static string PolygonRectangle {
             get {
                 return ResourceManager.GetString("PolygonRectangle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Adds or replaces all points on the polygon to create a multi-sided polygon..
-        /// </summary>
-        public static string PolygonToMultiSided {
-            get {
-                return ResourceManager.GetString("PolygonToMultiSided", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Adds or replaces all points on the polygon to create a rectangle..
-        /// </summary>
-        public static string PolygonToRectangle {
-            get {
-                return ResourceManager.GetString("PolygonToRectangle", resourceCulture);
             }
         }
         

@@ -4,14 +4,18 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Properties;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Themes;
 using Glue;
 using GlueFormsCore.ViewModels;
 using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace GlueFormsCore.Controls
 {
@@ -39,8 +43,6 @@ namespace GlueFormsCore.Controls
         {
             Self = this;
             InitializeComponent();
-
-            InitializeThemes();
 
             ViewModel = new TabControlViewModel();
             this.DataContext = ViewModel;
@@ -138,6 +140,49 @@ namespace GlueFormsCore.Controls
             }
         }
 
+        public void SwitchThemes(ThemeConfig config)
+        {
+            Switch(Resources);
+            
+            void Switch(ResourceDictionary resource)
+            {
+                if (resource.Source != null)
+                {
+                    string source = resource.Source.OriginalString;
+
+                    if (config.Mode is not null && Regex.IsMatch(source, @"Frb\.Brushes\.(Dark|Light)\.xaml$"))
+                    {
+                        resource.Source = config.Mode switch
+                        {
+                            ThemeMode.Light => new Uri(source.Replace("Dark", "Light"), UriKind.RelativeOrAbsolute),
+                            ThemeMode.Dark => new Uri(source.Replace("Light", "Dark"), UriKind.RelativeOrAbsolute),
+                            _ => throw new NotImplementedException()
+                        };
+                    }
+
+                    if (config.Accent is { } accent && source.Contains("Frb.Accents.xaml"))
+                    {
+                        resource.Remove("Frb.Colors.Primary");
+                        resource.Remove("Frb.Colors.Primary.Dark");
+                        resource.Remove("Frb.Colors.Primary.Light");
+                        resource.Remove("Frb.Colors.Primary.Contrast");
+
+                        resource.Add("Frb.Colors.Primary", accent);
+                        resource.Add("Frb.Colors.Primary.Dark", MaterialDesignColors.ColorManipulation.ColorAssist.Darken(accent));
+                        resource.Add("Frb.Colors.Primary.Light", MaterialDesignColors.ColorManipulation.ColorAssist.Lighten(accent));
+                        resource.Add("Frb.Colors.Primary.Contrast", MaterialDesignColors.ColorManipulation.ColorAssist.ContrastingForegroundColor(MaterialDesignColors.ColorManipulation.ColorAssist.Darken(accent)));
+                    }
+                }
+
+                foreach (var mergedResource in resource.MergedDictionaries)
+                {
+                    Switch(mergedResource);
+                }
+
+                MainGlueWindow.Self.SyncMenuStripWithTheme(Self);
+            }
+        }
+
         private static bool WaitForAllTaksToFinish(InitializationWindowWpf initWindow)
         {
             bool didWait = false;
@@ -215,21 +260,6 @@ namespace GlueFormsCore.Controls
             this.FileWatchTimer.Interval = 400;
             this.FileWatchTimer.Elapsed += this.FileWatchTimer_Tick;
             this.FileWatchTimer.Start();
-        }
-
-        private void InitializeThemes()
-        {
-            this.Resources.MergedDictionaries[0].Source =
-                new Uri($"/Themes/{AppTheme}.xaml", UriKind.Relative);
-
-
-            Style style = this.TryFindResource("UserControlStyle") as Style;
-            if (style != null)
-            {
-                this.Style = style;
-            }
-
-            ResourceDictionary = Resources;
         }
 
         private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)

@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:Height="400"
              d:Width="250">
@@ -12,12 +13,8 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="3" VerticalAlignment="Top">
-            <Button x:Name="PlayButton" Click="PlayButton_Click" VerticalAlignment="Top">
-                <Image Source="/OfficialPluginsCore;component/Content/Icons/Unpause.png" IsHitTestVisible="False"></Image>
-            </Button>
-            <Button x:Name="StopButton" Click="StopButton_Click" Margin="3,0,0,0">
-                <Image Source="/OfficialPluginsCore;component/Content/Icons/stop.png" IsHitTestVisible="False"></Image>
-            </Button>
+            <Button x:Name="PlayButton" Click="PlayButton_Click" VerticalAlignment="Top" Width="24" Height="24" Style="{DynamicResource ToolIcon}" Content="{materialDesign:PackIcon Play}"/>
+            <Button x:Name="StopButton" Click="StopButton_Click" Margin="3,0,0,0" Width="24" Height="24" Style="{DynamicResource ToolIcon}" Content="{materialDesign:PackIcon Stop}"/>
         </StackPanel>
         <Label Grid.Row="1" Content="{Binding DurationDescription, FallbackValue=0.32 seconds}"></Label>
     </Grid>

@@ -4,14 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignWidth="450" Height="28">
     <StackPanel Orientation="Horizontal">
         <Grid HorizontalAlignment="Left" Margin="0,0,0,0">
-            <Button IsHitTestVisible="False"></Button>
-            <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal" Margin="3,0,3,0" >
-                <Button Height="18" Width="18" Background="Transparent" Click="ZoomMinusClicked"
-                        BorderBrush="Transparent" Visibility="{Binding EditingToolsVisibility}">
+            <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal" Margin="0,0,3,0" >
+                <Button Height="16"
+                        Background="Transparent" Click="ZoomMinusClicked"
+                        BorderBrush="Transparent" Visibility="{Binding EditingToolsVisibility}"
+                        Content="{materialDesign:PackIcon Minus}"
+                        Style="{DynamicResource IconButton}">
                     <Button.ToolTip>
                         <ToolTip>
                             <StackPanel>
@@ -20,12 +23,15 @@
                             </StackPanel>
                         </ToolTip>
                     </Button.ToolTip>
-                    <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/icon_minus.png"></Image>
                 </Button>
-                <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/icon_magnify.png" Height="16" Margin="0,0,-3,0"></Image>
-                <TextBlock VerticalAlignment="Center" Text="{Binding CurrentZoomLevelDisplay, FallbackValue=100%}" Margin="2,0,2,0"></TextBlock>
-                <Button Height="18" Width="18" Background="Transparent" Click="ZoomPlusClicked"
-                        BorderBrush="Transparent" Visibility="{Binding EditingToolsVisibility}">
+                <materialDesign:PackIcon Kind="Search" VerticalAlignment="Center" Margin="2,0,0,0"/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding CurrentZoomLevelDisplay, FallbackValue=100%}" Margin="0,0,2,0"></TextBlock>
+                <Button
+                    Height="16"
+                    Background="Transparent" Click="ZoomPlusClicked"
+                        BorderBrush="Transparent" Visibility="{Binding EditingToolsVisibility}"
+                        Content="{materialDesign:PackIcon Plus}"
+                        Style="{DynamicResource IconButton}">
                     <Button.ToolTip>
                         <ToolTip>
                             <StackPanel>
@@ -34,7 +40,6 @@
                             </StackPanel>
                         </ToolTip>
                     </Button.ToolTip>
-                    <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/icon_plus.png"></Image>
                 </Button>
             </StackPanel>
 

@@ -12,6 +12,7 @@ using FlatRedBall.IO.Csv;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views;
 using System.Windows;
 using Newtonsoft.Json;
+using FlatRedBall.Glue.Themes;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -129,6 +130,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public bool IsBookmarksListVisible { get; set; }
         public double BookmarkRowHeight { get; set; }
+
+        public ThemeConfig ThemeConfig { get; set; } = new();
 
         /// <summary>
         /// XML cannot serialize CultureInfo because it doesn't have a parameterless constructor;

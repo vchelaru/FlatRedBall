@@ -1,0 +1,69 @@
+﻿<Window x:Class="FlatRedBall.Glue.Themes.ThemeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FlatRedBall.Glue.Themes"
+        mc:Ignorable="d"
+        WindowStyle="ToolWindow"
+        Title="ThemeWindow" 
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight"
+        d:DataContext="{d:DesignInstance Type=local:ThemeWindowViewModel, IsDesignTimeCreatable=False}">
+    
+    <Window.CommandBindings>
+        <!-- Bind ApplicationCommands.Close to a handler -->
+        <CommandBinding Command="ApplicationCommands.Close" Executed="CloseCommand_Executed"/>
+    </Window.CommandBindings>
+    
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="Theme Mode" 
+               HorizontalAlignment="Left" 
+               VerticalAlignment="Center" 
+               Grid.Row="0" 
+               Grid.Column="0"/>
+        <Label Content="Accent Color"
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Center" 
+                Grid.Row="1" 
+                Grid.Column="0"/>
+        
+        <ComboBox Grid.Row="0"
+                  Grid.Column="1"
+                  HorizontalAlignment="Right" 
+                  VerticalAlignment="Center" 
+                  ItemsSource="{Binding ThemeModes}" 
+                  SelectedItem="{Binding CurrentMode}"
+                  Text="{Binding CurrentMode}"/>
+
+        <ComboBox Grid.Row="1"
+                  Grid.Column="1"
+                  Width="60"
+                  HorizontalAlignment="Right" 
+                  VerticalAlignment="Center"
+                  ItemsSource="{Binding AccentOptions}" 
+                  SelectedItem="{Binding CurrentAccent}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Height="12" Width="50"  Background="{Binding}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <Button Grid.Row="2"
+                Grid.Column="1"
+                Content="Close"
+                Margin="0,12,0,0"
+                Command="ApplicationCommands.Close"/>
+
+    </Grid>
+</Window>
