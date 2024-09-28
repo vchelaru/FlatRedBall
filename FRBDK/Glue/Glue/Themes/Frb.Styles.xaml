@@ -7,7 +7,8 @@
                     xmlns:themes="clr-namespace:FlatRedBall.Glue.Themes"
                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
-                    xmlns:converters="clr-namespace:FlatRedBall.Glue.Themes.Converters">
+                    xmlns:converters="clr-namespace:FlatRedBall.Glue.Themes.Converters"
+                    xmlns:wpfDataUi="clr-namespace:WpfDataUi;assembly=WpfDataUiCore">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Themes/Frb.Brushes.xaml"/>
@@ -1337,6 +1338,14 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type wpfDataUi:DataUiGrid}">
+        <Style.Resources>
+            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Type ComboBox}}">
+                <Setter Property="Background" Value="{DynamicResource Frb.Brushes.Field.Background}"/>
+            </Style>
+        </Style.Resources>
     </Style>
 
 </ResourceDictionary>

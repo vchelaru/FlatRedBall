@@ -22,7 +22,7 @@ namespace OfficialPlugins.VariableDisplay.Controls
             var grid = base.Grid;
 
             var columnDefinition = new ColumnDefinition();
-            columnDefinition.Width = new System.Windows.GridLength(36);
+            columnDefinition.Width = GridLength.Auto;
 
             // January 18, 2022
             // We allow this to be
