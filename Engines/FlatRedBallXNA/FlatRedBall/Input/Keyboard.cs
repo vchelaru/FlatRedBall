@@ -101,6 +101,8 @@ namespace FlatRedBall.Input
             DefaultDownPressable = GetKey(Keys.S);
             DefaultLeftPressable = GetKey(Keys.A);
             DefaultRightPressable = GetKey(Keys.D);
+
+            Default2DInput = Get2DInput(Keys.A, Keys.D, Keys.W, Keys.S);
         }
 
         #endregion
@@ -445,11 +447,18 @@ namespace FlatRedBall.Input
         }
 
         /// <summary>
-        /// Returns an I2DInput using WASD keys.
+        /// Returns an I2DInput using WASD keys, typical for QWERTY keyboard layouts.
         /// </summary>
         /// <returns>An input using WASD as an I2DInput object.</returns>
         public I2DInput GetWasdInput() =>
             Get2DInput(Keys.A, Keys.D, Keys.W, Keys.S);
+
+        /// <summary>
+        /// Returns an I2DInput using ZQSD keys, typical for AZERTY keyboard layouts.
+        /// </summary>
+        /// <returns>An input using ZQSD as an I2DInput object.</returns>
+        public I2DInput GetZqsdInput() =>
+            Get2DInput(Keys.Q, Keys.D, Keys.Z, Keys.S);
 
         #endregion
 
@@ -675,13 +684,8 @@ namespace FlatRedBall.Input
 
         #region IInputDevice Explicit Implementation
 
-        I2DInput IInputDevice.Default2DInput
-        {
-            get
-            {
-                return this.Get2DInput(Keys.A, Keys.D, Keys.W, Keys.S);
-            }
-        }
+        public I2DInput Default2DInput { get; set; }
+        
 
         public IRepeatPressableInput DefaultUpPressable { get; set; }
         public IRepeatPressableInput DefaultDownPressable { get; set; }

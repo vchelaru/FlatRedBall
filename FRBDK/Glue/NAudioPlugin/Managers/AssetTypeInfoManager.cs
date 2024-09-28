@@ -87,7 +87,7 @@ namespace NAudioPlugin.Managers
             {
                 addToManagersMethod += $"var restartSong = " +
                     $"(FlatRedBall.Audio.AudioManager.CurrentlyPlayingSong == null && FlatRedBall.Audio.AudioManager.CurrentlyPlayingISong == null) || " +
-                    $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(\"{rfs.GetInstanceName()}\"); ";
+                    $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers({rfs.GetInstanceName()}.Name); ";
             }
             else
             {
