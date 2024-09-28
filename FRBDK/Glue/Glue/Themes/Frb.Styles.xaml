@@ -575,8 +575,7 @@
                         <Border.Style>
                             <Style TargetType="{x:Type Border}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
-
+                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
                                         <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary}"/>
                                     </DataTrigger>
                                 </Style.Triggers>

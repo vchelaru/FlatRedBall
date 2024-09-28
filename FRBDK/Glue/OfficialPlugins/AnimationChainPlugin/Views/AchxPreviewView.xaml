@@ -41,21 +41,7 @@
                 SelectedItem="{Binding SelectedItem}"
                 MouseDoubleClick="TreeListBox_MouseDoubleClick"
                 PreviewKeyDown="TreeListBox_PreviewKeyDown"
-                >
-
-                            <pt:TreeListBox.ItemTemplate>
-
-                                <DataTemplate>
-                                    <Grid x:Name="ItemGrid">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="1" Text="{Binding Text}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </pt:TreeListBox.ItemTemplate>
-
-                        </pt:TreeListBox>
+                />
                         <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"/>
                         <ScrollViewer Grid.Row="2">
                             <wpfdataui:DataUiGrid x:Name="PropertyGrid"></wpfdataui:DataUiGrid>
