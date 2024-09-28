@@ -124,26 +124,6 @@ namespace Npc.ViewModels
         }
 
         [DependsOn(nameof(ValidationResponse))]
-        public SolidColorBrush FinalDirectoryForeground
-        {
-            get
-            {
-                var validation = ValidationResponse;
-                if(validation.Succeeded)
-                {
-                    return Brushes.Black;
-                }
-                else
-                {
-
-                }
-                {
-                    return Brushes.Red;
-                }
-            }
-        }
-
-        [DependsOn(nameof(ValidationResponse))]
         public string ProjectLocationError => ValidationResponse.Message;
 
         [DependsOn(nameof(FinalDirectory))]
