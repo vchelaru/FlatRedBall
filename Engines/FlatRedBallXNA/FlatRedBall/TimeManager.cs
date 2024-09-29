@@ -80,7 +80,8 @@ namespace FlatRedBall
         /// The amount of time in seconds since the game started running. 
         /// This value is updated once-per-frame so it will 
         /// always be the same value until the next frame is called.
-        /// This value does not consider pausing. To consider pausing, see CurrentScreenTime.
+        /// This value does not consider pausing, and it does not reset when
+        /// a new screen starts. To consider pausing, see CurrentScreenTime.
         /// </summary>
         /// <remarks>
         /// This value can be used to uniquely identify a frame.

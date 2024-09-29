@@ -139,6 +139,9 @@ namespace FlatRedBall.Input
 
         DelegateBased1DInput scrollWheel;
 
+        /// <summary>
+        /// A 1D Input for the scroll wheel, where scroll wheel values will be normalized to be between -1 and 1 per wheel "tick".
+        /// </summary>
         public I1DInput ScrollWheel
         {
             get
@@ -168,6 +171,10 @@ namespace FlatRedBall.Input
             }
         }
 
+        /// <summary>
+        /// The main mouse for the game.
+        /// </summary>
+        public static Mouse Main => InputManager.Mouse;
 
 #if !MONOGAME && !FNA
         public bool IsOwnerFocused

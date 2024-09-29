@@ -74,6 +74,10 @@ namespace FlatRedBall.Input
             }
         }
 
+        /// <summary>
+        /// The main keyboard for the game.
+        /// </summary>
+        public static Keyboard Main => InputManager.Keyboard;
 
         #endregion
 
