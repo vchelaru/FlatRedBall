@@ -1116,13 +1116,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public async void ShowAddNewCategoryDialog()
         {
             // add category, addcategory, add state category
-            var tiw = new TextInputWindow();
-            tiw.Message = L.Texts.CategoryEnterName;
-            tiw.Text = L.Texts.CategoryNew;
+            CustomizableTextInputWindow tiw = new()
+            {
+                Message = L.Texts.CategoryEnterName
+            };
 
-            DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
-
-            if (result == DialogResult.OK)
+            if (tiw.ShowDialog() is true)
             {
                 string whyItIsntValid;
 
@@ -1144,14 +1143,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void ShowAddNewStateDialog()
         {
             // search: addstate, add new state, addnewstate, add state
-            var tiw = new TextInputWindow();
-            tiw.Message = L.Texts.StateEnterName;
-            tiw.Text = L.Texts.StateNew;
+            CustomizableTextInputWindow tiw = new()
+            {
+                Message = L.Texts.StateEnterName
+            };
 
-
-            DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
-
-            if (result == DialogResult.OK)
+            if (tiw.ShowDialog() is true)
             {
                 var currentElement = GlueState.Self.CurrentElement;
 

@@ -36,15 +36,14 @@ namespace TiledPluginCore.Views
 
         private void DuplicateLevelClicked(object sender, RoutedEventArgs e)
         {
-            var tiw = new TextInputWindow();
-            tiw.Message = Localization.Texts.EnterNewTmx;
+            CustomizableTextInputWindow tiw = new()
+            {
+                Message = Localization.Texts.EnterNewTmx,
+                Result = StringFunctions.IncrementNumberAtEnd(FileManager.RemoveExtension(ViewModel.SelectedTmxFile))
+                + ".tmx"
+            };
 
-            tiw.Result = StringFunctions.IncrementNumberAtEnd(FileManager.RemoveExtension(ViewModel.SelectedTmxFile)) 
-                + ".tmx";
-
-            var result = tiw.ShowDialog();
-
-            if (result == System.Windows.Forms.DialogResult.OK)
+            if (tiw.ShowDialog() is true)
             {
                 FilePath resultFilePath = GlueState.Self.ContentDirectory + tiw.Result;
 

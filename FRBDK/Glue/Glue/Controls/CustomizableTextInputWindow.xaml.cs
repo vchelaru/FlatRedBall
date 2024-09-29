@@ -6,6 +6,12 @@ using System.Windows.Input;
 
 namespace FlatRedBall.Glue.Controls
 {
+    public enum AboveOrBelow
+    {
+        Above,
+        Below
+    }
+
     /// <summary>
     /// Interaction logic for CustomizableTextInputWindow.xaml
     /// </summary>
@@ -50,7 +56,7 @@ namespace FlatRedBall.Glue.Controls
             TextBox.SelectAll();
         }
 
-        public void AddControl(UserControl control, AboveOrBelow aboveOrBelow = AboveOrBelow.Below)
+        public void AddControl(Control control, AboveOrBelow aboveOrBelow = AboveOrBelow.Below)
         {
             if(aboveOrBelow == AboveOrBelow.Above)
             {
