@@ -1644,13 +1644,12 @@ public static class RightClickHelper
     internal static void AddFolderClick(ITreeNode targetNode)
     {
         // addfolder, add folder, add new folder, addnewfolder
-        var tiw = new TextInputWindow();
-        tiw.Message = L.Texts.NewFolderEnter;
-        tiw.Text = L.Texts.NewFolder;
+        CustomizableTextInputWindow tiw = new()
+        {
+            Message = L.Texts.NewFolderEnter,
+        };
 
-        var result = tiw.ShowDialog(MainGlueWindow.Self);
-
-        if (result == DialogResult.OK)
+        if (tiw.ShowDialog() is true)
         {
             string folderName = tiw.Result;
             GlueCommands.Self.ProjectCommands.AddDirectory(folderName, targetNode);
@@ -1827,13 +1826,13 @@ public static class RightClickHelper
 
     static void HandleRenameFolderClick(ITreeNode treeNode)
     {
-        var inputWindow = new TextInputWindow();
-        inputWindow.Message = L.Texts.NewFolderEnter;
-        inputWindow.Result = treeNode.Text;
+        CustomizableTextInputWindow inputWindow = new()
+        {
+            Message = L.Texts.NewFolderEnter,
+            Result = treeNode.Text
+        };
 
-        var dialogResult = inputWindow.ShowDialog();
-
-        if (dialogResult == DialogResult.OK)
+        if (inputWindow.ShowDialog() is true)
         {
             GlueCommands.Self.GluxCommands.RenameFolder(treeNode, inputWindow.Result);
         }

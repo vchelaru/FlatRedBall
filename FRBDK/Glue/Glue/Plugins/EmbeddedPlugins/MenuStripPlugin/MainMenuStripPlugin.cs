@@ -145,12 +145,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
         private void findFileReferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var tiw = new TextInputWindow();
-            tiw.Message = Localization.Texts.EnterFileWithExtension;
+            CustomizableTextInputWindow tiw = new()
+            {
+                Message = Localization.Texts.EnterFileWithExtension
+            };
 
-
-
-            if (tiw.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
+            if (tiw.ShowDialog() is true)
             {
                 List<ReferencedFileSave> matchingReferencedFileSaves = new List<ReferencedFileSave>();
                 List<string> matchingRegularFiles = new List<string>();
@@ -232,25 +232,24 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
         private void newContentCSVToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TextInputWindow tiw = new TextInputWindow();
-            tiw.DisplayText = Localization.Texts.EnterNewCSVName;
+            CustomizableTextInputWindow tiw = new()
+            {
+                Message = Localization.Texts.EnterNewCSVName
+            };
 
-            var comboBox = new ComboBox();
+            var comboBox = new System.Windows.Controls.ComboBox();
 
             // project-specific CSVs are always named ProjectSpecificContent.csv
             comboBox.Items.Add(Localization.Texts.ProjectForAll);
             comboBox.Items.Add(Localization.Texts.ProjectThisOnly);
             // May 11 2023 - probably want to default to this project
             comboBox.Text = Localization.Texts.ProjectThisOnly;
-            comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox.Width = 136;
             tiw.AddControl(comboBox);
 
-            DialogResult result = tiw.ShowDialog();
-
             // CSVs can be added to be project-specific or shared across all projects (installed to a centralized location)
 
-            if (result == DialogResult.OK)
+            if (tiw.ShowDialog() is true)
             {
                 string textResult = tiw.Result;
                 if (textResult.ToLower().EndsWith(".csv", StringComparison.OrdinalIgnoreCase))

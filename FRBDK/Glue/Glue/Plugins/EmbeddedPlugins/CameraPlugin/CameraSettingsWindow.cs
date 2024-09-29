@@ -188,9 +188,12 @@ namespace FlatRedBall.Glue.Controls
 
         private void AddResolutionButton_Click(object sender, EventArgs e)
         {
-            TextInputWindow tiw = new TextInputWindow();
-            tiw.DisplayText = "Enter name for the new resolution preset";
-            if (tiw.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            CustomizableTextInputWindow tiw = new()
+            {
+                Message = "Enter name for the new resolution preset"
+            };
+
+            if (tiw.ShowDialog() is true)
             {
                 string whyIsntValid = WhyIsntResolutionPresetNameValid(tiw.Result);
 
