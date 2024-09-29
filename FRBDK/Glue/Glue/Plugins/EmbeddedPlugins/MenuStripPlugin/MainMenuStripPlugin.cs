@@ -23,6 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using FlatRedBall.Glue.Themes;
+using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
 namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 {
@@ -244,7 +245,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             comboBox.Items.Add(Localization.Texts.ProjectThisOnly);
             // May 11 2023 - probably want to default to this project
             comboBox.Text = Localization.Texts.ProjectThisOnly;
-            comboBox.Width = 136;
+            comboBox.HorizontalAlignment = HorizontalAlignment.Center;
             tiw.AddControl(comboBox);
 
             // CSVs can be added to be project-specific or shared across all projects (installed to a centralized location)
