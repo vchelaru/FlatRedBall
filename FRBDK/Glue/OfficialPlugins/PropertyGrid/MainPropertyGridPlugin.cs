@@ -115,6 +115,7 @@ namespace OfficialPlugins.VariableDisplay
             }
             else if(GlueState.Self.CurrentReferencedFileSave != null)
             {
+                variableTab?.Hide();
                 ShowPropertiesForReferencedFileSave(GlueState.Self.CurrentReferencedFileSave);
             }
             else
