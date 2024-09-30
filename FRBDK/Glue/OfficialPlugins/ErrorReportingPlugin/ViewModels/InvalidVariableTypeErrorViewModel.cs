@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Errors;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
@@ -30,44 +31,59 @@ namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
             GlueState.Self.CurrentCustomVariable = customVariable;
         }
 
-        public override bool GetIfIsFixed()
+        public static bool GetIfHasError(GlueElement owner, CustomVariable variable)
         {
-            if(owner is ScreenSave asScreen)
+            if (owner is ScreenSave asScreen)
             {
-                if(GlueState.Self.CurrentGlueProject.Screens.Contains(owner) == false)
+                if (GlueState.Self.CurrentGlueProject.Screens.Contains(owner) == false)
                 {
-                    return true;
+                    return false;
                 }
             }
-            else if(owner is EntitySave asEntity)
+            else if (owner is EntitySave asEntity)
             {
-                if(GlueState.Self.CurrentGlueProject.Entities.Contains(owner) == false)
+                if (GlueState.Self.CurrentGlueProject.Entities.Contains(owner) == false)
                 {
-                    return true;
+                    return false;
                 }
             }
 
-            if(owner.CustomVariables.Contains(customVariable) == false)
+            if (owner.CustomVariables.Contains(variable) == false)
             {
-                return true;
+                return false;
             }
 
-            var type = customVariable.Type;
+            var type = variable.Type;
 
             var doesTypeExist = true;
 
-            if (customVariable.Type.Contains("."))
+            if (variable.Type.Contains("."))
             {
-                // it better be a CSV or state
-                var found = customVariable.GetIsCsv() || customVariable.GetIsVariableState() || customVariable.GetIsBaseElementType();
+                var baseDefiningVariable = ObjectFinder.Self.GetRootCustomVariable(variable);
 
-                if (!found)
+                // for now we'll skip anything that is a tunneled variable because that gets way more complicated, and
+                // this check was added to catch missing CSV references
+                if (string.IsNullOrEmpty(baseDefiningVariable?.SourceObject))
                 {
-                    doesTypeExist = false;
+                    // it better be a CSV or state or Texture
+                    var found =
+                        variable.Type == "Microsoft.Xna.Framework.Graphics.Texture2D" ||
+                        variable.GetIsCsv() ||
+                        variable.GetIsVariableState() ||
+                        variable.GetIsBaseElementType();
+
+                    if (!found)
+                    {
+                        doesTypeExist = false;
+                    }
                 }
             }
+            return !doesTypeExist;
+        }
 
-            return doesTypeExist;
+        public override bool GetIfIsFixed()
+        {
+            return!GetIfHasError(owner, customVariable);
         }
     }
 }
