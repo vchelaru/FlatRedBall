@@ -32,6 +32,10 @@ namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
 
         public static bool GetIfHasError(GlueElement owner, CustomVariable variable)
         {
+            if(string.IsNullOrEmpty(variable.SourceObject))
+            {
+                return false;
+            }
             if (owner is ScreenSave asScreen)
             {
                 if (GlueState.Self.CurrentGlueProject.Screens.Contains(owner) == false)

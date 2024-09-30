@@ -43,6 +43,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         private void HandleUnloadedGlux()
         {
             base.RemoveFromToolbar(cameraToolbar, "Standard");
+
+            tab?.Hide();
         }
 
         private void HandleLoadedGlux()
