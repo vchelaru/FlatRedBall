@@ -317,21 +317,21 @@ namespace FlatRedBallAddOns.Entities
 
 
         CodeBlockNamespace namespaceBlock = rootBlock.Namespace(classNamespace);
-        ICodeBlock codeBlock = GenerateClassHeader(element, namespaceBlock);
+        ICodeBlock classCodeBlock = GenerateClassHeader(element, namespaceBlock);
 
-        GenerateFieldsAndProperties(codeBlock, element);
-        GenerateConstructors(codeBlock, element);
-        GenerateInitialize(codeBlock, element);
-        GenerateAddToManagers(codeBlock, element);
-        GenerateActivity(codeBlock, element);
+        GenerateFieldsAndProperties(classCodeBlock, element);
+        GenerateConstructors(classCodeBlock, element);
+        GenerateInitialize(classCodeBlock, element);
+        GenerateAddToManagers(classCodeBlock, element);
+        GenerateActivity(classCodeBlock, element);
 
         if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ScreensHaveActivityEditMode)
         {
-            GenerateActivityEditMode(codeBlock, element);
+            GenerateActivityEditMode(classCodeBlock, element);
         }
 
-        GenerateDestroy(codeBlock, element);
-        GenerateMethods(codeBlock, element);
+        GenerateDestroy(classCodeBlock, element);
+        GenerateMethods(classCodeBlock, element);
 
         foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
         {
@@ -621,7 +621,7 @@ namespace FlatRedBallAddOns.Entities
     {
         var inheritsFromElement = element.InheritsFromElement();
 
-        codeBlock = codeBlock.Function(StringHelper.SpaceStrings(
+        ICodeBlock functionBlock = codeBlock.Function(StringHelper.SpaceStrings(
                                                     "public",
                                                     "static",
                                                     inheritsFromElement ? "new" : null,
@@ -638,16 +638,16 @@ namespace FlatRedBallAddOns.Entities
             // to prevent this. We do this here instead of in the ReferencedFileSave generated code
             // because we want to exit out immediately before anything else has a chance to run. The 
             // RFS code generator can't do this without some hacks.
-            codeBlock.If("LoadedContentManagers.Contains(contentManagerName)")
+            functionBlock.If("LoadedContentManagers.Contains(contentManagerName)")
                 .Line("return;");
         }
         
-        PerformancePluginCodeGenerator.GenerateStart(element, codeBlock, "LoadStaticContent");
+        PerformancePluginCodeGenerator.GenerateStart(element, functionBlock, "LoadStaticContent");
 
-        codeBlock.Line("bool oldShapeManagerSuppressAdd = FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue;");
-        codeBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = true;");
+        functionBlock.Line("bool oldShapeManagerSuppressAdd = FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue;");
+        functionBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = true;");
 
-        codeBlock.If("string.IsNullOrEmpty(contentManagerName)")
+        functionBlock.If("string.IsNullOrEmpty(contentManagerName)")
             .Line("throw new System.ArgumentException(\"contentManagerName cannot be empty or null\");")
             .End();
 
@@ -657,10 +657,10 @@ namespace FlatRedBallAddOns.Entities
         {
             if (entitySave.UseGlobalContent)
             {
-                codeBlock.Line("// Set to use global content");
-                codeBlock.Line("contentManagerName = FlatRedBall.FlatRedBallServices.GlobalContentManager;");
+                functionBlock.Line("// Set to use global content");
+                functionBlock.Line("contentManagerName = FlatRedBall.FlatRedBallServices.GlobalContentManager;");
             }
-            codeBlock.Line("ContentManagerName = contentManagerName;");
+            functionBlock.Line("ContentManagerName = contentManagerName;");
         }
 
         #endregion
@@ -668,11 +668,11 @@ namespace FlatRedBallAddOns.Entities
 
         if (inheritsFromElement)
         {
-            codeBlock.Line("global::" + ProjectManager.ProjectNamespace + "." + element.BaseElement.Replace("\\", ".")  + ".LoadStaticContent(contentManagerName);");
+            functionBlock.Line("global::" + ProjectManager.ProjectNamespace + "." + element.BaseElement.Replace("\\", ".")  + ".LoadStaticContent(contentManagerName);");
         }
 
-        codeBlock = CodeGenerators.OrderBy(item => (int)item.CodeLocation)
-            .Aggregate(codeBlock, (current, codeGenerator) => codeGenerator.GenerateLoadStaticContent(current, element));
+        functionBlock = CodeGenerators.OrderBy(item => (int)item.CodeLocation)
+            .Aggregate(functionBlock, (current, codeGenerator) => codeGenerator.GenerateLoadStaticContent(current, element));
 
         #region Register the unload for EntitySaves
 
@@ -681,16 +681,16 @@ namespace FlatRedBallAddOns.Entities
 
         if (element is EntitySave { UseGlobalContent: false } save)
         {
-            ICodeBlock ifBlock = codeBlock.If("registerUnload && ContentManagerName != FlatRedBall.FlatRedBallServices.GlobalContentManager");
+            ICodeBlock ifBlock = functionBlock.If("registerUnload && ContentManagerName != FlatRedBall.FlatRedBallServices.GlobalContentManager");
             ReferencedFileSaveCodeGenerator.AppendAddUnloadMethod(ifBlock, save);
         }
 
         #endregion
 
-        codeBlock.Line("CustomLoadStaticContent(contentManagerName);");
-        codeBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = oldShapeManagerSuppressAdd;");
+        functionBlock.Line("CustomLoadStaticContent(contentManagerName);");
+        functionBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = oldShapeManagerSuppressAdd;");
 
-        PerformancePluginCodeGenerator.GenerateEnd(element, codeBlock, "LoadStaticContent");
+        PerformancePluginCodeGenerator.GenerateEnd(element, functionBlock, "LoadStaticContent");
     }
 
     #endregion
@@ -843,20 +843,20 @@ namespace FlatRedBallAddOns.Entities
                 : "protected virtual void";
         }
 
-        codeBlock = codeBlock.Function(initializePre, initializeMethodCall, "bool addToManagers");
+        ICodeBlock initializeBlock = codeBlock.Function(initializePre, initializeMethodCall, "bool addToManagers");
 
         // Start measuring performance before anything else
-        PerformancePluginCodeGenerator.GenerateStartTimingInitialize(element, codeBlock);
+        PerformancePluginCodeGenerator.GenerateStartTimingInitialize(element, initializeBlock);
 
         PerformancePluginCodeGenerator.SaveObject = element;
-        PerformancePluginCodeGenerator.CodeBlock = codeBlock;
+        PerformancePluginCodeGenerator.CodeBlock = initializeBlock;
 
         PerformancePluginCodeGenerator.GenerateStart("CustomLoadStaticContent from Initialize");
 
         // Load static content before looping through the CodeGenerators
         // The reason for this is there is a ReferencedFileSaveCodeGenerator
         // which needs to work with static RFS's which are instantiated here
-        codeBlock.Line("LoadStaticContent(ContentManagerName);");
+        initializeBlock.Line("LoadStaticContent(ContentManagerName);");
 
         PerformancePluginCodeGenerator.GenerateEnd();
         PerformancePluginCodeGenerator.GenerateStart("General Initialize internals");
@@ -865,7 +865,7 @@ namespace FlatRedBallAddOns.Entities
         {
             try
             {
-                codeGenerator.GenerateInitialize(codeBlock, element);
+                codeGenerator.GenerateInitialize(initializeBlock, element);
             }
             catch (Exception e)
             {
@@ -877,7 +877,7 @@ namespace FlatRedBallAddOns.Entities
         {
             try
             {
-                codeGenerator.GenerateInitializeLate(codeBlock, element);
+                codeGenerator.GenerateInitializeLate(initializeBlock, element);
             }
             catch(Exception e)
             {
@@ -885,11 +885,11 @@ namespace FlatRedBallAddOns.Entities
             }
         }
 
-        NamedObjectSaveCodeGenerator.GenerateCollisionRelationships(codeBlock, element);
+        NamedObjectSaveCodeGenerator.GenerateCollisionRelationships(initializeBlock, element);
 
         if (element is ScreenSave screenSave)
         {
-            codeBlock._();
+            initializeBlock._();
 
             if (screenSave.IsRequiredAtStartup)
             {
@@ -901,7 +901,7 @@ namespace FlatRedBallAddOns.Entities
             }
         }
 
-        codeBlock._();
+        initializeBlock._();
         PerformancePluginCodeGenerator.GenerateEnd();
 
         #region PostInitializeCode
@@ -911,7 +911,7 @@ namespace FlatRedBallAddOns.Entities
 
         if (element.InheritsFromElement() == false)
         {
-            codeBlock.Line("PostInitialize();");
+            initializeBlock.Line("PostInitialize();");
         }
         PerformancePluginCodeGenerator.GenerateEnd();
 
@@ -919,12 +919,12 @@ namespace FlatRedBallAddOns.Entities
 
         PerformancePluginCodeGenerator.GenerateStart("Base.Initialize");
         
-        InheritanceCodeWriter.Self.WriteBaseInitialize(element, codeBlock);
+        InheritanceCodeWriter.Self.WriteBaseInitialize(element, initializeBlock);
 
         if(element is ScreenSave && GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ScreenIsINameable)
         {
             var name = element.GetStrippedName();
-            codeBlock.Line($"this.Name = \"{name}\";");
+            initializeBlock.Line($"this.Name = \"{name}\";");
         }
 
         // This needs to happen after calling WriteBaseInitialize so that the derived overwrites the base
@@ -943,7 +943,7 @@ namespace FlatRedBallAddOns.Entities
         // has a chance to set values on derived objects
         PerformancePluginCodeGenerator.GenerateStart("Reset Variables");
         // Now that variables are set, we can record reset variables
-        NamedObjectSaveCodeGenerator.AssignResetVariables(codeBlock, element);
+        NamedObjectSaveCodeGenerator.AssignResetVariables(initializeBlock, element);
         PerformancePluginCodeGenerator.GenerateEnd();
 
         PerformancePluginCodeGenerator.GenerateStart("AddToManagers");
@@ -953,7 +953,7 @@ namespace FlatRedBallAddOns.Entities
         var shouldCallAddToManagers = !element.InheritsFromElement();
         if (shouldCallAddToManagers)
         {
-            ICodeBlock ifBlock = codeBlock
+            ICodeBlock ifBlock = initializeBlock
                 .If("addToManagers");
             if (element is ScreenSave)
             {
@@ -968,7 +968,7 @@ namespace FlatRedBallAddOns.Entities
         #endregion
         PerformancePluginCodeGenerator.GenerateEnd();
 
-        PerformancePluginCodeGenerator.GenerateEndTimingInitialize(element, codeBlock); 
+        PerformancePluginCodeGenerator.GenerateEndTimingInitialize(element, initializeBlock); 
     }
 
     #endregion
@@ -1008,19 +1008,20 @@ namespace FlatRedBallAddOns.Entities
  
         #region Generate the method header
 
+        ICodeBlock functionBlock;
         if (isScreen)
         {
-            codeBlock = codeBlock
+            functionBlock = codeBlock
                 .Function("public override void", "AddToManagers", "");
         }
         else if (element.InheritsFromElement()) // it's an EntitySave
         {
-            codeBlock = codeBlock
+            functionBlock = codeBlock
                 .Function("public override void", "AddToManagers", "FlatRedBall.Graphics.Layer layerToAddTo");
         }
         else // It's a base EntitySave
         {
-            codeBlock = codeBlock
+            functionBlock = codeBlock
                 .Function("public virtual void", "AddToManagers", "FlatRedBall.Graphics.Layer layerToAddTo");
         }
         #endregion
@@ -1032,12 +1033,12 @@ namespace FlatRedBallAddOns.Entities
             // and after their CustomInitialize is called. That CustomInitialize may use the TimeManager.CurrentScreenTime
             // which depends on the mTimeScreenWasCreated value being set. Therefore, we'll force set this here. It may get set
             // multiple times but that should be okay:
-            codeBlock.Line("mAccumulatedPausedTime = TimeManager.CurrentTime;");
-            codeBlock.Line("mTimeScreenWasCreated = FlatRedBall.TimeManager.CurrentTime;");
+            functionBlock.Line("mAccumulatedPausedTime = TimeManager.CurrentTime;");
+            functionBlock.Line("mTimeScreenWasCreated = FlatRedBall.TimeManager.CurrentTime;");
         }
 
         PerformancePluginCodeGenerator.SaveObject = element;
-        PerformancePluginCodeGenerator.CodeBlock = codeBlock;
+        PerformancePluginCodeGenerator.CodeBlock = functionBlock;
 
         PerformancePluginCodeGenerator.GenerateStart("Pooled PostInitialize");
 
@@ -1050,7 +1051,7 @@ namespace FlatRedBallAddOns.Entities
         // the entity after being destroyed. "old" recycled
         // entities may have their internal objects shifted around,
         // so a post-init will reset them. 
-        FactoryElementCodeGenerator.CallPostInitializeIfNecessary(element, codeBlock);
+        FactoryElementCodeGenerator.CallPostInitializeIfNecessary(element, functionBlock);
 
 
         #endregion
@@ -1065,7 +1066,7 @@ namespace FlatRedBallAddOns.Entities
         // Only Screens need to define a layer.  Otherwise, the layer is fed to the Entity
         if (IsOnOwnLayer(element) && isScreen)
         {
-            codeBlock.Line("mLayer = SpriteManager.AddLayer();");
+            functionBlock.Line("mLayer = SpriteManager.AddLayer();");
         }
 
         #endregion
@@ -1074,25 +1075,25 @@ namespace FlatRedBallAddOns.Entities
 
         if (isEntity)
         {
-            codeBlock.Line("LayerProvidedByContainer = layerToAddTo;");
+            functionBlock.Line("LayerProvidedByContainer = layerToAddTo;");
         }
 
         #endregion
 
         PerformancePluginCodeGenerator.GenerateEnd();
 
-        GenerateAddThisEntityToManagers(codeBlock, element);
+        GenerateAddThisEntityToManagers(functionBlock, element);
 
         const string addFilesToManagers = "Add Files to Managers";
-        PerformancePluginCodeGenerator.GenerateStart(element, codeBlock, addFilesToManagers);
+        PerformancePluginCodeGenerator.GenerateStart(element, functionBlock, addFilesToManagers);
         
         // Add referenced files before adding objects because the objects
         // may be aliases for the files (if using Entire File) and may add them
         // to layers.
         ReferencedFileSaveCodeGenerator.GenerateAddToManagersStatic(
-            codeBlock, element);
+            functionBlock, element);
 
-        PerformancePluginCodeGenerator.GenerateEnd(element, codeBlock, addFilesToManagers);
+        PerformancePluginCodeGenerator.GenerateEnd(element, functionBlock, addFilesToManagers);
         PerformancePluginCodeGenerator.GenerateStart("Create layer instances");
 
         #region First generate all code for Layers before other stuff
@@ -1105,13 +1106,13 @@ namespace FlatRedBallAddOns.Entities
                 continue;
             }
 
-            NamedObjectSaveCodeGenerator.WriteAddToManagersForNamedObject(element, nos, codeBlock);
+            NamedObjectSaveCodeGenerator.WriteAddToManagersForNamedObject(element, nos, functionBlock);
 
             foreach (CustomVariable customVariable in element.CustomVariables)
             {
                 if (customVariable.SourceObject == nos.InstanceName)
                 {
-                    CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInElement(codeBlock, customVariable, element as GlueElement);
+                    CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInElement(functionBlock, customVariable, element);
                 }
             }
         }
@@ -1125,14 +1126,14 @@ namespace FlatRedBallAddOns.Entities
             .OrderBy(item => (int)item.CodeLocation)
             .Where(item => item.CodeLocation == CodeLocation.BeforeStandardGenerated))
         {
-            codeGenerator.GenerateAddToManagers(codeBlock, element);
+            codeGenerator.GenerateAddToManagers(functionBlock, element);
         }
 
         foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators
             .OrderBy(item => (int)item.CodeLocation)
             .Where(item => item.CodeLocation == CodeLocation.StandardGenerated))
         {
-            codeGenerator.GenerateAddToManagers(codeBlock, element);
+            codeGenerator.GenerateAddToManagers(functionBlock, element);
         }
         PerformancePluginCodeGenerator.GenerateEnd();
 
@@ -1140,7 +1141,7 @@ namespace FlatRedBallAddOns.Entities
 
         if ( element.InheritsFromElement())
         {
-            codeBlock.Line(element is ScreenSave 
+            functionBlock.Line(element is ScreenSave 
                 ? "base.AddToManagers();" 
                 : "base.AddToManagers(layerToAddTo);");
         }
@@ -1152,21 +1153,21 @@ namespace FlatRedBallAddOns.Entities
                 {
                     // Screen will always call base.AddToManagers so that
                     // Screen.cs gets a chance to set up its timing
-                    codeBlock.Line("base.AddToManagers();");
+                    functionBlock.Line("base.AddToManagers();");
                 }
-                codeBlock.Line("AddToManagersBottomUp();");
+                functionBlock.Line("AddToManagersBottomUp();");
 
                 if(!element.InheritsFromElement())
                 {
                     if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
                     {
-                        codeBlock.Line("BeforeCustomInitialize?.Invoke();");
+                        functionBlock.Line("BeforeCustomInitialize?.Invoke();");
                     }
                 }
             }
             else
             {
-                codeBlock.Line("AddToManagersBottomUp(layerToAddTo);");
+                functionBlock.Line("AddToManagersBottomUp(layerToAddTo);");
             }
         }
  
@@ -1174,13 +1175,13 @@ namespace FlatRedBallAddOns.Entities
             .OrderBy(item => (int)item.CodeLocation)
             .Where(item => item.CodeLocation == CodeLocation.AfterStandardGenerated))
         {
-            codeGenerator.GenerateAddToManagers(codeBlock, element);
+            codeGenerator.GenerateAddToManagers(functionBlock, element);
         }
   
         PerformancePluginCodeGenerator.GenerateEnd(); 
         
         PerformancePluginCodeGenerator.GenerateStart("Custom Initialize");
-        codeBlock.Line("CustomInitialize();");
+        functionBlock.Line("CustomInitialize();");
         PerformancePluginCodeGenerator.GenerateEnd();
         
     }
@@ -1200,26 +1201,26 @@ namespace FlatRedBallAddOns.Entities
         if (!isEntity)
         {
             return;
-        } 
+        }
 
+        ICodeBlock functionBlock;
         if (inheritsFromNonFrbType)
         {
-            codeBlock.Function("public override void", "ReAddToManagers", "FlatRedBall.Graphics.Layer layerToAddTo");
-            codeBlock.Line("base.ReAddToManagers(layerToAddTo);");
+            functionBlock = codeBlock.Function("public override void", "ReAddToManagers", "FlatRedBall.Graphics.Layer layerToAddTo");
+            functionBlock.Line("base.ReAddToManagers(layerToAddTo);");
         }
         else
         {
-            codeBlock.Function("public virtual void", "ReAddToManagers", "FlatRedBall.Graphics.Layer layerToAddTo");
-            codeBlock.Line("LayerProvidedByContainer = layerToAddTo;");
+            functionBlock = codeBlock.Function("public virtual void", "ReAddToManagers", "FlatRedBall.Graphics.Layer layerToAddTo");
+            functionBlock.Line("LayerProvidedByContainer = layerToAddTo;");
         }
 
         // add "this" to managers:
-        GenerateAddThisEntityToManagers(codeBlock, element);
+        GenerateAddThisEntityToManagers(functionBlock, element);
 
         foreach (NamedObjectSave nos in element.NamedObjects)
         {
-            var setVariables = false;
-            NamedObjectSaveCodeGenerator.WriteAddToManagersForNamedObject(element, nos, codeBlock, false, setVariables);
+             NamedObjectSaveCodeGenerator.WriteAddToManagersForNamedObject(element, nos, functionBlock, false, false);
         }
     }
 
@@ -1262,12 +1263,7 @@ namespace FlatRedBallAddOns.Entities
                             .Replace("{THIS}", "this")
                             .Replace("{LAYER}", "layerToAddTo") + ';';
                         codeBlock.Line(line);
-                    }
-                    else
-                    {
-                        // not adding this to managers 
-                    }
-
+                    } 
                 }
                 else if(ati.AddToManagersFunc != null)
                 {
@@ -1291,7 +1287,7 @@ namespace FlatRedBallAddOns.Entities
                 : "FlatRedBall.SpriteManager.AddPositionedObject(this);");
         }
 
-        IWindowCodeGenerator.TryGenerateAddToManagers(codeBlock, element);
+        IWindowCodeGenerator.TryGenerateAddToManagers(codeBlock, (element as EntitySave)!);
         PerformancePluginCodeGenerator.GenerateEnd();
     }
 
@@ -1319,12 +1315,12 @@ namespace FlatRedBallAddOns.Entities
         {
             activityPre = "public override void";
         }
-        codeBlock = codeBlock.Function(activityPre, "Activity", activityParameters);
+        ICodeBlock functionBlock = codeBlock.Function(activityPre, "Activity", activityParameters);
 
         #region Plugin code generation before standard generation
 
         List<PluginManagerBase> pluginManagers = PluginManagerBase.GetInstances();
-        ICodeBlock currentBlock = codeBlock;
+        ICodeBlock currentBlock = functionBlock;
 
         foreach (PluginManager pluginManager in pluginManagers.Cast<PluginManager>())
         {
@@ -1358,7 +1354,7 @@ namespace FlatRedBallAddOns.Entities
         }
         else
         {
-            EntityCodeWriter.GenerateActivity(element as EntitySave, codeBlock);
+            EntityCodeWriter.GenerateActivity(element as EntitySave, currentBlock);
 
             GenerateGeneralActivity(currentBlock, element);
 
@@ -1366,7 +1362,7 @@ namespace FlatRedBallAddOns.Entities
 
         }
         
-        GenerateAfterActivity(codeBlock, element);
+        GenerateAfterActivity(currentBlock, element);
     }
 
     /// <summary>
@@ -1508,14 +1504,13 @@ namespace FlatRedBallAddOns.Entities
             destroyPre = "public override void";
         }
 
-        codeBlock = codeBlock.Function(destroyPre, "Destroy", "");
-        ICodeBlock currentBlock = codeBlock;
-        
+        ICodeBlock functionBlock = codeBlock.Function(destroyPre, "Destroy", "");
+         
         foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators
             // eventually split these up:
             .Where(item => item.CodeLocation == CodeLocation.BeforeStandardGenerated))
         {
-            codeGenerator.GenerateDestroy(currentBlock, element);
+            codeGenerator.GenerateDestroy(functionBlock, element);
         }
 
 
@@ -1523,7 +1518,7 @@ namespace FlatRedBallAddOns.Entities
 
         if (element.InheritsFromEntity() || element is ScreenSave)
         {
-            currentBlock.Line("base.Destroy();");
+            functionBlock.Line("base.Destroy();");
         }
 
         #endregion
@@ -1541,22 +1536,22 @@ namespace FlatRedBallAddOns.Entities
                 {
                     if(ati.DestroyFunc != null)
                     {
-                        currentBlock.Line(ati.DestroyFunc(entitySave, null, null));
+                        functionBlock.Line(ati.DestroyFunc(entitySave, null, null));
                     }
                     else
                     {
-                        currentBlock.Line(ati.DestroyMethod + ";");
+                        functionBlock.Line(ati.DestroyMethod + ";");
                     }
                 }
             }
             else if (!entitySave.InheritsFromElement())
             {
-                currentBlock.Line("FlatRedBall.SpriteManager.RemovePositionedObject(this);");
+                functionBlock.Line("FlatRedBall.SpriteManager.RemovePositionedObject(this);");
             }
 
             if (entitySave.ImplementsIWindow && !entitySave.GetInheritsFromIWindow())
             {
-                currentBlock.Line("FlatRedBall.Gui.GuiManager.RemoveWindow(this);");
+                functionBlock.Line("FlatRedBall.Gui.GuiManager.RemoveWindow(this);");
             }
 
         }
@@ -1567,15 +1562,15 @@ namespace FlatRedBallAddOns.Entities
             // eventually split these up:
             .Where(item => item.CodeLocation is CodeLocation.AfterStandardGenerated or CodeLocation.StandardGenerated))
         {
-            codeGenerator.GenerateDestroy(currentBlock, element);
+            codeGenerator.GenerateDestroy(functionBlock, element);
         }
 
         // Sept 9, 2022
         // Not sure if this should be at the beginning or end, but adding this
         // at the end so it doesn't interrupt any other unload code:
-        GenerateUnloadContentManager(currentBlock, element);
+        GenerateUnloadContentManager(functionBlock, element);
 
-        codeBlock.Line("CustomDestroy();");
+        functionBlock.Line("CustomDestroy();");
     }
 
     /// <summary>
@@ -2165,7 +2160,7 @@ namespace FlatRedBallAddOns.Entities
         NamedObjectSaveCodeGenerator.GetPostInitializeForNamedObjectList(null, 
             // There may be a race condition so handle it by to-listing it
             saveObject.NamedObjects.ToList(), 
-            currentBlock, saveObject as GlueElement);
+            currentBlock, saveObject);
 
         // July 24, 2013
         // Victor Chelaru
@@ -2642,14 +2637,15 @@ namespace FlatRedBallAddOns.Entities
     /// <param name="element">Element to write the code block for.</param>
     private static void GenerateRemoveFromManagers(ICodeBlock codeBlock, GlueElement element)
     {
+        ICodeBlock functionBlock;
         if (element.InheritsFromElement())
         {
-            codeBlock = codeBlock.Function("public override void", "RemoveFromManagers", "");
-            codeBlock.Line("base.RemoveFromManagers();");
+            functionBlock = codeBlock.Function("public override void", "RemoveFromManagers", "");
+            functionBlock.Line("base.RemoveFromManagers();");
         }
         else
         {
-            codeBlock = codeBlock.Function("public virtual void", "RemoveFromManagers", "");
+            functionBlock = codeBlock.Function("public virtual void", "RemoveFromManagers", "");
 
         }
 
@@ -2663,33 +2659,33 @@ namespace FlatRedBallAddOns.Entities
                 {
                     if (entitySave.CreatedByOtherEntities && !String.IsNullOrEmpty(ati.RecycledDestroyMethod))
                     {
-                        codeBlock.Line(ati.RecycledDestroyMethod + ";");
+                        functionBlock.Line(ati.RecycledDestroyMethod + ";");
                     }
                     else if(ati.DestroyFunc != null)
                     {
-                        codeBlock.Line(ati.DestroyFunc(entitySave, null, null));
+                        functionBlock.Line(ati.DestroyFunc(entitySave, null, null));
                     }
                     else
                     {
-                        codeBlock.Line(ati.DestroyMethod + ";");
+                        functionBlock.Line(ati.DestroyMethod + ";");
                     }
                 }
             }
 
             else if (!entitySave.InheritsFromElement())
             {
-                codeBlock.Line("FlatRedBall.SpriteManager.ConvertToManuallyUpdated(this);");
+                functionBlock.Line("FlatRedBall.SpriteManager.ConvertToManuallyUpdated(this);");
             }
 
             if (entitySave.ImplementsIWindow && !entitySave.GetInheritsFromIWindow())
             {
-                codeBlock.Line("FlatRedBall.Gui.GuiManager.RemoveWindow(this);");
+                functionBlock.Line("FlatRedBall.Gui.GuiManager.RemoveWindow(this);");
             }
         }
 
         foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
         {
-            codeGenerator.GenerateRemoveFromManagers(codeBlock, element);
+            codeGenerator.GenerateRemoveFromManagers(functionBlock, element);
         }
     }
 
@@ -2702,19 +2698,19 @@ namespace FlatRedBallAddOns.Entities
     {
         var inherits = !String.IsNullOrEmpty(element.BaseElement) && !element.InheritsFromFrbType();
 
-        
+        ICodeBlock functionBlock;
         if (inherits)
         {
-            codeBlock = codeBlock.Function("public override void", "AssignCustomVariables", "bool callOnContainedElements");
-            codeBlock.Line("base.AssignCustomVariables(callOnContainedElements);");
+            functionBlock = codeBlock.Function("public override void", "AssignCustomVariables", "bool callOnContainedElements");
+            functionBlock.Line("base.AssignCustomVariables(callOnContainedElements);");
         }
         else
         {
-            codeBlock = codeBlock.Function("public virtual void", "AssignCustomVariables", "bool callOnContainedElements");
+            functionBlock = codeBlock.Function("public virtual void", "AssignCustomVariables", "bool callOnContainedElements");
         }
 
         // call AssignCustomVariables on all contained objects before assigning custom variables on "this"
-        ICodeBlock ifCallOnContainedElements = codeBlock.If("callOnContainedElements");
+        ICodeBlock ifCallOnContainedElements = functionBlock.If("callOnContainedElements");
 
         var listOfItems = element.NamedObjects.Where(item=>
             item.IsFullyDefined &&
@@ -2723,14 +2719,14 @@ namespace FlatRedBallAddOns.Entities
             !item.SetByContainer  
             ).ToList();
      
-        GenerateAssignmentForListOfObjects(codeBlock, element, ifCallOnContainedElements, listOfItems);
+        GenerateAssignmentForListOfObjects(functionBlock, element, ifCallOnContainedElements, listOfItems);
   
         foreach (CustomVariable customVariable in element.CustomVariables)
         { 
-            CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInElement(codeBlock, customVariable, element);
+            CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInElement(functionBlock, customVariable, element);
         }
 
-        EventCodeGenerator.GenerateAddToManagersBottomUp(codeBlock, element);
+        EventCodeGenerator.GenerateAddToManagersBottomUp(functionBlock, element);
     }
 
     /// <summary>

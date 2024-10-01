@@ -261,9 +261,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             return variable.Name == "Enabled" && container is EntitySave && ((EntitySave)container).GetImplementsIWindowRecursively();
         }
 
-        internal static void TryGenerateAddToManagers(ICodeBlock codeBlock, IElement saveObject)
+        internal static void TryGenerateAddToManagers(ICodeBlock codeBlock, EntitySave saveObject)
         {
-            if ((saveObject as EntitySave).ImplementsIWindow && !(saveObject as EntitySave).GetInheritsFromIWindow())
+            if (saveObject.ImplementsIWindow && !saveObject.GetInheritsFromIWindow())
             {
                 codeBlock.Line("FlatRedBall.Gui.GuiManager.AddWindow(this);");
             }

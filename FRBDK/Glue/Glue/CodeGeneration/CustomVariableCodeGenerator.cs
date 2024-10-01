@@ -810,13 +810,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         // Note - this code is very similar to StateCodeGenerator.cs's GetRightSideAssignmentValueAsString
         // Unify?
-        public static ICodeBlock AppendAssignmentForCustomVariableInElement(ICodeBlock codeBlock, CustomVariable customVariable, GlueElement saveObject)
+        public static ICodeBlock AppendAssignmentForCustomVariableInElement(ICodeBlock codeBlock, CustomVariable customVariable, GlueElement glueElement)
         { 
-            var ati = saveObject.GetAssetTypeInfo();
+            var ati = glueElement.GetAssetTypeInfo();
             var variableDefinition = ati?.VariableDefinitions.Find(item => item.Name == customVariable.Name);
             if(variableDefinition?.CustomGenerationFunc != null)
             {
-                codeBlock.Line(variableDefinition.CustomGenerationFunc(saveObject, null, null, customVariable.Name));
+                codeBlock.Line(variableDefinition.CustomGenerationFunc(glueElement, null, null, customVariable.Name));
             }
 
             // Victor Chelaru
@@ -831,10 +831,10 @@ namespace FlatRedBall.Glue.CodeGeneration
             //if (!customVariable.SetByDerived && 
             else if (customVariable.DefaultValue != null && // if it's null the user doesn't want to change what is set in the file or in the source object
                 !customVariable.IsShared && // no need to handle statics here because they're always defined in class scope
-                !IsVariableTunnelingToDisabledObject(customVariable, saveObject)
+                !IsVariableTunnelingToDisabledObject(customVariable, glueElement)
                 )
             {
-                string rightSide = GetRightSideOfEquals(customVariable, saveObject);
+                string rightSide = GetRightSideOfEquals(customVariable, glueElement);
 
                 if (!string.IsNullOrEmpty(rightSide))
                 {
@@ -844,7 +844,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         codeBlock = codeBlock.If("Parent == null");
                     }
 
-                    NamedObjectSave namedObject = saveObject.GetNamedObject(customVariable.SourceObject);
+                    NamedObjectSave namedObject = glueElement.GetNamedObject(customVariable.SourceObject);
 
                     bool shouldSetUnderlyingValue = namedObject != null && namedObject.RemoveFromManagersWhenInvisible &&
                         customVariable.SourceObjectProperty == "Visible";
