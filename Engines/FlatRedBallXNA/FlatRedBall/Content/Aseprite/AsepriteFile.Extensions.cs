@@ -22,7 +22,7 @@ namespace FlatRedBall.Content.Aseprite
         {
 
             //  Generate the Aseprite Spritesheet
-            AseSpriteSheet spriteSheet = SpriteSheetProcessor.Process(file);
+            AseSpriteSheet spriteSheet = SpriteSheetProcessor.Process(file, null);
             AseTexture aseTexture = spriteSheet.TextureAtlas.Texture;
 
             //  Create the MonoGame Texture2D from the Aseprite Spritesheet
@@ -57,7 +57,7 @@ namespace FlatRedBall.Content.Aseprite
 
         public static AnimationChainListSave ToAnimationChainListSave(this AsepriteFile file)
         {
-            AseSpriteSheet spriteSheet = SpriteSheetProcessor.Process(file);
+            AseSpriteSheet spriteSheet = SpriteSheetProcessor.Process(file, null);
 
             AnimationChainListSave list = new AnimationChainListSave();
             AseTexture aseTexture = spriteSheet.TextureAtlas.Texture;

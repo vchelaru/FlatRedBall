@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallDesktopGL", "Fla
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallDesktopGLNet5", "..\FlatRedBallDesktopGLNet5\FlatRedBallDesktopGLNet5.csproj", "{99FAA612-03E6-4622-806C-7CFCE7F04FA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallDesktopGLNet6", "..\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj", "{99FAA612-03E6-4622-806C-7CFCE7F04FA0}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
