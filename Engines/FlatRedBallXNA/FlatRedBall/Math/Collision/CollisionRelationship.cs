@@ -1445,11 +1445,11 @@ namespace FlatRedBall.Math.Collision
 #if DEBUG
             if (firstList == null)
             {
-                throw new NullReferenceException($"The first list (of type {typeof(FirstCollidableT)}) is null. This needs to be set");
+                throw new ArgumentNullException(nameof(firstList), $"The first list (of type {typeof(FirstCollidableT)}) is null. This needs to be set");
             }
             if (secondList == null)
             {
-                throw new NullReferenceException($"The second list (of type {typeof(SecondCollidableT)}) is null. This needs to be set");
+                throw new ArgumentNullException(nameof(secondList), $"The second list (of type {typeof(SecondCollidableT)}) is null. This needs to be set");
             }
 #endif
             this.firstList = firstList;

@@ -810,7 +810,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         // Note - this code is very similar to StateCodeGenerator.cs's GetRightSideAssignmentValueAsString
         // Unify?
-        public static ICodeBlock AppendAssignmentForCustomVariableInElement(ICodeBlock codeBlock, CustomVariable customVariable, GlueElement saveObject)
+        public static ICodeBlock AppendAssignmentForCustomVariableInElement(ICodeBlock codeBlock, CustomVariable customVariable, IElement saveObject)
         {
             var glueElement = saveObject as GlueElement;
 
