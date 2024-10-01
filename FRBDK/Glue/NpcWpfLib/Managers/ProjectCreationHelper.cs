@@ -320,36 +320,11 @@ public static class ProjectCreationHelper
         urs.FileToDownload = fileToDownoad;
         urs.FormTitle = "Downloading " + viewModel.SelectedProject.FriendlyName;
 
-        //if (string.IsNullOrEmpty(zipToUnpack))
-        //{
-        //    throw new Exception("The zipToUnpack argument is null - it shouldn't be");
-        //}
-
         urs.LocationToSaveFile = destinationZip;
 
         string whereToSaveSettings =
             FileManager.UserApplicationDataForThisApplication + "DownloadInformation." + UpdaterRuntimeSettings.RuntimeSettingsExtension;
 
-
-        //ProcessStartInfo psi = new ProcessStartInfo();
-        //psi.FileName = resultingLocation;
-
-        //// The username for the user may have a space in it
-        //// so we need to have quotes around the path
-
-        //psi.Arguments = "\"" + whereToSaveSettings + "\"";
-
-
-        //Process process = Process.Start(psi);
-
-        //while (!process.HasExited)
-        //{
-        //    System.Threading.Thread.Sleep(200);
-        //}
-        //bool succeeded = process.ExitCode == 0;
-
-
-        //return succeeded;
 
         var window = new UpdaterWpf.Views.MainWindow(whereToSaveSettings, urs);
         window.CancelButtonVisibility = viewModel.IsCancelButtonVisible
