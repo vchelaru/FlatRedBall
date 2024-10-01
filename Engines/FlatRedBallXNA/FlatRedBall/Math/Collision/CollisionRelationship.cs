@@ -137,6 +137,12 @@ namespace FlatRedBall.Math.Collision
 
         public virtual void SetBounceCollision(float firstMass, float secondMass, float elasticity)
         {
+#if DEBUG
+            if(firstMass == 0 && secondMass == 0)
+            {
+                throw new ArgumentException("Both masses cannot be 0 in a bounce collision. For equal masses pick a non-zero value.");
+            }
+#endif
             this.CollisionType = CollisionType.BounceCollision;
             this.moveFirstMass = firstMass;
             this.moveSecondMass = secondMass;
