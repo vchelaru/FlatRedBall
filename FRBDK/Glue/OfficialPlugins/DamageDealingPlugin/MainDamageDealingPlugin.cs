@@ -8,14 +8,14 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
-using OfficialPluginsCore.DamageDealingPlugin.CodeGenerators;
+using OfficialPlugins.DamageDealingPlugin.CodeGenerators;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 
-namespace OfficialPluginsCore.DamageDealingPlugin
+namespace OfficialPlugins.DamageDealingPlugin
 {
     [Export(typeof(PluginBase))]
     public class MainDamageDealingPlugin : PluginBase

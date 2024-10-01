@@ -86,7 +86,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
-		<ProjectReference Include="..\..\..\..\Tiled\TMXGlueLib\TMXGlueLibCore.csproj" />
+		<ProjectReference Include="..\..\..\..\Tiled\TMXGlueLib\TMXGlueLib.csproj" />
 		<ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
 		<ProjectReference Include="..\..\Glue\GlueFormsCore.csproj">
 			<SpecificVersion>False</SpecificVersion>
@@ -104,7 +104,7 @@
 	<ItemGroup>
 		<Folder Include="Models\" />
 		<Folder Include="Properties\" />
-		<Folder Include="TiledPluginCore\" />
+		<Folder Include="TiledPlugin\" />
 	</ItemGroup>
 
 
@@ -127,7 +127,7 @@
 
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\TiledPlugin\&quot; rmdir &quot;$(SolutionDir)Glue\bin\Debug\Plugins\TiledPlugin\&quot; /s /q&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\TiledPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\TiledPlugin\&quot;&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\TiledPlugin\TiledPluginCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\TiledPlugin\TiledPluginCore.pdb&quot;&#xD;&#xA;" />
+		<Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\TiledPlugin\&quot; rmdir &quot;$(SolutionDir)Glue\bin\Debug\Plugins\TiledPlugin\&quot; /s /q&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\TiledPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\TiledPlugin\&quot;&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)\TiledPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\TiledPlugin\TiledPlugin.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)\TiledPlugin.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\TiledPlugin\TiledPlugin.pdb&quot;&#xD;&#xA;" />
 	</Target>
 
 

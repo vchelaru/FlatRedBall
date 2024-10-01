@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TiledPluginCore.Views
+namespace TiledPlugin.Views
 {
     /// <summary>
     /// Interaction logic for LevelWithVisualsSelectionView.xaml

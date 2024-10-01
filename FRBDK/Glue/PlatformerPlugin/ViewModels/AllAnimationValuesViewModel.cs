@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace PlatformerPluginCore.ViewModels
+namespace PlatformerPlugin.ViewModels
 {
     public class AllAnimationValuesViewModel : ViewModel
     {

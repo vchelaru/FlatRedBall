@@ -1,11 +1,11 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using Newtonsoft.Json;
-using OfficialPluginsCore.Wizard.Models;
+using OfficialPlugins.Wizard.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OfficialPluginsCore.Wizard.ViewModels
+namespace OfficialPlugins.Wizard.ViewModels
 {
     public class WizardWelcomeViewModel : ViewModel
     {

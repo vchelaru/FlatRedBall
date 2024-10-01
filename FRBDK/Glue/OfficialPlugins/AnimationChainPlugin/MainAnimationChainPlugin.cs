@@ -21,7 +21,7 @@ using System.Windows.Navigation;
 
 using FileManager = ToolsUtilities.FileManager;
 
-namespace OfficialPluginsCore.AnimationChainPlugin
+namespace OfficialPlugins.AnimationChainPlugin
 {
     [Export(typeof(PluginBase))]
     public class MainAnimationChainPlugin : PluginBase

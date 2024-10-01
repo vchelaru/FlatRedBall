@@ -29,21 +29,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallStandard", "..\.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlueFormsCore", "Glue\GlueFormsCore.csproj", "{C953AF0B-B890-40CE-888D-8F60579CD03E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopDownPluginCore", "TopDownPlugin\TopDownPluginCore.csproj", "{D784E25F-320D-47F5-9397-63E33B81A64F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopDownPlugin", "TopDownPlugin\TopDownPlugin.csproj", "{D784E25F-320D-47F5-9397-63E33B81A64F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfficialPluginsCore", "OfficialPlugins\OfficialPluginsCore.csproj", "{C5D613DF-0E6A-4BE5-BEAC-E5524DC1EC93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfficialPlugins", "OfficialPlugins\OfficialPlugins.csproj", "{C5D613DF-0E6A-4BE5-BEAC-E5524DC1EC93}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TiledPluginCore", "TileGraphicsPlugin\TileGraphicsPlugin\TiledPluginCore.csproj", "{6F58A8DD-C47E-4157-85BE-70E5371293FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TiledPlugin", "TileGraphicsPlugin\TileGraphicsPlugin\TiledPlugin.csproj", "{6F58A8DD-C47E-4157-85BE-70E5371293FA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GumPlugin", "GumPlugin\GumPlugin\GumPlugin.csproj", "{DCC8D6F5-FE0D-4A9F-B0C5-A2EBFCCBE8A5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityPerformancePluginCore", "EntityPerformancePlugin\EntityPerformancePlugin\EntityPerformancePluginCore.csproj", "{1D3A9503-99E6-47C3-AB8F-83762CE94444}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityPerformancePlugin", "EntityPerformancePlugin\EntityPerformancePlugin\EntityPerformancePlugin.csproj", "{1D3A9503-99E6-47C3-AB8F-83762CE94444}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlatformerPluginCore", "PlatformerPlugin\PlatformerPluginCore.csproj", "{5D57F2A4-9D0E-4CBE-BE10-C23981E9B8A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlatformerPlugin", "PlatformerPlugin\PlatformerPlugin.csproj", "{5D57F2A4-9D0E-4CBE-BE10-C23981E9B8A7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RacingPluginCore", "RacingPlugin\RacingPluginCore.csproj", "{6F7AB640-8B84-418B-8961-7E1BE318A063}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RacingPlugin", "RacingPlugin\RacingPlugin.csproj", "{6F7AB640-8B84-418B-8961-7E1BE318A063}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogTreePluginCore", "DialogTreePlugin\DialogTreePluginCore.csproj", "{2071B4D6-E370-4BD8-87C4-17DFCF461C33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogTreePlugin", "DialogTreePlugin\DialogTreePlugin.csproj", "{2071B4D6-E370-4BD8-87C4-17DFCF461C33}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBall.Plugin", "FlatRedBall.Plugin\FlatRedBall.Plugin.csproj", "{8706EDC1-24D6-42EE-8E5A-A25BDE7B00BB}"
 EndProject
@@ -51,9 +51,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GumDataTypesNet6", "..\..\.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NAudioPlugin", "NAudioPlugin\NAudioPlugin.csproj", "{18945F21-EB67-4E26-B6F3-1B08EBB2CDFE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TMXGlueLibCore", "..\..\Tiled\TMXGlueLib\TMXGlueLibCore.csproj", "{837F3D56-02C3-489D-B7D3-4D70BD9AAF97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TMXGlueLib", "..\..\Tiled\TMXGlueLib\TMXGlueLib.csproj", "{837F3D56-02C3-489D-B7D3-4D70BD9AAF97}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StateInterpolationPluginCore", "StateInterpolationPlugin\StateInterpolationPluginCore\StateInterpolationPluginCore.csproj", "{21E22761-CA8C-44FD-9F15-E7D66FA7D204}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StateInterpolationPlugin", "StateInterpolationPlugin\StateInterpolationPluginCore\StateInterpolationPlugin.csproj", "{21E22761-CA8C-44FD-9F15-E7D66FA7D204}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "StateInterpolationShared", "StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.shproj", "{D00D287D-385B-42FB-BF5F-04401E7D37D0}"
 EndProject

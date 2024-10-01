@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace TiledPluginCore.Views
+namespace TiledPlugin.Views
 {
     /// <summary>
     /// Interaction logic for NewTmxOptionsView.xaml

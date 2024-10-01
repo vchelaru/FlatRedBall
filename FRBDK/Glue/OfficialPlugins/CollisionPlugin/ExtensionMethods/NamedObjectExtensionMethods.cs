@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OfficialPluginsCore.CollisionPlugin.ExtensionMethods
+namespace OfficialPlugins.CollisionPlugin.ExtensionMethods
 {
     public static class NamedObjectExtensionMethods
     {

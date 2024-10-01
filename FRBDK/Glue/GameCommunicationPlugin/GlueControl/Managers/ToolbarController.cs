@@ -2,7 +2,7 @@
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using GameCommunicationPlugin.GlueControl;
-using OfficialPluginsCore.Compiler.ViewModels;
+using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace OfficialPluginsCore.Compiler.Managers;
+namespace OfficialPlugins.Compiler.Managers;
 
 class ToolbarController : Singleton<ToolbarController>
 {

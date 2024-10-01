@@ -23,7 +23,6 @@ using TopDownPlugin.Logic;
 using TopDownPlugin.Models;
 using TopDownPlugin.ViewModels;
 using TopDownPlugin.Views;
-using TopDownPluginCore.CodeGenerators;
 
 namespace TopDownPlugin.Controllers
 {

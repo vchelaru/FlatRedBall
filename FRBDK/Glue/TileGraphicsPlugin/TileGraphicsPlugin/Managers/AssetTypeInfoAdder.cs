@@ -8,8 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using TiledPluginCore.CodeGeneration;
-using TiledPluginCore.ViewModels;
+using TiledPlugin.CodeGeneration;
+using TiledPlugin.ViewModels;
 using TileGraphicsPlugin.CodeGeneration;
 using TileGraphicsPlugin.ViewModels;
 

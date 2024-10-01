@@ -9,13 +9,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using TiledPluginCore.Errors;
+using TiledPlugin.Errors;
 using TileGraphicsPlugin;
 using TileGraphicsPlugin.Controllers;
 using TileGraphicsPlugin.ViewModels;
 using TMXGlueLib;
 
-namespace TiledPluginCore.Managers
+namespace TiledPlugin.Managers
 {
 
     class ErrorReporter : ErrorReporterBase

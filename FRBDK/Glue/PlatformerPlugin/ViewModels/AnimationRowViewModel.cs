@@ -1,12 +1,12 @@
 ﻿using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.MVVM;
-using PlatformerPluginCore.SaveClasses;
+using PlatformerPlugin.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Input;
 
-namespace PlatformerPluginCore.ViewModels
+namespace PlatformerPlugin.ViewModels
 {
 
 

@@ -8,7 +8,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math;
 using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
-using OfficialPluginsCore.CollisionPlugin.ExtensionMethods;
+using OfficialPlugins.CollisionPlugin.ExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

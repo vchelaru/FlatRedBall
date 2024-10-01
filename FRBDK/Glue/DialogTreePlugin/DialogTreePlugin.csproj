@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\DialogTreePlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\DialogTreePlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\DialogTreePluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\DialogTreePlugin\DialogTreePluginCore.dll&quot;" />
+    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\DialogTreePlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\DialogTreePlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\DialogTreePlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\DialogTreePlugin\DialogTreePlugin.dll&quot;" />
   </Target>
 
 </Project>

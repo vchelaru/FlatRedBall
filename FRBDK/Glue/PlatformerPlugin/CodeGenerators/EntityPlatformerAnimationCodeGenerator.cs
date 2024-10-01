@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PlatformerPluginCore.CodeGenerators;
+namespace PlatformerPlugin.CodeGenerators;
 
 public class EntityPlatformerAnimationCodeGenerator : ElementComponentCodeGenerator
 {

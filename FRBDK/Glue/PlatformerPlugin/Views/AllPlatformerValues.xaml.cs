@@ -7,7 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace PlatformerPluginCore.Views
+namespace PlatformerPlugin.Views
 {
     /// <summary>
     /// Interaction logic for AllPlatformerValues.xaml

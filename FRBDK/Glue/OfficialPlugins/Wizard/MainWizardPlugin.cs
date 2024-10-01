@@ -10,10 +10,10 @@ using GlueFormsCore.FormHelpers;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin;
 using GlueFormsCore.ViewModels;
 using Newtonsoft.Json;
-using OfficialPluginsCore.Wizard.Managers;
-using OfficialPluginsCore.Wizard.Models;
-using OfficialPluginsCore.Wizard.ViewModels;
-using OfficialPluginsCore.Wizard.Views;
+using OfficialPlugins.Wizard.Managers;
+using OfficialPlugins.Wizard.Models;
+using OfficialPlugins.Wizard.ViewModels;
+using OfficialPlugins.Wizard.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,7 +25,7 @@ using System.Windows.Forms;
 using WpfDataUi;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
-namespace OfficialPluginsCore.Wizard
+namespace OfficialPlugins.Wizard
 {
     [Export(typeof(PluginBase))]
     public class MainWizardPlugin : PluginBase

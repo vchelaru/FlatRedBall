@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace OfficialPluginsCore.Wizard.Views
+namespace OfficialPlugins.Wizard.Views
 {
     /// <summary>
     /// Interaction logic for ElementImportItem.xaml

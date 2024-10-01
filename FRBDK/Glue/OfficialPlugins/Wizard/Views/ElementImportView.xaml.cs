@@ -1,10 +1,10 @@
-﻿using OfficialPluginsCore.Wizard.ViewModels;
+﻿using OfficialPlugins.Wizard.ViewModels;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace OfficialPluginsCore.Wizard.Views
+namespace OfficialPlugins.Wizard.Views
 {
     /// <summary>
     /// Interaction logic for ElementImportView.xaml

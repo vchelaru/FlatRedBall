@@ -15,9 +15,9 @@ using FlatRedBall.PlatformerPlugin.Generators;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.PlatformerPlugin.Data;
-using PlatformerPluginCore.Logic;
+using PlatformerPlugin.Logic;
 using GlueCommon.Models;
-using PlatformerPluginCore.Controllers;
+using PlatformerPlugin.Controllers;
 
 namespace FlatRedBall.PlatformerPlugin.Controllers
 {
@@ -413,7 +413,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             // must be called after refreshing the platformer values...at least that's what the top down controller suggests, so I'm following that here.
             if(IsPlatformer(currentEntitySave))
             {
-                PlatformerPluginCore.Controllers.AnimationController.LoadAnimationFilesFromDisk(currentEntitySave);
+                global::PlatformerPlugin.Controllers.AnimationController.LoadAnimationFilesFromDisk(currentEntitySave);
             }
 
             ignoresPropertyChanges = false;

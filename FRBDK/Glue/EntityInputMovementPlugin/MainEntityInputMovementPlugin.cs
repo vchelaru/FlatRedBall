@@ -42,7 +42,7 @@ namespace EntityInputMovementPlugin
         {
             base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator());
-            base.RegisterCodeGenerator(new PlatformerPluginCore.CodeGenerators.EntityPlatformerAnimationCodeGenerator());
+            base.RegisterCodeGenerator(new PlatformerPlugin.CodeGenerators.EntityPlatformerAnimationCodeGenerator());
             base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityTopDownAnimationCodeGenerator());
             base.RegisterCodeGenerator(new CodeGenerators.EntityCodeGenerator());
             AssignEvents();
@@ -142,7 +142,7 @@ namespace EntityInputMovementPlugin
                 TopDownPlugin.CodeGenerators.EnumFileGenerator.Self.GenerateAndSave();
                 TopDownPlugin.CodeGenerators.InterfacesFileGenerator.Self.GenerateAndSave();
                 TopDownPlugin.CodeGenerators.AiCodeGenerator.Self.GenerateAndSave();
-                TopDownPluginCore.CodeGenerators.AiTargetLogicCodeGenerator.Self.GenerateAndSave();
+                TopDownPlugin.CodeGenerators.AiTargetLogicCodeGenerator.Self.GenerateAndSave();
 
                 var topDownController = TopDownPlugin.Controllers.MainController.Self;
 
@@ -231,7 +231,7 @@ namespace EntityInputMovementPlugin
             var platformerViewModel = FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel();
             mainViewModel.PlatformerViewModel = platformerViewModel;
             mainView.PlatformerView.DataContext = platformerViewModel;
-            PlatformerPluginCore.Controllers.AnimationController.PlatformerViewModel = platformerViewModel;
+            PlatformerPlugin.Controllers.AnimationController.PlatformerViewModel = platformerViewModel;
             #endregion
 
 

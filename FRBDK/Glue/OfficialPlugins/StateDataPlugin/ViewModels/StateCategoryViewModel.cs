@@ -3,7 +3,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using OfficialPluginsCore.StateDataPlugin.Managers;
+using OfficialPlugins.StateDataPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

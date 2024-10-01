@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 
-namespace OfficialPluginsCore.FilesPlugin.Managers
+namespace OfficialPlugins.FilesPlugin.Managers
 {
     static class RightClickManager
     {

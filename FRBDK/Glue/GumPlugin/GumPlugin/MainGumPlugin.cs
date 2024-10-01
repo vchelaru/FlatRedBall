@@ -315,7 +315,7 @@ public class MainGumPlugin : PluginBase
 
         addGumProjectMenuItem = this.AddMenuItemTo(Localization.Texts.ProjectNewGum, Localization.MenuIds.ProjectNewGumId, HandleAddNewGumProjectMenuItemClicked, Localization.MenuIds.ContentId);
         //var bmp = new Bitmap(WindowsFormsApplication1.Properties.Resources.myimage);
-        addGumProjectMenuItem.Image = new Bitmap(GumPluginCore.Resource1.GumIcon);
+        addGumProjectMenuItem.Image = new Bitmap(GumPlugin.Resource1.GumIcon);
 
         AssignEvents();
 

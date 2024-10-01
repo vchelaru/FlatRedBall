@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:views="clr-namespace:OfficialPluginsCore.CollisionPlugin.Views"
+             xmlns:views="clr-namespace:OfficialPlugins.CollisionPlugin.Views"
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignWidth="600">
@@ -30,10 +30,10 @@
                     <ComboBox  FontSize="26"
                               SelectedItem="{Binding FirstCollisionName}"
                               ItemsSource="{Binding FirstCollisionItemSource}"></ComboBox>
-                    <Image ToolTip="{x:Static localization:Texts.HintObjectAutoPartition}" Grid.Column="1" Visibility="{Binding FirstPartitionEnabledVisibility}" Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/PartitionEnabled.png"/>
+                    <Image ToolTip="{x:Static localization:Texts.HintObjectAutoPartition}" Grid.Column="1" Visibility="{Binding FirstPartitionEnabledVisibility}" Source="/OfficialPlugins;component/CollisionPlugin/Icons/PartitionEnabled.png"/>
                     <Button ToolTip="{x:Static localization:Texts.HintObjectNotPartitioned}" Grid.Column="1" Visibility="{Binding FirstNoPartitioningVisibility}" 
                             Click="FirstObjectCollisionPartitioningButtonClicked">
-                        <Image Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/NoPartitioning.png"></Image>
+                        <Image Source="/OfficialPlugins;component/CollisionPlugin/Icons/NoPartitioning.png"></Image>
                     </Button>
                 </Grid>
                 <TextBlock Grid.Column="1" FontSize="26">vs</TextBlock>
@@ -45,10 +45,10 @@
                     <ComboBox FontSize="26"
                               SelectedItem="{Binding SecondCollisionName}"
                               ItemsSource="{Binding SecondCollisionItemSource}"></ComboBox>
-                    <Image ToolTip="{x:Static localization:Texts.HintObjectAutoPartition}" Grid.Column="1" Visibility="{Binding SecondPartitionEnabledVisibility}" Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/PartitionEnabled.png"></Image>
+                    <Image ToolTip="{x:Static localization:Texts.HintObjectAutoPartition}" Grid.Column="1" Visibility="{Binding SecondPartitionEnabledVisibility}" Source="/OfficialPlugins;component/CollisionPlugin/Icons/PartitionEnabled.png"></Image>
                     <Button ToolTip="{x:Static localization:Texts.HintObjectNotPartitioned}" Grid.Column="1" Visibility="{Binding SecondNoPartitioningVisibility}"
                             Click="SecondObjectCollisionPartitioningButtonClicked">
-                        <Image Source="/OfficialPluginsCore;component/CollisionPlugin/Icons/NoPartitioning.png"></Image>
+                        <Image Source="/OfficialPlugins;component/CollisionPlugin/Icons/NoPartitioning.png"></Image>
                     </Button>
                 </Grid>
 

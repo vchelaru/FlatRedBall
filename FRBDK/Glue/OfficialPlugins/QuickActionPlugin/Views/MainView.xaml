@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="OfficialPluginsCore.QuickActionPlugin.Views.MainView"
+﻿<UserControl x:Class="OfficialPlugins.QuickActionPlugin.Views.MainView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPluginsCore.QuickActionPlugin.Views"
+             xmlns:local="clr-namespace:OfficialPlugins.QuickActionPlugin.Views"
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
              xmlns:glue="clr-namespace:GlueFormsCore.Controls;assembly=GlueFormsCore"
              mc:Ignorable="d" 
@@ -26,14 +26,14 @@
                         x:Name="AddObjectToScreenButton"
                         Title="{x:Static localization:Texts.ObjectAdd}"
                         Details="{x:Static localization:Texts.ObjectAddDescription}"
-                        Clicked="AddObjectButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
+                        Clicked="AddObjectButton_Clicked" Image="/OfficialPlugins;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="AddObjectToListInScreenButton"
                         Title="{x:Static localization:Texts.AddXXXToList}"
                         Details="{x:Static localization:Texts.AddInstanceToSelectedList}"
-                        Clicked="AddObjectToListButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
+                        Clicked="AddObjectToListButton_Clicked" Image="/OfficialPlugins;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
 
@@ -45,21 +45,21 @@
                         x:Name="AddObjectToEntityButton"
                         Title="{x:Static localization:Texts.ObjectAdd}"
                         Details="{x:Static localization:Texts.ObjectAddDescription}"
-                        Clicked="AddObjectButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
+                        Clicked="AddObjectButton_Clicked" Image="/OfficialPlugins;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="AddObjectToListInEntityButton"
                         Title="{x:Static localization:Texts.AddXXXToList}"
                         Details="{x:Static localization:Texts.AddInstanceToSelectedList}"
-                        Clicked="AddObjectToListButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
+                        Clicked="AddObjectToListButton_Clicked" Image="/OfficialPlugins;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="AddListOfEntityButton"
                         Title="{x:Static localization:Texts.AddXXXToGameScreen}"
                         Details="{x:Static localization:Texts.AddXXXToGameScreen}"
-                        Clicked="AddListOfEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Entity List to GameScreen.png">
+                        Clicked="AddListOfEntityButton_Clicked" Image="/OfficialPlugins;component/QuickActionPlugin/Icons/Add Entity List to GameScreen.png">
 
                     </local:TitleImageButton>
 
@@ -68,14 +68,14 @@
                         x:Name="AddInstanceOfEntityButton"
                         Title="{x:Static localization:Texts.AddXXXInstanceToGameScreen}"
                         Details="{x:Static localization:Texts.AddXXXInstanceToGameScreenDescription}"
-                        Clicked="AddInstanceOfEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Entity instance to GameScreen.png">
+                        Clicked="AddInstanceOfEntityButton_Clicked" Image="/OfficialPlugins;component/QuickActionPlugin/Icons/Add Entity instance to GameScreen.png">
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="AddEntityFactory"
                         Title="{x:Static localization:Texts.AddXXXFactory}"
                         Details="{x:Static localization:Texts.AddXXXFactoryDescription}"
-                        Clicked="AddEntityFactory_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Factory for Entity.png">
+                        Clicked="AddEntityFactory_Clicked" Image="/OfficialPlugins;component/QuickActionPlugin/Icons/Create Factory for Entity.png">
                     </local:TitleImageButton>
                 </WrapPanel>
             </GroupBox>
@@ -85,7 +85,7 @@
                         x:Name="RunWizardButton"
                         Title="{x:Static localization:Texts.GlueWizardRun}"
                         Details="{x:Static localization:Texts.GlueWizardDescription}"
-                        Clicked="RunWizard_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/StartWizard.png">
+                        Clicked="RunWizard_Clicked" Image="/OfficialPlugins;component/QuickActionPlugin/Icons/StartWizard.png">
 
                     </local:TitleImageButton>
 
@@ -94,7 +94,7 @@
                         Title="{x:Static localization:Texts.ProjectCreateNew}"
                         Details="{x:Static localization:Texts.ProjectCreateNewDescription}"
                         Clicked="CreateNewProjectButton_Clicked" 
-                        Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Project.png">
+                        Image="/OfficialPlugins;component/QuickActionPlugin/Icons/Create Project.png">
 
                     </local:TitleImageButton>
 
@@ -103,7 +103,7 @@
                         Title="{x:Static localization:Texts.ProjectOpen}"
                         Details="{x:Static localization:Texts.ProjectOpenDescription}"
                         Clicked="OpenProjectButton_Clicked" 
-                        Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Open Project.png">
+                        Image="/OfficialPlugins;component/QuickActionPlugin/Icons/Open Project.png">
 
                     </local:TitleImageButton>
 
@@ -112,7 +112,7 @@
                         x:Name="AddGumProject"
                         Title="{x:Static localization:Texts.ProjectGumAdd}"
                         Details="{x:Static localization:Texts.ProjectGumAddDescription}"
-                        Clicked="AddGumButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Gum Project.png">
+                        Clicked="AddGumButton_Clicked" Image="/OfficialPlugins;component/QuickActionPlugin/Icons/Add Gum Project.png">
 
                     </local:TitleImageButton>
 
@@ -120,7 +120,7 @@
                         x:Name="AddScreenButton"
                         Title="{x:Static localization:Texts.AddScreenLevel}"
                         Details="{x:Static localization:Texts.AddScreenLevelDescription}"
-                        Clicked="AddScreenButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Level Screen.png">
+                        Clicked="AddScreenButton_Clicked" Image="/OfficialPlugins;component/QuickActionPlugin/Icons/Add Level Screen.png">
 
                     </local:TitleImageButton>
 
@@ -128,7 +128,7 @@
                         x:Name="AddEntityButton"
                         Title="{x:Static localization:Texts.EntityAdd}"
                         Details="{x:Static localization:Texts.EntityAddDescription}"
-                        Clicked="AddEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Entity.png">
+                        Clicked="AddEntityButton_Clicked" Image="/OfficialPlugins;component/QuickActionPlugin/Icons/Create Entity.png">
                     </local:TitleImageButton>
                 </WrapPanel>
             </GroupBox>

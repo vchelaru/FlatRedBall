@@ -6,7 +6,7 @@ using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.StateDataPlugin.Controls;
 using OfficialPlugins.StateDataPlugin.StateError;
 using OfficialPlugins.StateDataPlugin.ViewModels;
-using OfficialPluginsCore.StateDataPlugin.Managers;
+using OfficialPlugins.StateDataPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;

@@ -28,14 +28,14 @@ using TileGraphicsPlugin.ViewModels;
 using FlatRedBall.Glue.IO;
 using TileGraphicsPlugin.Logic;
 using System.ComponentModel;
-using TiledPluginCore.Controls;
-using TiledPluginCore.CodeGeneration;
-using TiledPluginCore.Controllers;
-using TiledPluginCore.Managers;
-using TiledPluginCore.Views;
+using TiledPlugin.Controls;
+using TiledPlugin.CodeGeneration;
+using TiledPlugin.Controllers;
+using TiledPlugin.Managers;
+using TiledPlugin.Views;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.FormHelpers;
-using TiledPluginCore.ViewModels;
+using TiledPlugin.ViewModels;
 
 namespace TileGraphicsPlugin;
 
@@ -406,7 +406,7 @@ public class TileGraphicsPluginClass : PluginBase
     private static void SaveTemplateTmx()
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
-        string whatToSave = "TiledPluginCore.Content.Levels.TiledMap.tmx";
+        string whatToSave = "TiledPlugin.Content.Levels.TiledMap.tmx";
         //C:\Users\Victor\AppData\Roaming\Glue\FilesForAddNewFile\
 
         string destination = FileManager.UserApplicationDataForThisApplication + "FilesForAddNewFile/" + 

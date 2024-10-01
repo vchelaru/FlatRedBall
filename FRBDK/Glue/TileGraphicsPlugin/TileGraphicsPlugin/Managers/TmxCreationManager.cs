@@ -8,11 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TiledPluginCore.ViewModels;
+using TiledPlugin.ViewModels;
 using TileGraphicsPlugin;
 using TMXGlueLib;
 
-namespace TiledPluginCore.Managers
+namespace TiledPlugin.Managers
 {
     public class TmxCreationManager : Singleton<TmxCreationManager>
     {
@@ -129,29 +129,29 @@ namespace TiledPluginCore.Managers
             FilePath targetVisualTsxFile = null;
             if (tilesetType == TilesetType.FrbVisualTiles)
             {
-                var visualTsxResourceName = "TiledPluginCore.Content.Tilesets.FrbVisualTiles.tsx";
+                var visualTsxResourceName = "TiledPlugin.Content.Tilesets.FrbVisualTiles.tsx";
                 targetVisualTsxFile = new FilePath(GlueState.Self.ContentDirectory + "FrbVisualTiles.tsx");
                 SaveIfNotExist(visualTsxResourceName, targetVisualTsxFile);
 
-                var visualPngResourceName = "TiledPluginCore.Content.Tilesets.FrbVisualTiles.png";
+                var visualPngResourceName = "TiledPlugin.Content.Tilesets.FrbVisualTiles.png";
                 var targetVisualPngFile = new FilePath(GlueState.Self.ContentDirectory + "FrbVisualTiles.png");
                 SaveIfNotExist(visualPngResourceName, targetVisualPngFile);
             }
             else if (tilesetType == TilesetType.Zoria)
             {
-                var visualTsxResourceName = "TiledPluginCore.Content.Tilesets.ZoriaOverworld.tsx";
+                var visualTsxResourceName = "TiledPlugin.Content.Tilesets.ZoriaOverworld.tsx";
                 targetVisualTsxFile = new FilePath(GlueState.Self.ContentDirectory + "ZoriaOverworld.tsx");
                 SaveIfNotExist(visualTsxResourceName, targetVisualTsxFile);
 
-                var visualPngResourceName = "TiledPluginCore.Content.Tilesets.ZoriaOverworld.png";
+                var visualPngResourceName = "TiledPlugin.Content.Tilesets.ZoriaOverworld.png";
                 var targetVisualPngFile = new FilePath(GlueState.Self.ContentDirectory + "ZoriaOverworld.png");
                 SaveIfNotExist(visualPngResourceName, targetVisualPngFile);
             }
-            var standardTsxResourceName = "TiledPluginCore.Content.Tilesets.StandardTileset.tsx";
+            var standardTsxResourceName = "TiledPlugin.Content.Tilesets.StandardTileset.tsx";
             var targetStandardTsxFile = new FilePath(GlueState.Self.ContentDirectory + "StandardTileset.tsx");
             SaveIfNotExist(standardTsxResourceName, targetStandardTsxFile);
 
-            var startTilesetPngResourceName = "TiledPluginCore.Content.Tilesets.StandardTilesetIcons.png";
+            var startTilesetPngResourceName = "TiledPlugin.Content.Tilesets.StandardTilesetIcons.png";
             var targetStartTilesetPngFile = new FilePath(GlueState.Self.ContentDirectory + "StandardTilesetIcons.png");
             SaveIfNotExist(startTilesetPngResourceName, targetStartTilesetPngFile);
 
@@ -159,7 +159,7 @@ namespace TiledPluginCore.Managers
             var wasLoadingSource = Tileset.ShouldLoadValuesFromSource;
             Tileset.ShouldLoadValuesFromSource = false;
             {
-                var tmxResourceName = "TiledPluginCore.Content.Levels." + levelName + ".tmx";
+                var tmxResourceName = "TiledPlugin.Content.Levels." + levelName + ".tmx";
                 var byteArray = FileManager.GetByteArrayFromEmbeddedResource(this.GetType().Assembly, tmxResourceName);
                 var tmxString = Encoding.UTF8.GetString(byteArray);
                 //TiledMapSave.FromFile(byteArrayString);
@@ -263,7 +263,7 @@ namespace TiledPluginCore.Managers
                         // save the tsx
                         FileManager.SaveEmbeddedResource(
                             assembly,
-                            "TiledPluginCore.Content.Tilesets.StandardTileset.tsx",
+                            "TiledPlugin.Content.Tilesets.StandardTileset.tsx",
                             destinationTsx.FullPath
                             );
 
@@ -283,7 +283,7 @@ namespace TiledPluginCore.Managers
                         // save the png
                         FileManager.SaveEmbeddedResource(
                         assembly,
-                        "TiledPluginCore.Content.Tilesets.StandardTilesetIcons.png",
+                        "TiledPlugin.Content.Tilesets.StandardTilesetIcons.png",
                         destinationPng.FullPath);
                     });
                 }

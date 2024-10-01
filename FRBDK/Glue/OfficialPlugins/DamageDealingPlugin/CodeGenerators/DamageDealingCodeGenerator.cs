@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
+namespace OfficialPlugins.DamageDealingPlugin.CodeGenerators
 {
     class DamageDealingCodeGenerator : ElementComponentCodeGenerator
     {

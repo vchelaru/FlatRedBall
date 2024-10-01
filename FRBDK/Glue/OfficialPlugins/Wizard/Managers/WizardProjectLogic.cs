@@ -9,8 +9,8 @@ using FlatRedBall.Math.Geometry;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin;
 using GlueFormsCore.ViewModels;
 using Newtonsoft.Json;
-using OfficialPluginsCore.Wizard.Models;
-using OfficialPluginsCore.Wizard.ViewModels;
+using OfficialPlugins.Wizard.Models;
+using OfficialPlugins.Wizard.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 using ToolsUtilities;
 using ToolsUtilitiesStandard.Network;
 
-namespace OfficialPluginsCore.Wizard.Managers
+namespace OfficialPlugins.Wizard.Managers
 {
     public class WizardProjectLogic : Singleton<WizardProjectLogic>
     {

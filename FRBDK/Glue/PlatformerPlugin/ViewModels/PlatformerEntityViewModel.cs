@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using PlatformerPluginCore.ViewModels;
-using PlatformerPluginCore.SaveClasses;
+using PlatformerPlugin.ViewModels;
+using PlatformerPlugin.SaveClasses;
 using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.PlatformerPlugin.ViewModels

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OfficialPluginsCore.StateDataPlugin.Managers
+namespace OfficialPlugins.StateDataPlugin.Managers
 {
     public class VariableInclusionManager
     {

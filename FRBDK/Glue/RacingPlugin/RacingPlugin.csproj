@@ -26,7 +26,7 @@
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="echo PostBuild Racing Plugin&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\RacingPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\RacingPluginCore.pdb&quot;&#xD;&#xA;" />
+		<Exec Command="echo PostBuild Racing Plugin&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\RacingPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\RacingPlugin.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\RacingPlugin.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\RacingPlugin.pdb&quot;&#xD;&#xA;" />
 	</Target>
 
 </Project>

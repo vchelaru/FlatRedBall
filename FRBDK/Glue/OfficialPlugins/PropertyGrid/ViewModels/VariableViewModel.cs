@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 
-namespace OfficialPluginsCore.PropertyGrid.ViewModels
+namespace OfficialPlugins.PropertyGrid.ViewModels
 {
     public class VariableViewModel : ViewModel
     {

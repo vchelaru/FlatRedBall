@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PlatformerPluginCore.SaveClasses
+namespace PlatformerPlugin.SaveClasses
 {
     public enum AnimationSpeedAssignment
     {

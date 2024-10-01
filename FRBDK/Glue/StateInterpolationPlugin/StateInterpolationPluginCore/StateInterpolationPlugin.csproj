@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\StateInterpolationPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\StateInterpolationPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\StateInterpolationPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\StateInterpolationPluginCore.pdb&quot;&#xD;&#xA;" />
+    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\StateInterpolationPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\StateInterpolationPlugin.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\StateInterpolationPlugin.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\StateInterpolationPlugin.pdb&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

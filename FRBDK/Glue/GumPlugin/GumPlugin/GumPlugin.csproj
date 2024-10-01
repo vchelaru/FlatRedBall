@@ -442,7 +442,7 @@
 
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild to $(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&#xD;&#xA;echo 1&#xD;&#xA;IF NOT EXIST  &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&quot;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.dll &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\GumPluginCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.pdb &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\GumPluginCore.pdb&quot;" />
+    <Exec Command="echo PostBuild to $(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&#xD;&#xA;echo 1&#xD;&#xA;IF NOT EXIST  &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&quot;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPlugin.dll &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\GumPlugin.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPlugin.pdb &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\GumPlugin.pdb&quot;" />
   </Target>
 
 </Project>
