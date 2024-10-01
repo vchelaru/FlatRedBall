@@ -25,7 +25,7 @@ namespace FlatRedBall.Glue.GuiDisplay
     // so I'm inheriting from StringConverter.
     public class AvailableAnimationChainsStringConverter : StringConverter, IObjectsInFileConverter
     {
-        IElement element;
+        GlueElement element;
         StateSave stateSave;
         NamedObjectSave referencedNos;
 
@@ -71,7 +71,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         public AvailableAnimationChainsStringConverter(CustomVariable customVariable, StateSave stateSave = null)
         {
-            IElement element = ObjectFinder.Self.GetVariableContainer(customVariable);
+            GlueElement element = ObjectFinder.Self.GetVariableContainer(customVariable);
 
             NamedObjectSave referencedNos = element.GetNamedObjectRecursively(customVariable.SourceObject);
 
@@ -79,12 +79,12 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         }
 
-        public AvailableAnimationChainsStringConverter(IElement element, NamedObjectSave namedObjectSave)
+        public AvailableAnimationChainsStringConverter(GlueElement element, NamedObjectSave namedObjectSave)
         {
             Initialize(element, namedObjectSave);
         }
 
-        void Initialize(IElement element, NamedObjectSave referencedNos, StateSave stateSave = null)
+        void Initialize(GlueElement element, NamedObjectSave referencedNos, StateSave stateSave = null)
         {
             this.element = element;
             this.stateSave = stateSave;
@@ -124,7 +124,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
         }
 
-        public static AnimationChainListSave GetAnimationChainListFile(IElement element, NamedObjectSave referencedNos, StateSave stateSave)
+        public static AnimationChainListSave GetAnimationChainListFile(GlueElement element, NamedObjectSave referencedNos, StateSave stateSave)
         {
             AnimationChainListSave acls = null;
 
@@ -164,7 +164,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             return acls;
         }
 
-        public static AnimationChainListSave GetReferencedAclsThroughSetVariables(IElement element, NamedObjectSave referencedNos, StateSave stateSave)
+        public static AnimationChainListSave GetReferencedAclsThroughSetVariables(GlueElement element, NamedObjectSave referencedNos, StateSave stateSave)
         {
             AnimationChainListSave foundAcls = null;
 
@@ -214,7 +214,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             return foundAcls;
         }
 
-        private static AnimationChainListSave LoadAnimationChainListSave(IElement element, string rfsName)
+        private static AnimationChainListSave LoadAnimationChainListSave(GlueElement element, string rfsName)
         {
             AnimationChainListSave acls = null;
 

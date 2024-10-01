@@ -13,7 +13,7 @@ namespace OfficialPlugins.SongPlugin.CodeGenerators
 {
     public class SongPluginCodeGenerator : ElementComponentCodeGenerator
     {
-        public override ICodeBlock GeneratePostInitialize(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GeneratePostInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             var playingSong = element.ReferencedFiles
                 .FirstOrDefault(item =>

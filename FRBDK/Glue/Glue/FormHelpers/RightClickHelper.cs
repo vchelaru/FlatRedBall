@@ -1129,7 +1129,7 @@ public static class RightClickHelper
     static void mFillValuesFromVariables_Click(object sender, EventArgs e)
     {
         StateSave stateSave = GlueState.Self.CurrentStateSave;
-        IElement element = GlueState.Self.CurrentElement;
+        GlueElement element = GlueState.Self.CurrentElement;
 
         var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
             String.Format(L.Texts.QuestionFillValuesDefault, stateSave.Name),
@@ -1617,7 +1617,7 @@ public static class RightClickHelper
         return wasRemoved;
     }
 
-    private static void AskToRemoveCustomVariablesWithoutState(IElement element)
+    private static void AskToRemoveCustomVariablesWithoutState(GlueElement element)
     {
         for (var i = 0; i < element.CustomVariables.Count; i++)
         {

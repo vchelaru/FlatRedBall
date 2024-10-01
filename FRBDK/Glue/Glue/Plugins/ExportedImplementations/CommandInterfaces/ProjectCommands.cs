@@ -115,7 +115,7 @@ class ProjectCommands : IProjectCommands
     }
 
 
-    public void CreateAndAddPartialFile(IElement element, string partialName, string code)
+    public void CreateAndAddPartialFile(GlueElement element, string partialName, string code)
     {
         var fileName = element.Name + ".Generated." + partialName + ".cs";
         var fullFileName = ProjectManager.ProjectBase.Directory + fileName;

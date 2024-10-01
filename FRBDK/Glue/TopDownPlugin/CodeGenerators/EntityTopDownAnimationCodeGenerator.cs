@@ -53,7 +53,7 @@ public class EntityTopDownAnimationCodeGenerator : ElementComponentCodeGenerator
     string TopDownAnimationControllerClassName =>
         $"global::{GlueState.Self.ProjectNamespace}.TopDown.TopDownAnimationController";
 
-    public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+    public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
     {
         var animationValues = GetAnimationValuesFor(element as GlueElement);
 
@@ -64,7 +64,7 @@ public class EntityTopDownAnimationCodeGenerator : ElementComponentCodeGenerator
         return codeBlock;
     }
 
-    public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+    public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
     {
 
         var animationValues = GetAnimationValuesFor(element as GlueElement);
@@ -124,7 +124,7 @@ public class EntityTopDownAnimationCodeGenerator : ElementComponentCodeGenerator
         return codeBlock;
     }
 
-    public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+    public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
     {
         var animationValues = GetAnimationValuesFor(element as GlueElement);
 

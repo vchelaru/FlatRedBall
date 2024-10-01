@@ -79,7 +79,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        internal void WriteBaseInitialize(IElement saveObject, ICodeBlock codeBlock)
+        internal void WriteBaseInitialize(GlueElement saveObject, ICodeBlock codeBlock)
         {
             // August 29, 2011
             // We used to only call

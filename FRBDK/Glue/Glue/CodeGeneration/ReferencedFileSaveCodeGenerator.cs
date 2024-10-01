@@ -29,7 +29,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Fields (Static Members)
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock,  SaveClasses.IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock,  SaveClasses.GlueElement element)
         {
             #region Get the ContentManager variable to use
 
@@ -66,7 +66,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         public static void AppendFieldOrPropertyForReferencedFile(ICodeBlock codeBlock, ReferencedFileSave referencedFile,
-            IElement element, string contentManagerName = "ContentManagerName")
+            GlueElement element, string contentManagerName = "ContentManagerName")
         {
             /////////////////////////////////////EARLY OUT//////////////////////////////////////////////
             // If the referenced file is a database for localizing, it will just be stuffed right into the localization manager
@@ -139,7 +139,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        private static void AppendPropertyForReferencedFileSave(ICodeBlock codeBlock, ReferencedFileSave referencedFile, IElement element, string contentManagerName, AssetTypeInfo ati, string variableName, string typeName)
+        private static void AppendPropertyForReferencedFileSave(ICodeBlock codeBlock, ReferencedFileSave referencedFile, GlueElement element, string contentManagerName, AssetTypeInfo ati, string variableName, string typeName)
         {
 
             codeBlock.Line(StringHelper.Modifiers(Static: referencedFile.IsSharedStatic, Type: typeName, Name: "m" + variableName) + ";");
@@ -276,7 +276,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Initialize
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock,  SaveClasses.IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock,  SaveClasses.GlueElement element)
         {
             for (int i = 0; i < element.ReferencedFiles.Count; i++)
             {
@@ -336,7 +336,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        public static void GenerateAddToManagersStatic(ICodeBlock codeBlock,  SaveClasses.IElement element)
+        public static void GenerateAddToManagersStatic(ICodeBlock codeBlock, GlueElement element)
         {
             for (int i = 0; i < element.ReferencedFiles.Count; i++)
             {
@@ -346,7 +346,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock,  SaveClasses.IElement element)
+        /// <inheritdoc />
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock,  SaveClasses.GlueElement element)
         {
             for (int i = 0; i < element.ReferencedFiles.Count; i++)
             {
@@ -357,7 +358,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        /// <inheritdoc />
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             for (int i = 0; i < element.ReferencedFiles.Count; i++)
             {
@@ -367,7 +369,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override void GeneratePauseIgnoringActivity(ICodeBlock codeBlock, IElement element)
+        /// <inheritdoc />
+        public override void GeneratePauseIgnoringActivity(ICodeBlock codeBlock, GlueElement element)
         {
             // April 2, 2024
             // Experimental:
@@ -397,7 +400,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock,  SaveClasses.IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock,  SaveClasses.GlueElement element)
         {
 
             bool inherits = !string.IsNullOrEmpty(element.BaseElement) && !element.InheritsFromFrbType();
@@ -416,7 +419,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
+        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, GlueElement element)
         {
             foreach(var referencedFile in element.ReferencedFiles)
             {
@@ -454,7 +457,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void GenerateGetMember(ICodeBlock codeBlock, SaveClasses.IElement element)
+        private static void GenerateGetMember(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             #region GetMember (Instance members)
 
@@ -583,7 +586,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock,  IElement element)
+        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock,  GlueElement element)
         {
             var curBlock = codeBlock;
             bool hasAddedRegisterUnloadVariable = false;
@@ -642,7 +645,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
-        public override ICodeBlock GenerateUnloadStaticContent(ICodeBlock codeBlock,  IElement element)
+        public override ICodeBlock GenerateUnloadStaticContent(ICodeBlock codeBlock,  GlueElement element)
         {
             // We'll assume that we want to get rid of the last one
             // The user may have loaded content from an Entity without calling LoadStaticContent - like if the
@@ -854,7 +857,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void WriteLoadedOnlyWhenReferencedPropertyBody(ReferencedFileSave referencedFile, IElement element, 
+        private static void WriteLoadedOnlyWhenReferencedPropertyBody(ReferencedFileSave referencedFile, GlueElement element, 
             string contentManagerName, AssetTypeInfo ati, string variableName, string lastContentManagerVariableName, ICodeBlock getBlock)
         {
             string referencedFileName = GetFileToLoadForRfs(referencedFile, ati);
@@ -972,7 +975,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public static void AppendAddUnloadMethod(ICodeBlock codeBlock, IElement element)
+        public static void AppendAddUnloadMethod(ICodeBlock codeBlock, GlueElement element)
         {
             var lockBlock = codeBlock.Lock("mLockObject");
 
@@ -1363,7 +1366,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        static ICodeBlock GetActivityForReferencedFile(ReferencedFileSave referencedFile, IElement element)
+        static ICodeBlock GetActivityForReferencedFile(ReferencedFileSave referencedFile, GlueElement element)
         {
             ICodeBlock codeBlock = new CodeDocument();
             /////////////////////EARLY OUT/////////////////////////
@@ -1447,7 +1450,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        protected ICodeBlock GetDestroyForReferencedFile(IElement element, ReferencedFileSave referencedFile)
+        protected ICodeBlock GetDestroyForReferencedFile(GlueElement element, ReferencedFileSave referencedFile)
         {
             ICodeBlock codeBlock = new CodeDocument(3);
 
@@ -1564,7 +1567,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        public static ICodeBlock GetAddToManagersForReferencedFile(IElement mSaveObject, ReferencedFileSave referencedFile)
+        public static ICodeBlock GetAddToManagersForReferencedFile(GlueElement mSaveObject, ReferencedFileSave referencedFile)
         {
             bool shouldAddToManagers = GetIfShouldAddToManagers(mSaveObject, referencedFile);
 

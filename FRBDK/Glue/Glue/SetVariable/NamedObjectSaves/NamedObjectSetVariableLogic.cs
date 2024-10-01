@@ -539,7 +539,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             if (!string.IsNullOrEmpty(container.BaseElement) && !string.IsNullOrEmpty(namedObjectSave.InstanceType))
             {
-                var baseElement = ObjectFinder.Self.GetIElement(container.BaseElement);
+                var baseElement = ObjectFinder.Self.GetElement(container.BaseElement);
 
                 NamedObjectSave namedObjectInBase = baseElement.GetNamedObjectRecursively(namedObjectSave.InstanceName);
 
@@ -686,7 +686,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             if (!string.IsNullOrEmpty(value))
             {
-                IElement element = GlueState.Self.CurrentElement;
+                GlueElement element = GlueState.Self.CurrentElement;
 
                 ReferencedFileSave referencedFileSave = element.GetReferencedFileSaveByInstanceNameRecursively(value);
 

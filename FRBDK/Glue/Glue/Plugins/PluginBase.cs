@@ -400,7 +400,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action<StateSaveCategory, string, StateCategoryVariableAction> ReactToStateCategoryExcludedVariablesChanged;
 
-        public Action<IElement, ReferencedFileSave> ReactToFileRemoved { get; protected set; }
+        public Action<GlueElement, ReferencedFileSave> ReactToFileRemoved { get; protected set; }
 
         /// <summary>
         /// Delegate raised whenever an entity is going to be removed. The first argument
@@ -416,7 +416,7 @@ namespace FlatRedBall.Glue.Plugins
         /// </summary>
         public Action<ScreenSave, List<string>> ReactToScreenRemoved { get; protected set; }
 
-        public Action<IElement, EventResponseSave> ReactToEventRemoved { get; protected set; }
+        public Action<GlueElement, EventResponseSave> ReactToEventRemoved { get; protected set; }
 
         /// <summary>
         /// Action raised when a variable changes. The IElement is the container of the variable, the CustomVariable is the changed variable.

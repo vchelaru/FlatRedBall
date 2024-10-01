@@ -558,7 +558,7 @@ public class CustomVariableSaveSetPropertyLogic
         }
     }
 
-    private void SetDerivedElementVariables(IElement owner, string name, Scope newScope)
+    private void SetDerivedElementVariables(GlueElement owner, string name, Scope newScope)
     {
         var instancesThatUseThis = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(owner);
         foreach (var instance in instancesThatUseThis)

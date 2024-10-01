@@ -28,10 +28,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             }
         }
 
-        bool IsAbstract(IElement element) => element.AllNamedObjects.Any(item => item.SetByDerived);
+        bool IsAbstract(GlueElement element) => element.AllNamedObjects.Any(item => item.SetByDerived);
 
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             // This needs to be before the base.Destroy(); call so that the derived class can make itself unused before the base class get a chance
             if (element is EntitySave entity && entity.CreatedByOtherEntities && entity.PooledByFactory)
@@ -55,13 +55,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
 
     public class FactoryElementCodeGenerator : ElementComponentCodeGenerator
     {
-        static bool IsAbstract(IElement element) => element.AllNamedObjects.Any(item => item.SetByDerived);
+        static bool IsAbstract(GlueElement element) => element.AllNamedObjects.Any(item => item.SetByDerived);
         static FactoryEntireClassGenerator mEntireClassGenerator = new FactoryEntireClassGenerator();
 
         #region CodeGenerator methods (for generating code in an Element)
 
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             // September 9, 2011
             // I think factories should
@@ -106,7 +106,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             return codeBlock;
         }
 
-        private static void GetEntitiesToInstantiateFactoriesFor(IElement element, out List<NamedObjectSave> entityLists, out HashSet<EntitySave> entitiesToInitializeFactoriesFor)
+        private static void GetEntitiesToInstantiateFactoriesFor(GlueElement element, out List<NamedObjectSave> entityLists, out HashSet<EntitySave> entitiesToInitializeFactoriesFor)
         {
             entityLists = element.NamedObjects
                 .Where(nos => !nos.InstantiatedByBase &&
@@ -142,7 +142,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             entitiesToInitializeFactoriesFor = entitiesToInitializeFactoriesForHash;
         }
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             // but for some reason we still destroyed
             // them.  Added the check for element is ScreenSave.
@@ -199,7 +199,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
         }
 
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             GenerateInitializeFactoriesAndSorting(codeBlock, element as GlueElement);
             return codeBlock;
@@ -300,14 +300,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             }
         }
 
-        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
             // TODO:  We should load static content for factories here
         }
         #endregion
 
-        public static void CallPostInitializeIfNecessary(IElement element, ICodeBlock currentBlock)
+        public static void CallPostInitializeIfNecessary(GlueElement element, ICodeBlock currentBlock)
         {
             bool isEntity = element is EntitySave;
 

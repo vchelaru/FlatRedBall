@@ -17,7 +17,7 @@ namespace OfficialPlugins.DoorEntityPlugin.CodeGenerators
         bool HasDoorEntity => ObjectFinder.Self.GlueProject.Entities.Any(item => item.Name == "Entities\\DoorEntity");
 
         // This has to be in AddToManagers so that all the lists have been filled.
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             if(!HasDoorEntity)
             {

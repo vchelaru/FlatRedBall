@@ -12,12 +12,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.IDrawableBatch
     public class IDrawableBatchCodeGenerator : ElementComponentCodeGenerator
     {
 
-        bool ShouldGenerate(IElement element)
+        bool ShouldGenerate(GlueElement element)
         {
             return element is EntitySave && ((EntitySave)element).ImplementsIDrawableBatch;
         }
 
-        public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+        public override void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element)
         {
             if (ShouldGenerate(element))
             {
@@ -25,7 +25,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.IDrawableBatch
             }
         }
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             if (ShouldGenerate(element))
             {
@@ -41,7 +41,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.IDrawableBatch
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             if (ShouldGenerate(element))
             {
@@ -53,7 +53,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.IDrawableBatch
             return codeBlock;
         }
 
-        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
+        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, GlueElement element)
         {
             if(ShouldGenerate(element))
             {
@@ -63,7 +63,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.IDrawableBatch
 
         }
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             if (ShouldGenerate(element))
             {
@@ -75,7 +75,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.IDrawableBatch
 
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             if (element is EntitySave && ((EntitySave)element).ImplementsIDrawableBatch)
             {

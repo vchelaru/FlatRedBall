@@ -102,7 +102,7 @@ namespace FlatRedBall.Glue.Elements
         /// If the object is a nameable, the construction function is responsible for assigning the name.
         /// </summary>
         [XmlIgnore]
-        public Func<IElement, NamedObjectSave, ReferencedFileSave, string> ConstructorFunc;
+        public Func<GlueElement, NamedObjectSave, ReferencedFileSave, string> ConstructorFunc;
 
         [XmlIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> GetObjectFromFileFunc;
@@ -148,7 +148,7 @@ namespace FlatRedBall.Glue.Elements
         /// The returned string is the code for adding.
         /// </summary>
         [XmlIgnore]
-        public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> AddToManagersFunc;
+        public Func<GlueElement, NamedObjectSave, ReferencedFileSave, string, string> AddToManagersFunc;
 
         /// <summary>
         /// Adds an object to managers on the specified FlatRedBall layer. Glue will

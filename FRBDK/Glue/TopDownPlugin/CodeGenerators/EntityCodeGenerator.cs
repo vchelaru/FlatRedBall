@@ -20,7 +20,7 @@ namespace TopDownPlugin.CodeGenerators
     {
         public override CodeLocation CodeLocation => CodeLocation.AfterStandardGenerated;
 
-        public override void GenerateAdditionalClasses(ICodeBlock codeBlock, IElement element)
+        public override void GenerateAdditionalClasses(ICodeBlock codeBlock, GlueElement element)
         {
             /////////////////Early Out//////////////////////
             var entitySave = element as EntitySave;
@@ -130,7 +130,7 @@ namespace TopDownPlugin.CodeGenerators
         }
 
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             /////////////////Early Out//////////////////////
             if (TopDownEntityPropertyLogic.GetIfIsTopDown(element) == false)
@@ -154,7 +154,7 @@ namespace TopDownPlugin.CodeGenerators
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             ///////////////////Early Out///////////////////////////////
             if (!TopDownEntityPropertyLogic.GetIfIsTopDown(element))
@@ -338,7 +338,7 @@ namespace TopDownPlugin.CodeGenerators
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             ///////////////////Early Out///////////////////////////////
             if (!TopDownEntityPropertyLogic.GetIfIsTopDown(element))

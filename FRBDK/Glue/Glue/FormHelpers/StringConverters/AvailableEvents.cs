@@ -16,7 +16,7 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
             set;
         }
 
-        public IElement Element
+        public GlueElement Element
         {
             get;
             set;

@@ -193,7 +193,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         #region Generating Fields / Properties
 
         // Generates the fields AND PROPERTIES even though it's only called GenerateFields
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
 
 
@@ -480,13 +480,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
 
-        public static List<StateSave> GetAllStatesForCategory(IElement element, string stateCategory)
+        public static List<StateSave> GetAllStatesForCategory(GlueElement element, string stateCategory)
         {
             var states = new List<StateSave>();
 
             if (!string.IsNullOrEmpty(element.BaseElement))
             {
-                IElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
+                GlueElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
 
                 if (baseElement != null)
                 {
@@ -504,7 +504,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return states;
         }
 
-        private static Dictionary<string, StateSaveCategory> GetAllStateCategoryNames(IElement element, bool includeInheritance)
+        private static Dictionary<string, StateSaveCategory> GetAllStateCategoryNames(GlueElement element, bool includeInheritance)
         {
             var names = new Dictionary<string, StateSaveCategory>();
             if (element != null)
@@ -530,21 +530,19 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
 
-        private static bool IsStateDefinedInBase(IElement element, string enumName)
+        private static bool IsStateDefinedInBase(GlueElement element, string enumName)
         {
-            bool toReturn = false;
             if (string.IsNullOrEmpty(element.BaseElement))
             {
-                toReturn = false;
+                return false;
             }
-            else
-            {
-                IElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
+            
+            bool toReturn = false;
+            GlueElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
 
-                if (baseElement != null)
-                {
-                    toReturn = baseElement.DefinesCategoryEnumRecursive(enumName);
-                }
+            if (baseElement != null)
+            {
+                toReturn = baseElement.DefinesCategoryEnumRecursive(enumName);
             }
             return toReturn;
         }
@@ -673,7 +671,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
-        public static List<StateSave> GetSharedVariableStates(SaveClasses.IElement element)
+        public static List<StateSave> GetSharedVariableStates(SaveClasses.GlueElement element)
         {
             if (element == null)
             {
@@ -687,7 +685,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             //Get states for parent entities
             if (!string.IsNullOrEmpty(currentElement.BaseElement))
             {
-                IElement baseElement = ObjectFinder.Self.GetElement(currentElement.BaseElement);
+                GlueElement baseElement = ObjectFinder.Self.GetElement(currentElement.BaseElement);
                 if (baseElement != null)
                 {
                     statesForThisCategory.AddRange(GetSharedVariableStates(baseElement));
@@ -703,7 +701,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return statesForThisCategory;
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             if (element.HasStates)
             {
@@ -718,7 +716,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if (!string.IsNullOrEmpty(element.BaseElement))
                     {
-                        IElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
+                        GlueElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
                         if (baseElement != null && baseElement.DefinesCategoryEnumRecursive("VariableState"))
                         {
                             propertyPrefix += "new ";
@@ -818,12 +816,12 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
         }
 
-        private static bool DoesBaseHaveUncategorizedStates(IElement element)
+        private static bool DoesBaseHaveUncategorizedStates(GlueElement element)
         {
             if (string.IsNullOrEmpty(element.BaseElement) || element.InheritsFromFrbType())
             {
@@ -979,7 +977,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     bool isVariableState = customVariable.GetIsVariableState();
 
-                    IElement objectElement = null;
+                    GlueElement objectElement = null;
 
                     if (namedObject != null)
                     {
@@ -1057,7 +1055,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public static string FullyQualifiedDefaultStateValue(IElement referencedElement, string variableType)
+        public static string FullyQualifiedDefaultStateValue(GlueElement referencedElement, string variableType)
         {
             string stateName = null;
             if (variableType == "VariableState")
@@ -1090,7 +1088,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             if (!string.IsNullOrEmpty(namedObject.CurrentState))
             {
-                IElement referencedElement = namedObject.GetReferencedElement();
+                GlueElement referencedElement = namedObject.GetReferencedElement();
                 if (referencedElement != null && referencedElement.GetUncategorizedStatesRecursively().Count != 0)
                 {
                     string qualifiedName = NamedObjectSaveCodeGenerator.GetQualifiedTypeName(namedObject);

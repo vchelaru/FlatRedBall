@@ -14,16 +14,14 @@ namespace FlatRedBall.Glue.Events
 {
     public static class EventResponseSaveExtensionMethods
     {
-        public static IElement GetContainer(this EventResponseSave instance)
+        public static GlueElement GetContainer(this EventResponseSave instance)
         {
             if (ObjectFinder.Self.GlueProject != null)
             {
                 return ObjectFinder.Self.GetElementContaining(instance);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         /// <summary>
@@ -63,7 +61,7 @@ namespace FlatRedBall.Glue.Events
                     {
 
                         // This may be a tunnel into a tunneled event
-                        FlatRedBall.Glue.SaveClasses.IElement element = ObjectFinder.Self.GetIElement(nos.SourceClassType);
+                        FlatRedBall.Glue.SaveClasses.GlueElement element = ObjectFinder.Self.GetElement(nos.SourceClassType);
 
                         if (element != null)
                         {
@@ -154,7 +152,7 @@ namespace FlatRedBall.Glue.Events
             return null;
         }
 
-        public static EventResponseSave GetEventThisTunnelsTo(this EventResponseSave instance, IElement element, out GlueElement containingElement)
+        public static EventResponseSave GetEventThisTunnelsTo(this EventResponseSave instance, GlueElement element, out GlueElement containingElement)
         {
             if (instance.GetIsTunneling() == false)
             {
@@ -252,12 +250,11 @@ namespace FlatRedBall.Glue.Events
 
         }
 
-        public static string GetEffectiveDelegateType(this EventResponseSave ers, IElement containingElement)
+        public static string GetEffectiveDelegateType(this EventResponseSave ers, GlueElement containingElement)
         {
             if (ers.GetIsTunneling())
             {
-                GlueElement tunneledElement;
-                EventResponseSave tunneledTo = ers.GetEventThisTunnelsTo(containingElement, out tunneledElement);
+                EventResponseSave tunneledTo = ers.GetEventThisTunnelsTo(containingElement, out GlueElement tunneledElement);
 
                 if (tunneledTo != null)
                 {

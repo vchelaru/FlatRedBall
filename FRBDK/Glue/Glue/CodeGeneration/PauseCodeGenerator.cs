@@ -12,7 +12,7 @@ namespace FlatRedBall.Glue.CodeGeneration
     {
 
 
-        public override CodeBuilder.ICodeBlock GenerateAdditionalMethods(CodeBuilder.ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override CodeBuilder.ICodeBlock GenerateAdditionalMethods(CodeBuilder.ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             if(element is EntitySave)
             {
@@ -52,7 +52,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static CodeBuilder.ICodeBlock GenerateSetToIgnorePausing(CodeBuilder.ICodeBlock codeBlock, SaveClasses.IElement element, bool hasBase)
+        private static CodeBuilder.ICodeBlock GenerateSetToIgnorePausing(CodeBuilder.ICodeBlock codeBlock, SaveClasses.GlueElement element, bool hasBase)
         {
 
             string virtualOrOverride = "virtual";
@@ -114,7 +114,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public static CodeBuilder.ICodeBlock AddToPauseIgnoreIfNecessary(CodeBuilder.ICodeBlock codeBlock, IElement element, NamedObjectSave nos)
+        public static CodeBuilder.ICodeBlock AddToPauseIgnoreIfNecessary(CodeBuilder.ICodeBlock codeBlock, GlueElement element, NamedObjectSave nos)
         {
             if (nos.IgnoresPausing)
             {

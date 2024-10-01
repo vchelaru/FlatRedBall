@@ -34,7 +34,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.HasIGumScreenOwner &&
         GetIfContainsAnyGumScreenFiles(element);
 
-    public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+    public override void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element)
     {
         /////////////////////////Early Out/////////////////////////////
         if(ShouldGenerateGumScreenOwner(element) == false)
@@ -48,7 +48,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
 
     }
 
-    public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+    public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
     {
         // June 6, 2023
         // GUMX files in Global Content load and initialize a static global GumIdb automatically.
@@ -94,7 +94,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         return false;
     }
 
-    public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+    public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
     {
         
         var gumScreenRfs =
@@ -131,7 +131,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         return codeBlock;
     }
 
-    public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+    public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
     {
         // We no longer do this as of June 7, 2023. Always using the global one
         //var needsGumIdb = NeedsGumIdb(element, out bool _, out bool _, out bool _);
@@ -145,7 +145,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         return codeBlock;
     }
 
-    public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+    public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
     {
         var needsGumIdb = NeedsGumIdb(element, out bool _, out bool _, out bool _);
 
@@ -157,7 +157,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         return codeBlock;
     }
 
-    public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, IElement element)
+    public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, GlueElement element)
     {
         bool hasGumProject = GetIfHasGumProject();
 
@@ -211,7 +211,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         return false;
     }
 
-    public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+    public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
     {
         bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
 
@@ -298,7 +298,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         return GetGumScreenRfs(element) != null;
     }
 
-    public override void GeneratePauseThisScreen(ICodeBlock codeBlock, IElement element)
+    public override void GeneratePauseThisScreen(ICodeBlock codeBlock, GlueElement element)
     {
         if (element is FlatRedBall.Glue.SaveClasses.ScreenSave)
         {
@@ -310,7 +310,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         }
     }
 
-    public override void GenerateUnpauseThisScreen(ICodeBlock codeBlock, IElement element)
+    public override void GenerateUnpauseThisScreen(ICodeBlock codeBlock, GlueElement element)
     {
         if (element is FlatRedBall.Glue.SaveClasses.ScreenSave)
         {

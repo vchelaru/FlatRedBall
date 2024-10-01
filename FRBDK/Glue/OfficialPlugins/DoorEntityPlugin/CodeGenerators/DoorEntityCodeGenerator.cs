@@ -14,9 +14,9 @@ namespace OfficialPlugins.DoorEntityPlugin.CodeGenerators
     {
 
 
-        bool IsDoorEntity(IElement element) => element is EntitySave && element.ClassName == "DoorEntity";
+        bool IsDoorEntity(GlueElement element) => element is EntitySave && element.ClassName == "DoorEntity";
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             if(IsDoorEntity(element))
             {
@@ -36,7 +36,7 @@ namespace OfficialPlugins.DoorEntityPlugin.CodeGenerators
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             if(IsDoorEntity(element))
             {
@@ -64,7 +64,7 @@ namespace OfficialPlugins.DoorEntityPlugin.CodeGenerators
             return codeBlock;
         }
 
-        public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+        public override void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element)
         {
             if(IsDoorEntity(element))
             {

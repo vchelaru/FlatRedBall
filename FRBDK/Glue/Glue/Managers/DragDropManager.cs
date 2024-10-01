@@ -345,9 +345,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 AddExistingNamedObjectToElement(
                     GlueState.Self.CurrentElement, movingNos);
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToAddTo);
-
-                IElement elementToRegenerate = targetNode.Parent.Tag as IElement;
-
+ 
                 PluginManager.ReactToObjectContainerChanged(movingNos, null);
             }
         }
@@ -751,7 +749,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
         else if (targetNode.IsGlobalContentContainerNode())
         {
-            AskAndAddAllContainedRfsToGlobalContent(treeNodeMoving.Tag as IElement);
+            AskAndAddAllContainedRfsToGlobalContent(treeNodeMoving.Tag as GlueElement);
         }
 
         return newTreeNode;
@@ -994,7 +992,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
     #endregion
 
-    private static string IncrementNumberAtEndOfNewObject(IElement elementToCreateIn, string objectName)
+    private static string IncrementNumberAtEndOfNewObject(GlueElement elementToCreateIn, string objectName)
     {
         // get an acceptable name for the new object
         if (elementToCreateIn.GetNamedObjectRecursively(objectName) != null)
@@ -1009,7 +1007,7 @@ public class DragDropManager : Singleton<DragDropManager>
         return objectName;
     }
 
-    private static void AskAndAddAllContainedRfsToGlobalContent(IElement element)
+    private static void AskAndAddAllContainedRfsToGlobalContent(GlueElement element)
     {
         string message = "Add all contained files in " + element + " to Global Content Files?  Files will still be referenced by " + element;
 

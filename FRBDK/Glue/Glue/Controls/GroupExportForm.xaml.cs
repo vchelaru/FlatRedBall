@@ -161,7 +161,7 @@ public partial class GroupExportForm
         return new Label() { Content = label };
     }
 
-    private void AddAsSelectedElement(IElement element)
+    private void AddAsSelectedElement(GlueElement element)
     {
         var node = new TreeViewItem
         {
@@ -194,7 +194,7 @@ public partial class GroupExportForm
     {
         if (CurrentSelectedItem != null)
         {
-            AddAsSelectedElement(CurrentSelectedItem.Tag as IElement);
+            AddAsSelectedElement(CurrentSelectedItem.Tag as GlueElement);
             (CurrentSelectedItem.Parent as TreeViewItem)!.Items.Remove(CurrentSelectedItem);
             CurrentSelectedItem = null;
         }

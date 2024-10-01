@@ -42,8 +42,8 @@ namespace FlatRedBall.Glue.Plugins
     public delegate void OnErrorOutputDelegate(string output);
     public delegate void ReactToChangedPropertyDelegate(string changedMember, object oldValue, GlueElement owner);
     public delegate void ReactToRightClickDelegate(System.Windows.Forms.PropertyGrid rightClickedPropertyGrid, ContextMenuStrip menuToModify);
-    public delegate void ReactToStateNameChangeDelegate(IElement element, string oldName, string newName);
-    public delegate void ReactToStateRemovedDelegate(IElement element, string stateName);
+    public delegate void ReactToStateNameChangeDelegate(GlueElement element, string oldName, string newName);
+    public delegate void ReactToStateRemovedDelegate(GlueElement element, string stateName);
     public delegate void ReactToItemSelectDelegate(ITreeNode selectedTreeNode);
     public delegate void ReactToTreeViewRightClickDelegate(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> listToAddTo);
 

@@ -13,7 +13,7 @@ namespace GumPluginCore.CodeGeneration
 {
     class GumCollidableCodeGenerator : ElementComponentCodeGenerator
     {
-        public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+        public override void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element)
         {
             if(IsIGumCollidable(element))
             {
@@ -22,7 +22,7 @@ namespace GumPluginCore.CodeGeneration
             base.AddInheritedTypesToList(listToAddTo, element);
         }
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             if(IsIGumCollidable(element))
             {
@@ -33,7 +33,7 @@ namespace GumPluginCore.CodeGeneration
             return base.GenerateFields(codeBlock, element);
         }
 
-        public static void GenerateAddCollision(StringBuilder stringBuilder, IElement element, NamedObjectSave nos)
+        public static void GenerateAddCollision(StringBuilder stringBuilder, GlueElement element, NamedObjectSave nos)
         {
             if(IsIGumCollidable(element) || InheritsFromIGumCollidable(element as GlueElement))
             {
@@ -42,7 +42,7 @@ namespace GumPluginCore.CodeGeneration
             }
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             if (IsIGumCollidable(element))
             {
@@ -51,7 +51,7 @@ namespace GumPluginCore.CodeGeneration
             return base.GenerateActivity(codeBlock, element);
         }
 
-        public static bool IsIGumCollidable(IElement element) => 
+        public static bool IsIGumCollidable(GlueElement element) => 
             element is EntitySave entitySave && 
             entitySave.Properties.GetValue<bool>(GumCollidableManager.ImplementsIGumCollidable);
 

@@ -62,7 +62,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.RenderTargetPlugin
             return "";
         }
 
-        private string GetConstructorFunc(IElement element, NamedObjectSave namedObject, ReferencedFileSave file)
+        private string GetConstructorFunc(GlueElement element, NamedObjectSave namedObject, ReferencedFileSave file)
         {
             string objectName = namedObject.FieldName;
 

@@ -12,7 +12,7 @@ namespace FlatRedBall.Glue.CodeGeneration {
 
     public class ITiledTileMetadataCodeGenerator: ElementComponentCodeGenerator {
 
-        public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element) {
+        public override void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element) {
             if(GlueState.Self.CurrentGlueProject.FileVersion < (int)FlatRedBall.Glue.SaveClasses.GlueProjectSave.GluxVersions.ITiledTileMetadataInFrb)
                 return;
 

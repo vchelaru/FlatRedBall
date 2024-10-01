@@ -18,7 +18,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
 
-        public static bool ContainsRecursively(this IElement element, ReferencedFileSave whatToLookFor)
+        public static bool ContainsRecursively(this GlueElement element, ReferencedFileSave whatToLookFor)
         {
             foreach (ReferencedFileSave rfs in element.ReferencedFiles)
             {
@@ -30,7 +30,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (!string.IsNullOrEmpty(element.BaseElement))
             {
-                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
+                GlueElement baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
                 if (baseElement != null)
                 {
                     return baseElement.ContainsRecursively(whatToLookFor);
@@ -39,7 +39,7 @@ namespace FlatRedBall.Glue.SaveClasses
             return false;
         }
 
-        public static void SortStatesToCustomVariables(this IElement element)
+        public static void SortStatesToCustomVariables(this GlueElement element)
         {
             foreach (StateSave stateSave in element.AllStates)
             {
@@ -47,7 +47,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static void CleanUnusedVariablesFromStates(this IElement element)
+        public static void CleanUnusedVariablesFromStates(this GlueElement element)
         {
             foreach (StateSave state in element.AllStates)
             {
@@ -62,7 +62,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static void RemoveState(this IElement elementToRemoveFrom, StateSave stateSave)
+        public static void RemoveState(this GlueElement elementToRemoveFrom, StateSave stateSave)
         {
             if (elementToRemoveFrom.States.Contains(stateSave))
             {

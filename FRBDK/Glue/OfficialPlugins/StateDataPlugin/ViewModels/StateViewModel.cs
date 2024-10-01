@@ -112,7 +112,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
     class StateViewModel : ViewModel
     {
-        IElement element;
+        GlueElement element;
         StateSaveCategory category;
 
         public string Name

@@ -64,7 +64,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             return true;
         }
 
-        public AvailableNamedObjectsAndFiles(IElement element)
+        public AvailableNamedObjectsAndFiles(GlueElement element)
             : base()
         {
             this.CurrentElement = element;

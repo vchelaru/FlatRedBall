@@ -60,7 +60,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="element">Element to get property from</param>
         /// <param name="name">Name of property to get</param>
         /// <typeparam name="T">Type of value object</typeparam>
-        T GetProperty<T>(IElement element, string name);
+        T GetProperty<T>(GlueElement element, string name);
 
         void HandleTreeNodeDoubleClicked(ITreeNode treeNode);
     }

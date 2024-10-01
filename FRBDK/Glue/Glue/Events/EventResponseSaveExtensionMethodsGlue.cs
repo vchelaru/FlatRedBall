@@ -15,7 +15,7 @@ namespace FlatRedBall.Glue.Events
     {
         public static string GetEventContents(this EventResponseSave instance)
         {
-            IElement element = instance.GetContainer();
+            GlueElement element = instance.GetContainer();
 
             string textToAssign = null;
 

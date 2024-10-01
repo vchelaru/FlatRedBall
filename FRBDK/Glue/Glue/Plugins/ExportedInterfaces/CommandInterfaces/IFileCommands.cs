@@ -42,7 +42,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         FilePath GetJsonFilePath(GlueElement element);
 
 
-        string GetContentFolder(IElement element);
+        string GetContentFolder(GlueElement element);
         FilePath GetGlobalContentFolder();
 
         void IgnoreNextChangeOnFile(string absoluteFileName);

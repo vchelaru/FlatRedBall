@@ -19,7 +19,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             set;
         }
 
-        public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+        public override void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element)
         {
             if (element is EntitySave && ((EntitySave)element).ImplementsIVisible)
             {
@@ -28,7 +28,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             EntitySave entitySave = element as EntitySave;
 
@@ -97,7 +97,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void GenerateVisibleProperty(ICodeBlock codeBlock, IElement element, EntitySave entitySave)
+        private static void GenerateVisibleProperty(ICodeBlock codeBlock, GlueElement element, EntitySave entitySave)
         {
             bool inheritsFromIVisible = entitySave.GetInheritsFromIVisible();
 
@@ -172,7 +172,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        public override void GenerateAdditionalClasses(ICodeBlock codeBlock, IElement element)
+        public override void GenerateAdditionalClasses(ICodeBlock codeBlock, GlueElement element)
         {
             var currentBlock = codeBlock;
 

@@ -41,7 +41,7 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             return shouldGenerateCollision;
         }
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             EntitySave asEntitySave = element as EntitySave;
 
@@ -76,7 +76,7 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             return codeBlock;
         }
 
-        public override ICodeBlock GeneratePostInitialize(ICodeBlock codeBlock, IElement iElement)
+        public override ICodeBlock GeneratePostInitialize(ICodeBlock codeBlock, GlueElement iElement)
         {
             var element = iElement as EntitySave;
             if (ShouldGenerateCollisionCodeFor(element))
@@ -155,7 +155,7 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             return codeBlock;
         }
 
-        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
+        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, GlueElement element)
         {
             TryGenerateRemoveShapeCollectionFromManagers(codeBlock, element as GlueElement);
         }
@@ -168,7 +168,7 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             }
         }
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             // Added shouldClear:true on Oct 30, 2021 so that
             // collision in a tight loop will effectively early-out
@@ -177,7 +177,7 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             return codeBlock;
         }
 
-        public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+        public override void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element)
         {
             if (ShouldGenerateCollisionCodeFor(element as EntitySave))
             {
@@ -192,12 +192,12 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
 
     public static class CollidableExtensions
     {
-        public static bool IsICollidable(this IElement element)
+        public static bool IsICollidable(this GlueElement element)
         {
             return element is EntitySave && (element as EntitySave).ImplementsICollidable;
         }
 
-        public static bool IsICollidableRecursive(this IElement element)
+        public static bool IsICollidableRecursive(this GlueElement element)
         {
             if(element is EntitySave entitySave)
             {

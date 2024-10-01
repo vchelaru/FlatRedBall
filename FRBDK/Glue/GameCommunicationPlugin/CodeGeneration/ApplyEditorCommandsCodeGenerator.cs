@@ -16,7 +16,7 @@ namespace GameCommunicationPlugin.CodeGeneration
 
         public bool IsGameCommunicationEnabled { get; set; }
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             ////////////////////////Early Out////////////////////////
             if (!IsGameCommunicationEnabled) return codeBlock;

@@ -34,13 +34,13 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
-        public static IEnumerable<NamedObjectSave> GetObjectsForGumLayers(IElement element)
+        public static IEnumerable<NamedObjectSave> GetObjectsForGumLayers(GlueElement element)
         {
             return element.AllNamedObjects.Where(item => item.IsLayer &&
                 NamedObjectSaveCodeGenerator.GetFieldCodeGenerationType(item) == CodeGenerationType.Full);
         }
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             List<string> gumLayerNames = GetGumLayerNames(element);
 
@@ -53,7 +53,7 @@ namespace GumPlugin.CodeGeneration
             return codeBlock;
         }
 
-        private List<string> GetGumLayerNames(IElement element)
+        private List<string> GetGumLayerNames(GlueElement element)
         {
             List<string> gumLayerNames = new List<string>();
 
@@ -85,18 +85,18 @@ namespace GumPlugin.CodeGeneration
             return gumLayerNames;
         }
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             return base.GenerateAddToManagers(codeBlock, element);
         }
 
-        public override void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element)
+        public override void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, GlueElement element)
         {
             GenerateMoveObjectsToGumLayers(codeBlock, element);
             base.GenerateAddToManagersBottomUp(codeBlock, element);
         }
 
-        private void GenerateMoveObjectsToGumLayers(ICodeBlock codeBlock, IElement element)
+        private void GenerateMoveObjectsToGumLayers(ICodeBlock codeBlock, GlueElement element)
         {
             if (ShouldGenerate)
             {

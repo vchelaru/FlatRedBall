@@ -11,7 +11,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CleanupPlugin
 {
     class FileRemovalLogic
     {
-        internal void HandleFileRemoved(IElement element, ReferencedFileSave file)
+        internal void HandleFileRemoved(GlueElement element, ReferencedFileSave file)
         {
             bool isCsv = file.IsCsvOrTreatedAsCsv;
 

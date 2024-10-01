@@ -13,7 +13,7 @@ namespace GumPlugin.CodeGeneration
 {
     class GumToFlatRedBallAttachmentCodeGenerator : ElementComponentCodeGenerator
     {
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             if(GetIfHasAttachedGumInstances(element as GlueElement))
             {
@@ -23,7 +23,7 @@ namespace GumPlugin.CodeGeneration
             return base.GenerateFields(codeBlock, element);
         }
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             if (GetIfHasAttachedGumInstances(element as GlueElement))
             {

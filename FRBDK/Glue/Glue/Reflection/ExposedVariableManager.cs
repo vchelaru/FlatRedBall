@@ -346,7 +346,7 @@ namespace FlatRedBall.Glue.Reflection
             }
         }
 
-        private static bool TryGetStateInCategory(string memberName, IElement entitySave, out string foundUnqualifiedCategoryName)
+        private static bool TryGetStateInCategory(string memberName, GlueElement entitySave, out string foundUnqualifiedCategoryName)
         {
             foundUnqualifiedCategoryName = "";
             if (entitySave.StateCategoryList.Count != 0 && memberName.StartsWith("Current") && memberName.EndsWith("State"))
@@ -581,7 +581,7 @@ namespace FlatRedBall.Glue.Reflection
             return returnValues;
         }
 
-        private static void AddStateVariables(IElement element, List<MemberWithType> returnValues)
+        private static void AddStateVariables(GlueElement element, List<MemberWithType> returnValues)
         {
             bool shouldAddCurrentState = false;
             if (element.States.Count != 0)
@@ -652,7 +652,7 @@ namespace FlatRedBall.Glue.Reflection
             return returnValues;
         }
 
-        public static List<MemberWithType> GetExposableMembersFor(IElement element, bool removeAlreadyExposed)
+        public static List<MemberWithType> GetExposableMembersFor(GlueElement element, bool removeAlreadyExposed)
         {
             List<MemberWithType> toReturn = new List<MemberWithType>();
 

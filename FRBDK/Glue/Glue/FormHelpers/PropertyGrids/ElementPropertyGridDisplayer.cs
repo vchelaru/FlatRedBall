@@ -59,7 +59,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             return ((IElement)Instance).ClassName;
         }
 
-        protected void UpdateIncludedAndExcludedBase(IElement element)
+        protected void UpdateIncludedAndExcludedBase(GlueElement element)
         {
             ResetToDefault();
 
@@ -131,7 +131,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             foreach (NamedObjectSave nos in element.NamedObjects.Where(nos => nos.SourceType == SourceType.Entity))
             {
-                var nosElement = ObjectFinder.Self.GetIElement(nos.SourceClassType);
+                var nosElement = ObjectFinder.Self.GetElement(nos.SourceClassType);
                 if (elementsToMakeGlobal.Contains(nosElement) == false)
                 {
                     elementsToMakeGlobal.Add(nosElement);

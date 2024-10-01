@@ -32,7 +32,7 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
 		}
 
 
-        public AvailableCustomVariables(IElement element)
+        public AvailableCustomVariables(GlueElement element)
             : base()
         {
             IncludeNone = true;

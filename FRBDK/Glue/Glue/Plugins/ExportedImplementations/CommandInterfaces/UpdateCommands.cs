@@ -16,7 +16,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             get { return GlueCommands.Self; }
         }
 
-        private static void RefreshElement(IElement element)
+        private static void RefreshElement(GlueElement element)
         {
             var glueCommands = GlueCommand;
 
@@ -66,7 +66,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         #region IUpdateCommands Members
 
 
-        public void Add(IElement element)
+        public void Add(GlueElement element)
         {
             throw new NotImplementedException();
         }
@@ -91,7 +91,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             throw new NotImplementedException();
         }
 
-        public void Update(IElement element)
+        public void Update(GlueElement element)
         {
             var currentElement = ObjectFinder.Self.GetElement(element.Name);
 
@@ -144,7 +144,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             //GlueCommand.GluxCommands.SaveProjectAndElements();
         }
 
-        public void Remove(IElement element)
+        public void Remove(GlueElement element)
         {
             throw new NotImplementedException();
         }

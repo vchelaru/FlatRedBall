@@ -943,7 +943,7 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToStateVariableChanged != null);
         }
 
-        internal static void ReactToStateNameChange(IElement element, string oldName, string newName)
+        internal static void ReactToStateNameChange(GlueElement element, string oldName, string newName)
         {
             CallMethodOnPlugin(
                 plugin => plugin.ReactToStateNameChangeHandler(element, oldName, newName),
@@ -951,7 +951,7 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        internal static void ReactToStateRemoved(IElement element, string stateName)
+        internal static void ReactToStateRemoved(GlueElement element, string stateName)
         {
             foreach (PluginManager pluginManager in mInstances)
             {
@@ -971,7 +971,7 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        internal static void ReactToEventResponseRemoved(IElement element, EventResponseSave eventResponse)
+        internal static void ReactToEventResponseRemoved(GlueElement element, EventResponseSave eventResponse)
         {
             foreach (PluginManager pluginManager in mInstances)
             {
@@ -991,7 +991,7 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        internal static void ReactToFileRemoved(IElement element, ReferencedFileSave file) =>
+        internal static void ReactToFileRemoved(GlueElement element, ReferencedFileSave file) =>
             CallMethodOnPlugin(
                 (plugin) => plugin.ReactToFileRemoved(element, file),
                 (plugin) => plugin.ReactToFileRemoved != null,
@@ -1025,7 +1025,7 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToElementVariableChange != null || plugin.ReactToGlueElementVariableChanged != null);
         }
 
-        internal static void ReactToElementRenamed(IElement elementToRename, string oldName) =>
+        internal static void ReactToElementRenamed(GlueElement elementToRename, string oldName) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToElementRenamed(elementToRename, oldName),
                 plugin => plugin.ReactToElementRenamed != null);
@@ -1076,7 +1076,7 @@ namespace FlatRedBall.Glue.Plugins
             plugin => plugin.ReactToNewObjectHandler != null || plugin.ReactToNewObjectList != null || plugin.ReactToNewObjectListAsync != null);
         }
 
-        internal static void ReactToObjectRemoved(IElement element, NamedObjectSave removedObject) =>
+        internal static void ReactToObjectRemoved(GlueElement element, NamedObjectSave removedObject) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToObjectRemoved(element, removedObject),
                 plugin => plugin.ReactToObjectRemoved != null);
@@ -2055,7 +2055,7 @@ namespace FlatRedBall.Glue.Plugins
             return null;
         }
 
-        public static List<VariableDefinition> GetVariableDefinitionsFor(IElement element)
+        public static List<VariableDefinition> GetVariableDefinitionsFor(GlueElement element)
         {
             List<VariableDefinition> toReturn = new List<VariableDefinition>();
             CallMethodOnPlugin(

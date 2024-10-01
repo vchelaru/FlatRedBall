@@ -30,7 +30,7 @@ namespace EntityPerformancePlugin.CodeGenerators
 
         #region Activity
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             WriteLiveUpdateCode(codeBlock, element as GlueElement);
 
@@ -333,7 +333,7 @@ namespace EntityPerformancePlugin.CodeGenerators
 
         #region UpdateDependencies
 
-        public override void GenerateUpdateDependencies(ICodeBlock codeBlock, IElement element)
+        public override void GenerateUpdateDependencies(ICodeBlock codeBlock, GlueElement element)
         {
             if (element is EntitySave)
             {
@@ -399,7 +399,7 @@ namespace EntityPerformancePlugin.CodeGenerators
             }
         }
 
-        private void GenerateEntitySaveUpdateDependencies(ICodeBlock codeBlock, IElement element)
+        private void GenerateEntitySaveUpdateDependencies(ICodeBlock codeBlock, GlueElement element)
         {
             EntityManagementValues managementValues = Values?.EntityManagementValueList?.FirstOrDefault(item => item.Name == element.Name);
 
@@ -435,7 +435,7 @@ namespace EntityPerformancePlugin.CodeGenerators
             }
         }
 
-        private void GenerateEntityUpdateDependencies(CodeBlockBase codeBlock, IElement element, EntityManagementValues managementValues)
+        private void GenerateEntityUpdateDependencies(CodeBlockBase codeBlock, GlueElement element, EntityManagementValues managementValues)
         {
             var ati = element.GetAssetTypeInfo();
 

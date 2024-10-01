@@ -12,7 +12,7 @@ namespace GumPluginCore.CodeGeneration
     class FormsObjectCodeGenerator : ElementComponentCodeGenerator
     {
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             bool isGlueScreen, hasGumScreen, hasForms;
             bool needsGumIdb = GumPluginCodeGenerator.NeedsGumIdb(element, out isGlueScreen, out hasGumScreen, out hasForms);
@@ -43,7 +43,7 @@ namespace GumPluginCore.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             var gumScreenRfs = element.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith(".gusx"));
 

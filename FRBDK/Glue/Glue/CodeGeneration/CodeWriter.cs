@@ -441,7 +441,7 @@ namespace FlatRedBallAddOns.Entities
     /// <param name="element">Element to generate the class header for</param>
     /// <param name="namespaceBlock">Code block to write to.</param>
     /// <returns>Code block for the class</returns>
-    private static ICodeBlock GenerateClassHeader(IElement element, ICodeBlock namespaceBlock)
+    private static ICodeBlock GenerateClassHeader(GlueElement element, ICodeBlock namespaceBlock)
     {
         var inheritance = GetInheritance(element);
 
@@ -464,7 +464,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to get the inheritance from.</param>
     /// <returns>Inheritances of the element, comma separated.</returns>
-    private static string GetInheritance(IElement element)
+    private static string GetInheritance(GlueElement element)
     {
         string whatToInheritFrom;
 
@@ -502,7 +502,7 @@ namespace FlatRedBallAddOns.Entities
     /// <param name="codeBlock">Code block to write the fields and properties to</param>
     /// <exception cref="Exception">If a code writer is in a <see langword="null"/> state,
     /// or if an error occurs while generating fields.</exception>
-    internal static void GenerateFieldsAndProperties(ICodeBlock codeBlock, IElement element)
+    internal static void GenerateFieldsAndProperties(ICodeBlock codeBlock, GlueElement element)
     {
         if(element is EntitySave entitySave)
         {
@@ -545,7 +545,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to write constructor(s) for.</param>
     /// <param name="codeBlock">Code block to write the constructor(s) to.</param>
-    private static void GenerateConstructors(ICodeBlock codeBlock, IElement element)
+    private static void GenerateConstructors(ICodeBlock codeBlock, GlueElement element)
     {
         ICodeBlock constructor;
 
@@ -592,7 +592,7 @@ namespace FlatRedBallAddOns.Entities
 
         return;
 
-        static void CallElementComponentCodeGeneratorGenerateConstructor(IElement element, ICodeBlock constructor)
+        static void CallElementComponentCodeGeneratorGenerateConstructor(GlueElement element, ICodeBlock constructor)
         {
             foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
             {
@@ -617,7 +617,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="codeBlock">Code block to write the content to</param>
     /// <param name="element">Element to write the content for</param>
-    private static void GenerateLoadStaticContent(ICodeBlock codeBlock, IElement element)
+    private static void GenerateLoadStaticContent(ICodeBlock codeBlock, GlueElement element)
     {
         var inheritsFromElement = element.InheritsFromElement();
 
@@ -755,7 +755,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to save</param>
     /// <returns>Found <see cref="FilePath"/></returns>
-    public static FilePath GetAbsoluteGeneratedCodeFileFor(IElement element)
+    public static FilePath GetAbsoluteGeneratedCodeFileFor(GlueElement element)
     {
         var fileName = element.Name + ".Generated.cs";
 
@@ -773,7 +773,7 @@ namespace FlatRedBallAddOns.Entities
     /// Generate a file if it doesn't exist for the specified <paramref name="element"/>.
     /// </summary>
     /// <param name="element">Element to generate the file for, it doesn't exist.</param>
-    public static void CreateGeneratedFileIfNecessary(IElement element)
+    public static void CreateGeneratedFileIfNecessary(GlueElement element)
     {
         FilePath absoluteFilePath = GetAbsoluteGeneratedCodeFileFor(element);
         if (absoluteFilePath.Exists() == false)
@@ -786,7 +786,7 @@ namespace FlatRedBallAddOns.Entities
     /// Generate a new file for the specified <paramref name="element"/>.
     /// </summary>
     /// <param name="element">Element to generate</param>
-    public static void CreateAndAddGeneratedFile(IElement element)
+    public static void CreateAndAddGeneratedFile(GlueElement element)
     {
         // let's make a generated file
         var fileName = element.Name + ".Generated.cs";
@@ -803,7 +803,7 @@ namespace FlatRedBallAddOns.Entities
     /// Refresh the reusable entire file RFSes for the specified <paramref name="element"/>.
     /// </summary>
     /// <param name="element">Element to refresh the RFSes for.</param>
-    private static void RefreshReusableEntireFileRfses(IElement element)
+    private static void RefreshReusableEntireFileRfses(GlueElement element)
     {
         ReusableEntireFileRfses.Clear();
 
@@ -824,7 +824,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to generate the method for</param>
     /// <param name="codeBlock">Code block to write the code to</param>
-    internal static void GenerateInitialize(ICodeBlock codeBlock, IElement element)
+    internal static void GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
     {
         TaskManager.Self.WarnIfNotInTask();
 
@@ -978,7 +978,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to check</param>
     /// <returns><see langword="true" /> if the specified <paramref name="element"/> is on its own layer.</returns>
-    public static bool IsOnOwnLayer(IElement element)
+    public static bool IsOnOwnLayer(GlueElement element)
     {
         if (element is EntitySave)
         {
@@ -999,7 +999,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    internal static void GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+    internal static void GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
     {  
         var isEntity = element is EntitySave;
         var isScreen = !isEntity;
@@ -1190,7 +1190,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    private static void GenerateReAddToManagers(ICodeBlock codeBlock, IElement element)
+    private static void GenerateReAddToManagers(ICodeBlock codeBlock, GlueElement element)
     {
         var isEntity = element is EntitySave;
 
@@ -1228,7 +1228,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    private static void GenerateAddThisEntityToManagers(ICodeBlock codeBlock, IElement element)
+    private static void GenerateAddThisEntityToManagers(ICodeBlock codeBlock, GlueElement element)
     {
         if (element is not EntitySave entitySave)
         {
@@ -1304,7 +1304,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    internal static void GenerateActivity(ICodeBlock codeBlock, IElement element)
+    internal static void GenerateActivity(ICodeBlock codeBlock, GlueElement element)
     {
 
         var activityPre = "public virtual void";
@@ -1374,7 +1374,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    private static void GenerateActivityEditMode(ICodeBlock codeBlock, IElement element)
+    private static void GenerateActivityEditMode(ICodeBlock codeBlock, GlueElement element)
     {
 
         var activityPre = "public virtual void";
@@ -1445,7 +1445,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    internal static void GenerateGeneralActivity(ICodeBlock codeBlock, IElement element)
+    internal static void GenerateGeneralActivity(ICodeBlock codeBlock, GlueElement element)
     {
         var isEntity = element is EntitySave;
         var entitySave = element as EntitySave;
@@ -1496,7 +1496,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    internal static void GenerateDestroy(ICodeBlock codeBlock, IElement element)
+    internal static void GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
     {
 
         var destroyPre = "public virtual void";
@@ -1583,7 +1583,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    private static void GenerateUnloadContentManager(ICodeBlock codeBlock, IElement element)
+    private static void GenerateUnloadContentManager(ICodeBlock codeBlock, GlueElement element)
     {
         var shouldUnload = 
             element is ScreenSave { UseGlobalContent: false } screenSave &&
@@ -2131,7 +2131,7 @@ namespace FlatRedBallAddOns.Entities
         return false;
     }
 
-    public static void GeneratePostInitialize(ICodeBlock codeBlock, IElement saveObject)
+    public static void GeneratePostInitialize(ICodeBlock codeBlock, GlueElement saveObject)
     {
         // PostInitialize is a method which can be called multiple times if an entity is pooled. Therefore, any "add" calls here must
         // be protected with if-checks.
@@ -2202,7 +2202,7 @@ namespace FlatRedBallAddOns.Entities
 /// </summary>
 /// <param name="codeBlock">Code block to write the element for.</param>
 /// <param name="element">Element to write the code block for.</param>
-    public static void GenerateAfterActivity(ICodeBlock codeBlock, IElement element)
+    public static void GenerateAfterActivity(ICodeBlock codeBlock, GlueElement element)
     {
         #region Loop through all ReferenceFiles to get their post custom activity code
 
@@ -2309,7 +2309,7 @@ namespace FlatRedBallAddOns.Entities
 /// Add event generated code for the element
 /// </summary>
 /// <param name="element">Element to generated code for</param>
-    internal static void AddEventGeneratedCodeFileForElement(IElement element)
+    internal static void AddEventGeneratedCodeFileForElement(GlueElement element)
     {
 
         var fileName = element.Name + ".Generated.Event.cs";
@@ -2327,7 +2327,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="codeBlock">Code block to write the element to</param>
     /// <param name="element">Element to be written</param>
-    internal static void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element)
+    internal static void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, GlueElement element)
     {
         var isEntity = element is EntitySave;
         var isScreen = element is ScreenSave;
@@ -2387,7 +2387,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to retrieve all code files for.</param>
     /// <returns>Stack of file paths.</returns>
-    public static List<FilePath> GetAllCodeFilesFor(IElement element)
+    public static List<FilePath> GetAllCodeFilesFor(GlueElement element)
     {
         var directory = FileManager.GetDirectory(GlueCommands.Self.GetAbsoluteFileName(element.Name + "/", false));
 
@@ -2439,7 +2439,7 @@ namespace FlatRedBallAddOns.Entities
     /// <param name="codeBlock">Code block to write the element to</param>
     /// <param name="element">Element to be written</param>
     /// <returns><paramref name="codeBlock"/>.</returns>
-    internal static ICodeBlock GenerateUnloadStaticContent(ICodeBlock codeBlock, IElement element)
+    internal static ICodeBlock GenerateUnloadStaticContent(ICodeBlock codeBlock, GlueElement element)
     {
         ICodeBlock currentBlock = codeBlock;
 
@@ -2483,7 +2483,7 @@ namespace FlatRedBallAddOns.Entities
     /// <param name="codeBlock">Code block to write the element to</param>
     /// <param name="element">Element to be written</param>
     /// <param name="reusableEntireFileRfses">Reusable RFSes.</param>
-    internal static void GenerateConvertToManuallyUpdated(ICodeBlock codeBlock, IElement element, Dictionary<string, string> reusableEntireFileRfses)
+    internal static void GenerateConvertToManuallyUpdated(ICodeBlock codeBlock, GlueElement element, Dictionary<string, string> reusableEntireFileRfses)
     {
         var hasBase = element.InheritsFromElement();
 
@@ -2537,7 +2537,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="codeBlock">Code block to write the methods to.</param>
     /// <param name="element">Element to write the code block for.</param>
-    private static void GenerateMethods(ICodeBlock codeBlock, IElement element)
+    private static void GenerateMethods(ICodeBlock codeBlock, GlueElement element)
     {
         ICodeBlock currentBlock = codeBlock;
 
@@ -2579,7 +2579,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="codeBlock">Code block to write the methods to.</param>
     /// <param name="element">Element to write the code block for.</param>
-    private static void GeneratePauseThisScreen(ICodeBlock codeBlock, IElement element)
+    private static void GeneratePauseThisScreen(ICodeBlock codeBlock, GlueElement element)
     {
         ICodeBlock methodBlock = codeBlock.Function("public override void", "PauseThisScreen", "");
 
@@ -2596,7 +2596,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="codeBlock">Code block to write the methods to.</param>
     /// <param name="element">Element to write the code block for.</param>
-    private static void GenerateUnpauseThisScreen(ICodeBlock codeBlock, IElement element)
+    private static void GenerateUnpauseThisScreen(ICodeBlock codeBlock, GlueElement element)
     {
         ICodeBlock methodBlock = codeBlock.Function("public override void", "UnpauseThisScreen", "");
 
@@ -2613,7 +2613,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="codeBlock">Code block to write the methods to.</param>
     /// <param name="element">Element to write the code block for.</param>
-    private static void GenerateUpdateDependencies(ICodeBlock codeBlock, IElement element)
+    private static void GenerateUpdateDependencies(ICodeBlock codeBlock, GlueElement element)
     {
         // screens will need this too:
         var innerBlock = new CodeBlockBase();
@@ -2640,7 +2640,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="codeBlock">Code block to write the methods to.</param>
     /// <param name="element">Element to write the code block for.</param>
-    private static void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
+    private static void GenerateRemoveFromManagers(ICodeBlock codeBlock, GlueElement element)
     {
         if (element.InheritsFromElement())
         {
@@ -2698,7 +2698,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="codeBlock">Code block to write the element to</param>
     /// <param name="element">Element to write to the code block.</param>
-    private static void GenerateAssignCustomVariables(ICodeBlock codeBlock, IElement element)
+    private static void GenerateAssignCustomVariables(ICodeBlock codeBlock, GlueElement element)
     {
         var inherits = !String.IsNullOrEmpty(element.BaseElement) && !element.InheritsFromFrbType();
 
@@ -2739,7 +2739,7 @@ namespace FlatRedBallAddOns.Entities
     /// <param name="codeBlock">Code block to write the element to</param>
     /// <param name="element">Element to write to the code block.</param>
     /// <param name="ifCallOnContainedElements">Code block that is utilized if subitems exist in the stack.</param>
-    private static void GenerateAssignmentForListOfObjects(ICodeBlock codeBlock, IElement element, ICodeBlock ifCallOnContainedElements, List<NamedObjectSave> listOfItems)
+    private static void GenerateAssignmentForListOfObjects(ICodeBlock codeBlock, GlueElement element, ICodeBlock ifCallOnContainedElements, List<NamedObjectSave> listOfItems)
     {
         foreach (NamedObjectSave item in listOfItems)
         {
@@ -2782,7 +2782,7 @@ namespace FlatRedBallAddOns.Entities
     /// <param name="customVariable">Custom variable to check</param>
     /// <param name="element">Element to check that the <paramref name="customVariable"/> belongs to.</param>
     /// <returns><see langword="true"/> if the variable is handled by a custom code generator.</returns>
-    internal static bool IsVariableHandledByCustomCodeGenerator(CustomVariable customVariable, IElement element)
+    internal static bool IsVariableHandledByCustomCodeGenerator(CustomVariable customVariable, GlueElement element)
         => CodeGenerators.Any(codeGenerator => codeGenerator.HandlesVariable(customVariable, element));
 
     #endregion

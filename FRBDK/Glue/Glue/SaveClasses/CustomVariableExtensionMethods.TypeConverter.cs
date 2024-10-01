@@ -17,12 +17,12 @@ namespace FlatRedBall.Glue.SaveClasses
     public  static partial class CustomVariableExtensionMethods
     {
 
-        public static TypeConverter GetTypeConverter(this CustomVariable customVariable, IElement containingElement)
+        public static TypeConverter GetTypeConverter(this CustomVariable customVariable, GlueElement containingElement)
         {
             return customVariable.GetTypeConverter(containingElement, null, null);
         }
 
-        public static TypeConverter GetTypeConverter(this CustomVariable customVariable, IElement containingElementAsIElement, StateSave stateSave, FlatRedBall.Glue.Plugins.ExportedInterfaces.IGlueState glueState)
+        public static TypeConverter GetTypeConverter(this CustomVariable customVariable, GlueElement containingElementAsIElement, StateSave stateSave, FlatRedBall.Glue.Plugins.ExportedInterfaces.IGlueState glueState)
         {
             var containingElement = containingElementAsIElement as GlueElement;
             TypeConverter typeConverter = null;

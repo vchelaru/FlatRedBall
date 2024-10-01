@@ -12,7 +12,7 @@ namespace GlueControls.ViewModels.Event
     {
         ObservableCollection<EventViewModel> mColumns = new ObservableCollection<EventViewModel>();
 
-        IElement mBackingElement;
+        GlueElement mBackingElement;
 
         //IEnumerable<EventResponseSave> mBackingEvents;
 
@@ -27,7 +27,7 @@ namespace GlueControls.ViewModels.Event
         //    }
         //}
 
-        public IElement BackingElement
+        public GlueElement BackingElement
         {
             get { return mBackingElement; }
             set

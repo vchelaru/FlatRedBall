@@ -15,7 +15,7 @@ namespace OfficialPlugins.SpritePlugin.CodeGenerators
 {
     internal class SpriteCodeGenerator : ElementComponentCodeGenerator
     {
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             if(element.IsICollidableRecursive() && GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasSetCollisionFromAnimation)
             {

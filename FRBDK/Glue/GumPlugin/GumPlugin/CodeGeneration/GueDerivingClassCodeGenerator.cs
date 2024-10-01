@@ -831,7 +831,7 @@ namespace GumPlugin.CodeGeneration
             currentBlock.Line("partial void CustomInitialize();");
         }
 
-        internal string GetAddToManagersFunc(IElement glueElement, NamedObjectSave namedObjectSave, ReferencedFileSave referencedFileSave, string layerName)
+        internal string GetAddToManagersFunc(GlueElement glueElement, NamedObjectSave namedObjectSave, ReferencedFileSave referencedFileSave, string layerName)
         {
             var stringBuilder = new StringBuilder();
 

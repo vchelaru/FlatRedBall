@@ -74,7 +74,7 @@ public partial class ElementReferenceListWindow
     /// <summary>
     /// Populates the list view with references to the supplied <paramref name="element"/>.
     /// </summary>
-    public void PopulateWithReferencesToElement(IElement element)
+    public void PopulateWithReferencesToElement(GlueElement element)
     {
         #region Get all named objects
 

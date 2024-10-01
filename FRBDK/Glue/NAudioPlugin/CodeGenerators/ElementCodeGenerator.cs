@@ -16,7 +16,7 @@ namespace NAudioPlugin.CodeGenerators
         {
 
         }
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             // no more need to dispose - this is handled by the content manager
             //foreach(var rfs in element.ReferencedFiles)

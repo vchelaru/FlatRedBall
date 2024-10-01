@@ -451,7 +451,7 @@ namespace FlatRedBall.Glue.SaveClasses
             return string.IsNullOrEmpty(whyItIsntValid);
         }
 
-        public static bool IsStateNameValid(string name, IElement element, StateSaveCategory category, StateSave currentStateSave, out string whyItIsntValid)
+        public static bool IsStateNameValid(string name, GlueElement element, StateSaveCategory category, StateSave currentStateSave, out string whyItIsntValid)
         {
             whyItIsntValid = null;
 
@@ -516,7 +516,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             int wasRemovedFromIndex;
             NamedObjectSave containerNos;
-            IElement element;
+            GlueElement element;
             RemoveNosFromElementIfNecessary(namedObject, out wasRemovedFromIndex, out element, out containerNos);
             
             MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(name);
@@ -612,7 +612,7 @@ namespace FlatRedBall.Glue.SaveClasses
             return false;
         }
 
-        private static void RemoveNosFromElementIfNecessary(NamedObjectSave namedObject, out int wasRemovedFromIndex, out IElement element, out NamedObjectSave containingNos)
+        private static void RemoveNosFromElementIfNecessary(NamedObjectSave namedObject, out int wasRemovedFromIndex, out GlueElement element, out NamedObjectSave containingNos)
         {
             // We want to see if this name is already being used by other NOS's.
             // However, if this NOS is already part of the current element, then the
@@ -763,7 +763,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
 
-        public static bool DoesTunneledVariableAlreadyExist(string sourceObject, string sourceObjectProperty, IElement element)
+        public static bool DoesTunneledVariableAlreadyExist(string sourceObject, string sourceObjectProperty, GlueElement element)
         {
             if (!string.IsNullOrEmpty(sourceObject))
             {

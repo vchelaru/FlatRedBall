@@ -802,7 +802,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public static bool IsVariableInvalid(AddCustomVariableViewModel viewModel, IElement currentElement, out string failureMessage)
+        public static bool IsVariableInvalid(AddCustomVariableViewModel viewModel, GlueElement currentElement, out string failureMessage)
         {
             string whyItIsntValid = "";
             var resultName = viewModel.ResultName;
@@ -820,7 +820,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 failureMessage = String.Format(L.Texts.VariableAlreadyModifying, viewModel.SelectedTunneledVariableName, viewModel.SelectedTunneledObject);
             }
             
-            if (!didFailureOccur && viewModel != null && viewModel.DesiredVariableType != CustomVariableType.Exposed && IsUserTryingToCreateNewWithExposableName(viewModel.ResultName))
+            if (!didFailureOccur && viewModel.DesiredVariableType != CustomVariableType.Exposed && IsUserTryingToCreateNewWithExposableName(viewModel.ResultName))
             {
                 didFailureOccur = true;
                 failureMessage = String.Format(L.Texts.VariableIsExposableUseDifferentName, resultName);
@@ -1275,9 +1275,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             else if (selectedNode.IsElementNode())
             {
-                IElement element = selectedNode.Tag as IElement;
+                var element = selectedNode.Tag as GlueElement;
 
-                string baseObject = element.BaseElement;
+                var baseObject = element.BaseElement;
 
                 if (!string.IsNullOrEmpty(baseObject))
                 {

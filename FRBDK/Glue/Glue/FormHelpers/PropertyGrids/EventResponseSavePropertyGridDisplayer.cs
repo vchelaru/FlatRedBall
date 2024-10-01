@@ -13,7 +13,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
     {
         #region Properties
 
-        public IElement CurrentElement
+        public GlueElement CurrentElement
         {
             get;
             set;

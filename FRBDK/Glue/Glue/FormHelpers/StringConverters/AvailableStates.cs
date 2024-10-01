@@ -17,7 +17,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             set;
         }
 
-        public IElement CurrentElement
+        public GlueElement CurrentElement
         {
             get;
             set;
@@ -47,7 +47,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             return true;
         }
 
-        public AvailableStates(NamedObjectSave currentNamedObject, IElement currentElement, CustomVariable currentCustomVariable, StateSave currentStateSave) : base()
+        public AvailableStates(NamedObjectSave currentNamedObject, GlueElement currentElement, CustomVariable currentCustomVariable, StateSave currentStateSave) : base()
         {
             IncludeNoneOption = true;
             CurrentNamedObject = currentNamedObject;
@@ -77,7 +77,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             {
                 selectedItemName = selectedItemName.Substring(0, selectedItemName.IndexOf(" set in "));
             }
-            IElement currentElement = null;
+            GlueElement currentElement;
 
             NamedObjectSave currentNamedObject = CurrentNamedObject;
 
@@ -118,10 +118,9 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
         }
 
-        private static CustomVariable FillPossibleStatesFor(List<string> listToFill, IElement currentElement, CustomVariable customVariable, bool includeNone)
-        {
-
-            IElement sourceElement = null;
+        private static CustomVariable FillPossibleStatesFor(List<string> listToFill, GlueElement currentElement, CustomVariable customVariable, bool includeNone)
+        { 
+            GlueElement sourceElement;
 
             customVariable = customVariable.GetDefiningCustomVariable();
 
@@ -141,7 +140,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 if(!string.IsNullOrEmpty(name) && name != currentElement?.Name)
                 {
-                    sourceElement = ObjectFinder.Self.GetIElement(name);
+                    sourceElement = ObjectFinder.Self.GetElement(name);
                 }
                 else
                 {

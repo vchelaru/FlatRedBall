@@ -32,7 +32,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region ReferencedFile
 
-        ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement element, string directoryPath, string absoluteFileName,
+        ReferencedFileSave CreateReferencedFileSaveForExistingFile(GlueElement element, string directoryPath, string absoluteFileName,
             StandardTypes.PromptHandleEnum unknownTypeHandle,
             Elements.AssetTypeInfo ati,
             out string creationReport, out string errorMessage);

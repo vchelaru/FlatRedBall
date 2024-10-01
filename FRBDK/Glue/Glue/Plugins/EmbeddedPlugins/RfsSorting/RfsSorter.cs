@@ -32,7 +32,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.RfsSorting
 
         void SortFilesAlphabetically(object sender, EventArgs args)
         {
-            IElement element = GlueState.Self.CurrentElement;
+            GlueElement element = GlueState.Self.CurrentElement;
 
             if (element != null)
             {

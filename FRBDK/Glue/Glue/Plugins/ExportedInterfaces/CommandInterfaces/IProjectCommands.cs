@@ -29,7 +29,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="element"></param>
         /// <param name="partialName"></param>
         /// <param name="code"></param>
-        void CreateAndAddPartialFile(IElement element, string partialName, string code);
+        void CreateAndAddPartialFile(GlueElement element, string partialName, string code);
 
         /// <summary>
         /// Creates an empty code file (if it doesn't already exist), and adds it to the main project. If the file already exists, then it 

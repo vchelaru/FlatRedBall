@@ -86,7 +86,7 @@ namespace GlueControls.ViewModels.Event
             }
         }
 
-        public void SetBackingObjects(IElement element, EventResponseSave eventResponse)
+        public void SetBackingObjects(GlueElement element, EventResponseSave eventResponse)
         {
             mElement = element;
             mEventResponse = eventResponse;

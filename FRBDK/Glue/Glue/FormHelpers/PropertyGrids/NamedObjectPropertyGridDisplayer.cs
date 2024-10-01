@@ -583,7 +583,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         private bool DetermineIfShouldShowStates(NamedObjectSave instance)
         {
-            IElement referencedEntitySave = instance.GetReferencedElement();
+            GlueElement referencedEntitySave = instance.GetReferencedElement();
 
             bool shouldRemove = referencedEntitySave == null;
 
@@ -591,7 +591,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             {
                 shouldRemove = true;
 
-                IElement element = referencedEntitySave;
+                GlueElement element = referencedEntitySave;
 
                 while (element != null)
                 {
@@ -602,7 +602,7 @@ namespace FlatRedBall.Glue.GuiDisplay
                     }
                     else
                     {
-                        element = ObjectFinder.Self.GetIElement(element.BaseElement);
+                        element = ObjectFinder.Self.GetElement(element.BaseElement);
                     }
                 }
             }

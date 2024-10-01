@@ -64,7 +64,7 @@ namespace GumPlugin.CodeGeneration
         }
 
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             if (ShouldGenerate)
             {
@@ -100,7 +100,7 @@ namespace GumPlugin.CodeGeneration
             return base.GenerateAddToManagers(codeBlock, element);
         }
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             if (ShouldGenerate)
             {

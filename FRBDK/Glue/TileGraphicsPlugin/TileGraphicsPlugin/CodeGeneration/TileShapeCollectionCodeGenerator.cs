@@ -19,12 +19,12 @@ namespace TileGraphicsPlugin.CodeGeneration
         {
             InitializeCategory = "Collision Objects";
         }
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateInitializeLate(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitializeLate(ICodeBlock codeBlock, GlueElement element)
         {
             // Vic says - I think we have to generate late so we can reference other objects that may be assigned in the initialize function,
             // but we need to make sure this happens before 
@@ -63,7 +63,7 @@ namespace TileGraphicsPlugin.CodeGeneration
         //    return codeBlock;
         //}
 
-        static NamedObjectSave[] GetAllTileShapeCollectionNamedObjectsInElement(IElement element)
+        static NamedObjectSave[] GetAllTileShapeCollectionNamedObjectsInElement(GlueElement element)
         {
             return element
                 .AllNamedObjects
@@ -71,7 +71,7 @@ namespace TileGraphicsPlugin.CodeGeneration
                 .ToArray();
         }
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             NamedObjectSave[] tileShapeCollections = GetAllTileShapeCollectionNamedObjectsInElement(element);
 
@@ -464,7 +464,7 @@ namespace TileGraphicsPlugin.CodeGeneration
 
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             NamedObjectSave[] tileShapeCollections = GetAllTileShapeCollectionNamedObjectsInElement(element);
 

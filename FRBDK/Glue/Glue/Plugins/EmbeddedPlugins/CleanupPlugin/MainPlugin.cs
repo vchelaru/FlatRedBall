@@ -24,12 +24,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CleanupPlugin
             this.ReactToEventRemoved += HandleEventRemoved;
         }
 
-        private void HandleEventRemoved(IElement element, EventResponseSave eventResponse)
+        private void HandleEventRemoved(GlueElement element, EventResponseSave eventResponse)
         {
             eventRemovalLogic.HandleEventRemoved(element, eventResponse);
         }
 
-        private void HandleFileRemoved(IElement element, ReferencedFileSave file)
+        private void HandleFileRemoved(GlueElement element, ReferencedFileSave file)
         {
             fileRemovalLogic.HandleFileRemoved(element, file);
         }

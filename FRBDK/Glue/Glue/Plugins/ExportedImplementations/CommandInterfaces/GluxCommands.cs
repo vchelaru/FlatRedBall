@@ -3259,7 +3259,7 @@ public class GluxCommands : IGluxCommands
         GluxCommands.Self.SaveProjectAndElements();
     }
 
-    private static async Task RemoveUnreferencedFiles(IElement element, List<string> filesThatCouldBeRemoved)
+    private static async Task RemoveUnreferencedFiles(GlueElement element, List<string> filesThatCouldBeRemoved)
     {
         var allReferencedFiles = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
 

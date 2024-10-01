@@ -602,7 +602,7 @@ public static class GlueProjectSaveExtensionMethods
         }
     }
 
-    private static void VerifyElementMembershipInProject(IElement element)
+    private static void VerifyElementMembershipInProject(GlueElement element)
     {
         string fileName = element.Name + ".cs";
 

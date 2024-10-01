@@ -82,7 +82,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return !String.IsNullOrEmpty(returnValue) ? FileManager.XmlDeserializeFromString<T>(returnValue) : default(T);
         }
 
-        public T GetProperty<T>(IElement element, string name)
+        public T GetProperty<T>(GlueElement element, string name)
         {
             if(element is ScreenSave)
             {

@@ -15,7 +15,7 @@ namespace EntityPerformancePluginCore.CodeGenerators
         public ProjectManagementValues Values { get; set; }
 
 
-        public override void GenerateUpdateDependencies(ICodeBlock codeBlock, IElement element)
+        public override void GenerateUpdateDependencies(ICodeBlock codeBlock, GlueElement element)
         {
             if(element is ScreenSave)
             {

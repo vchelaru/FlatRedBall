@@ -62,21 +62,21 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
 
         }
 
-        private static void AdjustPositionedObjectList(NamedObjectSave nos, IElement element)
+        private static void AdjustPositionedObjectList(NamedObjectSave nos, GlueElement element)
         {
             nos.ExposedInDerived = true;
             Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(nameof(nos.ExposedInDerived), false,
                 namedObjectSave: nos);
         }
 
-        private void AdjustShapeCollection(NamedObjectSave nos, IElement element)
+        private void AdjustShapeCollection(NamedObjectSave nos, GlueElement element)
         {
             nos.ExposedInDerived = true;
             Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(nameof(nos.ExposedInDerived), false,
                 namedObjectSave: nos);
         }
 
-        private void AdjustLayer(NamedObjectSave nos, IElement element)
+        private void AdjustLayer(NamedObjectSave nos, GlueElement element)
         {
             if (Is2D(element))
             {
@@ -84,7 +84,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
             }
         }
 
-        private void AdjustCircle(NamedObjectSave nos, IElement element)
+        private void AdjustCircle(NamedObjectSave nos, GlueElement element)
         {
             if (Is2D(element))
             {
@@ -95,13 +95,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
             }
         }
 
-        private bool Is2D(IElement element)
+        private bool Is2D(GlueElement element)
         {
             return (element is EntitySave && (element as EntitySave).Is2D) ||
                 ObjectFinder.Self.GlueProject.In2D;
         }
 
-        private void AdjustSpriteFrame(NamedObjectSave nos, IElement element)
+        private void AdjustSpriteFrame(NamedObjectSave nos, GlueElement element)
         {
 
             if (Is2D(element))
@@ -110,7 +110,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
             }
         }
 
-        private void AdjustAxisAlignedRectangle(NamedObjectSave nos, IElement element)
+        private void AdjustAxisAlignedRectangle(NamedObjectSave nos, GlueElement element)
         {
             if (Is2D(element))
             {
@@ -127,7 +127,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
             }
         }
 
-        private void AdjustSprite(NamedObjectSave nos, IElement element)
+        private void AdjustSprite(NamedObjectSave nos, GlueElement element)
         {
             if (Is2D(element))
             {

@@ -284,7 +284,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static ContainerType GetContainerType(this ReferencedFileSave instance)
         {
-            IElement element = instance.GetContainer();
+            GlueElement element = instance.GetContainer();
 
             if (element != null)
             {

@@ -12,7 +12,7 @@ namespace OfficialPlugins.PolygonPlugin.CodeGeneration
 {
     internal class PolygonCodeGenerator : ElementComponentCodeGenerator
     {
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             foreach(var variable in element.CustomVariables)
             {

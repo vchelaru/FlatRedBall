@@ -32,7 +32,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
         
-        private static ICodeBlock GenerateInterpolateForIndividualState(IElement element, ICodeBlock codeBlock, ICodeBlock otherBlock, StateSave stateSave, string enumType, bool isElse)
+        private static ICodeBlock GenerateInterpolateForIndividualState(GlueElement element, ICodeBlock codeBlock, ICodeBlock otherBlock, StateSave stateSave, string enumType, bool isElse)
         {
 
             //.Switch("stateToInterpolateTo");
@@ -118,7 +118,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        private static void GenerateInterpolateForIndividualStateWithSource(ref ICodeBlock codeBlock, IElement element, ref ICodeBlock otherBlock, CustomVariable customVariable, string valueAsString, NamedObjectSave sourceNamedObjectSave, string timeCastString)
+        private static void GenerateInterpolateForIndividualStateWithSource(ref ICodeBlock codeBlock, GlueElement element, ref ICodeBlock otherBlock, CustomVariable customVariable, string valueAsString, NamedObjectSave sourceNamedObjectSave, string timeCastString)
         {
             if (customVariable.GetIsVariableState())
             {
@@ -245,7 +245,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
 
-                var sourceElement = ObjectFinder.Self.GetIElement(nos.SourceClassType);
+                var sourceElement = ObjectFinder.Self.GetElement(nos.SourceClassType);
                 // InterpolationEntityInstance.InterpolateToState(InterpolationEntity.VariableState.Small, secondsToTake);
                 //
                 string type = "VariableState";
@@ -260,7 +260,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void GenerateInterpolateForIndividualStateNoSource(ref ICodeBlock codeBlock, IElement element, ref ICodeBlock otherBlock, InstructionSave instruction, CustomVariable customVariable, string valueAsString, string timeCastString)
+        private static void GenerateInterpolateForIndividualStateNoSource(ref ICodeBlock codeBlock, GlueElement element, ref ICodeBlock otherBlock, InstructionSave instruction, CustomVariable customVariable, string valueAsString, string timeCastString)
         {
             string velocityMember =
                 FlatRedBall.Instructions.InstructionManager.GetVelocityForState(instruction.Member);
@@ -506,7 +506,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                                     if (customVariable.GetIsVariableState(element))
                                     {
 
-                                        IElement stateContainingEntity = null;
+                                        GlueElement stateContainingEntity = null;
 
                                         if (nos != null)
                                         {
@@ -704,7 +704,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return curBlock;
         }
 
-        private static ICodeBlock GenerateInterpolateToStateMethod(IElement element, ICodeBlock codeBlock, string enumType, List<StateSave> states)
+        private static ICodeBlock GenerateInterpolateToStateMethod(GlueElement element, ICodeBlock codeBlock, string enumType, List<StateSave> states)
         {
             if (states.Count != 0)
             {

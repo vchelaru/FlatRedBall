@@ -20,7 +20,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         static NamedObjectSaveCodeGenerator mNamedObjectCodeGenerator = new NamedObjectSaveCodeGenerator();
         static NamedObjectSave mListNamedObjectSave = new NamedObjectSave();
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             // no longer do this for new projects
             if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.RemoveIsScrollableEntityList)
@@ -104,7 +104,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             if (element is EntitySave)
             {
@@ -124,7 +124,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             if (element is EntitySave)
             {
@@ -144,7 +144,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             if (element is EntitySave)
             {
@@ -166,7 +166,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             if (element is EntitySave)
             {
@@ -188,7 +188,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             if (element is EntitySave)
             {
@@ -378,7 +378,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
         }

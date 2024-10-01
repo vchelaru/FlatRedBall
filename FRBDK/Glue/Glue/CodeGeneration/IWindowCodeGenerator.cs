@@ -9,7 +9,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     public class IWindowCodeGenerator : ElementComponentCodeGenerator
     {
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             if (element is EntitySave && ((EntitySave)element).ImplementsIWindow &&
                 ((EntitySave)element).GetInheritsFromIWindow() == false)
@@ -21,7 +21,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+        public override void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element)
         {
             if (element is EntitySave)
             {
@@ -37,7 +37,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
             }
         }
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             EntitySave entitySave = element as EntitySave;
 
@@ -71,7 +71,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        private static void GenerateEnabledVariable(ICodeBlock codeBlock, IElement element)
+        private static void GenerateEnabledVariable(ICodeBlock codeBlock, GlueElement element)
         {
             CustomVariable exposedEnabledVariable = element.CustomVariables.FirstOrDefault(item => item.Name == "Enabled" && item.Type == "bool");
             bool isEnableVariableExposed = exposedEnabledVariable != null;
@@ -256,7 +256,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public override bool HandlesVariable(CustomVariable variable, IElement container)
+        public override bool HandlesVariable(CustomVariable variable, GlueElement container)
         {
             return variable.Name == "Enabled" && container is EntitySave && ((EntitySave)container).GetImplementsIWindowRecursively();
         }

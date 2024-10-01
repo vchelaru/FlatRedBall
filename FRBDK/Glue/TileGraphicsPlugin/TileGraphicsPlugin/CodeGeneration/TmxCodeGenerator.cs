@@ -14,7 +14,7 @@ namespace TileGraphicsPlugin.CodeGeneration
 {
     class TmxCodeGenerator : ElementComponentCodeGenerator
     {
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
 
             foreach(var file in element.ReferencedFiles)

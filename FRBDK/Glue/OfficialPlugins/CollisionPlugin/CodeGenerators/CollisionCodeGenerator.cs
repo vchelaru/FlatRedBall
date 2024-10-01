@@ -21,7 +21,7 @@ namespace OfficialPlugins.CollisionPlugin
 {
     public class CollisionCodeGenerator : ElementComponentCodeGenerator
     {
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             if(ShouldGenerateCollisionNameListCode(element as GlueElement))
             {
@@ -658,7 +658,7 @@ namespace OfficialPlugins.CollisionPlugin
             return canBePartitioned;
         }
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             // we only care about the top-level
             foreach (var nos in element.NamedObjects)
@@ -703,7 +703,7 @@ namespace OfficialPlugins.CollisionPlugin
             element.NamedObjects.Any(item => item.IsCollisionRelationship());
 
         
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             if(ShouldGenerateCollisionNameListCode(element as GlueElement))
             {
@@ -717,7 +717,7 @@ namespace OfficialPlugins.CollisionPlugin
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             if(ShouldGenerateCollisionNameListCode(element as GlueElement))
             {

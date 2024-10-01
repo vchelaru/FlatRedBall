@@ -14,7 +14,7 @@ namespace TiledPluginCore.CodeGeneration
 {
     class TileNodeNetworkCodeGenerator : ElementComponentCodeGenerator
     {
-        public override ICodeBlock GenerateInitializeLate(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitializeLate(ICodeBlock codeBlock, GlueElement element)
         {
             NamedObjectSave[] tileNodeNetworksCollections = GetAllTileNodeNetworkNamedObjectsInElement(element);
 
@@ -26,7 +26,7 @@ namespace TiledPluginCore.CodeGeneration
             return codeBlock;
         }
 
-        static NamedObjectSave[] GetAllTileNodeNetworkNamedObjectsInElement(IElement element)
+        static NamedObjectSave[] GetAllTileNodeNetworkNamedObjectsInElement(GlueElement element)
         {
             return element
                 .AllNamedObjects
@@ -34,7 +34,7 @@ namespace TiledPluginCore.CodeGeneration
                 .ToArray();
         }
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             NamedObjectSave[] tileNodeNetworks = GetAllTileNodeNetworkNamedObjectsInElement(element);
 

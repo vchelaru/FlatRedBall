@@ -16,7 +16,7 @@ namespace OfficialPlugins.StateInterpolation
             return "m" + enumName + "Tweener";
         }
         
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, FlatRedBall.Glue.SaveClasses.IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             if (element.SupportsAdvancedInterpolation())
             {
@@ -31,7 +31,7 @@ namespace OfficialPlugins.StateInterpolation
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             if (element.SupportsAdvancedInterpolation())
             {
@@ -55,7 +55,7 @@ namespace OfficialPlugins.StateInterpolation
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, FlatRedBall.Glue.SaveClasses.IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             if (element.SupportsAdvancedInterpolation())
             {
@@ -68,7 +68,7 @@ namespace OfficialPlugins.StateInterpolation
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, FlatRedBall.Glue.SaveClasses.IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             if (element.SupportsAdvancedInterpolation())
             {
@@ -115,7 +115,7 @@ namespace OfficialPlugins.StateInterpolation
             return codeBlock;
         }
 
-        public override void GeneratePauseThisScreen(ICodeBlock codeBlock, IElement element)
+        public override void GeneratePauseThisScreen(ICodeBlock codeBlock, GlueElement element)
         {
             if(element is ScreenSave)
             {
@@ -128,7 +128,7 @@ namespace OfficialPlugins.StateInterpolation
             }
         }
 
-        public override void GenerateUnpauseThisScreen(ICodeBlock codeBlock, IElement element)
+        public override void GenerateUnpauseThisScreen(ICodeBlock codeBlock, GlueElement element)
         {
             if (element is ScreenSave)
             {

@@ -542,14 +542,14 @@ class ElementImporter
 
         #region See if this IElement fixes any existing invalid references
 
-        foreach (IElement element in ProjectManager.GlueProjectSave.Entities)
+        foreach (GlueElement element in ProjectManager.GlueProjectSave.Entities)
         {
             if (element != newElement)
             {
                 SeeIfElementSolvesMissingReferences(element, newElement);
             }
         }
-        foreach (IElement element in ProjectManager.GlueProjectSave.Screens)
+        foreach (GlueElement element in ProjectManager.GlueProjectSave.Screens)
         {
             if (element != newElement)
             {
@@ -561,7 +561,7 @@ class ElementImporter
         #endregion
     }
 
-    private static void SeeIfElementSolvesMissingReferences(IElement elementToCheck, IElement newElement)
+    private static void SeeIfElementSolvesMissingReferences(GlueElement elementToCheck, IElement newElement)
     {
         string newElementUnqualifiedName = FileManager.RemovePath(newElement.Name);
 
@@ -572,7 +572,7 @@ class ElementImporter
             // todo:  Handle lists too
             if (!string.IsNullOrEmpty(nos.SourceClassType) && (nos.SourceType == SourceType.Entity))
             {
-                fulfillingIElement = ObjectFinder.Self.GetIElement(nos.SourceClassType);
+                fulfillingIElement = ObjectFinder.Self.GetElement(nos.SourceClassType);
 
                 if (fulfillingIElement == null)
                 {

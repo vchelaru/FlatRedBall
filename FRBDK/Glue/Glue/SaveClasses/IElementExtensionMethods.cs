@@ -77,7 +77,7 @@ public static class IElementExtensionMethods
 
     }
 
-    public static ReferencedFileSave GetReferencedFileSaveByInstanceName(this IElement element, string instanceName, bool caseSensitive = true)
+    public static ReferencedFileSave GetReferencedFileSaveByInstanceName(this GlueElement element, string instanceName, bool caseSensitive = true)
     {
         if (!string.IsNullOrEmpty(instanceName))
         {
@@ -96,7 +96,7 @@ public static class IElementExtensionMethods
     }
 
 
-    public static ReferencedFileSave GetReferencedFileSaveByInstanceNameRecursively(this IElement element, string instanceName, bool caseSensitive = true)
+    public static ReferencedFileSave GetReferencedFileSaveByInstanceNameRecursively(this GlueElement element, string instanceName, bool caseSensitive = true)
     {
         ReferencedFileSave rfs = element.GetReferencedFileSaveByInstanceName(instanceName, caseSensitive);
 
@@ -245,13 +245,13 @@ public static class IElementExtensionMethods
     }
 
 
-    public static List<CustomVariable> GetCustomVariablesToBeSetByDerived(this IElement element)
+    public static List<CustomVariable> GetCustomVariablesToBeSetByDerived(this GlueElement element)
     {
         var customVariablesToBeSetByDerived = new List<CustomVariable>();
 
         if (!string.IsNullOrEmpty(element.BaseObject) && element.BaseObject != "<NONE>")
         {
-            IElement elementBase = GlueState.CurrentGlueProject.GetElement(element.BaseObject);
+            GlueElement elementBase = GlueState.CurrentGlueProject.GetElement(element.BaseObject);
 
             if (elementBase == null)
             {
@@ -292,7 +292,7 @@ public static class IElementExtensionMethods
     }
 
 
-    public static void PostLoadInitialize(this IElement element)
+    public static void PostLoadInitialize(this GlueElement element)
     {
         foreach (CustomVariable cv in element.CustomVariables)
         {
@@ -408,7 +408,7 @@ public static class IElementExtensionMethods
     }
 
 
-    public static StateSave GetState(this IElement element, string stateName, string categoryName = null)
+    public static StateSave GetState(this GlueElement element, string stateName, string categoryName = null)
     {
         if (string.IsNullOrEmpty(categoryName) || categoryName == "Uncategorized")
         {
@@ -439,7 +439,7 @@ public static class IElementExtensionMethods
 
     }
 
-    public static StateSave GetStateRecursively(this IElement element, string stateName, string categoryName = null)
+    public static StateSave GetStateRecursively(this GlueElement element, string stateName, string categoryName = null)
     {
         StateSave stateSave = element.GetState(stateName, categoryName);
 
@@ -447,9 +447,10 @@ public static class IElementExtensionMethods
         {
             return stateSave;
         }
-        else if (stateSave == null && !string.IsNullOrEmpty(element.BaseElement))
+
+        if (!String.IsNullOrEmpty(element.BaseElement))
         {
-            IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
+            GlueElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
 
             if (baseElement != null)
             {
@@ -459,7 +460,7 @@ public static class IElementExtensionMethods
 
         return null;
     }
-    public static StateSave GetUncategorizedState(this IElement element, string stateName)
+    public static StateSave GetUncategorizedState(this GlueElement element, string stateName)
     {
         foreach (StateSave state in element.States)
         {
@@ -471,13 +472,13 @@ public static class IElementExtensionMethods
         return null;
     }
 
-    public static StateSave GetUncategorizedStateRecursively(this IElement element, string stateName)
+    public static StateSave GetUncategorizedStateRecursively(this GlueElement element, string stateName)
     {
         StateSave foundStateSave = element.GetUncategorizedState(stateName);
 
-        if (foundStateSave == null && !string.IsNullOrEmpty(element.BaseElement))
+        if (foundStateSave == null && !String.IsNullOrEmpty(element.BaseElement))
         {
-            IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
+            GlueElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
 
             if (baseElement != null)
             {
@@ -488,10 +489,10 @@ public static class IElementExtensionMethods
         return foundStateSave;
     }
 
-    public static List<StateSave> GetUncategorizedStatesRecursively(this IElement element)
+    public static List<StateSave> GetUncategorizedStatesRecursively(this GlueElement element)
     {
         // We'll start at the top and move down so that derived types can override baset types....not sure if this is going to eventually change
-        IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
+        GlueElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
 
         if(baseElement == null || element.States.Count != 0)
         {
@@ -504,19 +505,19 @@ public static class IElementExtensionMethods
 
     }
 
-    public static StateSaveCategory GetStateCategory(this IElement element, string stateCategoryName)
+    public static StateSaveCategory GetStateCategory(this GlueElement element, string stateCategoryName)
     {
         return element.StateCategoryList.FirstOrDefault(stateCategory => stateCategory.Name == stateCategoryName);
     }
 
-    public static StateSaveCategory GetStateCategoryRecursively(this IElement element, string stateCategoryName)
+    public static StateSaveCategory GetStateCategoryRecursively(this GlueElement element, string stateCategoryName)
     {
         // start at the top-down
         StateSaveCategory category = element.GetStateCategory(stateCategoryName);
 
         if (category == null && !string.IsNullOrEmpty(element.BaseElement))
         {
-            IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
+            GlueElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
 
             if (baseElement != null)
             {
@@ -529,7 +530,7 @@ public static class IElementExtensionMethods
 
     }
 
-    public static bool DefinesCategoryEnumRecursive(this IElement element, string enumType)
+    public static bool DefinesCategoryEnumRecursive(this GlueElement element, string enumType)
     {
         bool uses = false;
         if (enumType == "VariableState")
@@ -541,9 +542,9 @@ public static class IElementExtensionMethods
             uses = element.StateCategoryList.Count(item => { return item.Name == enumType; }) != 0;
         }
 
-        if (!uses && !string.IsNullOrEmpty(element.BaseElement))
+        if (!uses && !String.IsNullOrEmpty(element.BaseElement))
         {
-            IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
+            GlueElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
 
             if (baseElement != null)
             {
@@ -581,12 +582,12 @@ public static class IElementExtensionMethods
         }
     }
 
-    public static string GetQualifiedName(this IElement element, string projectName)
+    public static string GetQualifiedName(this GlueElement element, string projectName)
     {
         return projectName + '.' + element.Name.Replace('\\', '.');
     }
 
-    public static bool InheritsFromElement(this IElement element)
+    public static bool InheritsFromElement(this GlueElement element)
     {
         return element.BaseElement != null &&
                (element.BaseElement.Replace('\\', '/').StartsWith($"Entities/", StringComparison.OrdinalIgnoreCase) ||
@@ -594,7 +595,7 @@ public static class IElementExtensionMethods
             
     }
 
-    public static bool InheritsFromEntity(this IElement element)
+    public static bool InheritsFromEntity(this GlueElement element)
     {
         if (element is ScreenSave)
         {
@@ -607,7 +608,7 @@ public static class IElementExtensionMethods
         }
     }
 
-    public static bool InheritsFromFrbType(this IElement element)
+    public static bool InheritsFromFrbType(this GlueElement element)
     {
         if (element is ScreenSave)
         {
@@ -620,7 +621,7 @@ public static class IElementExtensionMethods
         }
     }
 
-    public static AssetTypeInfo GetAssetTypeInfo(this IElement element)
+    public static AssetTypeInfo GetAssetTypeInfo(this GlueElement element)
     {
         if (element is ScreenSave)
         {

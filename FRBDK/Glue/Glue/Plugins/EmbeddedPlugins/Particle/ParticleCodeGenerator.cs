@@ -12,7 +12,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle
 {
     public class ParticleCodeGenerator : ElementComponentCodeGenerator
     {
-        public override CodeGeneration.CodeBuilder.ICodeBlock GenerateActivity(CodeGeneration.CodeBuilder.ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override CodeGeneration.CodeBuilder.ICodeBlock GenerateActivity(CodeGeneration.CodeBuilder.ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             // We used to call TimedEmit here
             // but we only want to call it if the
@@ -39,7 +39,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle
             }
         }
 
-        public static void GenerateTimedEmit(ICodeBlock codeBlock, ReferencedFileSave rfs, IElement element)
+        public static void GenerateTimedEmit(ICodeBlock codeBlock, ReferencedFileSave rfs, GlueElement element)
         {
             if (rfs.LoadedAtRuntime && !rfs.LoadedOnlyWhenReferenced && (element is ScreenSave || rfs.IsSharedStatic == false)
                 && !string.IsNullOrEmpty(rfs.Name) && FileManager.GetExtension(rfs.Name) == "emix")

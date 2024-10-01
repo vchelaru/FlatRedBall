@@ -52,7 +52,7 @@ namespace FlatRedBall.Glue.IO
             // Therefore, we will populate the filesReferencedByElements List to suppress
             // warnings about files not referenced when they are part of the group.
             var filesReferencedByElements = (
-                from IElement element in elementGroup 
+                from GlueElement element in elementGroup 
                 from rfs in element.ReferencedFiles 
                 select GlueCommands.Self.GetAbsoluteFileName(rfs) 
                 into absoluteFile 
@@ -333,7 +333,7 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        private static void GetExtensionsForExport(IElement element, out string extension, out string zipExtension)
+        private static void GetExtensionsForExport(GlueElement element, out string extension, out string zipExtension)
         {
             extension = "";
             zipExtension = "";
@@ -353,7 +353,7 @@ namespace FlatRedBall.Glue.IO
 
 
 
-        private static void AdjustToPullFromDirectory(IElement element)
+        private static void AdjustToPullFromDirectory(GlueElement element)
         {
             mOldFileNames.Clear();
             mOldNamedObjectFileNames.Clear();
@@ -400,7 +400,7 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        private static void ReturnValuesBeforeModification(IElement element)
+        private static void ReturnValuesBeforeModification(GlueElement element)
         {
             element.Name = mOldElementName;
 
@@ -415,7 +415,7 @@ namespace FlatRedBall.Glue.IO
                 kvp.Key.SourceFile = kvp.Value;
             }
         }
-        static string GetReasonWhyElementCantBeExported(IElement element, List<string> filesAlreadyIncluded, bool copyExternalFiles = false)
+        static string GetReasonWhyElementCantBeExported(GlueElement element, List<string> filesAlreadyIncluded, bool copyExternalFiles = false)
         {
             string toReturn = null;
 
@@ -433,7 +433,7 @@ namespace FlatRedBall.Glue.IO
             return toReturn;
         }
 
-        private static List<string> GetExternalFiles(IElement element, List<string> filesAlreadyIncluded)
+        private static List<string> GetExternalFiles(GlueElement element, List<string> filesAlreadyIncluded)
         {
             string contentDirectory = GlueCommands.Self.GetAbsoluteFileName(element.Name, true);
             var filesNotIncluded = new List<string>();

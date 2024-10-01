@@ -52,7 +52,7 @@ namespace PluginTestbed.PerformanceMeasurement
 
         #region ICodeGeneratorPlugin Members
 
-        public void CodeGenerationStart(IElement element)
+        public void CodeGenerationStart(GlueElement element)
         {
 
         }

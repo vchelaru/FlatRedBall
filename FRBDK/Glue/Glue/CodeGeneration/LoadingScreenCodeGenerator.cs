@@ -11,13 +11,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     public class LoadingScreenCodeGenerator : ElementComponentCodeGenerator
     {
-        bool IsLoadingScreen(IElement element)
+        bool IsLoadingScreen(GlueElement element)
         {
             ScreenSave throwaway;
             return IsLoadingScreen(element, out throwaway);
         }
 
-        bool IsLoadingScreen(IElement element, out ScreenSave screenSave)
+        bool IsLoadingScreen(GlueElement element, out ScreenSave screenSave)
         {
             screenSave = null;
 
@@ -30,7 +30,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return false;
         }
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             if (IsLoadingScreen(element))
             {
@@ -40,7 +40,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             return codeBlock;
         }
-        public override CodeBuilder.ICodeBlock GenerateInitialize(CodeBuilder.ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override CodeBuilder.ICodeBlock GenerateInitialize(CodeBuilder.ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             if(IsLoadingScreen(element))
             {
@@ -51,7 +51,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             if(IsLoadingScreen(element))
             {
@@ -60,7 +60,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             if(IsLoadingScreen(element))
             {
@@ -126,7 +126,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             if (IsLoadingScreen(element))
             {

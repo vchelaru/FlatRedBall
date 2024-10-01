@@ -25,16 +25,16 @@ namespace FlatRedBall.Glue.CodeGeneration
         // plugins should just use the full type name for things that
         // aren't by default added in the generate code template.
 
-        public virtual void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+        public virtual void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element)
         {
 
         }
-        public virtual ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public virtual ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
 
         }
-        public virtual ICodeBlock GenerateConstructor(ICodeBlock codeBlock, IElement element)
+        public virtual ICodeBlock GenerateConstructor(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
 
@@ -45,16 +45,16 @@ namespace FlatRedBall.Glue.CodeGeneration
         public string InitializeCategory { get; set; }
         public string InitializeAfterCategory { get; set; }
 
-        public virtual ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        public virtual ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
 
         }
-        public virtual ICodeBlock GenerateInitializeLate(ICodeBlock codeBlock, IElement element)
+        public virtual ICodeBlock GenerateInitializeLate(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
         }
-        public virtual ICodeBlock GeneratePostInitialize(ICodeBlock codeBlock, IElement element)
+        public virtual ICodeBlock GeneratePostInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
         }
@@ -63,13 +63,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region AddToManagers
 
-        public virtual ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public virtual ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
 
         }
 
-        public virtual void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element)
+        public virtual void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, GlueElement element)
         {
 
         }
@@ -78,7 +78,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Destroy
 
-        public virtual ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public virtual ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
 
@@ -86,51 +86,51 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
-        public virtual void GenerateActivityEditMode(ICodeBlock codeBlock, IElement element) {  }
+        public virtual void GenerateActivityEditMode(ICodeBlock codeBlock, GlueElement element) {  }
 
-        public virtual ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        public virtual ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
         }
 
-        public virtual void GeneratePauseIgnoringActivity(ICodeBlock codeBlock, IElement element) { }
+        public virtual void GeneratePauseIgnoringActivity(ICodeBlock codeBlock, GlueElement element) { }
 
-        public virtual ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        public virtual ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
 
         }
-        public virtual ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, IElement element)
-        {
-            return codeBlock;
-
-        }
-
-        public virtual ICodeBlock GenerateUnloadStaticContent(ICodeBlock codeBlock, IElement element)
+        public virtual ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, GlueElement element)
         {
             return codeBlock;
 
         }
 
-        public virtual void GenerateAdditionalClasses(ICodeBlock codeBlock, IElement element)
+        public virtual ICodeBlock GenerateUnloadStaticContent(ICodeBlock codeBlock, GlueElement element)
+        {
+            return codeBlock;
+
+        }
+
+        public virtual void GenerateAdditionalClasses(ICodeBlock codeBlock, GlueElement element)
         {
 
 
         }
 
-        public virtual void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
+        public virtual void GenerateRemoveFromManagers(ICodeBlock codeBlock, GlueElement element)
         {
 
         }
 
         #region Pause/Unpause
 
-        public virtual void GeneratePauseThisScreen(ICodeBlock codeBlock, IElement element)
+        public virtual void GeneratePauseThisScreen(ICodeBlock codeBlock, GlueElement element)
         {
 
         }
 
-        public virtual void GenerateUnpauseThisScreen(ICodeBlock codeBlock, IElement element)
+        public virtual void GenerateUnpauseThisScreen(ICodeBlock codeBlock, GlueElement element)
         {
 
         }
@@ -148,12 +148,12 @@ namespace FlatRedBall.Glue.CodeGeneration
         /// </remarks>
         /// <param name="codeBlock">The code block for the UpdateDependencies method</param>
         /// <param name="element">The element that is currently being generated.</param>
-        public virtual void GenerateUpdateDependencies(ICodeBlock codeBlock, IElement element)
+        public virtual void GenerateUpdateDependencies(ICodeBlock codeBlock, GlueElement element)
         {
 
         }
 
-        public virtual bool HandlesVariable(CustomVariable variable, IElement element)
+        public virtual bool HandlesVariable(CustomVariable variable, GlueElement element)
         {
             return false;
         }

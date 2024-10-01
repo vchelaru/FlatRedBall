@@ -25,7 +25,7 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
 
     public static class CustomVariableHelper
     {
-        public static void SetDefaultValueFor(CustomVariable customVariable, IElement element)
+        public static void SetDefaultValueFor(CustomVariable customVariable, GlueElement element)
         {
             object defaultValue = GetDefaultValueFor(customVariable, element);
             if(defaultValue != null)
@@ -34,7 +34,7 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
             }
         }
 
-        private static object GetDefaultValueFor(CustomVariable customVariable, IElement element)
+        private static object GetDefaultValueFor(CustomVariable customVariable, GlueElement element)
         {
             object valueToReturn = null;
 

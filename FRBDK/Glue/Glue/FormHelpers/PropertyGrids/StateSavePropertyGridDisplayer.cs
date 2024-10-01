@@ -15,7 +15,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 {
     public class StateSavePropertyGridDisplayer : PropertyGridDisplayer
     {
-        public IElement CurrentElement
+        public GlueElement CurrentElement
         {
             get;
             set;
@@ -193,7 +193,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             }
         }
 
-        public static StateSave GetStateThatVariableBelongsTo(CustomVariable variable, IElement element)
+        public static StateSave GetStateThatVariableBelongsTo(CustomVariable variable, GlueElement element)
         {
             // We only loop through categories, not uncategorized States because a variable can't belong to an uncategorized state.
             // See update below for-loop

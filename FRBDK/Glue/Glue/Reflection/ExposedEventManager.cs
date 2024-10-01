@@ -98,7 +98,7 @@ namespace FlatRedBall.Glue.Reflection
             return returnValues;
         }
 
-        static void RemoveAlreadyExposed(IElement element, List<ExposableEvent> returnValues)
+        static void RemoveAlreadyExposed(GlueElement element, List<ExposableEvent> returnValues)
         {
             for (int i = returnValues.Count - 1; i > -1; i--)
             {

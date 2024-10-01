@@ -147,7 +147,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             codeBlock.Line("");
 
@@ -166,7 +166,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Instantiate/Initialize
 
-        public override ICodeBlock GenerateConstructor(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateConstructor(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             var constructorSortedNamedObjects = element.NamedObjects
                 // never make collision relationships in the constructor
@@ -182,7 +182,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public static void WriteCodeForNamedObjectInitialize(NamedObjectSave namedObject, IElement saveObject,
+        public static void WriteCodeForNamedObjectInitialize(NamedObjectSave namedObject, GlueElement saveObject,
             ICodeBlock codeBlock, string overridingContainerName, bool inConstructor = false)
         {
             var referencedFilesAlreadyUsingFullFile = ReusableEntireFileRfses;
@@ -275,7 +275,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             AddEndIfIfNecessary(codeBlock, namedObject);
         }
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
 
             // Do the named object saves
@@ -295,7 +295,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         // Relationships need to be assigned after all other objects. To do that, we'll explicitly call this from CodeWriter
-        public static void GenerateCollisionRelationships(ICodeBlock codeBlock, IElement element)
+        public static void GenerateCollisionRelationships(ICodeBlock codeBlock, GlueElement element)
         {
             var sortedNamedObjects = element.NamedObjects
                  .Where(item => item.IsCollisionRelationship())
@@ -373,7 +373,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Add To Managers
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             NamedObjectSaveCodeGenerator.WriteAddToManagersBottomUpForNamedObjectList(
                 element.NamedObjects, codeBlock, element,  CodeWriter.ReusableEntireFileRfses);
@@ -384,7 +384,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         #endregion
 
         #region Remove from Managers
-        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
+        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, GlueElement element)
         {
             for (int i = 0; i < element.NamedObjects.Count; i++)
             {
@@ -404,7 +404,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Destroy
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             var doesElementHaveLayers = element.NamedObjects.Any(item => item.IsLayer);
             
@@ -483,7 +483,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Activity
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             #region Loop through all NamedObjects
 
@@ -499,12 +499,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             #region Loop through all contained Objects and load static on them if they are Screens or Entities
 
@@ -528,7 +528,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        private static bool GenerateInstantiationOrAssignment(NamedObjectSave namedObject, IElement saveObject, 
+        private static bool GenerateInstantiationOrAssignment(NamedObjectSave namedObject, GlueElement saveObject, 
             ICodeBlock codeBlock, string overridingName, Dictionary<string, string> referencedFilesAlreadyUsingFullFile)
         {
 
@@ -955,7 +955,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void WriteTextSpecificInitialization(NamedObjectSave namedObject, IElement element, ICodeBlock codeBlock, 
+        private static void WriteTextSpecificInitialization(NamedObjectSave namedObject, GlueElement element, ICodeBlock codeBlock, 
             Dictionary<string, string> referencedFilesAlreadyUsingFullFile)
         {
             if (namedObject.SourceType == SourceType.File)
@@ -1032,7 +1032,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             forBlock.Line(string.Format("{0}.Texts[i].AdjustPositionForPixelPerfectDrawing = true;", sceneName));
         }
 
-        public static void GenerateRemoveFromManagersForNamedObject(IElement element, NamedObjectSave namedObject, ICodeBlock codeBlock)
+        public static void GenerateRemoveFromManagersForNamedObject(GlueElement element, NamedObjectSave namedObject, ICodeBlock codeBlock)
         {
             AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
             bool handled = false;
@@ -1050,7 +1050,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             AddEndIfIfNecessary(codeBlock, namedObject);
         }
 
-        public static void GetDestroyForNamedObject(IElement element, NamedObjectSave namedObject, ICodeBlock codeBlock, bool forceRecycle = false)
+        public static void GetDestroyForNamedObject(GlueElement element, NamedObjectSave namedObject, ICodeBlock codeBlock, bool forceRecycle = false)
         {
             #region EARLY OUTS
 
@@ -1768,7 +1768,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         public static void WriteAddToManagersBottomUpForNamedObjectList(List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, 
-            IElement element, Dictionary<string, string> reusableEntireFileRfses)
+            GlueElement element, Dictionary<string, string> reusableEntireFileRfses)
         {
             foreach(var nos in namedObjectList.Where(nos=>
                     nos.SourceType != SourceType.FlatRedBallType || 
@@ -2059,7 +2059,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return toReturn;
         }
 
-        public static void WriteAddToManagersForNamedObject(IElement element, NamedObjectSave namedObject, 
+        public static void WriteAddToManagersForNamedObject(GlueElement element, NamedObjectSave namedObject, 
             ICodeBlock codeBlock, bool isInVariableSetterProperty = false, bool considerRemoveIfInvisible = true)
         {
 
@@ -2314,7 +2314,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return layerName;
         }
 
-        public static void AssignInstanceVariablesOn(IElement element, NamedObjectSave namedObject, ICodeBlock codeBlock)
+        public static void AssignInstanceVariablesOn(GlueElement element, NamedObjectSave namedObject, ICodeBlock codeBlock)
         {
             AssetTypeInfo ati = namedObject.GetAssetTypeInfo();
             // Update June 24, 2012
@@ -2692,7 +2692,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public static void WriteConvertToManuallyUpdated(ICodeBlock codeBlock, IElement element, Dictionary<string, string> reusableEntireFileRfses)
+        public static void WriteConvertToManuallyUpdated(ICodeBlock codeBlock, GlueElement element, Dictionary<string, string> reusableEntireFileRfses)
         {
             foreach (NamedObjectSave nos in element.NamedObjects)
             {

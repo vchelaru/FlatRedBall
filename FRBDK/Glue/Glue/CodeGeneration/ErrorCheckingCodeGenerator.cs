@@ -4,7 +4,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     public class ErrorCheckingCodeGenerator : ElementComponentCodeGenerator
     {
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             codeBlock.Line("#if DEBUG");
             codeBlock.Line("public static bool HasBeenLoadedWithGlobalContentManager { get; private set; }= false;");
@@ -13,29 +13,29 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             return codeBlock;
 
         }
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             return codeBlock;
 
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             #region For debugging record if we're using a global content manager
 

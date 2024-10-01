@@ -30,7 +30,7 @@ namespace FlatRedBall.Glue.Plugins.Interfaces
     public interface ICodeGeneratorPlugin : IPlugin
     {
 
-        void CodeGenerationStart(IElement element);
+        void CodeGenerationStart(GlueElement element);
 
         #region XML Docs
         /// <summary>
@@ -48,7 +48,7 @@ namespace FlatRedBall.Glue.Plugins.Interfaces
     public static class CodeGeneratorPluginMethods
     {
 
-        public static void CallCodeGenerationStart(PluginManager pluginManager, IElement element)
+        public static void CallCodeGenerationStart(PluginManager pluginManager, GlueElement element)
         {
             foreach (ICodeGeneratorPlugin plugin in pluginManager.CodeGeneratorPlugins)
             {
@@ -61,7 +61,7 @@ namespace FlatRedBall.Glue.Plugins.Interfaces
 
 
         public static void GenerateActivityPluginCode(CodeLocation codeLocation, PluginManager pluginManager,
-            ICodeBlock codeBlock, IElement element)
+            ICodeBlock codeBlock, GlueElement element)
         {
 
             foreach (ComponentPluginPair cpp in GetPluginsIn(pluginManager, codeLocation))
@@ -72,7 +72,7 @@ namespace FlatRedBall.Glue.Plugins.Interfaces
 
 
         public static void GenerateAdditionalMethodsPluginCode(PluginManager pluginManager,
-            ICodeBlock codeBlock, IElement element)
+            ICodeBlock codeBlock, GlueElement element)
         {
             foreach (ComponentPluginPair cpp in GetPluginsIn(pluginManager))
             {
@@ -82,9 +82,9 @@ namespace FlatRedBall.Glue.Plugins.Interfaces
 
         //TODO:  Add more generation types here
 
-        delegate ICodeBlock GenerateDelegate(ICodeBlock codeBlock, IElement element);
+        delegate ICodeBlock GenerateDelegate(ICodeBlock codeBlock, GlueElement element);
 
-        static void GenerateWithException(GenerateDelegate method, ICodeBlock codeBlock, IElement element, IPlugin plugin, PluginManager pluginManager)
+        static void GenerateWithException(GenerateDelegate method, ICodeBlock codeBlock, GlueElement element, IPlugin plugin, PluginManager pluginManager)
         {
             try
             {

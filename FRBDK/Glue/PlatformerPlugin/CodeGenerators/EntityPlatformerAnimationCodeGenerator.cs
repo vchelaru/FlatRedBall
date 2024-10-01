@@ -51,7 +51,7 @@ public class EntityPlatformerAnimationCodeGenerator : ElementComponentCodeGenera
     string PlatformerAnimationControllerClassName =>
         $"{GlueState.Self.ProjectNamespace}.Entities.PlatformerAnimationController";
 
-    public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+    public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
     {
         var animationValues = GetAnimationValuesFor(element as GlueElement);
 
@@ -63,7 +63,7 @@ public class EntityPlatformerAnimationCodeGenerator : ElementComponentCodeGenera
     }
 
     
-    public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+    public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
     {
 
         var animationValues = GetAnimationValuesFor(element as GlueElement);
@@ -128,7 +128,7 @@ public class EntityPlatformerAnimationCodeGenerator : ElementComponentCodeGenera
         return codeBlock;
     }
 
-    public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+    public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
     {
         var animationValues = GetAnimationValuesFor(element as GlueElement);
 

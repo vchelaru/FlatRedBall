@@ -11,7 +11,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
 {
     class CompilerPluginElementCodeGenerator : ElementComponentCodeGenerator
     {
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             if(MainCompilerPlugin.MainViewModel.IsGenerateGlueControlManagerInGame1Checked && element is EntitySave &&
                 // If it has a base element, then the base will handle this...

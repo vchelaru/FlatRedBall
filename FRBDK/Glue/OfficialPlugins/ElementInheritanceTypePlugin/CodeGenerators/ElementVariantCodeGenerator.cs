@@ -18,7 +18,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 {
     internal class ElementVariantCodeGenerator : ElementComponentCodeGenerator
     {
-        public override void GenerateAdditionalClasses(ICodeBlock codeBlock, IElement element)
+        public override void GenerateAdditionalClasses(ICodeBlock codeBlock, GlueElement element)
         {
             var derivedElements = ObjectFinder.Self.GetAllDerivedElementsRecursive(element as GlueElement);
 
@@ -122,7 +122,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             classBlock.Line(";");
         }
 
-        private static void FillCreateNew(string methodHeaderParameters, string innerCallParameters, IElement element, ICodeBlock codeBlock)
+        private static void FillCreateNew(string methodHeaderParameters, string innerCallParameters, GlueElement element, ICodeBlock codeBlock)
         {
             codeBlock = codeBlock.Function($"public {element.ClassName}", "CreateNew", methodHeaderParameters);
 
@@ -204,7 +204,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             fromName.Line("return null;");
         }
 
-        private void CreateVariableFields(IElement element, ICodeBlock classBlock)
+        private void CreateVariableFields(GlueElement element, ICodeBlock classBlock)
         {
             CustomVariable tempVariable = new CustomVariable();
             foreach (var variable in element.CustomVariables.Where(item => item.SetByDerived))

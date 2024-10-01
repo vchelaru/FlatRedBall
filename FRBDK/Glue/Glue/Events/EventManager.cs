@@ -57,7 +57,7 @@ namespace FlatRedBall.Glue.Events
 
         }
 
-        public static string GetGeneratedEventFileNameForElement(IElement element)
+        public static string GetGeneratedEventFileNameForElement(GlueElement element)
         {
             return element.Name + ".Generated.Event.cs";
         }

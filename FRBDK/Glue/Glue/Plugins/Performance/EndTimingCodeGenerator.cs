@@ -19,7 +19,7 @@ namespace PluginTestbed.PerformanceMeasurement
             }
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, FlatRedBall.Glue.SaveClasses.IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, FlatRedBall.Glue.SaveClasses.GlueElement element)
         {
             if (Active)
             {

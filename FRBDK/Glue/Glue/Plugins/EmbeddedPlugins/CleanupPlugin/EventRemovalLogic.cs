@@ -12,7 +12,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CleanupPlugin
 {
     class EventRemovalLogic
     {
-        internal void HandleEventRemoved(IElement element, EventResponseSave eventResponse)
+        internal void HandleEventRemoved(GlueElement element, EventResponseSave eventResponse)
         {
             bool hasAnyEvents = element.Events.Count > 0;
 
@@ -22,7 +22,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CleanupPlugin
             }
         }
 
-        private void RemoveEventGeneratedCodefile(IElement element)
+        private void RemoveEventGeneratedCodefile(GlueElement element)
         {
             string fileName = element.Name + ".Generated.Event.cs";
             FilePath fullFileName = ProjectManager.ProjectBase.Directory + fileName;

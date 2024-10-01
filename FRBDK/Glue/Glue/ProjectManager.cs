@@ -550,7 +550,7 @@ namespace FlatRedBall.Glue
 
 
 
-        internal static CheckResult CheckForCircularObjectReferences(IElement element)
+        internal static CheckResult CheckForCircularObjectReferences(GlueElement element)
         {
 
             if (mGlueProjectSave != null && element != null)
@@ -610,7 +610,7 @@ namespace FlatRedBall.Glue
 
         }
 
-        private static CheckResult ReferenceVerificationHelper(IElement element, ref string cycleString, Stack<IElement> visitedElements)
+        private static CheckResult ReferenceVerificationHelper(GlueElement element, ref string cycleString, Stack<IElement> visitedElements)
         {
             List<string> typesReferenced = new List<string>();
 

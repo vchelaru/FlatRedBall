@@ -25,7 +25,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             }
         }
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             ///////////////Early Out//////////////////////
             if (GetIfIsPlatformer(element) == false || GetIfInheritsFromPlatformer(element))
@@ -290,7 +290,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             ///////////////////Early Out///////////////////////////////
             if(!GetIfIsPlatformer(element) || GetIfInheritsFromPlatformer(element))
@@ -338,7 +338,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             ///////////////////Early Out///////////////////////////////
             if(!GetIfIsPlatformer(element))
@@ -351,7 +351,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             ///////////////////Early Out///////////////////////////////
             if(!GetIfIsPlatformer(element) || GetIfInheritsFromPlatformer(element))
@@ -1174,7 +1174,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             return base.GenerateAdditionalMethods(codeBlock, element);
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             ///////////////////Early Out///////////////////////////////
             if(!GetIfIsPlatformer(element) || GetIfInheritsFromPlatformer(element))

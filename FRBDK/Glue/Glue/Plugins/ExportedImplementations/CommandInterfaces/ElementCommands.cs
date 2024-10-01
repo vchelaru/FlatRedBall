@@ -73,7 +73,7 @@ public class RenameModifications
     public List<CustomVariable> ChangedCustomVariables = new List<CustomVariable>();
     public string StartupScreenChange;
 }
-public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
+public class ElementCommands : IScreenCommands, IEntityCommands, IElementCommands
 {
     #region Fields/Properties
 
@@ -1328,7 +1328,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     #region ReferencedFile
 
     [Obsolete("This function does way too much. Moving this to GluxCommands")]
-    public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
+    public ReferencedFileSave CreateReferencedFileSaveForExistingFile(GlueElement containerForFile, string directoryInsideContainer, string absoluteFileName,
         PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage)
     {
         creationReport = "";
@@ -1522,7 +1522,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         }
     }
 
-    public static string GetFullPathContentDirectory(IElement element, string directoryRelativeToElement)
+    public static string GetFullPathContentDirectory(GlueElement element, string directoryRelativeToElement)
     {
         string resultNameInFolder = "";
 
@@ -1648,13 +1648,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         return haveChangesOccurred;
     }
 
-    private void UpdateCustomVariablesFromBaseType(IElement elementToUpdate)
+    private void UpdateCustomVariablesFromBaseType(GlueElement elementToUpdate)
     {
+        GlueElement baseElement = ObjectFinder.Self.GetBaseElement(elementToUpdate);
 
-        IElement baseElement = null;
-        baseElement = ObjectFinder.Self.GetBaseElement(elementToUpdate);
-
-        List<CustomVariable> customVariablesBeforeUpdate = new List<CustomVariable>();
+        var customVariablesBeforeUpdate = new List<CustomVariable>();
 
         for (int i = 0; i < elementToUpdate.CustomVariables.Count; i++)
         {

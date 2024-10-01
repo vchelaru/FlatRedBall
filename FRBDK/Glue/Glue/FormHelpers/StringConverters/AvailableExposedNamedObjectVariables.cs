@@ -25,7 +25,7 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
 			return true;
 		}
 
-        public AvailableExposedNamedObjectVariables(CustomVariable customVariable, IElement element)
+        public AvailableExposedNamedObjectVariables(CustomVariable customVariable, GlueElement element)
             : base()
         {
             mCustomVariable = customVariable;

@@ -14,7 +14,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
     {
         #region Inheritance
 
-        public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+        public override void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element)
         {
             if (element is EntitySave entity)
             {
@@ -36,7 +36,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
         public static bool UsesDamageV3 => GlueState.Self.CurrentMainProject.IsFrbSourceLinked()
                                            || GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.DamageDealingToggles;
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             if (element is EntitySave entity)
             {
@@ -117,7 +117,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             // Can't do this here, because derived needs a chance to set this
             // Moving to AddToManagers
@@ -129,7 +129,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
             return base.GenerateInitialize(codeBlock, element);
         }
 
-        public override void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element)
+        public override void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, GlueElement element)
         {
             if (UsesDamageV2 && ImplementsIDamageableRecursively(element as EntitySave))
             {
@@ -137,7 +137,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
             }
         }
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             if (element is EntitySave entity)
             {

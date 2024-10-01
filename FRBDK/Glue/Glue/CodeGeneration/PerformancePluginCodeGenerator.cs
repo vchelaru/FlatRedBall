@@ -37,7 +37,7 @@ namespace FlatRedBall.Glue.Plugins.Performance
             IsEnabled = false;
         }
 
-        public static void GenerateFields(ICodeBlock codeBlock, IElement element)
+        public static void GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             if (ObjectFinder.Self.GlueProject.PerformanceSettingsSave.RecordInitializeSegments &&
                 element is ScreenSave)

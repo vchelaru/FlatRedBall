@@ -191,7 +191,7 @@ namespace FlatRedBall.Glue.SaveClasses
         /// </summary>
         /// <param name="element">The element to return the inheritance chain for.</param>
         /// <returns>An IEnumerable of all base elements.</returns>
-        public static IEnumerable<IElement> BaseElements(this IElement element)
+        public static IEnumerable<IElement> BaseElements(this GlueElement element)
         {
             if (!string.IsNullOrEmpty(element.BaseElement))
             {

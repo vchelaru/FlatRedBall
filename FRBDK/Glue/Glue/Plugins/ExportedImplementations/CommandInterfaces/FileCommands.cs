@@ -198,7 +198,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public string GetContentFolder(IElement element)
+        public string GetContentFolder(GlueElement element)
         {
             string contentFolder = GlueState.Self.ContentDirectory;
 

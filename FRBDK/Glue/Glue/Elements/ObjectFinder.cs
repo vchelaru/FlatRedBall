@@ -309,10 +309,7 @@ public class ObjectFinder : IObjectFinder
         }
 
         return null;
-    }
-
-    [Obsolete("Use GetElement instead")]
-    public GlueElement GetIElement(string elementName) => GetElement(elementName);
+    } 
 
     /// <summary>
     /// Returns the element referenced by the argument NamedObjectSave's SourceClassType. If the NamedObjectSave
@@ -568,7 +565,7 @@ public class ObjectFinder : IObjectFinder
         return GetFirstCsvUsingClass(className, null);
     }
 
-    public ReferencedFileSave GetFirstCsvUsingClass(string className, IElement elementToLookIn)
+    public ReferencedFileSave GetFirstCsvUsingClass(string className, GlueElement elementToLookIn)
     {
         if (GlueProject != null)
         {
@@ -858,7 +855,7 @@ public class ObjectFinder : IObjectFinder
         }
     }
 
-    public List<NamedObjectSave> GetAllNamedObjectsThatUseElement(IElement element)
+    public List<NamedObjectSave> GetAllNamedObjectsThatUseElement(GlueElement element)
     {
         if (element is EntitySave)
         {
@@ -1172,7 +1169,7 @@ public class ObjectFinder : IObjectFinder
 
     #region Variables
 
-    public IElement GetVariableContainer(CustomVariable customVariable)
+    public GlueElement GetVariableContainer(CustomVariable customVariable)
     {
         return GetElementContaining(customVariable);
     }

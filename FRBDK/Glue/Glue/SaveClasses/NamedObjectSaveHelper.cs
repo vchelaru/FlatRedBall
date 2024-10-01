@@ -17,7 +17,7 @@ namespace FlatRedBall.Glue.SaveClasses
     public static class NamedObjectContainerHelper
     {
 
-        public static bool DoesMemberNeedToBeSetByContainer(this IElement namedObjectContainer, string memberName)
+        public static bool DoesMemberNeedToBeSetByContainer(this GlueElement namedObjectContainer, string memberName)
         {
             foreach (NamedObjectSave namedObject in namedObjectContainer.NamedObjects)
             {

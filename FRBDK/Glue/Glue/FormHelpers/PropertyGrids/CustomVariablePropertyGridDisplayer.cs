@@ -13,13 +13,11 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 {
     public class CustomVariablePropertyGridDisplayer : PropertyGridDisplayer
     {
-        public IElement CurrentElement
+        public GlueElement CurrentElement
         {
             get;
             set;
         }
-
-
         public override object Instance
         {
             get

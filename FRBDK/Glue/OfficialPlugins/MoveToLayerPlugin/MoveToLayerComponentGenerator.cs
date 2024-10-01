@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Elements;
@@ -11,7 +7,7 @@ namespace PluginTestbed.MoveToLayerPlugin
 {
     class MoveToLayerComponentGenerator : ElementComponentCodeGenerator
     {
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, FlatRedBall.Glue.SaveClasses.IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             //////////////////////////EARLY OUT//////////////////////////////////////
             if (element is ScreenSave)

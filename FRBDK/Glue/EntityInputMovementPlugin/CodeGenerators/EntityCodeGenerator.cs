@@ -11,7 +11,7 @@ namespace EntityInputMovementPlugin.CodeGenerators
 {
     class EntityCodeGenerator : ElementComponentCodeGenerator
     {
-        public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+        public override void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element)
         {
             base.AddInheritedTypesToList(listToAddTo, element);
 
@@ -24,7 +24,7 @@ namespace EntityInputMovementPlugin.CodeGenerators
             }
         }
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, GlueElement element)
         {
             var entity = element as EntitySave;
             /////////////Early Out////////////////

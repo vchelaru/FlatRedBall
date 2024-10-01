@@ -108,7 +108,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        private static void AppendPropertyForTunneledVariable(IElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable, VariableDefinition variableDefinition)
+        private static void AppendPropertyForTunneledVariable(GlueElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable, VariableDefinition variableDefinition)
         {
             NamedObjectSave referencedNos = saveObject.GetNamedObjectRecursively(customVariable.SourceObject);
 
@@ -400,7 +400,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             codeBlock.Line("/// </summary>");
         }
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             var glueElement = element as GlueElement;
 
@@ -416,7 +416,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        private static void WriteSetterForProperty(IElement saveObject, CustomVariable customVariable, ICodeBlock prop, 
+        private static void WriteSetterForProperty(GlueElement saveObject, CustomVariable customVariable, ICodeBlock prop, 
             bool isVisibleSetterOnList, VariableDefinition variableDefinition)
         {
             var setter = prop.Set();
@@ -605,7 +605,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Initialize
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             // Before August 23, 2010 Custom Variables used to be set
             // here in Initialize before the AddToManagers method.  This
@@ -810,10 +810,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         // Note - this code is very similar to StateCodeGenerator.cs's GetRightSideAssignmentValueAsString
         // Unify?
-        public static ICodeBlock AppendAssignmentForCustomVariableInElement(ICodeBlock codeBlock, CustomVariable customVariable, IElement saveObject)
-        {
-            var glueElement = saveObject as GlueElement;
-
+        public static ICodeBlock AppendAssignmentForCustomVariableInElement(ICodeBlock codeBlock, CustomVariable customVariable, GlueElement saveObject)
+        { 
             var ati = saveObject.GetAssetTypeInfo();
             var variableDefinition = ati?.VariableDefinitions.Find(item => item.Name == customVariable.Name);
             if(variableDefinition?.CustomGenerationFunc != null)
@@ -833,10 +831,10 @@ namespace FlatRedBall.Glue.CodeGeneration
             //if (!customVariable.SetByDerived && 
             else if (customVariable.DefaultValue != null && // if it's null the user doesn't want to change what is set in the file or in the source object
                 !customVariable.IsShared && // no need to handle statics here because they're always defined in class scope
-                !IsVariableTunnelingToDisabledObject(customVariable, glueElement)
+                !IsVariableTunnelingToDisabledObject(customVariable, saveObject)
                 )
             {
-                string rightSide = GetRightSideOfEquals(customVariable, glueElement);
+                string rightSide = GetRightSideOfEquals(customVariable, saveObject);
 
                 if (!string.IsNullOrEmpty(rightSide))
                 {
@@ -846,7 +844,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         codeBlock = codeBlock.If("Parent == null");
                     }
 
-                    NamedObjectSave namedObject = glueElement.GetNamedObject(customVariable.SourceObject);
+                    NamedObjectSave namedObject = saveObject.GetNamedObject(customVariable.SourceObject);
 
                     bool shouldSetUnderlyingValue = namedObject != null && namedObject.RemoveFromManagersWhenInvisible &&
                         customVariable.SourceObjectProperty == "Visible";
@@ -899,19 +897,19 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Activity
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             return codeBlock;
         }
 
         #endregion
 
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, SaveClasses.IElement elementAsIElement)
+        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, SaveClasses.GlueElement elementAsIElement)
         {
             var element = elementAsIElement as GlueElement;
             HashSet<GlueElement> elementsToLoadStaticContent = new HashSet<GlueElement>();
@@ -1049,7 +1047,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return prop;
         }
 
-        private static void WriteGetterForProperty(CustomVariable customVariable, IElement element, ICodeBlock prop)
+        private static void WriteGetterForProperty(CustomVariable customVariable, GlueElement element, ICodeBlock prop)
         {
             var getter = prop.Get();
 
@@ -1109,7 +1107,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static bool GetIfShouldGenerateRelative(CustomVariable customVariable, IElement element)
+        private static bool GetIfShouldGenerateRelative(CustomVariable customVariable, GlueElement element)
         {
             NamedObjectSave referencedNos = null;
             if (!string.IsNullOrEmpty(customVariable.SourceObject))
@@ -1128,7 +1126,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
         
-        public static string GetMemberTypeFor(CustomVariable customVariable, IElement element)
+        public static string GetMemberTypeFor(CustomVariable customVariable, GlueElement element)
         {
             customVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable, element as GlueElement);
             NamedObjectSave referencedNos = element.GetNamedObjectRecursively(customVariable.SourceObject);

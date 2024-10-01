@@ -17,7 +17,7 @@ namespace GumPlugin.CodeGeneration
             return "m" + namedObject.InstanceName + "IWindow";
         }
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, FlatRedBall.Glue.SaveClasses.IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             //foreach (var namedObject in element.AllNamedObjects.Where(item => IsGue(item) && 
             //    NamedObjectSaveCodeGenerator.GetFieldCodeGenerationType(item) == CodeGenerationType.Full))
@@ -44,7 +44,7 @@ namespace GumPlugin.CodeGeneration
 
 
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, FlatRedBall.Glue.SaveClasses.IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             //foreach(var namedObject in element.AllNamedObjects.Where(item=> IsGue(item) &&
             //    NamedObjectSaveCodeGenerator.GetInitializeCodeGenerationType(item, element) == CodeGenerationType.Full))
@@ -60,7 +60,7 @@ namespace GumPlugin.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, FlatRedBall.Glue.SaveClasses.IElement element)
+        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, GlueElement element)
         {
             //foreach (var namedObject in element.AllNamedObjects.Where(item => IsGue(item)))
             //{
@@ -70,12 +70,12 @@ namespace GumPlugin.CodeGeneration
             return base.GenerateAddToManagers(codeBlock, element);
         }
 
-        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, FlatRedBall.Glue.SaveClasses.IElement element)
+        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, GlueElement element)
         {
             base.GenerateRemoveFromManagers(codeBlock, element);
         }
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, FlatRedBall.Glue.SaveClasses.IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             return base.GenerateDestroy(codeBlock, element);
         }

@@ -20,7 +20,7 @@ namespace FlatRedBall.Glue.Managers
 
         //ITreeNode TreeNodeByDirectory(string containingDirection, TreeNode containingNode);
 
-        //ITreeNode ElementTreeNode(IElement element);
+        //ITreeNode ElementTreeNode(GlueElement element);
 
         //ITreeNode EntityTreeNode(EntitySave entitySave);
 
@@ -36,7 +36,7 @@ namespace FlatRedBall.Glue.Managers
 
         ITreeNode GlobalContentTreeNode { get;  }
 
-        //string ContentPathFor(IElement element);
+        //string ContentPathFor(GlueElement element);
 
         bool IfReferencedFileSaveIsReferenced(ReferencedFileSave referencedFileSave);
     }
@@ -105,7 +105,7 @@ namespace FlatRedBall.Glue.Managers
     //        }
     //    }
 
-    //    public ITreeNode ElementTreeNode(IElement element)
+    //    public ITreeNode ElementTreeNode(GlueElement element)
     //    {
     //        if (element is ScreenSave)
     //        {
@@ -245,7 +245,7 @@ namespace FlatRedBall.Glue.Managers
     //        return TreeNodeWrapper.CreateOrNull( found);
     //    }
 
-    //    public string ContentPathFor(IElement element)
+    //    public string ContentPathFor(GlueElement element)
     //    {
     //        return ElementCommands.GetFullPathContentDirectory(element, null);
 

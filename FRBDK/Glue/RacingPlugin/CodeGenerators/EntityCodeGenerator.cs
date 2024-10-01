@@ -15,7 +15,7 @@ namespace RacingPlugin.CodeGenerators
     {
         public override CodeLocation CodeLocation => CodeLocation.AfterStandardGenerated;
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             /////////////////Early Out//////////////////
             if(GetIfIsRacingEntity(element) == false)
@@ -120,7 +120,7 @@ namespace RacingPlugin.CodeGenerators
              */
         }
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             /////////////////Early Out//////////////////
             if (GetIfIsRacingEntity(element) == false)
@@ -439,13 +439,13 @@ namespace RacingPlugin.CodeGenerators
 
         }
 
-        private bool GetIfIsRacingEntity(IElement element)
+        private bool GetIfIsRacingEntity(GlueElement element)
         {
             return element is EntitySave && element.Properties
                 .GetValue<bool>(nameof(RacingEntityViewModel.IsRacingEntity));
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             /////////////////Early Out//////////////////
             if (GetIfIsRacingEntity(element) == false)

@@ -9,7 +9,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     internal class PooledCodeGenerator : ElementComponentCodeGenerator
     {
-        bool IsPoolable(IElement element)
+        bool IsPoolable(GlueElement element)
         {
             return element is EntitySave asEntity &&
                 asEntity.PooledByFactory &&
@@ -18,7 +18,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+        public override void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element)
         {
             if (IsPoolable(element))
             {
@@ -26,7 +26,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public override CodeBuilder.ICodeBlock GenerateFields(CodeBuilder.ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override CodeBuilder.ICodeBlock GenerateFields(CodeBuilder.ICodeBlock codeBlock, SaveClasses.GlueElement element)
         {
 
             if (element is EntitySave)

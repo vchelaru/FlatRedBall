@@ -10,14 +10,14 @@ namespace OfficialPlugins.CollisionPlugin.CodeGenerators
 {
     internal class StackableCodeGenerator : ElementComponentCodeGenerator
     {
-        public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+        public override void AddInheritedTypesToList(List<string> listToAddTo, GlueElement element)
         {
             if (StackableEntityManager.Self.ImplementsIStackable(element as GlueElement))
             {
                 listToAddTo.Add("FlatRedBall.Math.Geometry.IStackable");
             }
         }
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             if (StackableEntityManager.Self.ImplementsIStackable(element as GlueElement))
             {
@@ -27,7 +27,7 @@ namespace OfficialPlugins.CollisionPlugin.CodeGenerators
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             if(StackableEntityManager.Self.ImplementsIStackable(element as GlueElement))
             {

@@ -24,7 +24,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region ElementComponentCodeGenerator methods
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, GlueElement element)
         {
             foreach (EventResponseSave ers in element.Events)
             {
@@ -52,7 +52,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             foreach (EventResponseSave ers in element.Events)
             {
@@ -67,7 +67,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public static void GeneratePostInitialize(ICodeBlock codeBlock, IElement element)
+        public static void GeneratePostInitialize(ICodeBlock codeBlock, GlueElement element)
         {
             foreach (EventResponseSave ers in element.Events)
             {
@@ -81,7 +81,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        private static void GenerateInitializeForEvent(ICodeBlock codeBlock, IElement element, EventResponseSave ers)
+        private static void GenerateInitializeForEvent(ICodeBlock codeBlock, GlueElement element, EventResponseSave ers)
         {
             //We always want this to happen, even if it's 
             // emtpy
@@ -135,12 +135,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
+        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, GlueElement element)
         {
             base.GenerateRemoveFromManagers(codeBlock, element);
         }
 
-        private static void GetEventGenerationInfo(IElement element, EventResponseSave ers, out bool hasIfStatementForNos, out string leftSide)
+        private static void GetEventGenerationInfo(GlueElement element, EventResponseSave ers, out bool hasIfStatementForNos, out string leftSide)
         {
             hasIfStatementForNos = false;
             leftSide = null;
@@ -179,7 +179,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, GlueElement element)
         {
             foreach (EventResponseSave ers in element.Events)
             {
@@ -194,7 +194,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
+        public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, GlueElement element)
         {
             foreach (EventResponseSave ers in element.Events)
             {
@@ -365,7 +365,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        public static void GenerateEventGeneratedFile(IElement element)
+        public static void GenerateEventGeneratedFile(GlueElement element)
         {
             //string fileName = EventManager.GetEventFileNameForElement(element);
             //string fullCustomFileName = ProjectManager.ProjectBase.Directory + fileName;
@@ -787,7 +787,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         #endregion
 
 
-        internal static void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element)
+        internal static void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, GlueElement element)
         {
             foreach (EventResponseSave ers in element.Events)
             {
