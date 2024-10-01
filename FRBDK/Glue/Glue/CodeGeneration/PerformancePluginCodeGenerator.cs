@@ -37,10 +37,10 @@ namespace FlatRedBall.Glue.Plugins.Performance
             IsEnabled = false;
         }
 
-        public static void GenerateFields(IElement saveObject, ICodeBlock codeBlock)
+        public static void GenerateFields(ICodeBlock codeBlock, IElement element)
         {
             if (ObjectFinder.Self.GlueProject.PerformanceSettingsSave.RecordInitializeSegments &&
-                saveObject is ScreenSave)
+                element is ScreenSave)
             {
                 codeBlock.Line("FlatRedBall.Performance.Measurement.Section mSection;");
             }

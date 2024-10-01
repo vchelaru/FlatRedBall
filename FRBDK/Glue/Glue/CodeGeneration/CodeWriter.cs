@@ -319,10 +319,10 @@ namespace FlatRedBallAddOns.Entities
         CodeBlockNamespace namespaceBlock = rootBlock.Namespace(classNamespace);
         ICodeBlock codeBlock = GenerateClassHeader(element, namespaceBlock);
 
-        GenerateFieldsAndProperties(element, codeBlock);
-        GenerateConstructors(element, codeBlock);
-        GenerateInitialize(element, codeBlock);
-        GenerateAddToManagers(element, codeBlock);
+        GenerateFieldsAndProperties(codeBlock, element);
+        GenerateConstructors(codeBlock, element);
+        GenerateInitialize(codeBlock, element);
+        GenerateAddToManagers(codeBlock, element);
         GenerateActivity(codeBlock, element);
 
         if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ScreensHaveActivityEditMode)
@@ -330,7 +330,7 @@ namespace FlatRedBallAddOns.Entities
             GenerateActivityEditMode(codeBlock, element);
         }
 
-        GenerateDestroy(element, codeBlock);
+        GenerateDestroy(codeBlock, element);
         GenerateMethods(codeBlock, element);
 
         foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
@@ -496,15 +496,15 @@ namespace FlatRedBallAddOns.Entities
     #region Fields/Properties
 
     /// <summary>
-    /// Generates fields and properties for <paramref name="glueElement"/> and writes this to <paramref name="codeBlock"/>.
+    /// Generates fields and properties for <paramref name="element"/> and writes this to <paramref name="codeBlock"/>.
     /// </summary>
-    /// <param name="glueElement">Element to write the fields and properties for</param>
+    /// <param name="element">Element to write the fields and properties for</param>
     /// <param name="codeBlock">Code block to write the fields and properties to</param>
     /// <exception cref="Exception">If a code writer is in a <see langword="null"/> state,
     /// or if an error occurs while generating fields.</exception>
-    internal static void GenerateFieldsAndProperties(IElement glueElement, ICodeBlock codeBlock)
+    internal static void GenerateFieldsAndProperties(ICodeBlock codeBlock, IElement element)
     {
-        if(glueElement is EntitySave entitySave)
+        if(element is EntitySave entitySave)
         {
             EntityCodeWriter.GenerateFieldsAndProperties(entitySave, codeBlock);
         }
@@ -518,7 +518,7 @@ namespace FlatRedBallAddOns.Entities
 
             try
             {
-                codeGenerator.GenerateFields(codeBlock, glueElement);
+                codeGenerator.GenerateFields(codeBlock, element);
             }
             catch (Exception e)
             {
@@ -526,10 +526,10 @@ namespace FlatRedBallAddOns.Entities
             }
         }
 
-        PerformancePluginCodeGenerator.GenerateFields(glueElement, codeBlock);
+        PerformancePluginCodeGenerator.GenerateFields(codeBlock, element);
 
         // No need to create LayerProvidedByContainer if this inherits from another object.
-        if (glueElement is EntitySave && !glueElement.InheritsFromEntity())
+        if (element is EntitySave && !element.InheritsFromEntity())
         {
             // Add the layer that is going to get assigned in generated code
             codeBlock.Line("protected FlatRedBall.Graphics.Layer LayerProvidedByContainer = null;");
@@ -545,7 +545,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="element">Element to write constructor(s) for.</param>
     /// <param name="codeBlock">Code block to write the constructor(s) to.</param>
-    private static void GenerateConstructors(IElement element, ICodeBlock codeBlock)
+    private static void GenerateConstructors(ICodeBlock codeBlock, IElement element)
     {
         ICodeBlock constructor;
 
@@ -641,8 +641,7 @@ namespace FlatRedBallAddOns.Entities
             codeBlock.If("LoadedContentManagers.Contains(contentManagerName)")
                 .Line("return;");
         }
-
-
+        
         PerformancePluginCodeGenerator.GenerateStart(element, codeBlock, "LoadStaticContent");
 
         codeBlock.Line("bool oldShapeManagerSuppressAdd = FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue;");
@@ -752,13 +751,13 @@ namespace FlatRedBallAddOns.Entities
     }
 
     /// <summary>
-    /// Get the absolute file path for the generated code file for the specified <paramref name="saveObject"/>.
+    /// Get the absolute file path for the generated code file for the specified <paramref name="element"/>.
     /// </summary>
-    /// <param name="saveObject">Element to save</param>
+    /// <param name="element">Element to save</param>
     /// <returns>Found <see cref="FilePath"/></returns>
-    public static FilePath GetAbsoluteGeneratedCodeFileFor(IElement saveObject)
+    public static FilePath GetAbsoluteGeneratedCodeFileFor(IElement element)
     {
-        var fileName = saveObject.Name + ".Generated.cs";
+        var fileName = element.Name + ".Generated.cs";
 
         FilePath absoluteFileName = fileName;
 
@@ -771,28 +770,28 @@ namespace FlatRedBallAddOns.Entities
     }
 
     /// <summary>
-    /// Generate a file if it doesn't exist for the specified <paramref name="saveObject"/>.
+    /// Generate a file if it doesn't exist for the specified <paramref name="element"/>.
     /// </summary>
-    /// <param name="saveObject">Element to generate the file for, it doesn't exist.</param>
-    public static void CreateGeneratedFileIfNecessary(IElement saveObject)
+    /// <param name="element">Element to generate the file for, it doesn't exist.</param>
+    public static void CreateGeneratedFileIfNecessary(IElement element)
     {
-        FilePath absoluteFilePath = GetAbsoluteGeneratedCodeFileFor(saveObject);
+        FilePath absoluteFilePath = GetAbsoluteGeneratedCodeFileFor(element);
         if (absoluteFilePath.Exists() == false)
         {
-            CreateAndAddGeneratedFile(saveObject);
+            CreateAndAddGeneratedFile(element);
         }
     }
 
     /// <summary>
-    /// Generate a new file for the specified <paramref name="saveObject"/>.
+    /// Generate a new file for the specified <paramref name="element"/>.
     /// </summary>
-    /// <param name="saveObject">Element to generate</param>
-    public static void CreateAndAddGeneratedFile(IElement saveObject)
+    /// <param name="element">Element to generate</param>
+    public static void CreateAndAddGeneratedFile(IElement element)
     {
         // let's make a generated file
-        var fileName = saveObject.Name + ".Generated.cs";
+        var fileName = element.Name + ".Generated.cs";
         ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fileName, true);
-        PluginManager.ReceiveOutput("Glue has created the generated file " + FileManager.RelativeDirectory + saveObject.Name + ".cs");
+        PluginManager.ReceiveOutput("Glue has created the generated file " + FileManager.RelativeDirectory + element.Name + ".cs");
     }
 
     /// <summary>
@@ -821,17 +820,17 @@ namespace FlatRedBallAddOns.Entities
     #region Initialize
 
     /// <summary>
-    /// Generate the header for the Initialize() method of <paramref name="saveObject"/>.
+    /// Generate the header for the Initialize() method of <paramref name="element"/>.
     /// </summary>
-    /// <param name="saveObject">Element to generate the method for</param>
+    /// <param name="element">Element to generate the method for</param>
     /// <param name="codeBlock">Code block to write the code to</param>
-    internal static void GenerateInitialize(IElement saveObject, ICodeBlock codeBlock)
+    internal static void GenerateInitialize(ICodeBlock codeBlock, IElement element)
     {
         TaskManager.Self.WarnIfNotInTask();
 
         string initializePre;
         string initializeMethodCall;
-        if (saveObject is ScreenSave)
+        if (element is ScreenSave)
         {
             initializePre = "public override void";
             initializeMethodCall = "Initialize";
@@ -839,7 +838,7 @@ namespace FlatRedBallAddOns.Entities
         else
         {
             initializeMethodCall = "InitializeEntity";
-            initializePre = saveObject.InheritsFromElement()
+            initializePre = element.InheritsFromElement()
                 ? "protected override void"
                 : "protected virtual void";
         }
@@ -847,9 +846,9 @@ namespace FlatRedBallAddOns.Entities
         codeBlock = codeBlock.Function(initializePre, initializeMethodCall, "bool addToManagers");
 
         // Start measuring performance before anything else
-        PerformancePluginCodeGenerator.GenerateStartTimingInitialize(saveObject, codeBlock);
+        PerformancePluginCodeGenerator.GenerateStartTimingInitialize(element, codeBlock);
 
-        PerformancePluginCodeGenerator.SaveObject = saveObject;
+        PerformancePluginCodeGenerator.SaveObject = element;
         PerformancePluginCodeGenerator.CodeBlock = codeBlock;
 
         PerformancePluginCodeGenerator.GenerateStart("CustomLoadStaticContent from Initialize");
@@ -866,7 +865,7 @@ namespace FlatRedBallAddOns.Entities
         {
             try
             {
-                codeGenerator.GenerateInitialize(codeBlock, saveObject);
+                codeGenerator.GenerateInitialize(codeBlock, element);
             }
             catch (Exception e)
             {
@@ -878,7 +877,7 @@ namespace FlatRedBallAddOns.Entities
         {
             try
             {
-                codeGenerator.GenerateInitializeLate(codeBlock, saveObject);
+                codeGenerator.GenerateInitializeLate(codeBlock, element);
             }
             catch(Exception e)
             {
@@ -886,9 +885,9 @@ namespace FlatRedBallAddOns.Entities
             }
         }
 
-        NamedObjectSaveCodeGenerator.GenerateCollisionRelationships(codeBlock, saveObject);
+        NamedObjectSaveCodeGenerator.GenerateCollisionRelationships(codeBlock, element);
 
-        if (saveObject is ScreenSave screenSave)
+        if (element is ScreenSave screenSave)
         {
             codeBlock._();
 
@@ -910,7 +909,7 @@ namespace FlatRedBallAddOns.Entities
         PerformancePluginCodeGenerator.GenerateStart("Post Initialize");
 
 
-        if (saveObject.InheritsFromElement() == false)
+        if (element.InheritsFromElement() == false)
         {
             codeBlock.Line("PostInitialize();");
         }
@@ -920,16 +919,16 @@ namespace FlatRedBallAddOns.Entities
 
         PerformancePluginCodeGenerator.GenerateStart("Base.Initialize");
         
-        InheritanceCodeWriter.Self.WriteBaseInitialize(saveObject, codeBlock);
+        InheritanceCodeWriter.Self.WriteBaseInitialize(element, codeBlock);
 
-        if(saveObject is ScreenSave && GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ScreenIsINameable)
+        if(element is ScreenSave && GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ScreenIsINameable)
         {
-            var name = saveObject.GetStrippedName();
+            var name = element.GetStrippedName();
             codeBlock.Line($"this.Name = \"{name}\";");
         }
 
         // This needs to happen after calling WriteBaseInitialize so that the derived overwrites the base
-        if (saveObject is ScreenSave asScreenSave)
+        if (element is ScreenSave asScreenSave)
         {
             if (!String.IsNullOrEmpty(asScreenSave.NextScreen))
             {
@@ -944,19 +943,19 @@ namespace FlatRedBallAddOns.Entities
         // has a chance to set values on derived objects
         PerformancePluginCodeGenerator.GenerateStart("Reset Variables");
         // Now that variables are set, we can record reset variables
-        NamedObjectSaveCodeGenerator.AssignResetVariables(codeBlock, saveObject);
+        NamedObjectSaveCodeGenerator.AssignResetVariables(codeBlock, element);
         PerformancePluginCodeGenerator.GenerateEnd();
 
         PerformancePluginCodeGenerator.GenerateStart("AddToManagers");
 
 
         #region If shouldCallAddToManagers, call AddToManagers
-        var shouldCallAddToManagers = !saveObject.InheritsFromElement();
+        var shouldCallAddToManagers = !element.InheritsFromElement();
         if (shouldCallAddToManagers)
         {
             ICodeBlock ifBlock = codeBlock
                 .If("addToManagers");
-            if (saveObject is ScreenSave)
+            if (element is ScreenSave)
             {
                 ifBlock.Line("AddToManagers();");
             }
@@ -969,7 +968,7 @@ namespace FlatRedBallAddOns.Entities
         #endregion
         PerformancePluginCodeGenerator.GenerateEnd();
 
-        PerformancePluginCodeGenerator.GenerateEndTimingInitialize(saveObject, codeBlock); 
+        PerformancePluginCodeGenerator.GenerateEndTimingInitialize(element, codeBlock); 
     }
 
     #endregion
@@ -996,34 +995,32 @@ namespace FlatRedBallAddOns.Entities
     #region Add To Managers
 
     /// <summary>
-    /// Generate the AddToManagers method for the specified <paramref name="saveObject"/>.
+    /// Generate the AddToManagers method for the specified <paramref name="element"/>.
     /// </summary>
-    /// <param name="saveObject">Element to write the method for.</param>
+    /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    internal static void GenerateAddToManagers(IElement saveObject, ICodeBlock codeBlock)
-    {
-        ICodeBlock currentBlock = codeBlock;
-
-        var isEntity = saveObject is EntitySave;
+    internal static void GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
+    {  
+        var isEntity = element is EntitySave;
         var isScreen = !isEntity;
  
-        GenerateReAddToManagers(saveObject, currentBlock);
+        GenerateReAddToManagers(codeBlock, element);
  
         #region Generate the method header
 
         if (isScreen)
         {
-            currentBlock = currentBlock
+            codeBlock = codeBlock
                 .Function("public override void", "AddToManagers", "");
         }
-        else if (saveObject.InheritsFromElement()) // it's an EntitySave
+        else if (element.InheritsFromElement()) // it's an EntitySave
         {
-            currentBlock = currentBlock
+            codeBlock = codeBlock
                 .Function("public override void", "AddToManagers", "FlatRedBall.Graphics.Layer layerToAddTo");
         }
         else // It's a base EntitySave
         {
-            currentBlock = currentBlock
+            codeBlock = codeBlock
                 .Function("public virtual void", "AddToManagers", "FlatRedBall.Graphics.Layer layerToAddTo");
         }
         #endregion
@@ -1035,12 +1032,12 @@ namespace FlatRedBallAddOns.Entities
             // and after their CustomInitialize is called. That CustomInitialize may use the TimeManager.CurrentScreenTime
             // which depends on the mTimeScreenWasCreated value being set. Therefore, we'll force set this here. It may get set
             // multiple times but that should be okay:
-            currentBlock.Line("mAccumulatedPausedTime = TimeManager.CurrentTime;");
-            currentBlock.Line("mTimeScreenWasCreated = FlatRedBall.TimeManager.CurrentTime;");
+            codeBlock.Line("mAccumulatedPausedTime = TimeManager.CurrentTime;");
+            codeBlock.Line("mTimeScreenWasCreated = FlatRedBall.TimeManager.CurrentTime;");
         }
 
-        PerformancePluginCodeGenerator.SaveObject = saveObject;
-        PerformancePluginCodeGenerator.CodeBlock = currentBlock;
+        PerformancePluginCodeGenerator.SaveObject = element;
+        PerformancePluginCodeGenerator.CodeBlock = codeBlock;
 
         PerformancePluginCodeGenerator.GenerateStart("Pooled PostInitialize");
 
@@ -1053,7 +1050,7 @@ namespace FlatRedBallAddOns.Entities
         // the entity after being destroyed. "old" recycled
         // entities may have their internal objects shifted around,
         // so a post-init will reset them. 
-        FactoryElementCodeGenerator.CallPostInitializeIfNecessary(saveObject, currentBlock);
+        FactoryElementCodeGenerator.CallPostInitializeIfNecessary(element, codeBlock);
 
 
         #endregion
@@ -1066,9 +1063,9 @@ namespace FlatRedBallAddOns.Entities
         #region Generate layer if a screen
 
         // Only Screens need to define a layer.  Otherwise, the layer is fed to the Entity
-        if (IsOnOwnLayer(saveObject) && isScreen)
+        if (IsOnOwnLayer(element) && isScreen)
         {
-            currentBlock.Line("mLayer = SpriteManager.AddLayer();");
+            codeBlock.Line("mLayer = SpriteManager.AddLayer();");
         }
 
         #endregion
@@ -1077,44 +1074,44 @@ namespace FlatRedBallAddOns.Entities
 
         if (isEntity)
         {
-            currentBlock.Line("LayerProvidedByContainer = layerToAddTo;");
+            codeBlock.Line("LayerProvidedByContainer = layerToAddTo;");
         }
 
         #endregion
 
         PerformancePluginCodeGenerator.GenerateEnd();
 
-        GenerateAddThisEntityToManagers(saveObject, currentBlock);
+        GenerateAddThisEntityToManagers(codeBlock, element);
 
         const string addFilesToManagers = "Add Files to Managers";
-        PerformancePluginCodeGenerator.GenerateStart(saveObject, currentBlock, addFilesToManagers);
+        PerformancePluginCodeGenerator.GenerateStart(element, codeBlock, addFilesToManagers);
         
         // Add referenced files before adding objects because the objects
         // may be aliases for the files (if using Entire File) and may add them
         // to layers.
         ReferencedFileSaveCodeGenerator.GenerateAddToManagersStatic(
-            currentBlock, saveObject);
+            codeBlock, element);
 
-        PerformancePluginCodeGenerator.GenerateEnd(saveObject, currentBlock, addFilesToManagers);
+        PerformancePluginCodeGenerator.GenerateEnd(element, codeBlock, addFilesToManagers);
         PerformancePluginCodeGenerator.GenerateStart("Create layer instances");
 
         #region First generate all code for Layers before other stuff
         // We want the code for Layers to be generated before other stuff
         // since Layers may be used when generating the objects
-        foreach (NamedObjectSave nos in saveObject.NamedObjects)
+        foreach (NamedObjectSave nos in element.NamedObjects)
         {
             if (nos.SourceType != SourceType.FlatRedBallType || nos.GetAssetTypeInfo()?.FriendlyName != "Layer")
             {
                 continue;
             }
 
-            NamedObjectSaveCodeGenerator.WriteAddToManagersForNamedObject(saveObject, nos, currentBlock);
+            NamedObjectSaveCodeGenerator.WriteAddToManagersForNamedObject(element, nos, codeBlock);
 
-            foreach (CustomVariable customVariable in saveObject.CustomVariables)
+            foreach (CustomVariable customVariable in element.CustomVariables)
             {
                 if (customVariable.SourceObject == nos.InstanceName)
                 {
-                    CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInElement(currentBlock, customVariable, saveObject as GlueElement);
+                    CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInElement(codeBlock, customVariable, element as GlueElement);
                 }
             }
         }
@@ -1128,22 +1125,22 @@ namespace FlatRedBallAddOns.Entities
             .OrderBy(item => (int)item.CodeLocation)
             .Where(item => item.CodeLocation == CodeLocation.BeforeStandardGenerated))
         {
-            codeGenerator.GenerateAddToManagers(currentBlock, saveObject);
+            codeGenerator.GenerateAddToManagers(codeBlock, element);
         }
 
         foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators
             .OrderBy(item => (int)item.CodeLocation)
             .Where(item => item.CodeLocation == CodeLocation.StandardGenerated))
         {
-            codeGenerator.GenerateAddToManagers(currentBlock, saveObject);
+            codeGenerator.GenerateAddToManagers(codeBlock, element);
         }
         PerformancePluginCodeGenerator.GenerateEnd();
 
         PerformancePluginCodeGenerator.GenerateStart("Add to managers base and bottom up");
 
-        if ( saveObject.InheritsFromElement())
+        if ( element.InheritsFromElement())
         {
-            currentBlock.Line(saveObject is ScreenSave 
+            codeBlock.Line(element is ScreenSave 
                 ? "base.AddToManagers();" 
                 : "base.AddToManagers(layerToAddTo);");
         }
@@ -1151,25 +1148,25 @@ namespace FlatRedBallAddOns.Entities
         {
             if (isScreen)
             {
-                if (! saveObject.InheritsFromElement())
+                if (! element.InheritsFromElement())
                 {
                     // Screen will always call base.AddToManagers so that
                     // Screen.cs gets a chance to set up its timing
-                    currentBlock.Line("base.AddToManagers();");
+                    codeBlock.Line("base.AddToManagers();");
                 }
-                currentBlock.Line("AddToManagersBottomUp();");
+                codeBlock.Line("AddToManagersBottomUp();");
 
-                if(!saveObject.InheritsFromElement())
+                if(!element.InheritsFromElement())
                 {
                     if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
                     {
-                        currentBlock.Line("BeforeCustomInitialize?.Invoke();");
+                        codeBlock.Line("BeforeCustomInitialize?.Invoke();");
                     }
                 }
             }
             else
             {
-                currentBlock.Line("AddToManagersBottomUp(layerToAddTo);");
+                codeBlock.Line("AddToManagersBottomUp(layerToAddTo);");
             }
         }
  
@@ -1177,81 +1174,78 @@ namespace FlatRedBallAddOns.Entities
             .OrderBy(item => (int)item.CodeLocation)
             .Where(item => item.CodeLocation == CodeLocation.AfterStandardGenerated))
         {
-            codeGenerator.GenerateAddToManagers(currentBlock, saveObject);
+            codeGenerator.GenerateAddToManagers(codeBlock, element);
         }
   
         PerformancePluginCodeGenerator.GenerateEnd(); 
         
         PerformancePluginCodeGenerator.GenerateStart("Custom Initialize");
-        currentBlock.Line("CustomInitialize();");
+        codeBlock.Line("CustomInitialize();");
         PerformancePluginCodeGenerator.GenerateEnd();
         
     }
 
     /// <summary>
-    /// Generate the ReAddToManagers method for the specified <paramref name="saveObject"/>.
+    /// Generate the ReAddToManagers method for the specified <paramref name="element"/>.
     /// </summary>
-    /// <param name="saveObject">Element to write the method for.</param>
-    /// <param name="currentBlock">Code block to write the method to.</param>
-    private static void GenerateReAddToManagers(IElement saveObject, ICodeBlock currentBlock)
+    /// <param name="element">Element to write the method for.</param>
+    /// <param name="codeBlock">Code block to write the method to.</param>
+    private static void GenerateReAddToManagers(ICodeBlock codeBlock, IElement element)
     {
-        var isEntity = saveObject is EntitySave;
+        var isEntity = element is EntitySave;
 
         var inheritsFromNonFrbType =
-            !String.IsNullOrEmpty(saveObject.BaseElement) && !saveObject.InheritsFromFrbType();
+            !String.IsNullOrEmpty(element.BaseElement) && !element.InheritsFromFrbType();
 
         if (!isEntity)
         {
             return;
-        }
-
-        ICodeBlock reAddToManagers;
+        } 
 
         if (inheritsFromNonFrbType)
         {
-            reAddToManagers = currentBlock.Function("public override void", "ReAddToManagers", "FlatRedBall.Graphics.Layer layerToAddTo");
-            reAddToManagers.Line("base.ReAddToManagers(layerToAddTo);");
+            codeBlock.Function("public override void", "ReAddToManagers", "FlatRedBall.Graphics.Layer layerToAddTo");
+            codeBlock.Line("base.ReAddToManagers(layerToAddTo);");
         }
         else
         {
-            reAddToManagers = currentBlock.Function("public virtual void", "ReAddToManagers", "FlatRedBall.Graphics.Layer layerToAddTo");
-            reAddToManagers.Line("LayerProvidedByContainer = layerToAddTo;");
-
+            codeBlock.Function("public virtual void", "ReAddToManagers", "FlatRedBall.Graphics.Layer layerToAddTo");
+            codeBlock.Line("LayerProvidedByContainer = layerToAddTo;");
         }
 
         // add "this" to managers:
-        GenerateAddThisEntityToManagers(saveObject, reAddToManagers);
+        GenerateAddThisEntityToManagers(codeBlock, element);
 
-        foreach (NamedObjectSave nos in saveObject.NamedObjects)
+        foreach (NamedObjectSave nos in element.NamedObjects)
         {
             var setVariables = false;
-            NamedObjectSaveCodeGenerator.WriteAddToManagersForNamedObject(saveObject, nos, reAddToManagers, false, setVariables);
+            NamedObjectSaveCodeGenerator.WriteAddToManagersForNamedObject(element, nos, codeBlock, false, setVariables);
         }
     }
 
     /// <summary>
-    /// Generate the AddToManagersBottomUp method for the specified <paramref name="saveObject"/>.
+    /// Generate the AddToManagersBottomUp method for the specified <paramref name="element"/>.
     /// </summary>
-    /// <param name="saveObject">Element to write the method for.</param>
-    /// <param name="currentBlock">Code block to write the method to.</param>
-    private static void GenerateAddThisEntityToManagers(IElement saveObject, ICodeBlock currentBlock)
+    /// <param name="element">Element to write the method for.</param>
+    /// <param name="codeBlock">Code block to write the method to.</param>
+    private static void GenerateAddThisEntityToManagers(ICodeBlock codeBlock, IElement element)
     {
-        if (saveObject is not EntitySave entitySave)
+        if (element is not EntitySave entitySave)
         {
             return;
         }
 
         PerformancePluginCodeGenerator.GenerateStart("Add this to managers");
 
-        if (saveObject.InheritsFromFrbType())
+        if (element.InheritsFromFrbType())
         {
-            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseObject, saveObject);
+            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(element.BaseObject, element);
 
             if (ati != null)
             {
                 var addMethodIndex = 0;
 
-                NamedObjectSave isContainerNos = saveObject.AllNamedObjects.FirstOrDefault(item => item.IsContainer);
+                NamedObjectSave isContainerNos = element.AllNamedObjects.FirstOrDefault(item => item.IsContainer);
 
                 if (isContainerNos is { IsZBuffered: true } &&
                     (String.Equals(isContainerNos.SourceClassType, "Sprite", StringComparison.OrdinalIgnoreCase) ||
@@ -1267,7 +1261,7 @@ namespace FlatRedBallAddOns.Entities
                         var line = ati.AddManuallyUpdatedMethod
                             .Replace("{THIS}", "this")
                             .Replace("{LAYER}", "layerToAddTo") + ';';
-                        currentBlock.Line(line);
+                        codeBlock.Line(line);
                     }
                     else
                     {
@@ -1277,27 +1271,27 @@ namespace FlatRedBallAddOns.Entities
                 }
                 else if(ati.AddToManagersFunc != null)
                 {
-                    currentBlock.Line(ati.AddToManagersFunc(saveObject, null, null, "layerToAddTo"));
+                    codeBlock.Line(ati.AddToManagersFunc(element, null, null, "layerToAddTo"));
                 }
                 else if (ati.LayeredAddToManagersMethod.Count != 0)
                 {
                     // just use the method as-is, because the template is already using "this"
-                    currentBlock.Line(ati.LayeredAddToManagersMethod[addMethodIndex].Replace("mLayer", "layerToAddTo") + ";");
+                    codeBlock.Line(ati.LayeredAddToManagersMethod[addMethodIndex].Replace("mLayer", "layerToAddTo") + ";");
                 }
                 else if (ati.AddToManagersMethod.Count != 0)
                 {
-                    currentBlock.Line(ati.AddToManagersMethod[addMethodIndex] + ";");
+                    codeBlock.Line(ati.AddToManagersMethod[addMethodIndex] + ";");
                 }
             }
         }
-        else if (!saveObject.InheritsFromElement())
+        else if (!element.InheritsFromElement())
         {
-            currentBlock.Line(entitySave.IsManuallyUpdated
+            codeBlock.Line(entitySave.IsManuallyUpdated
                 ? "// This entity skips adding itself to FRB Managers because it has its IsManuallyUpdated property set to true"
                 : "FlatRedBall.SpriteManager.AddPositionedObject(this);");
         }
 
-        IWindowCodeGenerator.TryGenerateAddToManagers(currentBlock, saveObject);
+        IWindowCodeGenerator.TryGenerateAddToManagers(codeBlock, element);
         PerformancePluginCodeGenerator.GenerateEnd();
     }
 
@@ -1306,22 +1300,22 @@ namespace FlatRedBallAddOns.Entities
     #region Activity
 
     /// <summary>
-    /// Generate activity for the specified <paramref name="saveObject"/>.
+    /// Generate activity for the specified <paramref name="element"/>.
     /// </summary>
-    /// <param name="saveObject">Element to write the method for.</param>
+    /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    internal static void GenerateActivity(ICodeBlock codeBlock, IElement saveObject)
+    internal static void GenerateActivity(ICodeBlock codeBlock, IElement element)
     {
 
         var activityPre = "public virtual void";
         var activityParameters = "";
 
-        if (saveObject is ScreenSave)
+        if (element is ScreenSave)
         {
             activityPre = "public override void";
             activityParameters = "bool firstTimeCalled";
         }
-        else if (saveObject.InheritsFromElement())
+        else if (element.InheritsFromElement())
         {
             activityPre = "public override void";
         }
@@ -1334,18 +1328,16 @@ namespace FlatRedBallAddOns.Entities
 
         foreach (PluginManager pluginManager in pluginManagers.Cast<PluginManager>())
         {
-            CodeGeneratorPluginMethods.GenerateActivityPluginCode(CodeLocation.BeforeStandardGenerated, pluginManager, codeBlock, saveObject);
+            CodeGeneratorPluginMethods.GenerateActivityPluginCode(CodeLocation.BeforeStandardGenerated, pluginManager, codeBlock, element);
         }
         #endregion
 
-        if (saveObject is ScreenSave screenSave)
-        {
-
-
+        if (element is ScreenSave screenSave)
+        { 
             currentBlock = currentBlock
                 .If("!IsPaused");
 
-            GenerateGeneralActivity(currentBlock, saveObject);
+            GenerateGeneralActivity(currentBlock, element);
 
             currentBlock = currentBlock
                 .End();
@@ -1366,30 +1358,28 @@ namespace FlatRedBallAddOns.Entities
         }
         else
         {
-            EntityCodeWriter.GenerateActivity(saveObject as EntitySave, codeBlock);
+            EntityCodeWriter.GenerateActivity(element as EntitySave, codeBlock);
 
-            GenerateGeneralActivity(currentBlock, saveObject);
+            GenerateGeneralActivity(currentBlock, element);
 
             currentBlock.Line("CustomActivity();");
 
         }
-
-
-        GenerateAfterActivity(codeBlock, saveObject);
         
+        GenerateAfterActivity(codeBlock, element);
     }
 
     /// <summary>
-    /// Generate activity edit mode for the specified <paramref name="saveObject"/>.
+    /// Generate activity edit mode for the specified <paramref name="element"/>.
     /// </summary>
-    /// <param name="saveObject">Element to write the method for.</param>
+    /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    private static void GenerateActivityEditMode(ICodeBlock codeBlock, GlueElement saveObject)
+    private static void GenerateActivityEditMode(ICodeBlock codeBlock, IElement element)
     {
 
         var activityPre = "public virtual void";
  
-        var inherits = saveObject is ScreenSave || saveObject.InheritsFromElement();
+        var inherits = element is ScreenSave || element.InheritsFromElement();
 
         if (inherits)
         {
@@ -1399,7 +1389,7 @@ namespace FlatRedBallAddOns.Entities
 
         ICodeBlock currentBlock = codeBlock.Function(activityPre, "ActivityEditMode", "");
 
-        if(saveObject is ScreenSave)
+        if(element is ScreenSave)
         {
             currentBlock = currentBlock.If("FlatRedBall.Screens.ScreenManager.IsInEditMode");
 
@@ -1407,9 +1397,9 @@ namespace FlatRedBallAddOns.Entities
 
         if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.IEntityInFrb)
         {
-            if(saveObject is ScreenSave && !saveObject.InheritsFromElement())
+            if(element is ScreenSave && !element.InheritsFromElement())
             {
-                // The internal call could add or remove things from the FRB engine so we shouldn't foreach here. Reverse loop it instead:
+                // The internal call could add or remove things from the FRB engine, so we shouldn't foreach here. Reverse loop it instead:
                 //var foreachBlock = currentBlock.ForEach($"var item in FlatRedBall.SpriteManager.ManagedPositionedObjects");
                 ICodeBlock forBlock = currentBlock.For("int i = FlatRedBall.SpriteManager.ManagedPositionedObjects.Count - 1; i > -1; i--");
                 forBlock.Line("var item = FlatRedBall.SpriteManager.ManagedPositionedObjects[i];");
@@ -1420,7 +1410,7 @@ namespace FlatRedBallAddOns.Entities
         else
         {
             // Old version (before file version 10 in Dec 24 2021) required code gen to call custom activity.
-            foreach(NamedObjectSave nos in saveObject.NamedObjects)
+            foreach(NamedObjectSave nos in element.NamedObjects)
             {
                 if(!nos.DefinedByBase && !nos.IsDisabled)
                 {
@@ -1439,7 +1429,7 @@ namespace FlatRedBallAddOns.Entities
 
         foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
         {
-            codeGenerator.GenerateActivityEditMode(currentBlock, saveObject);
+            codeGenerator.GenerateActivityEditMode(currentBlock, element);
         }
 
         currentBlock.Line("CustomActivityEditMode();");
@@ -1451,14 +1441,14 @@ namespace FlatRedBallAddOns.Entities
     }
 
     /// <summary>
-    /// Generate the AfterActivity method for the specified <paramref name="saveObject"/>.
+    /// Generate the AfterActivity method for the specified <paramref name="element"/>.
     /// </summary>
-    /// <param name="saveObject">Element to write the method for.</param>
+    /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    internal static void GenerateGeneralActivity(ICodeBlock codeBlock, IElement saveObject)
+    internal static void GenerateGeneralActivity(ICodeBlock codeBlock, IElement element)
     {
-        var isEntity = saveObject is EntitySave;
-        var entitySave = saveObject as EntitySave;
+        var isEntity = element is EntitySave;
+        var entitySave = element as EntitySave;
 
         // This code might seem a little weird.  The reason we do this
         // is that when an Entity is paused, it has a method that is
@@ -1481,7 +1471,7 @@ namespace FlatRedBallAddOns.Entities
         // We only need to do this for EntitySaves.  Screens inherit from the
         // Screen class, so they ALWAYS call base.Activity.  It's in the generated
         // Screen template.  
-        if ( saveObject.InheritsFromEntity())
+        if ( element.InheritsFromEntity())
         {
             codeBlock.Line("base.Activity();");
         }
@@ -1491,27 +1481,27 @@ namespace FlatRedBallAddOns.Entities
         codeBlock._();
 
         // Eventually do we want to move this in the generate activity for custom variable code gen.
-        CustomVariableCodeGenerator.WriteVelocityForCustomVariables(saveObject.CustomVariables, codeBlock);
+        CustomVariableCodeGenerator.WriteVelocityForCustomVariables(element.CustomVariables, codeBlock);
         
         foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
         {
-            codeGenerator.GenerateActivity(codeBlock, saveObject);
+            codeGenerator.GenerateActivity(codeBlock, element);
         }
     }
 
     #endregion
 
     /// <summary>
-    /// Generate the Destroy() method of the specified <paramref name="saveObject"/>.
+    /// Generate the Destroy() method of the specified <paramref name="element"/>.
     /// </summary>
-    /// <param name="saveObject">Element to write the method for.</param>
+    /// <param name="element">Element to write the method for.</param>
     /// <param name="codeBlock">Code block to write the method to.</param>
-    internal static void GenerateDestroy(IElement saveObject, ICodeBlock codeBlock)
+    internal static void GenerateDestroy(ICodeBlock codeBlock, IElement element)
     {
 
         var destroyPre = "public virtual void";
 
-        var destroyInherits = saveObject is ScreenSave || saveObject.InheritsFromElement();
+        var destroyInherits = element is ScreenSave || element.InheritsFromElement();
 
         if (destroyInherits)
         {
@@ -1525,13 +1515,13 @@ namespace FlatRedBallAddOns.Entities
             // eventually split these up:
             .Where(item => item.CodeLocation == CodeLocation.BeforeStandardGenerated))
         {
-            codeGenerator.GenerateDestroy(currentBlock, saveObject);
+            codeGenerator.GenerateDestroy(currentBlock, element);
         }
 
 
         #region Call base.Destroy if it has a derived object
 
-        if (saveObject.InheritsFromEntity() || saveObject is ScreenSave)
+        if (element.InheritsFromEntity() || element is ScreenSave)
         {
             currentBlock.Line("base.Destroy();");
         }
@@ -1541,11 +1531,11 @@ namespace FlatRedBallAddOns.Entities
 
         #region If Entity, remove from managers (SpriteManager, GuiManager)
 
-        if (saveObject is EntitySave entitySave)
+        if (element is EntitySave entitySave)
         {
             if (entitySave.InheritsFromFrbType())
             {
-                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseObject, entitySave);
+                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(element.BaseObject, entitySave);
 
                 if (ati != null)
                 {
@@ -1577,26 +1567,26 @@ namespace FlatRedBallAddOns.Entities
             // eventually split these up:
             .Where(item => item.CodeLocation is CodeLocation.AfterStandardGenerated or CodeLocation.StandardGenerated))
         {
-            codeGenerator.GenerateDestroy(currentBlock, saveObject);
+            codeGenerator.GenerateDestroy(currentBlock, element);
         }
 
         // Sept 9, 2022
         // Not sure if this should be at the beginning or end, but adding this
         // at the end so it doesn't interrupt any other unload code:
-        GenerateUnloadContentManager(saveObject as GlueElement, currentBlock);
+        GenerateUnloadContentManager(currentBlock, element);
 
         codeBlock.Line("CustomDestroy();");
     }
-    
-/// <summary>
-/// 
-/// </summary>
-/// <param name="saveObject"></param>
-/// <param name="currentBlock"></param>
-    private static void GenerateUnloadContentManager(GlueElement saveObject, ICodeBlock currentBlock)
+
+    /// <summary>
+    /// Generate UnloadContentManager() for <paramref name="element"/>
+    /// </summary>
+    /// <param name="element">Element to write the method for.</param>
+    /// <param name="codeBlock">Code block to write the method to.</param>
+    private static void GenerateUnloadContentManager(ICodeBlock codeBlock, IElement element)
     {
         var shouldUnload = 
-            saveObject is ScreenSave { UseGlobalContent: false } screenSave &&
+            element is ScreenSave { UseGlobalContent: false } screenSave &&
             screenSave.ReferencedFiles.Any(item => item.LoadedOnlyWhenReferenced);
 
         // This code could be in a screen that is the base
@@ -1609,7 +1599,7 @@ namespace FlatRedBallAddOns.Entities
 
         if (shouldUnload)
         {
-            currentBlock.Line($"FlatRedBall.FlatRedBallServices.Unload(\"{saveObject.ClassName}\");");
+            codeBlock.Line($"FlatRedBall.FlatRedBallServices.Unload(\"{element.ClassName}\");");
         }
     }
 
@@ -1875,6 +1865,11 @@ namespace FlatRedBallAddOns.Entities
         }
     }
 
+    /// <summary>
+    /// Add GlobalContent.Initialize(); to custom code.
+    /// </summary>
+    /// <param name="contents">Existing contents (in string format)</param>
+    /// <exception cref="CodeParseException">Thrown if the method cannot be placed anywhere.</exception>
     private static void AddGlobalContentInitializeInCustomCode(ref string contents)
     {
         var lineToReplaceWith = "            " + "GlobalContent.Initialize();";
@@ -1900,17 +1895,28 @@ namespace FlatRedBallAddOns.Entities
 
     }
 
+    /// <summary>
+    /// Replaces the namespace with a new name.
+    /// </summary>
+    /// <param name="fileContents">Existing file contents</param>
+    /// <param name="newNamespace">New namespace name.</param>
+    /// <returns>Altered <paramref name="fileContents"/></returns>
     internal static string ReplaceNamespace(string fileContents, string newNamespace)
         => ReplaceNamespace(fileContents, newNamespace, out var _);
 
+    /// <summary>
+    /// Replaces the namespace with a new name.
+    /// </summary>
+    /// <param name="fileContents">Existing file contents</param>
+    /// <param name="newNamespace">New namespace name.</param>
+    /// <param name="oldNamespace">Old namespace name.</param>
+    /// <returns>Altered <paramref name="fileContents"/></returns>
     internal static string ReplaceNamespace(string fileContents, string newNamespace, out string oldNamespace)
     {
         var indexOfNamespaceKeyword = fileContents.IndexOf("namespace ", StringComparison.Ordinal);
         oldNamespace = "";
         if(indexOfNamespaceKeyword != -1)
-        {
-
-
+        { 
             var indexOfNamespaceStart = indexOfNamespaceKeyword + "namespace ".Length;
 
             var indexOfSlashR = fileContents.IndexOf("\r", indexOfNamespaceStart, StringComparison.Ordinal);
@@ -1942,13 +1948,23 @@ namespace FlatRedBallAddOns.Entities
         return fileContents;
     }
 
-
+    /// <summary>
+    /// Set the classname and namespace for the specified <paramref name="elementName"/>.
+    /// </summary>
+    /// <param name="projectNamespace">Namespace of the project</param>
+    /// <param name="elementName">Name of the element</param>
+    /// <param name="templateCode">Template code</param>
     public static void SetClassNameAndNamespace(string projectNamespace, string elementName, StringBuilder templateCode)
         => SetClassNameAndNamespace(projectNamespace, elementName, templateCode, false, "\"Global\"", null);
 
+    /// <summary>
+    /// Set the classname and namespace for the specified <paramref name="elementName"/>.
+    /// </summary>
+    /// <param name="classNamespace">Namespace of the class</param>
+    /// <param name="elementName">Name of the element</param>
+    /// <param name="templateCode">Template code</param>
     public static void SetClassNameAndNamespace(string classNamespace, string elementName, StringBuilder templateCode, bool useGlobalContent, string replacementContentManagerName, string inheritance)
     {
-
         var namespaceToReplace = StringFunctions.GetWordAfter("namespace ", templateCode);
         var isScreen = namespaceToReplace.Contains("Screen");
             
@@ -1957,11 +1973,7 @@ namespace FlatRedBallAddOns.Entities
         {
             templateCode.Replace("namespace " + namespaceToReplace,
                 "namespace " + classNamespace);
-
-
-
-
-
+            
             if (useGlobalContent)
             {
                 // replace the content manager name with the global content manager
@@ -2185,39 +2197,37 @@ namespace FlatRedBallAddOns.Entities
         currentBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = oldShapeManagerSuppressAdd;");
     }
 
-
-
-    public static ICodeBlock GenerateAfterActivity(ICodeBlock codeBlock, IElement saveObject)
+/// <summary>
+/// Generate AfterActivity() for the <paramref name="element"/>
+/// </summary>
+/// <param name="codeBlock">Code block to write the element for.</param>
+/// <param name="element">Element to write the code block for.</param>
+    public static void GenerateAfterActivity(ICodeBlock codeBlock, IElement element)
     {
         #region Loop through all ReferenceFiles to get their post custom activity code
 
-        for (var i = 0; i < saveObject.ReferencedFiles.Count; i++)
+        foreach (ReferencedFileSave referencedFile in element.ReferencedFiles)
         {
-            codeBlock.InsertBlock(ReferencedFileSaveCodeGenerator.GetPostCustomActivityForReferencedFile(saveObject.ReferencedFiles[i]));
+            codeBlock.InsertBlock(ReferencedFileSaveCodeGenerator.GetPostCustomActivityForReferencedFile(referencedFile));
         }
 
         #endregion
 
         #region Loop through all NamedObjectSaves to get their post custom activity code
 
-        for (var i = 0; i < saveObject.NamedObjects.Count; i++)
+        foreach (NamedObjectSave namedObject in element.NamedObjects)
         {
-            NamedObjectSaveCodeGenerator.GetPostCustomActivityForNamedObjectSave(saveObject, saveObject.NamedObjects[i], codeBlock);
+            NamedObjectSaveCodeGenerator.GetPostCustomActivityForNamedObjectSave(element, namedObject, codeBlock);
         }
-
 
         #endregion
         
         foreach (PluginManager pluginManager in PluginManagerBase.GetInstances().Cast<PluginManager>())
         {
             CodeGeneratorPluginMethods.GenerateActivityPluginCode(CodeLocation.AfterStandardGenerated,
-                pluginManager, codeBlock, saveObject);
+                pluginManager, codeBlock, element);
         }
-        
-
-        return codeBlock;
     }
-
 
     /// <summary>
     /// Localizes the contents (if necessary)
@@ -2227,7 +2237,7 @@ namespace FlatRedBallAddOns.Entities
     /// <param name="valueAsObject">Value of the variable (as object)</param>
     /// <param name="valueAsString">Value of the variable (as string)</param>
     /// <param name="customVariable">Established variable</param>
-    /// <returns></returns>
+    /// <returns>Localized string, or the default input.</returns>
     public static string MakeLocalizedIfNecessary(NamedObjectSave namedObject, string variableName, object valueAsObject, string valueAsString, CustomVariable customVariable)
     {
         // This code will convert something like
@@ -2424,12 +2434,12 @@ namespace FlatRedBallAddOns.Entities
     }
 
     /// <summary>
-    /// Generated UnloadStatic() method for the <paramref name="saveObject"/>
+    /// Generated UnloadStatic() method for the <paramref name="element"/>
     /// </summary>
     /// <param name="codeBlock">Code block to write the element to</param>
-    /// <param name="saveObject">Element to be written</param>
+    /// <param name="element">Element to be written</param>
     /// <returns><paramref name="codeBlock"/>.</returns>
-    internal static ICodeBlock GenerateUnloadStaticContent(ICodeBlock codeBlock, IElement saveObject)
+    internal static ICodeBlock GenerateUnloadStaticContent(ICodeBlock codeBlock, IElement element)
     {
         ICodeBlock currentBlock = codeBlock;
 
@@ -2441,19 +2451,19 @@ namespace FlatRedBallAddOns.Entities
         // so all entities will always generate this method.  That way
         // all Entities can just clone elements in the loaded data.
 
-        if (saveObject is EntitySave)
+        if (element is EntitySave)
         {
             currentBlock = currentBlock
                 .Function("UnloadStaticContent", "", Public: true, Static: true,
-                          New: saveObject.InheritsFromElement(), Type: "void");
+                          New: element.InheritsFromElement(), Type: "void");
 
             // We only want to unload if this isn't using global content
             // If so, then unloading should be a no-op
-            if (!saveObject.UseGlobalContent)
+            if (!element.UseGlobalContent)
             {
                 foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
                 {
-                    currentBlock = codeGenerator.GenerateUnloadStaticContent(currentBlock, saveObject);
+                    currentBlock = codeGenerator.GenerateUnloadStaticContent(currentBlock, element);
                 }
 
             }
@@ -2468,14 +2478,14 @@ namespace FlatRedBallAddOns.Entities
     }
 
     /// <summary>
-    /// Generates ConvertToManuallyUpdated() method for the <paramref name="saveObject"/>
+    /// Generates ConvertToManuallyUpdated() method for the <paramref name="element"/>
     /// </summary>
     /// <param name="codeBlock">Code block to write the element to</param>
-    /// <param name="saveObject">Element to be written</param>
+    /// <param name="element">Element to be written</param>
     /// <param name="reusableEntireFileRfses">Reusable RFSes.</param>
-    internal static void GenerateConvertToManuallyUpdated(ICodeBlock codeBlock, IElement saveObject, Dictionary<string, string> reusableEntireFileRfses)
+    internal static void GenerateConvertToManuallyUpdated(ICodeBlock codeBlock, IElement element, Dictionary<string, string> reusableEntireFileRfses)
     {
-        var hasBase = saveObject.InheritsFromElement();
+        var hasBase = element.InheritsFromElement();
 
         ICodeBlock currentBlock = codeBlock;
 
@@ -2488,7 +2498,7 @@ namespace FlatRedBallAddOns.Entities
             currentBlock.Line("base.ConvertToManuallyUpdated();");
         }
 
-        if (saveObject is EntitySave)
+        if (element is EntitySave)
         {
 
             // It's possible that an Entity may be converted to ManuallyUpdated before
@@ -2497,9 +2507,9 @@ namespace FlatRedBallAddOns.Entities
             // right when verts are created.
             currentBlock.Line("this.ForceUpdateDependenciesDeep();");
 
-            if (saveObject.InheritsFromFrbType())
+            if (element.InheritsFromFrbType())
             {
-                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseElement, saveObject);
+                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(element.BaseElement, element);
 
                 if (ati != null)
                 {
@@ -2514,12 +2524,12 @@ namespace FlatRedBallAddOns.Entities
             }
         }
 
-        foreach (ReferencedFileSave rfs in saveObject.ReferencedFiles)
+        foreach (ReferencedFileSave rfs in element.ReferencedFiles)
         {
             ReferencedFileSaveCodeGenerator.GenerateConvertToManuallyUpdated(currentBlock, rfs);
         }
 
-        NamedObjectSaveCodeGenerator.WriteConvertToManuallyUpdated(currentBlock, saveObject, reusableEntireFileRfses);
+        NamedObjectSaveCodeGenerator.WriteConvertToManuallyUpdated(currentBlock, element, reusableEntireFileRfses);
     }
 
     /// <summary>
@@ -2567,11 +2577,11 @@ namespace FlatRedBallAddOns.Entities
     /// <summary>
     /// Generate PauseThisScreen() for the <paramref name="element"/>.
     /// </summary>
-    /// <param name="currentBlock">Code block to write the methods to.</param>
+    /// <param name="codeBlock">Code block to write the methods to.</param>
     /// <param name="element">Element to write the code block for.</param>
-    private static void GeneratePauseThisScreen(ICodeBlock currentBlock, IElement element)
+    private static void GeneratePauseThisScreen(ICodeBlock codeBlock, IElement element)
     {
-        ICodeBlock methodBlock = currentBlock.Function("public override void", "PauseThisScreen", "");
+        ICodeBlock methodBlock = codeBlock.Function("public override void", "PauseThisScreen", "");
 
         foreach(ElementComponentCodeGenerator generator in CodeGenerators)
         {
@@ -2584,33 +2594,29 @@ namespace FlatRedBallAddOns.Entities
     /// <summary>
     /// Generate UnpauseThisScreen() for the <paramref name="element"/>.
     /// </summary>
-    /// <param name="currentBlock">Code block to write the methods to.</param>
+    /// <param name="codeBlock">Code block to write the methods to.</param>
     /// <param name="element">Element to write the code block for.</param>
-    private static void GenerateUnpauseThisScreen(ICodeBlock currentBlock, IElement element)
+    private static void GenerateUnpauseThisScreen(ICodeBlock codeBlock, IElement element)
     {
-        ICodeBlock methodBlock = currentBlock.Function("public override void", "UnpauseThisScreen", "");
+        ICodeBlock methodBlock = codeBlock.Function("public override void", "UnpauseThisScreen", "");
 
         foreach (ElementComponentCodeGenerator generator in CodeGenerators)
         {
             generator.GenerateUnpauseThisScreen(methodBlock, element);
         }
 
-
         methodBlock.Line("base.UnpauseThisScreen();");
-
     }
 
     /// <summary>
     /// Generate UpdateDependencies() for the <paramref name="element"/>.
     /// </summary>
-    /// <param name="currentBlock">Code block to write the methods to.</param>
+    /// <param name="codeBlock">Code block to write the methods to.</param>
     /// <param name="element">Element to write the code block for.</param>
-    private static void GenerateUpdateDependencies(ICodeBlock currentBlock, IElement element)
+    private static void GenerateUpdateDependencies(ICodeBlock codeBlock, IElement element)
     {
         // screens will need this too:
-        
-
-        var innerBlock = new CodeBlockBase(null);
+        var innerBlock = new CodeBlockBase();
 
         foreach(ElementComponentCodeGenerator generator in CodeGenerators)
         {
@@ -2619,72 +2625,71 @@ namespace FlatRedBallAddOns.Entities
 
         if(innerBlock.BodyCodeLines.Any())
         {
-            ICodeBlock methodBlock = currentBlock.Function("public override void", "UpdateDependencies", "double currentTime");
+            ICodeBlock methodBlock = codeBlock.Function("public override void", "UpdateDependencies", "double currentTime");
 
             methodBlock.InsertBlock(innerBlock);
 
             methodBlock.Line("CustomUpdateDependencies(currentTime);");
 
-            currentBlock.Line("partial void CustomUpdateDependencies(double currentTime);");
+            codeBlock.Line("partial void CustomUpdateDependencies(double currentTime);");
         }
     }
 
-
     /// <summary>
-    /// Generate RemoveFromManagers() for the <paramref name="saveObject"/>.
+    /// Generate RemoveFromManagers() for the <paramref name="element"/>.
     /// </summary>
-    /// <param name="currentBlock">Code block to write the methods to.</param>
-    /// <param name="saveObject">Element to write the code block for.</param>
-    private static void GenerateRemoveFromManagers(ICodeBlock currentBlock, IElement saveObject)
+    /// <param name="codeBlock">Code block to write the methods to.</param>
+    /// <param name="element">Element to write the code block for.</param>
+    private static void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
     {
-        if (saveObject.InheritsFromElement())
+        if (element.InheritsFromElement())
         {
-            currentBlock = currentBlock.Function("public override void", "RemoveFromManagers", "");
-            currentBlock.Line("base.RemoveFromManagers();");
+            codeBlock = codeBlock.Function("public override void", "RemoveFromManagers", "");
+            codeBlock.Line("base.RemoveFromManagers();");
         }
         else
         {
-            currentBlock = currentBlock.Function("public virtual void", "RemoveFromManagers", "");
+            codeBlock = codeBlock.Function("public virtual void", "RemoveFromManagers", "");
 
         }
 
-        if (saveObject is EntitySave entitySave)
+        if (element is EntitySave entitySave)
         {
             if (entitySave.InheritsFromFrbType())
             {
-                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(saveObject.BaseObject, entitySave);
+                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(element.BaseObject, entitySave);
 
                 if (ati != null)
                 {
                     if (entitySave.CreatedByOtherEntities && !String.IsNullOrEmpty(ati.RecycledDestroyMethod))
                     {
-                        currentBlock.Line(ati.RecycledDestroyMethod + ";");
+                        codeBlock.Line(ati.RecycledDestroyMethod + ";");
                     }
                     else if(ati.DestroyFunc != null)
                     {
-                        currentBlock.Line(ati.DestroyFunc(entitySave, null, null));
+                        codeBlock.Line(ati.DestroyFunc(entitySave, null, null));
                     }
                     else
                     {
-                        currentBlock.Line(ati.DestroyMethod + ";");
+                        codeBlock.Line(ati.DestroyMethod + ";");
                     }
                 }
             }
 
             else if (!entitySave.InheritsFromElement())
             {
-                currentBlock.Line("FlatRedBall.SpriteManager.ConvertToManuallyUpdated(this);");
+                codeBlock.Line("FlatRedBall.SpriteManager.ConvertToManuallyUpdated(this);");
             }
 
             if (entitySave.ImplementsIWindow && !entitySave.GetInheritsFromIWindow())
             {
-                currentBlock.Line("FlatRedBall.Gui.GuiManager.RemoveWindow(this);");
+                codeBlock.Line("FlatRedBall.Gui.GuiManager.RemoveWindow(this);");
             }
         }
 
         foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators)
         {
-            codeGenerator.GenerateRemoveFromManagers(currentBlock, saveObject);
+            codeGenerator.GenerateRemoveFromManagers(codeBlock, element);
         }
     }
 

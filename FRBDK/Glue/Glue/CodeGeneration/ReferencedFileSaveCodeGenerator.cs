@@ -357,7 +357,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock,  SaveClasses.IElement element)
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
         {
             for (int i = 0; i < element.ReferencedFiles.Count; i++)
             {
@@ -367,7 +367,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override void GeneratePauseIgnoringActivity(ICodeBlock codeBlock, GlueElement element)
+        public override void GeneratePauseIgnoringActivity(ICodeBlock codeBlock, IElement element)
         {
             // April 2, 2024
             // Experimental:

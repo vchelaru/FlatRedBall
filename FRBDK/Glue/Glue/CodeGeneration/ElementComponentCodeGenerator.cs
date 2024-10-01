@@ -86,14 +86,14 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
-        public virtual void GenerateActivityEditMode(ICodeBlock codeBlock, GlueElement element) {  }
+        public virtual void GenerateActivityEditMode(ICodeBlock codeBlock, IElement element) {  }
 
         public virtual ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
         {
             return codeBlock;
         }
 
-        public virtual void GeneratePauseIgnoringActivity(ICodeBlock codeBlock, GlueElement element) { }
+        public virtual void GeneratePauseIgnoringActivity(ICodeBlock codeBlock, IElement element) { }
 
         public virtual ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
         {
