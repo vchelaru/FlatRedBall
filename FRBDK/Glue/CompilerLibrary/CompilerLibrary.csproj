@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\Glue\GlueFormsCore.csproj">
+	  <ProjectReference Include="..\Glue\Glue.csproj">
 		  <SpecificVersion>False</SpecificVersion>
 	  </ProjectReference>
   </ItemGroup>

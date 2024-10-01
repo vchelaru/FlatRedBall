@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
-    <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
+    <ProjectReference Include="..\Glue\Glue.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />

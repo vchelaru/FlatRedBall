@@ -18,7 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
-    <ProjectReference Include="..\..\Glue\GlueFormsCore.csproj" />
+    <ProjectReference Include="..\..\Glue\Glue.csproj" />
     <ProjectReference Include="..\StateInterpolationNet6\StateInterpolationNet6.csproj" />
   </ItemGroup>
 

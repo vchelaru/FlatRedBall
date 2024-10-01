@@ -23,7 +23,7 @@
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
     <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
-    <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
+    <ProjectReference Include="..\Glue\Glue.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

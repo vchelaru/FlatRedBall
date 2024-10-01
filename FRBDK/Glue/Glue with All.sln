@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlueCommon", "GlueCommon\Gl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallStandard", "..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj", "{26DD17AA-55AE-46AB-9394-A2319728869A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlueFormsCore", "Glue\GlueFormsCore.csproj", "{C953AF0B-B890-40CE-888D-8F60579CD03E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Glue", "Glue\Glue.csproj", "{C953AF0B-B890-40CE-888D-8F60579CD03E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopDownPlugin", "TopDownPlugin\TopDownPlugin.csproj", "{D784E25F-320D-47F5-9397-63E33B81A64F}"
 EndProject
