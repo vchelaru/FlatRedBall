@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfficialPluginsCore", "Offi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TiledPluginCore", "TileGraphicsPlugin\TileGraphicsPlugin\TiledPluginCore.csproj", "{6F58A8DD-C47E-4157-85BE-70E5371293FA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GumPluginCore", "GumPlugin\GumPlugin\GumPluginCore.csproj", "{DCC8D6F5-FE0D-4A9F-B0C5-A2EBFCCBE8A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GumPlugin", "GumPlugin\GumPlugin\GumPlugin.csproj", "{DCC8D6F5-FE0D-4A9F-B0C5-A2EBFCCBE8A5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityPerformancePluginCore", "EntityPerformancePlugin\EntityPerformancePlugin\EntityPerformancePluginCore.csproj", "{1D3A9503-99E6-47C3-AB8F-83762CE94444}"
 EndProject
@@ -45,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RacingPluginCore", "RacingP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogTreePluginCore", "DialogTreePlugin\DialogTreePluginCore.csproj", "{2071B4D6-E370-4BD8-87C4-17DFCF461C33}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBall.PluginCore", "FlatRedBall.Plugin\FlatRedBall.PluginCore.csproj", "{8706EDC1-24D6-42EE-8E5A-A25BDE7B00BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBall.Plugin", "FlatRedBall.Plugin\FlatRedBall.Plugin.csproj", "{8706EDC1-24D6-42EE-8E5A-A25BDE7B00BB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GumDataTypesNet6", "..\..\..\Gum\GumDataTypes\GumDataTypesNet6.csproj", "{049D8E60-B8FD-4B57-909C-EF83124E242F}"
 EndProject
