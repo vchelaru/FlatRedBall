@@ -170,7 +170,17 @@ namespace GumPlugin.Managers
 
         }
 
-        public string GetGumScreenNameFor(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen) => FileManager.RemovePath(glueScreen.Name) + "Gum";
+        public string GetGumScreenNameFor(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
+        {
+            if(glueScreen.Name.StartsWith("Screens/") || glueScreen.Name.StartsWith("Screens\\"))
+            {
+                return glueScreen.Name.Substring("Screens/".Length).Replace("/", "\\");
+            }
+            else
+            {
+                return FileManager.RemovePath(glueScreen.Name) + "Gum";
+            }
+        }
 
         internal async Task AddScreenForGlueScreen(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
         {
