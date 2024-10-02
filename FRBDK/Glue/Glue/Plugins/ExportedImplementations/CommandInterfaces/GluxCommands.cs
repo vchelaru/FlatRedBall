@@ -3519,19 +3519,23 @@ public class GluxCommands : IGluxCommands
             }
             else
             { 
-                var allContainedEntities = GlueState.Self.CurrentGlueProject.Entities
-                    .Where(entity => entity.Name.StartsWith(directoryRenaming)).ToList();
+                var allContainedElements = GlueState.Self.CurrentGlueProject.Entities
+                    .Where(entity => entity.Name.StartsWith(directoryRenaming)).ToList<GlueElement>();
+                allContainedElements.AddRange(GlueState.Self.CurrentGlueProject.Screens
+                    .Where(screen => screen.Name.StartsWith(directoryRenaming)));
+
+
                 var oldDirectoryAbsolute = GlueCommands.Self.GetAbsoluteFileName(treeNode.GetRelativeFilePath(), isContent: false);
 
                 newDirectoryNameRelative = newDirectoryNameRelative.Replace('/', '\\');
 
 
-                foreach (var entity in allContainedEntities)
+                foreach (var element in allContainedElements)
                 {
-                    var strippedEntityName = entity.GetStrippedName();
+                    var strippedEntityName = element.GetStrippedName();
                     var newEntityName = newDirectoryNameRelative + strippedEntityName;
 
-                    await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(entity, newEntityName, showRenameWindow: false);
+                    await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(element, newEntityName, showRenameWindow: false);
                 }
 
                 // Is the old directory empty? If so, we can delete it:

@@ -19,8 +19,6 @@ namespace PluginTestbed.GlobalContentManagerPlugins
     [Export(typeof(PluginBase))]
     public class GlobalContentManagerHelperPlugin : PluginBase
     {
-        ToolStripMenuItem mMenuItem;
-        MenuStrip mMenuStrip;
         PluginTab GlobalContentPropertiesTab;
 
         GlobalContentPropertiesView GlobalContentPropertiesView;

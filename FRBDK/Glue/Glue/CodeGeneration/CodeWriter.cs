@@ -417,28 +417,23 @@ namespace FlatRedBallAddOns.Entities
     {
         string classNamespace = ProjectManager.ProjectNamespace;
 
-        if (element is EntitySave)
+        string directory = FileManager.MakeRelative(FileManager.GetDirectory(element.Name));
+
+        string entitiesOrScreens = element is EntitySave ? "Entities" : "Screens";
+
+        if (!directory.Equals($"{entitiesOrScreens}/", StringComparison.OrdinalIgnoreCase))
         {
-            string directory = FileManager.MakeRelative(FileManager.GetDirectory(element.Name));
+            string relativeDirectory = FileManager.MakeRelative(directory);
+            relativeDirectory = relativeDirectory.Substring(0, relativeDirectory.Length - 1);
+            relativeDirectory = relativeDirectory.Replace('/', '.');
 
-            if (!directory.Equals($"Entities/", StringComparison.OrdinalIgnoreCase))
-            {
-                string relativeDirectory = FileManager.MakeRelative(directory);
-                relativeDirectory = relativeDirectory.Substring(0, relativeDirectory.Length - 1);
-                relativeDirectory = relativeDirectory.Replace('/', '.');
-
-                classNamespace += "." + relativeDirectory;
-            }
-            else
-            {
-                classNamespace += ".Entities";
-            }
+            classNamespace += "." + relativeDirectory;
         }
-        else if (element is ScreenSave)
+        else
         {
-            classNamespace += ".Screens";
+            classNamespace += "." + entitiesOrScreens;
         }
-
+        
         return classNamespace;
     }
 
@@ -496,7 +491,10 @@ namespace FlatRedBallAddOns.Entities
             {
                 generator.AddInheritedTypesToList(inheritanceList, element);
             }
-            whatToInheritFrom += String.Join(", ", inheritanceList);
+            foreach(var item in inheritanceList)
+            {
+                whatToInheritFrom += ", " + item;
+            }
         }
 
         return whatToInheritFrom;

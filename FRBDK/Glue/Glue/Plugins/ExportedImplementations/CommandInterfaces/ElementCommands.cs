@@ -456,34 +456,57 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
     public async Task<SaveClasses.ScreenSave> AddScreen(string screenName)
     {
+
+        string qualifiedScreenName = screenName;
+
+        if (!screenName.ToLower().StartsWith("screens\\") && !screenName.ToLower().StartsWith("screens/"))
+        {
+            qualifiedScreenName = @"Screens\" + qualifiedScreenName;
+        }
+
         ScreenSave screenSave = new ScreenSave();
-        screenSave.Name = @"Screens\" + screenName;
+        screenSave.Name = qualifiedScreenName;
 
         await AddScreen(screenSave, suppressAlreadyExistingFileMessage:false);
 
         return screenSave;
     }
 
+    public async Task<ScreenSave> AddScreenAsync(AddScreenViewModel viewModel)
+    {
+        var gluxCommands = GlueCommands.Self.GluxCommands;
+
+        var directory = viewModel.Directory;
+
+        var newScreen = await gluxCommands.ScreenCommands.AddScreen(
+            directory + viewModel.ScreenName);
+
+        // we could add inheritance here 
+
+        return newScreen;
+    }
+
     public async Task AddScreen(ScreenSave screenSave, bool suppressAlreadyExistingFileMessage = false)
     {
         await TaskManager.Self.AddAsync(async () =>
         {
-            var glueProject = GlueState.Self.CurrentGlueProject;
-
-            string screenName = FileManager.RemovePath(screenSave.Name);
-
-            string fileName = screenSave.Name + ".cs";
-
             screenSave.Tags.Add("GLUE");
             screenSave.Source = "GLUE";
 
+            var glueProject = GlueState.Self.CurrentGlueProject;
+
             glueProject.Screens.Add(screenSave);
+
             glueProject.Screens.SortByName();
+
+            string screenName = FileManager.RemovePath(screenSave.Name);
+
+            string customCodeFilePath = screenSave.Name + ".cs";
 
             #region Create the Screen code (not the generated version)
 
 
-            var fullNonGeneratedFileName = FileManager.RelativeDirectory + fileName;
+            var fullNonGeneratedFileName = FileManager.RelativeDirectory + customCodeFilePath;
             var addedScreen =
                 GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fullNonGeneratedFileName, save: false);
 
@@ -560,19 +583,16 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
     public SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false, bool notifyPluginsOfNewEntity = true)
     {
-
-        string fileName = entityName + ".cs";
+        string qualifiedEntityName = entityName;
 
         if (!entityName.ToLower().StartsWith("entities\\") && !entityName.ToLower().StartsWith("entities/"))
         {
-            fileName = @"Entities\" + fileName;
+            qualifiedEntityName = @"Entities\" + qualifiedEntityName;
         }
-
-
 
         EntitySave entitySave = new EntitySave();
         entitySave.Is2D = is2D;
-        entitySave.Name = FileManager.RemoveExtension(fileName);
+        entitySave.Name = qualifiedEntityName;
 
         const bool AddXYZ = true;
 
@@ -2089,6 +2109,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             return newNamedObject;
         }
     }
+
 
 
     #endregion

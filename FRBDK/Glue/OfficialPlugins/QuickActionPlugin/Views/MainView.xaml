@@ -126,7 +126,7 @@
 
                     <local:TitleImageButton
                         x:Name="AddEntityButton"
-                        Title="{x:Static localization:Texts.EntityAdd}"
+                        Title="Add Entity"
                         Details="{x:Static localization:Texts.EntityAddDescription}"
                         Clicked="AddEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Entity.png">
                     </local:TitleImageButton>

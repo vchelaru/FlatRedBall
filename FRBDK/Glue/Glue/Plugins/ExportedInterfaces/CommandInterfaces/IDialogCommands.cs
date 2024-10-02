@@ -36,7 +36,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region Screen
 
-        void ShowAddNewScreenDialog();
+        void ShowAddNewScreenDialog(AddScreenViewModel viewModel = null);
 
         #endregion
 

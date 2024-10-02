@@ -1639,9 +1639,6 @@ for {1}?</value>
   <data name="AddScreenLevelDescription" xml:space="preserve">
     <value>Every game needs at least one screen. Usually the game logic is in a screen called GameScreen. Typically each level requires a new screen.</value>
   </data>
-  <data name="EntityAdd" xml:space="preserve">
-    <value>Add Entity</value>
-  </data>
   <data name="EntityAddDescription" xml:space="preserve">
     <value>Entities represent game objects like the player, enemies, bullets, and pick-ups.</value>
   </data>
@@ -2673,5 +2670,107 @@ for {1}?</value>
   </data>
   <data name="RestartOnFailedCommands" xml:space="preserve">
     <value>Restart on failed commands</value>
+  </data>
+  <data name="Preferences" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ErrorGumFileAssociationNotFound" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RunEditMode" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AutoTakeSnapshot" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ProjectWizardOpen" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GlobalContentMembership" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EntityBase" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LocalFiles" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DownloadFile" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HintExistingFileList" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EnterUrlName" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GlueWillDownloadFileAndDependencies" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FrbGlueVersion" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GlueProjectVersion" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Fullscreen" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ProjectNewSynced" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ObjectNoPartitioning" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DamageInGeneratedCode" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LinkToSource" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PolygonToRectangle" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PolygonToMultiSided" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HintMovePointUpList" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HintMovePointDownList" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HintResizePolygon" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Variables" xml:space="preserve">
+    <value />
+  </data>
+  <data name="VariablesExcluded" xml:space="preserve">
+    <value />
+  </data>
+  <data name="State" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HintObjectIsContainerNotApply" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FailedToSetGameEditModeToX" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FindAllReferences" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EntityAddDerived" xml:space="preserve">
+    <value />
   </data>
 </root>

@@ -15,6 +15,16 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        /// <summary>
+        /// The containing Directory relative to the project. If blank, the Screen is added to the Screens folder. If not blank,
+        /// this should contain the Screens\\ prefix. For example, a proper value might be: "Screens\\Level1\\".
+        /// </summary>
+        public string Directory
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public bool HasChangedScreenTextBox
         {
             get => Get<bool>();

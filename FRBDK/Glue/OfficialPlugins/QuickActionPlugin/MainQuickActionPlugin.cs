@@ -59,7 +59,7 @@ namespace OfficialPluginsCore.QuickActionPlugin
 
         private void AssignEvents()
         {
-            this.ReactToItemSelectHandler += (notUsed) =>
+            this.ReactToItemsSelected += _ =>
                 buttonVisibilityManager.UpdateVisibility();
 
             this.ReactToLoadedGlux += () =>

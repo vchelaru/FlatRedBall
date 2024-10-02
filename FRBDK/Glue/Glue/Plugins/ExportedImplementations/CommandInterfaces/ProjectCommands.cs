@@ -643,6 +643,12 @@ class ProjectCommands : IProjectCommands
 
             Directory.CreateDirectory(directory);
         }
+        else if(treeNodeToAddTo.IsRootScreenNode())
+        {
+            string directory = GlueState.Self.CurrentGlueProjectDirectory + "Screens/" + folderName;
+
+            Directory.CreateDirectory(directory);
+        }
         else if (treeNodeToAddTo.IsDirectoryNode())
         {
             // This used to use RelativeDirectory, but

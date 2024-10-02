@@ -267,7 +267,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         internal void AddDirectoryNodes()
         {
-            AddDirectoryNodes(FileManager.RelativeDirectory + "Entities/", EntityRootNode);
+            AddDirectoryNodes(FileManager.RelativeDirectory + "Entities/", EntityRootNode, ScreenOrEntity.Entity);
+            AddDirectoryNodes(FileManager.RelativeDirectory + "Screens/", ScreenRootNode, ScreenOrEntity.Screen);
 
             #region Add global content directories
 
@@ -278,7 +279,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 contentDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
             }
 
-            AddDirectoryNodes(contentDirectory + "GlobalContent/", GlobalContentRootNode);
+            AddDirectoryNodes(contentDirectory + "GlobalContent/", GlobalContentRootNode, screenOrEntity:null);
             #endregion
         }
 
@@ -307,8 +308,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     if (element is ScreenSave screen)
                     {
-                        elementTreeNode = new GlueElementNodeViewModel(ScreenRootNode, element, true);
-                        ScreenRootNode.Children.Add(elementTreeNode);
+                        elementTreeNode = AddScreenTreeNode(screen);
                     }
                     else if (element is EntitySave entitySave)
                     {
@@ -353,6 +353,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
             }
         }
+
+
 
         public NodeViewModel GetTreeNodeByRelativePath(string relativePath)
         {
@@ -470,7 +472,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             #endregion
 
             string contentDirectory = GlueState.Self.ContentDirectory;
-            AddDirectoryNodes(contentDirectory + "GlobalContent/", GlobalContentRootNode);
+            AddDirectoryNodes(contentDirectory + "GlobalContent/", GlobalContentRootNode, null);
 
 
             #region Do cleanup - remove tree nodes that exist but represent objects no longer in the project
@@ -491,11 +493,12 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         internal void RefreshDirectoryNodes()
         {
-            AddDirectoryNodes(GlueState.Self.CurrentGlueProjectDirectory + "Entities/", EntityRootNode);
+            AddDirectoryNodes(GlueState.Self.CurrentGlueProjectDirectory + "Entities/", EntityRootNode, ScreenOrEntity.Entity);
+            AddDirectoryNodes(GlueState.Self.CurrentGlueProjectDirectory + "Screens/", ScreenRootNode, ScreenOrEntity.Screen);
 
             string contentDirectory = GlueState.Self.ContentDirectory;
 
-            AddDirectoryNodes(contentDirectory + "GlobalContent/", GlobalContentRootNode);
+            AddDirectoryNodes(contentDirectory + "GlobalContent/", GlobalContentRootNode, screenOrEntity:null);
         }
 
         public void RefreshBookmarks()
@@ -517,7 +520,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
-        internal void AddDirectoryNodes(string parentDirectory, NodeViewModel parentTreeNode)
+        internal void AddDirectoryNodes(string parentDirectory, NodeViewModel parentTreeNode, ScreenOrEntity? screenOrEntity)
         {
             if (parentTreeNode == null)
             {
@@ -542,7 +545,21 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     if (!ReferencedFilesRootNodeViewModel.DirectoriesToIgnore.Contains(nameOfNewNode))
                     {
 
-                        var treeNode = TreeNodeForDirectoryOrEntityNode(relativePath, parentTreeNode);
+                        NodeViewModel treeNode = null;
+
+                        if(screenOrEntity == ScreenOrEntity.Entity)
+                        {
+                            treeNode = TreeNodeForDirectoryOrEntityNode(relativePath, parentTreeNode);
+                        }
+                        else if(screenOrEntity == ScreenOrEntity.Screen)
+                        {
+                            treeNode = TreeNodeForDirectoryOrScreenNode(relativePath, parentTreeNode);
+                        }
+                        else // null
+                        {
+                            // This handles both entities and global content
+                            treeNode = TreeNodeForDirectoryOrEntityNode(relativePath, parentTreeNode);
+                        }
 
                         if (treeNode == null)
                         {
@@ -554,12 +571,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                             parentTreeNode.Children.Add(treeNode);
                         }
 
-                        //treeNode.ImageKey = "folder.png";
-                        //treeNode.SelectedImageKey = "folder.png";
-
-                        //treeNode.ForeColor = ElementViewWindow.FolderColor;
-
-                        AddDirectoryNodes(parentDirectory + relativePath + "/", treeNode);
+                        AddDirectoryNodes(parentDirectory + relativePath + "/", treeNode, screenOrEntity);
                     }
                 }
 
@@ -620,10 +632,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         private NodeViewModel AddEntityTreeNode(EntitySave entitySave)
         {
-            //NodeViewModel elementTreeNode = new GlueElementNodeViewModel(EntityRootNode, entitySave);
-            //EntityRootNode.Children.Add(elementTreeNode);
-            //return elementTreeNode;
-
             string containingDirectory = FileManager.MakeRelative(FileManager.GetDirectory(entitySave.Name));
 
             NodeViewModel treeNodeToAddTo;
@@ -645,14 +653,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         Directory.CreateDirectory(absoluteDirectory);
 
                     }
-                    AddDirectoryNodes(FileManager.RelativeDirectory + "Entities/", EntityRootNode);
+                    AddDirectoryNodes(FileManager.RelativeDirectory + "Entities/", EntityRootNode, ScreenOrEntity.Entity);
 
                     // now try again
                     treeNodeToAddTo = TreeNodeForDirectoryOrEntityNode(
                         directory, EntityRootNode);
                 }
             }
-
 
             var treeNode = new GlueElementNodeViewModel(treeNodeToAddTo, entitySave, true);
             treeNode.Text = FileManager.RemovePath(entitySave.Name);
@@ -679,8 +686,54 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             treeNode.RefreshTreeNodes(TreeNodeRefreshType.All);
 
             return treeNode;
+        }
 
+        private NodeViewModel AddScreenTreeNode(ScreenSave screenSave)
+        {
+            string containingDirectory = FileManager.MakeRelative(FileManager.GetDirectory(screenSave.Name));
 
+            NodeViewModel treeNodeToAddTo;
+
+            if (containingDirectory == $"Screens/")
+            {
+                treeNodeToAddTo = ScreenRootNode;
+            }
+            else
+            {
+                string directory = containingDirectory.Substring("Screens/".Length);
+
+                treeNodeToAddTo = TreeNodeForDirectoryOrScreenNode(directory, ScreenRootNode);
+                if(treeNodeToAddTo == null && !string.IsNullOrEmpty(directory))
+                {
+                    // If it's null that may mean the directory doesn't exist.  We should make it
+                    string absoluteDirectory = GlueCommands.Self.GetAbsoluteFileName(containingDirectory, false);
+                    if (!Directory.Exists(absoluteDirectory))
+                    {
+                        Directory.CreateDirectory(absoluteDirectory);
+
+                    }
+                    AddDirectoryNodes(FileManager.RelativeDirectory + "Screens/", EntityRootNode, ScreenOrEntity.Screen);
+
+                    // now try again
+                    treeNodeToAddTo = TreeNodeForDirectoryOrEntityNode(
+                        directory, ScreenRootNode);
+                }
+            }
+
+            var treeNode = new GlueElementNodeViewModel(treeNodeToAddTo, screenSave, true);
+            treeNode.Text = FileManager.RemovePath(screenSave.Name);
+            treeNode.Tag = screenSave;
+
+            treeNodeToAddTo.Children.Add(treeNode);
+            treeNodeToAddTo.SortByTextConsideringDirectories();
+
+            string generatedFile = screenSave.Name + ".Generated.cs";
+
+            ScreenRootNode.SortByTextConsideringDirectories();
+
+            treeNode.RefreshTreeNodes(TreeNodeRefreshType.All);
+
+            return treeNode;
         }
 
         public void Clear()
@@ -1089,6 +1142,18 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 return TreeNodeByDirectory(containingDirection, containingNode);
             }
         }
+
+        public NodeViewModel TreeNodeForDirectoryOrScreenNode(string containingDirection, NodeViewModel containingNode) 
+        {
+            if (string.IsNullOrEmpty(containingDirection))
+            {
+                return ScreenRootNode;
+            }
+            else
+            {
+                return TreeNodeByDirectory(containingDirection, containingNode);
+            }
+            }
 
         public NodeViewModel TreeNodeByDirectory(string containingDirection, NodeViewModel containingNode)
         {

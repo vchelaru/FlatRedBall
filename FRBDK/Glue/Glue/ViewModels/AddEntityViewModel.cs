@@ -28,7 +28,7 @@ namespace GlueFormsCore.ViewModels
         }
 
         /// <summary>
-        /// The containing entity relative to the project. If blank, the Entity is added to the Entities folder. If not blank,
+        /// The containing directory relative to the project. If blank, the Entity is added to the Entities folder. If not blank,
         /// this should contain the Entities\\ prefix. For example, a proper value might be: "Entities\\Enemies\\".
         /// </summary>
         public string Directory

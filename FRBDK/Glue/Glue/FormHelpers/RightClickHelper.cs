@@ -331,7 +331,7 @@ public static class RightClickHelper
         #region IsRootEntityNode
         else if (targetNode.IsRootEntityNode())
         {
-            Add(L.Texts.EntityAdd, () => GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog(), image: EntityImage);
+            Add("Add Entity", () => GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog(), image: EntityImage);
 
             Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode), image: FolderImage);
 
@@ -342,7 +342,10 @@ public static class RightClickHelper
         #region IsRootScreenNode
         else if (targetNode.IsRootScreenNode())
         {
-            Add(L.Texts.ScreenAdd, GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog, image:ScreenImage);
+            Add(L.Texts.ScreenAdd, () => GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog(), image:ScreenImage);
+
+            Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode), image: FolderImage);
+
             Add(L.Texts.ScreenImport, () => ImportElementClick(targetNode));
 
         }
@@ -559,14 +562,17 @@ public static class RightClickHelper
             Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode), image: FolderImage);
 
             bool isEntityContainingFolder = targetNode.Root.IsRootEntityNode();
+            bool isScreenContainingFolder = targetNode.Root.IsRootScreenNode();
 
             if (isEntityContainingFolder)
             {
-                //AddItem(addEntityToolStripMenuItem);
-
-                Add(L.Texts.EntityAdd, () => GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog(), image: EntityImage);
+                Add("Add Entity", () => GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog(), image: EntityImage);
 
                 Add(L.Texts.EntityImport, () => ImportElementClick(targetNode));
+            }
+            else if(isScreenContainingFolder)
+            {
+                Add("Add Screen", () => GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog(), image: ScreenImage);
             }
             else
             {
@@ -577,7 +583,7 @@ public static class RightClickHelper
             AddSeparator();
 
             Add(L.Texts.FolderDelete, () => DeleteFolderClick(targetNode));
-            if (isEntityContainingFolder)
+            if (isEntityContainingFolder || isScreenContainingFolder)
             {
                 Add(L.Texts.FolderRename, () => HandleRenameFolderClick(targetNode));
             }
@@ -1805,6 +1811,17 @@ public static class RightClickHelper
 
                 }
             }
+            else if(targetNode.IsChildOfRootScreenNode() && targetNode.IsFolderForScreens())
+            {
+                List<ScreenSave> allScreenSaves = new List<ScreenSave>();
+                GetAllScreenSavesIn(targetNode, allScreenSaves);
+
+                foreach(ScreenSave screenSave in allScreenSaves)
+                {
+                    GlueState.Self.CurrentScreenSave = screenSave;
+                    await RemoveFromProjectOptionalSaveAndRegenerate(screenSave == allScreenSaves[^1], false, false);
+                }
+            }
             else if (targetNode.IsFolderInFilesContainerNode() || targetNode.IsChildOfGlobalContent())
             {
                 List<ReferencedFileSave> allReferencedFileSaves = new List<ReferencedFileSave>();
@@ -1849,6 +1866,21 @@ public static class RightClickHelper
             else if (subNode.Tag is EntitySave asEntitySave)
             {
                 allEntitySaves.Add(asEntitySave);
+            }
+        }
+    }
+
+    static void GetAllScreenSavesIn(ITreeNode treeNode, List<ScreenSave> allScreenSaves)
+    {
+        foreach(var subnode in treeNode.Children)
+        {
+            if(subnode.IsDirectoryNode())
+            {
+                GetAllScreenSavesIn(subnode, allScreenSaves);
+            }
+            else if(subnode.Tag is ScreenSave asScreenSave)
+            {
+                allScreenSaves.Add(asScreenSave);
             }
         }
     }

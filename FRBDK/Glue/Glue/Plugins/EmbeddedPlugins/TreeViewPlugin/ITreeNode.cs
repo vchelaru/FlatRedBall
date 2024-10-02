@@ -72,7 +72,7 @@ public interface ITreeNode
             return false;
         }
 
-        if (Parent.IsRootEntityNode() || Parent.IsGlobalContentContainerNode())
+        if (Parent.IsRootEntityNode() || Parent.IsGlobalContentContainerNode() || Parent.IsRootScreenNode())
             return true;
 
 
@@ -227,6 +227,23 @@ public interface ITreeNode
     }
 
 
+    public bool IsChildOfRootScreenNode()
+    {
+        if (Parent == null)
+        {
+            return false;
+        }
+        else if (Parent.IsRootScreenNode())
+        {
+            return true;
+        }
+        else
+        {
+            return Parent.IsChildOfRootScreenNode();
+        }
+    }
+
+
     public bool IsFolderForEntities()
     {
         //TODO:  this fails when deleting a folder inside files.  We got to fix that.  Try deleting the Palette folders in CreepBase in Baron
@@ -245,6 +262,24 @@ public interface ITreeNode
 
         return Tag == null &&
                IsChildOfRootEntityNode();
+    }
+
+    public bool IsFolderForScreens()
+    {
+        var parent = Parent;
+
+        if (parent == null)
+        {
+            return false;
+        }
+
+        if (parent.IsFilesContainerNode())
+        {
+            return false;
+        }
+
+        return Tag == null &&
+               IsChildOfRootScreenNode();
     }
 
     #endregion

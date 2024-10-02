@@ -516,50 +516,49 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public async void ShowAddNewEntityDialog(AddEntityViewModel viewModel = null)
         {
-            viewModel = viewModel ?? CreateAddNewEntityViewModel();
-
-            GlueProjectSave project = GlueState.Self.CurrentGlueProject;
-
-            // search:  addentity, add entity
-            if (project == null)
+            //////////////Early Out////////////
+            if (ProjectManager.GlueProjectSave == null)
             {
                 System.Windows.Forms.MessageBox.Show(L.Texts.ErrorNewProjectFirst);
+                return;
             }
-            else
+            if (ProjectManager.StatusCheck() != ProjectManager.CheckResult.Passed)
             {
-                if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
+                return;
+            }
+            ////////////End Early Out
+            
+            viewModel = viewModel ?? CreateAddNewEntityViewModel();
+
+            AddEntityWindow window = new();
+
+            window.DataContext = viewModel;
+
+            MoveToCursor(window);
+
+            PluginManager.ModifyAddEntityWindow(window);
+
+            var result = window.ShowDialog();
+
+            if (result == true)
+            {
+                string entityName = viewModel.Name;
+
+                string whyIsntValid;
+
+                if (!NameVerifier.IsEntityNameValid(entityName, null, out whyIsntValid))
                 {
-                    AddEntityWindow window = new Controls.AddEntityWindow();
+                    MessageBox.Show(whyIsntValid);
+                }
+                else
+                {
+                    var entity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(viewModel);
 
-                    window.DataContext = viewModel;
+                    await TaskManager.Self.AddAsync(() =>
+                        PluginManager.ReactToNewEntityCreatedWithUi(entity, window),
+                        L.Texts.PluginCallReactToNewEntity, doOnUiThread: true);
 
-                    MoveToCursor(window);
-
-                    PluginManager.ModifyAddEntityWindow(window);
-
-                    var result = window.ShowDialog();
-
-                    if (result == true)
-                    {
-                        string entityName = viewModel.Name;
-
-                        string whyIsntValid;
-
-                        if (!NameVerifier.IsEntityNameValid(entityName, null, out whyIsntValid))
-                        {
-                            MessageBox.Show(whyIsntValid);
-                        }
-                        else
-                        {
-                            var entity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(viewModel);
-
-                            await TaskManager.Self.AddAsync(() =>
-                                PluginManager.ReactToNewEntityCreatedWithUi(entity, window),
-                                L.Texts.PluginCallReactToNewEntity, doOnUiThread: true);
-
-                            GlueState.Self.CurrentEntitySave = entity;
-                        }
-                    }
+                    GlueState.Self.CurrentEntitySave = entity;
                 }
             }
         }
@@ -591,7 +590,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             viewModel.DirectoryOptions.Add("Entities\\");
             FillViewModelWithDirectoriesRecursively("Entities\\", viewModel);
-            viewModel.Directory = viewModel.DirectoryOptions[0];
+            if(String.IsNullOrEmpty(viewModel.Directory))
+            {
+                viewModel.Directory = viewModel.DirectoryOptions[0];
+            }
 
             return viewModel;
         }
@@ -852,7 +854,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         #endregion
 
         #region Screen
-        public async void ShowAddNewScreenDialog()
+        public async void ShowAddNewScreenDialog(AddScreenViewModel viewModel = null)
         {
             //////////////Early Out////////////
             if (ProjectManager.GlueProjectSave == null)
@@ -866,32 +868,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             ////////////End Early Out
 
+            viewModel = viewModel ?? CreateAddNewScreenViewModel();
+
             // AddScreen, add screen, addnewscreen, add new screen
-            var addScreenWindow = new AddScreenWindow();
+            AddScreenWindow addScreenWindow = new();
+
+            addScreenWindow.DataContext = viewModel;
 
             MoveToCursor(addScreenWindow);
 
             addScreenWindow.Message = L.Texts.EnterNewScreenName;
 
-            string name = "NewScreen";
-
-            if (GlueState.Self.CurrentGlueProject.Screens.Count == 0)
-            {
-                name = "GameScreen";
-            }
-
-            var allScreenNames =
-                GlueState.Self.CurrentGlueProject.Screens
-                .Select(item => item.GetStrippedName())
-                .ToList();
-
-            name = StringFunctions.MakeStringUnique(name,
-                allScreenNames, 2);
-
-
-            var viewModel = new AddScreenViewModel();
-            viewModel.ScreenName = name;
-            addScreenWindow.DataContext = viewModel;
             addScreenWindow.TextEntered += (not, used) => viewModel.HasChangedScreenTextBox = true;
 
             PluginManager.ModifyAddScreenWindow(addScreenWindow);
@@ -909,7 +896,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 else
                 {
                     var screen =
-                        await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(addScreenWindow.Result);
+                        await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreenAsync(viewModel);
 
                     GlueState.Self.CurrentElement = screen;
 
@@ -918,6 +905,40 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
 
             }
+        }
+
+        private static AddScreenViewModel CreateAddNewScreenViewModel()
+        {
+            AddScreenViewModel viewModel = new ();
+
+            // todo - inheritance...
+
+            string name = "NewScreen";
+
+            if (GlueState.Self.CurrentGlueProject.Screens.Count == 0)
+            {
+                name = "GameScreen";
+            }
+
+            var allScreenNames =
+                GlueState.Self.CurrentGlueProject.Screens
+                .Select(item => item.GetStrippedName())
+                .ToList();
+
+            name = StringFunctions.MakeStringUnique(name,
+                allScreenNames, 2);
+
+            viewModel.ScreenName = name;
+
+            viewModel.Directory = "";
+
+            if (GlueState.Self.CurrentTreeNode?.IsDirectoryNode() == true)
+            {
+                viewModel.Directory = GlueState.Self.CurrentTreeNode.GetRelativeFilePath();
+                viewModel.Directory = viewModel.Directory.Replace('/', '\\');
+            }
+
+            return viewModel;
         }
 
         #endregion
