@@ -134,9 +134,9 @@ namespace FlatRedBall.AI.Pathfinding
                 }
             }
 
-            void AddNodesForLayer(MapDrawableBatch layer, string name)
+            void AddNodesForLayer(MapDrawableBatch innerLayer, string name)
             {
-                var dictionary = layer.NamedTileOrderedIndexes;
+                var dictionary = innerLayer.NamedTileOrderedIndexes;
 
                 if (dictionary.ContainsKey(name))
                 {
@@ -146,7 +146,7 @@ namespace FlatRedBall.AI.Pathfinding
                     {
                         float left;
                         float bottom;
-                        layer.GetBottomLeftWorldCoordinateForOrderedTile(index, out left, out bottom);
+                        innerLayer.GetBottomLeftWorldCoordinateForOrderedTile(index, out left, out bottom);
 
                         var centerX = left + dimensionHalf;
                         var centerY = bottom + dimensionHalf;

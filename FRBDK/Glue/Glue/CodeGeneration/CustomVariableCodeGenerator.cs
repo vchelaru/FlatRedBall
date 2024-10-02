@@ -1368,7 +1368,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         // Don't remove the path, we want the prefix:
                         //string prefix = FileManager.RemovePath(saveObject.Name);
-                        string prefix = saveObject.Name.Replace('\\', '.');
+                        string prefix = container.Name.Replace('\\', '.');
                         variableToAssign = prefix + "." + rfs.GetInstanceName() + "[\"" + variableToAssign + "\"]";
                     }
                 }
