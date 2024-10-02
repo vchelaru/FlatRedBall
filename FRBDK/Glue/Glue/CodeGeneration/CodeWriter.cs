@@ -496,7 +496,11 @@ namespace FlatRedBallAddOns.Entities
             {
                 generator.AddInheritedTypesToList(inheritanceList, element);
             }
-            whatToInheritFrom += String.Join(", ", inheritanceList);
+
+            foreach (var item in inheritanceList)
+            {
+                whatToInheritFrom += ", " + item;
+            }
         }
 
         return whatToInheritFrom;
