@@ -1,10 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU</Platforms>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <RootNamespace>CompilerPlugin</RootNamespace>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
@@ -38,9 +39,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CompilerLibrary\CompilerLibrary.csproj" />
-	  <ProjectReference Include="..\Glue\GlueFormsCore.csproj">
-		  <SpecificVersion>False</SpecificVersion>
-	  </ProjectReference> 
+    <ProjectReference Include="..\Glue\GlueFormsCore.csproj">
+      <SpecificVersion>False</SpecificVersion>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

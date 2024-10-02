@@ -4,6 +4,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
 
   <Import Project="..\StateInterpolationPlugin\StateInterpolationShared.projitems" Label="Shared" />

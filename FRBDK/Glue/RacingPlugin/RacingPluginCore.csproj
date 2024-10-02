@@ -1,9 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Platforms>AnyCPU</Platforms>
 		<TargetFramework>net6.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
-	</PropertyGroup>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
 
 	<ItemGroup>
 		<Compile Remove="Properties\AssemblyInfo.cs" />
