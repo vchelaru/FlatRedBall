@@ -87,8 +87,8 @@ namespace GumPlugin.Managers
 
         string GetLoadStaticContentCodeFor(ReferencedFileSave rfs, NamedObjectSave nos, string qualifiedName = null)
         {
-            string strippedName = GetStrippedScreenName(rfs);
-
+            // Gum uses backslashes for screens in folders:
+            string strippedName = GetStrippedScreenName(rfs).Replace("/", "\\");
             // Now the camera setup code handles this, so we don't have to:
             // In fact, specific Screen types already removed this, but as of Oct 5, 2020
             // the GraphicalUiElement runtime type ATI still had this and it was messing up
@@ -111,12 +111,12 @@ namespace GumPlugin.Managers
             if(string.IsNullOrEmpty(qualifiedName))
             {
                 toReturn +=
-                    $"\n {thisName} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetElementSave(\"{strippedName}\"), true);";
+                    $"\n {thisName} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetElementSave(@\"{strippedName}\"), true);";
             }
             else
             {
                 toReturn +=
-                    $"\n {thisName} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetElementSave(\"{strippedName}\"), true);";
+                    $"\n {thisName} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetElementSave(@\"{strippedName}\"), true);";
             }
             toReturn +=
                  "\n Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = wasSuspended;";
