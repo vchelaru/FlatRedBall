@@ -36,7 +36,8 @@ namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
             this.Details = $"The object {nos} is instantiated by its base element, but it is also created " +
                 $"from file {nos.SourceFile} which means the instance is re-assigned. At a minimum this can result " +
                 $"in unnecessary instances being created at runtime, and worse it can result in memory leaks if the " +
-                $"instance created in the base element is not cleaned up.";
+                $"instance created in the base element is not cleaned up.\n" +
+                $"If the derived object should be set by its screen, the base should set its Instantiate property to false";
 
             uniqueId = Details;
 

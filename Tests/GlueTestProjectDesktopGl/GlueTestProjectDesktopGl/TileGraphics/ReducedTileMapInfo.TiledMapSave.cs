@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -69,6 +69,8 @@ namespace TMXGlueLib.DataTypes
                 NumberCellsTall = tiledMapSave.Height,
                 NumberCellsWide = tiledMapSave.Width
             };
+
+            toReturn.TileOrientation = tiledMapSave.orientation == "isometric" ? TileOrientation.Isometric : TileOrientation.Orthogonal;
             toReturn.CellHeightInPixels = (ushort)tiledMapSave.tileheight;
             toReturn.CellWidthInPixels = (ushort)tiledMapSave.tilewidth;
             toReturn.QuadHeight = tiledMapSave.tileheight;
@@ -96,9 +98,12 @@ namespace TMXGlueLib.DataTypes
             var layers = new List<AbstractMapLayer>();
             layers.AddRange(tiledMapSave.MapLayers);
 
-            foreach (var group in tiledMapSave.Group)
+            if(tiledMapSave.Group != null)
             {
-                GetAllMapLayers(group, layers);
+                foreach (var group in tiledMapSave.Group)
+                {
+                    GetAllMapLayers(group, layers);
+                }
             }
 
             return layers;
@@ -107,9 +112,13 @@ namespace TMXGlueLib.DataTypes
         static void GetAllMapLayers(LayerGroup layerGroup, List<AbstractMapLayer> layers)
         {
             layers.AddRange(layerGroup.MapLayers);
-            foreach (var group in layerGroup.Group)
+
+            if (layerGroup.Group != null)
             {
-                GetAllMapLayers(group, layers);
+                foreach (var group in layerGroup.Group)
+                {
+                    GetAllMapLayers(group, layers);
+                }
             }
         }
 
@@ -188,8 +197,10 @@ namespace TMXGlueLib.DataTypes
                     }
                 }
 
-                int tileWidth = tiledMapSave.tilewidth;
-                int tileHeight = tiledMapSave.tileheight;
+                // Update June 9, 2024
+                // the tileset may have its own tile height and width, so we should look to that:
+                int tileWidth = tileSet?.Tilewidth ?? tiledMapSave.tilewidth;
+                int tileHeight = tileSet?.Tileheight ?? tiledMapSave.tileheight;
 
                 reducedLayerInfo = new ReducedLayerInfo
                 {

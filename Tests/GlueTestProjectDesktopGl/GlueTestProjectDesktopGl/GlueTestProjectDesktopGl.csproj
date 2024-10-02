@@ -1437,6 +1437,91 @@
     <Content Include="Content\shader.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Entities\GlobalContentEntity\burnOrb.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>burnOrb</Name>
+      <Link>Content\Entities\GlobalContentEntity\burnOrb.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Entities\PausingEntity\SoundEffectFile.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SoundEffectFile</Name>
+      <Link>Content\Entities\PausingEntity\SoundEffectFile.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Entities\PausingEntity\superHit.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>superHit</Name>
+      <Link>Content\Entities\PausingEntity\superHit.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Entities\SoundEffectEntity\DogBarkSoundEffect.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>DogBarkSoundEffect</Name>
+      <Link>Content\Entities\SoundEffectEntity\DogBarkSoundEffect.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Entities\SoundEffectEntity\DogBarkSoundEffect2.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>DogBarkSoundEffect2</Name>
+      <Link>Content\Entities\SoundEffectEntity\DogBarkSoundEffect2.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Entities\SoundEffectEntity\SoundEffectInstanceFile.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SoundEffectInstanceFile</Name>
+      <Link>Content\Entities\SoundEffectEntity\SoundEffectInstanceFile.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\GlobalContent\BearContentPipeline.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BearContentPipeline</Name>
+      <Link>Content\GlobalContent\BearContentPipeline.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\GlobalContent\DogBarkSoundEffect.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>DogBarkSoundEffect</Name>
+      <Link>Content\GlobalContent\DogBarkSoundEffect.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\GlobalContent\DogBarkSoundEffect2.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>DogBarkSoundEffect2</Name>
+      <Link>Content\GlobalContent\DogBarkSoundEffect2.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\GlobalContent\LoadedOnlyWhenReferencedGlobal.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LoadedOnlyWhenReferencedGlobal</Name>
+      <Link>Content\GlobalContent\LoadedOnlyWhenReferencedGlobal.ogg</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\GlobalContent\LoadedOnlyWhenReferencedGlobal.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LoadedOnlyWhenReferencedGlobal</Name>
+      <Link>Content\GlobalContent\LoadedOnlyWhenReferencedGlobal.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Screens\AudioScreen\boom.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>boom</Name>
+      <Link>Content\Screens\AudioScreen\boom.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Screens\BaseScreen\BaseScreenSongOnlyWhenReferenced.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BaseScreenSongOnlyWhenReferenced</Name>
+      <Link>Content\Screens\BaseScreen\BaseScreenSongOnlyWhenReferenced.ogg</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Screens\BaseScreen\BaseScreenSongOnlyWhenReferenced.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BaseScreenSongOnlyWhenReferenced</Name>
+      <Link>Content\Screens\BaseScreen\BaseScreenSongOnlyWhenReferenced.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Screens\GlobalContentScreen\MenuSong.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>MenuSong</Name>
+      <Link>Content\Screens\GlobalContentScreen\MenuSong.ogg</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Screens\GlobalContentScreen\MenuSong.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>MenuSong</Name>
+      <Link>Content\Screens\GlobalContentScreen\MenuSong.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Screens\PauseScreen\SoundEffectInstanceFile.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SoundEffectInstanceFile</Name>
+      <Link>Content\Screens\PauseScreen\SoundEffectInstanceFile.xnb</Link>
+    </None>
     <None Include="..\builtxnbs\desktopgl\entities\globalcontententity\burnorb.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>burnOrb</Name>
@@ -1894,353 +1979,353 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Waves</Name>
     </None>
-    <None Include="content\gumproject\components\alignmentobject.gucx">
+    <None Include="Content\GumProject\Components\AlignmentObject.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>alignmentobject</Name>
+      <Name>AlignmentObject</Name>
     </None>
-    <None Include="content\gumproject\components\animatedcomponent.gucx">
+    <None Include="Content\GumProject\Components\AnimatedComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>animatedcomponent</Name>
+      <Name>AnimatedComponent</Name>
     </None>
-    <None Include="content\gumproject\components\childstatecomponent.gucx">
+    <None Include="Content\GumProject\Components\ChildStateComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>childstatecomponent</Name>
+      <Name>ChildStateComponent</Name>
     </None>
-    <None Include="content\gumproject\components\coloredcomponentwithcoloredstates.gucx">
+    <None Include="Content\GumProject\Components\ColoredComponentWithColoredStates.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>coloredcomponentwithcoloredstates</Name>
+      <Name>ColoredComponentWithColoredStates</Name>
     </None>
-    <None Include="content\gumproject\components\componentcontainingsprite.gucx">
+    <None Include="Content\GumProject\Components\ComponentContainingSprite.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>componentcontainingsprite</Name>
+      <Name>ComponentContainingSprite</Name>
     </None>
-    <None Include="content\gumproject\components\componentfolder\infolder1.gucx">
+    <None Include="Content\GumProject\Components\ComponentFolder\InFolder1.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>infolder1</Name>
+      <Name>InFolder1</Name>
     </None>
-    <None Include="content\gumproject\components\componentfolder\samenamecomponent.gucx">
+    <None Include="Content\GumProject\Components\ComponentFolder\SameNameComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>samenamecomponent</Name>
+      <Name>SameNameComponent</Name>
     </None>
-    <None Include="content\gumproject\components\componentfolder\statecomponentcontainedfoldered.gucx">
+    <None Include="Content\GumProject\Components\ComponentFolder\StateComponentContainedFoldered.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>statecomponentcontainedfoldered</Name>
+      <Name>StateComponentContainedFoldered</Name>
     </None>
-    <None Include="content\gumproject\components\componentwithcustominitialize.gucx">
+    <None Include="Content\GumProject\Components\ComponentWithCustomInitialize.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>componentwithcustominitialize</Name>
+      <Name>ComponentWithCustomInitialize</Name>
     </None>
-    <None Include="content\gumproject\components\containerofinfolder.gucx">
+    <None Include="Content\GumProject\Components\ContainerOfInFolder.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>containerofinfolder</Name>
+      <Name>ContainerOfInFolder</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\button.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\Button.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>button</Name>
+      <Name>Button</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\checkbox.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\CheckBox.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>checkbox</Name>
+      <Name>CheckBox</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\coloredframe.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\ColoredFrame.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>coloredframe</Name>
+      <Name>ColoredFrame</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\combobox.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\ComboBox.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>combobox</Name>
+      <Name>ComboBox</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\dialogbox.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\DialogBox.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>dialogbox</Name>
+      <Name>DialogBox</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\listbox.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\ListBox.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>listbox</Name>
+      <Name>ListBox</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\listboxitem.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\ListBoxItem.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>listboxitem</Name>
+      <Name>ListBoxItem</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\radiobutton.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\RadioButton.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>radiobutton</Name>
+      <Name>RadioButton</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\scrollbar.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\ScrollBar.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>scrollbar</Name>
+      <Name>ScrollBar</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\scrollbarthumb.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\ScrollBarThumb.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>scrollbarthumb</Name>
+      <Name>ScrollBarThumb</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\scrollviewer.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\ScrollViewer.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>scrollviewer</Name>
+      <Name>ScrollViewer</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\slider.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\Slider.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>slider</Name>
+      <Name>Slider</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\textbox.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\TextBox.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>textbox</Name>
+      <Name>TextBox</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\togglebutton.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\ToggleButton.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>togglebutton</Name>
+      <Name>ToggleButton</Name>
     </None>
-    <None Include="content\gumproject\components\defaultforms\usercontrol.gucx">
+    <None Include="Content\GumProject\Components\DefaultForms\UserControl.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>usercontrol</Name>
+      <Name>UserControl</Name>
     </None>
-    <None Include="content\gumproject\components\folder with space\componentinfolderwithspace.gucx">
+    <None Include="Content\GumProject\Components\Folder With Space\ComponentInFolderWithSpace.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>componentinfolderwithspace</Name>
+      <Name>ComponentInFolderWithSpace</Name>
     </None>
-    <None Include="content\gumproject\components\folder1\folderedentity1.gucx">
+    <None Include="Content\GumProject\Components\Folder1\FolderedEntity1.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>folderedentity1</Name>
+      <Name>FolderedEntity1</Name>
     </None>
-    <None Include="content\gumproject\components\folder2\folderedentity2.gucx">
+    <None Include="Content\GumProject\Components\Folder2\FolderedEntity2.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>folderedentity2</Name>
+      <Name>FolderedEntity2</Name>
     </None>
-    <None Include="content\gumproject\components\inheritfrominfolder.gucx">
+    <None Include="Content\GumProject\Components\InheritFromInFolder.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>inheritfrominfolder</Name>
+      <Name>InheritFromInFolder</Name>
     </None>
-    <None Include="content\gumproject\components\nineslicebutton.gucx">
+    <None Include="Content\GumProject\Components\NineSliceButton.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>nineslicebutton</Name>
+      <Name>NineSliceButton</Name>
     </None>
-    <None Include="content\gumproject\components\parentstatecomponent.gucx">
+    <None Include="Content\GumProject\Components\ParentStateComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>parentstatecomponent</Name>
+      <Name>ParentStateComponent</Name>
     </None>
-    <None Include="content\gumproject\components\redrectcontainer.gucx">
+    <None Include="Content\GumProject\Components\RedRectContainer.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>redrectcontainer</Name>
+      <Name>RedRectContainer</Name>
     </None>
-    <None Include="content\gumproject\components\samenamecomponent.gucx">
+    <None Include="Content\GumProject\Components\SameNameComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>samenamecomponent</Name>
+      <Name>SameNameComponent</Name>
     </None>
-    <None Include="content\gumproject\components\spriteinheritingcomponnt.gucx">
+    <None Include="Content\GumProject\Components\SpriteInheritingComponnt.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>spriteinheritingcomponnt</Name>
+      <Name>SpriteInheritingComponnt</Name>
     </None>
-    <None Include="content\gumproject\components\stackingcomponent.gucx">
+    <None Include="Content\GumProject\Components\StackingComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>stackingcomponent</Name>
+      <Name>StackingComponent</Name>
     </None>
-    <None Include="content\gumproject\components\star_particle.png">
+    <None Include="Content\GumProject\Components\star_particle.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>star_particle</Name>
     </None>
-    <None Include="content\gumproject\components\statecomponent.gucx">
+    <None Include="Content\GumProject\Components\StateComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>statecomponent</Name>
+      <Name>StateComponent</Name>
     </None>
-    <None Include="content\gumproject\components\statecomponentcontained.gucx">
+    <None Include="Content\GumProject\Components\StateComponentContained.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>statecomponentcontained</Name>
+      <Name>StateComponentContained</Name>
     </None>
-    <None Include="content\gumproject\components\switch.gucx">
+    <None Include="Content\GumProject\Components\Switch.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>switch</Name>
+      <Name>Switch</Name>
     </None>
-    <None Include="content\gumproject\components\testcomponent.gucx">
+    <None Include="Content\GumProject\Components\TestComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>testcomponent</Name>
+      <Name>TestComponent</Name>
     </None>
-    <None Include="content\gumproject\components\testrectangle.gucx">
+    <None Include="Content\GumProject\Components\TestRectangle.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>testrectangle</Name>
+      <Name>TestRectangle</Name>
     </None>
-    <None Include="content\gumproject\components\texturesettinginstatecomponent.gucx">
+    <None Include="Content\GumProject\Components\TextureSettingInStateComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>texturesettinginstatecomponent</Name>
+      <Name>TextureSettingInStateComponent</Name>
     </None>
-    <None Include="content\gumproject\components\usedtoinheritfromtextcomponent.gucx">
+    <None Include="Content\GumProject\Components\UsedToInheritFromTextComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>usedtoinheritfromtextcomponent</Name>
+      <Name>UsedToInheritFromTextComponent</Name>
     </None>
-    <None Include="content\gumproject\fontcache\font14arial.fnt">
+    <None Include="Content\GumProject\FontCache\Font14Arial.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>font14arial</Name>
+      <Name>Font14Arial</Name>
     </None>
-    <None Include="content\gumproject\fontcache\font14arial_0.png">
+    <None Include="Content\GumProject\FontCache\Font14Arial_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>font14arial_0</Name>
+      <Name>Font14Arial_0</Name>
     </None>
-    <None Include="content\gumproject\fontcache\font18arial.fnt">
+    <None Include="Content\GumProject\FontCache\Font18Arial.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>font18arial</Name>
+      <Name>Font18Arial</Name>
     </None>
-    <None Include="content\gumproject\fontcache\font18arial_0.png">
+    <None Include="Content\GumProject\FontCache\Font18Arial_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>font18arial_0</Name>
+      <Name>Font18Arial_0</Name>
     </None>
-    <None Include="content\gumproject\fontcache\font18arial_nosmooth.fnt">
+    <None Include="Content\GumProject\FontCache\Font18Arial_noSmooth.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>font18arial_nosmooth</Name>
+      <Name>Font18Arial_noSmooth</Name>
     </None>
-    <None Include="content\gumproject\fontcache\font18arial_nosmooth_0.png">
+    <None Include="Content\GumProject\FontCache\Font18Arial_noSmooth_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>font18arial_nosmooth_0</Name>
+      <Name>Font18Arial_noSmooth_0</Name>
     </None>
-    <None Include="content\gumproject\fontcache\font18arial_o1.fnt">
+    <None Include="Content\GumProject\FontCache\Font18Arial_o1.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>font18arial_o1</Name>
+      <Name>Font18Arial_o1</Name>
     </None>
-    <None Include="content\gumproject\fontcache\font18arial_o1_0.png">
+    <None Include="Content\GumProject\FontCache\Font18Arial_o1_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>font18arial_o1_0</Name>
+      <Name>Font18Arial_o1_0</Name>
     </None>
-    <None Include="content\gumproject\fontcache\font18arial_o1_nosmooth.fnt">
+    <None Include="Content\GumProject\FontCache\Font18Arial_o1_noSmooth.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>font18arial_o1_nosmooth</Name>
+      <Name>Font18Arial_o1_noSmooth</Name>
     </None>
-    <None Include="content\gumproject\fontcache\font18arial_o1_nosmooth_0.png">
+    <None Include="Content\GumProject\FontCache\Font18Arial_o1_noSmooth_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>font18arial_o1_nosmooth_0</Name>
+      <Name>Font18Arial_o1_noSmooth_0</Name>
     </None>
     <None Include="content\gumproject\gumproject.gumx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>GumProject</Name>
     </None>
-    <None Include="content\gumproject\screens\basegluescreennotbasegum.gusx">
+    <None Include="Content\GumProject\Screens\BaseGlueScreenNotBaseGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>basegluescreennotbasegum</Name>
+      <Name>BaseGlueScreenNotBaseGum</Name>
     </None>
-    <None Include="content\gumproject\screens\derivedofderivedscreengum.gusx">
+    <None Include="Content\GumProject\Screens\DerivedOfDerivedScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>DerivedOfDerivedScreenGum</Name>
     </None>
-    <None Include="content\gumproject\screens\derivedscreengum.gusx">
+    <None Include="Content\GumProject\Screens\DerivedScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>derivedscreengum</Name>
+      <Name>DerivedScreenGum</Name>
     </None>
-    <None Include="content\gumproject\screens\formsscreengum.gusx">
+    <None Include="Content\GumProject\Screens\FormsScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>FormsScreenGum</Name>
     </None>
-    <None Include="content\gumproject\screens\gamescreengum.gusx">
+    <None Include="Content\GumProject\Screens\GameScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>GameScreenGum</Name>
     </None>
-    <None Include="content\gumproject\screens\gumscreenlayeredgum.gusx">
+    <None Include="Content\GumProject\Screens\GumScreenLayeredGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>gumscreenlayeredgum</Name>
+      <Name>GumScreenLayeredGum</Name>
     </None>
-    <None Include="content\gumproject\screens\gumscreennogumidbscreengum.gusx">
+    <None Include="Content\GumProject\Screens\GumScreenNoGumIdbScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>gumscreennogumidbscreengum</Name>
+      <Name>GumScreenNoGumIdbScreenGum</Name>
     </None>
-    <None Include="content\gumproject\screens\inputscreengum.gusx">
+    <None Include="Content\GumProject\Screens\InputScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>inputscreengum</Name>
+      <Name>InputScreenGum</Name>
     </None>
-    <None Include="content\gumproject\screens\level1gum.gusx">
+    <None Include="Content\GumProject\Screens\Level1Gum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Level1Gum</Name>
     </None>
-    <None Include="content\gumproject\screens\rendertargetscreengum.gusx">
+    <None Include="Content\GumProject\Screens\RenderTargetScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>rendertargetscreengum</Name>
+      <Name>RenderTargetScreenGum</Name>
     </None>
-    <None Include="content\gumproject\screens\screenloadedasgraphicaluielement.gusx">
+    <None Include="Content\GumProject\Screens\ScreenLoadedAsGraphicalUiElement.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>screenloadedasgraphicaluielement</Name>
+      <Name>ScreenLoadedAsGraphicalUiElement</Name>
     </None>
-    <None Include="content\gumproject\screens\testscreen.gusx">
+    <None Include="Content\GumProject\Screens\TestScreen.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>testscreen</Name>
+      <Name>TestScreen</Name>
     </None>
-    <None Include="content\gumproject\screens\testscreenunused.gusx">
+    <None Include="Content\GumProject\Screens\TestScreenUnused.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>testscreenunused</Name>
+      <Name>TestScreenUnused</Name>
     </None>
-    <None Include="content\gumproject\screens\tileshapecollectionscreengum.gusx">
+    <None Include="Content\GumProject\Screens\TileShapeCollectionScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>tileshapecollectionscreengum</Name>
+      <Name>TileShapeCollectionScreenGum</Name>
     </None>
-    <None Include="content\gumproject\standards\circle.gutx">
+    <None Include="Content\GumProject\Standards\Circle.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>circle</Name>
+      <Name>Circle</Name>
     </None>
-    <None Include="content\gumproject\standards\coloredrectangle.gutx">
+    <None Include="Content\GumProject\Standards\ColoredRectangle.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>coloredrectangle</Name>
+      <Name>ColoredRectangle</Name>
     </None>
-    <None Include="content\gumproject\standards\component.gutx">
+    <None Include="Content\GumProject\Standards\Component.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>component</Name>
+      <Name>Component</Name>
     </None>
-    <None Include="content\gumproject\standards\container.gutx">
+    <None Include="Content\GumProject\Standards\Container.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>container</Name>
+      <Name>Container</Name>
     </None>
-    <None Include="content\gumproject\standards\nineslice.gutx">
+    <None Include="Content\GumProject\Standards\NineSlice.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>nineslice</Name>
+      <Name>NineSlice</Name>
     </None>
-    <None Include="content\gumproject\standards\polygon.gutx">
+    <None Include="Content\GumProject\Standards\Polygon.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>polygon</Name>
+      <Name>Polygon</Name>
     </None>
-    <None Include="content\gumproject\standards\rectangle.gutx">
+    <None Include="Content\GumProject\Standards\Rectangle.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>rectangle</Name>
+      <Name>Rectangle</Name>
     </None>
-    <None Include="content\gumproject\standards\sprite.gutx">
+    <None Include="Content\GumProject\Standards\Sprite.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>sprite</Name>
+      <Name>Sprite</Name>
     </None>
-    <None Include="content\gumproject\standards\standardgraphics\red_bottomcenter.png">
+    <None Include="Content\GumProject\Standards\StandardGraphics\Red_bottomCenter.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>red_bottomcenter</Name>
+      <Name>Red_bottomCenter</Name>
     </None>
-    <None Include="content\gumproject\standards\standardgraphics\red_bottomleft.png">
+    <None Include="Content\GumProject\Standards\StandardGraphics\Red_bottomLeft.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>red_bottomleft</Name>
+      <Name>Red_bottomLeft</Name>
     </None>
-    <None Include="content\gumproject\standards\standardgraphics\red_bottomright.png">
+    <None Include="Content\GumProject\Standards\StandardGraphics\Red_bottomRight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>red_bottomright</Name>
+      <Name>Red_bottomRight</Name>
     </None>
-    <None Include="content\gumproject\standards\standardgraphics\red_center.png">
+    <None Include="Content\GumProject\Standards\StandardGraphics\Red_center.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>red_center</Name>
+      <Name>Red_center</Name>
     </None>
-    <None Include="content\gumproject\standards\standardgraphics\red_left.png">
+    <None Include="Content\GumProject\Standards\StandardGraphics\Red_left.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>red_left</Name>
+      <Name>Red_left</Name>
     </None>
-    <None Include="content\gumproject\standards\standardgraphics\red_right.png">
+    <None Include="Content\GumProject\Standards\StandardGraphics\Red_right.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>red_right</Name>
+      <Name>Red_right</Name>
     </None>
-    <None Include="content\gumproject\standards\standardgraphics\red_topcenter.png">
+    <None Include="Content\GumProject\Standards\StandardGraphics\Red_topCenter.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>red_topcenter</Name>
+      <Name>Red_topCenter</Name>
     </None>
-    <None Include="content\gumproject\standards\standardgraphics\red_topleft.png">
+    <None Include="Content\GumProject\Standards\StandardGraphics\Red_topLeft.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>red_topleft</Name>
+      <Name>Red_topLeft</Name>
     </None>
-    <None Include="content\gumproject\standards\standardgraphics\red_topright.png">
+    <None Include="Content\GumProject\Standards\StandardGraphics\Red_topRight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>red_topright</Name>
+      <Name>Red_topRight</Name>
     </None>
-    <None Include="content\gumproject\standards\text.gutx">
+    <None Include="Content\GumProject\Standards\Text.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>text</Name>
+      <Name>Text</Name>
     </None>
-    <None Include="content\gumproject\uispritesheet.png">
+    <None Include="Content\GumProject\UISpriteSheet.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>uispritesheet</Name>
+      <Name>UISpriteSheet</Name>
     </None>
     <None Include="content\loadedonlywhenreferencedscene.scnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -81,7 +81,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             var block = classBlock.Block();
             block.Line($"Name = \"{derivedElement.ClassName}\",");
             block.Line($"Type = typeof({derivedElement.Name.Replace("/", ".").Replace("\\", ".")}),");
-            var hasFactory = derivedElement is EntitySave derivedEntity && derivedEntity.CreatedByOtherEntities;
+            var hasFactory = derivedElement is EntitySave derivedEntity && derivedEntity.CreatedByOtherEntities && derivedElement.IsAbstract == false;
             if (hasFactory)
             {
                 block.Line($"Factory = Factories.{derivedElement.ClassName}Factory.Self,");

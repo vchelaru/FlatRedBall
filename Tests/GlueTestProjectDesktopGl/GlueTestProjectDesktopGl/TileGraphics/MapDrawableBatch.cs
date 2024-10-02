@@ -1,3 +1,4 @@
+// The following #defines come from the version of your GLUJ/GLUX file. For more information see https://docs.flatredball.com/flatredball/glue-reference/glujglux
 #define PreVersion
 #define HasFormsObject
 #define AddedGeneratedGame1
@@ -29,7 +30,8 @@ namespace FlatRedBall.TileGraphics
     {
         None,
         X,
-        Y
+        Y,
+        YTopDown
     }
 
     #endregion
@@ -65,12 +67,12 @@ namespace FlatRedBall.TileGraphics
         protected VertexType[] mVertices;
 
         protected Texture2D mTexture;
-        #region XML Docs
+
         /// <summary>
         /// The indices to draw the shape
         /// </summary>
-        #endregion
-        protected int[] mIndices;
+        protected int[] indices32Bit;
+        protected short[] indices16Bit;
 
         Dictionary<string, List<int>> mNamedTileOrderedIndexes = new Dictionary<string, List<int>>();
 
@@ -101,6 +103,9 @@ namespace FlatRedBall.TileGraphics
             set { mBlue = value; }
         }
 
+        /// <summary>
+        /// Modifies the transparency of the map. By default this value equals 1 which means it is drawn at full opacity. A value of 0 makes the map fully transparent.
+        /// </summary>
         public float Alpha
         {
             get { return mAlpha; }
@@ -152,6 +157,11 @@ namespace FlatRedBall.TileGraphics
             get { return true; }
         }
 
+        /// <summary>
+        /// Mulitplier value used to scale the rendering of the map. 
+        /// A value of 1 (default) means the map is rendered at its original size.
+        /// A value of 2 would render the map at twice its size.
+        /// </summary>
         public float RenderingScale
         {
             get;
@@ -192,6 +202,23 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
+        /// <summary>
+        /// The vertices used to draw the map. These are typically not directly manipulated, but rather are set internally
+        /// when converting from a .TMX.
+        /// </summary>
+        /// <remarks>
+        /// Typically when dealing with the vertices, we deal with "quads"
+        /// The number of vertices should be divisible by 4, where each quad
+        /// is 4 vertices. Therefore, to get the bottom-left vertex of a quad
+        /// by quad index, you would do:
+        /// var vertexIndex = quadIndex * 4;
+        /// var bottomLeft = mVertices[vertexIndex];
+        /// 
+        /// Vertices are in counterclockwise order, starting with the bottom-left:
+        /// 3   2
+        ///
+        /// 0   1
+        /// </remarks>
         public VertexType[] Vertices => mVertices;
 
         public Texture2D Texture
@@ -270,13 +297,10 @@ namespace FlatRedBall.TileGraphics
             if (texture == null)
                 throw new ArgumentNullException("texture");
 
-            Visible = true;
-            InternalInitialize();
+            InternalInitialize(numberOfTiles);
 
             mTexture = texture;
-            mVertices = new VertexType[4 * numberOfTiles];
-            FlipFlagArray = new byte[numberOfTiles];
-            mIndices = new int[6 * numberOfTiles];
+
         }
 
         /// <summary>
@@ -294,74 +318,30 @@ namespace FlatRedBall.TileGraphics
             //if (texture == null)
             //    throw new ArgumentNullException("texture");
 
-            Visible = true;
-            InternalInitialize();
+            InternalInitialize(numberOfTiles);
 
             mTexture = texture;
-            mVertices = new VertexType[4 * numberOfTiles];
-            FlipFlagArray = new byte[numberOfTiles];
-            mIndices = new int[6 * numberOfTiles];
 
             mTileset = new Tileset(texture, textureTileDimensionWidth, textureTileDimensionHeight);
         }
 
-        //public MapDrawableBatch(int mapWidth, int mapHeight, float mapTileDimension, int textureTileDimension, string tileSetFilename)
-        //    : base()
-        //{
-        //    InternalInitialize();
-
-
-        //    mTileset = new Tileset(tileSetFilename, textureTileDimension);
-        //    mMapWidth = mapWidth;
-        //    mMapHeight = mapHeight;
-
-        //    int numberOfTiles = mapWidth * mapHeight;
-        //    // the number of vertices is 4 times the number of tiles (each tile gets 4 vertices) 
-        //    mVertices = new VertexPositionTexture[4 * numberOfTiles];
-
-        //    // the number of indices is 6 times the number of tiles
-        //    mIndices = new short[6 * numberOfTiles];
-        //    for(int i = 0; i < mapHeight; i++)
-        //    {
-        //        for (int j = 0; j < mapWidth; j++)
-        //        {
-        //            int currentTile         = mapHeight * i + j;
-        //            int currentVertex       = currentTile * 4;
-        //            float xOffset = j * mapTileDimension;
-        //            float yOffset = i * mapTileDimension;
-        //            int currentIndex        = currentTile * 6; // 6 indices per tile
-
-        //            // TEMP
-        //            Vector2[] coords = mTileset.GetTextureCoordinateVectorsOfTextureIndex(new Random().Next()%4);
-        //            // END TEMP
-
-
-        //            // create vertices
-        //            mVertices[currentVertex + 0] = new VertexPositionTexture(new Vector3(xOffset + 0f, yOffset + 0f, 0f), coords[0]);
-        //            mVertices[currentVertex + 1] = new VertexPositionTexture(new Vector3(xOffset + mapTileDimension, yOffset + 0f, 0f), coords[1]);
-        //            mVertices[currentVertex + 2] = new VertexPositionTexture(new Vector3(xOffset + mapTileDimension, yOffset + mapTileDimension, 0f), coords[2]);
-        //            mVertices[currentVertex + 3] = new VertexPositionTexture(new Vector3(xOffset + 0f, yOffset + mapTileDimension, 0f), coords[3]);
-
-
-        //            // create indices
-        //            mIndices[currentIndex + 0] = (short)(currentVertex + 0);
-        //            mIndices[currentIndex + 1] = (short)(currentVertex + 1);
-        //            mIndices[currentIndex + 2] = (short)(currentVertex + 2);
-        //            mIndices[currentIndex + 3] = (short)(currentVertex + 0);
-        //            mIndices[currentIndex + 4] = (short)(currentVertex + 2);
-        //            mIndices[currentIndex + 5] = (short)(currentVertex + 3);
-
-        //            mCurrentNumberOfTiles++; 
-        //        }
-        //    }
-        //    mTexture = FlatRedBallServices.Load<Texture2D>(@"content/tiles");
-
-
-
-        //}
-
-        void InternalInitialize()
+        void InternalInitialize(int numberOfTiles)
         {
+            Visible = true;
+            mVertices = new VertexType[4 * numberOfTiles];
+            FlipFlagArray = new byte[numberOfTiles];
+
+            var indexCount = 6 * numberOfTiles;
+            if (indexCount < short.MaxValue)
+            {
+                indices16Bit = new short[indexCount];
+            }
+            else
+            {
+                // This is a large map, so we need to use 32 bit indices
+                indices32Bit = new int[indexCount];
+            }
+
             // We're going to share these because creating effects is slow...
             // But is this okay if we tombstone?
             if (mBasicEffect == null)
@@ -510,7 +490,7 @@ namespace FlatRedBall.TileGraphics
             string textureName = reducedLayerInfo.Texture;
 
 
-#if IOS || ANDROID
+#if (IOS || ANDROID) && !NET8_0_OR_GREATER
 
 			textureName = textureName.ToLowerInvariant();
 
@@ -531,7 +511,12 @@ namespace FlatRedBall.TileGraphics
 
             TMXGlueLib.DataTypes.ReducedQuadInfo[] quads = null;
 
-            if (rtmi.NumberCellsWide > rtmi.NumberCellsTall)
+            if (rtmi.TileOrientation == TileOrientation.Isometric)
+            {
+                quads = reducedLayerInfo.Quads.OrderByDescending(item => item.BottomQuadCoordinate).ToArray();
+                toReturn.mSortAxis = SortAxis.YTopDown;
+            }
+            else if (rtmi.NumberCellsWide > rtmi.NumberCellsTall)
             {
                 quads = reducedLayerInfo.Quads.OrderBy(item => item.LeftQuadCoordinate).ToArray();
                 toReturn.mSortAxis = SortAxis.X;
@@ -1004,6 +989,7 @@ namespace FlatRedBall.TileGraphics
 
         /// <summary>
         /// Returns the quad index at the argument worldX and worldY. Returns null if no quad is found at this index.
+        /// If the map has a SortAxis of X or Y, then this funcion uses the sorting to find the quad more quickly.
         /// </summary>
         /// <param name="worldX">The absolute world X position.</param>
         /// <param name="worldY">The absolute world Y position.</param>
@@ -1091,12 +1077,24 @@ namespace FlatRedBall.TileGraphics
             mVertices[currentVertex + 3] = new VertexType(new Vector3(xOffset + 0f, yOffset + height, zOffset), new Vector2(texture.X, texture.Z));
 
             // create indices
-            mIndices[currentIndex + 0] = currentVertex + 0;
-            mIndices[currentIndex + 1] = currentVertex + 1;
-            mIndices[currentIndex + 2] = currentVertex + 2;
-            mIndices[currentIndex + 3] = currentVertex + 0;
-            mIndices[currentIndex + 4] = currentVertex + 2;
-            mIndices[currentIndex + 5] = currentVertex + 3;
+            if(indices32Bit != null)
+            {
+                indices32Bit[currentIndex + 0] = currentVertex + 0;
+                indices32Bit[currentIndex + 1] = currentVertex + 1;
+                indices32Bit[currentIndex + 2] = currentVertex + 2;
+                indices32Bit[currentIndex + 3] = currentVertex + 0;
+                indices32Bit[currentIndex + 4] = currentVertex + 2;
+                indices32Bit[currentIndex + 5] = currentVertex + 3;
+            }
+            else
+            {
+                indices16Bit[currentIndex + 0] = (short)(currentVertex + 0);
+                indices16Bit[currentIndex + 1] = (short)(currentVertex + 1);
+                indices16Bit[currentIndex + 2] = (short)(currentVertex + 2);
+                indices16Bit[currentIndex + 3] = (short)(currentVertex + 0);
+                indices16Bit[currentIndex + 4] = (short)(currentVertex + 2);
+                indices16Bit[currentIndex + 5] = (short)(currentVertex + 3);
+            }
 
             mCurrentNumberOfTiles++;
 
@@ -1178,14 +1176,29 @@ namespace FlatRedBall.TileGraphics
                     // Right now this uses the (slower) DrawUserIndexedPrimitives
                     // It could use DrawIndexedPrimitives instead for much faster performance,
                     // but to do that we'd have to keep VB's around and make sure to re-create them
-                    // whenever the graphics device is lost.  
-                    FlatRedBallServices.GraphicsDevice.DrawUserIndexedPrimitives<VertexType>(
-                        PrimitiveType.TriangleList,
-                        mVertices,
-                        firstVertIndex,
-                        numberVertsToDraw,
-                        mIndices,
-                        indexStart, numberOfTriangles);
+                    // whenever the graphics device is lost. Also, this would not work if tiles are animated
+                    // since those change their texture coordiantes. We can be more intelligent about this, though
+                    // but for now this is not even close to the slowest part of the engine so we'll leave it as is.
+                    if(indices32Bit != null)
+                    {
+                        FlatRedBallServices.GraphicsDevice.DrawUserIndexedPrimitives<VertexType>(
+                            PrimitiveType.TriangleList,
+                            mVertices,
+                            firstVertIndex,
+                            numberVertsToDraw,
+                            indices32Bit,
+                            indexStart, numberOfTriangles);
+                    }
+                    else
+                    {
+                        FlatRedBallServices.GraphicsDevice.DrawUserIndexedPrimitives<VertexType>(
+                            PrimitiveType.TriangleList,
+                            mVertices,
+                            firstVertIndex,
+                            numberVertsToDraw,
+                            indices16Bit,
+                            indexStart, numberOfTriangles);
+                    }
 
                 }
 
@@ -1295,6 +1308,9 @@ namespace FlatRedBall.TileGraphics
 
             lastVertIndex = mVertices.Length;
 
+            // We're waiting on Kni to support non-0 vertexOffset values on DrawUserPrimitives and DrawUserIndexedPrimitives
+            // When that happens we can remove this and improve performance.
+#if !WEB
 
             float tileWidth = mVertices[1].Position.X - mVertices[0].Position.X;
 
@@ -1320,10 +1336,10 @@ namespace FlatRedBall.TileGraphics
                 firstVertIndex = GetFirstAfterY(mVertices, minY - tileWidth);
                 lastVertIndex = GetFirstAfterY(mVertices, maxY) + 4;
             }
-
+#endif
             lastVertIndex = System.Math.Min(lastVertIndex, mVertices.Length);
 
-            indexStart = 0;// (firstVertIndex * 3) / 2;
+            indexStart = 0;
             int indexEndExclusive = ((lastVertIndex - firstVertIndex) * 3) / 2;
 
             numberOfTriangles = (indexEndExclusive - indexStart) / 3;
@@ -1596,11 +1612,9 @@ namespace FlatRedBall.TileGraphics
             set;
         }
 
-        #region XML Docs
         /// <summary>
         /// Don't call this, instead call SpriteManager.RemoveDrawableBatch
         /// </summary>
-        #endregion
         public void Destroy()
         {
             this.RemoveSelfFromListsBelongingTo();
@@ -1653,7 +1667,6 @@ namespace FlatRedBall.TileGraphics
             int totalNumberOfIndexes = 6 * (this.QuadCount + quadsToAdd);
 
             var oldVerts = mVertices;
-            var oldIndexes = mIndices;
 
             if (this.SortAxis == SortAxis.X)
             {
@@ -1665,7 +1678,9 @@ namespace FlatRedBall.TileGraphics
             }
             else
             {
-                MergeUnsorted(mapDrawableBatches, quadsOnThis, totalNumberOfVerts, totalNumberOfIndexes, oldVerts, oldIndexes);
+                var old32BitIndexes = indices32Bit;
+                var old16BitIndexes = indices16Bit;
+                MergeUnsorted(mapDrawableBatches, quadsOnThis, totalNumberOfVerts, totalNumberOfIndexes, oldVerts, old32BitIndexes, old16BitIndexes);
             }
         }
 
@@ -1691,7 +1706,17 @@ namespace FlatRedBall.TileGraphics
 
 
             var newVerts = new VertexType[totalNumberOfVerts];
-            var newIndexes = new int[totalNumberOfIndexes];
+            int[] new32BitIndexes = null;
+            short[] new16BitIndexes = null;
+
+            if(totalNumberOfIndexes < short.MaxValue)
+            {
+                new16BitIndexes = new short[totalNumberOfIndexes];
+            }
+            else
+            {
+                new32BitIndexes = new int[totalNumberOfIndexes];
+            }
 
             mCurrentNumberOfTiles = totalNumberOfVerts / 4;
 
@@ -1755,20 +1780,60 @@ namespace FlatRedBall.TileGraphics
                     newVerts[destinationVertIndex + 2] = layerToCopyFrom.mVertices[sourceVertIndex + 2];
                     newVerts[destinationVertIndex + 3] = layerToCopyFrom.mVertices[sourceVertIndex + 3];
 
-                    var firstVert = layerToCopyFrom.mIndices[sourceIndexIndex];
+                    if (new32BitIndexes != null)
+                    {
+                        if (layerToCopyFrom.indices32Bit != null)
+                        {
+                            var firstVert = layerToCopyFrom.indices32Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex + 1] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 1];
+                            new32BitIndexes[destinationIndexIndex + 2] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 2];
+                            new32BitIndexes[destinationIndexIndex + 3] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 3];
+                            new32BitIndexes[destinationIndexIndex + 4] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 4];
+                            new32BitIndexes[destinationIndexIndex + 5] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 5];
+                        }
+                        else
+                        {
+                            var firstVert = layerToCopyFrom.indices16Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex + 1] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 1];
+                            new32BitIndexes[destinationIndexIndex + 2] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 2];
+                            new32BitIndexes[destinationIndexIndex + 3] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 3];
+                            new32BitIndexes[destinationIndexIndex + 4] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 4];
+                            new32BitIndexes[destinationIndexIndex + 5] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 5];
+                        }
+                    }
+                    else
+                    {
+                        var firstVert = layerToCopyFrom.indices16Bit[sourceIndexIndex];
 
-                    newIndexes[destinationIndexIndex] =
-                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex];
-                    newIndexes[destinationIndexIndex + 1] =
-                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 1];
-                    newIndexes[destinationIndexIndex + 2] =
-                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 2];
-                    newIndexes[destinationIndexIndex + 3] =
-                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 3];
-                    newIndexes[destinationIndexIndex + 4] =
-                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 4];
-                    newIndexes[destinationIndexIndex + 5] =
-                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 5];
+                        // assume copying from 16 bit to a 16 bit, or else this will fail anyway due to length
+
+                        new16BitIndexes[destinationIndexIndex] =
+                            (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex]);
+                        new16BitIndexes[destinationIndexIndex + 1] =
+                            (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 1]);
+                        new16BitIndexes[destinationIndexIndex + 2] =
+                            (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 2]);
+                        new16BitIndexes[destinationIndexIndex + 3] =
+                            (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 3]);
+                        new16BitIndexes[destinationIndexIndex + 4] =
+                            (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 4]);
+                        new16BitIndexes[destinationIndexIndex + 5] =
+                            (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 5]);
+                    }
 
                     if (invertedDictionaries[layerIndexToCopyFrom].ContainsKey(sourceVertIndex / 4))
                     {
@@ -1792,7 +1857,8 @@ namespace FlatRedBall.TileGraphics
             this.FlipFlagArray = newFlipFlagArray;
 
             this.mVertices = newVerts;
-            this.mIndices = newIndexes;
+            this.indices32Bit = new32BitIndexes;
+            this.indices16Bit = new16BitIndexes;
         }
 
         private void MergeSortedY(IEnumerable<MapDrawableBatch> mapDrawableBatches, int totalNumberOfVerts, int totalNumberOfIndexes)
@@ -1814,7 +1880,18 @@ namespace FlatRedBall.TileGraphics
             int destinationIndexIndex = 0;
 
             var newVerts = new VertexType[totalNumberOfVerts];
-            var newIndexes = new int[totalNumberOfIndexes];
+
+            int[] new32BitIndexes = null;
+            short[] new16BitIndexes = null;
+
+            if(totalNumberOfIndexes < short.MaxValue)
+            {
+                new16BitIndexes = new short[totalNumberOfIndexes];
+            }
+            else
+            {
+                new32BitIndexes = new int[totalNumberOfIndexes];
+            }
 
             mCurrentNumberOfTiles = totalNumberOfVerts / 4;
 
@@ -1879,20 +1956,60 @@ namespace FlatRedBall.TileGraphics
                     newVerts[destinationVertIndex + 2] = layerToCopyFrom.mVertices[sourceVertIndex + 2];
                     newVerts[destinationVertIndex + 3] = layerToCopyFrom.mVertices[sourceVertIndex + 3];
 
-                    var firstVert = layerToCopyFrom.mIndices[sourceIndexIndex];
+                    if (new32BitIndexes != null)
+                    {
+                        if (layerToCopyFrom.indices32Bit != null)
+                        {
+                            var firstVert = layerToCopyFrom.indices32Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex + 1] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 1];
+                            new32BitIndexes[destinationIndexIndex + 2] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 2];
+                            new32BitIndexes[destinationIndexIndex + 3] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 3];
+                            new32BitIndexes[destinationIndexIndex + 4] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 4];
+                            new32BitIndexes[destinationIndexIndex + 5] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices32Bit[sourceIndexIndex + 5];
+                        }
+                        else
+                        {
+                            var firstVert = layerToCopyFrom.indices16Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex];
+                            new32BitIndexes[destinationIndexIndex + 1] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 1];
+                            new32BitIndexes[destinationIndexIndex + 2] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 2];
+                            new32BitIndexes[destinationIndexIndex + 3] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 3];
+                            new32BitIndexes[destinationIndexIndex + 4] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 4];
+                            new32BitIndexes[destinationIndexIndex + 5] =
+                                destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 5];
+                        }
+                    }
+                    else
+                    {
+                        var firstVert = layerToCopyFrom.indices16Bit[sourceIndexIndex];
 
-                    newIndexes[destinationIndexIndex] =
-                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex];
-                    newIndexes[destinationIndexIndex + 1] =
-                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 1];
-                    newIndexes[destinationIndexIndex + 2] =
-                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 2];
-                    newIndexes[destinationIndexIndex + 3] =
-                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 3];
-                    newIndexes[destinationIndexIndex + 4] =
-                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 4];
-                    newIndexes[destinationIndexIndex + 5] =
-                        destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 5];
+                        // assume copying from 16 bit to a 16 bit, or else this will fail anyway due to length
+
+                        new16BitIndexes[destinationIndexIndex] =
+                            (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex]);
+                        new16BitIndexes[destinationIndexIndex + 1] =
+                            (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 1]);
+                        new16BitIndexes[destinationIndexIndex + 2] =
+                            (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 2]);
+                        new16BitIndexes[destinationIndexIndex + 3] =
+                            (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 3]);
+                        new16BitIndexes[destinationIndexIndex + 4] =
+                            (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 4]);
+                        new16BitIndexes[destinationIndexIndex + 5] =
+                            (short)(destinationVertIndex - firstVert + layerToCopyFrom.indices16Bit[sourceIndexIndex + 5]);
+                    }
 
                     if (invertedDictionaries[layerIndexToCopyFrom].ContainsKey(sourceVertIndex / 4))
                     {
@@ -1916,17 +2033,27 @@ namespace FlatRedBall.TileGraphics
             this.FlipFlagArray = newFlipFlagArray;
 
             this.mVertices = newVerts;
-            this.mIndices = newIndexes;
+            this.indices32Bit = new32BitIndexes;
+            this.indices16Bit = new16BitIndexes;
 
         }
 
-        private void MergeUnsorted(IEnumerable<MapDrawableBatch> mapDrawableBatches, int quadsOnThis, int totalNumberOfVerts, int totalNumberOfIndexes, VertexType[] oldVerts, int[] oldIndexes)
+        private void MergeUnsorted(IEnumerable<MapDrawableBatch> mapDrawableBatches, int quadsOnThis, int totalNumberOfVerts, int totalNumberOfIndexes, VertexType[] oldVerts, int[] old32BitIndexes, short[] old16BitIndexes)
         {
             mVertices = new VertexType[totalNumberOfVerts];
-            mIndices = new int[totalNumberOfIndexes];
+
+            if(indices32Bit != null)
+            {
+                indices32Bit = new int[totalNumberOfIndexes];
+            }
+            if(old16BitIndexes != null)
+            {
+                indices16Bit = new short[totalNumberOfIndexes];
+            }
 
             oldVerts.CopyTo(mVertices, 0);
-            oldIndexes.CopyTo(mIndices, 0);
+            old32BitIndexes?.CopyTo(indices32Bit, 0);
+            old16BitIndexes?.CopyTo(indices16Bit, 0);   
 
             int currentQuadIndex = quadsOnThis;
 
@@ -1936,17 +2063,28 @@ namespace FlatRedBall.TileGraphics
             {
                 int startVert = currentQuadIndex * 4;
                 int startIndex = currentQuadIndex * 6;
-                int numberOfIndices = mdb.mIndices.Length;
+                int numberOfIndices = mdb.indices32Bit?.Length ?? mdb.indices16Bit.Length;
                 int numberOfNewVertices = mdb.mVertices.Length;
 
                 mdb.mVertices.CopyTo(mVertices, startVert);
-                mdb.mIndices.CopyTo(mIndices, startIndex);
+                mdb.indices32Bit?.CopyTo(indices32Bit, startIndex);
+                mdb.indices16Bit?.CopyTo(indices16Bit, startIndex);
 
-
-                for (int i = startIndex; i < startIndex + numberOfIndices; i++)
+                if(indices32Bit != null)
                 {
-                    mIndices[i] += startVert;
+                    for (int i = startIndex; i < startIndex + numberOfIndices; i++)
+                    {
+                        indices32Bit[i] += startVert;
+                    }
                 }
+                if (indices16Bit != null)
+                {
+                    for (int i = startIndex; i < startIndex + numberOfIndices; i++)
+                    {
+                        indices16Bit[i] += (short)startVert;
+                    }
+                }
+
 
                 for (int i = startVert; i < startVert + numberOfNewVertices; i++)
                 {

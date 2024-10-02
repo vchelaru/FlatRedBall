@@ -360,12 +360,9 @@ namespace FlatRedBallAddOns.Entities
         {
             #region If this thing is created by other entities, then we should make it IPoolable
 
-            if (entitySave.CreatedByOtherEntities)
+            if (entitySave.CreatedByOtherEntities && !entitySave.IsAbstract)
             {
-                 if(!entitySave.AllNamedObjects.Any(item => item.SetByDerived))
-                 {
-                    FactoryElementCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
-                 }
+                FactoryElementCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
             }
 
             #endregion

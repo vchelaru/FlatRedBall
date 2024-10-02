@@ -1,3 +1,4 @@
+// The following #defines come from the version of your GLUJ/GLUX file. For more information see https://docs.flatredball.com/flatredball/glue-reference/glujglux
 #define PreVersion
 #define HasFormsObject
 #define AddedGeneratedGame1
@@ -217,8 +218,12 @@ namespace FlatRedBall.TileCollisions
 
         public RepositionUpdateStyle RepositionUpdateStyle { get; set; } = RepositionUpdateStyle.Outward;
 
+#if ShapeCollectionHasLastCollisionCallDeepCheckCount || REFERENCES_FRB_SOURCE
 
-#endregion
+        public int LastCollisionCallDeepCheckCount => this.mShapes.LastCollisionCallDeepCheckCount;
+#endif
+
+        #endregion
 
         public TileShapeCollection()
         {
