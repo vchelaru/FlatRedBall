@@ -39,7 +39,7 @@ namespace GumPluginCore.ErrorReporting
                     // is it referenced?
                     var absoluteFile = GlueCommands.Self.GetAbsoluteFilePath(rfs);
 
-                    var relativeToGumFolder = absoluteFile.RemoveExtension().RelativeTo(gumProjectFolder).Substring("Screens/".Length);
+                    var relativeToGumFolder = absoluteFile.RemoveExtension().RelativeTo(gumProjectFolder).Substring("Screens/".Length).Replace('/', '\\');
 
                     var references = gumProject.ScreenReferences.Any(item => item.Name.ToLowerInvariant() == relativeToGumFolder.ToLowerInvariant());
 
