@@ -174,7 +174,7 @@ namespace GumPlugin.Managers
         {
             if(glueScreen.Name.StartsWith("Screens/") || glueScreen.Name.StartsWith("Screens\\"))
             {
-                return glueScreen.Name.Substring("Screens/".Length).Replace("/", "\\") + "Gum";
+                return glueScreen.Name.Substring("Screens/".Length).Replace("\\", "/") + "Gum";
             }
             else
             {

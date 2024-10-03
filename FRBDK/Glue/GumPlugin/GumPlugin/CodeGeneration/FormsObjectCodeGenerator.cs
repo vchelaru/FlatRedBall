@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Automation;
 
 namespace GumPluginCore.CodeGeneration
 {
@@ -21,11 +22,15 @@ namespace GumPluginCore.CodeGeneration
             {
                 var rfs = GumPluginCodeGenerator.GetGumScreenRfs(element);
 
-                var elementName = element.GetStrippedName();
+                // Now that FRB screens can exist in folders, we shouldn't strip the name:
+                //var elementName = element.GetStrippedName();
+
+                var elementName = element.Name.Substring("Screens/".Length);
+
 
                 if (hasForms)
                 {
-                    var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
+                    var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "") +
                         "." + rfs.GetInstanceName() + "Forms";
 
                     codeBlock.Line($"{formsObjectType} Forms;");
@@ -52,15 +57,15 @@ namespace GumPluginCore.CodeGeneration
 
             if (isGlueScreen && hasGumScreen)
             {
-                var elementName = element.GetStrippedName();
+                //var elementName = element.GetStrippedName();
+                var elementName = element.Name.Substring("Screens/".Length);
 
-                
                 var rfs = GumPluginCodeGenerator.GetGumScreenRfs(element);
 
                 if (hasForms && rfs?.RuntimeType != "FlatRedBall.Gum.GumIdb" && rfs?.RuntimeType != "Gum.Wireframe.GraphicalUiElement")
                 {
                     var rfsName = rfs.GetInstanceName();
-                    var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "Screens") +
+                    var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "") +
                         "." + rfsName + "Forms";
                     var formsInstantiationLine =
                         $"Forms = {rfsName}.FormsControl ?? new {formsObjectType}({rfsName});";
