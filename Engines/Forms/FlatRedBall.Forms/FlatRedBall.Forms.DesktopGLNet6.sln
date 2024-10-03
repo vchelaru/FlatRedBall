@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBall.Forms.DesktopGl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaInGum", "..\..\..\..\Gum\SvgPlugin\SkiaInGumShared\SkiaInGum.csproj", "{7AE61851-BDC2-4B77-B159-BFF52550C423}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +123,7 @@ Global
 		SolutionGuid = {81B3E152-73E4-4A3A-88E7-78634E4F25C4}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
 		..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{0ee8a96c-a754-453d-9e65-19a24e9a5e76}*SharedItemsImports = 13
 		..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{15f82ba6-f685-4408-b25e-3ebe3388b82e}*SharedItemsImports = 5
 		..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{30c8fdca-92b4-4998-a692-ab72f46e3943}*SharedItemsImports = 5

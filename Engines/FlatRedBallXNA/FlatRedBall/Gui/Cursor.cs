@@ -755,16 +755,6 @@ namespace FlatRedBall.Gui
                     mLastScreenX = InputManager.Mouse.X + FlatRedBallServices.Game.Window.ClientBounds.X;
                     mLastScreenX = InputManager.Mouse.Y + FlatRedBallServices.Game.Window.ClientBounds.Y;
                 }
-                else
-                {
-#if !MONOGAME && !UNIT_TESTS && !FNA
-                    var windowLocation =
-                                System.Windows.Forms.Form.FromHandle(FlatRedBallServices.WindowHandle).Location;
-
-                    mLastScreenX = InputManager.Mouse.X + windowLocation.X;
-                    mLastScreenX = InputManager.Mouse.Y + windowLocation.Y;
-#endif
-                }
             }
             else
             {
@@ -1832,30 +1822,17 @@ namespace FlatRedBall.Gui
         #endregion
 
 
-        #region XML Docs
         /// <summary>
         /// Determines whether the cursor is currently in the active Control which owns the application.
         /// </summary>
         /// <returns>Whether the cursor is currently in the active Control which owns the application.</returns>
-        #endregion
         public bool IsInWindow()
         {
             return InputManager.Mouse.IsInGameWindow();
         }
 
 
-#if !MONOGAME && !FNA
-        public bool IsInWindow(System.Windows.Forms.Control control)
-        {
-            if (!mUsingWindowsCursor)
-            {
-                return true;
-            }
 
-            // If mUsingWindowsCursor, we can just use the Mouse call
-            return InputManager.Mouse.IsInGameWindow();
-        }
-#endif
 
         public void ResetCursor()
         {
@@ -2752,23 +2729,10 @@ namespace FlatRedBall.Gui
 
         private void UpdatePositionToMouse()
         {
-#if !XBOX360
             // Is this method only called when using a windows cursor?
             float outX = 0;
             float outY = 0;
 
-#if FRB_MDX
-
-            MathFunctions.ScreenToAbsolute(
-                System.Windows.Forms.Cursor.Position.X,
-                System.Windows.Forms.Cursor.Position.Y,
-                ref outX,
-                ref outY,
-                mCamera.Z + 100,
-                mCamera, this.mOwner,
-                SpriteManager.settings.fullScreen);
-            
-#else
             float xEdge = GuiManager.XEdge;
             float yEdge = GuiManager.YEdge;
 
@@ -2778,7 +2742,6 @@ namespace FlatRedBall.Gui
                 xEdge = yEdge * SpriteManager.Camera.AspectRatio;
 
             }
-
 
             FlatRedBall.Math.MathFunctions.WindowToAbsolute(
                 InputManager.Mouse.X,
@@ -2792,9 +2755,6 @@ namespace FlatRedBall.Gui
                 SpriteManager.Camera.DestinationRectangle,
                 Camera.CoordinateRelativity.RelativeToCamera);
 
-#endif
-
-#endif
         }
 
         #endregion

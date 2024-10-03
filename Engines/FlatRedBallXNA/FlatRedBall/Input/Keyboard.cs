@@ -266,34 +266,6 @@ namespace FlatRedBall.Input
                 }
             }
 
-            #region Add Text if the user presses CTRL+V
-            if (
-                isCtrlPressed
-                && InputManager.Keyboard.KeyPushed(Keys.V)
-                )
-            {
-
-#if !MONOGAME && !FNA
-                bool isSTAThreadUsed =
-                    System.Threading.Thread.CurrentThread.GetApartmentState() == System.Threading.ApartmentState.STA;
-
-#if DEBUG
-                if (!isSTAThreadUsed)
-                {
-                    throw new InvalidOperationException("Need to set [STAThread] on Main to support copy/paste");
-                }
-#endif
-
-                if (isSTAThreadUsed && System.Windows.Forms.Clipboard.ContainsText())
-                {
-                    returnString += System.Windows.Forms.Clipboard.GetText();
-
-                }
-#endif
-
-            }
-            #endregion
-
             return returnString;
 #endif
         }
@@ -622,13 +594,6 @@ namespace FlatRedBall.Input
         private string KeyToStringAtCurrentState(int key)
         {
             bool isShiftDown = KeyDown(Keys.LeftShift) || KeyDown(Keys.RightShift);
-
-#if !MONOGAME && !FNA
-            if (System.Windows.Forms.Control.IsKeyLocked(System.Windows.Forms.Keys.CapsLock))
-            {
-                isShiftDown = !isShiftDown;
-            }
-#endif
 
             #region If Shift is down, return a different key
             if (isShiftDown && IsKeyLetter((Keys)key))

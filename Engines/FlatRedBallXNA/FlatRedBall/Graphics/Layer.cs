@@ -330,7 +330,6 @@ namespace FlatRedBall.Graphics
 
         //ListBuffer<Sprite> mSpriteBuffer;
         //ListBuffer<Text> mTextBuffer;
-        //ListBuffer<PositionedModel> mModelBuffer;
         //ListBuffer<IDrawableBatch> mBatchBuffer;
 
         bool mVisible;
@@ -619,7 +618,6 @@ namespace FlatRedBall.Graphics
 
             //mSpriteBuffer = new ListBuffer<Sprite>(mSprites);
             //mTextBuffer = new ListBuffer<Text>(mTexts);
-            //mModelBuffer = new ListBuffer<PositionedModel>(mModels);
             //mBatchBuffer = new ListBuffer<IDrawableBatch>(mBatches);
 
             mRectangles = new PositionedObjectList<AxisAlignedRectangle>();

@@ -176,38 +176,6 @@ namespace FlatRedBall.Input
         /// </summary>
         public static Mouse Main => InputManager.Mouse;
 
-#if !MONOGAME && !FNA
-        public bool IsOwnerFocused
-        {
-            get
-            {
-                //bool value = false;
-
-                System.Windows.Forms.Control control = FlatRedBallServices.Owner;
-
-                bool returnValue = false;
-                while (true)
-                {
-                    if (control == null)
-                    {
-                        returnValue = false;
-                        break;
-                    }
-                    else if (control.Focused)
-                    {
-                        returnValue = true;
-                        break;
-                    }
-
-                    control = control.Parent;
-                }
-                
-                return returnValue;
-            }
-
-        }
-#endif
-
         /// <summary>
         /// Returns the client rectangle-relative X pixel coordinate of the cursor.
         /// </summary>
@@ -215,14 +183,8 @@ namespace FlatRedBall.Input
         {
             get 
             {
-                #if FRB_MDX
 
-                return mOwner.PointToClient( System.Windows.Forms.Cursor.Position ).X;
-                #elif XBOX360
-                return 0;
-                #else
                 return mMouseState.X; 
-                #endif
             }
         }
 
@@ -233,13 +195,8 @@ namespace FlatRedBall.Input
         {
             get 
             { 
-                #if FRB_MDX
-                return mOwner.PointToClient( System.Windows.Forms.Cursor.Position ).Y;
-                #elif XBOX360
-                return 0;
-                #else
-                return mMouseState.Y; 
-                #endif
+
+                return mMouseState.Y;
             }
         }
 
@@ -767,22 +724,13 @@ namespace FlatRedBall.Input
 
         public void SetScreenPosition(int newX, int newY)
         {
-#if XNA
-            // The velocity should not change when positions are set.
-            mThisFrameRepositionX += newX - System.Windows.Forms.Cursor.Position.X;
-            mThisFrameRepositionY += newY - System.Windows.Forms.Cursor.Position.Y;
 
-            System.Windows.Forms.Cursor.Position = new System.Drawing.Point( 
-                   newX,
-                   newY);
-#else
             // The velocity should not change when positions are set.
             MouseState currentState = Microsoft.Xna.Framework.Input.Mouse.GetState();
             mThisFrameRepositionX += newX - currentState.X;
             mThisFrameRepositionY += newY - currentState.Y;
 
             Microsoft.Xna.Framework.Input.Mouse.SetPosition(newX, newY);
-#endif
         }
 
         [Obsolete("This method is not supported, and will be removed in future versions of FRB.")]

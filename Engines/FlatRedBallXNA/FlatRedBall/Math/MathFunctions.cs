@@ -1091,29 +1091,7 @@ namespace FlatRedBall.Math
         public static bool AreDoublesEqual(double num1, double num2, double epsilon)
         {
             return System.Math.Abs(num1 - num2) <= epsilon;
-        }
-
-#if FRB_MDX
-        public static void ScreenToAbsolute(int screenX, int screenY, ref float x,
-            ref float y, float z, Camera camera, System.Windows.Forms.Control form, bool fullscreen)
-        {
-            System.Drawing.Point point = new System.Drawing.Point(screenX, screenY);
-            point = form.PointToClient(point);
-            if (fullscreen)
-            {
-                // maximized, so scale the position
-                point.X = (int)(screenX * form.ClientRectangle.Width /
-                    (float)System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width
-                    );
-                point.Y = (int)(screenY * form.ClientRectangle.Height /
-                    (float)System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Height
-                    );
-            }
-
-            x = camera.XEdge * (point.X * 2.0f - form.ClientRectangle.Width) / form.ClientRectangle.Width;
-            y = -camera.YEdge * (point.Y * 2.0f - form.ClientRectangle.Height) / form.ClientRectangle.Height;
-        }
-#endif        
+        }      
 
 
         public static void WindowToAbsolute(int screenX, int screenY, IPositionable positionable)
@@ -1125,7 +1103,6 @@ namespace FlatRedBall.Math
             positionable.X = position.X;
             positionable.Y = position.Y;
             positionable.Z = position.Z;
-
         }
 
         public static void WindowToAbsolute(int screenX, int screenY, ref Vector3 position)
@@ -1152,20 +1129,6 @@ namespace FlatRedBall.Math
         public static void WindowToAbsolute(int screenX, int screenY, ref float x, 
             ref float y, float z, Camera camera, FlatRedBall.Camera.CoordinateRelativity coordinateRelativity)
 		{
-            
-
-            /*
-            if (fullscreen)
-            {
-                // maximized, so scale the position
-                point.X = (int)(screenX*form.ClientRectangle.Width/
-                    (float)System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width
-                    );
-                point.Y = (int)(screenY * form.ClientRectangle.Height /
-                    (float)System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Height
-                    );
-            }
- */
             if (camera.Orthogonal)
             {
                 float top = camera.AbsoluteTopYEdgeAt(z);

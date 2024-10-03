@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-#if FRB_XNA
-#elif FRB_MDX
-using Vector3 = Microsoft.DirectX.Vector3;
-using FlatRedBall.Math;
-#endif
 
 namespace FlatRedBall.Graphics
 {
@@ -42,19 +37,11 @@ namespace FlatRedBall.Graphics
                 second.Z - mCamera.Z);
             
             float firstDistance;
-#if FRB_MDX
-            Vector3 forwardVector = mCamera.RotationMatrix.Forward();
-            Vector3Extensions.Dot(ref firstCameraRelativePosition, ref forwardVector, out firstDistance);
-
-            float secondDistance;
-            Vector3Extensions.Dot(ref secondCameraRelativePosition, ref forwardVector, out secondDistance);
-#else
             Vector3 forwardVector = mCamera.RotationMatrix.Forward;
                         Vector3.Dot(ref firstCameraRelativePosition, ref forwardVector, out firstDistance);
 
             float secondDistance;
             Vector3.Dot(ref secondCameraRelativePosition, ref forwardVector, out secondDistance);
-#endif
 
 
             if (firstDistance < secondDistance)
