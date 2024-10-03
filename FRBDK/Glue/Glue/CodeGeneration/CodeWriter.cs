@@ -481,7 +481,7 @@ namespace FlatRedBallAddOns.Entities
         else // Screen
         {
             bool inherits = !String.IsNullOrEmpty(element.BaseElement) && element.BaseElement != "<NONE>";
-            whatToInheritFrom = inherits ? FileManager.RemovePath(element.BaseElement) : "FlatRedBall.Screens.Screen";
+            whatToInheritFrom = inherits ? element.BaseElement.Replace("\\", ".") : "FlatRedBall.Screens.Screen";
 
             List<string> inheritanceList = new();
             foreach (ElementComponentCodeGenerator generator in CodeGenerators)
