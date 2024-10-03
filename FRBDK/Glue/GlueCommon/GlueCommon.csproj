@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Platforms>AnyCPU</Platforms>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

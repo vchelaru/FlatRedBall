@@ -1,4 +1,4 @@
-﻿using FlatRedBall.Content.Math.Geometry;
+using FlatRedBall.Content.Math.Geometry;
 using FlatRedBall.Content.Polygon;
 using FlatRedBall.Math.Geometry;
 using System;

@@ -135,7 +135,7 @@ namespace GlueTestProject
             FlatRedBall.FlatRedBallServices.Game.Window.AllowUserResizing = Data.AllowWindowResizing;
             if (Data.IsFullScreen)
             {
-                #if DESKTOP_GL
+                #if DESKTOP_GL && !KNI
                 #if DEBUG
                 if (GraphicsDeviceManager == null)
                 {
@@ -145,7 +145,7 @@ namespace GlueTestProject
                 GraphicsDeviceManager.HardwareModeSwitch = false;
                 FlatRedBall.FlatRedBallServices.Game.Window.Position = new Microsoft.Xna.Framework.Point(0,0);
                 FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, FlatRedBall.Graphics.WindowedFullscreenMode.FullscreenBorderless);
-                #elif FNA
+                #elif FNA || KNI
                 FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, FlatRedBall.Graphics.WindowedFullscreenMode.FullscreenBorderless);
                 #elif WINDOWS
                 System.IntPtr hWnd = FlatRedBall.FlatRedBallServices.Game.Window.Handle;
@@ -164,7 +164,7 @@ namespace GlueTestProject
                 var maxHeight = Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 28;
                 width = System.Math.Min(width, maxWidth);
                 height = System.Math.Min(height, maxHeight);
-                #if MONOGAME
+                #if MONOGAME && !KNI
                 if (FlatRedBall.FlatRedBallServices.Game.Window.Position.Y < 25)
                 {
                     FlatRedBall.FlatRedBallServices.Game.Window.Position = new Microsoft.Xna.Framework.Point(FlatRedBall.FlatRedBallServices.Game.Window.Position.X, 25);
@@ -173,7 +173,7 @@ namespace GlueTestProject
                 FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(width, height);
             }
             #elif IOS || ANDROID
-            FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight);
+            FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight, isFullscreen:Data.IsFullScreen);
             #elif UWP
             if (Data.IsFullScreen)
             {

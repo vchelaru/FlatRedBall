@@ -1,15 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;MONOGAME_381;KNI;WEB;BLAZORGL</DefineConstants>
-	<Title>FlatRedBall (Web)</Title>
+    <Title>FlatRedBall (Web)</Title>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Description>FlatRedBall Game Engine</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Version>1.0.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  
+    <NoWarn>1591</NoWarn>
+
   </PropertyGroup>
   <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
 
