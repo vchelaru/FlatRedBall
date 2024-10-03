@@ -17,7 +17,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace OfficialPluginsCore.CsvNewFilePlugin
+namespace OfficialPlugins.CsvNewFilePlugin
 {
     [Export(typeof(PluginBase))]
     public class MainCsvPlugin : EmbeddedPlugin

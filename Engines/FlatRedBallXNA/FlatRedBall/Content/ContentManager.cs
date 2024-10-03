@@ -485,14 +485,6 @@ namespace FlatRedBall.Content
 			}
 #endif
 
-#if !MONOGAME && !FNA
-			if (!FileManager.IsRelative(assetName))
-			{
-				assetName = FileManager.MakeRelative(
-					assetName, System.Windows.Forms.Application.StartupPath + "/");
-			}
-#endif
-
 #if USES_DOT_SLASH_ABOLUTE_FILES
 
             T asset;

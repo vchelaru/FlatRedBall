@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OfficialPluginsCore.Wizard.ViewModels
+namespace OfficialPlugins.Wizard.ViewModels
 {
     class NamedObjectSaveViewModel : ViewModel
     {

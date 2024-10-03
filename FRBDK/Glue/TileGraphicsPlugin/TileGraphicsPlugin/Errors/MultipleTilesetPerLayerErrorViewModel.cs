@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using TMXGlueLib;
 
-namespace TiledPluginCore.Errors
+namespace TiledPlugin.Errors
 {
     class MultipleTilesetPerLayerErrorViewModel : FileErrorViewModel
     {

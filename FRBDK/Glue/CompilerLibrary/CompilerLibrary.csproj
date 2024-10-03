@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Glue\GlueFormsCore.csproj">
-      <SpecificVersion>False</SpecificVersion>
-    </ProjectReference>
+	  <ProjectReference Include="..\Glue\Glue.csproj">
+		  <SpecificVersion>False</SpecificVersion>
+	  </ProjectReference>
   </ItemGroup>
 
 </Project>

@@ -14,7 +14,7 @@ using System.ComponentModel.Composition;
 using System.Text;
 using System.Windows.Forms;
 
-namespace OfficialPluginsCore.PropertiesTabOldPlugin
+namespace OfficialPlugins.PropertiesTabOldPlugin
 {
     [Export(typeof(PluginBase))]
     public class MainPropertiesTabOldPlugin : EmbeddedPlugin

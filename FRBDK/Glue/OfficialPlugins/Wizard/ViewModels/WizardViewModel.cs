@@ -1,7 +1,7 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.SaveClasses;
 using Newtonsoft.Json;
-using OfficialPluginsCore.Wizard.ViewModels;
+using OfficialPlugins.Wizard.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Windows;
 using System.Xml.Serialization;
 
-namespace OfficialPluginsCore.Wizard.Models
+namespace OfficialPlugins.Wizard.Models
 {
     #region Enums
 

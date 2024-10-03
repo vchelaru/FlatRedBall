@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using TileGraphicsPlugin;
 
-namespace TiledPluginCore.Managers
+namespace TiledPlugin.Managers
 {
     static class NewObjectLogic
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OfficialPluginsCore.Compiler.CodeGeneration
+namespace OfficialPlugins.Compiler.CodeGeneration
 {
     static class InstanceLogicCodeGenerator
     {

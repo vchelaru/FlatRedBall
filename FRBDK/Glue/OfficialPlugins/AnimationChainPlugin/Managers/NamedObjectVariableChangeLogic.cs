@@ -4,7 +4,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using OfficialPluginsCore.AnimationChainPlugin;
+using OfficialPlugins.AnimationChainPlugin;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -12,7 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using FileManager = ToolsUtilities.FileManager;
 
-namespace OfficialPluginsCore.QuickActionPlugin.Views
+namespace OfficialPlugins.QuickActionPlugin.Views
 {
     /// <summary>
     /// Interaction logic for MainView.xaml

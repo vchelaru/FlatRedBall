@@ -1,13 +1,13 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
-using OfficialPluginsCore.ProfilePlugin.Manager;
+using OfficialPlugins.ProfilePlugin.Manager;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Text;
 
-namespace OfficialPluginsCore.ProfilePlugin
+namespace OfficialPlugins.ProfilePlugin
 {
     [Export(typeof(PluginBase))]
     public class MainProfilePluginClass : PluginBase

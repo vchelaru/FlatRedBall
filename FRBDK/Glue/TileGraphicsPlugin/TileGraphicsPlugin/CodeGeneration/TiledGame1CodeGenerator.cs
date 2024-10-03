@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TiledPluginCore.CodeGeneration
+namespace TiledPlugin.CodeGeneration
 {
     public class TiledGame1CodeGenerator : Game1CodeGenerator
     {

@@ -11,7 +11,7 @@ using OfficialPlugins.FilesPlugin.Controls;
 using OfficialPlugins.FilesPlugin.ViewModels;
 using System.ComponentModel.Composition;
 using FlatRedBall.Glue.Controls;
-using OfficialPluginsCore.FilesPlugin.Managers;
+using OfficialPlugins.FilesPlugin.Managers;
 using FlatRedBall.Glue.FormHelpers;
 
 namespace OfficialPlugins.FilesPlugin

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace OfficialPluginsCore.ProfilePlugin.Manager
+namespace OfficialPlugins.ProfilePlugin.Manager
 {
     class CodeItemAdder : Singleton<CodeItemAdder>
     {
@@ -17,7 +17,7 @@ namespace OfficialPluginsCore.ProfilePlugin.Manager
             adder.OutputFolderInProject = "Profile";
             adder.AddFileBehavior = AddFileBehavior.AlwaysCopy;
 
-            adder.Add("OfficialPluginsCore/ProfilePlugin/EmbeddedCodeFiles/ProfileManagerBase.cs");
+            adder.Add("OfficialPlugins/ProfilePlugin/EmbeddedCodeFiles/ProfileManagerBase.cs");
         }
 
         public void UpdateCodePresenceInProject()

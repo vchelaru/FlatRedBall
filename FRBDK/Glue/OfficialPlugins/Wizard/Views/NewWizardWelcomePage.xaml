@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
-             xmlns:views="clr-namespace:OfficialPluginsCore.QuickActionPlugin.Views"
+             xmlns:views="clr-namespace:OfficialPlugins.QuickActionPlugin.Views"
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="580">
     <StackPanel >
@@ -16,28 +16,28 @@
                                     Details="{x:Static localization:Texts.PlatformerStandardDescription}" 
                                     ImageWidthRatio=".5" 
                                     Height="140" HorizontalAlignment="Stretch" 
-                                    Width="280" Margin="5" Image="/OfficialPluginsCore;component/Wizard/Icons/action_platformer.png"></views:TitleImageButton>
+                                    Width="280" Margin="5" Image="/OfficialPlugins;component/Wizard/Icons/action_platformer.png"></views:TitleImageButton>
         
             <views:TitleImageButton Clicked="TopDownButtonClicked"
                                     Title="{x:Static localization:Texts.TopdownStandard}" 
                                     Details="{x:Static localization:Texts.TopdownStandardDescription}" 
                                     ImageWidthRatio=".5" 
                                     Height="140" HorizontalAlignment="Stretch" 
-                                    Width="280" Margin="5" Image="/OfficialPluginsCore;component/Wizard/Icons/action_topdown.png"></views:TitleImageButton>
+                                    Width="280" Margin="5" Image="/OfficialPlugins;component/Wizard/Icons/action_topdown.png"></views:TitleImageButton>
 
             <views:TitleImageButton Clicked="FormsButtonClicked" 
                                     Title="{x:Static localization:Texts.UIFrbForms}" 
                                     Details="{x:Static localization:Texts.UIFrbFormsDescription}" 
                                     ImageWidthRatio=".5" 
                                     Height="140" HorizontalAlignment="Stretch" 
-                                    Width="280" Margin="5" Image="/OfficialPluginsCore;component/Wizard/Icons/action_forms.png"></views:TitleImageButton>
+                                    Width="280" Margin="5" Image="/OfficialPlugins;component/Wizard/Icons/action_forms.png"></views:TitleImageButton>
 
             <views:TitleImageButton Clicked="CustomButtonClicked" 
                                     Title="{x:Static localization:Texts.CustomAdvanced}" 
                                     Details="{x:Static localization:Texts.CustomAdvancedDescription}" 
                                     ImageWidthRatio=".5" 
                                     Height="140" HorizontalAlignment="Stretch" 
-                                    Width="280" Margin="5" Image="/OfficialPluginsCore;component/Wizard/Icons/action_project.png"></views:TitleImageButton>
+                                    Width="280" Margin="5" Image="/OfficialPlugins;component/Wizard/Icons/action_project.png"></views:TitleImageButton>
         </WrapPanel>
     </StackPanel>
 </UserControl>

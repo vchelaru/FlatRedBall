@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using ToolsUtilities;
 
-namespace OfficialPluginsCore.Wizard.ViewModels
+namespace OfficialPlugins.Wizard.ViewModels
 {
     public enum UrlStatus
     {

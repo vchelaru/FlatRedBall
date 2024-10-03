@@ -3,7 +3,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace OfficialPluginsCore.CollisionPlugin.Views
+namespace OfficialPlugins.CollisionPlugin.Views
 {
     /// <summary>
     /// Interaction logic for EventCell.xaml

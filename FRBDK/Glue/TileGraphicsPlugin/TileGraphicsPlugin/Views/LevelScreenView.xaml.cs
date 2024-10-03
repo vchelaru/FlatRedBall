@@ -6,9 +6,9 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using TiledPluginCore.ViewModels;
+using TiledPlugin.ViewModels;
 
-namespace TiledPluginCore.Views
+namespace TiledPlugin.Views
 {
     /// <summary>
     /// Interaction logic for LevelScreenView.xaml

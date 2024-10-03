@@ -72,18 +72,6 @@ namespace FlatRedBall.IO
 #elif MONOGAME
         public static string DefaultRelativeDirectory = "./";
 
-#else
-        // Vic says - this used to be:
-        //static string mRelativeDirectory = (System.IO.Directory.GetCurrentDirectory() + "/").Replace("\\", "/");
-        // But the current directory is the directory that launched the application, not the directory of the .exe.
-        // We want to make sure that we use the .exe so that the game/tool can reference the proper path when loading
-        // content.
-        // Update: Made this per-thread so we can do multi-threaded loading.
-        // static string mRelativeDirectory = (System.Windows.Forms.Application.StartupPath + "/").Replace("\\", "/");
-        // Update October 22, 2012 - Projects like Glue may be multi-threaded, but they want the default directory to be preset to
-        // something specific.  But I think we only want this for tools (on the PC).
-        public static string DefaultRelativeDirectory = (System.Windows.Forms.Application.StartupPath + "/").Replace("\\", "/");
-
 #endif
 
         static Dictionary<int, string> mRelativeDirectoryDictionary = new Dictionary<int, string>();
@@ -230,11 +218,6 @@ namespace FlatRedBall.IO
 				return "./";
 #elif FRB_RAW || DESKTOP_GL || STANDARD
                 return System.IO.Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ) + "/";
-
-#else
-
-
-                return (System.Windows.Forms.Application.StartupPath + "/");
 #endif
 			}
         }

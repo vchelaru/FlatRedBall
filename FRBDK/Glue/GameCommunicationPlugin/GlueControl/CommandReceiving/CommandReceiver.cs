@@ -30,7 +30,7 @@ using ToolsUtilities;
 using Xceed.Wpf.Toolkit.PropertyGrid;
 using CompilerLibrary.ViewModels;
 
-namespace OfficialPluginsCore.Compiler.CommandReceiving
+namespace OfficialPlugins.Compiler.CommandReceiving
 {
     public class CommandReceiver
     {

@@ -2,7 +2,7 @@
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using OfficialPluginsCore.QuickActionPlugin.Views;
+using OfficialPlugins.QuickActionPlugin.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using ToolsUtilities;
 
-namespace OfficialPluginsCore.QuickActionPlugin.Managers
+namespace OfficialPlugins.QuickActionPlugin.Managers
 {
     class ButtonVisibilityManager
     {

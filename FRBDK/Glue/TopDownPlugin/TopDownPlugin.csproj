@@ -1,17 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
+
+  <PropertyGroup>
     <Platforms>AnyCPU</Platforms>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <RootNamespace>TopDownPlugin</RootNamespace>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
-
   <ItemGroup>
-    <Compile Remove="Properties\AssemblyInfo.cs" />
+    <Compile Remove="Embedded\TopDownAiInput.Generated.cs" />
+    <Compile Remove="Embedded\TopDownAiTargetLogic.Generated.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Content\Icons\icon_duplicate.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Embedded\TopDownAiInput.Generated.cs" />
+    <EmbeddedResource Include="Embedded\TopDownAiTargetLogic.Generated.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
+    <ProjectReference Include="..\Glue\Glue.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +30,7 @@
     <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
   </ItemGroup>
 
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
@@ -27,8 +38,14 @@
     <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\DialogTreePlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\DialogTreePlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\DialogTreePluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\DialogTreePlugin\DialogTreePluginCore.dll&quot;" />
-  </Target>
+
+  <ItemGroup>
+    <Folder Include="SaveClasses\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Resource Include="Content\Icons\icon_duplicate.png" />
+  </ItemGroup>
 
 </Project>

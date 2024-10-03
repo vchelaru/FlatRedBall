@@ -52,7 +52,7 @@
             <Button Click="MoveUpClick">^</Button>
             <Button Click="MoveDownClick" Grid.Column="1" >v</Button>
             <Button Click="CopyClicked" Grid.Column="2">
-                <Image Source="/OfficialPluginsCore;component/Content/Icons/CopyIcon.png"></Image>
+                <Image Source="/OfficialPlugins;component/Content/Icons/CopyIcon.png"></Image>
             </Button>
         </Grid>
         

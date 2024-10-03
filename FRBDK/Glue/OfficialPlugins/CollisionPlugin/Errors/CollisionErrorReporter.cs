@@ -2,13 +2,13 @@
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using OfficialPluginsCore.CollisionPlugin.ExtensionMethods;
+using OfficialPlugins.CollisionPlugin.ExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OfficialPluginsCore.CollisionPlugin.Errors
+namespace OfficialPlugins.CollisionPlugin.Errors
 {
     class CollisionErrorReporter : ErrorReporterBase
     {

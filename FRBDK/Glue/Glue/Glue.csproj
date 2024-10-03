@@ -1,1449 +1,732 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{213357E3-F729-4FF3-9B99-E91C40D50E6E}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FlatRedBall.Glue</RootNamespace>
-    <AssemblyName>Glue</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ApplicationIcon>Glue.ico</ApplicationIcon>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;GLUE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>x86</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.0</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.0</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Debug\</OutputPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;DEBUG;GLUE, XNA4, DEBUG</DefineConstants>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <DocumentationFile>
-    </DocumentationFile>
-    <WarningLevel>3</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.0</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.0</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnitTests|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\UnitTests\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;GLUE</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.0</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnitTests|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\UnitTests\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;GLUE, XNA4, TEST, UNIT_TESTS</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.0</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>Glue.Program</StartupObject>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'AutomatedBuild|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\AutomatedBuild\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;GLUE</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.0</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'AutomatedBuild|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\AutomatedBuild\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;GLUE, XNA4, DEBUG</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <WarningLevel>3</WarningLevel>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.0</LangVersion>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Accessibility">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="ICSharpCode.NRefactory, Version=5.0.0.0, Culture=neutral, PublicKeyToken=d4bfe873e7598c49, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\ICSharpCode.NRefactory.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.NRefactory.CSharp, Version=5.0.0.0, Culture=neutral, PublicKeyToken=d4bfe873e7598c49, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\ICSharpCode.NRefactory.CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Ionic.Zip, Version=1.7.2.26, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Ionic.Zip.dll</HintPath>
-    </Reference>
-    <Reference Include="Ionic.Zlib, Version=1.7.2.26, Culture=neutral, PublicKeyToken=c551e179877da246, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Ionic.Zlib.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Design" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="VSLangProj, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>C:\Program Files (x86)\Common Files\Microsoft Shared\MSEnv\PublicAssemblies\VSLangProj.dll</HintPath>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="WindowsFormsIntegration" />
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Xceed\Xceed.Wpf.AvalonDock.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Xceed\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Xceed\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Xceed\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.DataGrid, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Xceed\Xceed.Wpf.DataGrid.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Xceed\Xceed.Wpf.Toolkit.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\GluePropertyGridClasses\Interfaces\IVsProjectState.cs">
-      <Link>IO\IVsProjectState.cs</Link>
-    </Compile>
-    <Compile Include="..\OfficialPlugins\GlueView\GlueViewPlugin.ContentChanged.cs">
-      <Link>GlueView\GlueViewPlugin.ContentChanged.cs</Link>
-    </Compile>
-    <Compile Include="..\OfficialPlugins\GlueView\GlueViewPlugin.cs">
-      <Link>GlueView\GlueViewPlugin.cs</Link>
-    </Compile>
-    <Compile Include="..\OfficialPlugins\GlueView\GlueViewPlugin.CurrentElement.cs">
-      <Link>GlueView\GlueViewPlugin.CurrentElement.cs</Link>
-    </Compile>
-    <Compile Include="..\OfficialPlugins\GlueView\GlueViewPlugin.GluxLoad.cs">
-      <Link>GlueView\GlueViewPlugin.GluxLoad.cs</Link>
-    </Compile>
-    <Compile Include="..\OfficialPlugins\GlueView\GlueViewPlugin.MenuStrip.cs">
-      <Link>GlueView\GlueViewPlugin.MenuStrip.cs</Link>
-    </Compile>
-    <Compile Include="..\OfficialPlugins\GlueView\GlueViewPlugin.NamedObject.cs">
-      <Link>GlueView\GlueViewPlugin.NamedObject.cs</Link>
-    </Compile>
-    <Compile Include="..\OfficialPlugins\GlueView\GlueViewPlugin.TreeItemSelect.cs">
-      <Link>GlueView\GlueViewPlugin.TreeItemSelect.cs</Link>
-    </Compile>
-    <Compile Include="..\OfficialPlugins\GlueView\GlueViewRemotingSelectionInterfaceManager.cs">
-      <Link>GlueView\GlueViewRemotingSelectionInterfaceManager.cs</Link>
-    </Compile>
-    <Compile Include="..\OfficialPlugins\GlueView\InteractiveInterface.cs">
-      <Link>GlueView\InteractiveInterface.cs</Link>
-    </Compile>
-    <Compile Include="AutomatedGlue\AutoGlue.cs" />
-    <Compile Include="AutomatedGlue\GlueGui.cs" />
-    <Compile Include="CodeGeneration\Game1\Game1CodeGenerator.cs" />
-    <Compile Include="CodeGeneration\Game1\Game1CodeGeneratorManager.cs" />
-    <Compile Include="Controls\CustomizableNewFileWindow.xaml.cs">
-      <DependentUpon>CustomizableNewFileWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\CustomizableTextInputWindow.xaml.cs">
-      <DependentUpon>CustomizableTextInputWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Errors\CsvAndCustomClassSameName.cs" />
-    <Compile Include="Errors\CsvErrorReporter.cs" />
-    <Compile Include="Errors\IErrorReporter.cs" />
-    <Compile Include="MVVM\PropertyListContainerViewModel.cs" />
-    <Compile Include="MVVM\ViewModel.cs" />
-    <Compile Include="Plugins\CodeGenerators\FullFileCodeGenerator.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSetupCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockBase.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockClass.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockException.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockFunction.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockIf.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockIterations.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockNamespace.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockProperty.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockSwitch.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockTag.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBuilderDefaults.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeLine.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockInterface.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockLock.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockBlock.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\CodeBlockBaseNoIndent.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\ICode.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\ICodeBlock.cs" />
-    <Compile Include="CodeGeneration\CodeBuilder\StringHelper.cs" />
-    <Compile Include="CodeGeneration\ElementComponentCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\CustomVariableCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\EntireClassCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\ErrorCheckingCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\EventCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\CodeGeneratorIElement.cs" />
-    <Compile Include="CodeGeneration\GlobalContentCodeGeneratorBase.cs" />
-    <Compile Include="Controls\AddEntityWindow.xaml.cs">
-      <DependentUpon>AddEntityWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\AddExistingFileWindow.xaml.cs">
-      <DependentUpon>AddExistingFileWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\MultiButtonMessageBoxWpf.xaml.cs">
-      <DependentUpon>MultiButtonMessageBoxWpf.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Errors\Command.cs" />
-    <Compile Include="Errors\ErrorListViewModel.cs" />
-    <Compile Include="Errors\ErrorViewModel.cs" />
-    <Compile Include="GlueView\GlueView2RemotingSelectionInterfaceManager.cs" />
-    <Compile Include="GlueView\ISelectionInterface.cs" />
-    <Compile Include="GlueView\SelectionInterface2.cs" />
-    <Compile Include="GlueView\SelectionInterfaceClient.cs" />
-    <Compile Include="Managers\AddExistingFileManager.cs" />
-    <Compile Include="Managers\DragDropManager.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\AddToShapeCollectionPlugin\MainAddToShapeCollectionPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\AddVariablePlugin\Controls\CreateNewVariableControl.xaml.cs">
-      <DependentUpon>CreateNewVariableControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Errors\GeneralResponse.cs" />
-    <Compile Include="Extensions\LinqExtensions.cs" />
-    <Compile Include="FormHelpers\StringConverters\TypeConverterWithNone.cs" />
-    <Compile Include="IO\FilePath.cs" />
-    <Compile Include="Managers\HotkeyManager.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\AddVariablePlugin\ViewModels\CreateNewVariableViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraAtiUpdateLogic.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSettingsControl.xaml.cs">
-      <DependentUpon>CameraSettingsControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\DisplaySettingsViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\CleanupPlugin\EventRemovalLogic.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\CleanupPlugin\FileRemovalLogic.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\CleanupPlugin\MainPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\IDrawableBatch\IDrawableBatchCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\InheritanceCodeWriter.cs" />
-    <Compile Include="CodeGeneration\IVisibleCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\IWindowCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\LoadingScreenCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\NamedObjectSaveCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\PauseCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\PooledCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\ReferencedFileSaveCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\ScrollableListCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\StateCodeGenerator.cs" />
-    <Compile Include="CodeGeneration\StateCodeGenerator.Interpolation.cs" />
-    <Compile Include="CodeGeneration\UsingsCodeGenerator.cs" />
-    <Compile Include="ContentPipeline\ContentPipelineHelper.cs" />
-    <Compile Include="Controls\AboutBox1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\AboutBox1.Designer.cs">
-      <DependentUpon>AboutBox1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\AddVariableWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\AddVariableWindow.Designer.cs">
-      <DependentUpon>AddVariableWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\AutoLayoutForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\AutoLayoutForm.Designer.cs">
-      <DependentUpon>AutoLayoutForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\BaseElementTreeNode.cs" />
-    <Compile Include="FormHelpers\StringConverters\IObjectsInFileConverter.cs" />
-    <Compile Include="MVVM\CommandBase.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraMainPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSettingsWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSettingsWindow.Designer.cs">
-      <DependentUpon>CameraSettingsWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\CharacterListCreationWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\CharacterListCreationWindow.Designer.cs">
-      <DependentUpon>CharacterListCreationWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\AddEventWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\AddEventWindow.Designer.cs">
-      <DependentUpon>AddEventWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ComboBoxMessageBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\ComboBoxMessageBox.Designer.cs">
-      <DependentUpon>ComboBoxMessageBox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\DownloadPluginProgressWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\DownloadPluginProgressWindow.Designer.cs">
-      <DependentUpon>DownloadPluginProgressWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\GroupExportForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\GroupExportForm.Designer.cs">
-      <DependentUpon>GroupExportForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\NewObjectTypeSelectionControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\NewObjectTypeSelectionControl.Designer.cs">
-      <DependentUpon>NewObjectTypeSelectionControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ProjectSpecificFileCollectionEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\ProjectSpecificFileCollectionEditorForm.Designer.cs">
-      <DependentUpon>ProjectSpecificFileCollectionEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ToolbarControl.xaml.cs">
-      <DependentUpon>ToolbarControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Elements\VariableDefinition.cs" />
-    <Compile Include="GlueView\GlueViewToolbar.xaml.cs">
-      <DependentUpon>GlueViewToolbar.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraToolbar.xaml.cs">
-      <DependentUpon>CameraToolbar.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\CsprojReferenceSharer\ManualReferenceCopier.xaml.cs">
-      <DependentUpon>ManualReferenceCopier.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\IDrawableBatch\MainPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\LoadRecentFilesPlugin\MainRecentFilesPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\LocalizationPlugin\MainLocalizationPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ExportPluginLogic.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\GlueVaultBrowser.xaml.cs">
-      <DependentUpon>GlueVaultBrowser.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\MainControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\MainControl.Designer.cs">
-      <DependentUpon>MainControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\MainPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\PluginView.xaml.cs">
-      <DependentUpon>PluginView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ViewModels\BrowseGlueVaultViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ViewModels\FeedItemViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\ManagePlugins\ViewModels\PluginViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\Particle\ParticleFileReferenceManager.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\ExclusionControl.xaml.cs">
-      <DependentUpon>ExclusionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\FileExclusionViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\IndividualProjectSetting.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\MainPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\ProjectMembershipManager.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\RenderTargetPlugin\MainPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\BuildItemViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\Controls\ToolbarControl.xaml.cs">
-      <DependentUpon>ToolbarControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\GeneralErrorControl.xaml.cs">
-      <DependentUpon>GeneralErrorControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\OrphanedItemsControl.xaml.cs">
-      <DependentUpon>OrphanedItemsControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\ProjectListEntry.xaml.cs">
-      <DependentUpon>ProjectListEntry.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\SyncedProjectLogic.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\SyncedProjectsViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\SyncedProjectViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\ProjectReferencesWindow.xaml.cs">
-      <DependentUpon>ProjectReferencesWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\UninstallPluginWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\UninstallPluginWindow.Designer.cs">
-      <DependentUpon>UninstallPluginWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\CreatePluginWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\CreatePluginWindow.Designer.cs">
-      <DependentUpon>CreatePluginWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\InstallPluginWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\InstallPluginWindow.Designer.cs">
-      <DependentUpon>InstallPluginWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\LightShapeSelectionControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\LightShapeSelectionControl.Designer.cs">
-      <DependentUpon>LightShapeSelectionControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ListBoxWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\ListBoxWindow.Designer.cs">
-      <DependentUpon>ListBoxWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PluginTab.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\ProcessesWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\ProcessesWindow.Designer.cs">
-      <DependentUpon>ProcessesWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PreferencesWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\PreferencesWindow.Designer.cs">
-      <DependentUpon>PreferencesWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CreatedClass\CustomClassController.cs" />
-    <Compile Include="CreatedClass\CustomClassWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CreatedClass\CustomClassWindow.Designer.cs">
-      <DependentUpon>CustomClassWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\CustomizableMessageBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\CustomizableMessageBox.Designer.cs">
-      <DependentUpon>CustomizableMessageBox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ElementReferenceListWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\ElementReferenceListWindow.Designer.cs">
-      <DependentUpon>ElementReferenceListWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\EmbeddedProgramPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\EntityTreeNode.cs" />
-    <Compile Include="Controls\FileAssociationWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\FileAssociationWindow.Designer.cs">
-      <DependentUpon>FileAssociationWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\FileBuildToolAssociationWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\FileBuildToolAssociationWindow.Designer.cs">
-      <DependentUpon>FileBuildToolAssociationWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\InitializationWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\InitializationWindow.Designer.cs">
-      <DependentUpon>InitializationWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\MultiButtonMessageBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\MultiButtonMessageBox.Designer.cs">
-      <DependentUpon>MultiButtonMessageBox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\NamedObjectListTreeNode.cs" />
-    <Compile Include="Controls\NewFileWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\NewFileWindow.Designer.cs">
-      <DependentUpon>NewFileWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\OptionSelectionWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\OptionSelectionWindow.Designer.cs">
-      <DependentUpon>OptionSelectionWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PerformanceSettingsWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\PerformanceSettingsWindow.Designer.cs">
-      <DependentUpon>PerformanceSettingsWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PluginsWindow.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PluginsWindow.Designer.cs">
-      <DependentUpon>PluginsWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PropertyGridControls\StateValueEditor.cs" />
-    <Compile Include="Controls\ReferencedFileFlatListWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\ReferencedFileFlatListWindow.Designer.cs">
-      <DependentUpon>ReferencedFileFlatListWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ReferencedFileListTreeNode.cs" />
-    <Compile Include="Controls\ScreenTreeNode.cs" />
-    <Compile Include="Controls\StateListTreeNode.cs" />
-    <Compile Include="Controls\TabControlEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\TextInputWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\TextInputWindow.Designer.cs">
-      <DependentUpon>TextInputWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\VariablesToResetWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\VariablesToResetWindow.Designer.cs">
-      <DependentUpon>VariablesToResetWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Data\PluginSettings.cs" />
-    <Compile Include="EditorData.cs" />
-    <Compile Include="EditorLogic.cs" />
-    <Compile Include="Elements\AssetTypeInfoExtensionMethodsGlue.cs" />
-    <Compile Include="Elements\AssetTypeInfo.cs" />
-    <Compile Include="Elements\AssetTypeInfoExtensionMethods.cs" />
-    <Compile Include="Elements\AvailableAssetTypes.cs" />
-    <Compile Include="Elements\ObjectFinder.cs" />
-    <Compile Include="Errors\ErrorReporter.cs" />
-    <Compile Include="Events\EventManager.cs" />
-    <Compile Include="Events\EventManagerExtensionMethods.cs" />
-    <Compile Include="Events\EventResponseSaveExtensionMethods.cs" />
-    <Compile Include="Events\EventResponseSaveExtensionMethodsGlue.cs" />
-    <Compile Include="Extensions\WindowsForm.cs" />
-    <Compile Include="FacadeImplementation\ProjectValues.cs" />
-    <Compile Include="Facades\FacadeContainer.cs" />
-    <Compile Include="Facades\IApplicationSettings.cs" />
-    <Compile Include="Facades\IObjectFinder.cs" />
-    <Compile Include="Facades\IProjectValues.cs" />
-    <Compile Include="Factories\FactoryManager.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\Vector2WithProperties.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\Vector3WithProperties.cs" />
-    <Compile Include="MainGlueWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainGlueWindow.Designer.cs">
-      <DependentUpon>MainGlueWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormHelpers\DynamicUiHelper.cs" />
-    <Compile Include="FormHelpers\ElementViewWindow.DragDrop.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\BroadcastAttribute.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\CustomVariablePropertyGridDisplayer.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\ElementPropertyGridDisplayer.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\EntitySavePropertyGridDisplayer.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\EventResponseSavePropertyGridDisplayer.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\NamedObjectPropertyGridDisplayer.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\PropertyGridRightClickHelper.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\ReferencedFileSavePropertyGridDisplayer.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\ScreenSavePropertyGridDisplayer.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\StateSaveCategoryPropertyGridDisplayer.cs" />
-    <Compile Include="FormHelpers\PropertyGrids\StateSavePropertyGridDisplayer.cs" />
-    <Compile Include="FormHelpers\RightClickHelper.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableAnimationChainsStringConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableApplicationsStringConverters.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableBuildTools.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableClassGenericTypeConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableClassTypeConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableColorTypeConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableCustomVariables.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableCustomVariableTypeConverters.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableCustomVariableTypes.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableEntityTypeConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableDelegateTypeConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableEvents.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableExposedNamedObjectVariables.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableFileStringConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableLayersTypeConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableNameablesStringConverter.cs" />
-    <Compile Include="FormHelpers\ElementViewWindow.cs" />
-    <Compile Include="FormHelpers\PropertyGridHelper.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableNamedObjectsAndFiles.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailablePrimitiveTypeArraysStringConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailablePrimitiveTypeStringConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableRuntimeTypeConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableScreenTypeConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableSpreadsheetValueTypeConverter.cs" />
-    <Compile Include="FormHelpers\StringConverters\AvailableStates.cs" />
-    <Compile Include="FormHelpers\StringConverters\ImageTypeConverter.cs" />
-    <Compile Include="FormHelpers\ToolStripHelper.cs" />
-    <Compile Include="FormHelpers\TreeNodeCollectionExtensions.cs" />
-    <Compile Include="FormHelpers\TreeNodeHelpers.cs" />
-    <Compile Include="FormHelpers\VisibilityManager.cs" />
-    <Compile Include="FormHelpers\VisibilityManagerPlugin.cs" />
-    <Compile Include="IO\BuiltFileCopier.cs" />
-    <Compile Include="IO\ChangedFileGroup.cs" />
-    <Compile Include="IO\ElementExporter.cs" />
-    <Compile Include="IO\ElementImporter.cs" />
-    <Compile Include="IO\FileHelper.cs" />
-    <Compile Include="IO\FileWatchManager.cs" />
-    <Compile Include="IO\ImageHeader.cs" />
-    <Compile Include="IO\ProjectLoader.cs" />
-    <Compile Include="Build\BuildToolAssociationManager.cs" />
-    <Compile Include="Managers\CommandLineManager.cs" />
-    <Compile Include="Managers\CopyPasteManager.cs" />
-    <Compile Include="Managers\DownloadManager.cs" />
-    <Compile Include="Managers\ErrorManager.cs" />
-    <Compile Include="Managers\FileReferenceManager.cs" />
-    <Compile Include="Managers\FindManager.cs" />
-    <Compile Include="Managers\IconManager.cs" />
-    <Compile Include="Managers\RecursionManager.cs" />
-    <Compile Include="Managers\Singleton.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\CsprojReferenceSharer\MainPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\CsprojReferenceSharer\ReferenceCopierControl.xaml.cs">
-      <DependentUpon>ReferenceCopierControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\CsprojReferenceSharer\ReferenceCopierViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\MainPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\SyncedProjects\SyncedProjectsControl.xaml.cs">
-      <DependentUpon>SyncedProjectsControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\TypeConverterPlugin\MainPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesPlugin.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\FileCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\SelectCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\ValidationResponse.cs" />
-    <Compile Include="Plugins\ExportedImplementations\States\Clipboard.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IFileCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\ISelectCommands.cs" />
-    <Compile Include="Plugins\PluginErrors\PluginError.cs" />
-    <Compile Include="Plugins\PluginErrors\PluginErrorReporter.cs" />
-    <Compile Include="Tasks\GlueTask.cs" />
-    <Compile Include="Tasks\TaskManager.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesManager.cs" />
-    <Compile Include="Parsing\CodeParseException.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\BitmapFonts\BitmapFontPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\CollisionPlugin\CollisionPluginCodeGenerator.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\DropboxPlugins\DropboxPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\EmbeddedPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\EventsView\EventsViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\EventsView\EventsViewPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\EventsView\EventViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\FileParsingPlugins\StandardFileParsingPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\NewFiles\NewFilePlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\NewNamedObjectPlugins\NewNamedObjectPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\OutputPrintPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\OutputWindow.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\OutputWindow.Designer.cs">
-      <DependentUpon>OutputWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\Particle\ParticleCodeGenerator.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\Particle\ParticlePlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\RfsSorting\RfsSorter.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\TaskDisplayer\TaskDisplayerControl.xaml.cs">
-      <DependentUpon>TaskDisplayerControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\TaskDisplayer\TaskDisplayerPlugin.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\TaskDisplayer\TaskDisplayerViewModel.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\Windows8ContentAdd\XnbContentAdder.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\DialogCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\ElementCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\GlueViewCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\MenuStripCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IDialogCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IElementCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IEntityCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IScreenCommands.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\ICollidablePlugins\CollidableCodeGenerator.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\ICollidablePlugins\CollidablePlugin.cs" />
-    <Compile Include="Plugins\Interfaces\IContentFileChange.cs" />
-    <Compile Include="Plugins\Interfaces\IGlueSettings.cs" />
-    <Compile Include="Plugins\Interfaces\IOpenVisualStudio.cs" />
-    <Compile Include="CodeGeneration\PerformancePluginCodeGenerator.cs" />
-    <Compile Include="Plugins\Performance\EndTimingCodeGenerator.cs" />
-    <Compile Include="Plugins\Performance\PerformanceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Plugins\Performance\PerformanceForm.designer.cs">
-      <DependentUpon>PerformanceForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\Performance\PerformanceMeasurementPlugin.cs" />
-    <Compile Include="Plugins\Performance\StartTimingCodeGenerator.cs" />
-    <Compile Include="Plugins\PluginBase.cs" />
-    <Compile Include="Plugins\PluginDelegates.cs" />
-    <Compile Include="Plugins\PluginUpdater.cs" />
-    <Compile Include="Projects\CodeProjectHelper.cs" />
-    <Compile Include="QueuedActionManager.cs" />
-    <Compile Include="Resources\IEntityFactory.cs" />
-    <Compile Include="SaveClasses\BehaviorSaveExtensionMethods.cs" />
-    <Compile Include="SaveClasses\CustomVariableExtensionMethods.cs" />
-    <Compile Include="SaveClasses\CustomVariableExtensionMethods.TypeConverter.cs" />
-    <Compile Include="SaveClasses\EntitySaveExtensionMethods.cs" />
-    <Compile Include="SaveClasses\GlueProjectSaveExtensionMethods.cs" />
-    <Compile Include="SetVariable\CustomVariableSaveSetVariableLogic.cs" />
-    <Compile Include="SetVariable\EntitySaveSetVariableLogic.cs" />
-    <Compile Include="SetVariable\EventResponseSaveSetVariableLogic.cs" />
-    <Compile Include="SetVariable\GlobalContentSetVariableLogic.cs" />
-    <Compile Include="SetVariable\NamedObjectSetVariableLogic.cs" />
-    <Compile Include="SetVariable\ReferencedFileSaveSetVariableLogic.cs" />
-    <Compile Include="SetVariable\ScreenSaveSetVariableLogic.cs" />
-    <Compile Include="SetVariable\StateSaveCategorySetVariableLogic.cs" />
-    <Compile Include="SetVariable\StateSaveSetVariableLogic.cs" />
-    <Compile Include="SaveClasses\IElementExtensionMethods.cs" />
-    <Compile Include="SaveClasses\IElementHelperGlue.cs" />
-    <Compile Include="SaveClasses\INamedObjectContainerExtensionMethods.cs" />
-    <Compile Include="SaveClasses\NamedObjectSaveExtensionMethods.cs" />
-    <Compile Include="SaveClasses\NamedObjectSaveExtensionMethodsGlue.cs" />
-    <Compile Include="SaveClasses\ReferencedFileSaveExtensionMethods.cs" />
-    <Compile Include="SaveClasses\ReferencedFileSaveExtensionMethodsGlue.cs" />
-    <Compile Include="SaveClasses\ScreenSaveExtensionMethods.cs" />
-    <Compile Include="SaveClasses\StateSaveExtensionMethods.cs" />
-    <Compile Include="SetVariable\SetVariableLogic.cs" />
-    <Compile Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesView.xaml.cs">
-      <DependentUpon>UnreferencedFilesView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesViewModel.cs" />
-    <Compile Include="Utilities\IEnumerableExtensionMethods.cs" />
-    <Compile Include="Utilities\LinqToVisualTree.cs" />
-    <Compile Include="ViewModels\AddExistingFileViewModel.cs" />
-    <Compile Include="ViewModels\AddObjectViewModel.cs" />
-    <Compile Include="ViewModels\CustomClassViewModel.cs" />
-    <Compile Include="VSHelpers\CodeBuildItemAdder.cs" />
-    <Compile Include="VSHelpers\ContentItemAdder.cs" />
-    <Compile Include="VSHelpers\Projects\ClassLibraryProject.cs" />
-    <Compile Include="VSHelpers\Projects\CombinedEmbeddedContentProject.cs" />
-    <Compile Include="VSHelpers\Projects\ContentHybridProject.cs" />
-    <Compile Include="VSHelpers\Projects\DesktopGlLinuxProject.cs" />
-    <Compile Include="VSHelpers\Projects\DesktopGlProject.cs" />
-    <Compile Include="VSHelpers\Projects\IosMonogameProject.cs" />
-    <Compile Include="VSHelpers\Projects\AndroidProject.cs" />
-    <Compile Include="VSHelpers\Projects\MonoGameContentProject.cs" />
-    <Compile Include="VSHelpers\Projects\ProjectCreator.cs" />
-    <Compile Include="VSHelpers\Projects\UwpProject.cs" />
-    <Compile Include="VSHelpers\Projects\VisualStudioDotNetStandardProject.cs" />
-    <Compile Include="VSHelpers\Projects\Windows8MonoGameProject.cs" />
-    <Compile Include="VSHelpers\Projects\WindowsPhoneProject.cs" />
-    <Compile Include="VSHelpers\Projects\Xna4Project.cs" />
-    <Compile Include="VSHelpers\Projects\XnaContentProject.cs" />
-    <Compile Include="VSHelpers\VSSolution.cs" />
-    <Compile Include="WaitingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WaitingForm.Designer.cs">
-      <DependentUpon>WaitingForm.cs</DependentUpon>
-    </Compile>
-    <None Include="Content\Icons\IncreaseAreaGum.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\Icons\StretchAreaGum.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Include="Libraries\BMFont\bmfont.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libraries\Xceed\Xceed.Wpf.AvalonDock.dll" />
-    <Content Include="Libraries\Xceed\Xceed.Wpf.AvalonDock.Themes.Aero.dll" />
-    <Content Include="Libraries\Xceed\Xceed.Wpf.AvalonDock.Themes.Metro.dll" />
-    <Content Include="Libraries\Xceed\Xceed.Wpf.AvalonDock.Themes.VS2010.dll" />
-    <Content Include="Libraries\Xceed\Xceed.Wpf.DataGrid.dll" />
-    <Content Include="Libraries\Xceed\Xceed.Wpf.Toolkit.dll" />
-    <EmbeddedResource Include="Controls\DownloadPluginProgressWindow.resx">
-      <DependentUpon>DownloadPluginProgressWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\NewObjectTypeSelectionControl.resx">
-      <DependentUpon>NewObjectTypeSelectionControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Plugins\EmbeddedPlugins\ManagePlugins\MainControl.resx">
-      <DependentUpon>MainControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Plugins\Performance\PerformanceForm.resx">
-      <DependentUpon>PerformanceForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WaitingForm.resx">
-      <DependentUpon>WaitingForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Content\BuiltInEvents.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\FilesForAddNewFile\ArialFont.bmfc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\C#.syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\C++.syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\Cobol.syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\CSharp.syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\CSS.Syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\Java.syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\JavaScript.syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\Perl.syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\PHP.Syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\Python.syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\VB.NET.syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\VB.syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\VBScript.syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SyntaxHighlighting\XML.syn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Compile Include="IO\UpdateReactor.cs" />
-    <Compile Include="IO\Zip\Zipper.cs" />
-    <Compile Include="Navigation\SearchBarHelper.cs" />
-    <Compile Include="Navigation\TreeNodeStackManager.cs" />
-    <Compile Include="Parsing\CodeParser.cs" />
-    <Compile Include="CodeGeneration\CodeWriter.cs" />
-    <Compile Include="CodeGeneration\GlobalContentCodeGenerator.cs" />
-    <Compile Include="Parsing\CsvCodeGenerator.cs" />
-    <Compile Include="Parsing\FactoryCodeGenerator.cs" />
-    <Compile Include="Parsing\ParsedClass.cs" />
-    <Compile Include="Parsing\ParsedEnum.cs" />
-    <Compile Include="Parsing\ParsedField.cs" />
-    <Compile Include="Parsing\ParsedFile.cs" />
-    <Compile Include="Parsing\ParsedMethod.cs" />
-    <Compile Include="Parsing\ParsedNamespace.cs" />
-    <Compile Include="Parsing\ParsedProperty.cs" />
-    <Compile Include="Parsing\ParsedType.cs" />
-    <Compile Include="Parsing\PreProcessorDefineParser.cs" />
-    <Compile Include="Parsing\TypeManager.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\GenerateCodeCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\GluxCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\OpenCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\ProjectCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\RefreshCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\TreeNodeCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\CommandInterfaces\UpdateCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\GlueCommands.cs" />
-    <Compile Include="Plugins\ExportedImplementations\GlueState.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IGenerateCodeCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IGluxCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IOpenCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IProjectCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IRefreshCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\ITreeNodeCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\CommandInterfaces\IUpdateCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\IGlueCommands.cs" />
-    <Compile Include="Plugins\ExportedInterfaces\IGlueState.cs" />
-    <Compile Include="Plugins\Interfaces\ICodeGeneratorPlugin.cs" />
-    <Compile Include="Plugins\Interfaces\ILeftTab.cs" />
-    <Compile Include="Plugins\Interfaces\IBottomTab.cs" />
-    <Compile Include="Plugins\Interfaces\IPropertyChange.cs" />
-    <Compile Include="Plugins\Interfaces\IRightTab.cs" />
-    <Compile Include="Plugins\Interfaces\ICenterTab.cs" />
-    <Compile Include="Plugins\Interfaces\ICurrentElement.cs" />
-    <Compile Include="Plugins\Interfaces\IGluxLoad.cs" />
-    <Compile Include="Plugins\Interfaces\IMenuStripPlugin.cs" />
-    <Compile Include="Plugins\Interfaces\INewFile.cs" />
-    <Compile Include="Plugins\Interfaces\IPropertyGridRightClick.cs" />
-    <Compile Include="Plugins\Interfaces\IStateChange.cs" />
-    <Compile Include="Plugins\Interfaces\ITopTab.cs" />
-    <Compile Include="Plugins\Interfaces\ITreeItemSelect.cs" />
-    <Compile Include="Plugins\Interfaces\ITreeViewRightClick.cs" />
-    <Compile Include="Plugins\PluginManager.cs" />
-    <Compile Include="ProcessManager.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="ProjectManager.cs" />
-    <Compile Include="Projects\NewProjectHelper.cs" />
-    <Compile Include="Reflection\ExposedEventManager.cs" />
-    <Compile Include="Reflection\ExposedVariableManager.cs" />
-    <Compile Include="Resources\EventCode\EventTemplate.cs" />
-    <None Include="Plugins\Readme.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Resource Include="Content\Icons\CanInterpolate.bmp" />
-    <Resource Include="Content\Icons\CantInterpolate.bmp" />
-    <Resource Include="Content\Icons\NeedsInterpolateVariable.bmp" />
-    <None Include="Content\FilesForAddNewFile\SampleSound.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\FilesForAddNewFile\Bear.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\FilesForAddNewFile\IGB3Song.mp3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\FilesForAddNewFile\EmptyXml.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Include="Content\Icons\code.png" />
-    <Content Include="Content\Icons\copyIcon.png" />
-    <Content Include="Content\Icons\entity.png" />
-    <Content Include="Content\Icons\file.png" />
-    <None Include="Content\Icons\IncreaseArea.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Include="Content\Icons\master_code.png" />
-    <Content Include="Content\Icons\master_entity.png" />
-    <Content Include="Content\Icons\master_file.png" />
-    <Content Include="Content\Icons\master_object.png" />
-    <Content Include="Content\Icons\master_screen.png" />
-    <Content Include="Content\Icons\object.png" />
-    <Content Include="Content\Icons\screen.png" />
-    <None Include="Content\Icons\StretchArea.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Include="Libraries\ICSharpCode.NRefactory.CSharp.dll" />
-    <Content Include="Libraries\ICSharpCode.NRefactory.CSharp.xml" />
-    <Content Include="Libraries\ICSharpCode.NRefactory.dll" />
-    <Content Include="Libraries\ICSharpCode.NRefactory.xml" />
-    <Content Include="Libraries\Ionic.Zip.dll" />
-    <Content Include="Libraries\Ionic.Zlib.dll" />
-    <Content Include="Plugins\FRBDKUpdater\FRBDKUpdater.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
-    <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\XamarinIcon.png" />
-    <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
-    <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\Error.png" />
-    <Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraIcon.png" />
-    <Resource Include="Plugins\EmbeddedPlugins\UnreferencedFiles\Icons\RefreshIcon.png" />
-    <Content Include="Plugins\FRBDKUpdater\FlatRedBall.Tools.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Plugins\FRBDKUpdater\HowDidTheseGetHere.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\IWindowCode\IWindowTemplate.txt" />
-    <Compile Include="Resources\PoolList.cs" />
-    <Compile Include="Resources\Resource1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource1.resx</DependentUpon>
-    </Compile>
-    <Compile Include="SaveClasses\Helpers\CustomVariableHelper.cs" />
-    <Compile Include="SaveClasses\NamedObjectSaveHelper.cs" />
-    <Compile Include="SaveClasses\CustomFunction.cs" />
-    <Compile Include="SaveClasses\IElementHelper.cs" />
-    <Compile Include="Settings\GlueLayoutSettings.cs" />
-    <Compile Include="Settings\PreferenceSettings.cs" />
-    <Compile Include="..\..\NewProjectCreator\NewProjectCreator\Remote\RemoteFileManager.cs">
-      <Link>Utilities\RemoteFileManager.cs</Link>
-    </Compile>
-    <Compile Include="StandardTypes\PromptHandleEnum.cs" />
-    <Compile Include="Translation\TranslationHelpers.cs" />
-    <Compile Include="TypeConversions\CustomTypeConverter.cs" />
-    <Compile Include="TypeConversions\TypeConverterHelper.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Controls\AboutBox1.resx">
-      <DependentUpon>AboutBox1.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\AddVariableWindow.resx">
-      <DependentUpon>AddVariableWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\AutoLayoutForm.resx">
-      <DependentUpon>AutoLayoutForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSettingsWindow.resx">
-      <DependentUpon>CameraSettingsWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\CharacterListCreationWindow.resx">
-      <DependentUpon>CharacterListCreationWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\AddEventWindow.resx">
-      <DependentUpon>AddEventWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\ComboBoxMessageBox.resx">
-      <DependentUpon>ComboBoxMessageBox.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\GroupExportForm.resx">
-      <DependentUpon>GroupExportForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\ProjectSpecificFileCollectionEditorForm.resx">
-      <DependentUpon>ProjectSpecificFileCollectionEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\UninstallPluginWindow.resx">
-      <DependentUpon>UninstallPluginWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\CreatePluginWindow.resx">
-      <DependentUpon>CreatePluginWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\InstallPluginWindow.resx">
-      <DependentUpon>InstallPluginWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\ListBoxWindow.resx">
-      <DependentUpon>ListBoxWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\ProcessesWindow.resx">
-      <DependentUpon>ProcessesWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PreferencesWindow.resx">
-      <DependentUpon>PreferencesWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CreatedClass\CustomClassWindow.resx">
-      <DependentUpon>CustomClassWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\CustomizableMessageBox.resx">
-      <DependentUpon>CustomizableMessageBox.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\ElementReferenceListWindow.resx">
-      <DependentUpon>ElementReferenceListWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\FileAssociationWindow.resx">
-      <DependentUpon>FileAssociationWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\FileBuildToolAssociationWindow.resx">
-      <DependentUpon>FileBuildToolAssociationWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\InitializationWindow.resx">
-      <DependentUpon>InitializationWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\MultiButtonMessageBox.resx">
-      <DependentUpon>MultiButtonMessageBox.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\NewFileWindow.resx">
-      <DependentUpon>NewFileWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\OptionSelectionWindow.resx">
-      <DependentUpon>OptionSelectionWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PerformanceSettingsWindow.resx">
-      <DependentUpon>PerformanceSettingsWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PluginsWindow.resx">
-      <DependentUpon>PluginsWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\ReferencedFileFlatListWindow.resx">
-      <DependentUpon>ReferencedFileFlatListWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\TextInputWindow.resx">
-      <DependentUpon>TextInputWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\VariablesToResetWindow.resx">
-      <DependentUpon>VariablesToResetWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainGlueWindow.resx">
-      <DependentUpon>MainGlueWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Plugins\EmbeddedPlugins\OutputWindow.resx">
-      <DependentUpon>OutputWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Resource1.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Include="Content\ContentTypes.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <None Include="Resources\CameraSetupTemplate.cs" />
-    <Compile Include="SaveClasses\FileAssociationsSave.cs" />
-    <Compile Include="SaveClasses\GlueSettingsSave.cs" />
-    <Compile Include="SaveClasses\NameVerifier.cs" />
-    <Compile Include="Settings\FileAssociationSettings.cs" />
-    <Compile Include="Utilities\ListHelper.cs" />
-    <Compile Include="VSHelpers\ProjectSyncer.cs" />
-    <Compile Include="VSHelpers\Projects\VisualStudioProject.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Glue.ico" />
-    <None Include="Resources\broadcastFRB.gif" />
-    <None Include="Resources\broadcast1.png" />
-    <None Include="Resources\redball.BMP" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Clamp\" />
-    <Folder Include="Content\Csvs\" />
-    <Folder Include="Interfaces\" />
-    <Folder Include="Libraries\MonoGame\" />
-    <Folder Include="Libraries\MSBuild\" />
-    <Folder Include="Output\" />
-    <Folder Include="Plugins\EmbeddedPlugins\Spline\" />
-    <Folder Include="Plugins\EmbeddedPlugins\TaskOutput\" />
-    <Folder Include="Plugins\Rss\" />
-    <Folder Include="ProjectSync\" />
-    <Folder Include="Reflection\PropertyGridDisplayers\" />
-    <Folder Include="Resources\TreeView\" />
-    <Folder Include="Tools\" />
-    <Folder Include="Translation\Data\" />
-    <Folder Include="Wcf\" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Gum\InputLibrary\InputLibrary.csproj">
-      <Project>{938d9a00-8529-4ce8-9077-e0a3994a73ea}</Project>
-      <Name>InputLibrary</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Gum\RenderingLibrary\RenderingLibrary.csproj">
-      <Project>{a86ee399-7c93-42e1-80ed-ca4cbf4ca573}</Project>
-      <Name>RenderingLibrary</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilities.csproj">
-      <Project>{b941a93f-6093-4dc6-ad11-91a058b6c2cc}</Project>
-      <Name>ToolsUtilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj">
-      <Project>{47241002-7eb5-433b-b931-a530bb6b84ee}</Project>
-      <Name>WpfDataUi</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Gum\XnaAndWinforms\XnaAndWinforms.csproj">
-      <Project>{c39a973c-66d6-4a6c-82b5-ae0042f210f8}</Project>
-      <Name>XnaAndWinforms</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj">
-      <Project>{26dd17aa-55ae-46ab-9394-a2319728869a}</Project>
-      <Name>FlatRedBallStandard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\FlatRedBall.SpecializedXnaControls\FlatRedBall.SpecializedXnaControls.csproj">
-      <Project>{8c80ba7b-1cba-4579-9382-d9dc6c365070}</Project>
-      <Name>FlatRedBall.SpecializedXnaControls</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\FRBDK Supporting Projects\EditorObjects\EditorObjectsXna4.csproj">
-      <Project>{e1d670b6-ad42-4b84-aff8-d568097be03d}</Project>
-      <Name>EditorObjectsXna4</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GlueView\GlueView\InteractiveInterface\InteractiveInterface.csproj">
-      <Project>{82FE0346-E86B-46DE-BA29-93626D89C621}</Project>
-      <Name>InteractiveInterface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GlueView\GlueView\RemotingHelper\RemotingHelper.csproj">
-      <Project>{95630012-D69D-4410-ADC9-A08CDA88F10C}</Project>
-      <Name>RemotingHelper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GlueView\GlueView\SelectionInterface\SelectionInterface.csproj">
-      <Project>{b85cc176-2137-4a85-91ba-ce9d703bba00}</Project>
-      <Name>SelectionInterface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj">
-      <Project>{2C289A72-D6BD-4358-AFBC-B71F9D31B01E}</Project>
-      <Name>FlatRedBall.Plugin</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj">
-      <Project>{5FE94178-9907-4878-AFAC-8F347CA86B50}</Project>
-      <Name>FlatRedBall.PropertyGrid</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GlueCommon\GlueCommon.csproj">
-      <Project>{9403b27a-6e3a-4083-8a42-0eb62b699246}</Project>
-      <Name>GlueCommon</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GlueSaveClasses\GlueSaveClasses.csproj">
-      <Project>{545FF183-4D9D-4121-9A04-1D354B0B0DBA}</Project>
-      <Name>GlueSaveClasses</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GlueWcfServices\GlueWcfServices.csproj">
-      <Project>{575cdeaf-1ec5-4427-bd8e-60e773cd1511}</Project>
-      <Name>GlueWcfServices</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WpfApplication1\GlueControls.csproj">
-      <Project>{a80d41ed-35d6-4fd8-83f3-7647a803f583}</Project>
-      <Name>GlueControls</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Controls\AddEntityWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\AddExistingFileWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\CustomizableNewFileWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\CustomizableTextInputWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\MultiButtonMessageBoxWpf.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\AddVariablePlugin\Controls\CreateNewVariableControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\ToolbarControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="GlueView\GlueViewToolbar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraSettingsControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraToolbar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\CsprojReferenceSharer\ManualReferenceCopier.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\ManagePlugins\GlueVaultBrowser.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\ManagePlugins\PluginView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\ProjectExclusionPlugin\ExclusionControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\SyncedProjects\Controls\ToolbarControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\SyncedProjects\GeneralErrorControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\SyncedProjects\OrphanedItemsControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\SyncedProjects\ProjectListEntry.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\SyncedProjects\ProjectReferencesWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\CsprojReferenceSharer\ReferenceCopierControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\SyncedProjects\SyncedProjectsControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\TaskDisplayer\TaskDisplayerControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="CompareNETObjects">
-      <Version>4.63.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Build">
-      <Version>16.0.461</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Build.Utilities.Core">
-      <Version>16.0.461</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Setup.Configuration.Interop">
-      <Version>1.16.30</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="MonoGame.Framework.DesktopGL.Core">
-      <Version>3.8.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.2</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
+		<UseWPF>true</UseWPF>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<Platforms>AnyCPU</Platforms>
+		<Version>2022.06.27.675</Version>
+		<ApplicationIcon>Frb.ico</ApplicationIcon>
+		<RootNamespace>FlatRedBall.Glue</RootNamespace>
+		<LangVersion>10.0</LangVersion>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <BaseOutputPath></BaseOutputPath>
+    <AssemblyName>GlueFormsCore</AssemblyName> 
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<DefineConstants>TRACE;GLUE</DefineConstants>
+		<OutputPath></OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DefineConstants>TRACE;GLUE</DefineConstants>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<Compile Remove="GlueView\**" />
+		<Compile Remove="Libraries\MSBuild\**" />
+		<Compile Remove="Tools\MSBuild\**" />
+		<EmbeddedResource Remove="GlueView\**" />
+		<EmbeddedResource Remove="Libraries\MSBuild\**" />
+		<EmbeddedResource Remove="Tools\MSBuild\**" />
+		<None Remove="GlueView\**" />
+		<None Remove="Libraries\MSBuild\**" />
+		<None Remove="Tools\MSBuild\**" />
+		<Page Remove="GlueView\**" />
+		<Page Remove="Libraries\MSBuild\**" />
+		<Page Remove="Tools\MSBuild\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="Events\EventResponseSave.cs" />
+		<Compile Remove="Events\EventSave.cs" />
+		<Compile Remove="Events\IEventContainer.cs" />
+		<Compile Remove="FormHelpers\ParameterPropertyDescriptor.cs" />
+		<Compile Remove="IO\FilePath.cs" />
+		<Compile Remove="Plugins\AvailableMessages.cs" />
+		<Compile Remove="Plugins\EmbeddedPlugins\SyncedProjects\Controls\ToolbarControl.cs" />
+		<Compile Remove="Plugins\ExportedImplementations\CommandInterfaces\GlueViewCommands.cs" />
+		<Compile Remove="Plugins\GlueCommands.cs" />
+		<Compile Remove="Plugins\GlueState.cs" />
+		<Compile Remove="Plugins\IGluePlugin.cs" />
+		<Compile Remove="Plugins\IGlueState.cs" />
+		<Compile Remove="Plugins\ITreeViewPlugin.cs" />
+		<Compile Remove="Resources\CameraSetupTemplate.cs" />
+		<Compile Remove="Resources\IEntityFactory.cs" />
+		<Compile Remove="Resources\PoolList.cs" />
+		<Compile Remove="SaveClasses\CustomClassSave.cs" />
+		<Compile Remove="SaveClasses\CustomVariable.cs" />
+		<Compile Remove="SaveClasses\CustomVariableInNamedObject.cs" />
+		<Compile Remove="SaveClasses\EntitySave.cs" />
+		<Compile Remove="SaveClasses\GlobalContentSettingsSave.cs" />
+		<Compile Remove="SaveClasses\GlueProjectSave.cs" />
+		<Compile Remove="SaveClasses\IElement.cs" />
+		<Compile Remove="SaveClasses\IFileReferencer.cs" />
+		<Compile Remove="SaveClasses\INamedObjectContainer.cs" />
+		<Compile Remove="SaveClasses\NamedObjectPropertyOverride.cs" />
+		<Compile Remove="SaveClasses\NamedObjectSave.cs" />
+		<Compile Remove="SaveClasses\PerformanceSettingsSave.cs" />
+		<Compile Remove="SaveClasses\PropertySave.cs" />
+		<Compile Remove="SaveClasses\ReferencedFileSave.cs" />
+		<Compile Remove="SaveClasses\ScreenSave.cs" />
+		<Compile Remove="SaveClasses\StateSave.cs" />
+		<Compile Remove="SaveClasses\StateSaveCategory.cs" />
+		<Compile Remove="SaveClasses\TranslatedFileSave.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Content\Icons\CanInterpolate.bmp" />
+		<None Remove="Content\Icons\CantInterpolate.bmp" />
+		<None Remove="Content\Icons\code.png" />
+		<None Remove="Content\Icons\collisionRelationshipList.png" />
+		<None Remove="Content\Icons\copyIcon.png" />
+		<None Remove="Content\Icons\Delete.png" />
+		<None Remove="Content\Icons\edit_code.png" />
+		<None Remove="Content\Icons\entity.png" />
+		<None Remove="Content\Icons\file.png" />
+		<None Remove="Content\Icons\folder.png" />
+		<None Remove="Content\Icons\GlueIcon.png" />
+		<None Remove="Content\Icons\icon_collisions.png" />
+		<None Remove="Content\Icons\icon_entity.png" />
+		<None Remove="Content\Icons\icon_entity_derived.png" />
+		<None Remove="Content\Icons\icon_folder.png" />
+		<None Remove="Content\Icons\icon_screen.png" />
+		<None Remove="Content\Icons\IncreaseArea.Agif" />
+		<None Remove="Content\Icons\IncreaseArea.gif" />
+		<None Remove="Content\Icons\IncreaseAreaGum.gif" />
+		<None Remove="Content\Icons\layerList.png" />
+		<None Remove="Content\Icons\master_code.png" />
+		<None Remove="Content\Icons\master_entity.png" />
+		<None Remove="Content\Icons\master_file.png" />
+		<None Remove="Content\Icons\master_object.png" />
+		<None Remove="Content\Icons\master_screen.png" />
+		<None Remove="Content\Icons\master_states.png" />
+		<None Remove="Content\Icons\master_variables.png" />
+		<None Remove="Content\Icons\NeedsInterpolateVariable.bmp" />
+		<None Remove="Content\Icons\object.png" />
+		<None Remove="Content\Icons\SaveIcon.png" />
+		<None Remove="Content\Icons\screen.png" />
+		<None Remove="Content\Icons\StarFilled.png" />
+		<None Remove="Content\Icons\StarOutline.png" />
+		<None Remove="Content\Icons\states.png" />
+		<None Remove="Content\Icons\StretchArea.agif" />
+		<None Remove="Content\Icons\StretchArea.gif" />
+		<None Remove="Content\Icons\StretchAreaGum.gif" />
+		<None Remove="Content\Icons\transparent.png" />
+		<None Remove="Content\Icons\variable.png" />
+		<None Remove="Content\logo-512.png" />
+		<None Remove="Plugins\EmbeddedPlugins\CameraPlugin\CameraIcon.png" />
+		<None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\2DIcon.png" />
+		<None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\3DIcon.png" />
+		<None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\LinearFilter.png" />
+		<None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\PointFilter.png" />
+		<None Remove="Plugins\EmbeddedPlugins\OutputPlugin\DeleteOutput.png" />
+		<None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\Error.png" />
+		<None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
+		<None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
+		<None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\XamarinIcon.png" />
+		<None Remove="Plugins\EmbeddedPlugins\UnreferencedFiles\Icons\RefreshIcon.png" />
+		<None Remove="Resources\Icons\MoveTabs\BottomTab.png" />
+		<None Remove="Resources\Icons\MoveTabs\CenterTab.png" />
+		<None Remove="Resources\Icons\MoveTabs\LeftTab.png" />
+		<None Remove="Resources\Icons\MoveTabs\RightTab.png" />
+		<None Remove="Resources\Icons\MoveTabs\TopTab.png" />
+		<None Remove="Resources\test.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="..\..\..\Content\Icon.png" Link="Content\Icons\Icon.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\Gum\GumCommon\GumCommon.csproj" />
+		<ProjectReference Include="..\..\..\..\Gum\GumDataTypes\GumDataTypesNet6.csproj" />
+		<ProjectReference Include="..\..\..\..\Gum\SkiaGum.Wpf.NetCore3_0\SkiaGum.Wpf.Net6.csproj" />
+		<ProjectReference Include="..\..\..\..\Gum\SkiaGumMonogame\SkiaGumMonogame.csproj" />
+		<ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
+		<ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
+		<ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+		<ProjectReference Include="..\..\..\Tiled\TMXGlueLib\TMXGlueLib.csproj" />
+		<ProjectReference Include="..\..\FRBDKUpdater\UpdaterWpf\UpdaterWpf\UpdaterWpf.csproj" />
+		<ProjectReference Include="..\..\Localization\Localization.csproj" />
+		<ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.Plugin.csproj" />
+		<ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
+		<ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
+		<ProjectReference Include="..\NpcWpfLib\NpcWpfLib.csproj" />
+		<ProjectReference Include="..\StateInterpolationPlugin\StateInterpolationNet6\StateInterpolationNet6.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Microsoft\XNA Game Studio\v4.0\" />
+		<Folder Include="MonoGame\v3.0\" />
+		<Folder Include="Tools\" />
+		<Folder Include="ViewModels\Interface\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AsepriteDotNet" Version="1.8.1" />
+		<PackageReference Include="CompareNETObjects" Version="4.72.0" />
+		<PackageReference Include="DotNetZip" Version="1.16.0" />
+		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />
+		<PackageReference Include="JsonDiffPatch.Net" Version="2.3.0" />
+		<PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
+		
+		<PackageReference Include="Microsoft.Build" Version="17.3.1">
+			<!--<ExcludeAssets>runtime</ExcludeAssets>-->
+		</PackageReference>
+		
+		<PackageReference Include="Microsoft.Build.Framework" Version="17.3.1" />
+
+		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.3.1">
+			<!--<ExcludeAssets>runtime</ExcludeAssets>-->
+		</PackageReference>
+
+		<PackageReference Include="Mono.Cecil" Version="0.11.5" />
+
+		<PackageReference Include="NAudio" Version="2.1.0" />
+		<PackageReference Include="NAudio.Core" Version="2.1.0" />
+		<PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
+		
+		<!--<PackageReference Include="Microsoft.Build.Locator" Version="1.5.5" />-->
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+		<PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
+		<PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
+		<PackageReference Include="ParallelExtensionsExtras.CrossPlatform" Version="1.0.0" />
+		<PackageReference Include="PixiEditor.ColorPicker" Version="3.4.1" />
+		<PackageReference Include="PropertyTools.Wpf" Version="3.1.0" />
+		<PackageReference Include="SharpSerializer" Version="3.0.1" />
+		<PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
+		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+		<PackageReference Include="System.Runtime" Version="4.3.1" />
+		<PackageReference Include="System.ServiceModel.Primitives" Version="4.10.0" />
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Content\Icons\CanInterpolate.bmp" />
+		<Resource Include="Content\Icons\CantInterpolate.bmp" />
+		<Resource Include="Content\Icons\code.png" />
+		<Resource Include="Content\Icons\collisionRelationshipList.png" />
+		<Resource Include="Content\Icons\copyIcon.png" />
+		<Resource Include="Content\Icons\Delete.png" />
+		<Resource Include="Content\Icons\edit_code.png" />
+		<Resource Include="Content\Icons\entity.png" />
+		<Resource Include="Content\Icons\file.png" />
+		<Resource Include="Content\Icons\folder.png" />
+		<Resource Include="Content\Icons\GlueIcon.png" />
+		<Resource Include="Content\Icons\icon_collisions.png" />
+		<Resource Include="Content\Icons\icon_entity.png" />
+		<Resource Include="Content\Icons\icon_entity_derived.png" />
+		<Resource Include="Content\Icons\icon_folder.png" />
+		<Resource Include="Content\Icons\icon_screen.png" />
+		<Resource Include="Content\Icons\SaveIcon.png" />
+		<EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseArea.Agif">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseArea.gif">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseAreaGum.gif">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<Resource Include="Content\Icons\layerList.png" />
+		<Resource Include="Content\Icons\master_code.png" />
+		<Resource Include="Content\Icons\master_entity.png" />
+		<Resource Include="Content\Icons\master_file.png" />
+		<Resource Include="Content\Icons\master_object.png" />
+		<Resource Include="Content\Icons\master_screen.png" />
+		<Resource Include="Content\Icons\master_states.png" />
+		<Resource Include="Content\Icons\master_variables.png" />
+		<Resource Include="Content\Icons\NeedsInterpolateVariable.bmp" />
+		<Resource Include="Content\Icons\object.png" />
+		<Resource Include="Content\Icons\screen.png" />
+		<Resource Include="Content\Icons\StarFilled.png" />
+		<Resource Include="Content\Icons\StarOutline.png" />
+		<Resource Include="Content\Icons\states.png" />
+		<EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\StretchArea.agif">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\StretchArea.gif">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\StretchAreaGum.gif">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<Resource Include="Content\Icons\transparent.png" />
+		<Resource Include="Content\Icons\variable.png" />
+		<Resource Include="Content\logo-512.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\CameraIcon.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\Icons\2DIcon.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\Icons\3DIcon.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\Icons\LinearFilter.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\Icons\PointFilter.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\OutputPlugin\DeleteOutput.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\Error.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\XamarinIcon.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\UnreferencedFiles\Icons\RefreshIcon.png" />
+		<Resource Include="Resources\CameraSetupTemplate.cs" />
+		<Resource Include="Resources\Icons\MoveTabs\BottomTab.png" />
+		<Resource Include="Resources\Icons\MoveTabs\CenterTab.png" />
+		<Resource Include="Resources\Icons\MoveTabs\LeftTab.png" />
+		<Resource Include="Resources\Icons\MoveTabs\RightTab.png" />
+		<Resource Include="Resources\Icons\MoveTabs\TopTab.png" />
+		<Resource Include="Resources\test.png" />
+		<EmbeddedResource Include="Resources\IEntityFactory.cs">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resources\PoolList.cs">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<Compile Update="Resources\Resource1.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resource1.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Resources\Resource1.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Content\BuiltInEvents.csv">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Content\ContentTypes.csv">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Content\FilesForAddNewFile\ArialFont.bmfc">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Content\FilesForAddNewFile\Bear.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Content\FilesForAddNewFile\EmptyXml.xml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Content\FilesForAddNewFile\IGB3Song.mp3">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Content\FilesForAddNewFile\OpenOfficeSpreadsheet.ods">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Content\FilesForAddNewFile\ResistanceRises.ogg">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Content\FilesForAddNewFile\SampleSound.wav">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Libraries\BMFont\bmfont.exe">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft.Common.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft.CSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft.NETFramework.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft.NETFramework.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.AvailablePlatforms.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Common.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Content.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.ContentPipeline.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.CSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.VisualBasic.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Windows.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Xbox 360.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="MonoGame.Build.Tasks.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="MonoGame.Common.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="MonoGame.Content.Builder.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="MonoGame\v3.0\MonoGame.Content.Builder.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Analysis.Compatibility.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Analysis.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Analysis.Tasks.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Analysis.Tasks.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Aapt.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Aapt2.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Analysis.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Application.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.AvailableItems.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Bindings.After.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Bindings.Before.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Bindings.ClassParse.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Bindings.Core.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Bindings.Documentation.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Bindings.JarToXml.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Bindings.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Build.Debugging.Tasks.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Build.Debugging.Tasks.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Build.Tasks.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Build.Tasks.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.BuildInfo.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Cecil.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Cecil.Mdb.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Cecil.Mdb.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Cecil.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Common.After.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Common.Before.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Common.Debugging.props">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Common.Debugging.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Common.props">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Common.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.CSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.D8.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.DefaultOutputPaths.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Designer.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.DesignTime.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.DX.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.EmbeddedResource.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.FSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Javac.targets">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Legacy.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.PCLSupport.props">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.PCLSupport.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.SkipCases.projitems">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tooling.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.Aidl.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.Aidl.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.AndroidSdk.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.AndroidSdk.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.AnnotationSupport.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.AnnotationSupport.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.ApiXmlAdjuster.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.ApiXmlAdjuster.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.Bytecode.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.Bytecode.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.JavadocImporter.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.JavadocImporter.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.Versions.props">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.VisualBasic.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Wear.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Installer.Common.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.Analysis.Compatibility.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.Analysis.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.ImplicitFacade.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.Analysis.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.AppExtension.Common.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.AppExtension.Common.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.AppExtension.CSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.AppExtension.FSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.Common.After.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.Common.After.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.Common.Before.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.Common.Before.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.Common.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.Common.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.CSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.FSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.HotRestart.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.HotRestart.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.Local.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.Local.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.Common.After.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.Common.After.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.Common.Before.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.Common.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.Common.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.After.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.After.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.WatchApp.Common.After.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.WatchApp.Common.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.WatchApp.Common.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.WatchApp.CSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.Windows.After.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.Windows.Before.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.iOS.Windows.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.MacCatalyst.Common.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.MacCatalyst.CSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.MacCatalyst.FSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.MacCatalyst.ObjCBinding.CSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.Messaging.Apple.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.Messaging.Build.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.MonoTouch.FSharp.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.Shared.ObjCBinding.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.Shared.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.Shared.Stubs.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\iOS\Xamarin.Shared.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Tools\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Tools\MSBuild**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+
+
+
+	</ItemGroup>
+
+	<ItemGroup>
+		<Page Update="Controls\ActivitySpinner.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
+	</ItemGroup>
+
+
+
 </Project>

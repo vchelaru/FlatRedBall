@@ -16,7 +16,7 @@ namespace FlatRedBall
     /// </summary>
     /// <remarks>
     /// The PositionedObject is a common object in FlatRedBall.  It is the root class
-    /// for a number of FlatRedBall classes including Sprites, Texts, SpriteFrames, PositionedModels,
+    /// for a number of FlatRedBall classes including Sprites, Texts, SpriteFrames,
     /// and all Shapes.
     /// <para>
     /// The PositionedObject class is also used as the base class for Glue entities.

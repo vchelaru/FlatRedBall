@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
 
-namespace OfficialPluginsCore.Wizard.ViewModels
+namespace OfficialPlugins.Wizard.ViewModels
 {
     public class TaskItemViewModel : ViewModel
     {

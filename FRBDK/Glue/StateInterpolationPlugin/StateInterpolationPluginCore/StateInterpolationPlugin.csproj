@@ -19,12 +19,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
-    <ProjectReference Include="..\..\Glue\GlueFormsCore.csproj" />
+    <ProjectReference Include="..\..\Glue\Glue.csproj" />
     <ProjectReference Include="..\StateInterpolationNet6\StateInterpolationNet6.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\StateInterpolationPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\StateInterpolationPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\StateInterpolationPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\StateInterpolationPluginCore.pdb&quot;&#xD;&#xA;" />
+    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\StateInterpolationPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\StateInterpolationPlugin.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\StateInterpolationPlugin.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\StateInterpolationPlugin\StateInterpolationPlugin.pdb&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

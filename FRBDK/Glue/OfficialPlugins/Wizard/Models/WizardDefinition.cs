@@ -2,8 +2,8 @@
 using Newtonsoft.Json;
 using OfficialPlugins.Wizard.Managers;
 using OfficialPlugins.Wizard.Views;
-using OfficialPluginsCore.Wizard.ViewModels;
-using OfficialPluginsCore.Wizard.Views;
+using OfficialPlugins.Wizard.ViewModels;
+using OfficialPlugins.Wizard.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using ToolsUtilities;
 
-namespace OfficialPluginsCore.Wizard.Models
+namespace OfficialPlugins.Wizard.Models
 {
     class WizardFormsDefinition
     {

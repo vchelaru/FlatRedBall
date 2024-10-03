@@ -7,8 +7,8 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.PlatformerPlugin.ViewModels;
 using Newtonsoft.Json;
-using PlatformerPluginCore.SaveClasses;
-using PlatformerPluginCore.ViewModels;
+using PlatformerPlugin.SaveClasses;
+using PlatformerPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,7 +20,7 @@ using WpfDataUi;
 using WpfDataUi.Controls;
 using WpfDataUi.DataTypes;
 
-namespace PlatformerPluginCore.Controllers;
+namespace PlatformerPlugin.Controllers;
 
 public static class AnimationController
 {

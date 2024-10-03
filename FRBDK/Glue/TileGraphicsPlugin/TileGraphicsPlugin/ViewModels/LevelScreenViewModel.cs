@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 
-namespace TiledPluginCore.ViewModels
+namespace TiledPlugin.ViewModels
 {
     public class LevelScreenViewModel : PropertyListContainerViewModel
     {

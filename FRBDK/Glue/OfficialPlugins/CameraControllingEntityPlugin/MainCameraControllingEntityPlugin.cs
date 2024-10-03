@@ -9,7 +9,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 
-namespace OfficialPluginsCore.CameraControllingEntityPlugin
+namespace OfficialPlugins.CameraControllingEntityPlugin
 {
     [Export(typeof(PluginBase))]
     public class MainCameraControllingEntityPlugin : PluginBase

@@ -1,10 +1,10 @@
-﻿using PlatformerPluginCore.Controllers;
-using PlatformerPluginCore.ViewModels;
+﻿using PlatformerPlugin.Controllers;
+using PlatformerPlugin.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace PlatformerPluginCore.Views
+namespace PlatformerPlugin.Views
 {
     /// <summary>
     /// Interaction logic for AnimationRow.xaml

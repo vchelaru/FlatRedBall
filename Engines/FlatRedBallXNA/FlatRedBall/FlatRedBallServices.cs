@@ -132,10 +132,6 @@ namespace FlatRedBall
 
         static int? mPrimaryThreadId = null;
 
-#if !MONOGAME && !FNA
-        static System.Windows.Forms.Control mOwner;
-#endif
-
         static internal Dictionary<string, FlatRedBall.Content.ContentManager> mContentManagers; // keep this null, it's used by Initialization to know if the engine needs pre-initialization
         static List<FlatRedBall.Content.ContentManager> mContentManagersWaitingToBeDestroyed = new List<Content.ContentManager>();
         static Game mGame = null;
@@ -214,12 +210,6 @@ namespace FlatRedBall
             }
         }
 
-#if !MONOGAME && !FNA
-        public static System.Windows.Forms.Control Owner
-        {
-            get { return mOwner; }
-        }
-#endif
         public static Game Game
         {
             get
@@ -313,17 +303,7 @@ namespace FlatRedBall
                 }
                 else
                 {
-#if MONOGAME || FNA
                     throw new NotSupportedException("Game required on the this platform");
-#else
-                    System.Windows.Forms.Control window = System.Windows.Forms.Form.FromHandle(mWindowHandle);
-                    mClientHeight = window.Height;
-                    mClientWidth = window.Width;
-#endif
-                    foreach (Camera camera in SpriteManager.Cameras)
-                    {
-                        camera.UpdateOnResize();
-                    }
                 }
 
 
@@ -559,17 +539,6 @@ namespace FlatRedBall
             // use one of them.
 
 #if WINDOWS && !STANDARD
-            mOwner =
-                System.Windows.Forms.Form.FromHandle(mWindowHandle);
-
-
-            mOwner.MinimumSize = new System.Drawing.Size(mOwner.MinimumSize.Width, 35);
-
-            mOwner.GotFocus += new EventHandler(mOwner_GotFocus);
-
-#endif
-
-#if WINDOWS && !STANDARD
 
             mOwner.Resize += new EventHandler(Window_ClientSizeChanged);
 #else
@@ -662,10 +631,6 @@ namespace FlatRedBall
 
             graphics.DeviceReset += new EventHandler<EventArgs>(graphics_DeviceReset);
 
-#if !MONOGAME && !FNA
-            System.Windows.Forms.Form.FromHandle(mWindowHandle).Resize += new EventHandler(Window_ClientSizeChanged);
-
-#endif
             CommonInitialize(graphics);
         }
 

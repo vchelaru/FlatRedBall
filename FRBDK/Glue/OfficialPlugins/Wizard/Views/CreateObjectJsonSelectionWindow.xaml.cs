@@ -1,7 +1,7 @@
-﻿using OfficialPluginsCore.Wizard.ViewModels;
+﻿using OfficialPlugins.Wizard.ViewModels;
 using System.Windows;
 
-namespace OfficialPluginsCore.Wizard.Views
+namespace OfficialPlugins.Wizard.Views
 {
     /// <summary>
     /// Interaction logic for CreateObjectJsonSelectionWindow.xaml

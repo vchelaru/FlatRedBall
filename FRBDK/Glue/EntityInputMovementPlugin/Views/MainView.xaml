@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
-             xmlns:TopDownViews="clr-namespace:TopDownPlugin.Views;assembly=TopDownPluginCore"
-             xmlns:PlatformerViews="clr-namespace:FlatRedBall.PlatformerPlugin.Views;assembly=PlatformerPluginCore"
+             xmlns:TopDownViews="clr-namespace:TopDownPlugin.Views;assembly=TopDownPlugin"
+             xmlns:PlatformerViews="clr-namespace:FlatRedBall.PlatformerPlugin.Views;assembly=PlatformerPlugin"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>

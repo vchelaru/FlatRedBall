@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 
-namespace TiledPluginCore.ViewModels
+namespace TiledPlugin.ViewModels
 {
     #region Enums
 

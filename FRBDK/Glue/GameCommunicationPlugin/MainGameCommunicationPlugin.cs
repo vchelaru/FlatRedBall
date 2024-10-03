@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 using GameCommunicationPlugin.CodeGeneration;
 using ToolsUtilities;
 using GameCommunicationPlugin.GlueControl.ViewModels;
-using OfficialPluginsCore.Compiler.CommandReceiving;
+using OfficialPlugins.Compiler.CommandReceiving;
 using System.Collections.Generic;
 using GameCommunicationPlugin.GlueControl;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;

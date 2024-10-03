@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TileGraphicsPlugin.ViewModels;
 
-namespace TiledPluginCore.Errors
+namespace TiledPlugin.Errors
 {
     internal class TileShapeCollectionMapShapeCollectionNameMismatchViewModel : ErrorViewModel
     {

@@ -15,7 +15,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace TiledPluginCore.Controls
+namespace TiledPlugin.Controls
 {
     #region TmxReferenceViewModel Class
     public class TmxReferenceViewModel : ViewModel
