@@ -18,6 +18,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
 {
     #region FactoryElementGeneratorEarly
 
+
     public class FactoryElementGeneratorEarly : ElementComponentCodeGenerator
     {
         public override CodeLocation CodeLocation
@@ -53,6 +54,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
 
     #endregion
 
+    /// <summary>
+    /// Class responsible for creating code in an element to support interacting with its own factory.
+    /// </summary>
     public class FactoryElementCodeGenerator : ElementComponentCodeGenerator
     {
         static bool IsAbstract(IElement element) => element.AllNamedObjects.Any(item => item.SetByDerived);

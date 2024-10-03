@@ -1477,16 +1477,25 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if (memberInfo == null)
                     {
-                        GlueGui.ShowMessageBox("Error generating code for " + namedObjectSave.ToString() + ":\n" +
-                            "Could not find variable " + variableToReset + " in " + namedObjectSave.SourceClassType+ "\n" +
-                            "See the output window for more info");
-
                         var stringBuilder = new StringBuilder();
-                        stringBuilder.AppendLine("Error generating code for " + namedObjectSave.ToString() + " because the AssetTypeInfo could not be found. The following asset type infos are used:");
+                        stringBuilder.AppendLine("Error generating code for " + namedObjectSave.ToString());
 
-                        foreach(var existingAti in AvailableAssetTypes.Self.AllAssetTypes.OrderBy(item => item.FriendlyName))
+                        if(ati == null)
                         {
-                            stringBuilder.AppendLine($"{existingAti.FriendlyName} ({existingAti.QualifiedRuntimeTypeName})");
+                            stringBuilder.AppendLine("the AssetTypeInfo for this object could not be found. The following asset type infos are used:");
+
+                            foreach(var existingAti in AvailableAssetTypes.Self.AllAssetTypes.OrderBy(item => item.FriendlyName))
+                            {
+                                stringBuilder.AppendLine($"{existingAti.FriendlyName} ({existingAti.QualifiedRuntimeTypeName})");
+                            }
+                        }
+                        else
+                        {
+                            stringBuilder.AppendLine($"Found the AssetTypeInfo {ati.FriendlyName} but missing the variable {variableToReset}. The following variables exist in the AssetTypeInfo:");
+                            foreach (var foundVariable in ati.VariableDefinitions)
+                            {
+                                stringBuilder.AppendLine(foundVariable.Name + " (" + foundVariable.Type + ")");
+                            }
                         }
 
                         GlueCommands.Self.PrintError(stringBuilder.ToString());
@@ -2130,7 +2139,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                         {
                             if (isInsideVisibleProperty)
                             {
-                                codeBlock.Line(namedObject.FieldName + ".ReAddToManagers(" + layerName + ");");
+                                // October 2, 2024
+                                // There is no ReAddToManagers
+                                // available anymore so this generates
+                                // invalid code. I think that this code
+                                // path is used anymore otherwise others
+                                // would have reported it,but we'll modify
+                                // the code so it compiles at least for the
+                                // auto test:
+                                //codeBlock.Line(namedObject.FieldName + ".ReAddToManagers(" + layerName + ");");
+                                codeBlock.Line(namedObject.FieldName + ".AddToManagers(" + layerName + ");");
                             }
                             else
                             {

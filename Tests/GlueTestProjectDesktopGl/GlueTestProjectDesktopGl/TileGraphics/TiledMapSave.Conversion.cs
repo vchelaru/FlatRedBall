@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1117,30 +1117,31 @@ namespace TMXGlueLib
             return String.Equals(property.GetStrippedName(key), "name", StringComparison.OrdinalIgnoreCase);
         }
 
+
         public void CalculateWorldCoordinates(int layerIndex, int tileIndex, int tileWidth, int tileHeight, int layerWidth, out float x, out float y, out float z)
         {
-            int normalizedX = tileIndex % this.Width;
-            int normalizedY = tileIndex / this.Width;
-            CalculateWorldCoordinates(layerIndex, normalizedX, normalizedY, tileWidth, tileHeight, layerWidth, out x, out y, out z);
+            int tileXIndex = tileIndex % this.Width;
+            int tileYIndex = tileIndex / this.Width;
+            CalculateWorldCoordinates(layerIndex, tileXIndex, tileYIndex, tileWidth, tileHeight, layerWidth, out x, out y, out z);
         }
 
-        public void CalculateWorldCoordinates(int layerIndex, float normalizedX, float normalizedY, int tileWidth, int tileHeight, int layerWidth, out float x, out float y, out float z)
+        public void CalculateWorldCoordinates(int layerIndex, float tileXIndex, float tileYIndex, int tileWidth, int tileHeight, int layerWidth, out float x, out float y, out float z)
         {
             if (this.orientation == null || this.orientation.Equals("orthogonal"))
             {
-                x = (normalizedX * this.tilewidth) + (this.tilewidth / 2.0f);
+                x = (tileXIndex * this.tilewidth) + (this.tilewidth / 2.0f);
                 x += (tileWidth - this.tilewidth) / 2.0f;
-                y = -(normalizedY * this.tileheight) - (this.tileheight / 2.0f);
+                y = -(tileYIndex * this.tileheight) - (this.tileheight / 2.0f);
                 y += (tileHeight - this.tileheight) / 2.0f;
                 z = layerIndex;
             }
             else if (this.orientation != null && this.orientation.Equals("isometric"))
             {
-                y = -((normalizedX * this.tilewidth / 2.0f) + (normalizedY * this.tilewidth / 2.0f)) / 2;
-                y += tileHeight / 2.0f;
-                x = -((normalizedY * this.tilewidth / 2.0f) - (normalizedX * this.tileheight / 2.0f) * 2);
-                x += tileWidth / 2.0f;
-                z = ((normalizedY * layerWidth + normalizedX) * .000001f) + layerIndex;
+                y = -((tileXIndex * this.tilewidth / 2.0f) + (tileYIndex * this.tilewidth / 2.0f)) / 2;
+                y -= tileHeight / 2.0f;
+                x = -((tileYIndex * this.tilewidth / 2.0f) - (tileXIndex * this.tileheight / 2.0f) * 2);
+                x += (tileWidth * this.Width) / 2.0f;
+                z = ((tileYIndex * layerWidth + tileXIndex) * .000001f) + layerIndex;
             }
             else
             {
@@ -1350,6 +1351,9 @@ namespace TMXGlueLib
             {
                 fileName = FileManager.RelativeDirectory + fileName;
             }
+
+            fileName = FileManager.RemoveDotDotSlash(fileName);
+
 
             // I believe the relative directory of the TMS must be its own directory so that
             // image references can be tracked on XML deserialization

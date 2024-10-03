@@ -1,4 +1,4 @@
-﻿using FlatRedBall.Math.Collision;
+using FlatRedBall.Math.Collision;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.TileCollisions;
 using System;
