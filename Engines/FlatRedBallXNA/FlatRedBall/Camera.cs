@@ -1463,8 +1463,88 @@ namespace FlatRedBall
         {
             // Set up our view matrix. A view matrix can be defined given an eye point,
             // a point to lookat, and a direction for which way is up. 
-            effect.View = GetLookAtMatrix(relativeToCamera);
-            effect.Projection = GetProjectionMatrix();
+            var lookAtMatrix = GetLookAtMatrix(relativeToCamera);
+#if DEBUG
+            if(float.IsNaN(lookAtMatrix.M11) ||
+                float.IsNaN(lookAtMatrix.M12) ||
+                float.IsNaN(lookAtMatrix.M13) ||
+                float.IsNaN(lookAtMatrix.M14) ||
+                float.IsNaN(lookAtMatrix.M21) ||
+                float.IsNaN(lookAtMatrix.M22) ||
+                float.IsNaN(lookAtMatrix.M23) ||
+                float.IsNaN(lookAtMatrix.M24) ||
+                float.IsNaN(lookAtMatrix.M31) ||
+                float.IsNaN(lookAtMatrix.M32) ||
+                float.IsNaN(lookAtMatrix.M33) ||
+                float.IsNaN(lookAtMatrix.M34) ||
+                float.IsNaN(lookAtMatrix.M41) ||
+                float.IsNaN(lookAtMatrix.M42) ||
+                float.IsNaN(lookAtMatrix.M43) ||
+                float.IsNaN(lookAtMatrix.M44))
+            {
+                var message = "The Camera's LookAtMatrix contains NaN values, so it cannot be used in rendering";
+
+                const string upBehind =
+                    " The Camera's Up vector is pointing directly behind it. For a 3D camera, change the UpVector to the desired up direction";
+                const string upInFront =
+                    " The Camera's Up vector is pointing directly in front of it. For a 3D camera, change the UpVector to the desired up direction";
+
+                if (this.RotationMatrix.Backward == UpVector)
+                {
+                    message += upBehind;
+                }
+                else if (this.RotationMatrix.Forward == UpVector)
+                {
+                    message += upInFront ;
+                }
+                else
+                {
+                    // they could be really close
+                    var dot = Vector3.Dot(this.RotationMatrix.Forward, UpVector);
+
+                    if(dot > .999f)
+                    {
+                        message += upBehind;
+                    }
+                    else if(dot <.999f)
+                    {
+                        message += upInFront;
+                    }
+                }
+
+
+
+                throw new Exception(message);
+            }
+#endif
+            effect.View = lookAtMatrix;
+
+
+            var projectionMatrix = GetProjectionMatrix();
+#if DEBUG
+            if (float.IsNaN(projectionMatrix.M11) ||
+                float.IsNaN(projectionMatrix.M12) ||
+                float.IsNaN(projectionMatrix.M13) ||
+                float.IsNaN(projectionMatrix.M14) ||
+                float.IsNaN(projectionMatrix.M21) ||
+                float.IsNaN(projectionMatrix.M22) ||
+                float.IsNaN(projectionMatrix.M23) ||
+                float.IsNaN(projectionMatrix.M24) ||
+                float.IsNaN(projectionMatrix.M31) ||
+                float.IsNaN(projectionMatrix.M32) ||
+                float.IsNaN(projectionMatrix.M33) ||
+                float.IsNaN(projectionMatrix.M34) ||
+                float.IsNaN(projectionMatrix.M41) ||
+                float.IsNaN(projectionMatrix.M42) ||
+                float.IsNaN(projectionMatrix.M43) ||
+                float.IsNaN(projectionMatrix.M44))
+            {
+                throw new Exception("The Camera's projectoin matrix contains NaN values, so it cannot be used in rendering");
+            }
+#endif
+            effect.Projection = projectionMatrix;
+
+
         }
 
         public void SetDeviceViewAndProjection(Effect effect, bool relativeToCamera)
