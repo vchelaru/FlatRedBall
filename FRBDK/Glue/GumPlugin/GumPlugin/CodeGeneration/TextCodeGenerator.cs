@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
-namespace GumPluginCore.CodeGeneration
+namespace GumPlugin.CodeGeneration
 {
     internal class TextCodeGenerator : Singleton<TextCodeGenerator>
     {

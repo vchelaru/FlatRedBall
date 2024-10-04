@@ -3,13 +3,13 @@ using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
 using GumPlugin.Managers;
-using GumPluginCore.Managers;
+using GumPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GumPluginCore.CodeGeneration
+namespace GumPlugin.CodeGeneration
 {
     class GumCollidableCodeGenerator : ElementComponentCodeGenerator
     {

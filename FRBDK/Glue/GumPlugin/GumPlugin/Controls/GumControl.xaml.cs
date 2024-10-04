@@ -6,7 +6,7 @@ using Gum.DataTypes.Behaviors;
 using GumPlugin.DataGeneration;
 using GumPlugin.Managers;
 using GumPlugin.ViewModels;
-using GumPluginCore.Managers;
+using GumPlugin.Managers;
 using HQ.Util.Unmanaged;
 using System;
 using System.Collections.Generic;

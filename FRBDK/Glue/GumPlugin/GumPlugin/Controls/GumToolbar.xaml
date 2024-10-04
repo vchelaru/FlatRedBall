@@ -9,8 +9,8 @@
     <Grid>
         <Button Click="HandleButtonClick" Style="{DynamicResource IconButton}" Padding="2">
             <Grid>
-                <Image ToolTip="Add Gum Project to this Game" Visibility="{Binding AddGumProjectVisibility}" Source="/GumPluginCore;component/Icons/AddGumProject.png"></Image>
-                <Image ToolTip="Open Gum" Visibility="{Binding OpenGumVisibility}" Source="/GumPluginCore;component/Icons/GumIcon.png"></Image>
+                <Image ToolTip="Add Gum Project to this Game" Visibility="{Binding AddGumProjectVisibility}" Source="/GumPlugin;component/Icons/AddGumProject.png"></Image>
+                <Image ToolTip="Open Gum" Visibility="{Binding OpenGumVisibility}" Source="/GumPlugin;component/Icons/GumIcon.png"></Image>
             </Grid>
         </Button>
     </Grid>

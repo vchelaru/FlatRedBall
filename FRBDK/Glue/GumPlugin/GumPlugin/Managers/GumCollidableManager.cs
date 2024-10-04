@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GumPluginCore.Managers
+namespace GumPlugin.Managers
 {
     public static class GumCollidableManager
     {

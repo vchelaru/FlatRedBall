@@ -13,7 +13,7 @@ using Gum.DataTypes.Behaviors;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.IO;
-using GumPluginCore.CodeGeneration;
+using GumPlugin.CodeGeneration;
 using FlatRedBall.Glue.Plugins;
 
 namespace GumPlugin.Managers;

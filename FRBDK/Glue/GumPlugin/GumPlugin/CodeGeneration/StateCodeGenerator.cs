@@ -5,7 +5,7 @@ using Gum.DataTypes;
 using Gum.DataTypes.Behaviors;
 using Gum.DataTypes.Variables;
 using Gum.Managers;
-using GumPluginCore.CodeGeneration;
+using GumPlugin.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -54,7 +54,7 @@ namespace GumPlugin.Managers
 
         void SaveGumFile(string fileName)
         {
-            string resourceName = "GumPluginCore/Embedded/EmptyProject/" + fileName;
+            string resourceName = "GumPlugin/Embedded/EmptyProject/" + fileName;
 
             resourceName = resourceName.Replace("/", ".");
 
@@ -82,7 +82,7 @@ namespace GumPlugin.Managers
 
             mStateInterpolationItemAdder = new CodeBuildItemAdder();
 
-            var prefix = "GumPluginCore/Embedded/StateInterpolation/";
+            var prefix = "GumPlugin/Embedded/StateInterpolation/";
 
             mStateInterpolationItemAdder.Add(prefix + "Back.cs");
             mStateInterpolationItemAdder.Add(prefix + "Bounce.cs");
@@ -154,7 +154,7 @@ namespace GumPlugin.Managers
             var codeItemAdder = new CodeBuildItemAdder();
             codeItemAdder.OutputFolderInProject = "GumCore";
 
-            var embeddedFolder = "GumPluginCore/Embedded/";
+            var embeddedFolder = "GumPlugin/Embedded/";
 
             codeItemAdder.Add(embeddedFolder + "ContentManagerWrapper.cs");
 
@@ -172,7 +172,7 @@ namespace GumPlugin.Managers
 
             // Sometimes we can add entire folders because the extensions
             // are simple:
-            codeItemAdder.AddFolder("GumPluginCore.Embedded.LibraryFiles.GumDataTypes", assemblyContainingResources);
+            codeItemAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.GumDataTypes", assemblyContainingResources);
 
 
             // But in situations where files have names like
@@ -191,9 +191,9 @@ namespace GumPlugin.Managers
             codeItemAdder.Add(embeddedFolder + "LibraryFiles/GumRuntime/VariableSaveExtensionMethods.cs");
 
 
-            codeItemAdder.AddFolder("GumPluginCore.Embedded.LibraryFiles.RenderingLibrary", assemblyContainingResources);
+            codeItemAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.RenderingLibrary", assemblyContainingResources);
 
-            codeItemAdder.AddFolder("GumPluginCore.Embedded.LibraryFiles.ToolsUtilities", assemblyContainingResources);
+            codeItemAdder.AddFolder("GumPlugin.Embedded.LibraryFiles.ToolsUtilities", assemblyContainingResources);
 
             return codeItemAdder;
         }

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GumPluginCore.CodeGeneration
+namespace GumPlugin.CodeGeneration
 {
     class FormsObjectCodeGenerator : ElementComponentCodeGenerator
     {

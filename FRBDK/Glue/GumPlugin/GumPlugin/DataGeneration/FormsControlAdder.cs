@@ -28,11 +28,11 @@ namespace GumPlugin.DataGeneration
             {
                 if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GumDefaults2)
                 {
-                    return "GumPluginCore.Embedded.GumDefaults2";
+                    return "GumPlugin.Embedded.GumDefaults2";
                 }
                 else
                 {
-                    return "GumPluginCore.Embedded.EmbeddedObjectGumProject";
+                    return "GumPlugin.Embedded.EmbeddedObjectGumProject";
                 }
             }
         }
