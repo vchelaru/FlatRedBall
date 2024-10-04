@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
-namespace GumPluginCore.CodeGeneration
+namespace GumPlugin.CodeGeneration
 {
     public class FormsClassCodeGenerator : Singleton<FormsClassCodeGenerator>
     {

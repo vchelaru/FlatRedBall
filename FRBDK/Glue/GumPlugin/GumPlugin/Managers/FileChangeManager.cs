@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GumPluginCore.Managers;
+namespace GumPlugin.Managers;
 
 public class FileChangeManager : Singleton<FileChangeManager>
 {

@@ -26,15 +26,15 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Managers;
 using System.Diagnostics;
 using FlatRedBall.Glue.Errors;
-using GumPluginCore.Managers;
+using GumPlugin.Managers;
 using FlatRedBall.Glue.Controls;
-using GumPluginCore.ViewModels;
+using GumPlugin.ViewModels;
 using GumPlugin.DataGeneration;
 using FlatRedBall.Glue.FormHelpers;
 using System.Threading.Tasks;
 using HQ.Util.Unmanaged;
 using System.IO;
-using GumPluginCore.CodeGeneration;
+using GumPlugin.CodeGeneration;
 
 namespace GumPlugin;
 
@@ -331,7 +331,7 @@ public class MainGumPlugin : PluginBase
 
 
         //EditorObjects.IoC.Container.Get<IErrorContainer>().
-        var error = new GumPluginCore.ErrorReporting.ErrorReporter();
+        var error = new GumPlugin.ErrorReporting.ErrorReporter();
 
         AddErrorReporter(error);
 

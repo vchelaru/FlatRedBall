@@ -4,7 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using Gum.DataTypes;
 using Gum.DataTypes.Variables;
-using GumPluginCore.CodeGeneration;
+using GumPlugin.CodeGeneration;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;

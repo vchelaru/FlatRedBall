@@ -3,14 +3,14 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using Gum.DataTypes;
 using GumPlugin.Managers;
-using GumPluginCore.Managers;
+using GumPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FrbObjectFinder = FlatRedBall.Glue.Elements.ObjectFinder;
 
-namespace GumPluginCore.ErrorReporting
+namespace GumPlugin.ErrorReporting
 {
     class ErrorReporter : ErrorReporterBase
     {

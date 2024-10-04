@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Automation;
 
-namespace GumPluginCore.CodeGeneration
+namespace GumPlugin.CodeGeneration
 {
     class FormsObjectCodeGenerator : ElementComponentCodeGenerator
     {

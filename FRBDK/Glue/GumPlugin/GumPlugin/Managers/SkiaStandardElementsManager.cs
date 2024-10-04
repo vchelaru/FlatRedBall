@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RenderingLibrary.Graphics;
 
-namespace GumPluginCore.Managers
+namespace GumPlugin.Managers
 {
     internal class SkiaStandardElementsManager
     {

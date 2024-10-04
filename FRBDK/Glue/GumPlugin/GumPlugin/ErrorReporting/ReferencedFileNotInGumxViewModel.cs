@@ -12,7 +12,7 @@ using GumObjectFinder = Gum.Managers.ObjectFinder;
 using FrbObjectFinder = FlatRedBall.Glue.Elements.ObjectFinder;
 using Xceed.Wpf.AvalonDock.Themes;
 
-namespace GumPluginCore.ErrorReporting
+namespace GumPlugin.ErrorReporting
 {
     internal class ReferencedFileNotInGumxViewModel : ErrorViewModel
     {

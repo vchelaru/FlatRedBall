@@ -14,7 +14,7 @@ using System.Text;
 using Gum.DataTypes.Behaviors;
 using FlatRedBall.Glue.SaveClasses;
 using GumPlugin.ViewModels;
-using GumPluginCore.CodeGeneration;
+using GumPlugin.CodeGeneration;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace GumPlugin.CodeGeneration
