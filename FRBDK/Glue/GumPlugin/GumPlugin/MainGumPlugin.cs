@@ -1005,7 +1005,7 @@ public class MainGumPlugin : PluginBase
 
     private async void HandleGluxLoad()
     {
-        base.AddToToolBar(gumToolbar, Localization.Texts.Tools);
+        base.AddToToolBar(gumToolbar, "Tools");
 
         var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
@@ -1033,7 +1033,7 @@ public class MainGumPlugin : PluginBase
                 // the UpdatecodeInProjectPresence may add new files, so save:
                 GlueCommands.Self.ProjectCommands.SaveProjects();
 
-            }, Localization.Texts.GumPluginGluxLoad);
+            }, "Gum Plugin reacting to Glue Project Load");
 
             await UpdateGumParentProject();
 

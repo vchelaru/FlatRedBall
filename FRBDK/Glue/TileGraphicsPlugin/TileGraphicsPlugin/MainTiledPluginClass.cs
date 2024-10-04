@@ -40,7 +40,7 @@ using TiledPlugin.ViewModels;
 namespace TileGraphicsPlugin;
 
 [Export(typeof(PluginBase))]
-public class TileGraphicsPluginClass : PluginBase
+public class MainTiledPluginClass : PluginBase
 {
     #region Fields
 
@@ -231,8 +231,8 @@ public class TileGraphicsPluginClass : PluginBase
         get { return "Tiled Plugin"; }
     }
 
-    static TileGraphicsPluginClass mSelf;
-    public static TileGraphicsPluginClass Self
+    static MainTiledPluginClass mSelf;
+    public static MainTiledPluginClass Self
     {
         get { return mSelf; }
     }
@@ -242,7 +242,7 @@ public class TileGraphicsPluginClass : PluginBase
 
     #region Constructor/Startup
 
-    public TileGraphicsPluginClass()
+    public MainTiledPluginClass()
     {
         mSelf = this;
     }

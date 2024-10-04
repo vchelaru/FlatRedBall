@@ -87,8 +87,8 @@ namespace GumPlugin.Managers
 
         string GetLoadStaticContentCodeFor(ReferencedFileSave rfs, NamedObjectSave nos, string qualifiedName = null)
         {
-            // Gum uses backslashes for screens in folders:
-            string strippedName = GetStrippedScreenName(rfs).Replace("/", "\\");
+            // Gum uses forward slashes (I used to think it was back slashes but that was a bug causing that):
+            string strippedName = GetStrippedScreenName(rfs).Replace("\\", "/");
             // Now the camera setup code handles this, so we don't have to:
             // In fact, specific Screen types already removed this, but as of Oct 5, 2020
             // the GraphicalUiElement runtime type ATI still had this and it was messing up
