@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.SaveClasses;
 using GumPlugin.CodeGeneration;
+using GumPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,9 +31,7 @@ namespace GumPlugin.CodeGeneration
 
                 if (hasForms)
                 {
-                    var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "") +
-                        "." + rfs.GetInstanceName() + "Forms";
-
+                    var formsObjectType = GetFullyQualifiedFormsObjectFor(rfs);
                     codeBlock.Line($"{formsObjectType} Forms;");
                 }
 
@@ -58,24 +57,39 @@ namespace GumPlugin.CodeGeneration
             if (isGlueScreen && hasGumScreen)
             {
                 //var elementName = element.GetStrippedName();
-                var elementName = element.Name.Substring("Screens/".Length);
+                var glueElementName = element.Name.Substring("Screens/".Length);
 
                 var rfs = GumPluginCodeGenerator.GetGumScreenRfs(element);
 
                 if (hasForms && rfs?.RuntimeType != "FlatRedBall.Gum.GumIdb" && rfs?.RuntimeType != "Gum.Wireframe.GraphicalUiElement")
                 {
-                    var rfsName = rfs.GetInstanceName();
-                    var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(elementName, "") +
-                        "." + rfsName + "Forms";
-                    var formsInstantiationLine =
-                        $"Forms = {rfsName}.FormsControl ?? new {formsObjectType}({rfsName});";
-                    codeBlock.Line(formsInstantiationLine);
+                    var formsObjectType = GetFullyQualifiedFormsObjectFor(rfs);
+                    if(!string.IsNullOrEmpty( formsObjectType ))
+                    {
+                        var rfsName = rfs.GetInstanceName();
+                        var formsInstantiationLine = $"Forms = {rfsName}.FormsControl ?? new {formsObjectType}({rfsName});";
+                        codeBlock.Line(formsInstantiationLine);
+                    }
                 }
-
             }
 
             return codeBlock;
         }
 
+        private string GetFullyQualifiedFormsObjectFor(ReferencedFileSave rfs)
+        {
+            var gumElement = GumPluginCommands.Self.GetGumElement(rfs);
+            if(gumElement != null)
+            {
+                var namespaceName = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(gumElement, prefixGlobal: true);
+                var rfsName = rfs.GetInstanceName();
+                // This shouldn't use the Glue element because FRB screens can exist in folders that differ from
+                // their Gum screen:
+                //var formsObjectType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(glueElementName, "") +
+                var formsObjectType = namespaceName + "." + rfsName + "Forms";
+                return formsObjectType;
+            }
+            return string.Empty;
+        }
     }
 }

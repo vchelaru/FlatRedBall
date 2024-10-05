@@ -400,14 +400,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 // this is a big deal, we don't currently handle this, so need to return an error to restart
             }
+            else if(element is EntitySave asEntity)
+            {
+                var dto = new RenameElementDto();
+                dto.OldName = oldName;
+                dto.NewName = element.Name;
 
-            var asEntity = (EntitySave)element;
+                await CommandSender.Self.Send(dto);
+            }
 
-            var dto = new RenameElementDto();
-            dto.OldName = oldName;
-            dto.NewName = element.Name;
-
-            await CommandSender.Self.Send(dto);
         }
 
         #endregion

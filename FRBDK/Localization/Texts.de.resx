@@ -2094,9 +2094,6 @@
   <data name="NameCannotStartWithNumber" xml:space="preserve">
     <value>Namen dürfen nicht mit einer Zahl beginnen.</value>
   </data>
-  <data name="NameCannotContainInvalidChar" xml:space="preserve">
-    <value>Der Name darf kein ungültiges Zeichen {0} enthalten.</value>
-  </data>
   <data name="NameCannotHaveSpaces" xml:space="preserve">
     <value>Der Name darf keine Leerzeichen enthalten.</value>
   </data>

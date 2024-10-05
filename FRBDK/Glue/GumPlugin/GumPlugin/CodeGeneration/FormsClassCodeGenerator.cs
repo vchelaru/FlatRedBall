@@ -275,16 +275,16 @@ namespace GumPlugin.CodeGeneration
             return currentBlock;
         }
 
-        public string GetUnqualifiedRuntimeTypeFor(ElementSave elementSave)
+        public string GetUnqualifiedRuntimeTypeFor(ElementSave gumElement)
         {
-            return FlatRedBall.IO.FileManager.RemovePath(elementSave.Name) + "Forms";
+            return FlatRedBall.IO.FileManager.RemovePath(gumElement.Name) + "Forms";
         }
 
-        public string GetFullRuntimeNamespaceFor(ElementSave elementSave, bool prefixGlobal=true)
+        public string GetFullRuntimeNamespaceFor(ElementSave gumElement, bool prefixGlobal=true)
         {
-            string elementName = elementSave.Name;
+            string elementName = gumElement.Name;
 
-            var subfolder = elementSave is ScreenSave ? "" : "Components";
+            var subfolder = gumElement is ScreenSave ? "" : "Components";
 
             return GetFullRuntimeNamespaceFor(elementName, subfolder, prefixGlobal);
         }

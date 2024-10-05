@@ -245,7 +245,7 @@ public class ObjectFinder : IObjectFinder
             {
                 EntitySave entitySave = GlueProject.Entities[i];
 
-                if (FileManager.RemovePath(entitySave.Name) == entityName && entitySave != toIgnore)
+                if (entitySave != toIgnore && FileManager.RemovePath(entitySave.Name) == entityName)
                 {
                     return entitySave;
                 }
@@ -293,7 +293,7 @@ public class ObjectFinder : IObjectFinder
         return null;
     }
 
-    public ScreenSave GetScreenSaveUnqualified(string screenName)
+    public ScreenSave GetScreenSaveUnqualified(string screenName, ScreenSave screenToIgnore = null)
     {
         if (GlueProject != null)
         {
@@ -301,7 +301,7 @@ public class ObjectFinder : IObjectFinder
             {
                 ScreenSave screenSave = GlueProject.Screens[i];
 
-                if (FileManager.RemovePath(screenSave.Name) == screenName)
+                if (screenToIgnore != screenSave && FileManager.RemovePath(screenSave.Name) == screenName)
                 {
                     return screenSave;
                 }

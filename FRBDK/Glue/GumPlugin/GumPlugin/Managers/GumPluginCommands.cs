@@ -170,7 +170,13 @@ namespace GumPlugin.Managers
 
         }
 
-        public string GetGumScreenNameFor(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
+        /// <summary>
+        /// Returns the expected name for a Gum screen given a FlatRedBall screen. This does not return the actual screen name for the argument screen because
+        /// Gum folder structure may not match Glue folder structure.
+        /// </summary>
+        /// <param name="glueScreen">The Glue ScreenSave reference.</param>
+        /// <returns>The expected name.</returns>
+        public string GetExpectedGumScreenNameFor(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
         {
             if(glueScreen.Name.StartsWith("Screens/") || glueScreen.Name.StartsWith("Screens\\"))
             {
@@ -184,7 +190,7 @@ namespace GumPlugin.Managers
 
         internal async Task AddScreenForGlueScreen(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
         {
-            string gumScreenName = GetGumScreenNameFor(glueScreen);
+            string gumScreenName = GetExpectedGumScreenNameFor(glueScreen);
 
             bool exists = AppState.Self.GumProjectSave.Screens.Any(item => item.Name == gumScreenName);
             if (!exists)
@@ -332,5 +338,22 @@ namespace GumPlugin.Managers
 
         }
 
+        internal ElementSave GetGumElement(FlatRedBall.Glue.SaveClasses.ReferencedFileSave rfs)
+        {
+            var gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+            var gumProjectDirectory = gumProjectFileName.GetDirectoryContainingThis().FullPath;
+
+            var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+
+            var relativeToGum = FileManager.RemoveExtension(absoluteRfs.RelativeTo(gumProjectDirectory));
+            if(relativeToGum?.ToLowerInvariant().StartsWith("screens/") == true)
+            {
+                relativeToGum = relativeToGum.Substring("Screens/".Length);
+            }
+            var gumElement = ObjectFinder.Self.GetElementSave(relativeToGum);
+
+            return gumElement;
+
+        }
     }
 }

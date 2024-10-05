@@ -565,7 +565,7 @@ public class MainGumPlugin : PluginBase
     {
         if (AppState.Self.GumProjectSave != null)
         {
-            var gumScreenName = GumPluginCommands.Self.GetGumScreenNameFor(glueScreen);
+            var gumScreenName = GumPluginCommands.Self.GetExpectedGumScreenNameFor(glueScreen);
 
             var gumScreen = AppState.Self.GumProjectSave.Screens.FirstOrDefault(item => item.Name == gumScreenName);
 

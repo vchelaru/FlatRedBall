@@ -2095,9 +2095,6 @@ for {1}?</value>
   <data name="NameCannotStartWithNumber" xml:space="preserve">
     <value>Names can't start with a number.</value>
   </data>
-  <data name="NameCannotContainInvalidChar" xml:space="preserve">
-    <value>The name can't contain invalid character {0}</value>
-  </data>
   <data name="NameCannotHaveSpaces" xml:space="preserve">
     <value>The name can't have any spaces.</value>
   </data>

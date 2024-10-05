@@ -352,6 +352,7 @@ namespace FlatRedBall.Glue.SaveClasses
         /// <returns>Whether the name is valid.</returns>
         public static bool IsScreenNameValid(string name, ScreenSave screenSave, out string whyItIsntValid)
 		{
+            string screensOrEntitiesPrefix = "Screens\\";   
             var strippedName = name?.Replace("/", "\\");
             if(strippedName?.Contains("\\") == true)
             {
@@ -359,34 +360,34 @@ namespace FlatRedBall.Glue.SaveClasses
             }
 			whyItIsntValid = "";
 
-			CheckForCommonImproperNames(name, ref whyItIsntValid);
+			CheckForCommonImproperNames(strippedName, ref whyItIsntValid);
 
-            if (ObjectFinder.Self.GetScreenSave("Screens\\" + name) != null)
+            if (ObjectFinder.Self.GetScreenSaveUnqualified(strippedName, screenSave) != null)
 			{
-				whyItIsntValid = "There is already an Screen named " + name;
+				whyItIsntValid = "There is already a Screen named " + name;
 			}
-			else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile("Screens\\" + name) != null)
+			else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(screensOrEntitiesPrefix + name) != null)
 			{
 				whyItIsntValid = "There is already a file named " + name;
 			}
-            else if (mReservedClassNames.Contains(name))
+            else if (mReservedClassNames.Contains(strippedName))
             {
-                whyItIsntValid = "The name " + name + " is a reserved class name, so it can't be used for a Screen";
+                whyItIsntValid = "The name " + strippedName + " is a reserved class name, so it can't be used";
             }
-            else if (ObjectFinder.Self.GetEntitySaveUnqualified(name) != null)
+            else if (ObjectFinder.Self.GetEntitySaveUnqualified(strippedName) != null)
             {
                 whyItIsntValid = "There is already an Entity named " + name + ".\n\n" +
                     "Glue recommends naming the Screen something different than existing Entities because " +
                     "generated code can get confused if you add this same-named Entity in the Screen.";
             }
-            else if (name == ProjectManager.ProjectNamespace)
+            else if (strippedName == ProjectManager.ProjectNamespace)
             {
                 whyItIsntValid = "The Screen cannot be named the same as the root namespace (which is usually the same name as the project)";
             }
 
             if(string.IsNullOrEmpty(whyItIsntValid))
             {
-                CheckForFileNameWindowsReserved(name, out whyItIsntValid);
+                CheckForFileNameWindowsReserved(strippedName, out whyItIsntValid);
             }
 
             return string.IsNullOrEmpty(whyItIsntValid);
@@ -394,6 +395,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
 		public static bool IsEntityNameValid(string name, EntitySave entitySave, out string whyItIsntValid)
 		{
+            string screensOrEntitiesPrefix = "Entities\\";
+
             var strippedName = name?.Replace("/", "\\");
             if(strippedName?.Contains("\\") == true)
             {
@@ -407,13 +410,13 @@ namespace FlatRedBall.Glue.SaveClasses
 			{
 				whyItIsntValid = "There is already an entity named " + strippedName;
 			}
-			else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile("Entities\\" + strippedName) != null)
+			else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(screensOrEntitiesPrefix + strippedName) != null)
 			{
 				whyItIsntValid = "There is already a file named " + strippedName;
 			}
             else if (mReservedClassNames.Contains(strippedName))
             {
-                whyItIsntValid = "The name " + strippedName + " is a reserved class name, so it can't be used for an Entity";
+                whyItIsntValid = "The name " + strippedName + " is a reserved class name, so it can't be used";
             }
             else if (ObjectFinder.Self.GetScreenSaveUnqualified(strippedName) != null)
             {
@@ -698,7 +701,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 whyItIsntValid = InvalidCharacters
                     .Where(name.Contains)
                     .Aggregate(whyItIsntValid, (current, invalidCharacter) 
-                        => current + String.Format(L.Texts.NameCannotContainInvalidChar, invalidCharacter));
+                        => current + String.Format("The name can't contain invalid character {0}", invalidCharacter));
             }
 			else if(name.Contains(' '))
             {

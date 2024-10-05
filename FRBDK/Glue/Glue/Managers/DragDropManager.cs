@@ -695,23 +695,45 @@ public class DragDropManager : Singleton<DragDropManager>
 
     #endregion
 
+    #region Element (Screen and Entity)
+
+    async Task<ITreeNode> MoveElementOn(ITreeNode treeNodeMoving, ITreeNode targetNode)
+    {
+        ITreeNode newTreeNode = null;
+
+        #region Moving the element into (or out of) a directory
+        var shouldMoveIntoDirectory = targetNode.IsDirectoryNode() ||
+            (targetNode.IsRootEntityNode() && treeNodeMoving.Tag is EntitySave) ||
+            (targetNode.IsRootScreenNode() && treeNodeMoving.Tag is ScreenSave) ;
+
+        if (shouldMoveIntoDirectory)
+        {
+            MoveElementToDirectory(treeNodeMoving, targetNode);
+        }
+
+        #endregion
+
+        else if(treeNodeMoving.Tag is EntitySave)
+        {
+            newTreeNode = await MoveEntityOn(treeNodeMoving, targetNode);
+        }
+
+        return newTreeNode;
+    }
+
+    #endregion
+
     #region Entity
 
     public async Task<ITreeNode> MoveEntityOn(ITreeNode treeNodeMoving, ITreeNode targetNode)
     {
         ITreeNode newTreeNode = null;
 
-        #region Moving the Entity into (or out of) a directory
-        if (targetNode.IsDirectoryNode() || targetNode.IsRootEntityNode())
-        {
-            MoveEntityToDirectory(treeNodeMoving, targetNode);
-        }
 
-        #endregion
 
         #region Moving an Entity onto another element to create an instance
 
-        else if (targetNode.IsEntityNode() || targetNode.IsScreenNode() || targetNode.IsRootNamedObjectNode())
+        if (targetNode.IsEntityNode() || targetNode.IsScreenNode() || targetNode.IsRootNamedObjectNode())
         {
             bool isValidDrop = true;
             // Make sure that we don't drop an Entity into its own Objects
@@ -856,33 +878,33 @@ public class DragDropManager : Singleton<DragDropManager>
 
     #region ... on Directory
 
-    static void MoveEntityToDirectory(ITreeNode treeNodeMoving, ITreeNode targetNode)
+    static void MoveElementToDirectory(ITreeNode treeNodeMoving, ITreeNode targetNode)
     {
         bool succeeded = true;
 
-        EntitySave entitySave = treeNodeMoving.Tag as EntitySave;
+        var elementSave = treeNodeMoving.Tag as GlueElement;
 
         string newRelativeDirectory = targetNode.GetRelativeFilePath();
 
-        string newName = newRelativeDirectory.Replace("/", "\\") + entitySave.ClassName;
+        string newName = newRelativeDirectory.Replace("/", "\\") + elementSave.ClassName;
 
         // modify data and files
         //succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entitySave, newRelativeDirectory);
-        GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(entitySave, newName);
+        GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(elementSave, newName);
 
         // Generate and save
         if (succeeded)
         {
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entitySave);
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementSave);
 
             GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementSave);
 
             GluxCommands.Self.SaveProjectAndElements();
             GlueCommands.Self.ProjectCommands.SaveProjects();
 
-            GlueState.Self.CurrentElement = entitySave;
+            GlueState.Self.CurrentElement = elementSave;
         }
     }
 
@@ -1719,9 +1741,9 @@ public class DragDropManager : Singleton<DragDropManager>
             {
                 // do nothing
             }
-            else if (nodeMoving.IsEntityNode())
+            else if (nodeMoving.IsElementNode())
             {
-                await DragDropManager.Self.MoveEntityOn(nodeMoving, targetNode);
+                await DragDropManager.Self.MoveElementOn(nodeMoving, targetNode);
                 shouldSaveGlux = true;
 
             }
