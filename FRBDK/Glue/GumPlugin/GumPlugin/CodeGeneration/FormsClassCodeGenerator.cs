@@ -284,7 +284,7 @@ namespace GumPlugin.CodeGeneration
         {
             string elementName = gumElement.Name;
 
-            var subfolder = gumElement is ScreenSave ? "" : "Components";
+            var subfolder = gumElement is ScreenSave ? "Screens" : "Components";
 
             return GetFullRuntimeNamespaceFor(elementName, subfolder, prefixGlobal);
         }
