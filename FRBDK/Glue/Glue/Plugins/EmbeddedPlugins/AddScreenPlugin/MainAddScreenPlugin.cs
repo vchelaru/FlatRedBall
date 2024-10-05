@@ -9,7 +9,6 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.IO;
 using FlatRedBall.Utilities;
-using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.ViewModels;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin.Views;
 using GlueFormsCore.ViewModels;
 using System;
@@ -39,10 +38,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
         {
             var optionsView = new AddScreenOptionsView();
 
-            var viewModel = new ViewModels.AddScreenViewModel();
-
-            var topLevelViewModel = window.DataContext as GlueFormsCore.ViewModels.AddScreenViewModel;
-            viewModel.TopLevelViewModel = topLevelViewModel;
+            var viewModel = window.DataContext as GlueFormsCore.ViewModels.AddScreenViewModel;
 
 
             var gameScreen =

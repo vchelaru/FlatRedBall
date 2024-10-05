@@ -72,6 +72,10 @@ namespace OfficialPlugins.ErrorPlugin.ViewModels
             {
                 return true;
             }
+            else if(FilePath.Exists() == false)
+            {
+                return true;
+            }
             else
             {
                 // If we're testing if it's fixed, then the file may have changed, so refresh the last parse message

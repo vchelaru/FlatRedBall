@@ -888,9 +888,6 @@
   <data name="AddXnbToMonogame" xml:space="preserve">
     <value>XNBs zu Monogame-Projekt(en) hinzufügen</value>
   </data>
-  <data name="EnterNameForEntity" xml:space="preserve">
-    <value>Geben Sie einen Namen für die neue Entität ein:</value>
-  </data>
   <data name="Sprite" xml:space="preserve">
     <value>Sprite</value>
   </data>
@@ -2093,9 +2090,6 @@
   </data>
   <data name="FactoryAddX" xml:space="preserve">
     <value>{0} Fabrik hinzufügen</value>
-  </data>
-  <data name="NameCannotBeEmpty" xml:space="preserve">
-    <value>Der Name darf nicht leer sein.</value>
   </data>
   <data name="NameCannotStartWithNumber" xml:space="preserve">
     <value>Namen dürfen nicht mit einer Zahl beginnen.</value>

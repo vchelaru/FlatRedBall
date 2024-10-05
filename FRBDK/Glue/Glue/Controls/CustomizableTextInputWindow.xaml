@@ -17,7 +17,7 @@
         <StackPanel Grid.Row="1" x:Name="TextBoxStackPanel">
             <TextBlock x:Name="Label" TextWrapping="Wrap" Text="{x:Static localization:Texts.Label}" />
             <TextBox x:Name="TextBox" KeyDown="TextBox_KeyDown" TextChanged="TextBox_TextChanged" ></TextBox>
-            <TextBlock x:Name="ValidationLabel" Foreground="DarkRed" FontSize="10" Margin="3,0,0,0" TextWrapping="Wrap" Text="{x:Static localization:Texts.ValidationTextForWrapping}" />
+      <TextBlock x:Name="ValidationLabel" Foreground="{DynamicResource Frb.Brushes.Error}" FontSize="10" Margin="3,0,0,0" TextWrapping="Wrap" Text="{x:Static localization:Texts.ValidationTextForWrapping}" />
         </StackPanel>
         <StackPanel x:Name="BelowTextBoxStackPanel"
                     Grid.Row="2"></StackPanel>

@@ -567,7 +567,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
                 else if (string.IsNullOrEmpty(name))
                 {
-                    whyItIsntValid = L.Texts.NameCannotBeEmpty;
+                    whyItIsntValid = "The name cannot be empty.";
                 }
                 else if (char.IsDigit(name[0]))
                 {
@@ -686,7 +686,7 @@ namespace FlatRedBall.Glue.SaveClasses
 		{
 			if (string.IsNullOrEmpty(name))
             {
-                whyItIsntValid = L.Texts.NameCannotBeEmpty;
+                whyItIsntValid = "The name cannot be empty.";
             }
 			else if (char.IsDigit(name[0]))
 			{

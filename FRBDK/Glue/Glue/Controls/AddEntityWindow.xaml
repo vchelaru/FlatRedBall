@@ -9,7 +9,7 @@
              SizeToContent="Height"
              Width="260">
     <StackPanel x:Name="MainStackPanel" Margin="4">
-        <TextBlock Margin="3,0,3,0"  Text="{x:Static localization:Texts.EnterNameForEntity}"></TextBlock>
+        <TextBlock Margin="3,0,3,0"  Text="Enter a name for the new entity:"></TextBlock>
         <TextBox x:Name="TextBox" Margin="3,0,3,0" KeyDown="TextBox_KeyDown" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
         <TextBlock x:Name="FailureTextBlock" Margin="3,0,3,3" Foreground="{DynamicResource Frb.Brushes.Error}" 
                    Visibility="{Binding FailureTextVisibility}" Text="{Binding FailureText}" TextWrapping="Wrap"></TextBlock>
