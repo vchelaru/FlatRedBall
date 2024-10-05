@@ -28,6 +28,7 @@ using FlatRedBall.ManagedSpriteGroups;
 using FlatRedBall.Utilities;
 using FlatRedBall.Graphics.Texture;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlatRedBall
 {
@@ -1836,6 +1837,30 @@ namespace FlatRedBall
                 //try
                 //{
                     await TimeManager.DelaySeconds(CurrentChain.TotalLength);
+                //}
+                //catch (TaskCanceledException) { return; }
+            }
+        }
+
+        public async Task PlayAnimationsAsync(CancellationToken cancellationToken, params string[] animations)
+        {
+            if (animations.Length > 0)
+            {
+                this.Animate = true;
+            }
+            foreach (var animation in animations)
+            {
+                CurrentChainName = animation;
+
+                if (CurrentChain == null)
+                {
+                    throw new InvalidOperationException($"Could not set the current chain to {animation} because this animation does not exist");
+                }
+                // This should not try/catch. If it does, then any caller will continue after it's finished, causing additional logic to run after a screen has ended:
+                //try
+                //{
+                await TimeManager.DelaySeconds(CurrentChain.TotalLength, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
                 //}
                 //catch (TaskCanceledException) { return; }
             }
