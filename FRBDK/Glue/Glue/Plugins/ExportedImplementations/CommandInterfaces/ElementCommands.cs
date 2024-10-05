@@ -499,8 +499,6 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             glueProject.Screens.SortByName();
 
-            string screenName = FileManager.RemovePath(screenSave.Name);
-
             string customCodeFilePath = screenSave.Name + ".cs";
 
             #region Create the Screen code (not the generated version)
@@ -531,7 +529,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             #region Create <ScreenName>.Generated.cs
 
-            string generatedFileName = @"Screens\" + screenName + ".Generated.cs";
+            string generatedFileName = screenSave.Name + ".Generated.cs";
             ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(generatedFileName, true);
 
 
