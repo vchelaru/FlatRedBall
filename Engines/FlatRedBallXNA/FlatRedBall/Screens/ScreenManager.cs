@@ -228,9 +228,25 @@ namespace FlatRedBall.Screens
                 var isFullyQualified = type?.Contains(".") == true;
                 if(!isFullyQualified && !string.IsNullOrEmpty(type))
                 {
+                    var unqualifiedType = type;
                     // try to prepend the current type to make the next screen fully qualified:
                     var prepend = mCurrentScreen.GetType().Namespace;
                     type = prepend + "." + type;
+
+                    // Update October 5, 2024 - the type may not exist in this namespace because
+                    // we now support screens in folders, so the screens may have different namespaces.
+                    // Therefore we have to check the type
+                    var assembly = mCurrentScreen.GetType().Assembly;
+                    var foundType = assembly.GetType(type);
+
+                    if(foundType == null)
+                    {
+                        foundType = assembly.GetTypes().FirstOrDefault(item => item.Name == unqualifiedType);
+                        if(foundType != null)
+                        {
+                            type = foundType?.FullName;
+                        }
+                    }
                 }
 
                 Screen asyncLoadedScreen = mCurrentScreen.mNextScreenToLoadAsync;
