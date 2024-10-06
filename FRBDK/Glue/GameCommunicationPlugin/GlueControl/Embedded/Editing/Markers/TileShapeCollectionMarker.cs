@@ -1,4 +1,5 @@
-﻿{CompilerDirectives}
+﻿#pragma warning disable
+{CompilerDirectives}
 
 using FlatRedBall;
 using FlatRedBall.Gui;

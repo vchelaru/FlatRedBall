@@ -1570,7 +1570,6 @@ namespace GlueControl
         {
             var collisionManager = FlatRedBall.Math.Collision.CollisionManager.Self;
             int numberOfCollisions = 0;
-            int? maxCollisions = null;
 
             List<CollisionRelationshipInfo> toReturn = new List<CollisionRelationshipInfo>();
             foreach (var relationship in collisionManager.Relationships)

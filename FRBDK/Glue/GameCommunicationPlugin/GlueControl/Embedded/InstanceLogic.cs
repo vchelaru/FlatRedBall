@@ -76,10 +76,6 @@ namespace GlueControl
         /// </summary>
         public Dictionary<string, GlueElement> CustomGlueElements = new Dictionary<string, GlueElement>();
 
-
-        // this is to prevent multiple objects from having the same name in the same frame:
-        static long NewIndex = 0;
-
         #endregion
 
         #region Create Instance from Glue

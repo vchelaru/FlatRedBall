@@ -740,11 +740,11 @@ namespace GlueControl.Editing
             var mouse = InputManager.Mouse;
             if (mouse.ButtonPushed(Mouse.MouseButtons.XButton1))
             {
-                GlueControlManager.Self.SendToGlue(new Dtos.SelectPreviousDto());
+                _=GlueControlManager.Self.SendToGlue(new Dtos.SelectPreviousDto());
             }
             else if (mouse.ButtonPushed(Mouse.MouseButtons.XButton2))
             {
-                GlueControlManager.Self.SendToGlue(new Dtos.SelectNextDto());
+                _=GlueControlManager.Self.SendToGlue(new Dtos.SelectNextDto());
             }
         }
 
@@ -754,7 +754,7 @@ namespace GlueControl.Editing
 
             if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.F12))
             {
-                GlueControlManager.Self.SendToGlue(new Dtos.GoToDefinitionDto());
+                _=GlueControlManager.Self.SendToGlue(new Dtos.GoToDefinitionDto());
             }
         }
 

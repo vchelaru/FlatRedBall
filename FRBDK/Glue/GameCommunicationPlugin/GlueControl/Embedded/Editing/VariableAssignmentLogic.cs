@@ -12,7 +12,6 @@ using Newtonsoft.Json;
 using FlatRedBall.Math.Collision;
 using System.Collections;
 using GlueControl.Dtos;
-using {ProjectNamespace};
 using FlatRedBall.Forms.Controls;
 using GlueControl.Models;
 using System.Runtime.CompilerServices;

@@ -170,10 +170,6 @@ namespace GlueControl
             byte[] intBytes = await GetByteArrayFromStream(stm, 4, new byte[4]);
             var length = BitConverter.ToInt32(intBytes, 0);
 
-            if (length > 1_000_000)
-            {
-                int m = 3;
-            }
             if (length > 0)
             {
                 byte[] byteArray = await GetByteArrayFromStream(stm, length);
@@ -276,10 +272,6 @@ namespace GlueControl
 
             if (!isGet)
             {
-                if (message.Contains(":") == false)
-                {
-                    int m = 3;
-                }
                 if (runSetImmediately)
                 {
                     response = ApplySetMessage(message) ?? null;

@@ -1,6 +1,5 @@
 ﻿{CompilerDirectives}
 
-using {ProjectNamespace};
 
 using FlatRedBall;
 using FlatRedBall.Gui;
@@ -427,7 +426,7 @@ namespace GlueControl.Editing
             dto.DestinationRectangleHeight = Camera.Main.DestinationRectangle.Height;
             dto.OrthogonalWidth = Camera.Main.OrthogonalWidth;
             dto.OrthogonalHeight = Camera.Main.OrthogonalHeight;
-            GlueControlManager.Self.SendToGlue(dto);
+            _=GlueControlManager.Self.SendToGlue(dto);
         }
 
         #endregion
