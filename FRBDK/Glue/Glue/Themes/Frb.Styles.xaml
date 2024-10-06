@@ -899,7 +899,7 @@
     <ControlTemplate x:Key="{x:Static MenuItem.SubmenuItemTemplateKey}"
                      TargetType="{x:Type MenuItem}">
         <Border Name="Border">
-            <Grid>
+            <Grid Background="Transparent">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"
                                       SharedSizeGroup="Icon" />
@@ -983,7 +983,7 @@
     <ControlTemplate x:Key="{x:Static MenuItem.SubmenuHeaderTemplateKey}"
                      TargetType="{x:Type MenuItem}">
         <Border Name="Border">
-            <Grid>
+            <Grid Background="Transparent">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"
                                       SharedSizeGroup="Icon" />
