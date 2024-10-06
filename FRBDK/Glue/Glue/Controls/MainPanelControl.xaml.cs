@@ -305,9 +305,19 @@ namespace GlueFormsCore.Controls
 
         internal void ApplyGlueSettings(GlueSettingsSave glueSettingsSave)
         {
-            if(glueSettingsSave.LeftTabWidthPixels > 1)
+            if(glueSettingsSave.LeftTabWidthPixels is > 0)
             {
-                ViewModel.LeftPanelWidth = new GridLength(glueSettingsSave.LeftTabWidthPixels.Value);
+                ViewModel.LeftPanelWidth = new(glueSettingsSave.LeftTabWidthPixels.Value);
+            }
+
+            if (glueSettingsSave.RightTabWidthPixels is > 0)
+            {
+                ViewModel.RightPanelWidth = new(glueSettingsSave.RightTabWidthPixels.Value);
+            }
+
+            if (glueSettingsSave.BottomTabHeightPixels is > 0)
+            {
+                ViewModel.BottomPanelHeight = new(glueSettingsSave.BottomTabHeightPixels.Value);
             }
 
         }
