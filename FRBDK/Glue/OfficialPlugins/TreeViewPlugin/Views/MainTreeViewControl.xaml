@@ -187,7 +187,8 @@
                         DragEnter="MainTreeView_DragEnter"
                         DragOver="MainTreeView_DragOver"
                         MouseDoubleClick="MainTreeView_MouseDoubleClick"
-                        MouseMove="MainTreeView_MouseMove">
+                        MouseMove="MainTreeView_MouseMove"
+                        ContextMenuOpening="MainTreeView_OnContextMenuOpening_">
 
             <pt:TreeListBox.ContextMenu>
                 <ContextMenu x:Name="RightClickContextMenu"/>
