@@ -204,10 +204,11 @@ namespace OfficialPlugins.VariableDisplay
             {
                 var value = args.Value;
                 instanceMember.IsDefault = false;
-
                 //RefreshLogic.IgnoreNextRefresh();
 
-                await GlueCommands.Self.GluxCommands.ElementCommands.HandleSetVariable(variable, value);
+                var saveAndUpdate = args.CommitType == SetPropertyCommitType.Full;
+
+                await GlueCommands.Self.GluxCommands.ElementCommands.HandleSetVariable(variable, value, saveAndUpdate, saveAndUpdate);
             };
 
             instanceMember.CustomGetEvent += (instance) =>

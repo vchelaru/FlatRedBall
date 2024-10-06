@@ -320,9 +320,14 @@ namespace FlatRedBall.Glue.Plugins
         /// Delegate raised whenever a property on either a variable or an element has changed.
         /// </summary>
         /// <remarks>
-        /// New plugins should use ReactToChangedNamedObjectVariableList instead if they intend to handle variables specifically
+        /// New plugins should use ReactToChangedNamedObjectVariableList instead since it allows handling of individual variables and it allows
+        /// checking what type of variable assignment occurred (Intermediate vs Full)
         /// </remarks>
         public ReactToChangedPropertyDelegate ReactToChangedPropertyHandler { get; protected set; }
+
+        /// <summary>
+        /// Delegate raised whenever a property changes on a NamedObjectSave. 
+        /// </summary>
         public Action<List<NamedObjectSavePropertyChange>> ReactToChangedNamedObjectPropertyList { get; protected set; }
         [Obsolete("Use ReactToFileChange")]
         public ReactToFileChangeDelegate ReactToFileChangeHandler { get; protected set; }

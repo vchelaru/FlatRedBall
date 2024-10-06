@@ -49,8 +49,17 @@ namespace OfficialPlugins.VariableDisplay
 
             this.ReactToLoadedGlux += HandleLoadedGlux;
 
-            this.ReactToChangedPropertyHandler += HandleRefreshProperties;
+            //this.ReactToChangedPropertyHandler += HandleRefreshProperties;
+            this.ReactToNamedObjectChangedValueList += HandleChangedValues;
 
+        }
+
+        private void HandleChangedValues(List<VariableChangeArguments> list)
+        {
+            if(list.Any(item => item.CommitType == WpfDataUi.DataTypes.SetPropertyCommitType.Full))
+            {
+                RefreshLogic.RefreshGrid(VariableGrid.DataUiGrid);
+            }
         }
 
         private void HandleLoadedGlux()
