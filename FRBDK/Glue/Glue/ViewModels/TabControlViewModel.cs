@@ -146,13 +146,15 @@ namespace GlueFormsCore.ViewModels
 
             if (args.NewItems is not null && tab.Count == 1)
             {
-                double length = tab.Location switch
+                double? length = tab.Location switch
                 {
-                    TabLocation.Left => GlueState.Self.GlueSettingsSave.LeftTabWidthPixels ?? 230,
-                    _ => 230
+                    TabLocation.Left => GlueState.Self.GlueSettingsSave.LeftTabWidthPixels,
+                    TabLocation.Right => GlueState.Self.GlueSettingsSave.RightTabWidthPixels,
+                    TabLocation.Bottom => GlueState.Self.GlueSettingsSave.BottomTabHeightPixels,
+                    _ => null
                 };
 
-                gridLength = new GridLength(length, GridUnitType.Pixel);
+                gridLength = new GridLength(length ?? 220, GridUnitType.Pixel);
             }
             else if (tab.Count == 0)
             {

@@ -121,6 +121,8 @@ namespace FlatRedBall.Glue.SaveClasses
         public List<string> BottomTabs { get; set; } = new List<string>();
 
         public double? LeftTabWidthPixels { get; set; }
+        public double? RightTabWidthPixels { get; set; }
+        public double? BottomTabHeightPixels { get; set; }
 
         public ExternalSeparatingList<BuildToolAssociation> BuildToolAssociations = new ExternalSeparatingList<BuildToolAssociation>();
 
