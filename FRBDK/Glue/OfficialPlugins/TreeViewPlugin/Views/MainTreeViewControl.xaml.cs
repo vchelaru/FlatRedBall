@@ -913,4 +913,9 @@ public partial class MainTreeViewControl : UserControl
             }
         }
     }
+
+    private void MainTreeView_OnContextMenuOpening_(object sender, ContextMenuEventArgs e)
+    {
+        e.Handled = SelectionLogic.CurrentNode is null;
+    }
 }
