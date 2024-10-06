@@ -332,7 +332,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var child in this.Children)
             {
-                child.CollapseToDefinitions();
+                child.CollapseRecursively();
             }
         }
 
