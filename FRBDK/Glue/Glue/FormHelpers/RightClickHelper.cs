@@ -194,7 +194,7 @@ public static class RightClickHelper
                 if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
                 {
                     Add(L.Texts.ScreenSaveForceJson, () => ForceSaveElementJson(targetNode.Tag as GlueElement));
-                    Add(L.Texts.ViewInExplorer, () => ViewElementInExplorer(targetNode.Tag as GlueElement));
+                    Add(L.Texts.ViewInExplorer, () => ViewElementInExplorer(targetNode.Tag as GlueElement), image: FolderImage);
                 }
                 Add(L.Texts.FileOpenCs, () => OpenCsFile(targetNode.Tag as GlueElement));
             }
@@ -239,7 +239,7 @@ public static class RightClickHelper
 
                 if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
                 {
-                    Add(L.Texts.ViewInExplorer, () => ViewElementInExplorer(targetNode.Tag as GlueElement));
+                    Add(L.Texts.ViewInExplorer, () => ViewElementInExplorer(targetNode.Tag as GlueElement), image: FolderImage);
                 }
 
                 Add(L.Texts.FileOpenCs, () => OpenCsFile(targetNode.Tag as GlueElement));
@@ -255,7 +255,7 @@ public static class RightClickHelper
             AddItem(addFileToolStripMenuItem);
             Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode), image: FolderImage);
             AddSeparator();
-            Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode));
+            Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode), image: FolderImage);
             Add(L.Texts.CopyPathClipboard, () => HandleCopyToClipboardClick(targetNode));
 
             AddSeparator();
@@ -324,7 +324,7 @@ public static class RightClickHelper
             Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode), image: FolderImage);
             Add(L.Texts.CodeRegenerate, () => HandleReGenerateCodeClick(targetNode));
 
-            Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode));
+            Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode), image: FolderImage);
         }
         #endregion
 
@@ -444,7 +444,7 @@ public static class RightClickHelper
         #region IsReferencedFileNode
         else if (targetNode.IsReferencedFile())
         {
-            Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode));
+            Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode), image: FolderImage);
             Add(L.Texts.Open, () => HandleOpen(targetNode));
             AddItem(mFindAllReferences);
 
@@ -528,7 +528,7 @@ public static class RightClickHelper
         else if (targetNode.IsCodeNode())
         {
 
-            Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode));
+            Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode), image: FolderImage);
             Add(L.Texts.CodeRegenerate, () => HandleReGenerateCodeClick(targetNode));
         }
 
