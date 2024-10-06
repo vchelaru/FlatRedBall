@@ -116,6 +116,7 @@ public static class RightClickHelper
     static System.Windows.Controls.Image FolderImage;
 
     static System.Windows.Controls.Image ScreenImage;
+    static System.Windows.Controls.Image StartupScreenImage;
 
     static bool HasCreatedImages = false;
     private static void CreateImages()
@@ -129,7 +130,7 @@ public static class RightClickHelper
             EntityImage = MakeImage("/Content/Icons/icon_entity.png");
             FolderImage = MakeImage("/Content/Icons/icon_folder.png");
             ScreenImage = MakeImage("/Content/Icons/icon_screen.png");
-
+            StartupScreenImage = MakeImage("/Content/Icons/icon_screen_startup.png");
 
             HasCreatedImages = true;
         }
@@ -172,7 +173,7 @@ public static class RightClickHelper
             }
             else
             {
-                Add(L.Texts.SetAsStartupScreen, SetStartupScreen);
+                Add(L.Texts.SetAsStartupScreen, SetStartupScreen, image: StartupScreenImage);
                 AddEvent(screen.IsRequiredAtStartup
                     ? L.Texts.ScreenRemoveRequirement
                     : L.Texts.MakeRequiredAtStartup, ToggleRequiredAtStartupClick);
