@@ -37,6 +37,10 @@ If you prefer, you can also file issues on Github: https://github.com/vchelaru/F
 
 Of course, FlatRedBall has the best documentation: https://docs.flatredball.com/
 
+## Contributing to FlatRedBall
+
+If you're interested in helping out, check out our Contributors section here: https://docs.flatredball.com/flatredball/contributing
+
 ## FlatRedBall Games
 
 FlatRedBall has been used to build dozens of commercial games. Here are some of our favorites:
