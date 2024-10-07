@@ -1333,15 +1333,22 @@ namespace FlatRedBall.Glue.CodeGeneration
                     item.IsCsvOrTreatedAsCsv && (item.GetTypeForCsvFile() == customVariable.Type || item.Name == customVariable.Type));
 
                 // Which one contains this value?
-                ReferencedFileSave rfs = null;
+                // Give preferential treatment to the current entity. If it has the file, use that one:
+                ReferencedFileSave rfs = saveObject?.GetAllReferencedFileSavesRecursively().FirstOrDefault(item =>
+                    item.IsCsvOrTreatedAsCsv && (item.GetTypeForCsvFile() == customVariable.Type || item.Name == customVariable.Type));
 
-                if (!string.IsNullOrEmpty(preferredFile))
+                // If not, look for others:
+                if(rfs == null)
                 {
-                    rfs = files.FirstOrDefault(item => item.Name.EndsWith(preferredFile));
-                }
-                else
-                {
-                    rfs = files.FirstOrDefault();
+                    if (!string.IsNullOrEmpty(preferredFile))
+                    {
+                        rfs = files.FirstOrDefault(item => item.Name.EndsWith(preferredFile));
+                    }
+                    else
+                    {
+                        rfs = files.FirstOrDefault();
+                    }
+
                 }
 
                 if (rfs != null)
