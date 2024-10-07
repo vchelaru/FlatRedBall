@@ -467,8 +467,6 @@ namespace FlatRedBall.TileGraphics
             {
                 foreach (var tile in tileset.TileDictionary.Values)
                 {
-                    int propertyCountFromTileset = 0;
-
                     if (tile.properties.Count != 0)
                     {
                         // this needs a name:

@@ -10,7 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms.Design;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace GumPlugin.CodeGeneration
 {
@@ -21,7 +23,7 @@ namespace GumPlugin.CodeGeneration
         List<string> mVariableNamesToSkipForStates = new List<string>();
 
         public static Dictionary<string, string> VariableNamesToReplaceForStates = new Dictionary<string, string>();
-        
+
         #endregion
 
 
@@ -108,7 +110,7 @@ namespace GumPlugin.CodeGeneration
                 Skip("StackSpacing");
             }
 
-            if(version >= (int)GluxVersions.GumUsesSystemTypes)
+            if (version >= (int)GluxVersions.GumUsesSystemTypes)
             {
                 Include("CustomFrameTextureCoordinateWidth");
                 Include("AutoGridHorizontalCells");
@@ -123,7 +125,7 @@ namespace GumPlugin.CodeGeneration
                 Skip("LineHeightMultiplier");
             }
 
-            if ( version >= (int) GluxVersions.GumHasIgnoredByParentSize)
+            if (version >= (int)GluxVersions.GumHasIgnoredByParentSize)
             {
                 Include("IgnoredByParentSize");
             }
@@ -132,7 +134,7 @@ namespace GumPlugin.CodeGeneration
                 Skip("IgnoredByParentSize");
             }
 
-            if( version >= (int) GluxVersions.GumTextHasIsBold)
+            if (version >= (int)GluxVersions.GumTextHasIsBold)
             {
                 // We can include this one, it's handled by 
                 Include("IsBold");
@@ -170,7 +172,7 @@ namespace GumPlugin.CodeGeneration
             GenerateStateEnums(elementSave, currentBlock);
 
             GenerateCurrentStateFields(elementSave, currentBlock);
-            
+
             GenerateCurrentStateProperties(elementSave, currentBlock);
 
             GenerateStateInterpolateBetween(elementSave, currentBlock);
@@ -200,16 +202,16 @@ namespace GumPlugin.CodeGeneration
 
                     var innerIf = ifStatement.If("category == null");
                     {
-                        foreach(var state in elementSave.States)
+                        foreach (var state in elementSave.States)
                         {
                             innerIf.Line($"if (state.Name == \"{state.Name}\") this.mCurrentVariableState = VariableState.{state.MemberNameInCode()};");
                         }
                     }
-                    foreach(var category in elementSave.Categories)
+                    foreach (var category in elementSave.Categories)
                     {
                         var elseIf = ifStatement.ElseIf($"category.Name == \"{category.Name}\"");
                         {
-                            foreach(var state in category.States)
+                            foreach (var state in category.States)
                             {
                                 elseIf.Line($"if(state.Name == \"{state.Name}\") this.mCurrent{category.Name}State = {category.EnumNameInCode()}.{state.MemberNameInCode()};");
                             }
@@ -231,14 +233,14 @@ namespace GumPlugin.CodeGeneration
 
             var canGenerate = true;
 
-            if(stateContainer is BehaviorSave)
+            if (stateContainer is BehaviorSave)
             {
                 // If it's a behavior, we need to make sure we are on a version of C# that supports enums in interfaces
                 canGenerate = SupportsEnumsInInterfaces;
             }
 
 
-            if(canGenerate)
+            if (canGenerate)
             {
                 currentBlock.Line("#region State Enums");
 
@@ -246,14 +248,19 @@ namespace GumPlugin.CodeGeneration
                 {
                     string categoryName = "VariableState";
                     var states = stateContainer.UncategorizedStates;
-                    GenerateEnumsForCategory(currentBlock, categoryName, states);
+
+                    var isStandard = stateContainer is StandardElementSave;
+
+                    var newAndSpace = isStandard ? string.Empty : "new ";
+
+                    GenerateEnumsForCategory(currentBlock, categoryName, states, newAndSpace);
                 }
                 // loop through categories:
                 foreach (var category in stateContainer.Categories)
                 {
                     string categoryName = enumNamePrefix + category.EnumNameInCode();
                     var states = category.States;
-                    GenerateEnumsForCategory(currentBlock, categoryName, states);
+                    GenerateEnumsForCategory(currentBlock, categoryName, states, string.Empty);
 
                 }
 
@@ -262,9 +269,9 @@ namespace GumPlugin.CodeGeneration
 
         }
 
-        public void GenerateEnumsForCategory(ICodeBlock codeBlock, string categoryName, IEnumerable<StateSave> states)
+        public void GenerateEnumsForCategory(ICodeBlock codeBlock, string categoryName, IEnumerable<StateSave> states, string newAndSpace)
         {
-            var enumBlock = codeBlock.Enum("public", categoryName);
+            var enumBlock = codeBlock.Enum("public " + newAndSpace, categoryName);
 
             foreach (var item in states)
             {
@@ -304,17 +311,18 @@ namespace GumPlugin.CodeGeneration
 
         #region Properties (which contain all the individual setters
 
-        private void GeneratePropertyForCurrentState(ICodeBlock currentBlock, string propertyType, string propertyName, 
-            List<Gum.DataTypes.Variables.StateSave> states, ElementSave container, bool isNullable)
+        private void GeneratePropertyForCurrentState(ICodeBlock currentBlock, string propertyType, string propertyName,
+            List<Gum.DataTypes.Variables.StateSave> states, ElementSave container, bool isNullable, string newAndSpace)
         {
             string propertyPrefix;
-            if(isNullable)
+
+            if (isNullable)
             {
-                propertyPrefix = $"public {propertyType}?";
+                propertyPrefix = $"public {newAndSpace}{propertyType}?";
             }
             else
             {
-                propertyPrefix = $"public {propertyType}";
+                propertyPrefix = $"public {newAndSpace}{propertyType}";
             }
             var property = currentBlock.Property(propertyPrefix, propertyName);
 
@@ -334,53 +342,64 @@ namespace GumPlugin.CodeGeneration
             }
             setter.Line("m" + propertyName + " = value;");
 
-            var switchBlock = setter.Switch("m" + propertyName);
-
-            foreach (var state in states)
+            if (states.Count > 0)
             {
-                var caseBlock = switchBlock.Case(propertyType + "." + state.MemberNameInCode());
+                var switchBlock = setter.Switch("m" + propertyName);
+
+                var shouldIncludeSwitchBlock = false;
+                foreach (var state in states)
                 {
-                    // Parent variables need to be assigned in the order of the objects in the component so that they're attached in the right order.
-                    // If they're attached in the wrong order, then stacking won't work properly:
-                    var instanceNames = container.Instances.Select(item => item.Name).ToList();
-
-                    var orderedVariables = state.Variables
-                        .OrderByDescending(variable => variable.GetRootName() == "Parent")
-                        .ThenByDescending(variable => variable.IsState(container))
-                        .ThenBy(variable => instanceNames.IndexOf(variable.SourceObject))
-                        .ToList();
-
-                    foreach (var variable in orderedVariables)
+                    var caseBlock = switchBlock.Case(propertyType + "." + state.MemberNameInCode());
                     {
-                        var shouldGenerate = false;
-                        try
-                        {
-                            shouldGenerate = GetIfShouldGenerateStateVariable(variable, container);
-                        }
-                        catch (Exception e)
-                        {
-                            GlueCommands.Self.PrintError(e.ToString());
-                        }
-                        // where block doesn't debug well for some reason, so I unrolled it...
-                        if (shouldGenerate)
-                        {
-                            // Note that this could return values like "1,2" instead of "1.2" depending
-                            // on the current language, so the AdjustVariableValueIfNecessary needs to account for that.
-                            string variableValue = variable.Value.ToString();
-                            bool isEntireAssignment;
+                        // Parent variables need to be assigned in the order of the objects in the component so that they're attached in the right order.
+                        // If they're attached in the wrong order, then stacking won't work properly:
+                        var instanceNames = container.Instances.Select(item => item.Name).ToList();
 
-                            GueDerivingClassCodeGenerator.Self.AdjustVariableValueIfNecessary(variable, container, ref variableValue, out isEntireAssignment);
-                            if (isEntireAssignment)
+                        var orderedVariables = state.Variables
+                            .OrderByDescending(variable => variable.GetRootName() == "Parent")
+                            .ThenByDescending(variable => variable.IsState(container))
+                            .ThenBy(variable => instanceNames.IndexOf(variable.SourceObject))
+                            .ToList();
+
+                        foreach (var variable in orderedVariables)
+                        {
+                            var shouldGenerate = false;
+                            try
                             {
-                                caseBlock.Line(variableValue);
+                                shouldGenerate = GetIfShouldGenerateStateVariable(variable, container);
                             }
-                            else
+                            catch (Exception e)
                             {
-                                string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
-                                caseBlock.Line(memberNameInCode + " = " + variableValue + ";");
+                                GlueCommands.Self.PrintError(e.ToString());
+                            }
+                            // where block doesn't debug well for some reason, so I unrolled it...
+                            if (shouldGenerate)
+                            {
+                                shouldIncludeSwitchBlock = true;
+                                // Note that this could return values like "1,2" instead of "1.2" depending
+                                // on the current language, so the AdjustVariableValueIfNecessary needs to account for that.
+                                string variableValue = variable.Value.ToString();
+                                bool isEntireAssignment;
+
+                                GueDerivingClassCodeGenerator.Self.AdjustVariableValueIfNecessary(variable, container, ref variableValue, out isEntireAssignment);
+                                if (isEntireAssignment)
+                                {
+                                    caseBlock.Line(variableValue);
+                                }
+                                else
+                                {
+                                    string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
+                                    caseBlock.Line(memberNameInCode + " = " + variableValue + ";");
+                                }
                             }
                         }
                     }
+                }
+
+                // even though this has variables, it could have all variables that are not generated;
+                if(!shouldIncludeSwitchBlock)
+                {
+                    switchBlock.Parent.BodyCodeLines.Remove(switchBlock);
                 }
             }
 
@@ -395,22 +414,33 @@ namespace GumPlugin.CodeGeneration
             string propertyType = "VariableState";
             var states = elementSave.States;
 
-            GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable:false);
+            var isStandard = elementSave is StandardElementSave;
 
-            foreach (var category in elementSave.Categories)
+            var newAndSpace = isStandard ? string.Empty : "new ";
+
+            GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable: false, newAndSpace:newAndSpace);
+
+            if(elementSave.Categories.Count > 0)
             {
-                propertyName = "Current" + category.Name + "State";
-                propertyType = category.EnumNameInCode();
-                states = category.States;
+                var baseElement = ObjectFinder.Self.GetElementSave(elementSave.BaseType);
 
-                GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable:true);
+                foreach (var category in elementSave.Categories)
+                {
+                    propertyName = "Current" + category.Name + "State";
+                    propertyType = category.EnumNameInCode();
+                    states = category.States;
+
+                    newAndSpace = baseElement?.Categories.Any(item => item.Name == category.Name) == true ? "new " : string.Empty;
+
+                    GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable: true, newAndSpace: newAndSpace);
+                }
             }
 
             currentBlock.Line("#endregion");
         }
 
         #endregion
-        
+
         private bool GetIfShouldGenerateStateVariable(Gum.DataTypes.Variables.VariableSave variable, ElementSave container)
         {
             bool toReturn = true;
@@ -427,7 +457,7 @@ namespace GumPlugin.CodeGeneration
             var isVariableState = variable.IsState(container);
 
             // states can't set states on this
-            if(isVariableState && string.IsNullOrEmpty(variable.SourceObject ) )
+            if (isVariableState && string.IsNullOrEmpty(variable.SourceObject))
             {
                 toReturn = false;
             }
@@ -443,12 +473,12 @@ namespace GumPlugin.CodeGeneration
             {
                 InstanceSave instanceSave = container.GetInstance(variable.SourceObject);
 
-                if(instanceSave == null)
+                if (instanceSave == null)
                 {
                     toReturn = false;
                 }
-                else 
-                { 
+                else
+                {
                     var baseElement = Gum.Managers.ObjectFinder.Self.GetElementSave(instanceSave.BaseType);
 
                     if (baseElement == null)
@@ -478,11 +508,11 @@ namespace GumPlugin.CodeGeneration
                         // or not. It allows code to behave a little unpredictably,
                         // but at the same time, we could simply solve the problem by
                         // initializing here, so I'm going to do that:
-                        if(defaultState.ParentContainer == null)
+                        if (defaultState.ParentContainer == null)
                         {
                             baseElement.Initialize(null);
                         }
-                        
+
                         RecursiveVariableFinder rvf = new RecursiveVariableFinder(defaultState);
 
                         var foundVariable = rvf.GetVariable(variable.GetRootName());
@@ -493,13 +523,13 @@ namespace GumPlugin.CodeGeneration
                             toReturn = false;
                         }
 
-                        if(isVariableState)
+                        if (isVariableState)
                         {
                             // see if the base type has this category. If so, see if the state name exists. If not, we should skip generation:
                             var category = baseElement.Categories.FirstOrDefault(item => item.Name == variable.Type);
                             var variableValueAsString = variable.Value?.ToString();
 
-                            if(!string.IsNullOrEmpty(variableValueAsString) && category != null && !category.States.Any(item => item.Name == variableValueAsString))
+                            if (!string.IsNullOrEmpty(variableValueAsString) && category != null && !category.States.Any(item => item.Name == variableValueAsString))
                             {
                                 // this references an invalid state. This can happen if a state is deleted from an entity 
                                 toReturn = false;
@@ -509,7 +539,7 @@ namespace GumPlugin.CodeGeneration
                 }
             }
 
-            if(toReturn && !hasSourceObject)
+            if (toReturn && !hasSourceObject)
             {
                 // If a variable is part of a component, it better be defined in the base type or else we won't generate it.
                 // For example, consider a component that used to inherit from Text. It will have variables for fonts. If that
@@ -556,16 +586,16 @@ namespace GumPlugin.CodeGeneration
             }
 
             // special case (for now)
-            if(container.Name == "Svg")
+            if (container.Name == "Svg")
             {
-                if(variable.Name == "SourceFile")
+                if (variable.Name == "SourceFile")
                 {
                     toReturn = false;
                 }
             }
-            if(container.Name == "LottieAnimation")
+            if (container.Name == "LottieAnimation")
             {
-                if(variable.Name == "SourceFile")
+                if (variable.Name == "SourceFile")
                 {
                     toReturn = false;
                 }
@@ -579,16 +609,16 @@ namespace GumPlugin.CodeGeneration
 
             string categoryName = "VariableState";
             var states = elementSave.States;
-            GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryName, states, addValues:false);
-            GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryName, states, addValues:true);
+            GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryName, states, addValues: false);
+            GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryName, states, addValues: true);
 
 
             foreach (var category in elementSave.Categories)
             {
                 var categoryType = category.EnumNameInCode();
                 states = category.States;
-                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryType, states, addValues:false);
-                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryType, states, addValues:true);
+                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryType, states, addValues: false);
+                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryType, states, addValues: true);
             }
 
             currentBlock.Line("#endregion");
@@ -598,7 +628,7 @@ namespace GumPlugin.CodeGeneration
         {
             string methodName = "GetCurrentValuesOnState";
 
-            if(addValues)
+            if (addValues)
             {
                 methodName = "AddToCurrentValuesWithState";
             }
@@ -607,61 +637,63 @@ namespace GumPlugin.CodeGeneration
 
             currentBlock.Line("Gum.DataTypes.Variables.StateSave newState = new Gum.DataTypes.Variables.StateSave();");
 
-            var switchBlock = currentBlock.Switch("state");
+            if (states.Count > 0)
             {
-                foreach (var state in states)
+                var switchBlock = currentBlock.Switch("state");
                 {
-                    var caseBlock = switchBlock.Case(categoryType + "." + state.MemberNameInCode());
+                    foreach (var state in states)
                     {
-                        var instanceNames = container.Instances.Select(item => item.Name).ToList();
-                        var orderedVariables = state.Variables
-                            .Where(item => GetIfShouldGenerateStateVariable(item, container))
-                            .OrderBy(variable => instanceNames.IndexOf(variable.SourceObject));
-
-                        foreach (var variable in orderedVariables)
+                        var caseBlock = switchBlock.Case(categoryType + "." + state.MemberNameInCode());
                         {
-                            string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
+                            var instanceNames = container.Instances.Select(item => item.Name).ToList();
+                            var orderedVariables = state.Variables
+                                .Where(item => GetIfShouldGenerateStateVariable(item, container))
+                                .OrderBy(variable => instanceNames.IndexOf(variable.SourceObject));
 
-                            caseBlock.Line("newState.Variables.Add(new Gum.DataTypes.Variables.VariableSave()");
-                            var instantiatorBlock = caseBlock.Block();
+                            foreach (var variable in orderedVariables)
                             {
-                                instantiatorBlock.Line("SetsValue = true,");
+                                string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
 
-                                // Don't use memberNameInCode - states from the XML files will not, and we want this
-                                // to behave the same so merging (used in interpolation) works properly
-                                //instantiatorBlock.Line("Name = \"" + memberNameInCode + "\",");
-                                instantiatorBlock.Line("Name = \"" + variable.Name + "\",");
-
-                                instantiatorBlock.Line($"Type = \"{variable.Type}\",");
-
-                                string valueString = "Value = " + memberNameInCode + "";
-
-
-                                if(addValues && IsVariableNumeric(variable))
+                                caseBlock.Line("newState.Variables.Add(new Gum.DataTypes.Variables.VariableSave()");
+                                var instantiatorBlock = caseBlock.Block();
                                 {
-                                    
-                                    string variableValue = variable.Value.ToString();
-                                    bool isEntireAssignment;
-                                    GueDerivingClassCodeGenerator.Self.AdjustVariableValueIfNecessary(variable, container, ref variableValue, out isEntireAssignment);
+                                    instantiatorBlock.Line("SetsValue = true,");
 
-                                    if (isEntireAssignment)
+                                    // Don't use memberNameInCode - states from the XML files will not, and we want this
+                                    // to behave the same so merging (used in interpolation) works properly
+                                    //instantiatorBlock.Line("Name = \"" + memberNameInCode + "\",");
+                                    instantiatorBlock.Line("Name = \"" + variable.Name + "\",");
+
+                                    instantiatorBlock.Line($"Type = \"{variable.Type}\",");
+
+                                    string valueString = "Value = " + memberNameInCode + "";
+
+
+                                    if (addValues && IsVariableNumeric(variable))
                                     {
-                                        valueString = variableValue;
+
+                                        string variableValue = variable.Value.ToString();
+                                        bool isEntireAssignment;
+                                        GueDerivingClassCodeGenerator.Self.AdjustVariableValueIfNecessary(variable, container, ref variableValue, out isEntireAssignment);
+
+                                        if (isEntireAssignment)
+                                        {
+                                            valueString = variableValue;
+                                        }
+                                        else
+                                        {
+                                            valueString += " + " + variableValue;
+                                        }
                                     }
-                                    else
-                                    {
-                                        valueString += " + " + variableValue;
-                                    }
+                                    instantiatorBlock.Line(valueString);
+
                                 }
-                                instantiatorBlock.Line(valueString);
-
+                                caseBlock.Line(");");
                             }
-                            caseBlock.Line(");");
                         }
                     }
                 }
             }
-
             currentBlock.Line("return newState;");
         }
 

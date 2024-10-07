@@ -784,7 +784,7 @@ namespace GlueControl
                 dto.ElementNamesGlue.Add(glueType);
             }
 
-            GlueControlManager.Self.SendToGlue(dto);
+            _=GlueControlManager.Self.SendToGlue(dto);
         }
 
         #endregion
@@ -978,19 +978,13 @@ namespace GlueControl
                     {
                         // succeed = false
                     }
+#pragma warning disable CS0618 // Suppressing this error for older versions of FRB where this is still raised.
                     catch (ExecutionEngineException)
                     {
 
                     }
+#pragma warning restore CS0618 // Type or member is obsolete
 
-                    if (!didSucceed)
-                    {
-                        // this could be a new exposed variable. If so, try to assign it using the actual type:
-                        if (nos == null)
-                        {
-                            int m = 3;
-                        }
-                    }
                 }
             }
             catch (MemberAccessException)

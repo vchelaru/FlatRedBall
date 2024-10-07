@@ -397,15 +397,6 @@ namespace TMXGlueLib
                 this.imageField = value;
             }
         }
-
-
-        [XmlAttribute("opacity")]
-        public float Opacity
-        {
-            get;
-            set;
-        } = 1.0f;
-
     }
 
     #endregion
