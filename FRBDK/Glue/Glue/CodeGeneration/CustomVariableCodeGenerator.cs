@@ -31,7 +31,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (!string.IsNullOrEmpty(customVariable.SourceObject))
             {
                 var owner = saveObject.GetNamedObjectRecursively(customVariable.SourceObject);
-                var nosAti = owner.GetAssetTypeInfo();
+                var nosAti = owner?.GetAssetTypeInfo();
                 variableDefinition = nosAti?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
             }
             else

@@ -364,11 +364,17 @@ namespace FlatRedBall.Glue.Managers
                 if(markAsCurrent) CurrentlyRunningTask = task;
                 TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
                 task.TimeStarted = DateTime.Now;
-                await task.Do_Action_Internal();
-                task.TimeEnded = DateTime.Now;
-                // Set it to null before raising the event so that the TaskCount uses a null object.
-                if (markAsCurrent) CurrentlyRunningTask = null;
-                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
+                try
+                {
+                    await task.Do_Action_Internal();
+                }
+                finally
+                {
+                    task.TimeEnded = DateTime.Now;
+                    // Set it to null before raising the event so that the TaskCount uses a null object.
+                    if (markAsCurrent) CurrentlyRunningTask = null;
+                    TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
+                }
             }
 
         }
