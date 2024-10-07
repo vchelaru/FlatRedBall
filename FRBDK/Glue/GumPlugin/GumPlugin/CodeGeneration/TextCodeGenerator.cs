@@ -110,6 +110,11 @@ namespace GumPlugin.CodeGeneration
                 mVariableNamesToSkipForProperties.Add("TextOverflowHorizontalMode");
                 mVariableNamesToSkipForProperties.Add("TextOverflowVerticalMode");
             }
+            else
+            {
+                // skip this still, generate it manually:
+                mVariableNamesToSkipForProperties.Add("TextOverflowVerticalMode");
+            }
         }
 
         public void AddVariableNamesToSkipForStates(List<string> variableNamesToSkipForStates)
@@ -131,6 +136,32 @@ namespace GumPlugin.CodeGeneration
                     overrideTextRenderingPositionModeProperty.Line("get => mContainedText.OverrideTextRenderingPositionMode;");
                     overrideTextRenderingPositionModeProperty.Line("set => mContainedText.OverrideTextRenderingPositionMode = value;");
                 }
+
+                if (GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GumTextObjectsHaveTextOverflowProperties)
+                {
+                    /*
+                     * public global::RenderingLibrary.Graphics.TextOverflowVerticalMode TextOverflowVerticalMode
+                     * {
+                     *     get
+                     *     {
+                     *         return ContainedText.TextOverflowVerticalMode;
+                     *     }
+                     *     set
+                     *     {
+                     *         ContainedText.TextOverflowVerticalMode = value;
+                     *         NotifyPropertyChanged();
+                     *     }
+                     * }
+                     */
+
+                    // This allows us to inject "new"
+                    classBodyBlock.Property("public new global::RenderingLibrary.Graphics.TextOverflowVerticalMode", "TextOverflowVerticalMode")
+                        .Get().Line("return ContainedText.TextOverflowVerticalMode;").End()
+                        .Set()
+                            .Line("ContainedText.TextOverflowVerticalMode = value;")
+                            .Line("NotifyPropertyChanged();");
+                }
+
             }
         }
 

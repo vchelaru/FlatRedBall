@@ -227,6 +227,19 @@ namespace GumPlugin.CodeGeneration
 
         public bool SupportsEnumsInInterfaces => GlueState.Self.CurrentMainProject?.DotNetVersion?.Major >= 5;
 
+        bool IsUncagetgorizedStateNew (IStateContainer stateContainer)
+        {
+            var isStandard = stateContainer is StandardElementSave;
+
+            var toReturn = !isStandard;
+
+            if (!isStandard && stateContainer is ScreenSave screenSave && string.IsNullOrEmpty(screenSave.BaseType))
+            {
+                toReturn = false;
+            }
+            return toReturn;
+        }
+
         public void GenerateStateEnums(IStateContainer stateContainer, ICodeBlock currentBlock, string enumNamePrefix = null)
         {
             bool hasUncategorized = (stateContainer is BehaviorSave) == false;
@@ -249,9 +262,7 @@ namespace GumPlugin.CodeGeneration
                     string categoryName = "VariableState";
                     var states = stateContainer.UncategorizedStates;
 
-                    var isStandard = stateContainer is StandardElementSave;
-
-                    var newAndSpace = isStandard ? string.Empty : "new ";
+                    var newAndSpace = IsUncagetgorizedStateNew(stateContainer) ? "new " : string.Empty;
 
                     GenerateEnumsForCategory(currentBlock, categoryName, states, newAndSpace);
                 }
@@ -416,7 +427,9 @@ namespace GumPlugin.CodeGeneration
 
             var isStandard = elementSave is StandardElementSave;
 
-            var newAndSpace = isStandard ? string.Empty : "new ";
+            //var newAndSpace = isStandard ? string.Empty : "new ";
+            var newAndSpace = IsUncagetgorizedStateNew(elementSave) ? "new " : string.Empty;
+
 
             GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable: false, newAndSpace:newAndSpace);
 
