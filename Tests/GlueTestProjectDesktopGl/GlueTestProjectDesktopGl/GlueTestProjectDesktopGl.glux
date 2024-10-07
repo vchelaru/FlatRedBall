@@ -2622,20 +2622,6 @@
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
-          <InstanceName>RemoveObjectsWhenInvisibleEntityInstance</InstanceName>
-          <SourceClassType>Entities\RemoveObjectsWhenInvisibleEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>1</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <SourceType>Entity</SourceType>
-          <AttachToContainer>true</AttachToContainer>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
           <InstanceName>PolygonEntityInstance</InstanceName>
           <SourceClassType>Entities\PolygonEntity</SourceClassType>
           <Properties>
@@ -6083,21 +6069,6 @@
           <ProjectsToExcludeFrom />
           <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
-        <ReferencedFileSave>
-          <Name>Screens/TiledLevelScreen/Tilesets/Level1Info.csv</Name>
-          <Properties>
-            <PropertySave>
-              <Name>LoadedOnlyWhenReferenced</Name>
-              <ValueAsBool>true</ValueAsBool>
-            </PropertySave>
-          </Properties>
-          <IsSharedStatic>true</IsSharedStatic>
-          <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
-          <SourceFile>Screens/TiledLevelScreen/Levels/Level1.tmx</SourceFile>
-          <BuildTool>*.tmx -&gt; TmxToCSV.exe -&gt; *.csv</BuildTool>
-          <ProjectsToExcludeFrom />
-          <IsCreatedByWildcard>false</IsCreatedByWildcard>
-        </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <CustomVariables>
@@ -6110,6 +6081,22 @@
           </Properties>
           <Name>UsesTmxLevelFiles</Name>
           <DefaultValue xsi:type="xsd:boolean">true</DefaultValue>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>string</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+            <PropertySave>
+              <Name>Category</Name>
+              <ValueAsString>Layer</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>DefaultLayer</Name>
+          <Category>Layer</Category>
         </CustomVariable>
       </CustomVariables>
       <NamedObjects>
@@ -6245,6 +6232,24 @@
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>string</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+            <PropertySave>
+              <Name>Category</Name>
+              <ValueAsString>Layer</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>DefaultLayer</Name>
+          <Category>Layer</Category>
+        </CustomVariable>
+      </CustomVariables>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>EmptyTileShapeCollection</InstanceName>
@@ -6553,6 +6558,24 @@
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>string</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+            <PropertySave>
+              <Name>Category</Name>
+              <ValueAsString>Layer</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>DefaultLayer</Name>
+          <Category>Layer</Category>
+        </CustomVariable>
+      </CustomVariables>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>TileEntityInstance</InstanceName>
@@ -12491,7 +12514,6 @@
           <SourceName>Entire File (Scene)</SourceName>
           <ExposedInDerived>true</ExposedInDerived>
           <AttachToContainer>true</AttachToContainer>
-          <Instantiate>false</Instantiate>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -18286,408 +18308,6 @@
       <Source>GLUE</Source>
       <UseGlobalContent>false</UseGlobalContent>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
-      <CustomVariables>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>TextInheritingEntityInstanceVisible</Name>
-          <SourceObject>TextInheritingEntityInstance</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>SetInvisibleOnlyByTunneledVariableVisible</Name>
-          <DefaultValue xsi:type="xsd:boolean">false</DefaultValue>
-          <SourceObject>SetInvisibleOnlyByTunneledVariable</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>StartingVisibleVisible</Name>
-          <DefaultValue xsi:type="xsd:boolean">true</DefaultValue>
-          <SourceObject>StartingVisible</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>float</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>X</Name>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>float</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>Y</Name>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>float</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>Z</Name>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>StartingInvisibleMadeVisibleVisible</Name>
-          <DefaultValue xsi:type="xsd:boolean">false</DefaultValue>
-          <SourceObject>StartingInvisibleMadeVisible</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>float</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>StartingVisibleAlpha</Name>
-          <DefaultValue xsi:type="xsd:float">1</DefaultValue>
-          <SourceObject>StartingVisible</SourceObject>
-          <SourceObjectProperty>Alpha</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>TextInstanceSetInvisibleInCustomCodeVisible</Name>
-          <DefaultValue xsi:type="xsd:boolean">true</DefaultValue>
-          <SourceObject>TextInstanceSetInvisibleInCustomCode</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>SetVisibleInCustomCodeVisible</Name>
-          <SourceObject>SetVisibleInCustomCode</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>InstanceContainingOtherEntityInstanceVisible</Name>
-          <SourceObject>InstanceContainingOtherEntityInstance</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-      </CustomVariables>
-      <NamedObjects>
-        <NamedObjectSave>
-          <InstanceName>StartingInvisible</InstanceName>
-          <SourceClassType>Sprite</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>2</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>Blue</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>ColorOperation</Type>
-            <Member>ColorOperation</Member>
-            <ValueAsInt>6</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
-          </CustomProperty>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>SetInvisibleOnlyByTunneledVariable</InstanceName>
-          <SourceClassType>Sprite</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>2</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>StartingVisible</InstanceName>
-          <SourceClassType>Sprite</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>2</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>Blue</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>ColorOperation</Type>
-            <Member>ColorOperation</Member>
-            <ValueAsInt>6</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>StartingInvisibleMadeVisible</InstanceName>
-          <SourceClassType>Sprite</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>2</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>Blue</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>ColorOperation</Type>
-            <Member>ColorOperation</Member>
-            <ValueAsInt>6</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
-          </CustomProperty>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>TextInstanceStartingInvisible</InstanceName>
-          <SourceClassType>Text</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>2</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>string</Type>
-            <Member>DisplayText</Member>
-            <ValueAsString>Hello</ValueAsString>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
-          </CustomProperty>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>TextInstanceSetInvisibleInCustomCode</InstanceName>
-          <SourceClassType>Text</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>2</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>TextInheritingEntityInstance</InstanceName>
-          <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>1</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <SourceType>Entity</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>TextInheritingEntityInstanceStartingInvisibleCustomRadius</InstanceName>
-          <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>1</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>CircleRadius</Member>
-            <ValueAsFloat>250</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
-          </CustomProperty>
-          <SourceType>Entity</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>TextInheritingEntityInstanceStartingInvisible</InstanceName>
-          <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>1</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
-          </CustomProperty>
-          <SourceType>Entity</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>SetVisibleInCustomCode</InstanceName>
-          <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>1</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
-          </CustomProperty>
-          <SourceType>Entity</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>InstanceContainingOtherEntityInstance</InstanceName>
-          <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>1</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <SourceType>Entity</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-      </NamedObjects>
-      <Name>Entities\RemoveObjectsWhenInvisibleEntity</Name>
-      <CustomClassesForExport />
-      <ImplementsITiledTileMetadata>false</ImplementsITiledTileMetadata>
-      <Is2D>true</Is2D>
-    </EntitySave>
-    <EntitySave>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
-      <UseGlobalContent>false</UseGlobalContent>
-      <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <Properties>
         <PropertySave>
           <Name>InputDevice</Name>
@@ -22894,7 +22514,6 @@
       <Name>TileMapInfo</Name>
       <CsvFilesUsingThis>
         <string>Screens/CsvScreen/CustomCsvClassLoadedOnlyWhenReferenced.csv</string>
-        <string>Screens/TiledLevelScreen/Tilesets/Level1Info.csv</string>
       </CsvFilesUsingThis>
       <RequiredProperties>
         <InstructionSave>

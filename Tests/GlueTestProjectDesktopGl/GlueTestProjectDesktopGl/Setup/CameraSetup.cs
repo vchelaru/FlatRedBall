@@ -229,8 +229,7 @@ namespace GlueTestProject
                     var resolutionAspectRatio = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth / (decimal)FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;
                     int destinationRectangleWidth;
                     int destinationRectangleHeight;
-                    int x = 0;
-                    int y = 0;
+
                     if (Data.EffectiveAspectRatio.Value > resolutionAspectRatio)
                     {
                         destinationRectangleWidth = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth;

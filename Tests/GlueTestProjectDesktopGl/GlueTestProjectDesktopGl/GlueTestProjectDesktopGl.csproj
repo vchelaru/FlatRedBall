@@ -642,10 +642,6 @@
     <Compile Include="Entities\RecyclableEntity.Generated.cs">
       <DependentUpon>RecyclableEntity.cs</DependentUpon>
     </Compile>
-    <Compile Include="Entities\RemoveObjectsWhenInvisibleEntity.cs" />
-    <Compile Include="Entities\RemoveObjectsWhenInvisibleEntity.Generated.cs">
-      <DependentUpon>RemoveObjectsWhenInvisibleEntity.cs</DependentUpon>
-    </Compile>
     <Compile Include="Entities\ResetVariableEntity.cs" />
     <Compile Include="Entities\ResetVariableEntity.Generated.cs">
       <DependentUpon>ResetVariableEntity.cs</DependentUpon>
@@ -2534,10 +2530,6 @@
     <None Include="content\screens\tiledlevelscreen\levels\level1.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Level1</Name>
-    </None>
-    <None Include="content\screens\tiledlevelscreen\tilesets\level1info.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>Level1Info</Name>
     </None>
     <None Include="content\screens\tiledlevelscreen\tilesets\platformertiles.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
