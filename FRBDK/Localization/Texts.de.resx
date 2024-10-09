@@ -984,9 +984,6 @@
   <data name="EnterFile" xml:space="preserve">
     <value>Geben Sie den Namen der neuen Datei ein:</value>
   </data>
-  <data name="SelectFileType" xml:space="preserve">
-    <value>Wählen Sie den Dateityp:</value>
-  </data>
   <data name="Label" xml:space="preserve">
     <value>Etikett</value>
   </data>

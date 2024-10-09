@@ -52,6 +52,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
 
         void AddNewFileOptions(CustomizableNewFileWindow newFileWindow)
         {
+            var viewModel = newFileWindow.ViewModel;
+
             var listOfFiles = GetAvailableFilesForNewFile();
 
             List<string> filesNotInAtiList = listOfFiles.Select(item=> FileManager.GetExtension(item)).Distinct().ToList();
@@ -77,21 +79,20 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
                 bool added = false;
                 if (!string.IsNullOrEmpty(ati.Extension) && !string.IsNullOrEmpty(ati.QualifiedSaveTypeName))
                 {
-                    newFileWindow.AddOption(ati);
+                    viewModel.AllOptions.Add(ati);
                     added = true;
                 }
 
                 // special case .txt
                 if (!added && ati.Extension == "txt")
                 {
-                    newFileWindow.AddOption(ati);
+                    viewModel.AllOptions.Add(ati);
                     added = true;
                 }
 
                 if (!added && GetNewFileTemplateForExtension(listOfFiles, ati.Extension, false) != null)
                 {
-                    newFileWindow.AddOption(ati);
-
+                    viewModel.AllOptions.Add(ati);
                 }
             }
 

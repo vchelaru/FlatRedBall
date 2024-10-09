@@ -985,9 +985,6 @@ for {1}?</value>
   <data name="EnterFile" xml:space="preserve">
     <value>Enter the new file's name:</value>
   </data>
-  <data name="SelectFileType" xml:space="preserve">
-    <value>Select the file type:</value>
-  </data>
   <data name="Label" xml:space="preserve">
     <value>Label</value>
   </data>

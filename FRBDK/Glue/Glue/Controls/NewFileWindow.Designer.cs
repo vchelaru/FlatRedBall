@@ -81,7 +81,7 @@ partial class NewFileWindow
         this.ComboBoxLabel.Name = "ComboBoxLabel";
         this.ComboBoxLabel.Size = new System.Drawing.Size(97, 13);
         this.ComboBoxLabel.TabIndex = 7;
-        this.ComboBoxLabel.Text = L.Texts.SelectFileType;
+        this.ComboBoxLabel.Text = "Select the file type:";
         // 
         // label2
         // 

@@ -25,7 +25,7 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel x:Name="StandardUiStack">
-                    <Label Content="{x:Static localization:Texts.SelectFileType}" />
+                    <Label Content="Select the file type:" />
                     <Grid>
                         <TextBox x:Name="SearchTermTextBox" Height="24" 
                              Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"

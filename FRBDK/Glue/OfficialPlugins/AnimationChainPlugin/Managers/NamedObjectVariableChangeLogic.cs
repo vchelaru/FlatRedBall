@@ -31,13 +31,22 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 {
                     AnimationChainListSave achx = null;
                     var extension = achxFullFile.Extension;
-                    if (extension == "aseprite")
+                    try
                     {
-                        achx = AsepriteAnimationChainLoader.ToAnimationChainListSave(achxFullFile.FullPath);
+                        if (extension == "aseprite")
+                        {
+                            achx = AsepriteAnimationChainLoader.ToAnimationChainListSave(achxFullFile.FullPath);
+                        }
+                        else
+                        {
+                            achx = AnimationChainListSave.FromFile(achxFullFile.FullPath);
+                        }
                     }
-                    else
+                    catch(Exception e)
                     {
-                        achx = AnimationChainListSave.FromFile(achxFullFile.FullPath);
+                        // The file could be corrupted. We don't want to have the entire plugin crash, so we catch
+                        // the exception and output an error:
+                        GlueCommands.Self.PrintError($"Error loading AnimationChain file {achxFullFile}:\n{e}");
                     }
                     firstAnimationName = achx?.AnimationChains.FirstOrDefault()?.Name;
                 }

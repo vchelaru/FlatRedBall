@@ -31,6 +31,11 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
                 clone.FriendlyName = "Aseprite Animation Chain";
                 clone.Extension = "aseprite";
+                // If we don't set this to true, the file will show up in the new file window.
+                // As of October 9, 2024 we do not have a sample .aseprite file to use so Glue
+                // attempts to create a new .achx file but save it as an .aseprite file, which causes
+                // corruption.
+                clone.HideFromNewFileWindow = true;
                 return clone;
             }
             else

@@ -56,7 +56,7 @@ namespace OfficialPlugins.VariableDisplay
 
         private void HandleChangedValues(List<VariableChangeArguments> list)
         {
-            if(list.Any(item => item.CommitType == WpfDataUi.DataTypes.SetPropertyCommitType.Full))
+            if(list.Any(item => item.CommitType == WpfDataUi.DataTypes.SetPropertyCommitType.Full) && VariableGrid != null)
             {
                 RefreshLogic.RefreshGrid(VariableGrid.DataUiGrid);
             }
