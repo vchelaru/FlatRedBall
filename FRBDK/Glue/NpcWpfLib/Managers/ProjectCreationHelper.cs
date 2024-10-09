@@ -200,7 +200,7 @@ public static class ProjectCreationHelper
         newNamespace = newNamespace ?? newProjectName;
         if(oldProjectName != newNamespace)
         {
-            UpdateNamespaces(projectRootDirectory, oldProjectName, newNamespace);
+            UpdateNamespaces(projectRootDirectory, oldProjectName, newNamespace, newProjectName);
         }
 
     }
@@ -365,8 +365,8 @@ public static class ProjectCreationHelper
     /// </summary>
     /// <param name="unpackDirectory">The directory containing all of the files to rename.</param>
     /// <param name="stringToReplace">What to replace - usually this is the platform name.</param>
-    /// <param name="stringToReplaceWith">What to replace with - this is the project name.</param>
-    private static void RenameFiles(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
+    /// <param name="newProjectName">What to replace with - this is the project name.</param>
+    private static void RenameFiles(string unpackDirectory, string stringToReplace, string newProjectName)
     {
         List<string> filesToReplace = FileManager.GetAllFilesInDirectory(
             unpackDirectory, "csproj");
@@ -416,7 +416,7 @@ public static class ProjectCreationHelper
                 string directory = FileManager.GetDirectory(fileName);
                 string fileWithoutPath = FileManager.RemovePath(fileName);
 
-                fileWithoutPath = fileWithoutPath.Replace(stringToReplace, stringToReplaceWith);
+                fileWithoutPath = fileWithoutPath.Replace(stringToReplace, newProjectName);
 
                 TryMultipleTimes(() => File.Move(fileName, directory + fileWithoutPath), 5);
             }
@@ -444,7 +444,7 @@ public static class ProjectCreationHelper
                     string beforeLastIndex = fileName.Substring(0, lastIndexOfWhatToReplace);
 
                     string after = fileName.Substring(lastIndexOfWhatToReplace, fileName.Length - lastIndexOfWhatToReplace);
-                    after = after.Replace(stringToReplace, stringToReplaceWith);
+                    after = after.Replace(stringToReplace, newProjectName);
 
                     string targetDirectory = beforeLastIndex + after;
 
@@ -523,7 +523,7 @@ public static class ProjectCreationHelper
         streamWrite.Write(fileContents);
         streamWrite.Close();
     }
-    private static void UpdateNamespaces(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
+    private static void UpdateNamespaces(string unpackDirectory, string stringToReplace, string projectNamespace, string projectName)
     {
         #region cs/xaml/aspx/html/user/appxmanifest
         // simple replacements:
@@ -541,7 +541,7 @@ public static class ProjectCreationHelper
         {
             string contents = FileManager.FromFileText(fileName);
 
-            contents = contents.Replace(stringToReplace, stringToReplaceWith);
+            contents = contents.Replace(stringToReplace, projectNamespace);
 
             FileManager.SaveText(contents, fileName);
         }
@@ -557,7 +557,7 @@ public static class ProjectCreationHelper
         {
             string contents = FileManager.FromFileText(fileName);
             // to catch namespaces:
-            contents = contents.Replace(stringToReplace + ".", stringToReplaceWith + ".");
+            contents = contents.Replace(stringToReplace + ".", projectNamespace + ".");
 
             FileManager.SaveText(contents, fileName);
         }
@@ -580,24 +580,26 @@ public static class ProjectCreationHelper
                 "<RootNamespace>" + stringToReplace + "</RootNamespace>";
 
             string namespaceLineReplacement =
-                "<RootNamespace>" + stringToReplaceWith + "</RootNamespace>";
+                "<RootNamespace>" + projectNamespace + "</RootNamespace>";
 
             contents = contents.Replace(namespaceLine, namespaceLineReplacement);
 
             string originalStartup = "<StartupObject>" + stringToReplace + ".Program</StartupObject>";
-            string replacementStartup = "<StartupObject>" + stringToReplaceWith + ".Program</StartupObject>";
+            string replacementStartup = "<StartupObject>" + projectNamespace + ".Program</StartupObject>";
             contents = contents.Replace(originalStartup, replacementStartup);
 
             string originalAssemblyName = $"<AssemblyName>{stringToReplace}</AssemblyName>";
-            string newAssemblyName = $"<AssemblyName>{stringToReplaceWith}</AssemblyName>";
+            string newAssemblyName = $"<AssemblyName>{projectNamespace}</AssemblyName>";
             contents = contents.Replace(originalAssemblyName, newAssemblyName);
 
             string originalProjectReference = $@"<ProjectReference Include=""..\{stringToReplace}Content\{stringToReplace}Content.contentproj"">";
-            string newProjectReference = $@"<ProjectReference Include=""..\{stringToReplaceWith}Content\{stringToReplaceWith}Content.contentproj"">";
+            string newProjectReference = $@"<ProjectReference Include=""..\{projectNamespace}Content\{projectNamespace}Content.contentproj"">";
             contents = contents.Replace(originalProjectReference, newProjectReference);
 
             string originalMgcb = $@"<KniContentReference Include=""Content\{stringToReplace}Content.mgcb"" />";
-            string newMgcb = $@"<KniContentReference Include=""Content\{stringToReplaceWith}Content.mgcb"" />";
+            // use the project name, not the project namespace because we want the mgcb to have the same name as the project
+            // when making a synced project
+            string newMgcb = $@"<KniContentReference Include=""Content\{projectName}Content.mgcb"" />";
             contents = contents.Replace(originalMgcb, newMgcb);
 
             System.IO.File.WriteAllText(fileName, contents, Encoding.UTF8);
@@ -614,7 +616,7 @@ public static class ProjectCreationHelper
             string contents = FileManager.FromFileText(fileName);
 
             string whatToReplace = $"\\{stringToReplace}\\Libraries\\";
-            string whatToReplaceWith = $"\\{stringToReplaceWith}\\Libraries\\";
+            string whatToReplaceWith = $"\\{projectNamespace}\\Libraries\\";
 
             contents = contents.Replace(whatToReplace, whatToReplaceWith);
 
@@ -633,7 +635,7 @@ public static class ProjectCreationHelper
             string contents = FileManager.FromFileText(fileName);
 
             string whatToSearchFor = stringToReplace + ".";
-            string replacement = stringToReplaceWith + ".";
+            string replacement = projectNamespace + ".";
 
             contents = contents.Replace(whatToSearchFor, replacement);
 
@@ -656,7 +658,7 @@ public static class ProjectCreationHelper
             // need to update those. We can be more general by just looking for 
             // the old name plus a dot at the end
             string whatToSearchFor = stringToReplace + ".";
-            string replacement = stringToReplaceWith + ".";
+            string replacement = projectNamespace + ".";
 
             contents = contents.Replace(whatToSearchFor, replacement);
 
@@ -677,14 +679,14 @@ public static class ProjectCreationHelper
             // need to update those. We can be more general by just looking for 
             // the old name plus a dot at the end
             string whatToSearchFor = $"@using {stringToReplace}";
-            string replacement = $"@using {stringToReplaceWith}";
+            string replacement = $"@using {projectNamespace}";
 
             contents = contents.Replace(whatToSearchFor, replacement);
 
             if(contents.Contains($"<PageTitle>{stringToReplace}</PageTitle>"))
             {
                 whatToSearchFor = $"<PageTitle>{stringToReplace}</PageTitle>";
-                replacement = $"<PageTitle>{stringToReplaceWith}</PageTitle>";
+                replacement = $"<PageTitle>{projectNamespace}</PageTitle>";
 
                 contents = contents.Replace(whatToSearchFor, replacement);
             }
@@ -706,7 +708,7 @@ public static class ProjectCreationHelper
 
             string contents = FileManager.FromFileText(fileName);
             string whatToSearchFor = "\"" + stringToReplace + "\": {";
-            string replacement = "\"" + stringToReplaceWith + "\": {";
+            string replacement = "\"" + projectNamespace + "\": {";
 
             contents = contents.Replace(whatToSearchFor, replacement);
 

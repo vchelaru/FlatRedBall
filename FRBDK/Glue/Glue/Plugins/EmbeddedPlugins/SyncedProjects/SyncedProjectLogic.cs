@@ -49,7 +49,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 // Skip trying to add the folder.  We don't need to do this because if it
                 // contains anything, then the contained objects will automatically put themselves in a folder
                 shouldSkipContent = true;
+            }
 
+            // MGCBs from one project type to another are not compatible, so do not sync them.
+            if(bi.UnevaluatedInclude.EndsWith(".mgcb"))
+            {
+                shouldSkipContent = true;
             }
 
             if (!shouldSkipContent)
