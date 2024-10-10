@@ -169,6 +169,9 @@
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="Background" Value="{StaticResource Frb.Brushes.Primary.Dark}"></Setter>
             </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value=".75" />
+            </Trigger>
         </Style.Triggers>
     </Style>
 
