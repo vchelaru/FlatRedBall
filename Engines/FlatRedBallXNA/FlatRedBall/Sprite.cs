@@ -780,7 +780,7 @@ namespace FlatRedBall
         /// <remarks>
         /// The index begins counting at the bottom left (index 0)
         /// and increases moving counterclockwise.
-        ////3----2
+        /// 3----2
         /// |    |
         /// |    |
         /// 0----1

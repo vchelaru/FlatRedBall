@@ -25,8 +25,6 @@ namespace FlatRedBall.Forms.Controls
 
         public Action<TreeViewItem> NewTreeViewItemCreated;
 
-        int selectedIndex = -1;
-
         public object SelectedObject
         {
             get

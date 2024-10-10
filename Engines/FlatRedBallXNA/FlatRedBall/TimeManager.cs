@@ -511,7 +511,6 @@ namespace FlatRedBall
         /// A timed section is the amount of time (in seconds) since the last time either Update
         /// or TimeSection has been called.  The sections are reset every time Update is called.
         /// The sections can be retrieved through the GetTimedSections method.
-        /// <seealso cref="FRB.TimeManager.GetTimedSection"/>
         /// </remarks>
         public static void TimeSection()
         {
@@ -526,7 +525,6 @@ namespace FlatRedBall
         /// A timed section is the amount of time (in seconds) since the last time either Update
         /// or TimeSection has been called.  The sections are reset every time Update is called.
         /// The sections can be retrieved through the GetTimedSections method.
-        /// <seealso cref="FRB.TimeManager.GetTimedSection"/>
         /// </remarks>
         /// <param name="label">The label for the timed section.</param>
         public static void TimeSection(string label)

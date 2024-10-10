@@ -542,7 +542,7 @@ namespace FlatRedBall.Screens
         /// <remarks>
         /// This can be used to begin a level from the beginning or to reload a screen for debugging.
         /// </remarks>
-        /// <param name="reloadContent">Whether the screen's content should be reloaded. 
+        /// <param name="reloadScreenContent">Whether the screen's content should be reloaded. 
         /// If true, then any content that belongs
         /// to this Screen's content manager will be reloaded. 
         /// Global content will not be reloaded.</param>

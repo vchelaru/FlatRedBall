@@ -860,7 +860,6 @@ namespace FlatRedBall.Gui
             if (Cursor.PrimaryClick)
             {
                 Cursor.WindowGrabbed = null;
-                Cursor.mSidesGrabbed = Sides.None;
 
             }
             #endregion
