@@ -462,11 +462,11 @@ namespace FlatRedBall.Audio
         /// </summary>
         public static void StopSong()
         {
-            if(mCurrentISong != null)
+            if(CurrentlyPlayingISong != null)
             {
-                mCurrentISong.Stop();
+                CurrentlyPlayingISong.Stop();
             }
-            else if (mCurrentSong != null)
+            else if (CurrentlyPlayingSong != null)
             {
                 Microsoft.Xna.Framework.Media.MediaPlayer.Stop();
             }
@@ -483,7 +483,7 @@ namespace FlatRedBall.Audio
         /// <returns>Whether the song was disposed.</returns>
         public static bool StopAndDisposeCurrentSongIfNameDiffers(string nameToCompareAgainst)
         {
-            bool wasDisposed = false;
+            bool wasStopped = false;
 
             if (CurrentlyPlayingSong != null && nameToCompareAgainst != mLastSongNameRequested)
             {
@@ -495,7 +495,9 @@ namespace FlatRedBall.Audio
                     songToDispose.Dispose();
                 }
 
-                wasDisposed = true;
+                CurrentlyPlayingSong = null;
+
+                wasStopped = true;
             }
             if(CurrentlyPlayingISong != null && nameToCompareAgainst != mLastSongNameRequested)
             {
@@ -505,11 +507,14 @@ namespace FlatRedBall.Audio
                 {
                     songToDispose.Dispose();
                 }
-                wasDisposed = true;
+
+                CurrentlyPlayingISong = null;
+
+                wasStopped = true;
             }
 
 
-            return wasDisposed;
+            return wasStopped;
         }
 
 
