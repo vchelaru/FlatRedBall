@@ -81,7 +81,7 @@ namespace OfficialPlugins.CollisionPlugin
         {
             this.ReactToLoadedGluxEarly += HandleGluxLoad;
 
-            this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
+            this.ReactToItemsSelected += HandleItemsSelected;
 
             this.AddEventsForObject += HandleAddEventsForObject;
 
@@ -148,6 +148,7 @@ namespace OfficialPlugins.CollisionPlugin
 
             this.ReactToElementRenamed += HandleElementRenamed;
         }
+
 
         private void HandleElementRenamed(IElement element, string oldName)
         {
@@ -288,7 +289,7 @@ namespace OfficialPlugins.CollisionPlugin
             }
         }
 
-        private void HandleTreeViewItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> list)
         {
             var selectedNos = GlueState.Self.CurrentNamedObjectSave;
 
@@ -302,7 +303,9 @@ namespace OfficialPlugins.CollisionPlugin
             TryHandleSelectedCollisionRelationship(selectedNos);
 
             TryHandleSelectedCollidable(element, selectedNos);
+
         }
+
 
         private void TryHandleSelectedCollisionRelationship(NamedObjectSave selectedNos)
         {

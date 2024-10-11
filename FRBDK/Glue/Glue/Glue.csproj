@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net6.0-windows</TargetFramework>
@@ -13,8 +13,10 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <BaseOutputPath></BaseOutputPath>
-    <AssemblyName>GlueFormsCore</AssemblyName> 
-	</PropertyGroup>
+    <AssemblyName>GlueFormsCore</AssemblyName>
+    <NoWarn>1591</NoWarn>
+
+  </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 		<DefineConstants>TRACE;GLUE</DefineConstants>

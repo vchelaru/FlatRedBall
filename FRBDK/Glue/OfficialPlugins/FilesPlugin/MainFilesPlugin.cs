@@ -51,18 +51,14 @@ namespace OfficialPlugins.FilesPlugin
 
         public override void StartUp()
         {
-            this.ReactToItemSelectHandler += HandleItemSelected;
+            this.ReactToItemsSelected += HandleItemsSelected;
             this.ReactToTreeViewRightClickHandler +=
                 RightClickManager.HandleRightClick;
         }
 
-        private void HandleItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> list)
         {
-            ReferencedFileSave rfs = null;
-            if(selectedTreeNode != null)
-            {
-                rfs = selectedTreeNode.Tag as ReferencedFileSave;
-            }
+            var rfs = list.FirstOrDefault(item => item.Tag is ReferencedFileSave)?.Tag as ReferencedFileSave;
 
             if(rfs != null)
             {

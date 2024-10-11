@@ -45,12 +45,22 @@ namespace OfficialPlugins.VariableDisplay
         {
             VariableDisplayerTypeManager.FillTypeNameAssociations();
 
-            this.ReactToItemSelectHandler += HandleItemSelect;
+            this.ReactToItemsSelected += HandleItemsSelected;
 
             this.ReactToLoadedGlux += HandleLoadedGlux;
 
             //this.ReactToChangedPropertyHandler += HandleRefreshProperties;
             this.ReactToNamedObjectChangedValueList += HandleChangedValues;
+
+        }
+
+        private void HandleItemsSelected(List<ITreeNode> list)
+        {
+            var first = list.FirstOrDefault();
+            if(first != null)
+            {
+                HandleItemSelect(GlueState.Self.CurrentTreeNode);
+            }
 
         }
 

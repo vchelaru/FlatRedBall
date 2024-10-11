@@ -61,11 +61,12 @@ namespace OfficialPlugins.SongPlugin
 
         private void AssignEvents()
         {
-            this.ReactToItemSelectHandler += HandleItemSelected;
+            this.ReactToItemsSelected += HandleItemSelected;
             this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
             this.ReactToFileChange += HandleFileChanged;
             this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
         }
+
 
         private bool TryHandleDoubleClick(ITreeNode arg)
         {
@@ -184,9 +185,9 @@ namespace OfficialPlugins.SongPlugin
             return addToManagersMethod;
         }
 
-        private void HandleItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemSelected(List<ITreeNode> list)
         {
-            var rfs = selectedTreeNode?.Tag as ReferencedFileSave;
+            var rfs = list.FirstOrDefault(item => item.Tag is ReferencedFileSave)?.Tag as ReferencedFileSave;
 
             viewModel.GlueObject = rfs;
 

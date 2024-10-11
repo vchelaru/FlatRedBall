@@ -166,7 +166,7 @@ namespace CompilerPlugin
                 {
                     _compilerViewModel.HasDoneNugetRestore = true;
                     _runner.IsRunning = false;
-                    _runner.Run(preventFocus: false);
+                    _=_runner.Run(preventFocus: false);
                 }
                 else
                 {
@@ -174,7 +174,7 @@ namespace CompilerPlugin
                     var innerResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage);
                     if(innerResult == System.Windows.MessageBoxResult.Yes)
                     {
-                        _runner.Run(preventFocus: false);
+                        _=_runner.Run(preventFocus: false);
                     }
                 }
             };

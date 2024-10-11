@@ -509,9 +509,7 @@ public partial class MainTreeViewControl : UserControl
         var nodeViewModel = frameworkElementPushed?.DataContext as BookmarkViewModel;
         if(nodeViewModel != null)
         {
-            var separated = nodeViewModel.Text.Split('/').ToList();
-
-            var node = GetTreeNode(separated);
+            var node = ViewModel.GetTreeNodeByQualifiedPath(nodeViewModel.Text);
 
             if(node != null)
             {
@@ -720,9 +718,7 @@ public partial class MainTreeViewControl : UserControl
 
         if(selectedItem != null)
         {
-            var separated = selectedItem.Text.Split('/').ToList();
-
-            var node = GetTreeNode(separated);
+            var node = ViewModel.GetTreeNodeByQualifiedPath(selectedItem.Text);
 
             if(node != null)
             {
@@ -740,51 +736,6 @@ public partial class MainTreeViewControl : UserControl
         //Bookmarks.SelectedItem = null;
     }
 
-    private NodeViewModel GetTreeNode(List<string> separated)
-    {
-        var first = separated[0];
-        separated.RemoveAt(0);
-
-        NodeViewModel nodeViewModel = null;
-
-        if (first == ViewModel.EntityRootNode.Text)
-        {
-            nodeViewModel = ViewModel.EntityRootNode;
-        }
-        else if(first == ViewModel.ScreenRootNode.Text)
-        {
-            nodeViewModel = ViewModel.ScreenRootNode;
-        }
-        else if(first == ViewModel.GlobalContentRootNode.Text)
-        {
-            nodeViewModel = ViewModel.GlobalContentRootNode;
-        }
-
-        return GetTreeNode(separated, nodeViewModel);
-        
-
-    }
-
-    private NodeViewModel GetTreeNode(List<string> separated, NodeViewModel nodeViewModel)
-    {
-        if(separated.Count == 0)
-        {
-            return nodeViewModel;
-        }
-        else
-        {
-            var child = nodeViewModel.Children.FirstOrDefault(item => item.Text == separated[0]);
-            separated.RemoveAt(0);
-            if (child != null)
-            {
-                return GetTreeNode(separated, child);
-            }
-            else
-            {
-                return null;
-            }
-        }
-    }
 
     private void DeleteBookmark_MenuItem_Click(object sender, RoutedEventArgs e)
     {

@@ -18,6 +18,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
+using Xceed.Wpf.Toolkit.Primitives;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
@@ -516,6 +517,20 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 var vm = new BookmarkViewModel();
                 vm.Text = bookmark.Name;
                 vm.ImageSource = NodeViewModel.FromSource(bookmark.ImageSource);
+
+                // The image sources were invalidated when the plugin changed from
+                // having the "Core" suffix to not. Someting like this could happen in
+                // the future so let's handle it here. 
+                if(vm.ImageSource == null)
+                {
+                    var node = GetTreeNodeByQualifiedPath(bookmark.Name);
+                    if(node != null)
+                    {
+                        bookmark.ImageSource = node.ImageSource.UriSource.OriginalString;
+                        vm.ImageSource = NodeViewModel.FromSource(bookmark.ImageSource);
+                    }
+                }
+
                 this.Bookmarks.Add(vm);
             }
         }
@@ -1314,6 +1329,60 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 EntityRootNode.GetNodeByTag(tag) ??
                 GlobalContentRootNode.GetNodeByTag(tag);
             return found;
+        }
+
+        public NodeViewModel GetTreeNodeByQualifiedPath(string qualifiedPath)
+        {
+            var separated = qualifiedPath.Split('/').ToList();
+
+            var node = GetTreeNode(separated);
+
+            return node;
+        }
+
+        private NodeViewModel GetTreeNode(List<string> separated)
+        {
+            var first = separated[0];
+            separated.RemoveAt(0);
+
+            NodeViewModel nodeViewModel = null;
+
+            if (first == EntityRootNode.Text)
+            {
+                nodeViewModel = EntityRootNode;
+            }
+            else if (first == ScreenRootNode.Text)
+            {
+                nodeViewModel = ScreenRootNode;
+            }
+            else if (first == GlobalContentRootNode.Text)
+            {
+                nodeViewModel = GlobalContentRootNode;
+            }
+
+            return GetTreeNode(separated, nodeViewModel);
+        }
+
+
+        private NodeViewModel GetTreeNode(List<string> separated, NodeViewModel nodeViewModel)
+        {
+            if (separated.Count == 0)
+            {
+                return nodeViewModel;
+            }
+            else
+            {
+                var child = nodeViewModel.Children.FirstOrDefault(item => item.Text == separated[0]);
+                separated.RemoveAt(0);
+                if (child != null)
+                {
+                    return GetTreeNode(separated, child);
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         public bool IsInTreeView(NodeViewModel node)

@@ -29,23 +29,8 @@ namespace OfficialPlugins.PreviewGenerator
 
         public override void StartUp()
         {
-            var view = new MainPreviewGeneratorControl();
-
-            this.ReactToItemSelectHandler = HandleReactToItemSelectHandler;
-        }
-
-        private void HandleReactToItemSelectHandler(ITreeNode selectedTreeNode)
-        {
-            //var shouldShow = GlueState.Self.CurrentEntitySave != null;
-
-            //if(shouldShow)
-            //{
-            //    previewPreviewTab.Show();
-            //}
-            //else
-            //{
-            //    previewPreviewTab.Hide();
-            //}
+            // I think this plugin might not be showing this anymore?
+            //var view = new MainPreviewGeneratorControl();
         }
 
         protected override Task<string> HandleEventWithReturnImplementation(string eventName, string payload)

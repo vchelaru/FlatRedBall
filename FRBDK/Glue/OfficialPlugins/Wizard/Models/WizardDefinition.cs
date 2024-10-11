@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using OfficialPlugins.Wizard.Managers;
 using OfficialPlugins.Wizard.Views;
 using OfficialPlugins.Wizard.ViewModels;
-using OfficialPlugins.Wizard.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;

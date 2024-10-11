@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
@@ -208,7 +208,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo Creating $(SolutionDir)Glue\bin\Debug\Plugins\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\Debug\Plugins\&quot; md &quot;$(SolutionDir)Glue\bin\Debug\Plugins\&quot;&#xD;&#xA;&#xD;&#xA;echo $(TargetDir)&#xD;&#xA;&#xD;&#xA;echo creating $(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\&quot; md &quot;$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\&quot;&#xD;&#xA;echo copy $(TargetDir)OfficialPlugins.dll to $(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\OfficialPlugins.dll&#xD;&#xA;copy &quot;$(TargetDir)OfficialPlugins.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\OfficialPlugins.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)OfficialPlugins.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\OfficialPlugins.pdb&quot;" />
+    <Exec Command="if not exist &quot;$(SolutionDir)Glue\bin\Debug\Plugins\&quot; md &quot;$(SolutionDir)Glue\bin\Debug\Plugins\&quot;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\&quot; md &quot;$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\&quot;&#xD;&#xA;copy &quot;$(TargetDir)OfficialPlugins.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\OfficialPlugins.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)OfficialPlugins.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\OfficialPlugins\OfficialPlugins.pdb&quot;" />
   </Target>
 
 </Project>

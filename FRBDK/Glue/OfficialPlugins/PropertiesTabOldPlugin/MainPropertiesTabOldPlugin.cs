@@ -11,6 +11,7 @@ using Glue;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -37,14 +38,14 @@ namespace OfficialPlugins.PropertiesTabOldPlugin
 
                 return false;
             };
-            this.ReactToItemSelectHandler += HandleItemSelected;
+            this.ReactToItemsSelected += HandleItemsSelected;
 
-            HandleItemSelected(null);
+            HandleItemsSelected(new List<ITreeNode>());
         }
 
-        private void HandleItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> list)
         {
-            var selectedObject = selectedTreeNode?.Tag;
+            var selectedObject = list.FirstOrDefault()?.Tag;
 
             var shouldShow = selectedObject is ScreenSave ||
                 selectedObject is EntitySave ||

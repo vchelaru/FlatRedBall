@@ -45,7 +45,7 @@ namespace OfficialPlugins.StateDataPlugin
 
         public override void StartUp()
         {
-            this.ReactToItemSelectHandler += HandleReactToItemSelect;
+            this.ReactToItemsSelected += HandleItemsSelected;
             this.ReactToStateRemovedHandler += HandleStateRemoved;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             this.ReactToStateCategoryExcludedVariablesChanged += HandleStateCategoryVariableChange;
@@ -53,6 +53,7 @@ namespace OfficialPlugins.StateDataPlugin
             stateErrorReporter = new StateErrorReporter();
             this.AddErrorReporter(stateErrorReporter);
         }
+
 
         private void HandleGluxUnloaded()
         {
@@ -64,9 +65,9 @@ namespace OfficialPlugins.StateDataPlugin
             GlueCommands.Self.RefreshCommands.RefreshErrorsFor(stateErrorReporter);
         }
 
-        private void HandleReactToItemSelect(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> list)
         {
-            if(GlueState.Self.CurrentTreeNode?.IsStateCategoryNode() == true)
+            if(list.Any(item => item.IsStateCategoryNode()))
             {
                 ShowCategory(GlueState.Self.CurrentStateSaveCategory);
             }

@@ -51,13 +51,14 @@ namespace OfficialPlugins.AnimationChainPlugin
             this.ReactToFileChange += HandleFileChanged;
             this.ReactToNamedObjectChangedValue += NamedObjectVariableChangeLogic.HandleNamedObjectChangedValue;
             this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
-            this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
+            this.ReactToItemsSelected += HandleItemsSelected;
             this.ReactToLoadedGluxEarly += HandleLoadedGluxEarly;
             this.ReactToUnloadedGlux += HandleUnloadedGlux;
             this.IsHandlingHotkeys += GetIfIsHandlingHotkeys;
             //this.FillWithReferencedFiles += HandleFillWithReferencedFiles;
             this.FillWithReferencedFiles += HandleFillWithReferencedFilesNew;
         }
+
 
         // See HandleFillWithReferencedFilesNew for info on why this isn't used
         private ToolsUtilities.GeneralResponse HandleFillWithReferencedFiles(FilePath path, List<FilePath> list)
@@ -171,7 +172,7 @@ namespace OfficialPlugins.AnimationChainPlugin
             return false;
         }
 
-        private void HandleTreeViewItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> list) 
         {
             var file = GlueState.Self.CurrentReferencedFileSave;
 
