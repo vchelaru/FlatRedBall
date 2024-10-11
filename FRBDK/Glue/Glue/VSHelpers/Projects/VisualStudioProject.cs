@@ -123,8 +123,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public string DotNetVersionString { get; private set; }
 
         public Version DotNetVersion { get; private set; }
-        public Version XamarinVersion { get; private set; }
 
+        public Version XamarinVersion { get; private set; }
 
 
         public decimal? DotNetVersionNumber { get; private set; }
@@ -908,6 +908,24 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             newName = StandardizeItemName(newName);
 
             ProjectItem item = GetItem(oldName);
+
+            // August 11, 2024
+            // There seems to be 
+            // some kind of race condition
+            // that can cause this to be null
+            // Vic hansn't been able to reproduce
+            // it with breakpoints, but it does happen
+            // when running normally. Fortunately FRB should
+            // pick up that the factory is missing on project
+            // reload and clean that up so let's just suppress 
+            // the error:
+            /////////////////////////////////Early Out///////////////////////////////
+            if(item == null)
+            {
+                return;
+            }
+            /////////////////////////////End Early Out///////////////////////////////
+
 
             mBuildItemDictionaries.Remove(oldName);
 

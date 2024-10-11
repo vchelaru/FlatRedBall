@@ -59,6 +59,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
             {
                 var name = FileManager.RemovePath(FileManager.RemoveExtension(item.FileName));
 
+                if(!string.IsNullOrEmpty(item.PlatformType))
+                {
+                    name += " (" + item.PlatformType + ")";
+                }
+
                 var directory = FileManager.GetDirectory(item.FileName);
 
                 if(System.IO.Directory.Exists(directory))
@@ -192,6 +197,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
             {
                 GlueSettings.RecentFileList.Remove(existing);
                 existing.LastTimeAccessed = DateTime.Now;
+                existing.PlatformType = GlueState.Self.CurrentMainProject.ProjectId;
                 GlueSettings.RecentFileList.Insert(0, existing);
             }
             else
@@ -201,6 +207,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                     FileName = currentFile.FullPath
                 };
                 file.LastTimeAccessed = DateTime.Now;
+                file.PlatformType = GlueState.Self.CurrentMainProject.ProjectId;
+
                 GlueSettings.RecentFileList.Add(file);
             }
 

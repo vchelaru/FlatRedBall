@@ -1,7 +1,7 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Managers;
 using Gum.DataTypes;
-using GumPluginCore.CodeGeneration;
+using GumPlugin.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +42,7 @@ namespace DesktopGlForms.GumRuntimes.DefaultForms
             codeBlock.Line("using System.Linq;");
             codeBlock.Line();
             codeBlock = codeBlock.Namespace(
-                GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(element));
+                GueDerivingClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(element, prefixGlobal:false));
             {
                 string runtimeClassName =
                     GueDerivingClassCodeGenerator.Self.GetUnqualifiedRuntimeTypeFor(element);

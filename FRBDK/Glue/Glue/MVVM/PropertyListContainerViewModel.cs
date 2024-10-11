@@ -224,25 +224,30 @@ namespace FlatRedBall.Glue.MVVM
                 // I could use reflection (which could
                 // be slow) or just special case it:
 
-                if(GlueObject == null)
+                if(!IsUpdatingFromGlueObject)
                 {
-                    throw new InvalidOperationException("Need to set GlueObject before calling SetAndPersist");
-                }
-
-                if(GlueObject is ReferencedFileSave && modelName == nameof(ReferencedFileSave.DestroyOnUnload))
-                {
-                    ((ReferencedFileSave)GlueObject).DestroyOnUnload = (bool)(object)propertyValue;
-                }
-                else
-                {
-                    if(propertyInfo.RemoveIfDefault)
+                    // August 7, 2024
+                    // If we're updating from Glue object, we don't want to set values back on the Glue object.
+                    if(GlueObject == null)
                     {
-                        GlueObject.Properties.SetValue(modelName, propertyValue, persistIfDefault:false);
+                        throw new InvalidOperationException("Need to set GlueObject before calling SetAndPersist");
+                    }
+
+                    if(GlueObject is ReferencedFileSave && modelName == nameof(ReferencedFileSave.DestroyOnUnload))
+                    {
+                        ((ReferencedFileSave)GlueObject).DestroyOnUnload = (bool)(object)propertyValue;
                     }
                     else
                     {
-                        // The default for the type may not match the default value on the view model, so force-set the underlying by calling PersistIfDefault
-                        GlueObject.Properties.SetValuePersistIfDefault(modelName, propertyValue);
+                        if(propertyInfo.RemoveIfDefault)
+                        {
+                            GlueObject.Properties.SetValue(modelName, propertyValue, persistIfDefault:false);
+                        }
+                        else
+                        {
+                            // The default for the type may not match the default value on the view model, so force-set the underlying by calling PersistIfDefault
+                            GlueObject.Properties.SetValuePersistIfDefault(modelName, propertyValue);
+                        }
                     }
                 }
                 //},

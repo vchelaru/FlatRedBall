@@ -20,9 +20,9 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <local:TextureCoordinateSelectionView x:Name="InnerView"/>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,2,0,2">
-            <Button Width="50" Click="OkButtonClick" Content="{x:Static localization:Texts.Ok}" />
-            <Button Width="50" Click="CancelButtonClick"  Margin="5,0,2,0" Content="{x:Static localization:Texts.Cancel}" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,2,0,2">
+            <Button Width="60" Height="30" Click="OkButtonClick" Content="{x:Static localization:Texts.Ok}" />
+            <Button Width="60" Height="30" Click="CancelButtonClick"  Margin="5,0,2,0" Content="{x:Static localization:Texts.Cancel}" />
         </StackPanel>
     </Grid>
 </Window>

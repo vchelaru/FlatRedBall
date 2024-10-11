@@ -43,6 +43,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         private void HandleUnloadedGlux()
         {
             base.RemoveFromToolbar(cameraToolbar, "Standard");
+
+            tab?.Hide();
         }
 
         private void HandleLoadedGlux()
@@ -98,6 +100,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                     propertyName == nameof(viewModel.ResolutionHeight))
                 {
                     PluginManager.ReactToResolutionChanged();
+                }
+
+                if(propertyName == nameof(viewModel.ScaleGum))
+                {
+                   PluginManager.ReactToScaleGumChanged();
                 }
             }
         } 

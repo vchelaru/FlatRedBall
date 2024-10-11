@@ -13,6 +13,8 @@ using System.Linq;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.TypeConversions;
 using Microsoft.Xna.Framework.Graphics;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -86,20 +88,46 @@ namespace FlatRedBall.Glue.CodeGeneration
             return currentBlock;
         }
 
-        private static bool ShouldIncludeVariable(StateSaveCategory category, GlueElement element, CustomVariable item)
+        private static bool ShouldIncludeVariable(StateSaveCategory category, GlueElement element, CustomVariable customVariable)
         {
+            var shouldInclude = true;
             if (category == null)
             {
-                var isState = item.GetIsVariableState(element);
+                var isState = customVariable.GetIsVariableState(element);
 
                 // states setting other states causes lots of problems. Since uncategorized states can't exclude variables in the StateData world, we just won't
                 // set other states
-                return !isState;
+                shouldInclude = !isState;
             }
             else
             {
-                return category?.ExcludedVariables.Contains(item.Name) == false;
+                shouldInclude = category?.ExcludedVariables.Contains(customVariable.Name) == false;
             }
+
+            if(shouldInclude)
+            {
+                VariableDefinition variableDefinition = null;
+                if (!string.IsNullOrEmpty(customVariable.SourceObject))
+                {
+                    var owner = element.GetNamedObjectRecursively(customVariable.SourceObject);
+                    var nosAti = owner.GetAssetTypeInfo();
+                    variableDefinition = nosAti?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
+                }
+                else
+                {
+                    var elementAti = element.GetAssetTypeInfo();
+                    variableDefinition = elementAti?.VariableDefinitions.Find(item => item.Name == customVariable.Name);
+                }
+
+                if(variableDefinition != null)
+                {
+                    // If it uses custom code generation, all bets are off for whether the type is the same.
+                    // We could support this in the future but Vic doesn't want to continue advancing State tech...
+                    shouldInclude = !variableDefinition.UsesCustomCodeGeneration;
+                }
+            }
+
+            return shouldInclude;
         }
 
         private static void CreatePredefinedStateInstances(ICodeBlock currentBlock, List<StateSave> statesForThisCategory, GlueElement element, string categoryClassName, CustomVariable[] includedVariables)
@@ -270,7 +298,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // states became an object which held their
             // own values. This means that users can now
             // define their own states dynamically and change
-            // a state at runtime (not sure why, but it's possible).
+            // a state at runtime (or load them in live edit mode).
             // Since states now store their own values, we no longer need
             // codegen to explicitly assign variables. Sure, assigning hard
             // values is faster, but having conditionals is slower so...does
@@ -290,8 +318,26 @@ namespace FlatRedBall.Glue.CodeGeneration
             //    GenerateVariableAssignmentForState(element, setBlock, stateSave, category, isElse);
             //    isElse = true;
             //}
+            // Update August 19, 2024
+            // For live edit we want to
+            // use true dynamic states. This
+            // means that not only can individual
+            // values change, but it also means we
+            // will run custom code completely if a
+            // state has been updated. This allows states
+            // to have new variables added which did not even
+            // exist during compile time.
+            setBlock.Line("bool assignedThroughReflection = false;");
 
-            GenerateVariableAssignmentForDynamicState(element, setBlock, category);
+            if(category != null)
+            {
+                PluginManager.CallPluginMethod("Game Communication Plugin", "AddReflectionStateAssignmentCode",
+                    setBlock, category);
+            }
+
+            var ifInternal = setBlock.If("!assignedThroughReflection");
+
+            GenerateVariableAssignmentForDynamicState(element, ifInternal, category);
 
 
             if ((enumType == "VariableState" && DoesBaseHaveUncategorizedStates(element)) ||
@@ -620,6 +666,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
+        #region Set State (dynamic)
+
+        // only do this for categorized states since non-categorized are not recommended
+
+
+        #endregion
 
         public static List<StateSave> GetSharedVariableStates(SaveClasses.IElement element)
         {

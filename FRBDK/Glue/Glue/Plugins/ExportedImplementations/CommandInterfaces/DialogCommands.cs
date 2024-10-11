@@ -23,6 +23,8 @@ using FlatRedBall.Glue.IO;
 using System.Threading.Tasks;
 using L = Localization;
 using ShimSkiaSharp;
+using System.Threading;
+using System.Windows.Controls;
 
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
@@ -53,18 +55,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         string solutionName = projectFileName;
 
-                        projectFileName = solution.ReferencedProjects.FirstOrDefault(item =>
+                        var foundProject = solution.ReferencedProjects.FirstOrDefault(item =>
                         {
-                            var isRegularProject = FileManager.GetExtension(item) == "csproj" || FileManager.GetExtension(item) == "vsproj";
+                            var isRegularProject = FileManager.GetExtension(item.Name) == "csproj" || FileManager.GetExtension(item.Name) == "vsproj";
 
                             bool hasSameName = FileManager.RemovePath(FileManager.RemoveExtension(solutionName)).ToLowerInvariant() ==
-                                FileManager.RemovePath(FileManager.RemoveExtension(item)).ToLowerInvariant();
+                                FileManager.RemovePath(FileManager.RemoveExtension(item.Name)).ToLowerInvariant();
 
 
                             return isRegularProject && hasSameName;
                         });
 
-                        projectFileName = FileManager.GetDirectory(solutionName) + projectFileName;
+                        projectFileName = FileManager.GetDirectory(solutionName) + foundProject.Name;
                     }
                     else if(extension == "gluj")
                     {
@@ -514,58 +516,49 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public async void ShowAddNewEntityDialog(AddEntityViewModel viewModel = null)
         {
-            viewModel = viewModel ?? CreateAddNewEntityViewModel();
-
-            GlueProjectSave project = GlueState.Self.CurrentGlueProject;
-
-            // search:  addentity, add entity
-            if (project == null)
+            //////////////Early Out////////////
+            if (ProjectManager.GlueProjectSave == null)
             {
                 System.Windows.Forms.MessageBox.Show(L.Texts.ErrorNewProjectFirst);
+                return;
             }
-            else
+            if (ProjectManager.StatusCheck() != ProjectManager.CheckResult.Passed)
             {
-                if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
+                return;
+            }
+            ////////////End Early Out
+            
+            viewModel = viewModel ?? CreateAddNewEntityViewModel();
+
+            AddEntityWindow window = new();
+
+            window.DataContext = viewModel;
+
+            MoveToCursor(window);
+
+            PluginManager.ModifyAddEntityWindow(window);
+
+            var result = window.ShowDialog();
+
+            if (result == true)
+            {
+                string entityName = viewModel.Name;
+
+                string whyIsntValid;
+
+                if (!NameVerifier.IsEntityNameValid(entityName, null, out whyIsntValid))
                 {
-                    AddEntityWindow window = new Controls.AddEntityWindow();
+                    MessageBox.Show(whyIsntValid);
+                }
+                else
+                {
+                    var entity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(viewModel);
 
-                    window.DataContext = viewModel;
+                    await TaskManager.Self.AddAsync(() =>
+                        PluginManager.ReactToNewEntityCreatedWithUi(entity, window),
+                        L.Texts.PluginCallReactToNewEntity, doOnUiThread: true);
 
-                    MoveToCursor(window);
-
-                    PluginManager.ModifyAddEntityWindow(window);
-
-                    string directory = "";
-
-                    if (GlueState.Self.CurrentTreeNode?.IsDirectoryNode() == true)
-                    {
-                        directory = GlueState.Self.CurrentTreeNode.GetRelativeFilePath();
-                        directory = directory.Replace('/', '\\');
-                    }
-
-                    var result = window.ShowDialog();
-
-                    if (result == true)
-                    {
-                        string entityName = viewModel.Name;
-
-                        string whyIsntValid;
-
-                        if (!NameVerifier.IsEntityNameValid(entityName, null, out whyIsntValid))
-                        {
-                            MessageBox.Show(whyIsntValid);
-                        }
-                        else
-                        {
-                            var entity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(viewModel, directory);
-
-                            await TaskManager.Self.AddAsync(() =>
-                                PluginManager.ReactToNewEntityCreatedWithUi(entity, window),
-                                L.Texts.PluginCallReactToNewEntity, doOnUiThread: true);
-
-                            GlueState.Self.CurrentEntitySave = entity;
-                        }
-                    }
+                    GlueState.Self.CurrentEntitySave = entity;
                 }
             }
         }
@@ -587,7 +580,40 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             viewModel.SelectedBaseEntity = "<NONE>";
 
+            viewModel.Directory = "";
+
+            if (GlueState.Self.CurrentTreeNode?.IsDirectoryNode() == true)
+            {
+                viewModel.Directory = GlueState.Self.CurrentTreeNode.GetRelativeFilePath();
+                viewModel.Directory = viewModel.Directory.Replace('/', '\\');
+            }
+
+            viewModel.DirectoryOptions.Add("Entities\\");
+            FillViewModelWithDirectoriesRecursively("Entities\\", viewModel);
+            if(String.IsNullOrEmpty(viewModel.Directory))
+            {
+                viewModel.Directory = viewModel.DirectoryOptions[0];
+            }
+
             return viewModel;
+        }
+
+        private void FillViewModelWithDirectoriesRecursively(string relativeDirectory, AddEntityViewModel viewModel)
+        {
+            FilePath absolute = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
+
+            if(absolute.Exists())
+            {
+                foreach(var directory in System.IO.Directory.GetDirectories(absolute.FullPath))
+                {
+                    string relative = FileManager.MakeRelative(directory, GlueState.Self.CurrentGlueProjectDirectory);
+                    relative = relative.Replace('/', '\\');
+
+                    viewModel.DirectoryOptions.Add(relative + "\\");
+
+                    FillViewModelWithDirectoriesRecursively(relative, viewModel);
+                }
+            }
         }
 
         public void MoveToCursor(System.Windows.Window window)
@@ -828,7 +854,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         #endregion
 
         #region Screen
-        public async void ShowAddNewScreenDialog()
+        public async void ShowAddNewScreenDialog(AddScreenViewModel viewModel = null)
         {
             //////////////Early Out////////////
             if (ProjectManager.GlueProjectSave == null)
@@ -842,32 +868,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             ////////////End Early Out
 
+            viewModel = viewModel ?? CreateAddNewScreenViewModel();
+
             // AddScreen, add screen, addnewscreen, add new screen
-            var addScreenWindow = new AddScreenWindow();
+            AddScreenWindow addScreenWindow = new();
+
+            addScreenWindow.DataContext = viewModel;
 
             MoveToCursor(addScreenWindow);
 
             addScreenWindow.Message = L.Texts.EnterNewScreenName;
 
-            string name = "NewScreen";
-
-            if (GlueState.Self.CurrentGlueProject.Screens.Count == 0)
-            {
-                name = "GameScreen";
-            }
-
-            var allScreenNames =
-                GlueState.Self.CurrentGlueProject.Screens
-                .Select(item => item.GetStrippedName())
-                .ToList();
-
-            name = StringFunctions.MakeStringUnique(name,
-                allScreenNames, 2);
-
-
-            var viewModel = new AddScreenViewModel();
-            viewModel.ScreenName = name;
-            addScreenWindow.DataContext = viewModel;
             addScreenWindow.TextEntered += (not, used) => viewModel.HasChangedScreenTextBox = true;
 
             PluginManager.ModifyAddScreenWindow(addScreenWindow);
@@ -885,7 +896,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 else
                 {
                     var screen =
-                        await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(addScreenWindow.Result);
+                        await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreenAsync(viewModel);
 
                     GlueState.Self.CurrentElement = screen;
 
@@ -894,6 +905,40 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
 
             }
+        }
+
+        private static AddScreenViewModel CreateAddNewScreenViewModel()
+        {
+            AddScreenViewModel viewModel = new ();
+
+            // todo - inheritance...
+
+            string name = "NewScreen";
+
+            if (GlueState.Self.CurrentGlueProject.Screens.Count == 0)
+            {
+                name = "GameScreen";
+            }
+
+            var allScreenNames =
+                GlueState.Self.CurrentGlueProject.Screens
+                .Select(item => item.GetStrippedName())
+                .ToList();
+
+            name = StringFunctions.MakeStringUnique(name,
+                allScreenNames, 2);
+
+            viewModel.ScreenName = name;
+
+            viewModel.Directory = "";
+
+            if (GlueState.Self.CurrentTreeNode?.IsDirectoryNode() == true)
+            {
+                viewModel.Directory = GlueState.Self.CurrentTreeNode.GetRelativeFilePath();
+                viewModel.Directory = viewModel.Directory.Replace('/', '\\');
+            }
+
+            return viewModel;
         }
 
         #endregion
@@ -1026,18 +1071,78 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
+        #region Spinner
+
+        public void ShowSpinner(string text)
+        {
+            MainPanelControl.Self.SpinnerLabel.Content = text;
+            MainPanelControl.Self.Spinner.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        public void HideSpinner()
+        {
+            MainPanelControl.Self.Spinner.Visibility = System.Windows.Visibility.Collapsed;
+
+        }
+
+        #endregion
+
+        #region Toast
+
+        CancellationTokenSource lastToastCancellation = null;
+        public async void ShowToast(string text, TimeSpan? timeToShowToast = null)
+        {
+            var panel = MainPanelControl.Self;
+
+            panel.ToastLabel.Content = text;
+            panel.Toast.Visibility = System.Windows.Visibility.Visible;
+
+            if(lastToastCancellation != null)
+            {
+                lastToastCancellation.Cancel();
+            }
+
+            lastToastCancellation = new CancellationTokenSource();
+
+            var timeToWait = timeToShowToast ?? TimeSpan.FromSeconds(5);
+
+            var wasCancelled = false;
+            try
+            {
+                await Task.Delay(timeToWait, lastToastCancellation.Token);
+            }
+            catch(OperationCanceledException)
+            {
+                wasCancelled = true;
+            }
+
+            if(!wasCancelled)
+            {
+                // if cancelled, the next caller will hide it...
+                HideToast();
+            }
+        }
+
+        public void HideToast()
+        {
+            var panel = MainPanelControl.Self;
+            panel.Toast.Visibility = System.Windows.Visibility.Collapsed;
+        }
+
+
+        #endregion
+
         #region State Categories
 
         public async void ShowAddNewCategoryDialog()
         {
             // add category, addcategory, add state category
-            var tiw = new TextInputWindow();
-            tiw.Message = L.Texts.CategoryEnterName;
-            tiw.Text = L.Texts.CategoryNew;
+            CustomizableTextInputWindow tiw = new()
+            {
+                Message = L.Texts.CategoryEnterName
+            };
 
-            DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
-
-            if (result == DialogResult.OK)
+            if (tiw.ShowDialog() is true)
             {
                 string whyItIsntValid;
 
@@ -1059,14 +1164,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void ShowAddNewStateDialog()
         {
             // search: addstate, add new state, addnewstate, add state
-            var tiw = new TextInputWindow();
-            tiw.Message = L.Texts.StateEnterName;
-            tiw.Text = L.Texts.StateNew;
+            CustomizableTextInputWindow tiw = new()
+            {
+                Message = L.Texts.StateEnterName
+            };
 
-
-            DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
-
-            if (result == DialogResult.OK)
+            if (tiw.ShowDialog() is true)
             {
                 var currentElement = GlueState.Self.CurrentElement;
 
@@ -1215,6 +1318,5 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (MainGlueWindow.Self != null)
                 form.Owner = MainGlueWindow.Self;
         }
-
     }
 }

@@ -10,7 +10,7 @@ using System.Text;
 using TileGraphicsPlugin;
 using TMXGlueLib;
 
-namespace TiledPluginCore.Controllers
+namespace TiledPlugin.Controllers
 {
     public class TileNodeNetworkPropertiesController : 
         Singleton<TileNodeNetworkPropertiesController>

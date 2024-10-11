@@ -14,8 +14,8 @@ using OfficialPlugins.CollisionPlugin.Controllers;
 using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
 using OfficialPlugins.CollisionPlugin.Views;
-using OfficialPluginsCore.CollisionPlugin.Errors;
-using OfficialPluginsCore.CollisionPlugin.ExtensionMethods;
+using OfficialPlugins.CollisionPlugin.Errors;
+using OfficialPlugins.CollisionPlugin.ExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -81,7 +81,7 @@ namespace OfficialPlugins.CollisionPlugin
         {
             this.ReactToLoadedGluxEarly += HandleGluxLoad;
 
-            this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
+            this.ReactToItemsSelected += HandleItemsSelected;
 
             this.AddEventsForObject += HandleAddEventsForObject;
 
@@ -148,6 +148,7 @@ namespace OfficialPlugins.CollisionPlugin
 
             this.ReactToElementRenamed += HandleElementRenamed;
         }
+
 
         private void HandleElementRenamed(IElement element, string oldName)
         {
@@ -288,7 +289,7 @@ namespace OfficialPlugins.CollisionPlugin
             }
         }
 
-        private void HandleTreeViewItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> list)
         {
             var selectedNos = GlueState.Self.CurrentNamedObjectSave;
 
@@ -302,15 +303,15 @@ namespace OfficialPlugins.CollisionPlugin
             TryHandleSelectedCollisionRelationship(selectedNos);
 
             TryHandleSelectedCollidable(element, selectedNos);
+
         }
+
 
         private void TryHandleSelectedCollisionRelationship(NamedObjectSave selectedNos)
         {
             var shouldShowControl = false;
             if (selectedNos?.IsCollisionRelationship() == true)
             {
-                RefreshViewModelTo(selectedNos);
-
                 shouldShowControl = true;
             }
 

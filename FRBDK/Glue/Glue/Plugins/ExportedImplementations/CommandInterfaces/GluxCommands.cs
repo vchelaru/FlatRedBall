@@ -263,11 +263,12 @@ public class GluxCommands : IGluxCommands
         }
         else
         {
-            SaveGlux(taskExecutionPreference);
+            // still use this:
+            SaveProjectAndElements(taskExecutionPreference);
         }
     }
 
-    [Obsolete("Use SaveEverythingImmediately because it more clearly " +
+    [Obsolete("Use SaveProjectAndElementsImmediately because it more clearly " +
         "indicates that everything (main project and all screens/entities) are saved")]
     public void SaveGlueProjectImmediately()
     {
@@ -967,7 +968,10 @@ public class GluxCommands : IGluxCommands
     {
         if (toReturn.IsCsvOrTreatedAsCsv)
         {
-            toReturn.CreatesDictionary = ((string)options) == "Dictionary";
+            var optionsAsString = (string)options;
+            // If it's null, then let's default to dictionary so that 
+            // existing files default to dictionary:
+            toReturn.CreatesDictionary = string.IsNullOrEmpty(optionsAsString) || optionsAsString == "Dictionary";
         }
     }
 
@@ -1818,6 +1822,14 @@ public class GluxCommands : IGluxCommands
     public async Task<List<ToolsUtilities.GeneralResponse<NamedObjectSave>>> CopyNamedObjectListIntoElement(List<NamedObjectSave> nosList, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
     {
         var toReturn = new List<ToolsUtilities.GeneralResponse<NamedObjectSave>>();
+        //////////////////////////Early Out///////////////////////////////
+        if(nosList.Count == 0)
+        {
+            return toReturn;
+        }
+        /////////////////////////End Early Out/////////////////////////////
+
+
         foreach (var originalNos in nosList)
         {
             var response = await CopyNamedObjectIntoElementInner(originalNos, targetElement, targetNos:null, performSaveAndGenerateCode:false, updateUi: false, notifyPlugins: false);
@@ -2185,7 +2197,9 @@ public class GluxCommands : IGluxCommands
             foreach (var variable in objectsToRemove.CustomVariables)
             {
                 removalInformation.AppendLine("Removed variable " + variable.ToString());
-                element.CustomVariables.Remove(variable);
+                //element.CustomVariables.Remove(variable);
+                // We should use the full removal to update all necessary objects in response to the variable removal:
+                RemoveCustomVariable(variable);
             }
             #endregion
 
@@ -2897,6 +2911,12 @@ public class GluxCommands : IGluxCommands
                 GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(newEntitySave);
             }
 
+            // notify plugins that new objects were added. Even though we didn't go through the normal
+            // call to add objects (since it's handled by paste), we need to let plugins know that new objects
+            // were added. 
+            var newNamedObjects = newElement.AllNamedObjects.ToList();
+            await PluginManager.ReactToNewObjectListAsync(newNamedObjects);
+
         }, $"Adding copy of {original}");
     }
 
@@ -3177,10 +3197,19 @@ public class GluxCommands : IGluxCommands
 
         for (int i = screenToRemove.NamedObjects.Count - 1; i > -1; i--)
         {
-            NamedObjectSave nos = screenToRemove.NamedObjects[i];
+            NamedObjectSave toRemove = null;
+            if(i < screenToRemove.NamedObjects.Count)
+            {
+                toRemove= screenToRemove.NamedObjects[i];
+            }
 
-            GlueCommands.Self.GluxCommands
-                .RemoveNamedObject(nos, false, false, null);
+            if(toRemove != null)
+            {
+                GlueCommands.Self.GluxCommands
+                    .RemoveNamedObject(toRemove, false, false, null);
+
+            }
+
         }
 
         #endregion
@@ -3490,19 +3519,23 @@ public class GluxCommands : IGluxCommands
             }
             else
             { 
-                var allContainedEntities = GlueState.Self.CurrentGlueProject.Entities
-                    .Where(entity => entity.Name.StartsWith(directoryRenaming)).ToList();
+                var allContainedElements = GlueState.Self.CurrentGlueProject.Entities
+                    .Where(entity => entity.Name.StartsWith(directoryRenaming)).ToList<GlueElement>();
+                allContainedElements.AddRange(GlueState.Self.CurrentGlueProject.Screens
+                    .Where(screen => screen.Name.StartsWith(directoryRenaming)));
+
+
                 var oldDirectoryAbsolute = GlueCommands.Self.GetAbsoluteFileName(treeNode.GetRelativeFilePath(), isContent: false);
 
                 newDirectoryNameRelative = newDirectoryNameRelative.Replace('/', '\\');
 
 
-                foreach (var entity in allContainedEntities)
+                foreach (var element in allContainedElements)
                 {
-                    var strippedEntityName = entity.GetStrippedName();
+                    var strippedEntityName = element.GetStrippedName();
                     var newEntityName = newDirectoryNameRelative + strippedEntityName;
 
-                    await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(entity, newEntityName, showRenameWindow: false);
+                    await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(element, newEntityName, showRenameWindow: false);
                 }
 
                 // Is the old directory empty? If so, we can delete it:

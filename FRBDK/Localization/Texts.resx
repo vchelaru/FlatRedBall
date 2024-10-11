@@ -258,9 +258,6 @@
   <data name="PerformanceSettings" xml:space="preserve">
     <value>Performance Settings</value>
   </data>
-  <data name="Preferences" xml:space="preserve">
-    <value>Preferences</value>
-  </data>
   <data name="CustomGameClass" xml:space="preserve">
     <value>Custom Game Class</value>
   </data>
@@ -394,9 +391,6 @@ for {1}?</value>
   <data name="GumProperties" xml:space="preserve">
     <value>Gum Properties</value>
   </data>
-  <data name="ErrorGumFileAssociationNotFound" xml:space="preserve">
-    <value>Could not find file association for Gum files and could not find Gum relative to the FlatRedBall Editor. Associations need to be set before attempting to rebuild font files</value>
-  </data>
   <data name="RefreshingFontCache" xml:space="preserve">
     <value>Refreshing Font Cache</value>
   </data>
@@ -423,9 +417,6 @@ for {1}?</value>
   </data>
   <data name="EnableGameEmbedInSettings" xml:space="preserve">
     <value>Enable Game Embed and Edit in Settings</value>
-  </data>
-  <data name="RunEditMode" xml:space="preserve">
-    <value>Run In Edit Mode</value>
   </data>
   <data name="StartGameInEditMode" xml:space="preserve">
     <value>Starts the game in edit mode on the startup screen.</value>
@@ -498,9 +489,6 @@ for {1}?</value>
   </data>
   <data name="IncreaseGameSpeedFastForward" xml:space="preserve">
     <value>Increases game speed (makes it run in fast-forward)</value>
-  </data>
-  <data name="AutoTakeSnapshot" xml:space="preserve">
-    <value>Auto Take Snapshot</value>
   </data>
   <data name="TakeSnapshot" xml:space="preserve">
     <value>Take Snapshot</value>
@@ -814,12 +802,6 @@ for {1}?</value>
   <data name="GitignoreAdd" xml:space="preserve">
     <value>Add .gitignore:</value>
   </data>
-  <data name="ProjectWizardOpen" xml:space="preserve">
-    <value>Open New Project Wizard:</value>
-  </data>
-  <data name="GlobalContentMembership" xml:space="preserve">
-    <value>GlobalContent Membership</value>
-  </data>
   <data name="UpdateLibraries" xml:space="preserve">
     <value>Update Libraries</value>
   </data>
@@ -907,12 +889,6 @@ for {1}?</value>
   <data name="AddXnbToMonogame" xml:space="preserve">
     <value>Add XNBs to Monogame Project(s)</value>
   </data>
-  <data name="EnterNameForEntity" xml:space="preserve">
-    <value>Enter a name for the new entity:</value>
-  </data>
-  <data name="EntityBase" xml:space="preserve">
-    <value>Base Entity:</value>
-  </data>
   <data name="Sprite" xml:space="preserve">
     <value>Sprite</value>
   </data>
@@ -951,21 +927,6 @@ for {1}?</value>
   </data>
   <data name="IncludeListsInGameScreen" xml:space="preserve">
     <value>Include lists in GameScreen</value>
-  </data>
-  <data name="LocalFiles" xml:space="preserve">
-    <value>Local Files</value>
-  </data>
-  <data name="DownloadFile" xml:space="preserve">
-    <value>Download File</value>
-  </data>
-  <data name="HintExistingFileList" xml:space="preserve">
-    <value>The list above shows all files in the game's content folder. &lt;LineBreak&gt;&lt;/LineBreak&gt;To add files from outside of the content folder, click the Browse button. Files from outside of the content folder will be copied to the content folder.</value>
-  </data>
-  <data name="Browse" xml:space="preserve">
-    <value>Browse...</value>
-  </data>
-  <data name="EnterUrlName" xml:space="preserve">
-    <value>Enter URL Name:</value>
   </data>
   <data name="SelectFileOrClickBrowse" xml:space="preserve">
     <value>Select a file or click the Browse button</value>
@@ -1023,9 +984,6 @@ for {1}?</value>
   </data>
   <data name="EnterFile" xml:space="preserve">
     <value>Enter the new file's name:</value>
-  </data>
-  <data name="SelectFileType" xml:space="preserve">
-    <value>Select the file type:</value>
   </data>
   <data name="Label" xml:space="preserve">
     <value>Label</value>
@@ -1087,20 +1045,8 @@ for {1}?</value>
   <data name="DeleteQuestion" xml:space="preserve">
     <value>Are you sure you want to delete?</value>
   </data>
-  <data name="FrbGlueVersion" xml:space="preserve">
-    <value>FlatRedBall Glue Version</value>
-  </data>
-  <data name="LatestVersion" xml:space="preserve">
-    <value>Latest Version</value>
-  </data>
   <data name="InstallUpdate" xml:space="preserve">
     <value>Install Update</value>
-  </data>
-  <data name="Copyright" xml:space="preserve">
-    <value>Copyright</value>
-  </data>
-  <data name="GlueProjectVersion" xml:space="preserve">
-    <value>Glue Project Version</value>
   </data>
   <data name="InheritFromGameScreen" xml:space="preserve">
     <value>Inherit from GameScreen</value>
@@ -1251,9 +1197,6 @@ for {1}?</value>
   </data>
   <data name="ProjectRemove" xml:space="preserve">
     <value>Remove Project</value>
-  </data>
-  <data name="ProjectNewSynced" xml:space="preserve">
-    <value>New Synced Project</value>
   </data>
   <data name="ProjectAddExisting" xml:space="preserve">
     <value>Add Existing Project</value>
@@ -1585,9 +1528,6 @@ for {1}?</value>
   <data name="PropertyString" xml:space="preserve">
     <value>String Property:</value>
   </data>
-  <data name="LinkToSource" xml:space="preserve">
-    <value>Link to Source</value>
-  </data>
   <data name="Angle" xml:space="preserve">
     <value>Angle:</value>
   </data>
@@ -1605,21 +1545,6 @@ for {1}?</value>
   </data>
   <data name="Remove" xml:space="preserve">
     <value>Remove</value>
-  </data>
-  <data name="PolygonToRectangle" xml:space="preserve">
-    <value>Adds or replaces all points on the polygon to create a rectangle.</value>
-  </data>
-  <data name="PolygonToMultiSided" xml:space="preserve">
-    <value>Adds or replaces all points on the polygon to create a multi-sided polygon.</value>
-  </data>
-  <data name="HintMovePointUpList" xml:space="preserve">
-    <value>Moves the selected point up in the list.</value>
-  </data>
-  <data name="HintMovePointDownList" xml:space="preserve">
-    <value>Moves the selected point down in the list.</value>
-  </data>
-  <data name="HintResizePolygon" xml:space="preserve">
-    <value>Resize the polygon by moving the contained points.</value>
   </data>
   <data name="ClearPointsAddRectangle" xml:space="preserve">
     <value>Would you like to clear the points and replace them with points for a rectangle shape?</value>
@@ -1708,9 +1633,6 @@ for {1}?</value>
   <data name="AddScreenLevelDescription" xml:space="preserve">
     <value>Every game needs at least one screen. Usually the game logic is in a screen called GameScreen. Typically each level requires a new screen.</value>
   </data>
-  <data name="EntityAdd" xml:space="preserve">
-    <value>Add Entity</value>
-  </data>
   <data name="EntityAddDescription" xml:space="preserve">
     <value>Entities represent game objects like the player, enemies, bullets, and pick-ups.</value>
   </data>
@@ -1746,12 +1668,6 @@ for {1}?</value>
   </data>
   <data name="TextureSize" xml:space="preserve">
     <value>Texture Size</value>
-  </data>
-  <data name="Variables" xml:space="preserve">
-    <value>Variables</value>
-  </data>
-  <data name="VariablesExcluded" xml:space="preserve">
-    <value>Excluded Variables</value>
   </data>
   <data name="CollapseAll" xml:space="preserve">
     <value>Collapse All</value>
@@ -2134,9 +2050,6 @@ for {1}?</value>
   <data name="Volume" xml:space="preserve">
     <value>Volume</value>
   </data>
-  <data name="State" xml:space="preserve">
-    <value>State</value>
-  </data>
   <data name="TmxCreationOptions" xml:space="preserve">
     <value>TMX Creation Options</value>
   </data>
@@ -2176,14 +2089,8 @@ for {1}?</value>
   <data name="FactoryAddX" xml:space="preserve">
     <value>Add {0} Factory</value>
   </data>
-  <data name="NameCannotBeEmpty" xml:space="preserve">
-    <value>The name cannot be empty.</value>
-  </data>
   <data name="NameCannotStartWithNumber" xml:space="preserve">
     <value>Names can't start with a number.</value>
-  </data>
-  <data name="NameCannotContainInvalidChar" xml:space="preserve">
-    <value>The name can't contain invalid character {0}</value>
   </data>
   <data name="NameCannotHaveSpaces" xml:space="preserve">
     <value>The name can't have any spaces.</value>
@@ -2410,9 +2317,6 @@ for {1}?</value>
   <data name="EventNew" xml:space="preserve">
     <value>New Event</value>
   </data>
-  <data name="HintObjectIsContainerNotApply" xml:space="preserve">
-    <value>This value may not be applied since this object has IsContainer set to true</value>
-  </data>
   <data name="Velocity" xml:space="preserve">
     <value>Velocity</value>
   </data>
@@ -2560,9 +2464,6 @@ for {1}?</value>
   <data name="ViewSourceExplorer" xml:space="preserve">
     <value>View source file in explorer</value>
   </data>
-  <data name="FindAllReferences" xml:space="preserve">
-    <value>Find all references to this</value>
-  </data>
   <data name="VariableAdd" xml:space="preserve">
     <value>Add variable</value>
   </data>
@@ -2634,9 +2535,6 @@ for {1}?</value>
   </data>
   <data name="FileOpenCs" xml:space="preserve">
     <value>Open .cs file</value>
-  </data>
-  <data name="EntityAddDerived" xml:space="preserve">
-    <value>Add Derived Entity</value>
   </data>
   <data name="ScreenLevelCreate" xml:space="preserve">
     <value>Create Level Screen</value>
@@ -2760,5 +2658,107 @@ for {1}?</value>
   </data>
   <data name="RestartOnFailedCommands" xml:space="preserve">
     <value>Restart on failed commands</value>
+  </data>
+  <data name="Preferences" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ErrorGumFileAssociationNotFound" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RunEditMode" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AutoTakeSnapshot" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ProjectWizardOpen" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GlobalContentMembership" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EntityBase" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LocalFiles" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DownloadFile" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HintExistingFileList" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EnterUrlName" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GlueWillDownloadFileAndDependencies" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FrbGlueVersion" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GlueProjectVersion" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Fullscreen" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ProjectNewSynced" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ObjectNoPartitioning" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DamageInGeneratedCode" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LinkToSource" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PolygonToRectangle" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PolygonToMultiSided" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HintMovePointUpList" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HintMovePointDownList" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HintResizePolygon" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Variables" xml:space="preserve">
+    <value />
+  </data>
+  <data name="VariablesExcluded" xml:space="preserve">
+    <value />
+  </data>
+  <data name="State" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HintObjectIsContainerNotApply" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FailedToSetGameEditModeToX" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FindAllReferences" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EntityAddDerived" xml:space="preserve">
+    <value />
   </data>
 </root>

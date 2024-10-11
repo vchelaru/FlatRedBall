@@ -1,4 +1,5 @@
-﻿{CompilerDirectives}
+﻿#pragma warning disable
+{CompilerDirectives}
 
 using FlatRedBall;
 using FlatRedBall.Gui;
@@ -37,6 +38,9 @@ namespace GlueControl.Editing
     public class TileShapeCollectionMarker : ISelectionMarker
     {
         #region Fields/Properties
+
+        public bool IsSuppressingPunchThrough => true;
+
 
         public bool UsesRightMouseButton => true;
 
@@ -161,7 +165,7 @@ namespace GlueControl.Editing
         public void Update(bool didGameBecomeActive)
         {
             ////////////////early out//////////////////////////////
-            if (map == null)
+            if (map == null || FlatRedBallServices.Game.IsActive == false)
             {
                 return;
             }
@@ -199,7 +203,7 @@ namespace GlueControl.Editing
 
             #region Primary Push
 
-            if (cursor.PrimaryPush && EditingMode == EditingMode.None)
+            if (cursor.PrimaryPush && EditingMode == EditingMode.None && cursor.IsInWindow())
             {
                 if (keyboard.IsShiftDown)
                 {
@@ -620,6 +624,15 @@ namespace GlueControl.Editing
 
         private void PaintTileAtWorldPosition(float worldX, float worldY)
         {
+            // only paint if within the bounds
+            var shouldPaint = worldX > map.Left && worldX < map.Left + map.Width &&
+                worldY < map.Top && worldY > map.Top - map.Height;
+
+            if (!shouldPaint)
+            {
+                return;
+            }
+
             var tileDimensions = owner.GridSize;
             owner.AddCollisionAtWorld(worldX, worldY);
             var newRect = owner.GetRectangleAtPosition(worldX, worldY);

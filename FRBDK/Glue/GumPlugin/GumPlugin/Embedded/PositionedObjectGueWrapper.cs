@@ -82,6 +82,10 @@ namespace GumCoreShared.FlatRedBall.Embedded
             UpdateGumObject();
         }
 
+        /// <summary>
+        /// Calls base.UpdateDependencies to update this object's position and rotation, then updates the Gum object.
+        /// </summary>
+        /// <param name="currentTime">The current game time, used to prevent multiple calls from updating this.</param>
         public override void UpdateDependencies(double currentTime)
         {
             base.UpdateDependencies(currentTime);
@@ -203,8 +207,19 @@ namespace GumCoreShared.FlatRedBall.Embedded
         }
     }
 
+    /// <summary>
+    /// Static class containing extension methods for updating FlatRedBall objects from a GraphicalUiElement.
+    /// </summary>
     public static class GraphicalUiElementExtensions
     {
+        /// <summary>
+        /// Updates the children shapes of the argument Parent to match the Gum object's shapes. This optionally
+        /// creates new shapes.
+        /// </summary>
+        /// <param name="graphicalUiElement">The GraphicalUiElement from which to pull shapes.</param>
+        /// <param name="shapeCollection">The ShapeCollection for the FlatRedBall shapes.</param>
+        /// <param name="parent">The parent for the FlatRedBall shapes.</param>
+        /// <param name="createMissingShapes">Whether to instantiate missing shapes, where the name is the property used to find matches.</param>
         public static void SetCollision(this GraphicalUiElement graphicalUiElement, ShapeCollection shapeCollection, PositionedObject parent, bool createMissingShapes = false)
         {
             // this will do it only at the element level. Instances must be of shape type to be applied
@@ -291,6 +306,13 @@ namespace GumCoreShared.FlatRedBall.Embedded
             }
         }
 
+        /// <summary>
+        /// Updates the children sprite of the argument Parent to match the Gum object's sprites. This optionally
+        /// creates new Sprites.
+        /// </summary>
+        /// <param name="graphicalUiElement">The GraphicalUiElement from which to pull sprites.</param>
+        /// <param name="parent">The parent of the FlatRedBall Sprites.</param>
+        /// <param name="createMissingSprites">Whether to instantiate missing sprites, where the name is the property used to find matches.</param>
         public static void SetSprites(this GraphicalUiElement graphicalUiElement, PositionedObject parent, bool createMissingSprites = false)
         {
             if(graphicalUiElement.ElementSave != null)

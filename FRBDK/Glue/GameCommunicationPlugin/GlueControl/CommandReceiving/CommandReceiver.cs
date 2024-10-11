@@ -30,7 +30,7 @@ using ToolsUtilities;
 using Xceed.Wpf.Toolkit.PropertyGrid;
 using CompilerLibrary.ViewModels;
 
-namespace OfficialPluginsCore.Compiler.CommandReceiving
+namespace OfficialPlugins.Compiler.CommandReceiving
 {
     public class CommandReceiver
     {
@@ -97,7 +97,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             {
                 if(dto != null)
                 {
-                    response = ReceiveDto(dto);
+                    response = await ReceiveDto(dto);
                 }
                 else
                 {
@@ -122,10 +122,11 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             },
             outputText);
 
+
             return response;
         }
 
-        private object ReceiveDto(object dto)
+        private async Task<object> ReceiveDto(object dto)
         {
             var type = dto.GetType();
 
@@ -139,7 +140,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
                 else
                 {
-                    PrintOutput(dto.ToString());
+                    PrintOutput(DateTime.Now + " " + dto.ToString());
                 }
             }
 
@@ -159,6 +160,22 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             if (method != null)
             {
                 toReturn = method.Invoke(this, new object[] { dto });
+
+                if(toReturn is Task asTask)
+                {
+                    await asTask;
+
+                    Type taskType = asTask.GetType();
+                    bool isGenericTask = taskType.IsGenericType;
+
+                    if(isGenericTask)
+                    {
+                        var resultProperty = taskType.GetProperty("Result");
+                        toReturn = resultProperty.GetValue(asTask);
+                    }
+
+                }
+
             }
 
             return toReturn;
@@ -830,6 +847,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 object methodResponse = null;
                 try
                 {
+                    HandleBeforeRunningReceivedMethod(incomingDto);
                     methodResponse = method.Invoke(target, parameters.ToArray());
                 }
                 catch(TargetParameterCountException)
@@ -887,6 +905,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 toReturn = null;
             }
             return toReturn;
+        }
+
+        private void HandleBeforeRunningReceivedMethod(FacadeCommandBase incomingDto)
+        {
+            if (incomingDto.Method == nameof(GlueCommands.Self.GluxCommands.CopyNamedObjectListIntoElement))
+            {
+                _refreshManager.NextPositionValues = new RefreshManager.NewObjectListPositionValues
+                {
+                    SkipPositioningForNextGroup = true
+                };
+            }
         }
 
         //private async Task<ResponseWithContentDto> SendResponseBackToGame(FacadeCommandBase dto, object contentToGame)

@@ -10,47 +10,39 @@ namespace FlatRedBall.Graphics
     {
         #region Properties
 
-        #region XML Docs
         /// <summary>
         /// The X value to use for sorting.  This does NOT affect the position
         /// of objects drawn by the DrawableBatch.
         /// </summary>
-        #endregion
         float X
         {
             get;
-            set;
+            //set;
         }
 
-        #region XML Docs
         /// <summary>
         /// The Y value to use for sorting.  This does NOT affect the position
         /// of objects drawn by the DrawableBatch.
         /// </summary>
-        #endregion
         float Y
         {
             get;
-            set;
+            //set;
         }
 
-        #region XML Docs
         /// <summary>
         /// The Z value to use for sorting.  This does NOT affect the position
         /// of objects drawn by the DrawableBatch.
         /// </summary>
-        #endregion
         float Z
         {
             get;
-            set;
+            //set;
         }
 
-        #region XML Docs
         /// <summary>
         /// Whether or not this batch should be updated
         /// </summary>
-        #endregion
         bool UpdateEveryFrame
         {
             get;
@@ -74,11 +66,9 @@ namespace FlatRedBall.Graphics
         /// </summary>
         void Update();
 
-        #region XML Docs
         /// <summary>
         /// Used to destroy any assets that need to be destroyed
         /// </summary>
-        #endregion
         void Destroy();
 
         #endregion

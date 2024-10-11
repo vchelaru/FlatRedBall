@@ -1,12 +1,16 @@
 ﻿$GLUE_VERSIONS$
 using FlatRedBall.Audio;
-using NAudio.Wave;
 using System;
 using System.IO;
+#if !WEB
+using NAudio.Wave;
 using NAudio.Utils;
+#endif
 
 namespace FlatRedBall.NAudio
 {
+#if !WEB
+
     public class NAudio_Song : IDisposable
 #if ISongInFrb
         , ISong
@@ -19,6 +23,7 @@ namespace FlatRedBall.NAudio
         LoopStream loopStream;
 
         public event EventHandler PlaybackStopped;
+        public event EventHandler Looped;
 
         //public float LoopStartSeconds
         //{
@@ -104,6 +109,9 @@ namespace FlatRedBall.NAudio
             {
                 throw new NotImplementedException($"The extension {extension} is not supported");
             }
+
+            loopStream.Looped += (not, used) => Looped?.Invoke(this, null);
+
             this.Name = fileName;
 
             waveOut = new WaveOutEvent();
@@ -210,4 +218,7 @@ namespace FlatRedBall.NAudio
 
         public TimeSpan Duration => reader.TotalTime;
     }
+
+
+#endif
 }

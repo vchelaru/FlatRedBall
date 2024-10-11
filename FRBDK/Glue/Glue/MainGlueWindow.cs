@@ -33,6 +33,10 @@ using Newtonsoft.Json;
 using System.Threading;
 using System.IO;
 using System.ServiceModel.Channels;
+using System.Windows.Media;
+using FlatRedBall.Glue.Themes;
+using System.Reflection;
+using Wpf = System.Windows;
 
 namespace Glue;
 
@@ -100,16 +104,33 @@ public partial class MainGlueWindow : Form
                 return;
             }
 
-            startInfo = new ProcessStartInfo("&\"dotnet.exe\"", "--list-sdks")
+            // This can fail for some reason, so let's try/catch it:
+            string commandToRun = "&\"dotnet.exe\"";
+            string arguments = "--list-sdks";
+            try
             {
-                RedirectStandardOutput = true,
-                WorkingDirectory = @"C:\Program Files\dotnet"
-            };
 
-            process = Process.Start(startInfo)!;
-            process.WaitForExit(1000);
+                startInfo = new ProcessStartInfo(commandToRun, arguments)
+                {
+                    RedirectStandardOutput = true,
+                    WorkingDirectory = @"C:\Program Files\dotnet"
+                };
 
-            output = process.StandardOutput.ReadToEnd();
+                process = Process.Start(startInfo)!;
+                process.WaitForExit(1000);
+
+                output = process.StandardOutput.ReadToEnd();
+            }
+            catch(Exception e)
+            {
+                var message = $"Error running command {commandToRun} {arguments}";
+
+                message += e.ToString();
+
+                GlueCommands.Self.PrintOutput(message);
+
+            }
+
         }
 
         if (String.IsNullOrEmpty(output))
@@ -176,6 +197,10 @@ public partial class MainGlueWindow : Form
 
     public MainGlueWindow()
     {
+        // Because we are hosting in a WinForms application, we need to ensure Application.Current is set
+        // This is required for various aspects of WPF controls to work correctly.
+        _ = new Wpf.Application() { ShutdownMode = Wpf.ShutdownMode.OnExplicitShutdown };
+
         // Vic says - this makes Glue use the latest MSBuild environments
         // Running on AnyCPU means we run in 64 bit and can load VS 22 64 bit libs.
         SetMsBuildEnvironmentVariable();
@@ -198,10 +223,33 @@ public partial class MainGlueWindow : Form
         this.Controls.Add(this.mMenu);
     }
 
+    public void SyncMenuStripWithTheme(System.Windows.Controls.UserControl control)
+    {
+        if (control.TryFindResource("Frb.Colors.Surface01") is Color bgColor &&
+            control.TryFindResource("Frb.Colors.Foreground") is Color fgColor &&
+            control.TryFindResource("Frb.Colors.Primary") is Color primaryColor)
+        {
+            System.Drawing.Color bg = System.Drawing.Color.FromArgb(bgColor.A, bgColor.R, bgColor.G, bgColor.B);
+            System.Drawing.Color fg = System.Drawing.Color.FromArgb(fgColor.A, fgColor.R, fgColor.G, fgColor.B);
+            System.Drawing.Color primary = System.Drawing.Color.FromArgb(primaryColor.A, primaryColor.R, primaryColor.G, primaryColor.B);
+
+            FrbMenuStripRenderer renderer = new FrbMenuStripRenderer(bg, fg, primary);
+
+            Self.MainMenuStrip.Renderer = renderer;
+            Self.MainMenuStrip.Invalidate();
+        }
+    }
+
     private async void StartUpGlue(object sender, EventArgs e)
     {
         // We need to load the glue settings before loading the plugins so that we can shut off plugins according to settings
         GlueCommands.Self.LoadGlueSettings();
+
+        if (GlueState.Self.GlueSettingsSave.ThemeConfig is { } config)
+        {
+            MainWpfControl.SwitchThemes(config);
+        }
+
         var mainCulture = GlueState.Self.GlueSettingsSave.CurrentCulture;
         if(mainCulture != null)
         {
@@ -386,9 +434,77 @@ public partial class MainGlueWindow : Form
         var wpfHost = new ElementHost();
         wpfHost.Dock = DockStyle.Fill;
         MainWpfControl = new MainPanelControl();
+        MainWpfControl.Resources.MergedDictionaries.Add(_implicitWindowTypeDictionary);
+
+        TryGenerateImplicitWindowStylesFor(Assembly.GetCallingAssembly());
+        Wpf.Application.Current.Resources = MainWpfControl.Resources;
+        SyncMenuStripWithTheme(MainWpfControl);
         wpfHost.Child = MainWpfControl;
         this.Controls.Add(wpfHost);
         this.PerformLayout();
+    }
+
+    private readonly HashSet<string> _checkedAssemblies = new();
+    private readonly HashSet<string> _addedWindowTypes = new();
+    private readonly Wpf.ResourceDictionary _implicitWindowTypeDictionary = new();
+
+    public void TryGenerateImplicitWindowStylesFor(Assembly assembly)
+    {
+        if (!_checkedAssemblies.Add(assembly.FullName))
+        {
+            return;
+        }
+
+        List<Type> windowTypes = GetAllReferencedAssemblies(assembly)
+            .Concat(new[] { assembly })
+            .SelectMany(x => x.GetTypes())
+            .Where(t => t.IsSubclassOf(typeof(Wpf.Window)) && !t.IsAbstract && _addedWindowTypes.Add(t.AssemblyQualifiedName))
+            .ToList();
+
+
+        foreach (Type windowType in windowTypes)
+        {
+            Wpf.Style style = new ()
+            {
+                TargetType = windowType,
+                BasedOn = (Wpf.Style)MainWpfControl.TryFindResource(typeof(Wpf.Window))
+            };
+            _implicitWindowTypeDictionary.Add(windowType, style);
+        }
+
+
+        IEnumerable<Assembly> GetAllReferencedAssemblies(Assembly assembly)
+        {
+            HashSet<string> visitedAssemblies = new();
+            Queue<Assembly> assembliesToCheck = new();
+
+            assembliesToCheck.Enqueue(assembly);
+
+            while (assembliesToCheck.Count > 0)
+            {
+                Assembly currentAssembly = assembliesToCheck.Dequeue();
+
+                if (!visitedAssemblies.Add(currentAssembly.FullName)) continue;
+
+                yield return currentAssembly;
+
+                foreach (AssemblyName referencedAssemblyName in currentAssembly.GetReferencedAssemblies())
+                {
+                    try
+                    {
+                        Assembly referencedAssembly = Assembly.Load(referencedAssemblyName);
+                        if (!visitedAssemblies.Contains(referencedAssembly.FullName))
+                        {
+                            assembliesToCheck.Enqueue(referencedAssembly);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        _ = e;
+                    }
+                }
+            }
+        }
     }
 
     public new void Invoke(Action action)
@@ -596,4 +712,8 @@ public partial class MainGlueWindow : Form
 
         GlueCommands.Self.CloseGlue();
     }
+
+    #region Styling
+
+    #endregion
 }

@@ -364,11 +364,17 @@ namespace FlatRedBall.Glue.Managers
                 if(markAsCurrent) CurrentlyRunningTask = task;
                 TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
                 task.TimeStarted = DateTime.Now;
-                await task.Do_Action_Internal();
-                task.TimeEnded = DateTime.Now;
-                // Set it to null before raising the event so that the TaskCount uses a null object.
-                if (markAsCurrent) CurrentlyRunningTask = null;
-                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
+                try
+                {
+                    await task.Do_Action_Internal();
+                }
+                finally
+                {
+                    task.TimeEnded = DateTime.Now;
+                    // Set it to null before raising the event so that the TaskCount uses a null object.
+                    if (markAsCurrent) CurrentlyRunningTask = null;
+                    TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
+                }
             }
 
         }
@@ -629,7 +635,6 @@ namespace FlatRedBall.Glue.Managers
             return didWait;
         }
 
-
         bool DoesTaskNeedToFinish(GlueTaskBase glueTask)
         {
             if(glueTask.IsCancelled)
@@ -676,7 +681,6 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-
         public async Task<T> WaitForTaskToFinish<T>(GlueTask<T> glueTask)
         {
             if (glueTask == null)
@@ -703,6 +707,32 @@ namespace FlatRedBall.Glue.Managers
                     await Task.Delay(150);
                 }
                 return (T)glueTask.Result;
+            }
+        }
+
+        public async Task WaitForTaskToFinish(string taskDescription)
+        {
+            GlueTaskBase task = null;
+            if(addOrMoveToEndTaskQueueTaskIds.ContainsKey(taskDescription))
+            {
+                addOrMoveToEndTaskQueueTaskIds.TryGetValue(taskDescription, out task);
+            }
+
+            if(task == null)
+            {
+                var taskInQueue = taskQueue.FirstOrDefault(item => item.Value.DisplayInfo == taskDescription);
+                task = taskInQueue.Value;
+
+            }
+            
+            if(task == null)
+            {
+                task = mActiveParallelTasks.FirstOrDefault(item => item.DisplayInfo == taskDescription);
+            }
+
+            if(task != null)
+            {
+                await WaitForTaskToFinish(task);
             }
         }
 

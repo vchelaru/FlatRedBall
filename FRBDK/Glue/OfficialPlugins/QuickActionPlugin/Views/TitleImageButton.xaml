@@ -1,33 +1,113 @@
-﻿<UserControl Style="{DynamicResource UserControlStyleDark}" x:Class="OfficialPluginsCore.QuickActionPlugin.Views.TitleImageButton"
+﻿<UserControl x:Class="OfficialPlugins.QuickActionPlugin.Views.TitleImageButton"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:views="clr-namespace:OfficialPlugins.QuickActionPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="175" Width="250"  Margin="10,10,0,0">
-    <Grid>
-        <Button Click="Button_Click">
-            
-        </Button>
-        <StackPanel>
-            <TextBlock x:Name="TitleTextBlock" IsHitTestVisible="False" HorizontalAlignment="Center" TextAlignment="Center" FontSize="24" Margin="0,12,0,0" TextWrapping="Wrap">
-                This is the title
-            </TextBlock>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition x:Name="ImageColumn" Width="1*"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Image x:Name="ImageInstance" Source="/OfficialPluginsCore;component/QuickActionPlugin/Views/Add Entity instance to GameScreen.png" 
-                       IsHitTestVisible="False"
-                       Margin="10" VerticalAlignment="Top">
-                    
-                </Image>
-                <TextBlock x:Name="DetailsTextBlock" Grid.Column="1" IsHitTestVisible="False" Margin="10,10,5,10" TextWrapping="Wrap">
+             d:DesignHeight="175" 
+             Width="200"
+             Margin="0,0,4,4">
+    <Button Click="Button_Click" Padding="4" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top">
+        <Grid Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="ImageColumn" Width="40"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Image Grid.Column="0" 
+                       x:Name="ImageInstance" 
+                       Source="/OfficialPlugins;component/QuickActionPlugin/Views/Add Entity instance to GameScreen.png" 
+                       VerticalAlignment="Top" 
+                       Margin="0,0,4,0"/>
+
+            <StackPanel Grid.Column="1">
+                <TextBlock x:Name="TitleTextBlock" 
+                           FontSize="14" 
+                           TextWrapping="Wrap"
+                           Foreground="{DynamicResource Frb.Brushes.Foreground}">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DescribeInToolTip, RelativeSource={RelativeSource AncestorType=views:TitleImageButton}}" Value="True">
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                    This is the title
+                </TextBlock>
+                <TextBlock x:Name="DetailsTextBlock" 
+                           TextWrapping="Wrap" 
+                           MaxWidth="200"
+                           FontSize="12">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DescribeInToolTip, RelativeSource={RelativeSource AncestorType=views:TitleImageButton}}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
                     This is the second text block, which has detail about the action
                 </TextBlock>
-            </Grid>
-            
-        </StackPanel>
-    </Grid>
+            </StackPanel>
+
+
+            <Border x:Name="DetailsIcon"  Background="{DynamicResource Frb.Brushes.Primary}" Width="22" Height="22" CornerRadius="26" Padding="0" BorderThickness="1"  BorderBrush="Transparent" 
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="-4,-4,0,0">
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding DescribeInToolTip, RelativeSource={RelativeSource AncestorType=views:TitleImageButton}}" Value="True"/>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=views:TitleImageButton}}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <materialDesign:PackIcon Kind="QuestionMarkCircleOutline" 
+                                         Foreground="{DynamicResource Frb.Brushes.Primary.Contrast}" 
+                                         VerticalAlignment="Bottom"
+                                         Width="Auto"
+                                         Height="Auto"
+                                         ToolTipService.InitialShowDelay="0">
+                    <materialDesign:PackIcon.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock x:Name="DetailsTooltipTextBlock" 
+                                           TextWrapping="Wrap" 
+                                           MaxWidth="200"
+                                           FontSize="12">
+                                    This is the second text block, which has detail about the action
+                                </TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </materialDesign:PackIcon.ToolTip>
+                </materialDesign:PackIcon>
+            </Border>
+        </Grid>
+        
+        <Button.Style>
+            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="Background" Value="Transparent" />
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource Frb.Brushes.Primary.Transparent}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource Frb.Brushes.Primary}"></Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Button.Style>
+
+    </Button>
 </UserControl>

@@ -57,6 +57,17 @@ namespace FlatRedBall.Math.Geometry
             Right = right;
         }
 
+        public FloatRectangle(Point center, float width, float height)
+        {
+            float halfWidth = width / 2;
+            float halfHeight = height / 2;
+
+            Top = (float)center.Y + halfHeight;
+            Bottom = (float)center.Y - halfHeight;
+            Right = (float)center.X + halfWidth;
+            Left = (float)center.X - halfWidth;
+        }
+
         /// <summary>
         /// Checks whether this rectangle's defined area overlaps with another <see cref="FloatRectangle"/>.
         /// </summary>

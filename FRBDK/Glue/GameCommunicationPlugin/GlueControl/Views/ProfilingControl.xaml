@@ -14,10 +14,11 @@
         <WrapPanel Margin="2"  Orientation="Horizontal" Grid.Column="0">
             <Button Click="InvokeSnapShot" Content="{x:Static localization:Texts.TakeSnapshot}"></Button>
 
-            <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsAutoSnapshotEnabled}" Content="{x:Static localization:Texts.AutoTakeSnapshot}"></CheckBox>
+            <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsAutoSnapshotEnabled}" Content="Auto Take Snapshot"></CheckBox>
+            <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsDisableFixedTimestepChecked}" Content="Disable Fixed Timestep/VSync"></CheckBox>
         </WrapPanel>
         <TabControl Grid.Row="1">
-            <TabItem Header="{x:Static localization:Texts.Summary}">
+            <TabItem Header="Summary">
                 <ScrollViewer>
                     <TextBlock Grid.Row="1" x:Name="SummaryTextBlock" Text="{Binding SummaryText}">
 

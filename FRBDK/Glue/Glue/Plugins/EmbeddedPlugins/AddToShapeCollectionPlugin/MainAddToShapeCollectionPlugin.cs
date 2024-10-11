@@ -83,11 +83,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
         {
             NamedObjectSave toReturn = null;
 
-            var tiw = new TextInputWindow();
-            tiw.Message = message;
-            var dialogResult = tiw.ShowDialog();
+            CustomizableTextInputWindow tiw = new()
+            {
+                Message = message
+            };
 
-            if (dialogResult == DialogResult.OK)
+            if (tiw.ShowDialog() is true)
             {
                 string whyItIsntValid;
                 NameVerifier.IsNamedObjectNameValid(tiw.Result, out whyItIsntValid);

@@ -143,7 +143,7 @@ namespace FlatRedBall.Glue
 
         public static void GetDictionaryTypes(ReferencedFileSave referencedFileSave, out string keyType, out string valueType)
         {
-            valueType = referencedFileSave.GetTypeForCsvFile();
+            valueType = "global::" + referencedFileSave.GetTypeForCsvFile();
 
             // To know the value type, we got to pop this file open and find the first required type
             keyType = null;
@@ -289,9 +289,6 @@ namespace FlatRedBall.Glue
         private static bool CreateConstsForCsvEntries(ReferencedFileSave initialRfs, List<TypedMemberBase> members, Dictionary<string, string> untypedMembers, ICodeBlock codeBlock)
         {
             bool succeeded = true;
-
-            bool addToOrderedLists = true;
-
 
             CustomClassSave customClass = GetCustomClassForCsv(initialRfs.Name);
 

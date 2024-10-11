@@ -1,39 +1,69 @@
 ﻿using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace GlueFormsCore.ViewModels
 {
 
-    public class TabContainerViewModel
+    public class TabContainerViewModel : ViewModel
     {
-        public PluginTabPage this[int index]
+        public PluginTab this[int index]
         {
             get => Tabs[index];
             set => Tabs[index] = value;
         }
-        public void Add(PluginTabPage item) => Tabs.Add(item);
-        public void Remove(PluginTabPage item) => Tabs.Remove(item);
-        public int Count => Tabs.Count;
-        public ObservableCollection<PluginTabPage> Tabs { get; private set; } = new ObservableCollection<PluginTabPage>();
+        public void Add(PluginTab item) => Tabs.Add(item);
+        public void Remove(PluginTab item) => Tabs.Remove(item);
 
-        public Dictionary<string, PluginTabPage> TabsForTypes { get; private set; } = new Dictionary<string, PluginTabPage>();
-        public void SetTabForCurrentType(PluginTabPage tab)
+        public PluginTab SelectedTab
         {
-            var treeNode = GlueState.Self.CurrentTreeNode;
-            var selectedType = treeNode?.Tag?.GetType()?.Name ?? treeNode?.Text;
+            get => Get<PluginTab>();
+            set => Set(value);
+        }
 
-            if(selectedType != null)
+        [DependsOn(nameof(Count))]
+        public Visibility Visibility => Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+
+        public TabLocation Location { get; init; }
+
+        public int Count => Tabs.Count;
+        public ObservableCollection<PluginTab> Tabs { get; private set; } = new ObservableCollection<PluginTab>();
+
+        public TabContainerViewModel()
+        {
+            Tabs.CollectionChanged += OnTabsCollectionChanged;
+        }
+
+        private void OnTabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            NotifyPropertyChanged(nameof(Count));
+            e.NewItems?.OfType<PluginTab>().ToList().ForEach(tab => tab.ParentContainer = this);
+            if (Count == 1)
             {
-                TabsForTypes[selectedType] = tab;
+                SelectedTab = Tabs.FirstOrDefault();
             }
+        }
+
+        public void ShowMostRecentTabFor(string typeName)
+        {
+            if (Count == 0 || typeName is null)
+            {
+                return;
+            }
+
+            SelectedTab = Tabs.OrderByDescending(item => item.LastTimeClicked)
+                    .ThenByDescending(item => item.IsPreferredDisplayerForType(typeName))
+                    .First();
         }
     }
 
@@ -42,47 +72,11 @@ namespace GlueFormsCore.ViewModels
         public static bool IsRecordingSelection { get; set; } = true;
         #region Fields/Properties
 
-        public TabContainerViewModel TopTabItems { get; private set; } =    new TabContainerViewModel();
-        public TabContainerViewModel BottomTabItems { get; private set; } = new TabContainerViewModel();
-        public TabContainerViewModel LeftTabItems { get; private set; } =   new TabContainerViewModel();
-        public TabContainerViewModel RightTabItems { get; private set; } =  new TabContainerViewModel();
-        public TabContainerViewModel CenterTabItems { get; private set; } = new TabContainerViewModel();
-
-        public PluginTabPage TopSelectedTab
-        {
-            get => Get<PluginTabPage>();
-            set => Set(value);
-        }
-
-        public PluginTabPage BottomSelectedTab
-        {
-            get => Get<PluginTabPage>();
-            set => Set(value);
-        }
-
-        public PluginTabPage LeftSelectedTab
-        {
-            get => Get<PluginTabPage>();
-            set => Set(value);
-        }
-
-        public PluginTabPage RightSelectedTab
-        {
-            get => Get<PluginTabPage>();
-            set => Set(value);
-        }
-
-        public PluginTabPage CenterSelectedTab
-        {
-            get => Get<PluginTabPage>();
-            set => Set(value);
-        }
-
-        public GridLength TopSplitterHeight
-        {
-            get => Get<GridLength>();
-            set => Set(value);
-        }
+        public TabContainerViewModel TopTabItems { get; } = new() { Location = TabLocation.Top };
+        public TabContainerViewModel BottomTabItems { get; } = new () { Location = TabLocation.Bottom };
+        public TabContainerViewModel LeftTabItems { get; } = new () { Location = TabLocation.Left };
+        public TabContainerViewModel RightTabItems { get; } =  new () { Location = TabLocation.Right };
+        public TabContainerViewModel CenterTabItems { get; } = new () { Location = TabLocation.Center };
 
         public GridLength TopPanelHeight
         {
@@ -96,13 +90,7 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
-        public GridLength LeftSplitterWidth
-        {
-            get => Get<GridLength>();
-            set => Set(value);
-        }
-
-        public GridLength BottomSplitterHeight
+        public GridLength RightPanelWidth
         {
             get => Get<GridLength>();
             set => Set(value);
@@ -114,170 +102,95 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        [DependsOn(nameof(TopTabItems))]
+        public Visibility TopSplitterVisibility => TopTabItems.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+
+        [DependsOn(nameof(RightTabItems))]
+        public Visibility RightSplitterVisibility => RightTabItems.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+
+        [DependsOn(nameof(BottomTabItems))]
+        public Visibility BottomSplitterVisibility => BottomTabItems.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+
         #endregion
+
+        private IReadOnlyDictionary<string, TabContainerViewModel> Containers { get; }
 
         public TabControlViewModel()
         {
-            TopTabItems.Tabs.CollectionChanged += (_, __) => NotifyPropertyChanged(nameof(TopTabItems));
-            BottomTabItems.Tabs.CollectionChanged += (_, __) => NotifyPropertyChanged(nameof(BottomTabItems));
-            LeftTabItems.Tabs.CollectionChanged += (_, __) => NotifyPropertyChanged(nameof(LeftTabItems));
-            RightTabItems.Tabs.CollectionChanged += (_, __) => NotifyPropertyChanged(nameof(RightTabItems));
-            CenterTabItems.Tabs.CollectionChanged += (_, __) => NotifyPropertyChanged(nameof(CenterTabItems));
-
-            this.PropertyChanged += (sender, args) => HandlePropertyChanged(args.PropertyName);
-
-            ExpandAndCollapseColumnAndRowWidths();
-        }
-
-        private void HandlePropertyChanged(string propertyName)
-        {
-            switch (propertyName)
+            Containers = new Dictionary<string, TabContainerViewModel>
             {
-                case nameof(TopTabItems):
-                    ExpandAndCollapseColumnAndRowWidths();
-                    if (TopTabItems.Count > 0 && TopSelectedTab == null)
-                    {
-                        TopSelectedTab = TopTabItems[0];
-                    }
-                    break;
-                case nameof(BottomTabItems):
-                    ExpandAndCollapseColumnAndRowWidths();
-                    if (BottomTabItems.Count > 0 && BottomSelectedTab == null)
-                    {
-                        BottomSelectedTab = BottomTabItems[0];
-                    }
-                    break;
-                case nameof(LeftTabItems):
-                    ExpandAndCollapseColumnAndRowWidths();
-                    if (LeftTabItems.Count > 0 && LeftSelectedTab == null)
-                    {
-                        LeftSelectedTab = LeftTabItems[0];
-                    }
-                    break;
-                case nameof(RightTabItems):
-                    ExpandAndCollapseColumnAndRowWidths();
-                    if (RightTabItems.Count > 0 && RightSelectedTab == null)
-                    {
-                        RightSelectedTab = RightTabItems[0];
-                    }
-                    break;
-                case nameof(CenterTabItems):
-                    ExpandAndCollapseColumnAndRowWidths();
-                    if (CenterTabItems.Count > 0 && CenterSelectedTab == null)
-                    {
-                        CenterSelectedTab = CenterTabItems[0];
-                    }
-                    break;
-            }
-        }
+                { nameof(TopTabItems), TopTabItems },
+                { nameof(BottomTabItems), BottomTabItems },
+                { nameof(LeftTabItems), LeftTabItems },
+                { nameof(RightTabItems), RightTabItems },
+                { nameof(CenterTabItems), CenterTabItems }
+            };
 
-        double? leftPixelWhenShrank;
-
-        private void ExpandAndCollapseColumnAndRowWidths()
-        {
-            var shouldShrinkLeft = LeftTabItems.Count == 0 && LeftSplitterWidth.Value > 0;
-            var shouldExpandLeft = LeftTabItems.Count > 0 && LeftSplitterWidth.Value == 0;
-
-            var shouldShrinkTop = TopTabItems.Count == 0 && TopSplitterHeight.Value > 0;
-            var shouldExpandTop = TopTabItems.Count > 0 && TopSplitterHeight.Value == 0;
-
-            var shouldShrinkBottom = BottomTabItems.Count == 0 && BottomSplitterHeight.Value > 0;
-            var shouldExpandBottom = BottomTabItems.Count > 0 && BottomSplitterHeight.Value == 0;
-
-            if (shouldShrinkLeft)
+            foreach (var (name, vm) in Containers)
             {
-                if(LeftPanelWidth.Value > 1)
+                vm.Tabs.CollectionChanged += (_, args) => AdjustGrid(vm, args);
+
+                vm.PropertyChanged += (_, args) =>
                 {
-                    leftPixelWhenShrank = LeftPanelWidth.Value;
-                }
-                LeftSplitterWidth = new GridLength(0);
-                LeftPanelWidth = new GridLength(0, GridUnitType.Pixel);
+                    if (args.PropertyName == nameof(TabContainerViewModel.Count))
+                    {
+                        NotifyPropertyChanged(name);
+                    }
+                };
+            };
+        }
 
-            }
-            else if (shouldExpandLeft)
-            {
-                LeftSplitterWidth = new GridLength(4);
-                LeftPanelWidth = new GridLength(leftPixelWhenShrank ?? 230, GridUnitType.Pixel);
-                //LeftPanelWidth = new GridLength(1, GridUnitType.Star);
-            }
+        private void AdjustGrid(TabContainerViewModel tab, NotifyCollectionChangedEventArgs args)
+        {
+            GridLength? gridLength = null;
 
-            if (shouldShrinkTop)
+            if (args.NewItems is not null && tab.Count == 1)
             {
-                TopSplitterHeight = new GridLength(0);
-                TopPanelHeight = new GridLength(0);
-            }
-            else if (shouldExpandTop)
-            {
-                TopSplitterHeight = new GridLength(4);
-                //TopPanelHeight = new GridLength(1, GridUnitType.Star);
-                TopPanelHeight = new GridLength(200, GridUnitType.Pixel);
-            }
+                double? length = tab.Location switch
+                {
+                    TabLocation.Left => GlueState.Self.GlueSettingsSave.LeftTabWidthPixels,
+                    TabLocation.Right => GlueState.Self.GlueSettingsSave.RightTabWidthPixels,
+                    TabLocation.Bottom => GlueState.Self.GlueSettingsSave.BottomTabHeightPixels,
+                    _ => null
+                };
 
-            if (shouldShrinkBottom)
-            {
-                BottomSplitterHeight = new GridLength(0);
-                BottomPanelHeight = new GridLength(0);
+                gridLength = new GridLength(length ?? 220, GridUnitType.Pixel);
             }
-            else if (shouldExpandBottom)
+            else if (tab.Count == 0)
             {
-                BottomSplitterHeight = new GridLength(4);
-                //BottomPanelHeight = new GridLength(1, GridUnitType.Star);
-                BottomPanelHeight = new GridLength(200, GridUnitType.Pixel);
+                gridLength = new GridLength(0, GridUnitType.Pixel);
             }
 
+            if (gridLength is not { } gl) return;
+
+            switch (tab.Location)
+            {
+                case TabLocation.Left:
+                    LeftPanelWidth = gl;
+                    break;
+                case TabLocation.Right:
+                    RightPanelWidth = gl;
+                    break;
+                case TabLocation.Top:
+                    TopPanelHeight = gl;
+                    break;
+                case TabLocation.Bottom:
+                    BottomPanelHeight = gl;
+                    break;
+            }
         }
 
         internal void UpdateToSelection(ITreeNode selectedTreeNode)
         {
-            var selectedType = selectedTreeNode?.Tag?.GetType().Name ?? selectedTreeNode?.Text;
+            string selectedType = selectedTreeNode?.Tag?.GetType().Name ?? selectedTreeNode?.Text;
 
-            ShowMostRecentTabFor(TopTabItems,
-                (item) => TopSelectedTab = item, 
-                selectedType);
-
-            ShowMostRecentTabFor(BottomTabItems,
-                (item) => BottomSelectedTab = item, 
-                selectedType);
-
-            ShowMostRecentTabFor(LeftTabItems,
-                (item) => LeftSelectedTab = item, 
-                selectedType);
-
-            ShowMostRecentTabFor(CenterTabItems,
-                (item) => CenterSelectedTab = item, 
-                selectedType);
-
-            ShowMostRecentTabFor(RightTabItems,
-                (item) => RightSelectedTab = item, 
-                selectedType);
-        }
-
-
-        private static void ShowMostRecentTabFor(TabContainerViewModel items, Action<PluginTabPage> action, string typeName)
-        {
-            if (items.Count > 1)
+            foreach (var (_, vm) in Containers)
             {
-                // Is there a tab for this type?
-                if(typeName != null && items.TabsForTypes.ContainsKey(typeName))
+                if(selectedTreeNode != null)
                 {
-                    action(items.TabsForTypes[typeName]);
-
-                }
-                else
-                {
-
-                    var ordered = items.Tabs
-                        .OrderBy(item => !item.IsPreferredDisplayerForType(typeName))
-                        .ThenByDescending(item => item.LastTimeClicked).ToList();
-
-                    if (ordered[0].LastTimeClicked != ordered[1].LastTimeClicked)
-                    {
-                        action(ordered[0]);
-                    }
+                    vm.ShowMostRecentTabFor(selectedType);
                 }
             }
-
         }
     }
-
 }

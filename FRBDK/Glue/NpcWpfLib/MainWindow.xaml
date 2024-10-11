@@ -79,8 +79,20 @@
 
             <StackPanel Grid.Row="6" Grid.ColumnSpan="2">
                 <TextBlock FontStyle="Italic" FontSize="10"  Text="{x:Static localization:Texts.SolutionLocatedIn}" />
-                <TextBlock FontStyle="Italic" FontWeight="Bold"  FontSize="10" Foreground="{Binding FinalDirectoryForeground}" Text="{Binding FinalDirectory}" TextWrapping="Wrap" Margin="15,4,0,0"></TextBlock>
-                <TextBlock FontStyle="Italic" FontSize="10" Foreground="{Binding FinalDirectoryForeground}" Text="{Binding ProjectLocationError}" TextWrapping="Wrap" Margin="15,4,0,0"></TextBlock>
+                <StackPanel>
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ValidationResponse.Succeeded}" Value="False">
+                                    <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Error}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Resources>
+                    <TextBlock FontStyle="Italic" FontWeight="Bold"  FontSize="10" Text="{Binding FinalDirectory}" TextWrapping="Wrap" Margin="15,4,0,0"></TextBlock>
+                    <TextBlock FontStyle="Italic" FontSize="10" Text="{Binding ProjectLocationError}" TextWrapping="Wrap" Margin="15,4,0,0"></TextBlock>
+                </StackPanel>
+
             </StackPanel>
 
             <TextBlock FontWeight="Bold" Grid.Row="7" Margin="0,0,16,10" Text="{x:Static localization:Texts.GitignoreAdd}" />
@@ -98,8 +110,8 @@
             </CheckBox>
             
             
-            <TextBlock FontWeight="Bold" Grid.Row="9" Margin="0,0,16,10" Text="{x:Static localization:Texts.ProjectWizardOpen}" />
-            <CheckBox Grid.Row="9" Grid.Column="1" IsChecked="{Binding IsOpenNewProjectWizardChecked}">
+            <TextBlock FontWeight="Bold" Grid.Row="9" Margin="0,0,16,10" Text="Open New Project Wizard" Visibility="{Binding NewProjectWizardVisibility}" />
+            <CheckBox Grid.Row="9" Grid.Column="1" IsChecked="{Binding IsOpenNewProjectWizardChecked}"  Visibility="{Binding NewProjectWizardVisibility}">
                 <CheckBox.LayoutTransform>
                     <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
                 </CheckBox.LayoutTransform>

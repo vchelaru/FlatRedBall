@@ -28,7 +28,9 @@ namespace FlatRedBallXna4Template
         public Game1() : base()
         {
             graphics = new GraphicsDeviceManager(this);
-
+            // HiDef is required for web, but proably for all other platforms too, so let's set it 
+            // outside of any #if's
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
 #if  ANDROID || IOS
             graphics.IsFullScreen = true;
 #elif WINDOWS || DESKTOP_GL

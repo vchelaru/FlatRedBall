@@ -220,7 +220,6 @@ namespace FlatRedBall.Graphics
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Creates a new Text with the argument string which will only be drawn in the argument Camera's
         /// destination.
@@ -233,7 +232,6 @@ namespace FlatRedBall.Graphics
         /// <param name="s">The string to show.</param>
         /// <param name="cameraToAddTo">The camera that the newly created Text belongs to.</param>
         /// <returns>Reference to the newly created Text.</returns>
-        #endregion
         static public Text AddText(string s, Camera cameraToAddTo)
         {
             Text t = new Text();
@@ -258,7 +256,10 @@ namespace FlatRedBall.Graphics
 #if DEBUG
             if (mAutomaticallyUpdatedTexts.Contains(textToAdd))
             {
-                throw new InvalidOperationException("Can't add the text to the Automatically Updated (Managed) Text list because it's already there.  This error is here to prevent you from double-adding Texts.");
+                var message =
+                    "Can't add the text to the Automatically Updated (Managed) Text list because it's already there.  This error is here to prevent you from double-adding Texts.";
+
+                throw new InvalidOperationException(message);
             }
 #endif
             

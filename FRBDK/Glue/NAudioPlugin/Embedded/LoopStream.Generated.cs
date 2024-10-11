@@ -1,4 +1,6 @@
-﻿using NAudio.Wave;
+﻿#if !WEB
+using NAudio.Wave;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +9,13 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.NAudio
 {
+#if !WEB
+
     public class LoopStream : WaveStream
     {
         WaveStream sourceStream;
+
+        public event EventHandler Looped;
 
         public LoopStream(WaveStream sourceStream)
         {
@@ -51,10 +57,14 @@ namespace FlatRedBall.NAudio
                     }
                     // loop
                     sourceStream.Position = 0;
+                    Looped?.Invoke(this, null);
                 }
                 totalBytesRead += bytesRead;
             }
             return totalBytesRead;
         }
     }
+
+#endif
+
 }

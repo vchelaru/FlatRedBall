@@ -162,7 +162,7 @@ public partial class CreatePluginWindow
 
             if (FromInstalledPluginComboBox.SelectedItem is PluginContainer container)
             {
-                return FileManager.GetDirectory(container.AssemblyLocation);
+                return container.AssemblyLocation.GetDirectoryContainingThis().FullPath;
             }
 
             return null;

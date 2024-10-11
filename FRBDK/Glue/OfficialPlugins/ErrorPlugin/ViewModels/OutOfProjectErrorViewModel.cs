@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OfficialPluginsCore.ErrorPlugin.ViewModels
+namespace OfficialPlugins.ErrorPlugin.ViewModels
 {
     public class OutOfProjectErrorViewModel : ErrorViewModel
     {

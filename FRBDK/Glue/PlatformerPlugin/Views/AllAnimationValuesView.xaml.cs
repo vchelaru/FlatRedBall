@@ -1,9 +1,9 @@
 ﻿using FlatRedBall.PlatformerPlugin.ViewModels;
-using PlatformerPluginCore.ViewModels;
+using PlatformerPlugin.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace PlatformerPluginCore.Views
+namespace PlatformerPlugin.Views
 {
     /// <summary>
     /// Interaction logic for AllAnimationValuesView.xaml

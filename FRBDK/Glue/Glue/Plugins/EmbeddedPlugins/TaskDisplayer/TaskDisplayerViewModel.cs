@@ -56,6 +56,19 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
             }
         }
 
+        public bool LogGameToFrbCommands
+        {
+            get => Get<bool>();
+            set
+            {
+                if (Set(value))
+                {
+                    // send this to the game communication plugin:
+                    PluginManager.CallPluginMethod("Glue Compiler", "SetIsLoggingReceivedCommands", value);
+                }
+            }
+        }
+
         public TaskDisplayerViewModel()
         {
             TaskManager.Self.TaskAddedOrRemoved += HandleSyncTaskAddedOrRemoved;

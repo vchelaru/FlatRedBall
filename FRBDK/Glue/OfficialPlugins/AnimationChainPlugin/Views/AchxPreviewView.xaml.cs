@@ -1,9 +1,12 @@
 ﻿using AsepriteDotNet;
+using FlatRedBall.Attributes;
 using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Controls.DataUi;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.Managers;
 using OfficialPlugins.AnimationChainPlugin.ViewModels;
+using OfficialPlugins.Common.Controls;
 using OfficialPlugins.SpritePlugin.Managers;
 using PropertyTools.Wpf;
 using RenderingLibrary;
@@ -94,8 +97,31 @@ namespace OfficialPlugins.ContentPreview.Views
             if (ViewModel != null)
             {
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
+                InitializeSettingsPropertyGrid();
+
+                ViewModel.Settings.PropertyChanged += HandleSettingsPropertyChanged;
                 ViewModel.AnimationChainCollectionChanged += HandleAnimationChainCollectionChanged;
                 ViewModel.FrameUpdatedByUi += HandleFrameUpdated;
+            }
+        }
+
+        private void InitializeSettingsPropertyGrid()
+        {
+            this.SettingsPropertyGrid.Instance = ViewModel.Settings;
+
+            GetMember(nameof(ViewModel.Settings.BackgroundColor)).PreferredDisplayer = typeof(ColorDisplay);
+
+            WpfDataUi.DataTypes.InstanceMember GetMember(string memberName)
+            {
+                foreach (var category in SettingsPropertyGrid.Categories)
+                {
+                    var found = category.Members.FirstOrDefault(item => item.Name == memberName);
+                    if (found != null)
+                    {
+                        return found;
+                    }
+                }
+                return null;
             }
         }
 
@@ -109,9 +135,11 @@ namespace OfficialPlugins.ContentPreview.Views
             this.TopWindowCameraLogic = topWindowCameraLogic;
             this.BottomWindowCameraLogic = bottomWindowCameraLogic;
 
-            TopWindowManager = new TopWindowManager(TopGumCanvas, this, topWindowCameraLogic, (this.DataContext as AchxViewModel)?.TopWindowZoom);
+            TopWindowManager = new TopWindowManager(TopGumCanvas, this, topWindowCameraLogic,
+                ViewModel?.TopWindowZoom, ViewModel.Settings);
 
-            BottomWindowManager = new BottomWindowManager(BottomGumCanvas, this, BottomWindowCameraLogic, (this.DataContext as AchxViewModel)?.BottomWindowZoom);
+            BottomWindowManager = new BottomWindowManager(BottomGumCanvas, this, BottomWindowCameraLogic,
+                ViewModel?.BottomWindowZoom, ViewModel.Settings);
         }
 
         #endregion
@@ -143,10 +171,18 @@ namespace OfficialPlugins.ContentPreview.Views
                     RefreshTopWindowScrollBars();
 
                     break;
-                case nameof(ViewModel.IsShowGuidesChecked):
+            }
+        }
+
+        private void HandleSettingsPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case nameof(ViewModel.Settings.IsShowingGuides):
                     BottomWindowManager.RefreshBottomGuideVisibility(ViewModel);
                     break;
             }
+
         }
 
         public void ForceRefreshAchx(FilePath achxFilePath = null, bool preserveSelection = false)
@@ -437,7 +473,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
             while(focusedElement != null)
             {
-                if(focusedElement == ListBox)
+                if(focusedElement is ListBox)
                 {
                     return true;
                 }
@@ -447,6 +483,15 @@ namespace OfficialPlugins.ContentPreview.Views
                 }
             }
             return false;
+        }
+
+        private void OpenInAnimationEditorButton_Click(object sender, RoutedEventArgs e)
+        {
+            var rfs = GlueState.Self.CurrentReferencedFileSave;
+            if(rfs != null)
+            {
+                GlueCommands.Self.FileCommands.OpenReferencedFileInDefaultProgram(rfs);
+            }
         }
     }
 }

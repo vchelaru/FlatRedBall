@@ -9,6 +9,9 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using EditorObjects.IoC;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace OfficialPlugins.ContentPipelinePlugin
 {
@@ -23,14 +26,16 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
         public override void GenerateInitializeStart(ICodeBlock codeBlock)
         {
-            if(controller.Settings.UseContentPipelineOnAllPngs)
+            // See if any files use content pipeline
+            var anyUseContentPipeline = ObjectFinder.Self.GetAllReferencedFiles().Any(item => item.UseContentPipeline);
+            if(anyUseContentPipeline)
             {
                 var glueState = Container.Get<IGlueState>();
                 codeBlock.Line(glueState.ProjectNamespace + ".FileAliasLogic.SetFileAliases();");
             }
         }
 
-        public void GenerateFileAliasLogicCode(bool isUsingContentPipeline)
+        public void GenerateFileAliasLogicCode()
         {
             var glueCommands = Container.Get<IGlueCommands>();
             var glueState = Container.Get<IGlueState>();
@@ -39,7 +44,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
             {
                 if(glueState.CurrentGlueProject != null)
                 {
-                    string codeFileContents = GetFileAliasLogicFileContents(isUsingContentPipeline);
+                    string codeFileContents = GetFileAliasLogicFileContents();
 
                     glueCommands.ProjectCommands.CreateAndAddCodeFile("FileAliases.Generated.cs");
      
@@ -64,7 +69,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
                 TaskExecutionPreference.AddOrMoveToEnd);
         }
 
-        private static string GetFileAliasLogicFileContents(bool isUsingContentPipeline)
+        private static string GetFileAliasLogicFileContents()
         {
             var glueState = Container.Get<IGlueState>();
 
@@ -74,22 +79,30 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
             var codeBlock = classBlock.Function("public static void", "SetFileAliases", "");
 
-            var files = ContentPipelineController.GetReferencedPngs();
+            var fileNamesRelative = ObjectFinder.Self.GetAllReferencedFiles()
+                .Where(item =>
+                {
+                    if(item.UseContentPipeline)
+                    {
+                        // but can it really use th content pipeline?
+                        var ati = item.GetAssetTypeInfo();
+                        return ati == null || ati.CanBeAddedToContentPipeline;
+                    }
+                    return false;
+                })
+                .Select(item => item.Name).ToHashSet();
 
             var contentFolder = glueState.ContentDirectory;
 
-            if(isUsingContentPipeline)
+            foreach (var fileName in fileNamesRelative)
             {
-                foreach (var file in files)
-                {
-                    var relativeFile = "content/" + FileManager.MakeRelative(file, contentFolder).ToLowerInvariant();
-                    string withExtension = relativeFile;
-                    string noExtension = FileManager.RemoveExtension(relativeFile);
-                    var line =
-                        $"FlatRedBall.Content.ContentManager.FileAliases.Add(FlatRedBall.IO.FileManager.Standardize(\"{withExtension}\"), " +
-                        $"FlatRedBall.IO.FileManager.Standardize(\"{noExtension}\"));";
-                    codeBlock.Line(line);
-                }
+                var relativeFile = "Content/" + fileName;
+                string withExtension = relativeFile;
+                string noExtension = FileManager.RemoveExtension(relativeFile);
+                var line =
+                    $"global::FlatRedBall.Content.ContentManager.FileAliases[global::FlatRedBall.IO.FileManager.Standardize(\"{withExtension}\")] = " +
+                    $"global::FlatRedBall.IO.FileManager.Standardize(\"{noExtension}\");";
+                codeBlock.Line(line);
             }
 
             var codeFileContents = namespaceBlock.ToString();

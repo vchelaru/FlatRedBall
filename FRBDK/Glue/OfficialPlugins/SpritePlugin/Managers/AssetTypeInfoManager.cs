@@ -1,6 +1,7 @@
 ﻿using FlatRedBall;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math;
 using GlueFormsCore.ViewModels;
@@ -21,8 +22,33 @@ namespace OfficialPlugins.SpritePlugin.Managers
     {
         public static void HandleStartup()
         {
-            AssetTypeInfoManager.AddSpriteColorAtiVariables();
-            AssetTypeInfoManager.AddTextureCoordinateVariables();
+            AddSpriteColorAtiVariables();
+            AddTextureCoordinateVariables();
+            AddCreateNewAchxButton();
+        }
+
+        internal static void HandleGluxLoaded()
+        {
+            AdjustIgnoreAnimationVariables();
+
+            var shouldHaveAddSetCollisionFromAnimation = 
+                GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasSetCollisionFromAnimation;
+
+            if(shouldHaveAddSetCollisionFromAnimation)
+            {
+                if(!AlreadyHasAddSetCollisionFromAnimation())
+                {
+                    AddSetCollisionFromAnimation();
+                }
+            }
+            else
+            {
+                if(AlreadyHasAddSetCollisionFromAnimation())
+                {
+                    var ati = AvailableAssetTypes.CommonAtis.Sprite;
+                    ati.VariableDefinitions.RemoveAll(item => item.Name == GetSetCollisionFromAnimationVariableDefinition().Name);
+                }
+            }
         }
 
         #region Color (Hex)
@@ -195,21 +221,59 @@ namespace OfficialPlugins.SpritePlugin.Managers
             var index = ati.VariableDefinitions.IndexOf(variableToAddAfter);
             ati.VariableDefinitions.Insert(index + 1, variableDefinition);
 
+            var createNewShapes =
+                GetCreateMissingShapesDefinition();
+
+            ati.VariableDefinitions.Insert(index+2, createNewShapes);
+
         }
 
         static VariableDefinition setCollisionFromAnimationVariableDefinition;
+        const string SetCollisionFromAnimationVariableName = nameof(Sprite.SetCollisionFromAnimation);
         public static VariableDefinition GetSetCollisionFromAnimationVariableDefinition()
         {
             if(setCollisionFromAnimationVariableDefinition == null)
             {
                 setCollisionFromAnimationVariableDefinition = new VariableDefinition();
-                setCollisionFromAnimationVariableDefinition.Name = "SetCollisionFromAnimation";
+                setCollisionFromAnimationVariableDefinition.Name = SetCollisionFromAnimationVariableName;
                 setCollisionFromAnimationVariableDefinition.Category = "Animation";
                 setCollisionFromAnimationVariableDefinition.DefaultValue = "false";
                 setCollisionFromAnimationVariableDefinition.Type = "bool";
                 setCollisionFromAnimationVariableDefinition.UsesCustomCodeGeneration = true;
+                setCollisionFromAnimationVariableDefinition.SubtextFunc = (element, nos) =>
+                {
+                    if(element is EntitySave && element.IsICollidableRecursive() == false)
+                    {
+                        return $"{element.GetStrippedName()} must be ICollidable or must inherit from an ICollidable entity for animation collisions to be applied automatically.";
+                    }
+                    return string.Empty;
+                };
             }
             return setCollisionFromAnimationVariableDefinition;
+        }
+
+
+        static VariableDefinition createMissingShapesDefinition;
+        public static VariableDefinition GetCreateMissingShapesDefinition()
+        {
+            if(createMissingShapesDefinition == null)
+            {
+                createMissingShapesDefinition = new VariableDefinition();
+                createMissingShapesDefinition.Name = "CreateMissingAnimationShapes";
+                createMissingShapesDefinition.Category = "Animation";
+                createMissingShapesDefinition.DefaultValue = "false";
+                createMissingShapesDefinition.Type = "bool";
+                createMissingShapesDefinition.UsesCustomCodeGeneration = true;
+                createMissingShapesDefinition.IsVariableVisibleInEditor = (element, nos) =>
+                {
+                    // Only show this if the NOS has SetCollisionFromAnimation set to true
+                    var foundVariable = nos.GetCustomVariable(SetCollisionFromAnimationVariableName);
+
+                    return foundVariable != null && foundVariable.Value as bool? == true;
+                };
+            }
+
+            return createMissingShapesDefinition;
         }
 
         static bool AlreadyHasAddSetCollisionFromAnimation()
@@ -218,32 +282,40 @@ namespace OfficialPlugins.SpritePlugin.Managers
             return ati.VariableDefinitions.Any(item => item.Name == GetSetCollisionFromAnimationVariableDefinition().Name);
         }
 
-        internal static void HandleGluxLoaded()
+        #endregion
+
+        #region Create new ACHX
+
+        private static void AddCreateNewAchxButton()
         {
-            AdjustIgnoreAnimationVariables();
+            var ati = AvailableAssetTypes.CommonAtis.Sprite;
 
-            var shouldHaveAddSetCollisionFromAnimation = 
-                GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasSetCollisionFromAnimation;
+            var createNewAchxVariable = new VariableDefinition();
 
-            if(shouldHaveAddSetCollisionFromAnimation)
+            createNewAchxVariable.PreferredDisplayer = typeof(CreateNewAchxButton);
+            createNewAchxVariable.UsesCustomCodeGeneration = true;
+            createNewAchxVariable.Type = "string"; // not used
+            createNewAchxVariable.Name = "CreateNewAchxButtonPlaceholder";
+            createNewAchxVariable.Category = "Animation";
+            createNewAchxVariable.IsVariableVisibleInEditor = (element, nos) =>
             {
-                if(!AlreadyHasAddSetCollisionFromAnimation())
-                {
-                    AddSetCollisionFromAnimation();
-                }
-            }
-            else
-            {
-                if(AlreadyHasAddSetCollisionFromAnimation())
-                {
-                    var ati = AvailableAssetTypes.CommonAtis.Sprite;
-                    ati.VariableDefinitions.RemoveAll(item => item.Name == GetSetCollisionFromAnimationVariableDefinition().Name);
-                }
-            }
+                // does this or any derived element have an .achx file?
+
+                var alreadyHasAchx = element.GetAllReferencedFileSavesRecursively()
+                    .Any(item => item.Name.ToLower().EndsWith(".achx"));
+
+                return !alreadyHasAchx;
+            };
+
+            var variableToAddBefore = ati.VariableDefinitions.FirstOrDefault(item => item.Name == nameof(Sprite.AnimationChains));
+            var index = ati.VariableDefinitions.IndexOf(variableToAddBefore);
+            ati.VariableDefinitions.Insert(index, createNewAchxVariable);
+
+
+
         }
 
         #endregion
-
 
         private static void AdjustIgnoreAnimationVariables()
         {

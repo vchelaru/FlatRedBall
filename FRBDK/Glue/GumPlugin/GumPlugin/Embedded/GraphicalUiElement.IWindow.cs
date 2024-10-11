@@ -55,10 +55,10 @@ namespace Gum.Wireframe
 
 
         /// <summary>
-        /// Obsolete - this does not work. Use RollOn, RollOf, or RollOver
-        /// for events raised when over an object.
+        /// Event raised when the user has grabbed the window and is dragging it.
+        /// Consider using RollOn, RollOff, and RollOver for most cases. This is similar
+        /// to RollOver, but is raised even if the cursor is not over the window.
         /// </summary>
-        [Obsolete("Use RollOn, RollOff, or RollOver")]
         public event WindowEvent DragOver;
 
         /// <summary>
@@ -924,7 +924,7 @@ namespace Gum.Wireframe
         {
             // early out - this isn't technically necessary as 
             // the subscription code below can be called multiple
-            // times, but it does make debgging easier.
+            // times, but it does make debugging easier.
             if(oldBindingContext == EffectiveBindingContext)
             {
                 return;
@@ -973,7 +973,7 @@ namespace Gum.Wireframe
             }
             else
             {
-                // Do the default functionalty first...
+                // Do the default functionality first...
                 UpdateChildrenInheritedBindingContext(this.ContainedElements, EffectiveBindingContext);
                 // ... then overwrite it
                 foreach (var gue in this.ContainedElements)
@@ -1140,7 +1140,22 @@ namespace Gum.Wireframe
 
                         var convertedValue = ConvertValue(vmValue, uiProperty.PropertyType, binding.ToStringFormat);
 
-                        uiProperty.SetValue(this, convertedValue, null);
+                        try
+                        {
+                            uiProperty.SetValue(this, convertedValue, null);
+                        }
+                        catch
+                        {
+#if DEBUG
+                            if(convertedValue != null && uiProperty.PropertyType != convertedValue.GetType())
+                            {
+                                throw new InvalidCastException(
+                                    $"Error applying binding: The bound property {convertedValue.GetType()} {vmPropertyName} with value {convertedValue} " +
+                                    $"could not be converted to {uiProperty.PropertyType} which is the type of {binding.UiProperty}");
+                            }
+#endif
+                            throw;
+                        }
                     }
                     updated = true;
                 }

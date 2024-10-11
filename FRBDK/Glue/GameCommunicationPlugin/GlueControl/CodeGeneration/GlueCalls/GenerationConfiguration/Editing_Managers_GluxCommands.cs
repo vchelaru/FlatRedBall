@@ -15,6 +15,10 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls.Generatio
                 BaseClass = "GlueCommandsStateBase",
                 Namespace = "GlueControl.Managers",
                 Defines = new[] { "IncludeSetVariable", "SupportsEditMode", "HasGum" },
+                Usings = new[]
+                {
+                    "System.Collections.Generic"
+                },
                 Methods = new[]
                 {
                     GetMethod_CopyNamedObjectIntoElement(),

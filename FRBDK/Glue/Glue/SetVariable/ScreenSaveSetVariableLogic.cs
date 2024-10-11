@@ -26,7 +26,7 @@ namespace FlatRedBall.Glue.SetVariable
         {
             #region Name
 
-            if (propertyName == "ClassName")
+            if (propertyName == nameof(ScreenSave.ClassName))
             {
                 ReactToChangedClassName(oldValue, screenSave);
             }
@@ -43,11 +43,16 @@ namespace FlatRedBall.Glue.SetVariable
                 var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(screenSave);
                 foreach (var baseElement in allBase)
                 {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(baseElement, generateDerivedElements:false);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(baseElement, generateDerivedElements: false);
                 }
             }
 
             #endregion
+
+            else if (propertyName == nameof(ScreenSave.IsBeforeGlobalContentLoaded))
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
+            }
 
             // Jan 5, 2023
             // Vic asks - should this call plugin code? Need to trace the code when setting properties

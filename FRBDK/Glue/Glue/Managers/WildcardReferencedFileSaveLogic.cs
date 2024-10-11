@@ -1,7 +1,9 @@
-﻿using FlatRedBall.Glue.SaveClasses;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -52,7 +54,16 @@ namespace FlatRedBall.Glue.Managers
                 mainGlueProjectSave.GlobalFiles.Remove(wildcardRfs);
                 //var absoluteFile = GlueCommands.Self.GetAbsoluteFilePath(wildcardRfs);
                 var absoluteFile = new FilePath(contentFolder + wildcardRfs.Name);
-                var files = GetFilesForWildcard(absoluteFile);
+                List<FilePath> files = new List<FilePath>();
+                
+                try
+                {
+                    files = GetFilesForWildcard(absoluteFile);
+                }
+                catch(DirectoryNotFoundException ex)
+                {
+                    GlueCommands.Self.PrintError($"Error processing wildcard pattern {wildcardRfs.Name}:\n{ex}");
+                }
 
                 foreach (var filePathForPossibleRfs in files)
                 {
@@ -134,6 +145,12 @@ namespace FlatRedBall.Glue.Managers
                     // "**/*.txt" means "all txt files in this folder plus subfolders"
                     GetFilesForWildcard(prefix.FullPath, remainderSuffix ?? "*", files);
                 }
+
+                if(System.IO.Directory.Exists(prefix.FullPath) == false)
+                {
+                    throw new DirectoryNotFoundException("Could not find the directory " + prefix.FullPath);
+                }
+
                 var directories = System.IO.Directory.GetDirectories(prefix.FullPath);
                 foreach(var directory in directories)
                 {

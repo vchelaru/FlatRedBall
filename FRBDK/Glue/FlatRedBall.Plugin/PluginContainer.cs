@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Threading;
 using FlatRedBall.Glue.Plugins.Rss;
+using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -86,11 +87,11 @@ namespace FlatRedBall.Glue.Plugins
             set;
         }
 
-        public string AssemblyLocation
+        public FilePath AssemblyLocation
         {
             set
             {
-                mCustomAssemblyLocation = value;
+                mCustomAssemblyLocation = value.FullPath;
             }
             get
             {

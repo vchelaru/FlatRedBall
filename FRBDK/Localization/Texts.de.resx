@@ -258,9 +258,6 @@
   <data name="PerformanceSettings" xml:space="preserve">
     <value>Leistungseinstellungen</value>
   </data>
-  <data name="Preferences" xml:space="preserve">
-    <value>Präferenzen</value>
-  </data>
   <data name="CustomGameClass" xml:space="preserve">
     <value>Benutzerdefinierte Game Class</value>
   </data>
@@ -360,14 +357,14 @@
   <data name="Tools" xml:space="preserve">
     <value>Werkzeuge</value>
   </data>
-  <data name="GumProjectFileCanOnlyAddedToGlobal" xml:space="preserve">
-    <value>Die Gum-Projektdatei (.gumx) kann nur zu globalen Inhalten hinzugefügt werden.</value>
+  <data name="GumPluginHandleNewFrbScreen" xml:space="preserve">
+    <value>Gum Plugin – neuen FRB-Bildschirm {0} verarbeiten </value>
   </data>
   <data name="GumConfirmDeleteScreen" xml:space="preserve">
     <value>Den Gum-Bildschirm {0}\nfür {1} löschen?</value>
   </data>
-  <data name="GumPluginHandleNewFrbScreen" xml:space="preserve">
-    <value>Gum Plugin – neuen FRB-Bildschirm {0} verarbeiten </value>
+  <data name="GumProjectFileCanOnlyAddedToGlobal" xml:space="preserve">
+    <value>Die Gum-Projektdatei (.gumx) kann nur zu globalen Inhalten hinzugefügt werden.</value>
   </data>
   <data name="GumReordering" xml:space="preserve">
     <value>.gumx neu anordnen</value>
@@ -392,9 +389,6 @@
   </data>
   <data name="GumProperties" xml:space="preserve">
     <value>Gum-eigenschaften</value>
-  </data>
-  <data name="ErrorGumFileAssociationNotFound" xml:space="preserve">
-    <value>Es konnte keine Dateizuordnung für Gum-Dateien gefunden werden und Gum konnte relativ zum FlatRedBall-Editor nicht gefunden werden. Zuordnungen müssen festgelegt werden, bevor versucht wird, Schriftartdateien neu zu erstellen</value>
   </data>
   <data name="RefreshingFontCache" xml:space="preserve">
     <value>Erfrischender Schriftarten-Cache</value>
@@ -422,9 +416,6 @@
   </data>
   <data name="EnableGameEmbedInSettings" xml:space="preserve">
     <value>Aktivieren Sie das Einbetten und Bearbeiten von Spielen in den Einstellungen</value>
-  </data>
-  <data name="RunEditMode" xml:space="preserve">
-    <value>Im Bearbeitungsmodus ausführen</value>
   </data>
   <data name="StartGameInEditMode" xml:space="preserve">
     <value>Startet das Spiel im Bearbeitungsmodus auf dem Startbildschirm.</value>
@@ -497,9 +488,6 @@
   </data>
   <data name="IncreaseGameSpeedFastForward" xml:space="preserve">
     <value>Erhöht die Spielgeschwindigkeit (lässt es im Schnellvorlauf laufen)</value>
-  </data>
-  <data name="AutoTakeSnapshot" xml:space="preserve">
-    <value>Schnappschuss automatisch erstellen</value>
   </data>
   <data name="TakeSnapshot" xml:space="preserve">
     <value>Schnappschuss machen</value>
@@ -813,12 +801,6 @@
   <data name="GitignoreAdd" xml:space="preserve">
     <value>.gitignore hinzufügen:</value>
   </data>
-  <data name="ProjectWizardOpen" xml:space="preserve">
-    <value>Öffnen Sie das Assistent für ein neues Projekt:</value>
-  </data>
-  <data name="GlobalContentMembership" xml:space="preserve">
-    <value>Mitgliedschaft bei GlobalContent</value>
-  </data>
   <data name="UpdateLibraries" xml:space="preserve">
     <value>Bibliotheken aktualisieren</value>
   </data>
@@ -906,12 +888,6 @@
   <data name="AddXnbToMonogame" xml:space="preserve">
     <value>XNBs zu Monogame-Projekt(en) hinzufügen</value>
   </data>
-  <data name="EnterNameForEntity" xml:space="preserve">
-    <value>Geben Sie einen Namen für die neue Entität ein:</value>
-  </data>
-  <data name="EntityBase" xml:space="preserve">
-    <value>Basisentität</value>
-  </data>
   <data name="Sprite" xml:space="preserve">
     <value>Sprite</value>
   </data>
@@ -950,24 +926,6 @@
   </data>
   <data name="IncludeListsInGameScreen" xml:space="preserve">
     <value>Listen in GameScreen einbinden</value>
-  </data>
-  <data name="LocalFiles" xml:space="preserve">
-    <value>Lokale Dateien</value>
-  </data>
-  <data name="DownloadFile" xml:space="preserve">
-    <value>Download-Datei</value>
-  </data>
-  <data name="HintExistingFileList" xml:space="preserve">
-    <value>Die obige Liste zeigt alle Dateien im Inhaltsordner des Spiels. &lt;LineBreak&gt;&lt;/LineBreak&gt;Um Dateien von außerhalb des Inhaltsordners hinzuzufügen, klicken Sie auf die Schaltfläche „Durchsuchen“. Dateien von außerhalb des Inhaltsordners werden in den Inhaltsordner kopiert.</value>
-  </data>
-  <data name="Browse" xml:space="preserve">
-    <value>Durchsuche...</value>
-  </data>
-  <data name="EnterUrlName" xml:space="preserve">
-    <value>Geben Sie den URL-Namen ein:</value>
-  </data>
-  <data name="GlueWillDownloadFileAndDependencies" xml:space="preserve">
-    <value>Glue lädt die oben eingegebene Datei zusammen mit allen Abhängigkeiten herunter.</value>
   </data>
   <data name="SelectFileOrClickBrowse" xml:space="preserve">
     <value>Wählen Sie eine Datei aus oder klicken Sie auf die Schaltfläche „Durchsuchen“.</value>
@@ -1025,9 +983,6 @@
   </data>
   <data name="EnterFile" xml:space="preserve">
     <value>Geben Sie den Namen der neuen Datei ein:</value>
-  </data>
-  <data name="SelectFileType" xml:space="preserve">
-    <value>Wählen Sie den Dateityp:</value>
   </data>
   <data name="Label" xml:space="preserve">
     <value>Etikett</value>
@@ -1089,20 +1044,8 @@
   <data name="DeleteQuestion" xml:space="preserve">
     <value>Sind Sie sicher, dass Sie löschen möchten?</value>
   </data>
-  <data name="FrbGlueVersion" xml:space="preserve">
-    <value>FlatRedBall-Glueversion</value>
-  </data>
-  <data name="LatestVersion" xml:space="preserve">
-    <value>Letzte Version</value>
-  </data>
   <data name="InstallUpdate" xml:space="preserve">
     <value>Installiere Update</value>
-  </data>
-  <data name="Copyright" xml:space="preserve">
-    <value>Urheberrecht</value>
-  </data>
-  <data name="GlueProjectVersion" xml:space="preserve">
-    <value>Glue-Projektversion</value>
   </data>
   <data name="InheritFromGameScreen" xml:space="preserve">
     <value>Von GameScreen erben</value>
@@ -1166,9 +1109,6 @@
   </data>
   <data name="TextureFilter" xml:space="preserve">
     <value>Texturfilter</value>
-  </data>
-  <data name="Fullscreen" xml:space="preserve">
-    <value>Vollbild</value>
   </data>
   <data name="WindowResizingAllow" xml:space="preserve">
     <value>Fenstergrößenänderung zulassen</value>
@@ -1256,9 +1196,6 @@
   </data>
   <data name="ProjectRemove" xml:space="preserve">
     <value>Projekt entfernen</value>
-  </data>
-  <data name="ProjectNewSynced" xml:space="preserve">
-    <value>Neues synchronisiertes Projekt</value>
   </data>
   <data name="ProjectAddExisting" xml:space="preserve">
     <value>Bestehendes Projekt hinzufügen</value>
@@ -1458,9 +1395,6 @@
   <data name="ListSortEveryFrame" xml:space="preserve">
     <value>Sortieren Sie jeden Frame</value>
   </data>
-  <data name="ObjectNoPartitioning" xml:space="preserve">
-    <value>Für dieses Objekt sind keine Partitionierungsoptionen verfügbar.</value>
-  </data>
   <data name="HintObjectAutoPartition" xml:space="preserve">
     <value>Dieses Objekt wird automatisch partitioniert oder benötigt keine Partitionierung</value>
   </data>
@@ -1545,9 +1479,6 @@
   <data name="CollisionApplyPhysics" xml:space="preserve">
     <value>Physik bei Kollision automatisch anwenden</value>
   </data>
-  <data name="DamageInGeneratedCode" xml:space="preserve">
-    <value>Füge Schaden im generierten Code zu</value>
-  </data>
   <data name="Always" xml:space="preserve">
     <value>Stets</value>
   </data>
@@ -1596,9 +1527,6 @@
   <data name="PropertyString" xml:space="preserve">
     <value>String-Eigenschaft:</value>
   </data>
-  <data name="LinkToSource" xml:space="preserve">
-    <value>Link zur Quelle</value>
-  </data>
   <data name="Angle" xml:space="preserve">
     <value>Winkel:</value>
   </data>
@@ -1616,21 +1544,6 @@
   </data>
   <data name="Remove" xml:space="preserve">
     <value>Entfernen</value>
-  </data>
-  <data name="PolygonToRectangle" xml:space="preserve">
-    <value>Fügt alle Punkte auf dem Polygon hinzu oder ersetzt sie, um ein Rechteck zu erstellen.</value>
-  </data>
-  <data name="PolygonToMultiSided" xml:space="preserve">
-    <value>Fügt alle Punkte auf dem Polygon hinzu oder ersetzt sie, um ein mehrseitiges Polygon zu erstellen.</value>
-  </data>
-  <data name="HintMovePointUpList" xml:space="preserve">
-    <value>Verschiebt den ausgewählten Punkt in der Liste nach oben.</value>
-  </data>
-  <data name="HintMovePointDownList" xml:space="preserve">
-    <value>Verschiebt den ausgewählten Punkt in der Liste nach unten.</value>
-  </data>
-  <data name="HintResizePolygon" xml:space="preserve">
-    <value>Ändern Sie die Größe des Polygons, indem Sie die enthaltenen Punkte verschieben.</value>
   </data>
   <data name="ClearPointsAddRectangle" xml:space="preserve">
     <value>Möchten Sie die Punkte löschen und durch Punkte für eine Rechteckform ersetzen?</value>
@@ -1719,9 +1632,6 @@
   <data name="AddScreenLevelDescription" xml:space="preserve">
     <value>Jedes Spiel benötigt mindestens einen Bildschirm. Normalerweise befindet sich die Spiellogik in einem Bildschirm namens GameScreen. Normalerweise erfordert jedes Level einen neuen Bildschirm.</value>
   </data>
-  <data name="EntityAdd" xml:space="preserve">
-    <value>Entität hinzufügen</value>
-  </data>
   <data name="EntityAddDescription" xml:space="preserve">
     <value>Entitäten repräsentieren Spielobjekte wie den Spieler, Feinde, Kugeln und Pick-ups.</value>
   </data>
@@ -1757,12 +1667,6 @@
   </data>
   <data name="TextureSize" xml:space="preserve">
     <value>Texturgröße</value>
-  </data>
-  <data name="Variables" xml:space="preserve">
-    <value>Variablen</value>
-  </data>
-  <data name="VariablesExcluded" xml:space="preserve">
-    <value>Ausgeschlossene Variablen</value>
   </data>
   <data name="CollapseAll" xml:space="preserve">
     <value>Alles reduzieren</value>
@@ -2145,9 +2049,6 @@
   <data name="Volume" xml:space="preserve">
     <value>Volumen</value>
   </data>
-  <data name="State" xml:space="preserve">
-    <value>Status</value>
-  </data>
   <data name="TmxCreationOptions" xml:space="preserve">
     <value>TMX-Erstellungsoptionen</value>
   </data>
@@ -2187,14 +2088,8 @@
   <data name="FactoryAddX" xml:space="preserve">
     <value>{0} Fabrik hinzufügen</value>
   </data>
-  <data name="NameCannotBeEmpty" xml:space="preserve">
-    <value>Der Name darf nicht leer sein.</value>
-  </data>
   <data name="NameCannotStartWithNumber" xml:space="preserve">
     <value>Namen dürfen nicht mit einer Zahl beginnen.</value>
-  </data>
-  <data name="NameCannotContainInvalidChar" xml:space="preserve">
-    <value>Der Name darf kein ungültiges Zeichen {0} enthalten.</value>
   </data>
   <data name="NameCannotHaveSpaces" xml:space="preserve">
     <value>Der Name darf keine Leerzeichen enthalten.</value>
@@ -2421,17 +2316,11 @@
   <data name="EventNew" xml:space="preserve">
     <value>Neue Veranstaltung</value>
   </data>
-  <data name="HintObjectIsContainerNotApply" xml:space="preserve">
-    <value>Dieser Wert darf nicht angewendet werden, da IsContainer für dieses Objekt auf „true“ gesetzt ist</value>
-  </data>
   <data name="Velocity" xml:space="preserve">
     <value>Geschwindigkeit</value>
   </data>
   <data name="AnimationSpeed" xml:space="preserve">
     <value>Animations Geschwindigkeit</value>
-  </data>
-  <data name="FailedToSetGameEditModeToX" xml:space="preserve">
-    <value>Der Spiel-/Bearbeitungsmodus konnte nicht auf {0} gesetzt werden.</value>
   </data>
   <data name="CouldNotLoadProjectSeeOutput" xml:space="preserve">
     <value>Das Projekt konnte nicht geladen werden. Weitere Informationen finden Sie im Ausgabefenster.</value>
@@ -2571,9 +2460,6 @@
   <data name="ViewSourceExplorer" xml:space="preserve">
     <value>Quelldatei im Explorer anzeigen</value>
   </data>
-  <data name="FindAllReferences" xml:space="preserve">
-    <value>Hier finden Sie alle Hinweise dazu</value>
-  </data>
   <data name="VariableAdd" xml:space="preserve">
     <value>Variable hinzufügen</value>
   </data>
@@ -2645,9 +2531,6 @@
   </data>
   <data name="FileOpenCs" xml:space="preserve">
     <value>Öffnen Sie die .cs-Datei</value>
-  </data>
-  <data name="EntityAddDerived" xml:space="preserve">
-    <value>Abgeleitete Entität hinzufügen</value>
   </data>
   <data name="ScreenLevelCreate" xml:space="preserve">
     <value>Levelbildschirm erstellen</value>
@@ -2750,5 +2633,107 @@
   </data>
   <data name="FrbEditor" xml:space="preserve">
     <value>FlatRedBall-Editor</value>
+  </data>
+  <data name="Preferences" xml:space="preserve">
+    <value>Präferenzen</value>
+  </data>
+  <data name="ErrorGumFileAssociationNotFound" xml:space="preserve">
+    <value>Es konnte keine Dateizuordnung für Gum-Dateien gefunden werden und Gum konnte relativ zum FlatRedBall-Editor nicht gefunden werden. Zuordnungen müssen festgelegt werden, bevor versucht wird, Schriftartdateien neu zu erstellen</value>
+  </data>
+  <data name="RunEditMode" xml:space="preserve">
+    <value>Im Bearbeitungsmodus ausführen</value>
+  </data>
+  <data name="AutoTakeSnapshot" xml:space="preserve">
+    <value>Schnappschuss automatisch erstellen</value>
+  </data>
+  <data name="ProjectWizardOpen" xml:space="preserve">
+    <value>Öffnen Sie das Assistent für ein neues Projekt:</value>
+  </data>
+  <data name="GlobalContentMembership" xml:space="preserve">
+    <value>Mitgliedschaft bei GlobalContent</value>
+  </data>
+  <data name="EntityBase" xml:space="preserve">
+    <value>Basisentität</value>
+  </data>
+  <data name="LocalFiles" xml:space="preserve">
+    <value>Lokale Dateien</value>
+  </data>
+  <data name="DownloadFile" xml:space="preserve">
+    <value>Download-Datei</value>
+  </data>
+  <data name="HintExistingFileList" xml:space="preserve">
+    <value>Die obige Liste zeigt alle Dateien im Inhaltsordner des Spiels. &lt;LineBreak&gt;&lt;/LineBreak&gt;Um Dateien von außerhalb des Inhaltsordners hinzuzufügen, klicken Sie auf die Schaltfläche „Durchsuchen“. Dateien von außerhalb des Inhaltsordners werden in den Inhaltsordner kopiert.</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Durchsuche...</value>
+  </data>
+  <data name="EnterUrlName" xml:space="preserve">
+    <value>Geben Sie den URL-Namen ein:</value>
+  </data>
+  <data name="GlueWillDownloadFileAndDependencies" xml:space="preserve">
+    <value>Glue lädt die oben eingegebene Datei zusammen mit allen Abhängigkeiten herunter.</value>
+  </data>
+  <data name="FrbGlueVersion" xml:space="preserve">
+    <value>FlatRedBall-Glueversion</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Letzte Version</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>Urheberrecht</value>
+  </data>
+  <data name="GlueProjectVersion" xml:space="preserve">
+    <value>Glue-Projektversion</value>
+  </data>
+  <data name="Fullscreen" xml:space="preserve">
+    <value>Vollbild</value>
+  </data>
+  <data name="ProjectNewSynced" xml:space="preserve">
+    <value>Neues synchronisiertes Projekt</value>
+  </data>
+  <data name="ObjectNoPartitioning" xml:space="preserve">
+    <value>Für dieses Objekt sind keine Partitionierungsoptionen verfügbar.</value>
+  </data>
+  <data name="DamageInGeneratedCode" xml:space="preserve">
+    <value>Füge Schaden im generierten Code zu</value>
+  </data>
+  <data name="LinkToSource" xml:space="preserve">
+    <value>Link zur Quelle</value>
+  </data>
+  <data name="PolygonToRectangle" xml:space="preserve">
+    <value>Fügt alle Punkte auf dem Polygon hinzu oder ersetzt sie, um ein Rechteck zu erstellen.</value>
+  </data>
+  <data name="PolygonToMultiSided" xml:space="preserve">
+    <value>Fügt alle Punkte auf dem Polygon hinzu oder ersetzt sie, um ein mehrseitiges Polygon zu erstellen.</value>
+  </data>
+  <data name="HintMovePointUpList" xml:space="preserve">
+    <value>Verschiebt den ausgewählten Punkt in der Liste nach oben.</value>
+  </data>
+  <data name="HintMovePointDownList" xml:space="preserve">
+    <value>Verschiebt den ausgewählten Punkt in der Liste nach unten.</value>
+  </data>
+  <data name="HintResizePolygon" xml:space="preserve">
+    <value>Ändern Sie die Größe des Polygons, indem Sie die enthaltenen Punkte verschieben.</value>
+  </data>
+  <data name="Variables" xml:space="preserve">
+    <value>Variablen</value>
+  </data>
+  <data name="VariablesExcluded" xml:space="preserve">
+    <value>Ausgeschlossene Variablen</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="HintObjectIsContainerNotApply" xml:space="preserve">
+    <value>Dieser Wert darf nicht angewendet werden, da IsContainer für dieses Objekt auf „true“ gesetzt ist</value>
+  </data>
+  <data name="FailedToSetGameEditModeToX" xml:space="preserve">
+    <value>Der Spiel-/Bearbeitungsmodus konnte nicht auf {0} gesetzt werden.</value>
+  </data>
+  <data name="FindAllReferences" xml:space="preserve">
+    <value>Hier finden Sie alle Hinweise dazu</value>
+  </data>
+  <data name="EntityAddDerived" xml:space="preserve">
+    <value>Abgeleitete Entität hinzufügen</value>
   </data>
 </root>

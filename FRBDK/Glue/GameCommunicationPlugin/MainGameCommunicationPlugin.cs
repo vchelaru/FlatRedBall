@@ -13,9 +13,11 @@ using Newtonsoft.Json.Linq;
 using GameCommunicationPlugin.CodeGeneration;
 using ToolsUtilities;
 using GameCommunicationPlugin.GlueControl.ViewModels;
-using OfficialPluginsCore.Compiler.CommandReceiving;
+using OfficialPlugins.Compiler.CommandReceiving;
 using System.Collections.Generic;
 using GameCommunicationPlugin.GlueControl;
+using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace GameCommunicationPlugin
 {
@@ -26,6 +28,7 @@ namespace GameCommunicationPlugin
 
         private GameConnectionManager _gameCommunicationManager;
         private Game1GlueCommunicationGenerator game1GlueCommunicationGenerator;
+        private ApplyEditorCommandsCodeGenerator applyEditorCommandsCodeGenerator;
 
         public override string FriendlyName => "Game Communication Plugin";
 
@@ -55,6 +58,9 @@ namespace GameCommunicationPlugin
             game1GlueCommunicationGenerator = new Game1GlueCommunicationGenerator(true, 8888);
             RegisterCodeGenerator(game1GlueCommunicationGenerator);
 
+            applyEditorCommandsCodeGenerator = new ApplyEditorCommandsCodeGenerator();
+            RegisterCodeGenerator(applyEditorCommandsCodeGenerator);
+
             //Task.Run(() =>
             //{
             //    while (true)
@@ -75,6 +81,8 @@ namespace GameCommunicationPlugin
             _gameCommunicationManager.DoConnections = doConnections;
             game1GlueCommunicationGenerator.PortNumber = _gameCommunicationManager.Port;
             game1GlueCommunicationGenerator.IsGameCommunicationEnabled = _gameCommunicationManager.DoConnections;
+
+            applyEditorCommandsCodeGenerator.IsGameCommunicationEnabled = _gameCommunicationManager.DoConnections;
         }
 
         private async Task<object> HandleOnPacketReceived(GameConnectionManager.Packet packet)
@@ -92,5 +100,9 @@ namespace GameCommunicationPlugin
             return toReturn;
         }
 
+        public void AddReflectionStateAssignmentCode(ICodeBlock codeBlock, StateSaveCategory category)
+        {
+            ReflectionBasedStateCodeGenerator.AddReflectionStateAssignmentCode(codeBlock, category);
+        }
     }
 }

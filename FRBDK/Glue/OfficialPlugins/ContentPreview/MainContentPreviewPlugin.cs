@@ -34,11 +34,12 @@ namespace OfficialPlugins.ContentPreview
 
         private void AssignEvents()
         {
-            this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
+            this.ReactToItemsSelected += HandleItemsSelected;
             this.ReactToFileChange += HandleFileChange;
 
             this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
         }
+
 
         private bool TryHandleDoubleClick(ITreeNode tree)
         {
@@ -62,7 +63,7 @@ namespace OfficialPlugins.ContentPreview
             return false;
         }
 
-        private void HandleTreeViewItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> list) 
         {
             var file = GlueState.Self.CurrentReferencedFileSave;
 

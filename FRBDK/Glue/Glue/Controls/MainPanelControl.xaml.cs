@@ -4,14 +4,18 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Properties;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Themes;
 using Glue;
 using GlueFormsCore.ViewModels;
 using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace GlueFormsCore.Controls
 {
@@ -24,7 +28,7 @@ namespace GlueFormsCore.Controls
 
         //public static string AppTheme = "Dark";
         public static string AppTheme = "Light";
-        public static ResourceDictionary ResourceDictionary { get; private set; }
+        public static ResourceDictionary ResourceDictionary { get; private set; } = new();
         public static bool IsExiting { get; private set; }
 
         public static TabControlViewModel ViewModel { get; private set; }
@@ -38,15 +42,10 @@ namespace GlueFormsCore.Controls
         public MainPanelControl()
         {
             Self = this;
-
             InitializeComponent();
-
-            InitializeThemes();
 
             ViewModel = new TabControlViewModel();
             this.DataContext = ViewModel;
-
-            SetBinding(ViewModel);
 
             PluginManager.SetTabs(ViewModel);
             PluginManager.SetToolbarTray(ToolbarControl);
@@ -141,6 +140,49 @@ namespace GlueFormsCore.Controls
             }
         }
 
+        public void SwitchThemes(ThemeConfig config)
+        {
+            Switch(Resources);
+            
+            void Switch(ResourceDictionary resource)
+            {
+                if (resource.Source != null)
+                {
+                    string source = resource.Source.OriginalString;
+
+                    if (config.Mode is not null && Regex.IsMatch(source, @"Frb\.Brushes\.(Dark|Light)\.xaml$"))
+                    {
+                        resource.Source = config.Mode switch
+                        {
+                            ThemeMode.Light => new Uri(source.Replace("Dark", "Light"), UriKind.RelativeOrAbsolute),
+                            ThemeMode.Dark => new Uri(source.Replace("Light", "Dark"), UriKind.RelativeOrAbsolute),
+                            _ => throw new NotImplementedException()
+                        };
+                    }
+
+                    if (config.Accent is { } accent && source.Contains("Frb.Accents.xaml"))
+                    {
+                        resource.Remove("Frb.Colors.Primary");
+                        resource.Remove("Frb.Colors.Primary.Dark");
+                        resource.Remove("Frb.Colors.Primary.Light");
+                        resource.Remove("Frb.Colors.Primary.Contrast");
+
+                        resource.Add("Frb.Colors.Primary", accent);
+                        resource.Add("Frb.Colors.Primary.Dark", MaterialDesignColors.ColorManipulation.ColorAssist.Darken(accent));
+                        resource.Add("Frb.Colors.Primary.Light", MaterialDesignColors.ColorManipulation.ColorAssist.Lighten(accent));
+                        resource.Add("Frb.Colors.Primary.Contrast", MaterialDesignColors.ColorManipulation.ColorAssist.ContrastingForegroundColor(MaterialDesignColors.ColorManipulation.ColorAssist.Darken(accent)));
+                    }
+                }
+
+                foreach (var mergedResource in resource.MergedDictionaries)
+                {
+                    Switch(mergedResource);
+                }
+
+                MainGlueWindow.Self.SyncMenuStripWithTheme(Self);
+            }
+        }
+
         private static bool WaitForAllTaksToFinish(InitializationWindowWpf initWindow)
         {
             bool didWait = false;
@@ -220,45 +262,6 @@ namespace GlueFormsCore.Controls
             this.FileWatchTimer.Start();
         }
 
-        private void SetBinding(TabControlViewModel viewModel)
-        {
-            TopTabControl.SetBinding(TabControl.ItemsSourceProperty, 
-                nameof(viewModel.TopTabItems) + "." + nameof(TabContainerViewModel.Tabs));
-
-            TopTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.TopSelectedTab));
-
-            BottomTabControl.SetBinding(TabControl.ItemsSourceProperty, 
-                nameof(viewModel.BottomTabItems) + "." + nameof(TabContainerViewModel.Tabs));
-            BottomTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.BottomSelectedTab));
-
-            LeftTabControl.SetBinding(TabControl.ItemsSourceProperty, 
-                nameof(viewModel.LeftTabItems) + "." + nameof(TabContainerViewModel.Tabs));
-            LeftTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.LeftSelectedTab));
-
-            RightTabControl.SetBinding(TabControl.ItemsSourceProperty, 
-                nameof(viewModel.RightTabItems) + "." + nameof(TabContainerViewModel.Tabs));
-            RightTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.RightSelectedTab));
-
-            CenterTabControl.SetBinding(TabControl.ItemsSourceProperty, 
-                nameof(viewModel.CenterTabItems) + "." + nameof(TabContainerViewModel.Tabs));
-            CenterTabControl.SetBinding(TabControl.SelectedItemProperty, nameof(viewModel.CenterSelectedTab));
-        }
-
-        private void InitializeThemes()
-        {
-            this.Resources.MergedDictionaries[0].Source =
-                new Uri($"/Themes/{AppTheme}.xaml", UriKind.Relative);
-
-
-            Style style = this.TryFindResource("UserControlStyle") as Style;
-            if (style != null)
-            {
-                this.Style = style;
-            }
-
-            ResourceDictionary = Resources;
-        }
-
         private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             var handledByPlugin = PluginManager.IsHandlingHotkeys();
@@ -302,14 +305,29 @@ namespace GlueFormsCore.Controls
 
         internal void ApplyGlueSettings(GlueSettingsSave glueSettingsSave)
         {
-            if(glueSettingsSave.LeftTabWidthPixels > 1)
+            if(glueSettingsSave.LeftTabWidthPixels is > 0)
             {
-                ViewModel.LeftPanelWidth = new GridLength(glueSettingsSave.LeftTabWidthPixels.Value);
-                // To prevent expansion from resetting:
-                ViewModel.LeftSplitterWidth = new GridLength(4);
-
+                ViewModel.LeftPanelWidth = new(glueSettingsSave.LeftTabWidthPixels.Value);
             }
 
+            if (glueSettingsSave.RightTabWidthPixels is > 0)
+            {
+                ViewModel.RightPanelWidth = new(glueSettingsSave.RightTabWidthPixels.Value);
+            }
+
+            if (glueSettingsSave.BottomTabHeightPixels is > 0)
+            {
+                ViewModel.BottomPanelHeight = new(glueSettingsSave.BottomTabHeightPixels.Value);
+            }
+
+        }
+
+        private void TabItem_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Source is TabItem { DataContext: PluginTab tab })
+            {
+                tab.OnMouseEvent(e);
+            }
         }
     }
 }

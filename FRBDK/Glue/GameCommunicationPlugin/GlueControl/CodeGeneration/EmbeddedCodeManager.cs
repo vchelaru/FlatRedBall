@@ -16,6 +16,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
         static List<string> filesToSave = new List<string>
         {
             "CommandReceiver.cs",
+            "CommandReplayLogic.cs",
             
             "Dtos.cs",
             "GameConnectionManager.cs",
@@ -59,10 +60,10 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
             //SaveEmbeddedFile("Forms.ObjectCreationWindow.cs");
             
             "GlueControlManager.cs",
-            
+
             "InstanceLogic.cs",
-            
-            
+
+
             "Models.CustomVariable.cs",
             "Models.GlueElement.cs",
             "Models.GlueElementFileReference.cs",
@@ -92,6 +93,9 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
 
             // This was a typo in old projects:
             RemoveEmbeddedFile("Runtime/DynamicEntitys.Generated.cs", saveAfterRemoving:true);
+            // This is no longer used, so get rid of it:
+            RemoveEmbeddedFile("Forms/ObjectCreationWindow.Generated.cs", saveAfterRemoving:true);
+
 
             // this was moved:
             FilePath oldGameConnectionManagerLocation = GlueState.Self.CurrentGlueProjectDirectory + "GlueCommunication/GameConnectionManager.Generated.cs";

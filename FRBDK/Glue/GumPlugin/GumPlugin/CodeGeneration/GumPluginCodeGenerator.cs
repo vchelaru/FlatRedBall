@@ -5,7 +5,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Gum.DataTypes;
-using GumPluginCore.CodeGeneration;
+using GumPlugin.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -162,10 +162,26 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         bool hasGumProject = GetIfHasGumProject();
 
         // We used to only do this code if the screen had a component, but we will do it if the entire project
-        // has a gum file so that users don't have to manually do this 
+        // has a gum file so that users don't have to manually do this.
+        // Update Sept 14, 2024
+        // If this screen comes before
+        // global content, we don't want
+        // to forcefully load Gum files because
+        // that will probably happen through a manual
+        // call to global content
 
-        if (hasGumProject)
+        var shouldAccessGum = hasGumProject;
+        if(element is FlatRedBall.Glue.SaveClasses.ScreenSave asScreenSave)
         {
+            if(asScreenSave.IsBeforeGlobalContentLoaded)
+            {
+                shouldAccessGum = false;
+            }
+        }
+
+        if (shouldAccessGum)
+        {
+
             var gumProject =
                 GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => item.Name.EndsWith(".gumx"));
 
@@ -222,11 +238,11 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
             //}
             if(ati?.RuntimeTypeName == "GumIdb")
             {
-                method.Line($"{gumScreenRfs.GetInstanceName()}.Element.UpdateLayout();");
+                method.Line($"{gumScreenRfs.GetInstanceName()}?.Element.UpdateLayout();");
             }
             else
             {
-                method.Line($"{gumScreenRfs.GetInstanceName()}.UpdateLayout();");
+                method.Line($"{gumScreenRfs.GetInstanceName()}?.UpdateLayout();");
             }
 
             if(hasBase)

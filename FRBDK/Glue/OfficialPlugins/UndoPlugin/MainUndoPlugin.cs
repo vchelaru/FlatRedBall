@@ -2,7 +2,7 @@
 using FlatRedBall.Glue.Plugins.Interfaces;
 using OfficialPlugins.UndoPlugin.NewFolder;
 using OfficialPlugins.UndoPlugin.Views;
-using OfficialPluginsCore.Wizard.ViewModels;
+using OfficialPlugins.Wizard.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;

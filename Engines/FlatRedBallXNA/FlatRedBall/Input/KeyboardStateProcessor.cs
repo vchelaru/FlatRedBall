@@ -52,10 +52,19 @@ namespace FlatRedBall.Input
                 !mKeyboardState.IsKeyDown(key);
         }
 
-        public void Update()
+        public void Update(bool useCurrentKeyboardStateAsLast = false)
         {
-            mLastFrameKeyboardState = mKeyboardState;
-            mKeyboardState = Microsoft.Xna.Framework.Input.Keyboard.GetState();
+            if(useCurrentKeyboardStateAsLast)
+            {
+                // this prevents pushes from happening
+                mKeyboardState = Microsoft.Xna.Framework.Input.Keyboard.GetState();
+                mLastFrameKeyboardState = mKeyboardState;
+            }
+            else
+            {
+                mLastFrameKeyboardState = mKeyboardState;
+                mKeyboardState = Microsoft.Xna.Framework.Input.Keyboard.GetState();
+            }
         }
 
     }

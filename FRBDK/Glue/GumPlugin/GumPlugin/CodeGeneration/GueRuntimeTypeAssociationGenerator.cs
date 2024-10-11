@@ -3,7 +3,7 @@ using FlatRedBall.Glue.Managers;
 using Gum.DataTypes;
 using GumPlugin.DataGeneration;
 using GumPlugin.Managers;
-using GumPluginCore.CodeGeneration;
+using GumPlugin.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;

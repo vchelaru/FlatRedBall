@@ -183,6 +183,10 @@ namespace FlatRedBall.Input
             }
         }
 
+        /// <summary>
+        /// The current input receiver which has its input events called every frame
+        /// if the game is active.
+        /// </summary>
         public static IInputReceiver InputReceiver
         {
             get { return mReceivingInput; }

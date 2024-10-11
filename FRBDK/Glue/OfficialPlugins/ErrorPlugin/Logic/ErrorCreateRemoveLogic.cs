@@ -5,7 +5,6 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.ErrorPlugin.ViewModels;
-using OfficialPluginsCore.ErrorPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

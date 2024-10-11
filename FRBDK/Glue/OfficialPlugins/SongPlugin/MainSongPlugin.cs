@@ -61,11 +61,12 @@ namespace OfficialPlugins.SongPlugin
 
         private void AssignEvents()
         {
-            this.ReactToItemSelectHandler += HandleItemSelected;
+            this.ReactToItemsSelected += HandleItemSelected;
             this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
             this.ReactToFileChange += HandleFileChanged;
             this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
         }
+
 
         private bool TryHandleDoubleClick(ITreeNode arg)
         {
@@ -147,10 +148,24 @@ namespace OfficialPlugins.SongPlugin
             }
         }
 
+        static bool HasISong => GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ISongInFrb ||
+            GlueState.Self.IsReferencingFrbSource;
+
         private string HandleSongAddToManagers(IElement element, NamedObjectSave namedObjectSave, ReferencedFileSave rfs, string layer)
         {
             var supportsEditMode = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
-            string addToManagersMethod = $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(\"{rfs.GetInstanceName()}\"); ";
+            string addToManagersMethod = String.Empty;
+            addToManagersMethod += "{";
+            if (HasISong)
+            {
+                addToManagersMethod += $"var restartSong = " +
+                    $"(FlatRedBall.Audio.AudioManager.CurrentlyPlayingSong == null && FlatRedBall.Audio.AudioManager.CurrentlyPlayingISong == null) || " +
+                    $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(\"{rfs.GetInstanceName()}\"); ";
+            }
+            else
+            {
+                addToManagersMethod += $"var restartSong = FlatRedBall.Audio.AudioManager.CurrentlyPlayingSong == null || FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(\"{rfs.GetInstanceName()}\"); ";
+            }
             if (supportsEditMode)
             {
                 addToManagersMethod +=
@@ -164,14 +179,15 @@ namespace OfficialPlugins.SongPlugin
                 forceGlobal ? "true" : "ContentManagerName == \"Global\"";
 
             addToManagersMethod += 
-                    $"FlatRedBall.Audio.AudioManager.PlaySong({rfs.GetInstanceName()}, false, {isGlobal});";
+                    $"FlatRedBall.Audio.AudioManager.PlaySong({rfs.GetInstanceName()}, restartSong, {isGlobal});";
+            addToManagersMethod += "}";
 
             return addToManagersMethod;
         }
 
-        private void HandleItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemSelected(List<ITreeNode> list)
         {
-            var rfs = selectedTreeNode?.Tag as ReferencedFileSave;
+            var rfs = list.FirstOrDefault(item => item.Tag is ReferencedFileSave)?.Tag as ReferencedFileSave;
 
             viewModel.GlueObject = rfs;
 

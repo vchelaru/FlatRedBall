@@ -1,22 +1,28 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;MONOGAME_381;</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup>
-	<Title>FlatRedBall (.NET 6 Desktop GL)</Title>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Description>FlatRedBall Game Engine</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.0</Version>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  
-  </PropertyGroup>
-  <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;MONOGAME_381;</DefineConstants>
+		<Title>FlatRedBall (.NET 6 Desktop GL)</Title>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Description>FlatRedBall Game Engine</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Version>1.0.0</Version>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-  <ItemGroup>
-    <PackageReference Include="AsepriteDotNet" Version="1.8.1" />
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
-  </ItemGroup>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <NoWarn>1701;1702; 1591</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <NoWarn>1701;1702; 1591</NoWarn>
+	</PropertyGroup>
+	<Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
+
+	<ItemGroup>
+		<PackageReference Include="AsepriteDotNet" Version="1.9.0" />
+		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
+	</ItemGroup>
 </Project>

@@ -1,10 +1,10 @@
-﻿using OfficialPluginsCore.Wizard.Models;
+﻿using OfficialPlugins.Wizard.Models;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace OfficialPluginsCore.Wizard.Views
+namespace OfficialPlugins.Wizard.Views
 {
     /// <summary>
     /// Interaction logic for WizardWindow.xaml

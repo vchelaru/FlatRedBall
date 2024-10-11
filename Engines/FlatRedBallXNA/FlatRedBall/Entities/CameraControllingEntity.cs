@@ -10,11 +10,6 @@ namespace FlatRedBall.Entities
 {
     #region Enums
 
-    public enum CameraBehaviorType
-    {
-        PositionLocking,
-    }
-
     public enum TargetApproachStyle
     {
         /// <summary>
@@ -52,12 +47,6 @@ namespace FlatRedBall.Entities
         private float furthestZoom;
         private AxisAlignedRectangle MaximumViewRectangle = new AxisAlignedRectangle();
 
-
-        /// <summary>
-        /// Defines the behavior of the camera when determining its target position. 
-        /// Currently it always performs PositionLocking, but additional types of bhehavior may be added in the future.
-        /// </summary>
-        public CameraBehaviorType BehaviorType { get; set; }
 
         // August 24, 2021
         // Vic asks - Targets used to be an IList instead of IList<PositionedObject>. Why? Was this intentional?
@@ -215,6 +204,9 @@ namespace FlatRedBall.Entities
         /// This value has only been tested on a limited number of devices/games. It's not clear if this should be a fixed value, or if it should depend
         /// </remarks>
         public float SnapToPixelOffset { get; set; } = .25f;
+
+        public float? CustomSnapToPixelZoom { get; set; } = null;
+
 
         /// <summary>
         /// Whether to perform logic in the Activity call. This exists to allow control over whether Activity
@@ -494,19 +486,6 @@ namespace FlatRedBall.Entities
             #endregion
 
             Vector2 target = Vector2.Zero;
-            //#region Convert the average positions to a target given the BehaviorType
-
-            //switch (BehaviorType)
-            //{
-            //    case CameraBehaviorType.PositionLocking:
-            //        target.X = averagePosition.X;
-            //        target.Y = averagePosition.Y;
-            //        break;
-            //}
-
-            //#endregion
-
-
 
             // Compare the target with the window
             var windowWidthHalf = ScrollingWindowWidth / 2.0f;
@@ -692,6 +671,11 @@ namespace FlatRedBall.Entities
 
                 var invertZoom = 1 / zoom;
 
+                if(CustomSnapToPixelZoom != null)
+                {
+                    invertZoom = 1 / CustomSnapToPixelZoom.Value;
+                }
+
                 Camera.X = MathFunctions.RoundFloat(effectiveThis.X + CameraOffset.X, invertZoom) + SnapToPixelOffset * invertZoom;
                 Camera.Y = MathFunctions.RoundFloat(effectiveThis.Y + CameraOffset.Y, invertZoom) + SnapToPixelOffset * invertZoom;
 
@@ -770,7 +754,7 @@ namespace FlatRedBall.Entities
         /// </summary>
         /// <param name="shakeRadius">The shake radius - a larger value creates more shaking.</param>
         /// <param name="taskToAwait">The task to await before shaking stops.</param>
-        public async void ShakeScreenUntil(float shakeRadius, Task taskToAwait)
+        public async Task ShakeScreenUntil(float shakeRadius, Task taskToAwait)
         {
             var random = FlatRedBallServices.Random;
             while(!taskToAwait.IsCompleted)

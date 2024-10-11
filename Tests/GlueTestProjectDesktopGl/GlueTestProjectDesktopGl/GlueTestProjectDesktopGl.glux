@@ -63,6 +63,7 @@
       <Name>Screens\AnimationChainScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\ManuallyUpdatedScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -138,6 +139,7 @@
       <Name>Screens\AudioScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\GlobalContentScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -228,6 +230,7 @@
       <Name>Screens\BaseScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\DerivedScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -255,6 +258,7 @@
       <Name>Screens\CameraAttachScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\PauseScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -897,6 +901,7 @@
       <Name>Screens\CollisionScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\TransparencyRenderingScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -981,6 +986,7 @@
       </Events>
       <CustomClassesForExport />
       <NextScreen>Screens\EventScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -1098,6 +1104,22 @@
           <DefaultValue xsi:type="xsd:string">Name3</DefaultValue>
           <CreatesEvent>true</CreatesEvent>
         </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>string</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+            <PropertySave>
+              <Name>Category</Name>
+              <ValueAsString>Layer</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>DefaultLayer</Name>
+          <Category>Layer</Category>
+        </CustomVariable>
       </CustomVariables>
       <NamedObjects>
         <NamedObjectSave>
@@ -1135,6 +1157,7 @@
       </Events>
       <CustomClassesForExport />
       <NextScreen>Screens\OptionallyCreatedObjectScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -1234,6 +1257,7 @@
       <Name>Screens\CursorTestScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\GumScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -1254,6 +1278,7 @@
       <Name>Screens\CustomContentTypeScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\AudioScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -1316,6 +1341,7 @@
       <Name>Screens\CustomVariableScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\CameraAttachScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -1359,6 +1385,7 @@
       <CustomClassesForExport />
       <BaseScreen>Screens\DerivedScreen</BaseScreen>
       <NextScreen>Screens\DisabledObjectScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -1425,6 +1452,7 @@
       <CustomClassesForExport />
       <BaseScreen>Screens\BaseScreen</BaseScreen>
       <NextScreen>Screens\DerivedOfDerivedScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -1473,6 +1501,7 @@
       <Name>Screens\DisabledObjectScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\SpriteSortScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -1515,6 +1544,7 @@
       </Events>
       <CustomClassesForExport />
       <NextScreen>Screens\ListScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -1738,6 +1768,7 @@
       <Name>Screens\FactoryScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\FactoryScreenForListAddingChecks</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -1768,6 +1799,7 @@
       <Name>Screens\FactoryScreenForListAddingChecks</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\LayerScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -1946,6 +1978,7 @@
       <Name>Screens\FileScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\CustomVariableScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -1957,6 +1990,7 @@
       <Name>Screens\FirstScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\RenderTargetScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -2588,20 +2622,6 @@
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
-          <InstanceName>RemoveObjectsWhenInvisibleEntityInstance</InstanceName>
-          <SourceClassType>Entities\RemoveObjectsWhenInvisibleEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>1</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <SourceType>Entity</SourceType>
-          <AttachToContainer>true</AttachToContainer>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
           <InstanceName>PolygonEntityInstance</InstanceName>
           <SourceClassType>Entities\PolygonEntity</SourceClassType>
           <Properties>
@@ -2934,6 +2954,7 @@
       <Name>Screens\FlatRedBallTypeScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\SlowLoadScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -2954,6 +2975,7 @@
       <Name>Screens\FormsScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\FileScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -3149,6 +3171,7 @@
       </StateCategoryList>
       <Name>Screens\GameScreen</Name>
       <CustomClassesForExport />
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -3246,6 +3269,7 @@
       <Name>Screens\GlobalContentScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\XmlScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -3587,6 +3611,7 @@
       <Name>Screens\GumScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\GumScreenNoGumIdbScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -3657,6 +3682,7 @@
       <Name>Screens\GumScreenLayered</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\FormsScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -3677,6 +3703,7 @@
       <Name>Screens\GumScreenNoGumIdbScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\GumScreenLayered</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -3749,6 +3776,7 @@
       <Name>Screens\InheritanceScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\StateScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -3769,6 +3797,7 @@
       <Name>Screens\InputScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\AnimationChainScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -3780,6 +3809,7 @@
       <Name>Screens\InstructionScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\LastScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -3823,6 +3853,7 @@
       <Name>Screens\IWindowScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\TmxScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -3845,6 +3876,7 @@
       </CustomVariables>
       <Name>Screens\LastScreen</Name>
       <CustomClassesForExport />
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -4114,6 +4146,7 @@
       <Name>Screens\LayerScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\LocalizationScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -4307,6 +4340,7 @@
       <Name>Screens\Level1</Name>
       <CustomClassesForExport />
       <BaseScreen>Screens\GameScreen</BaseScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -4349,6 +4383,7 @@
       <Name>Screens\ListScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\FactoryScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -4365,6 +4400,7 @@
       </Properties>
       <Name>Screens\LoadingScreen</Name>
       <CustomClassesForExport />
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -4488,6 +4524,7 @@
       <Name>Screens\LocalizationScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\InheritanceScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -4803,6 +4840,7 @@
       <Name>Screens\ManuallyUpdatedScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\BaseScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -4869,6 +4907,7 @@
       <Name>Screens\NodeNetworkScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\SaveClassScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -4933,6 +4972,7 @@
       <Name>Screens\OptionallyCreatedObjectScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\TunneledVariableScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5095,6 +5135,7 @@
       <Name>Screens\PauseScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\SplashScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5224,6 +5265,7 @@
       <Name>Screens\PositioningScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\SizeScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5262,6 +5304,7 @@
       <Name>Screens\RenderTargetScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\TileShapeCollectionScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5321,6 +5364,7 @@
       <Name>Screens\RepeatingScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\PositioningScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5341,6 +5385,7 @@
       <Name>Screens\SaveClassScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\ZBufferedScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5352,6 +5397,7 @@
       <Name>Screens\ScreenAfterAsyncScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\FlatRedBallTypeScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5379,6 +5425,7 @@
       <Name>Screens\ScreenBeforeAsyncScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\ScreenToLoadAsync</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5443,6 +5490,7 @@
       <Name>Screens\ScreenToLoadAsync</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\ScreenAfterAsyncScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5470,6 +5518,7 @@
       <Name>Screens\SizeScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\CompilationTestScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5481,6 +5530,7 @@
       <Name>Screens\SlowLoadScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\IWindowScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5554,6 +5604,7 @@
       <Name>Screens\SplashScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\RepeatingScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5606,6 +5657,7 @@
       <Name>Screens\SpriteSortScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\CollisionScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -5993,6 +6045,7 @@
       <Name>Screens\StateScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\CsvScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -6016,21 +6069,6 @@
           <ProjectsToExcludeFrom />
           <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
-        <ReferencedFileSave>
-          <Name>Screens/TiledLevelScreen/Tilesets/Level1Info.csv</Name>
-          <Properties>
-            <PropertySave>
-              <Name>LoadedOnlyWhenReferenced</Name>
-              <ValueAsBool>true</ValueAsBool>
-            </PropertySave>
-          </Properties>
-          <IsSharedStatic>true</IsSharedStatic>
-          <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
-          <SourceFile>Screens/TiledLevelScreen/Levels/Level1.tmx</SourceFile>
-          <BuildTool>*.tmx -&gt; TmxToCSV.exe -&gt; *.csv</BuildTool>
-          <ProjectsToExcludeFrom />
-          <IsCreatedByWildcard>false</IsCreatedByWildcard>
-        </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <CustomVariables>
@@ -6043,6 +6081,22 @@
           </Properties>
           <Name>UsesTmxLevelFiles</Name>
           <DefaultValue xsi:type="xsd:boolean">true</DefaultValue>
+        </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>string</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+            <PropertySave>
+              <Name>Category</Name>
+              <ValueAsString>Layer</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>DefaultLayer</Name>
+          <Category>Layer</Category>
         </CustomVariable>
       </CustomVariables>
       <NamedObjects>
@@ -6146,6 +6200,7 @@
       <Name>Screens\TiledLevelScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\NodeNetworkScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -6177,6 +6232,24 @@
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>string</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+            <PropertySave>
+              <Name>Category</Name>
+              <ValueAsString>Layer</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>DefaultLayer</Name>
+          <Category>Layer</Category>
+        </CustomVariable>
+      </CustomVariables>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>EmptyTileShapeCollection</InstanceName>
@@ -6370,6 +6443,7 @@
       <Name>Screens\TileShapeCollectionScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\InputScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -6484,6 +6558,24 @@
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
+      <CustomVariables>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>string</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+            <PropertySave>
+              <Name>Category</Name>
+              <ValueAsString>Layer</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>DefaultLayer</Name>
+          <Category>Layer</Category>
+        </CustomVariable>
+      </CustomVariables>
       <NamedObjects>
         <NamedObjectSave>
           <InstanceName>TileEntityInstance</InstanceName>
@@ -6709,6 +6801,7 @@
       <Name>Screens\TmxScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\TiledLevelScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -6757,6 +6850,7 @@
       <Name>Screens\TransparencyRenderingScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\CursorTestScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -6799,6 +6893,7 @@
       <Name>Screens\TunneledVariableScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\ScreenBeforeAsyncScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -6818,6 +6913,7 @@
       <Name>Screens\XmlScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\InstructionScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
     <ScreenSave>
       <Tags>
@@ -6860,6 +6956,7 @@
       <Name>Screens\ZBufferedScreen</Name>
       <CustomClassesForExport />
       <NextScreen>Screens\CustomContentTypeScreen</NextScreen>
+      <IsBeforeGlobalContentLoaded>false</IsBeforeGlobalContentLoaded>
     </ScreenSave>
   </Screens>
   <Entities>
@@ -12491,7 +12588,6 @@
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <DefinedByBase>true</DefinedByBase>
-          <InstantiatedByBase>true</InstantiatedByBase>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
         <NamedObjectSave>
@@ -12530,12 +12626,6 @@
             <string>XVelocity</string>
             <string>YVelocity</string>
             <string>ZVelocity</string>
-            <string>RotationX</string>
-            <string>RotationY</string>
-            <string>RotationZ</string>
-            <string>RotationXVelocity</string>
-            <string>RotationYVelocity</string>
-            <string>RotationZVelocity</string>
           </VariablesToReset>
           <IndependentOfCamera>true</IndependentOfCamera>
         </NamedObjectSave>
@@ -18218,408 +18308,6 @@
       <Source>GLUE</Source>
       <UseGlobalContent>false</UseGlobalContent>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
-      <CustomVariables>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>TextInheritingEntityInstanceVisible</Name>
-          <SourceObject>TextInheritingEntityInstance</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>SetInvisibleOnlyByTunneledVariableVisible</Name>
-          <DefaultValue xsi:type="xsd:boolean">false</DefaultValue>
-          <SourceObject>SetInvisibleOnlyByTunneledVariable</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>StartingVisibleVisible</Name>
-          <DefaultValue xsi:type="xsd:boolean">true</DefaultValue>
-          <SourceObject>StartingVisible</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>float</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>X</Name>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>float</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>Y</Name>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>float</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>Z</Name>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>StartingInvisibleMadeVisibleVisible</Name>
-          <DefaultValue xsi:type="xsd:boolean">false</DefaultValue>
-          <SourceObject>StartingInvisibleMadeVisible</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>float</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>StartingVisibleAlpha</Name>
-          <DefaultValue xsi:type="xsd:float">1</DefaultValue>
-          <SourceObject>StartingVisible</SourceObject>
-          <SourceObjectProperty>Alpha</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>TextInstanceSetInvisibleInCustomCodeVisible</Name>
-          <DefaultValue xsi:type="xsd:boolean">true</DefaultValue>
-          <SourceObject>TextInstanceSetInvisibleInCustomCode</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>SetVisibleInCustomCodeVisible</Name>
-          <SourceObject>SetVisibleInCustomCode</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-        <CustomVariable>
-          <Properties>
-            <PropertySave>
-              <Name>Type</Name>
-              <ValueAsString>bool</ValueAsString>
-            </PropertySave>
-          </Properties>
-          <Name>InstanceContainingOtherEntityInstanceVisible</Name>
-          <SourceObject>InstanceContainingOtherEntityInstance</SourceObject>
-          <SourceObjectProperty>Visible</SourceObjectProperty>
-        </CustomVariable>
-      </CustomVariables>
-      <NamedObjects>
-        <NamedObjectSave>
-          <InstanceName>StartingInvisible</InstanceName>
-          <SourceClassType>Sprite</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>2</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>Blue</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>ColorOperation</Type>
-            <Member>ColorOperation</Member>
-            <ValueAsInt>6</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
-          </CustomProperty>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>SetInvisibleOnlyByTunneledVariable</InstanceName>
-          <SourceClassType>Sprite</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>2</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>StartingVisible</InstanceName>
-          <SourceClassType>Sprite</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>2</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>Blue</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>ColorOperation</Type>
-            <Member>ColorOperation</Member>
-            <ValueAsInt>6</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>StartingInvisibleMadeVisible</InstanceName>
-          <SourceClassType>Sprite</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>2</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>Blue</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>ColorOperation</Type>
-            <Member>ColorOperation</Member>
-            <ValueAsInt>6</ValueAsInt>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>TextureScale</Member>
-            <ValueAsFloat>1</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
-          </CustomProperty>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>TextInstanceStartingInvisible</InstanceName>
-          <SourceClassType>Text</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>2</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>string</Type>
-            <Member>DisplayText</Member>
-            <ValueAsString>Hello</ValueAsString>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
-          </CustomProperty>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>TextInstanceSetInvisibleInCustomCode</InstanceName>
-          <SourceClassType>Text</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>2</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <SourceType>FlatRedBallType</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>TextInheritingEntityInstance</InstanceName>
-          <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>1</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <SourceType>Entity</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>TextInheritingEntityInstanceStartingInvisibleCustomRadius</InstanceName>
-          <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>1</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>float</Type>
-            <Member>CircleRadius</Member>
-            <ValueAsFloat>250</ValueAsFloat>
-          </CustomProperty>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
-          </CustomProperty>
-          <SourceType>Entity</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>TextInheritingEntityInstanceStartingInvisible</InstanceName>
-          <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>1</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
-          </CustomProperty>
-          <SourceType>Entity</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>SetVisibleInCustomCode</InstanceName>
-          <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>1</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <CustomProperty>
-            <Type>bool</Type>
-            <Member>Visible</Member>
-            <ValueAsBool>false</ValueAsBool>
-          </CustomProperty>
-          <SourceType>Entity</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>InstanceContainingOtherEntityInstance</InstanceName>
-          <SourceClassType>Entities\TextInheritingEntity</SourceClassType>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsInt>1</ValueAsInt>
-            </PropertySave>
-          </Properties>
-          <SourceType>Entity</SourceType>
-          <SourceFile />
-          <AttachToContainer>true</AttachToContainer>
-          <RemoveFromManagersWhenInvisible>true</RemoveFromManagersWhenInvisible>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-      </NamedObjects>
-      <Name>Entities\RemoveObjectsWhenInvisibleEntity</Name>
-      <CustomClassesForExport />
-      <ImplementsITiledTileMetadata>false</ImplementsITiledTileMetadata>
-      <Is2D>true</Is2D>
-    </EntitySave>
-    <EntitySave>
-      <Tags>
-        <string>GLUE</string>
-      </Tags>
-      <Source>GLUE</Source>
-      <UseGlobalContent>false</UseGlobalContent>
-      <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <Properties>
         <PropertySave>
           <Name>InputDevice</Name>
@@ -22785,6 +22473,7 @@
   <GlobalContentSettingsSave>
     <LoadAsynchronously>false</LoadAsynchronously>
     <RecordLockContention>false</RecordLockContention>
+    <GenerateLoadGlobalContentCode>true</GenerateLoadGlobalContentCode>
   </GlobalContentSettingsSave>
   <SyncedProjects />
   <StartUpScreen>Screens\FirstScreen</StartUpScreen>
@@ -22825,7 +22514,6 @@
       <Name>TileMapInfo</Name>
       <CsvFilesUsingThis>
         <string>Screens/CsvScreen/CustomCsvClassLoadedOnlyWhenReferenced.csv</string>
-        <string>Screens/TiledLevelScreen/Tilesets/Level1Info.csv</string>
       </CsvFilesUsingThis>
       <RequiredProperties>
         <InstructionSave>

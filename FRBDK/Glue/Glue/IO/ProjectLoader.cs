@@ -149,10 +149,6 @@ namespace FlatRedBall.Glue.IO
 
                 if (!glueProjectFile.Exists())
                 {
-                    if(!TaskManager.Self.IsInTask())
-                    {
-                        int m = 3;
-                    }
                     ProjectManager.GlueProjectSave = new GlueProjectSave();
 
                     ProjectManager.GlueProjectSave.FileVersion = GlueProjectSave.LatestVersion;
@@ -169,7 +165,7 @@ namespace FlatRedBall.Glue.IO
 
 
                     ProjectManager.FindGameClass();
-                    GluxCommands.Self.SaveGlueProjectImmediately();
+                    GluxCommands.Self.SaveProjectAndElementsImmediately();
 
                     // no need to do this - will do it in PerformLoadGlux:
                     //PluginManager.ReactToLoadedGlux(ProjectManager.GlueProjectSave, glueProjectFile);
@@ -188,8 +184,6 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
 
                 var verboseSectionResult = section.ToStringVerbose();
-
-                int mm = 3;
 
                 #endregion
 
@@ -350,7 +344,10 @@ namespace FlatRedBall.Glue.IO
                 IdentifyAdditionalAssetTypes();
 
                 SetInitWindowText("Finding and fixing .glux errors", initializationWindow);
-                ProjectManager.GlueProjectSave.FixErrors(true);
+
+                ChangedObjects changedObjects = new ChangedObjects();
+
+                ProjectManager.GlueProjectSave.FixErrors(true, changedObjects);
                 ProjectManager.GlueProjectSave.RemoveInvalidStatesFromNamedObjects(true);
 
                 SetUnsetValues();
@@ -399,6 +396,8 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
                 
                 var allReferencedFileSaves = ObjectFinder.Self.GetAllReferencedFiles();
+
+                // This is going to do it in a task after the load finishes, so we will not pass the ChangedObjects
                 Managers.TaskManager.Self.Add(() =>
                 {
                     var wasAnythingModified = false;
@@ -455,12 +454,6 @@ namespace FlatRedBall.Glue.IO
 
                 GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
 
-                // Screens and Entities have the membership of their files
-                // automatically updated when the tree nodes are created. This
-                // is bad. GlobalContent does this better by requiring the call
-                // to be explicitly made:
-                UpdateGlobalContentFileProjectMembership();
-
                 // I think this is handled automatically when regenerating all code...
                 // Yes, down in GenerateAllCodeTask
                 //GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
@@ -491,29 +484,25 @@ namespace FlatRedBall.Glue.IO
 
                 // Fix before doing any generation
                 GlueState.Self.CurrentGlueProject.FixAllTypesPostLoad();
-                ReferencedFileSaveCodeGenerator.GenerateCaseSensitive = 
+                ReferencedFileSaveCodeGenerator.GenerateCaseSensitive =
                     GlueState.Self.CurrentGlueProject.FileVersion >= (int)SaveClasses.GlueProjectSave.GluxVersions.CaseSensitiveLoading;
+
+                if(changedObjects.DidGlobalContentChange)
+                {
+                    GlueCommands.Self.GluxCommands.SaveGlujFile();
+                }
+                foreach(var entity in changedObjects.ChangedEntitiySaves)
+                {
+                    GlueCommands.Self.GluxCommands.SaveElementAsync(entity);
+                }
+                foreach (var screen in changedObjects.ChangedScreenSaves)
+                {
+                    GlueCommands.Self.GluxCommands.SaveElementAsync(screen);
+                }
+
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 Section.EndContextAndTime();
 
-            }
-        }
-
-
-        private void UpdateGlobalContentFileProjectMembership()
-        {
-            bool wasAnythingAdded = false;
-            foreach(var file in GlueState.Self.CurrentGlueProject.GlobalFiles)
-            {
-                if (GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(file))
-                {
-                    wasAnythingAdded = true;
-                }
-            }
-            if(wasAnythingAdded)
-            {
-                // save the projects:
-                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }
 
@@ -573,10 +562,6 @@ namespace FlatRedBall.Glue.IO
             bool succeeded = true;
             try
             {
-                if (!TaskManager.Self.IsInTask())
-                {
-                    int m = 3;
-                }
                 ProjectManager.GlueProjectSave = GlueProjectSaveExtensions.Load(glueProjectFile);
 
                 string errors;
@@ -610,7 +595,7 @@ namespace FlatRedBall.Glue.IO
                         MessageBox.Show(e.ToString());
                         break;
                     case DialogResult.Retry:
-                        LoadProject(projectFileName);
+                        _=LoadProject(projectFileName);
                         break;
                     case DialogResult.Yes:
                         string text = FileManager.FromFileText(glueProjectFile);

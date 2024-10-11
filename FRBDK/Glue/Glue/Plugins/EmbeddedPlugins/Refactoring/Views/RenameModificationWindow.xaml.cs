@@ -23,6 +23,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Refactoring.Views
         public RenameModificationWindow()
         {
             InitializeComponent();
+
+            this.Loaded += HandleLoaded;
+        }
+
+        private void HandleLoaded(object sender, RoutedEventArgs e)
+        {
+            this.OkButton.Focus();
         }
 
         public void SetFrom(RenameModifications renameModifications)

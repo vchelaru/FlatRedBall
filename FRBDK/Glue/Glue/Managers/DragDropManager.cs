@@ -42,14 +42,14 @@ public class DragDropManager : Singleton<DragDropManager>
             NamedObjectSave targetNos = targetNode.Tag as NamedObjectSave;
             NamedObjectSave movingNos = treeNodeMoving.Tag as NamedObjectSave;
 
-            bool succeeded = false;
+            bool shouldRegenerateAndSave = false;
             if (targetNode == null)
             {
                 // Didn't move on to anything
             }
             else if (targetNode.IsRootNamedObjectNode())
             {
-                succeeded = await MoveObjectOnObjectsRoot(treeNodeMoving, targetNode, movingNos, succeeded);
+                shouldRegenerateAndSave = await MoveObjectOnObjectsRoot(treeNodeMoving, targetNode, movingNos);
             }
             else if (targetNode.IsRootCustomVariablesNode())
             {
@@ -57,18 +57,21 @@ public class DragDropManager : Singleton<DragDropManager>
             }
             else if (targetNode.Tag is GlueElement glueElement)
             {
-                succeeded = await DragDropNosIntoElement(movingNos, glueElement);
+                shouldRegenerateAndSave = await DragDropNosIntoElement(movingNos, glueElement);
             }
             else if (targetNode.IsRootEventsNode())
             {
-                succeeded = DragDropNosOnRootEventsNode(treeNodeMoving, targetNode);
+                shouldRegenerateAndSave = DragDropNosOnRootEventsNode(treeNodeMoving, targetNode);
             }
             else if (targetNos?.SourceType == SourceType.FlatRedBallType || 
                 // could be collidable:
                 targetNos?.SourceType == SourceType.Entity)
             {
-                succeeded = await DragDropNosOnNos(treeNodeMoving, targetNode, targetNos, movingNos, succeeded);
-
+                // This handles success internally so that it can be done on a task:
+                _ = TaskManager.Self.AddAsync(() =>
+                {
+                    return DragDropNosOnNos(treeNodeMoving, targetNode, targetNos, movingNos);
+                }, $"Drag+dropping {treeNodeMoving} onto {targetNode}", TaskExecutionPreference.Asap, doOnUiThread: true);
             }
             else
             {
@@ -76,29 +79,35 @@ public class DragDropManager : Singleton<DragDropManager>
             }
 
 
-            if (succeeded)
+            if (shouldRegenerateAndSave)
             {
-                var element = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
-                if (element != null)
-                {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                }
-                else
-                {
-                    GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
-                }
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-                GluxCommands.Self.SaveProjectAndElements();
+                GenerateAndSaveAfterDragDrop(targetNode);
             }
         }
+    }
+
+    private static void GenerateAndSaveAfterDragDrop(ITreeNode targetNode)
+    {
+        var element = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+        if (element != null)
+        {
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+        }
+        else
+        {
+            GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
+        }
+        GlueCommands.Self.ProjectCommands.SaveProjects();
+        GluxCommands.Self.SaveProjectAndElements();
     }
 
     #endregion
 
     #region ... on other Named Object
 
-    private async Task<bool> DragDropNosOnNos(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos, bool succeeded)
+    private async Task DragDropNosOnNos(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos)
     {
+        bool succeeded = false;
         var targetAti = targetNos.GetAssetTypeInfo();
         string targetClassType = targetAti?.FriendlyName;
 
@@ -282,9 +291,12 @@ public class DragDropManager : Singleton<DragDropManager>
         {
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
             GlueState.Self.CurrentNamedObjectSave = movingNos;
+
+            GenerateAndSaveAfterDragDrop(targetNode);
+
         }
 
-        return succeeded;
+
     }
 
     #endregion
@@ -308,8 +320,9 @@ public class DragDropManager : Singleton<DragDropManager>
 
     #region ... into/out of lists
 
-    private static async Task<bool> MoveObjectOnObjectsRoot(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave movingNos, bool succeeded)
+    private static async Task<bool> MoveObjectOnObjectsRoot(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave movingNos)
     {
+        bool succeeded = false;
         // Dropped it on the "Objects" tree node
 
         // Let's see if it's the Objects that contains node or another one
@@ -550,25 +563,43 @@ public class DragDropManager : Singleton<DragDropManager>
 
     #endregion
 
+    #region ... On State Category
+
     private static void MoveVariableOnStateCategory(CustomVariable customVariable, StateSaveCategory stateSaveCategory)
     {
-        TaskManager.Self.AddOrRunIfTasked(() =>
+        _=TaskManager.Self.AddAsync(() =>
         {
-            if (stateSaveCategory.ExcludedVariables.Contains(customVariable.Name))
+            var owner = ObjectFinder.Self.GetElementContaining(customVariable);
+
+            var canBeIncludedResponse =
+                GlueCommands.Self.GluxCommands.ElementCommands.CanVariableBeIncludedInStates(
+                    customVariable.Name, owner);
+
+            if(!canBeIncludedResponse.Succeeded)
             {
-                stateSaveCategory.ExcludedVariables.Remove(customVariable.Name);
+                GlueCommands.Self.DialogCommands.ShowMessageBox(canBeIncludedResponse.Message, "Cannot include variable");
+
             }
-            var container = ObjectFinder.Self.GetElementContaining(stateSaveCategory);
+            else
+            {
+                if (stateSaveCategory.ExcludedVariables.Contains(customVariable.Name))
+                {
+                    stateSaveCategory.ExcludedVariables.Remove(customVariable.Name);
+                }
+                var container = ObjectFinder.Self.GetElementContaining(stateSaveCategory);
 
-            PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(stateSaveCategory, customVariable.Name, StateCategoryVariableAction.Included);
+                PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(stateSaveCategory, customVariable.Name, StateCategoryVariableAction.Included);
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
-            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
-            GlueCommands.Self.PrintOutput($"Including variable {customVariable.Name} in category {stateSaveCategory.Name}");
+                GlueCommands.Self.PrintOutput($"Including variable {customVariable.Name} in category {stateSaveCategory.Name}");
+            }
         }, $"Including variable {customVariable.Name} in category {stateSaveCategory.Name}", TaskExecutionPreference.Asap);
     }
+
+    #endregion
 
     private static void MoveCustomVariable(ITreeNode nodeMoving, ITreeNode targetNode)
     {
@@ -649,23 +680,45 @@ public class DragDropManager : Singleton<DragDropManager>
     {
         if (targetNode.IsRootCustomVariablesNode() || targetNode.IsCustomVariable())
         {
-            // The user drag+dropped a state category into the variables
-            // Let's make sure that it's all in the same Element though:
-            // Update December 30, 2021 - Glue now supports variables which
-            // are a state category which comes from a different entity/screen.
-            // I don't want to uncomment this right now because that may require
-            // some additional testing, but I'm putting this comment here so that
-            // in the future it's clear that this was an old rule which could be removed
-            // with proper testing.
-            // July 23, 2023 - removing this if-check now.
-            //if (targetNode.GetContainingElementTreeNode() == nodeMoving.GetContainingElementTreeNode())
-            {
-                StateSaveCategory category = nodeMoving.Tag as StateSaveCategory;
-                var element = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
+            StateSaveCategory category = nodeMoving.Tag as StateSaveCategory;
+            var element = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
 
-                await GlueCommands.Self.GluxCommands.ElementCommands.AddStateCategoryCustomVariableToElementAsync(category, element);
+            var response = await GlueCommands.Self.GluxCommands.ElementCommands.AddStateCategoryCustomVariableToElementAsync(category, element);
+
+            if(response.Succeeded == false)
+            {
+                GlueCommands.Self.DialogCommands.ShowToast(response.Message, TimeSpan.FromSeconds(4));
+                GlueCommands.Self.PrintError(response.Message);
             }
         }
+    }
+
+    #endregion
+
+    #region Element (Screen and Entity)
+
+    async Task<ITreeNode> MoveElementOn(ITreeNode treeNodeMoving, ITreeNode targetNode)
+    {
+        ITreeNode newTreeNode = null;
+
+        #region Moving the element into (or out of) a directory
+        var shouldMoveIntoDirectory = targetNode.IsDirectoryNode() ||
+            (targetNode.IsRootEntityNode() && treeNodeMoving.Tag is EntitySave) ||
+            (targetNode.IsRootScreenNode() && treeNodeMoving.Tag is ScreenSave) ;
+
+        if (shouldMoveIntoDirectory)
+        {
+            MoveElementToDirectory(treeNodeMoving, targetNode);
+        }
+
+        #endregion
+
+        else if(treeNodeMoving.Tag is EntitySave)
+        {
+            newTreeNode = await MoveEntityOn(treeNodeMoving, targetNode);
+        }
+
+        return newTreeNode;
     }
 
     #endregion
@@ -676,17 +729,11 @@ public class DragDropManager : Singleton<DragDropManager>
     {
         ITreeNode newTreeNode = null;
 
-        #region Moving the Entity into (or out of) a directory
-        if (targetNode.IsDirectoryNode() || targetNode.IsRootEntityNode())
-        {
-            MoveEntityToDirectory(treeNodeMoving, targetNode);
-        }
 
-        #endregion
 
         #region Moving an Entity onto another element to create an instance
 
-        else if (targetNode.IsEntityNode() || targetNode.IsScreenNode() || targetNode.IsRootNamedObjectNode())
+        if (targetNode.IsEntityNode() || targetNode.IsScreenNode() || targetNode.IsRootNamedObjectNode())
         {
             bool isValidDrop = true;
             // Make sure that we don't drop an Entity into its own Objects
@@ -831,33 +878,33 @@ public class DragDropManager : Singleton<DragDropManager>
 
     #region ... on Directory
 
-    static void MoveEntityToDirectory(ITreeNode treeNodeMoving, ITreeNode targetNode)
+    static void MoveElementToDirectory(ITreeNode treeNodeMoving, ITreeNode targetNode)
     {
         bool succeeded = true;
 
-        EntitySave entitySave = treeNodeMoving.Tag as EntitySave;
+        var elementSave = treeNodeMoving.Tag as GlueElement;
 
         string newRelativeDirectory = targetNode.GetRelativeFilePath();
 
-        string newName = newRelativeDirectory.Replace("/", "\\") + entitySave.ClassName;
+        string newName = newRelativeDirectory.Replace("/", "\\") + elementSave.ClassName;
 
         // modify data and files
         //succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entitySave, newRelativeDirectory);
-        GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(entitySave, newName);
+        GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(elementSave, newName);
 
         // Generate and save
         if (succeeded)
         {
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entitySave);
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementSave);
 
             GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementSave);
 
             GluxCommands.Self.SaveProjectAndElements();
             GlueCommands.Self.ProjectCommands.SaveProjects();
 
-            GlueState.Self.CurrentElement = entitySave;
+            GlueState.Self.CurrentElement = elementSave;
         }
     }
 
@@ -1694,9 +1741,9 @@ public class DragDropManager : Singleton<DragDropManager>
             {
                 // do nothing
             }
-            else if (nodeMoving.IsEntityNode())
+            else if (nodeMoving.IsElementNode())
             {
-                await DragDropManager.Self.MoveEntityOn(nodeMoving, targetNode);
+                await DragDropManager.Self.MoveElementOn(nodeMoving, targetNode);
                 shouldSaveGlux = true;
 
             }

@@ -45,6 +45,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using WpfDataUi.DataTypes;
 using EditorObjects.IoC;
+using Glue;
 //using Gum.Wireframe;
 //using Gum.Converters;
 
@@ -158,7 +159,10 @@ namespace FlatRedBall.Glue.Plugins
             foreach (var pluginList in allPlugins)
             {
                 foreach (var plugin in pluginList)
+                {
+                    MainGlueWindow.Self.TryGenerateImplicitWindowStylesFor(plugin.GetType().Assembly);
                     StartupPlugin(plugin);
+                }
             }
 
             var embedded = ImportedPlugins
@@ -169,6 +173,7 @@ namespace FlatRedBall.Glue.Plugins
                 .ToArray();
             foreach (var plugin in sortedEmbedded)
             {
+                MainGlueWindow.Self.TryGenerateImplicitWindowStylesFor(plugin.GetType().Assembly);
                 StartupPlugin(plugin);
 
                 // did it fail?
@@ -182,6 +187,7 @@ namespace FlatRedBall.Glue.Plugins
             var normal = ImportedPlugins.Except(embedded);
             foreach (var plugin in normal)
             {
+                MainGlueWindow.Self.TryGenerateImplicitWindowStylesFor(plugin.GetType().Assembly);
                 StartupPlugin(plugin);
 
                 // did it fail?
@@ -330,6 +336,14 @@ namespace FlatRedBall.Glue.Plugins
                         message += $"\nProject Plugin Location: {projectSpecificPlugin.Value.AssemblyLocation}";
 
 
+                        message += "\n* If you would like to continue using the global plugin, you can delete the project-specific plugin from its location above.";
+                        if(projectSpecificPlugin.Value.AssemblyLocation.FullPath.Contains(copiedPluginDirectoryPrefix))
+                        {
+                            message += "\n - Note that the project-specific plugin is in a temporary location which is created by the FRB editor when it runs. You must delete the .dll from its location above, plus delete the associated .plug file";
+                        }
+                        message += "\n* If you would like to use the project-specific plugin, delete the global plugin from the location above.";
+
+
                         PluginManager.PrintError(
                             message,
                             (PluginManager)globalPluginsManager);
@@ -447,8 +461,7 @@ namespace FlatRedBall.Glue.Plugins
                             foreach(var instance in mInstances)
                             {
                                 existingInstallLocations.AddRange(instance.PluginContainers
-                                    .Select(item => new FilePath(item.Value.AssemblyLocation)
-                                        .GetDirectoryContainingThis()
+                                    .Select(item => item.Value.AssemblyLocation.GetDirectoryContainingThis()
                                         ));
                             }
 
@@ -556,6 +569,7 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        const string copiedPluginDirectoryPrefix = ".running";
         /// <summary>
         /// Project specific plugins should be updatable while Glue has the project active.  Since loading the
         /// assemblies locks the dlls we can't just load project specific plugins from the plugin directory root,
@@ -565,7 +579,6 @@ namespace FlatRedBall.Glue.Plugins
         /// <returns>The path to the directory containing the copied and loadable plugins</returns>
         private static FilePath CopyProjectPluginsToRunnableDirectory(FilePath pluginDirectory)
         {
-            const string directoryPrefix = ".running";
 
             if (!Directory.Exists(pluginDirectory.FullPath)) // Directory.Exists as FilePath.Exits is only for files
             {
@@ -575,7 +588,7 @@ namespace FlatRedBall.Glue.Plugins
             
             // Delete all previously created runnable directories to try and prevent a pileup
             var prevFolders = Directory.GetDirectories(pluginDirectory.FullPath)
-                .Where(x => Path.GetFileName(x).StartsWith(directoryPrefix))
+                .Where(x => Path.GetFileName(x).StartsWith(copiedPluginDirectoryPrefix))
                 .ToArray();
             
             foreach (var folder in prevFolders)
@@ -596,7 +609,7 @@ namespace FlatRedBall.Glue.Plugins
             // cleaned up or updated.  This also provides the advantage is that every project load has a fresh copy
             // of all plugins in, so if a plugin is removed we don't need logic to detect that and delete those dlls.
 
-            var tempDirectory = Path.Combine(pluginDirectory.FullPath, $"{directoryPrefix}-{Path.GetRandomFileName()}");
+            var tempDirectory = Path.Combine(pluginDirectory.FullPath, $"{copiedPluginDirectoryPrefix}-{Path.GetRandomFileName()}");
             var runnablePath = new FilePath(tempDirectory);
 
             Directory.CreateDirectory(runnablePath.FullPath);
@@ -978,28 +991,22 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        internal static void ReactToFileRemoved(IElement element, ReferencedFileSave file)
-        {
+        internal static void ReactToFileRemoved(IElement element, ReferencedFileSave file) =>
             CallMethodOnPlugin(
                 (plugin) => plugin.ReactToFileRemoved(element, file),
                 (plugin) => plugin.ReactToFileRemoved != null,
                 nameof(ReactToFileRemoved));
-        }
 
-        internal static void ReactToEntityRemoved(EntitySave entity, List<string> filesToRemove)
-        {
+        internal static void ReactToEntityRemoved(EntitySave entity, List<string> filesToRemove) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToEntityRemoved(entity, filesToRemove),
                 plugin => plugin.ReactToEntityRemoved != null,
                 nameof(ReactToEntityRemoved));
-        }
 
-        internal static void ReactToScreenRemoved(ScreenSave screenSave, List<string> filesToRemove)
-        {
+        internal static void ReactToScreenRemoved(ScreenSave screenSave, List<string> filesToRemove) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToScreenRemoved(screenSave, filesToRemove),
                 plugin => plugin.ReactToScreenRemoved != null);
-        }
 
         internal static void ReactToElementVariableChange(GlueElement element, CustomVariable variable, object oldValue)
         {
@@ -1018,18 +1025,10 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToElementVariableChange != null || plugin.ReactToGlueElementVariableChanged != null);
         }
 
-        internal static void ReactToElementRenamed(IElement elementToRename, string oldName)
-        {
+        internal static void ReactToElementRenamed(IElement elementToRename, string oldName) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToElementRenamed(elementToRename, oldName),
                 plugin => plugin.ReactToElementRenamed != null);
-        }
-
-        [Obsolete("Use ReactToNewObjectListAsync since that does all the proper fallbacks")]
-        public static void ReactToNewObject(NamedObjectSave newObject) =>
-            CallMethodOnPlugin(
-                plugin => plugin.ReactToNewObjectHandler(newObject),
-                plugin => plugin.ReactToNewObjectHandler != null);
 
         internal static bool IsHandlingHotkeys()
         {
@@ -1052,23 +1051,21 @@ namespace FlatRedBall.Glue.Plugins
         {
             return CallMethodOnPluginAsync(async (plugin) =>
             {
-                var handledByList = false;
                 if (plugin.ReactToNewObjectList != null)
                 {
                     plugin.ReactToNewObjectList(newObjectList);
-                    handledByList = true;
                 }
 
                 if (plugin.ReactToNewObjectListAsync != null)
                 {
                     await plugin.ReactToNewObjectListAsync(newObjectList);
-                    handledByList = true;
                 }
 
+                // Previously we would only call ReactToNewObjectHandler if the lists didn't handle it.
                 // We need to call this even if not handled by list. Some plugins, like the live edit system,
                 // subscribe to both events to differentiate between copy/paste and 
                 //if(!handledByList)
-                if(plugin.ReactToNewObjectHandler != null)
+                if (plugin.ReactToNewObjectHandler != null)
                 {
                     foreach(var nos in newObjectList)
                     {
@@ -1085,12 +1082,10 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToObjectRemoved != null);
         
 
-        public static void TryAssignPreferredDisplayerFromName(CustomVariable customVariable)
-        {
+        public static void TryAssignPreferredDisplayerFromName(CustomVariable customVariable) =>
             CallMethodOnPlugin(
                 plugin => plugin.TryAssignPreferredDisplayerFromName(customVariable),
                 plugin => plugin.TryAssignPreferredDisplayerFromName != null);
-        }
 
         internal static Task ReactToObjectListRemovedAsync(List<GlueElement> ownerList, List<NamedObjectSave> removedObjects)
         {
@@ -1121,47 +1116,39 @@ namespace FlatRedBall.Glue.Plugins
             plugin => plugin.ReactToObjectRemoved != null || plugin.ReactToObjectListRemoved != null);
         }
 
-        internal static async Task ReactToNewScreenCreated(ScreenSave screen)
-        {
+        internal static async Task ReactToNewScreenCreated(ScreenSave screen) =>
             await CallMethodOnPluginAsync(
                 plugin => plugin.NewScreenCreated(screen),
                 plugin => plugin.NewScreenCreated != null);
-        }
 
         /// <summary>
         /// Called any time an entity is created. ReactToNewEntityCreatedWithUi may also get called.
         /// </summary>
         /// <param name="entitySave"></param>
-        internal static void ReactToNewEntityCreated(EntitySave entitySave)
-        {
+        internal static void ReactToNewEntityCreated(EntitySave entitySave) =>
             CallMethodOnPlugin(
                 plugin => plugin.NewEntityCreated(entitySave),
                 plugin => plugin.NewEntityCreated != null);
-        }
 
-        internal static void ReactToNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window)
-        {
+        internal static void ReactToNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window) =>
             CallMethodOnPlugin(
                 plugin => plugin.NewEntityCreatedWithUi(entitySave, window),
                 plugin => plugin.NewEntityCreatedWithUi != null);
-        }
 
-        internal static Task ReactToNewScreenCreatedWithUiAsync(ScreenSave screen, AddScreenWindow addScreenWindow)
-        {
-            return CallMethodOnPluginAsync(
+        internal static Task ReactToNewScreenCreatedWithUiAsync(ScreenSave screen, AddScreenWindow addScreenWindow) =>
+            CallMethodOnPluginAsync(
                 plugin => plugin.NewScreenCreatedWithUi(screen, addScreenWindow),
                 plugin => plugin.NewScreenCreatedWithUi != null);
-        }
 
-        internal static void ReactToResolutionChanged()
-        {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ResolutionChanged();
-            },
-            plugin => plugin.ResolutionChanged != null,
-            nameof(ReactToResolutionChanged));
-        }
+        internal static void ReactToResolutionChanged() =>
+            CallMethodOnPlugin(plugin =>
+                plugin.ResolutionChanged(),
+                plugin => plugin.ResolutionChanged != null);
+        
+        internal static void ReactToScaleGumChanged() =>
+            CallMethodOnPlugin(plugin =>
+                plugin.ScaleGumChanged(),
+                plugin => plugin.ScaleGumChanged != null);
 
         public static async Task<NamedObjectSave> ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)
         {
@@ -1298,12 +1285,10 @@ namespace FlatRedBall.Glue.Plugins
             TabControlViewModel.IsRecordingSelection = true;
         }
 
-        internal static void ReactToSelectedSubIndexChanged(int? selectedSubIndex)
-        {
+        internal static void ReactToSelectedSubIndexChanged(int? selectedSubIndex) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToSelectedSubIndexChanged(selectedSubIndex),
                 plugin => plugin.ReactToSelectedSubIndexChanged != null);
-        }
 
         internal static void ReactToPropertyGridRightClick(System.Windows.Forms.PropertyGrid rightClickedPropertyGrid, ContextMenuStrip menuToModify)
         {
@@ -2293,6 +2278,14 @@ namespace FlatRedBall.Glue.Plugins
             return false;
         }
 
+        /// <summary>
+        /// Raised when the user adds a file to the project which is outisde of the project file structure (Content).
+        /// When this occurs, the file must be copied to the new location. This method allows plugins to perform
+        /// a custom file copy including adjusting references.
+        /// </summary>
+        /// <param name="sourceFile">The source file location.</param>
+        /// <param name="targetFile">The destination file location.</param>
+        /// <returns>Whether a plugin successfully copied the file.</returns>
         internal static bool TryCopyFile(string sourceFile, string targetFile)
         {
 

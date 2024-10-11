@@ -73,6 +73,23 @@ namespace FlatRedBall.Glue.Elements
         [JsonIgnore]
         public Func<IElement, NamedObjectSave, ReferencedFileSave, List<string>> CustomGetForcedOptionFunc;
 
+        [XmlIgnore]
+        [JsonIgnore]
+        /// <summary>
+        /// Whether this variable should appear in the editor. By default this is null so the variable appears.
+        /// If this is not null, this is evaluated to determine whether to display the variable in the variable grid.
+        /// </summary>
+        public Func<GlueElement, NamedObjectSave, bool> IsVariableVisibleInEditor;
+
+
+        [XmlIgnore]
+        [JsonIgnore]
+        /// <summary>
+        /// Function which can return custm subtext depending on the state of the argument GlueElement and NamedObjectSave.
+        /// If null, no subtext is returned.
+        /// </summary>
+        public Func<GlueElement, NamedObjectSave, string> SubtextFunc;
+
         // Added Jan 15 2024, default to true to match behavior 
         public bool CanBeSetInFile = true;
 

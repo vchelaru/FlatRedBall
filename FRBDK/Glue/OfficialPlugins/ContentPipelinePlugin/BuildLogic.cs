@@ -31,8 +31,11 @@ namespace OfficialPlugins.MonoGameContent
 
         static string GetCommandLineBuildExe(VisualStudioProject project)
         {
-
-            if(project.DotNetVersion?.Major >= 6)
+            if(project is KniWebProject)
+            {
+                return Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
+            }
+            else if(project.DotNetVersion?.Major >= 6)
             {
                 return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\.dotnet\tools\mgcb.exe";
             }
@@ -97,6 +100,7 @@ namespace OfficialPlugins.MonoGameContent
                 or UwpProject 
                 or AndroidMonoGameNet8Project 
                 or IosMonoGameNet8Project
+                or KniWebProject
                 ;
 
         }
@@ -110,7 +114,7 @@ namespace OfficialPlugins.MonoGameContent
             {
                 newFiles = await TryAddXnbReferencesAndBuild(referencedFile, project, save:true);
             }
-            else
+            else if(DoesProjectSupportContentPipeline(project))
             {
                 TryRemoveXnbReferences(project, referencedFile);
 
@@ -218,13 +222,13 @@ namespace OfficialPlugins.MonoGameContent
             return GetContentItem(fullFileName, project, createEvenIfProjectTypeNotSupported);
         }
 
-        private static ContentItem GetContentItem(string fullFileName, ProjectBase project, bool createEvenIfProjectTypeNotSupported)
+        private static ContentItem GetContentItem(FilePath filePath, ProjectBase project, bool createEvenIfProjectTypeNotSupported)
         {
             var contentDirectory = GlueState.ContentDirectory;
 
-            var relativeToContent = FileManager.MakeRelative(fullFileName, contentDirectory);
+            var relativeToContent = filePath.RelativeTo(contentDirectory);
 
-            string extension = FileManager.GetExtension(fullFileName);
+            string extension = filePath.Extension;
 
             ContentItem contentItem = null;
 
@@ -267,20 +271,31 @@ namespace OfficialPlugins.MonoGameContent
 
             if (contentItem != null)
             {
+                var outputDirectory = GetXnbDestinationDirectory(filePath.FullPath, project);
+
                 string projectDirectory = GlueState.CurrentGlueProjectDirectory;
                 // The user may have multiple monogame projects synced. If so we need to build to different
                 // folders so that one platform doesn't override the other:
-                string builtXnbRoot = FileManager.RemoveDotDotSlash($"{projectDirectory}../BuiltXnbs/{contentItem.Platform}/");
-                contentItem.BuildFileName = fullFileName;
+                string builtXnbRoot = FileManager.RemoveDotDotSlash( $"{projectDirectory}../BuiltXnbs/{platform}/");
+                contentItem.BuildFileName = filePath;
 
                 // remove the trailing slash:
-                contentItem.OutputDirectory = builtXnbRoot;
+                contentItem.OutputDirectory = outputDirectory;
                 contentItem.OutputFileNoExtension = FileManager.RemoveExtension(relativeToContent);
 
-                contentItem.IntermediateDirectory = builtXnbRoot + "obj/" +
-                    FileManager.RemoveExtension(relativeToContent);
+                contentItem.IntermediateDirectory = FileManager.RemoveDotDotSlash( builtXnbRoot + "obj/" +
+                    FileManager.GetDirectory(FileManager.RemoveExtension(relativeToContent), RelativeType.Relative));
             }
             return contentItem;
+        }
+
+        private static bool DoesProjectSupportContentPipeline(ProjectBase project)
+        {
+            if(project is FnaDesktopProject)
+            {
+                return false;
+            }
+            return true;
         }
 
         private static string GetPipelinePlatformNameFor(ProjectBase project)
@@ -316,10 +331,21 @@ namespace OfficialPlugins.MonoGameContent
             {
                 platform = "WindowsStoreApp";
             }
+            else if(project is KniWebProject)
+            {
+                platform = "BlazorGL";
+            }
 
             return platform;
         }
 
+        /// <summary>
+        /// Returns the XNB destination for the argument file for the given project.
+        /// </summary>
+        /// <param name="fullFileName">The file that will be built (such as a .wav file)</param>
+        /// <param name="project">The project, which could be the main project or a synced project.</param>
+        /// <returns>The destination XNB file.</returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public static string GetXnbDestinationDirectory(FilePath fullFileName, ProjectBase project)
         {
             string platform = GetPipelinePlatformNameFor(project);
@@ -327,13 +353,59 @@ namespace OfficialPlugins.MonoGameContent
             {
                 throw new InvalidOperationException($"The project type {project.GetType().Name} does not have a specified platform for the content pipeline. This must be added.");
             }
-            string contentDirectory = project.FullFileName.GetDirectoryContainingThis() + project.ContentDirectory;
+
+            // The file could be relative to the argument project, or it could be relative to a different project - such as if we're dealing
+            // with a synced project. We need to check if the file is relative to the current project. Otherwise, let's find a project that is
+            // the parent root of the file
             var projectDirectory = project.FullFileName.GetDirectoryContainingThis();
-            string destinationDirectory = fullFileName.GetDirectoryContainingThis().FullPath;
+
+            string fileRelativeToItsProject = "";
+
+            if (fullFileName.IsRelativeTo(projectDirectory))
+            {
+                fileRelativeToItsProject = fullFileName.RelativeTo(projectDirectory);
+            }
+            else
+            {
+                var found = false;
+                if(project != GlueState.CurrentMainProject)
+                {
+                    var mainProjectFull = GlueState.CurrentMainProject.FullFileName;
+                    if(fullFileName.IsRelativeTo(mainProjectFull.GetDirectoryContainingThis()))
+                    {
+                        fileRelativeToItsProject = fullFileName.RelativeTo(mainProjectFull.GetDirectoryContainingThis());
+                        found = true;
+                    }
+                }
+
+                if(!found)
+                {
+                    // we are prob using a synced project, so need to find the root project:
+                    foreach (var syncedProjectRelative in GlueState.CurrentGlueProject.SyncedProjects)
+                    {
+                        var syncedProjectFull = projectDirectory + syncedProjectRelative;
+                        if (fullFileName.IsRelativeTo(syncedProjectFull))
+                        {
+                            fileRelativeToItsProject = fullFileName.RelativeTo(syncedProjectFull);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if(string.IsNullOrEmpty(fileRelativeToItsProject))
+            {
+                throw new InvalidOperationException($"The file {fullFileName} is not relative to any projects (main or synced)");
+            }
+
+            string contentDirectory = project.FullFileName.GetDirectoryContainingThis() + project.ContentDirectory;
             if(contentDirectory != null)
             {
-                destinationDirectory = FileManager.MakeRelative(destinationDirectory, contentDirectory);
-                destinationDirectory = FileManager.RemoveDotDotSlash($"{projectDirectory}../BuiltXnbs/{platform}/{destinationDirectory}");
+                var fileDirectoryRelativeToContent = FileManager.GetDirectory(fileRelativeToItsProject, RelativeType.Relative);
+
+                // The XNB could live in either the main project or a synced project. For historical reasons we'll keep it in the main project folder structure.
+                var mainProjectDirectory = GlueState.CurrentMainProject.FullFileName.GetDirectoryContainingThis();
+                var destinationDirectory = FileManager.RemoveDotDotSlash($"{mainProjectDirectory}../BuiltXnbs/{platform}/{fileDirectoryRelativeToContent}");
 
                 return destinationDirectory;
             }
@@ -448,6 +520,41 @@ namespace OfficialPlugins.MonoGameContent
             return toReturn;
         }
 
+        public List<FilePath> GetDestinationBuiltFilesFor(ReferencedFileSave rfs, VisualStudioProject project)
+        {
+            var sourceFullFileName = GlueCommands.FileCommands.GetFilePath(rfs);
+            return GetDestinationBuiltFilesFor(sourceFullFileName, project);
+        }
+
+        public List<FilePath> GetDestinationBuiltFilesFor(FilePath filePath, VisualStudioProject project)
+        { 
+            var contentItem = GetContentItem(filePath, project, createEvenIfProjectTypeNotSupported: false);
+            var toReturn = new List<FilePath>(); 
+            if (contentItem == null)
+            {
+                return toReturn;
+            }
+            var contentDirectory = GlueState.ContentDirectory;
+
+            var relativeToContent = filePath.RelativeTo(contentDirectory);
+
+            var extensions = contentItem.GetBuiltExtensions();
+
+            var destinationDirectory = GetXnbDestinationDirectory(filePath, project);
+
+
+            foreach (var extension in extensions)
+            {
+                var destination = destinationDirectory + filePath.NoPathNoExtension + "." + extension;
+
+                toReturn.Add(destination);
+            }
+            return toReturn;
+        }
+
+        // todo - this can be slow - like 100 ms. This only needs to happen 1 time per run per project type.
+        static bool HasInstalledBuilder = false;
+
         private void InstallBuilderIfNecessary(VisualStudioProject visualStudioProject)
         {
             var needs3_8_1_Builder = visualStudioProject.DotNetVersion.Major >= 6;
@@ -457,7 +564,13 @@ namespace OfficialPlugins.MonoGameContent
             {
                 return;
             }
+            if(HasInstalledBuilder)
+            {
+                return;
+            }
             //////////End Early Out///////////////
+
+            HasInstalledBuilder = true;
 
             var startInfo = new ProcessStartInfo("dotnet", "tool list -g")
             {
@@ -533,7 +646,11 @@ namespace OfficialPlugins.MonoGameContent
         {
             StringBuilder stringBuilder = new StringBuilder();
             string contentDirectory = GlueState.ContentDirectory;
-            string workingDirectory = contentDirectory;
+            string workingDirectory = "";
+            
+            // There's an issue with the kni content pipeline where it appends directories if you don't set the 
+            // working directory to your content file...actually this might be the normal pipeline too
+            workingDirectory = contentItem.BuildFileName.GetDirectoryContainingThis().FullPath;
 
             string commandLine = contentItem.GenerateCommandLine(project, rebuild);
             var process = new Process();
@@ -543,7 +660,7 @@ namespace OfficialPlugins.MonoGameContent
             process.StartInfo.Arguments = commandLine;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.FileName = commandLineBuildExe;
-            process.StartInfo.WorkingDirectory = contentDirectory;
+            process.StartInfo.WorkingDirectory = workingDirectory;
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.RedirectStandardInput = true;
             process.StartInfo.RedirectStandardOutput = true;
@@ -552,7 +669,7 @@ namespace OfficialPlugins.MonoGameContent
 
             process.Start();
 
-            GlueCommands.PrintOutput($"Building: {commandLineBuildExe} {commandLine}");
+            GlueCommands.PrintOutput($"Building: \"{commandLineBuildExe}\" {commandLine}");
 
             // Note - the process may print errors while it is running before it reports that it has an error.
             // Therefore, if we immediately display output as it is printing from monogame, we won't
@@ -560,7 +677,7 @@ namespace OfficialPlugins.MonoGameContent
             // This does delay the output a little, but normal output can get lost.
             while (process.HasExited == false)
             {
-                System.Threading.Thread.Sleep(100);
+                System.Threading.Thread.Sleep(50);
 
                 while (!process.StandardOutput.EndOfStream)
                 {
@@ -653,6 +770,11 @@ namespace OfficialPlugins.MonoGameContent
             {
                 item = project.AddContentBuildItem(absoluteFile, SyncedProjectRelativeType.Linked, false);
 
+            }
+
+            // It's okay if it's null, the project can decide to not add it:
+            if(item != null)
+            {
                 link = "Content\\" + link;
 
                 // This is not needed for .NET 8 projects, only Xamarin Android:
@@ -668,7 +790,6 @@ namespace OfficialPlugins.MonoGameContent
                     GlueCommands.TryMultipleTimes(project.Save, 5);
                 }
             }
-
         }
     }
 }

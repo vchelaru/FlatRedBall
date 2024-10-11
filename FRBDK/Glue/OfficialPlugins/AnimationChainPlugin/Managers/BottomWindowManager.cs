@@ -14,11 +14,15 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using RenderingLibrary;
 using FlatRedBall.Content.AnimationChain;
+using System.ComponentModel;
+using SkiaSharp.Views.Desktop;
 
 namespace OfficialPlugins.AnimationChainPlugin.Managers
 {
     internal class BottomWindowManager
     {
+        #region Fields/Properties
+
         SpriteRuntime MainAnimationSprite;
 
         PolygonRuntime BottomWindowHorizontalGuide;
@@ -45,26 +49,53 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
         ZoomViewModel zoomViewModel;
 
+        SettingsViewModel settingsViewModel;
 
-        SolidRectangleRuntime GumAnimationBackground { get; set; }
 
+        SolidRectangleRuntime GumBackground { get; set; }
 
-        public BottomWindowManager(GumSKElement bottomGumCanvas, UserControl userControl, CameraLogic cameraLogic, ZoomViewModel bottomWindowZoom)
+        #endregion
+
+        public BottomWindowManager(GumSKElement bottomGumCanvas, UserControl userControl,
+            CameraLogic cameraLogic, ZoomViewModel bottomWindowZoom, SettingsViewModel settingsViewModel)
         {
             zoomViewModel = bottomWindowZoom;
+            this.settingsViewModel = settingsViewModel;
+            this.settingsViewModel.PropertyChanged += HandleSettingsViewModelPropertyChanged;
             UserControl = userControl;
             BottomGumCanvas = bottomGumCanvas;
             CameraLogic = cameraLogic;
+
+
 
             // background first, so it's behind the other sprites
             CreateBackground();
             CreateAnimatedSprite();
             CreateBottomGuideLines();
 
-            CameraLogic.Initialize(userControl, bottomWindowZoom, BottomGumCanvas, this.GumAnimationBackground);
+            CameraLogic.Initialize(userControl, bottomWindowZoom, BottomGumCanvas, this.GumBackground);
             bottomGumCanvas.SystemManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
 
             StartAnimating();
+
+            // Refresh after creating the sprite
+            RefreshBackgroundColor();
+        }
+
+        private void HandleSettingsViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(SettingsViewModel.BackgroundColor):
+                    RefreshBackgroundColor();
+                    break;
+            }
+        }
+
+        private void RefreshBackgroundColor()
+        {
+            GumBackground.Color = settingsViewModel.BackgroundColor.ToSKColor();
+            BottomGumCanvas.InvalidateSurface();
         }
 
         public void RefreshAnimationPreview(AchxViewModel ViewModel)
@@ -101,7 +132,9 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                         shapes = ViewModel.SelectedAnimationFrame.VisibleChildren.ToList();
                     }
 
-                    RenderFrame(frame, shapes);
+
+                    // force render because we're displaying a frame or a shape explicitly
+                    RenderFrame(frame, shapes, forceRenderShapes:true);
                 }
                 else if (ViewModel.CurrentAnimationChain != null)
                 {
@@ -121,12 +154,13 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
         public void RefreshBottomGuideVisibility(AchxViewModel viewModel)
         {
-            BottomWindowVerticalGuide.Visible = viewModel.IsShowGuidesChecked;
-            BottomWindowHorizontalGuide.Visible = viewModel.IsShowGuidesChecked;
+            var isShowGuidesChecked = viewModel.Settings.IsShowingGuides;
+            BottomWindowVerticalGuide.Visible = isShowGuidesChecked;
+            BottomWindowHorizontalGuide.Visible = isShowGuidesChecked;
             BottomGumCanvas.InvalidateVisual();
         }
 
-        private void RenderShapes(List<ShapeViewModel> shapes, AnimationFrameViewModel owner)
+        private void RenderShapes(List<ShapeViewModel> shapes, AnimationFrameViewModel owner, bool forceRenderShapes)
         {
             foreach (var shape in AnimationShapes)
             {
@@ -134,27 +168,29 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             }
             AnimationShapes.Clear();
 
-            foreach (var loopShape in shapes)
+            if (settingsViewModel.IsShowingFrameShapes || forceRenderShapes)
             {
-                if (loopShape is RectangleViewModel)
+                foreach (var loopShape in shapes)
                 {
-                    var shape = (RectangleViewModel)loopShape;
+                    if (loopShape is RectangleViewModel)
+                    {
+                        var shape = (RectangleViewModel)loopShape;
 
-                    var outline = new PolygonRuntime();
-                    outline.Color = SKColors.White;
+                        var outline = new PolygonRuntime();
+                        outline.Color = SKColors.White;
 
-                    var verticalCenter = shape.Height / 2.0f;
+                        var verticalCenter = shape.Height / 2.0f;
 
-                    var shapeLeft = shape.X + owner.RelativeX;
-                    var shapeTop = verticalCenter - shape.Y - owner.RelativeY;
+                        var shapeLeft = shape.X + owner.RelativeX;
+                        var shapeTop = verticalCenter - shape.Y - owner.RelativeY;
 
-                    var left = shapeLeft;
-                    var top = verticalCenter + (shapeTop) + shape.Height / 2.0f;
-                    var right = shapeLeft + shape.Width;
-                    var bottom = verticalCenter + (shapeTop) - shape.Height / 2.0f;
+                        var left = shapeLeft;
+                        var top = verticalCenter + (shapeTop) + shape.Height / 2.0f;
+                        var right = shapeLeft + shape.Width;
+                        var bottom = verticalCenter + (shapeTop) - shape.Height / 2.0f;
 
-                    outline.IsFilled = false;
-                    outline.Points = new List<SKPoint>
+                        outline.IsFilled = false;
+                        outline.Points = new List<SKPoint>
                             {
                                 new SKPoint(left, top),
                                 new SKPoint(right, top),
@@ -163,31 +199,34 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                                 new SKPoint(left, top),
                             };
 
-                    AnimationShapes.Add(outline);
-                    BottomGumCanvas.Children.Add(outline);
+                        AnimationShapes.Add(outline);
+                        BottomGumCanvas.Children.Add(outline);
+                    }
+
+                    if (loopShape is CircleViewModel)
+                    {
+                        var shape = (CircleViewModel)loopShape;
+
+                        var outline = new ColoredCircleRuntime();
+                        outline.XOrigin = RenderingLibrary.Graphics.HorizontalAlignment.Center;
+                        outline.YOrigin = RenderingLibrary.Graphics.VerticalAlignment.Center;
+
+                        outline.Color = SKColors.White;
+
+                        outline.X = shape.X;
+                        outline.Y = -shape.Y;
+                        outline.Width = shape.Radius * 2;
+                        outline.Height = shape.Radius * 2;
+
+                        outline.IsFilled = false;
+
+                        AnimationShapes.Add(outline);
+                        BottomGumCanvas.Children.Add(outline);
+                    }
                 }
 
-                if (loopShape is CircleViewModel)
-                {
-                    var shape = (CircleViewModel)loopShape;
-
-                    var outline = new ColoredCircleRuntime();
-                    outline.XOrigin = RenderingLibrary.Graphics.HorizontalAlignment.Center;
-                    outline.YOrigin = RenderingLibrary.Graphics.VerticalAlignment.Center;
-
-                    outline.Color = SKColors.White;
-
-                    outline.X = shape.X;
-                    outline.Y = -shape.Y;
-                    outline.Width = shape.Radius * 2;
-                    outline.Height = shape.Radius * 2;
-
-                    outline.IsFilled = false;
-
-                    AnimationShapes.Add(outline);
-                    BottomGumCanvas.Children.Add(outline);
-                }
             }
+
         }
 
         private void RunAnimation()
@@ -218,18 +257,20 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             {
                 UserControl.Dispatcher.Invoke(() =>
                 {
-                    RenderFrame(frame, frame.VisibleChildren.ToList());
+                    RenderFrame(frame, frame.VisibleChildren.ToList(), 
+                        // do not force render shapes, we're viewing an animation so only if the animation is 
+                        forceRenderShapes:false);
 
                     CameraLogic.RefreshCameraZoomToViewModel();
                 });
             }
-            catch(TaskCanceledException)
+            catch (TaskCanceledException)
             {
 
             }
         }
 
-        private void RenderFrame(AnimationFrameViewModel frame, List<ShapeViewModel> shapes)
+        private void RenderFrame(AnimationFrameViewModel frame, List<ShapeViewModel> shapes, bool forceRenderShapes)
         {
             // don't use percentage, because that will result in a flipped sprite having negative width and height
             //MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
@@ -242,8 +283,8 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
             MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
             MainAnimationSprite.Visible = true;
-            MainAnimationSprite.Y = -frame.RelativeY * (frame.FlipVertical?-1:1);
-            MainAnimationSprite.X = frame.RelativeX * (frame.FlipHorizontal?-1:1);
+            MainAnimationSprite.Y = -frame.RelativeY * (frame.FlipVertical ? -1 : 1);
+            MainAnimationSprite.X = frame.RelativeX * (frame.FlipHorizontal ? -1 : 1);
 
             if (frame.FlipHorizontal)
             {
@@ -260,7 +301,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             MainAnimationSprite.Height = System.Math.Abs(MainAnimationSprite.TextureHeight);
 
 
-            RenderShapes(shapes, frame);
+            RenderShapes(shapes, frame, forceRenderShapes);
 
 
         }
@@ -359,13 +400,13 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
         private void CreateBackground()
         {
 
-            GumAnimationBackground = new SolidRectangleRuntime();
-            GumAnimationBackground.Color = new SKColor(68, 34, 136);
-            GumAnimationBackground.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
-            GumAnimationBackground.Width = 100;
-            GumAnimationBackground.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
-            GumAnimationBackground.Height = 100;
-            this.BottomGumCanvas.Children.Add(GumAnimationBackground);
+            GumBackground = new SolidRectangleRuntime();
+            GumBackground.Color = new SKColor(68, 34, 136);
+            GumBackground.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            GumBackground.Width = 100;
+            GumBackground.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            GumBackground.Height = 100;
+            this.BottomGumCanvas.Children.Add(GumBackground);
         }
 
 

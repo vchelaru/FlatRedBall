@@ -49,15 +49,18 @@ public partial class StateCodeGenerator
 
             CreateStartingValueVariables(elementSave, states, currentBlock, interpolationCharacteristics);
 
-            currentBlock = currentBlock.Switch("firstState");
-            currentBlock = SetInterpolateBetweenValuesForStates(elementSave, enumType, states, currentBlock,
-                interpolationCharacteristics, FirstValue);
-            currentBlock = currentBlock.End();
+            if(states.Count() > 0)
+            {
+                currentBlock = currentBlock.Switch("firstState");
+                currentBlock = SetInterpolateBetweenValuesForStates(elementSave, enumType, states, currentBlock,
+                    interpolationCharacteristics, FirstValue);
+                currentBlock = currentBlock.End();
 
-            currentBlock = currentBlock.Switch("secondState");
-            currentBlock = SetInterpolateBetweenValuesForStates(elementSave, enumType, states, currentBlock,
-                interpolationCharacteristics, SecondValue);
-            currentBlock = currentBlock.End();
+                currentBlock = currentBlock.Switch("secondState");
+                currentBlock = SetInterpolateBetweenValuesForStates(elementSave, enumType, states, currentBlock,
+                    interpolationCharacteristics, SecondValue);
+                currentBlock = currentBlock.End();
+            }
 
             var suspendLayout = GlueState.Self.CurrentGlueProject.FileVersion >= (int)FlatRedBall.Glue.SaveClasses.GlueProjectSave.GluxVersions.GumHasMIsLayoutSuspendedPublic;
             if (suspendLayout)

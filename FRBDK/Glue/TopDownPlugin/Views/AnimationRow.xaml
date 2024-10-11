@@ -7,24 +7,27 @@
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
 
              xmlns:local="clr-namespace:TopDownPlugin.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="200">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <wpfdataui:DataUiGrid CategoriesOrientation="Horizontal" x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
-        <StackPanel Grid.Column="1">
-            <Button x:Name="CloseButton" Command="{Binding RemoveCommand}">X</Button>
-            <Button x:Name="MoveUpButton" Command="{Binding MoveUpCommand}" Margin="0,5,0,0">^</Button>
-            <Button x:Name="MoveDownButton" Command="{Binding MoveDownCommand}" Width="22">v</Button>
-            <Button x:Name="DuplicateButton" Command="{Binding DuplicateCommand}" Width="22" Margin="0,5,0,0">
-                <Image Source="/TopDownPluginCore;component/Content/Icons/icon_duplicate.png" ></Image>
-                <Button.ToolTip>
-                    <Label Content="{x:Static localization:Texts.HintCreateDuplicateAnimationLayer}" />
-                </Button.ToolTip>
-            </Button>
-        </StackPanel>
-    </Grid>
+    <Border BorderBrush="Gray" BorderThickness="1">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <wpfdataui:DataUiGrid CategoriesOrientation="Horizontal" x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
+            <StackPanel Grid.Column="1">
+                <Button x:Name="CloseButton" Command="{Binding RemoveCommand}" Content="{materialDesign:PackIcon CloseCircle}" Style="{DynamicResource ToolIcon}"/>
+                <Button x:Name="MoveUpButton" Command="{Binding MoveUpCommand}" Content="{materialDesign:PackIcon Kind=MenuUp}" Style="{DynamicResource IconButton}"/>
+                <Button x:Name="MoveDownButton" Command="{Binding MoveDownCommand}" Content="{materialDesign:PackIcon Kind=MenuDown}" Style="{DynamicResource IconButton}"/>
+                <Button x:Name="DuplicateButton" Command="{Binding DuplicateCommand}" Width="16" Content="{materialDesign:PackIcon Kind=ContentDuplicate}" Style="{DynamicResource ToolIcon}">
+                    <Button.ToolTip>
+                        <Label Content="{x:Static localization:Texts.HintCreateDuplicateAnimationLayer}" />
+                    </Button.ToolTip>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
 </UserControl>

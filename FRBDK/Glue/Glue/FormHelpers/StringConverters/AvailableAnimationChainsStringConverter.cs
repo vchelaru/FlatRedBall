@@ -99,7 +99,15 @@ namespace FlatRedBall.Glue.GuiDisplay
         private void RefreshList()
         {
             AnimationChainListSave acls = null;
-            acls = GetAnimationChainListFile(element, referencedNos, stateSave);
+            try
+            {
+                acls = GetAnimationChainListFile(element, referencedNos, stateSave);
+            }
+            catch(Exception e)
+            {
+                // file could be corrupt, don't crash the plugin if so, treat it as if it's empty and print output:
+                GlueCommands.Self.PrintError($"Error loading AnimationChains from {referencedNos} when attempting to get list of items:\n{e}");
+            }
 
 
             if (acls == null)

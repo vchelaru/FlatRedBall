@@ -34,6 +34,7 @@ using System.Windows.Data;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.Refactoring.Views;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 using Microsoft.VisualBasic;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
@@ -42,6 +43,12 @@ public class ChangedNamedObjectVariable
 {
     public NamedObjectSave NamedObjectSave;
     public string VariableName;
+
+    public override string ToString()
+    {
+        var newValue = NamedObjectSave.GetCustomVariable(VariableName)?.Value?.ToString() ?? "";
+        return NamedObjectSave + "." + VariableName + " = "  + newValue;
+    }
 }
 
 public class FileChange
@@ -85,7 +92,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
     #endregion
 
-    #region GlueElement (both screens and entities)
+    #region RenameElement (both screens and entities)
 
     /// <summary>
     /// Performs all logic related to renaming an element. The name should not have the "Screens\\" or "Entities\\" prefix, nor any prefixes
@@ -122,41 +129,38 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         }, $"Renaming {elementToRename} to {newFullElementName}");
     }
 
-    private void DoRenameInner(GlueElement elementToRename, string newNameFull, bool showRenameWindow)
+    private void DoRenameInner(GlueElement elementToRename, string newElementName, bool showRenameWindow)
     {
         RenameModifications renameModifications = new RenameModifications();
 
-        string oldNameFull = elementToRename.Name;
+        string oldElementName = elementToRename.Name;
         var fileNameBeforeMove = GlueCommands.Self.FileCommands.GetJsonFilePath(elementToRename);
 
         var oldFileNames = CodeWriter.GetAllCodeFilesFor(elementToRename);
 
-        var changeClassNamesResponse = ChangeClassNamesAndNamespaceInCodeAndFileName(oldFileNames, oldNameFull, newNameFull);
+        var changeClassNamesResponse = ChangeClassNamesAndNamespaceInCodeAndFileName(oldFileNames, oldElementName, newElementName);
 
-        var oldDirectory = FileManager.GetDirectory(oldNameFull, RelativeType.Relative);
-        var newDirectory = FileManager.GetDirectory(newNameFull, RelativeType.Relative);
+        var oldDirectory = FileManager.GetDirectory(oldElementName, RelativeType.Relative);
+        var newDirectory = FileManager.GetDirectory(newElementName, RelativeType.Relative);
         var didChangeDirectory = oldDirectory != newDirectory;
 
-        if(didChangeDirectory)
+        if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
         {
-            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
-            {
-                // delete the old file (put it in recycle bin)
-                // From https://stackoverflow.com/questions/2342628/deleting-file-to-recycle-bin-on-windows-x64-in-c-sharp
+            // delete the old file (put it in recycle bin)
+            // From https://stackoverflow.com/questions/2342628/deleting-file-to-recycle-bin-on-windows-x64-in-c-sharp
 
-                if (fileNameBeforeMove?.Exists() == true)
+            if (fileNameBeforeMove?.Exists() == true)
+            {
+                try
                 {
-                    try
-                    {
-                        Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(
-                            fileNameBeforeMove.FullPath,
-                            Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
-                            Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
-                    }
-                    catch (Exception e)
-                    {
-                        GlueCommands.Self.PrintError(e.ToString());
-                    }
+                    Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(
+                        fileNameBeforeMove.FullPath,
+                        Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
+                        Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+                }
+                catch (Exception e)
+                {
+                    GlueCommands.Self.PrintError(e.ToString());
                 }
             }
         }
@@ -168,7 +172,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             // Set the name first because that's going
             // to be used by code that follows to modify
             // inheritance.
-            elementToRename.Name = newNameFull;
+            elementToRename.Name = newElementName;
 
             var elementsToRegenerate = new HashSet<GlueElement>();
 
@@ -181,28 +185,28 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                 for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
                 {
                     var entitySave = ProjectManager.GlueProjectSave.Entities[i];
-                    if (entitySave.BaseElement == oldNameFull)
+                    if (entitySave.BaseElement == oldElementName)
                     {
-                        entitySave.BaseEntity = newNameFull;
+                        entitySave.BaseEntity = newElementName;
                         renameModifications.ElementsWithChangedBaseType.Add(entitySave);
                     }
                 }
 
                 // Change any NamedObjects that use this as their type (whether in Entity, or as a generic class)
-                List<NamedObjectSave> namedObjectsWithElementSourceClassType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldNameFull);
+                List<NamedObjectSave> namedObjectsWithElementSourceClassType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldElementName);
 
                 foreach (NamedObjectSave nos in namedObjectsWithElementSourceClassType)
                 {
                     elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
-                    if (nos.SourceType == SourceType.Entity && nos.SourceClassType == oldNameFull)
+                    if (nos.SourceType == SourceType.Entity && nos.SourceClassType == oldElementName)
                     {
-                        nos.SourceClassType = newNameFull;
+                        nos.SourceClassType = newElementName;
                         renameModifications.ObjectsWithChangedBaseEntity.Add(nos);
                         nos.UpdateCustomProperties();
                     }
-                    else if (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassGenericType == oldNameFull)
+                    else if (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassGenericType == oldElementName)
                     {
-                        nos.SourceClassGenericType = newNameFull;
+                        nos.SourceClassGenericType = newElementName;
                         renameModifications.ObjectsWithChangedGenericBaseEntity.Add(nos);
 
                     }
@@ -220,16 +224,16 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                     }
                 }
 
-                List<NamedObjectSave> namedObjectsWithElementAsVariableType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntityAsVariableType(oldNameFull);
+                List<NamedObjectSave> namedObjectsWithElementAsVariableType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntityAsVariableType(oldElementName);
                 foreach (var nos in namedObjectsWithElementAsVariableType)
                 {
                     elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
 
                     foreach (var variable in nos.InstructionSaves)
                     {
-                        if ((variable.Value as string) == oldNameFull)
+                        if ((variable.Value as string) == oldElementName)
                         {
-                            variable.Value = newNameFull;
+                            variable.Value = newElementName;
 
                             renameModifications.ChangedNamedObjectVariables.Add(new ChangedNamedObjectVariable
                             {
@@ -262,35 +266,35 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                 for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
                 {
                     var screenSave = ProjectManager.GlueProjectSave.Screens[i];
-                    if (screenSave.BaseScreen == oldNameFull)
+                    if (screenSave.BaseScreen == oldElementName)
                     {
-                        screenSave.BaseScreen = newNameFull;
+                        screenSave.BaseScreen = newElementName;
 
                         renameModifications.ElementsWithChangedBaseType.Add(screenSave);
 
                     }
                 }
 
-                if (GlueCommands.Self.GluxCommands.StartUpScreenName == oldNameFull)
+                if (GlueCommands.Self.GluxCommands.StartUpScreenName == oldElementName)
                 {
-                    GlueCommands.Self.GluxCommands.StartUpScreenName = newNameFull;
-                    renameModifications.StartupScreenChange = newNameFull;
+                    GlueCommands.Self.GluxCommands.StartUpScreenName = newElementName;
+                    renameModifications.StartupScreenChange = newElementName;
 
                 }
                 // Don't do anything with NamedObjects and Screens since they can't (currently) be named objects
             }
 
-            var variablesReferencingElement = ObjectFinder.Self.GetVariablesReferencingElementType(oldNameFull);
+            var variablesReferencingElement = ObjectFinder.Self.GetVariablesReferencingElementType(oldElementName);
 
             var newVariantName = elementToRename.Name.Replace("\\", ".") + "Variant";
-            var oldVariantName = oldNameFull.Replace("\\", ".") + "Variant";
+            var oldVariantName = oldElementName.Replace("\\", ".") + "Variant";
 
             foreach (var variable in variablesReferencingElement)
             {
 
-                if((variable.DefaultValue as string) == oldNameFull)
+                if((variable.DefaultValue as string) == oldElementName)
                 {
-                    variable.DefaultValue = newNameFull;
+                    variable.DefaultValue = newElementName;
                 }
                 if(variable.Type == oldVariantName)
                 {
@@ -319,7 +323,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToRename);
 
-            PluginManager.ReactToElementRenamed(elementToRename, oldNameFull);
+            PluginManager.ReactToElementRenamed(elementToRename, oldElementName);
 
             if(showRenameWindow)
             {
@@ -452,34 +456,55 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
     public async Task<SaveClasses.ScreenSave> AddScreen(string screenName)
     {
+
+        string qualifiedScreenName = screenName;
+
+        if (!screenName.ToLower().StartsWith("screens\\") && !screenName.ToLower().StartsWith("screens/"))
+        {
+            qualifiedScreenName = @"Screens\" + qualifiedScreenName;
+        }
+
         ScreenSave screenSave = new ScreenSave();
-        screenSave.Name = @"Screens\" + screenName;
+        screenSave.Name = qualifiedScreenName;
 
         await AddScreen(screenSave, suppressAlreadyExistingFileMessage:false);
 
         return screenSave;
     }
 
+    public async Task<ScreenSave> AddScreenAsync(AddScreenViewModel viewModel)
+    {
+        var gluxCommands = GlueCommands.Self.GluxCommands;
+
+        var directory = viewModel.Directory;
+
+        var newScreen = await gluxCommands.ScreenCommands.AddScreen(
+            directory + viewModel.ScreenName);
+
+        // we could add inheritance here 
+
+        return newScreen;
+    }
+
     public async Task AddScreen(ScreenSave screenSave, bool suppressAlreadyExistingFileMessage = false)
     {
         await TaskManager.Self.AddAsync(async () =>
         {
-            var glueProject = GlueState.Self.CurrentGlueProject;
-
-            string screenName = FileManager.RemovePath(screenSave.Name);
-
-            string fileName = screenSave.Name + ".cs";
-
             screenSave.Tags.Add("GLUE");
             screenSave.Source = "GLUE";
 
+            var glueProject = GlueState.Self.CurrentGlueProject;
+
             glueProject.Screens.Add(screenSave);
+
             glueProject.Screens.SortByName();
+
+            string customCodeFilePath = screenSave.Name + ".cs";
 
             #region Create the Screen code (not the generated version)
 
 
-            var fullNonGeneratedFileName = FileManager.RelativeDirectory + fileName;
+            var fullNonGeneratedFileName = FileManager.RelativeDirectory + customCodeFilePath;
             var addedScreen =
                 GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fullNonGeneratedFileName, save: false);
 
@@ -504,7 +529,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             #region Create <ScreenName>.Generated.cs
 
-            string generatedFileName = @"Screens\" + screenName + ".Generated.cs";
+            string generatedFileName = screenSave.Name + ".Generated.cs";
             ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(generatedFileName, true);
 
 
@@ -554,21 +579,18 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
     #region Add Entity
 
-    public SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false)
+    public SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false, bool notifyPluginsOfNewEntity = true)
     {
-
-        string fileName = entityName + ".cs";
+        string qualifiedEntityName = entityName;
 
         if (!entityName.ToLower().StartsWith("entities\\") && !entityName.ToLower().StartsWith("entities/"))
         {
-            fileName = @"Entities\" + fileName;
+            qualifiedEntityName = @"Entities\" + qualifiedEntityName;
         }
-
-
 
         EntitySave entitySave = new EntitySave();
         entitySave.Is2D = is2D;
-        entitySave.Name = FileManager.RemoveExtension(fileName);
+        entitySave.Name = qualifiedEntityName;
 
         const bool AddXYZ = true;
 
@@ -579,18 +601,22 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             entitySave.CustomVariables.Add(new CustomVariable() { Name = "Z", Type = "float", SetByDerived = true });
         }
 
-        AddEntity(entitySave);
+        AddEntity(entitySave, notifyPluginsOfNewEntity);
 
         return entitySave;
 
     }
 
-    public async Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel, string directory = null)
+    public async Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel)
     {
         var gluxCommands = GlueCommands.Self.GluxCommands;
 
+        var directory = viewModel.Directory;
+
         var newElement = gluxCommands.EntityCommands.AddEntity(
-            directory + viewModel.Name, is2D: true);
+            directory + viewModel.Name, is2D: true,
+            // Don't notify, we'll do so lower in this method after applying the ViewModel's properties.
+            notifyPluginsOfNewEntity: false);
 
         // Why select it here? This causes the tree view to not yet show the inherited variables.
         // Maybe this was done because the property ReactToPropertyChanged required it to be selected?
@@ -1013,12 +1039,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         return pairs;
     }
 
-    public void AddEntity(EntitySave entitySave)
-    {
-        AddEntity(entitySave, false);
-    }
-
-    public void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage)
+    public void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage = false, bool notifyPluginsOfNewEntity = true)
     {
 
         entitySave.Tags.Add("GLUE");
@@ -1064,6 +1085,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
         #endregion
 
+        if(notifyPluginsOfNewEntity)
+        {
+            PluginManager.ReactToNewEntityCreated(entitySave);
+        }
+
         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entitySave);
 
         GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
@@ -1083,29 +1109,51 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         AddCustomVariableToElementImmediate(newVariable, element, save);
     }
 
-    public async Task AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true)
+    public async Task<GeneralResponse> AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true)
     {
+        GeneralResponse response = new GeneralResponse();
+
         await TaskManager.Self.AddAsync(() =>
         {
-            // expose a variable that exposes the category
-            CustomVariable customVariable = new CustomVariable();
-
-            var categoryOwner = ObjectFinder.Self.GetElementContaining(category);
-
-            var name = category.Name;
-            if(categoryOwner != null && categoryOwner != element)
+            // This creates an exposed variable which must have a specific name:
+            var requiredName = "Current" + category.Name + "State";
+            // ...if there is already a variable with this name, we should not add it again
+            if (element.GetCustomVariableRecursively(requiredName) != null)
             {
-                name = categoryOwner.Name.Replace("\\", ".") + "." + name;
+                response.Succeeded = false;
+                response.Message = $"The variable {requiredName} already exists in {element}.";
+            }
+            else
+            {
+                // expose a variable that exposes the category
+                CustomVariable customVariable = new CustomVariable();
+
+                var categoryOwner = ObjectFinder.Self.GetElementContaining(category);
+
+                var name = category.Name;
+
+                // Update September 17, 2024
+                // We want to fully-qualify the
+                // type even if the new variable
+                // is in the same element as the category.
+                // This is required for live edit.
+                //if(categoryOwner != null && categoryOwner != element)
+                if(categoryOwner != null)
+                {
+                    name = categoryOwner.Name.Replace("\\", ".") + "." + name;
+                }
+
+                customVariable.Type = name;
+                customVariable.Name = requiredName;
+                customVariable.SetByDerived = true;
+
+                AddCustomVariableToElementImmediate(
+                    customVariable, element, save);
+                response.Succeeded = true;
             }
 
-            customVariable.Type = name;
-            customVariable.Name = "Current" + category.Name + "State";
-            customVariable.SetByDerived = true;
-
-            AddCustomVariableToElementImmediate(
-                customVariable, element, save);
-
         }, $"Adding category {category} as variable to {element}");
+        return response;
     }
 
     void AddCustomVariableToElementImmediate(CustomVariable newVariable, GlueElement element, bool save = true)
@@ -1227,7 +1275,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
     #endregion
 
-    #region Add StateSaveCategory
+    #region StateSaveCategory
 
     public async Task AddStateSaveCategoryAsync(string categoryName, GlueElement element)
     {
@@ -1265,6 +1313,32 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             GluxCommands.Self.SaveProjectAndElements();
         }, nameof(AddStateSaveCategoryAsync));
+    }
+
+    public GeneralResponse CanVariableBeIncludedInStates(string variableName, GlueElement element)
+    {
+        var variable = element.GetCustomVariableRecursively(variableName);
+
+        if(variable == null)
+        {
+            return GeneralResponse.UnsuccessfulWith("Variable does not exist, so it cannot be included");
+        }
+        else if(variable.SourceObject != null)
+        {
+            var rootVariable = ObjectFinder.Self.GetRootCustomVariable(variable);
+
+            if(rootVariable?.Name == "Points")
+            {
+                // for now we assume this is for a polygon, and we don't allow it:
+                return GeneralResponse.UnsuccessfulWith("Cannot include Points which is a list.");
+            }
+            else if(rootVariable?.Type.StartsWith("List<") == true)
+            {
+                return GeneralResponse.UnsuccessfulWith($"Variables of list types ({rootVariable?.Type}) cannot be included in states.");
+
+            }
+        }
+        return GeneralResponse.SuccessfulResponse;
     }
 
     #endregion
@@ -1556,7 +1630,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
     #region Property Set
 
-    public async Task ReactToPropertyChanged(GlueElement element, string propertyName, object oldValue)
+    public Task ReactToPropertyChanged(GlueElement element, string propertyName, object oldValue)
     {
         if(element is EntitySave entitySave)
         {
@@ -1566,6 +1640,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         {
             Container.Get<ScreenSaveSetVariableLogic>().ReactToScreenPropertyChanged(screenSave, propertyName, oldValue);
         }
+        return Task.CompletedTask;
     }
 
     #endregion
@@ -2032,6 +2107,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             return newNamedObject;
         }
     }
+
 
 
     #endregion

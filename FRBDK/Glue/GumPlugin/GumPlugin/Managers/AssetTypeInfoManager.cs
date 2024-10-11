@@ -87,8 +87,8 @@ namespace GumPlugin.Managers
 
         string GetLoadStaticContentCodeFor(ReferencedFileSave rfs, NamedObjectSave nos, string qualifiedName = null)
         {
-            string strippedName = GetStrippedScreenName(rfs);
-
+            // Gum uses forward slashes (I used to think it was back slashes but that was a bug causing that):
+            string strippedName = GetStrippedScreenName(rfs).Replace("\\", "/");
             // Now the camera setup code handles this, so we don't have to:
             // In fact, specific Screen types already removed this, but as of Oct 5, 2020
             // the GraphicalUiElement runtime type ATI still had this and it was messing up
@@ -111,12 +111,12 @@ namespace GumPlugin.Managers
             if(string.IsNullOrEmpty(qualifiedName))
             {
                 toReturn +=
-                    $"\n {thisName} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetElementSave(\"{strippedName}\"), true);";
+                    $"\n {thisName} = GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetElementSave(@\"{strippedName}\"), true);";
             }
             else
             {
                 toReturn +=
-                    $"\n {thisName} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetElementSave(\"{strippedName}\"), true);";
+                    $"\n {thisName} = ({qualifiedName})GumRuntime.ElementSaveExtensions.CreateGueForElement(Gum.Managers.ObjectFinder.Self.GetElementSave(@\"{strippedName}\"), true);";
             }
             toReturn +=
                  "\n Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = wasSuspended;";
@@ -491,10 +491,17 @@ namespace GumPlugin.Managers
         string GetGumxLoadCode(IElement element, NamedObjectSave nos, ReferencedFileSave rfs, string contentManagerName)
         {
             string fileNameToLoad = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs, mGumxAti);
-
             string toReturn = $"FlatRedBall.Gum.GumIdb.StaticInitialize(\"{fileNameToLoad}\"); " +
                         "FlatRedBall.Gum.GumIdbExtensions.RegisterTypes();  " +
-                        "FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false;";
+                        $"FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false;";
+
+            var shouldAddFieldAssignment = false;
+
+            if(element == null && GlueState.Self.CurrentGlueProject.GlobalContentSettingsSave.LoadAsynchronously)
+            {
+                var fieldName = "m" + rfs.GetInstanceName();
+                toReturn += $" {fieldName} = FlatRedBall.Gum.GumIdb.Self;";
+            }
 
             var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
 
@@ -653,7 +660,7 @@ namespace GumPlugin.Managers
 
         public AssetTypeInfo GetAtiFor(ElementSave elementSave)
         {
-            var qualified = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(elementSave);
+            var qualified = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(elementSave, prefixGlobal: false);
 
             return AssetTypesForThisProject.FirstOrDefault(Item => Item.QualifiedRuntimeTypeName.QualifiedType == qualified);
         }
@@ -677,7 +684,7 @@ namespace GumPlugin.Managers
 
             newAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
             {
-                QualifiedType = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element)
+                QualifiedType = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element, prefixGlobal:false)
             };
 
 
@@ -703,7 +710,7 @@ namespace GumPlugin.Managers
             }
             if (element is Gum.DataTypes.ScreenSave)
             {
-                var qualifiedName = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
+                var qualifiedName = GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element, prefixGlobal: true);
 
                 newAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos, qualifiedName);
 
@@ -851,7 +858,7 @@ namespace GumPlugin.Managers
             // todo: for now we'll return the unqualified name for the state, but eventually we may want to qualify it:
             if(isState)
             {
-                return GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(container) + "." + variable.Type + "?";
+                return GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(container, prefixGlobal: false) + "." + variable.Type + "?";
             }
             else
             {

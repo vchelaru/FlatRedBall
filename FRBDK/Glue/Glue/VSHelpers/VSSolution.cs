@@ -1,4 +1,5 @@
-﻿using FlatRedBall.IO;
+﻿using ExCSS;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,13 +10,27 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.VSHelpers
 {
+    public class CsprojReference
+    {
+        public string Name
+        {
+            get;
+            set;
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+    }
+
     public class VSSolution
     {
-        public List<string> ReferencedProjects
+        public List<CsprojReference> ReferencedProjects
         {
             get;
             private set;
-        } = new List<string>();
+        } = new List<CsprojReference>();
 
         public string FullFileName
         {
@@ -261,8 +276,10 @@ namespace FlatRedBall.Glue.VSHelpers
         {
             var splitBySpaces = line.Split('"');
 
-            var projectReference = splitBySpaces[5];
+            var projectReferenceName = splitBySpaces[5];
 
+            var projectReference = new CsprojReference();
+            projectReference.Name = projectReferenceName;
             solution.ReferencedProjects.Add(projectReference);
 
         }
@@ -270,6 +287,31 @@ namespace FlatRedBall.Glue.VSHelpers
         public override string ToString()
         {
             return FileManager.RemovePath(FullFileName);
+        }
+
+        internal void RenameProject(CsprojReference project, string newCandidateProjectName)
+        {
+            var allLines = File.ReadAllLines(FullFileName).ToList();
+
+
+            for (int i = 0; i < allLines.Count; i++)
+            {
+                string line = allLines[i];
+                if (line.Contains(project.Name))
+                {
+                    var oldStripped = FileManager.RemoveExtension( FileManager.RemovePath(project.Name));
+                    var newStripped = FileManager.RemoveExtension(FileManager.RemovePath(newCandidateProjectName));
+                    var newLine = line.Replace(project.Name, newCandidateProjectName);
+
+                    newLine = newLine.Replace(
+                        "\"" + oldStripped + "\"", 
+                        "\"" + newStripped + "\"");
+
+                    allLines[i] = newLine;
+                }
+            }
+
+            File.WriteAllLines(FullFileName, allLines);
         }
 
         public class SharedProject

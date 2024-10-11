@@ -11,18 +11,6 @@ using System.Threading.Tasks;
 
 namespace FRBDKUpdater
 {
-    //public class DownloaderProgressEventArgs
-    //{
-    //    public DownloaderProgressEventArgs(int progressPercentage, string speed)
-    //    {
-    //        ProgressPercentage = progressPercentage;
-    //        Speed = speed;
-    //    }
-
-    //    public int ProgressPercentage { get; private set; }
-    //    public string Speed { get; private set; }
-    //}
-
     public class DownloaderErrorEventArgs
     {
         public DownloaderErrorEventArgs(string error)
@@ -33,22 +21,9 @@ namespace FRBDKUpdater
         public string Error { get; set; }
     }
 
-    //public class DownloaderCompleteEventArgs
-    //{
-    //    public DownloaderCompleteEventArgs(bool successful)
-    //    {
-    //        Successful = successful;
-    //    }
-
-    //    public bool Successful { get; protected set; }
-    //}
-
-
+ 
     public delegate void DownloaderErrorEventHandler(
         object sender, DownloaderErrorEventArgs e);
-
-    //public delegate void DownloaderCompleteEventHandler(
-    //    object sender, DownloaderCompleteEventArgs e);
 
     public class Downloader
     {

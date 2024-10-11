@@ -114,13 +114,18 @@ namespace BuildServerUploaderConsole.Processes
 
         private void UpdateTemplateNugets()
         {
-            UpdateTemplateNuget("FlatRedBallDesktopGLNet6", "FlatRedBallDesktopGLNet6Template");
+            foreach(var engine in AllData.Engines)
+            {
+                var templateName = FileManager.RemovePath(engine.TemplateCsProjFolder);
+                if(templateName.EndsWith("\\"))
+                {
+                    templateName = templateName.Substring(0, templateName.Length - 1);
+                }
 
-            UpdateTemplateNuget("FlatRedBall.FNA", "FlatRedBallDesktopFnaTemplate");
+                var strippedEngineName = FileManager.RemoveExtension( FileManager.RemovePath(engine.EngineCSProjLocation));
 
-            UpdateTemplateNuget("FlatRedBallAndroid", "FlatRedBallAndroidMonoGameTemplate");
-
-            UpdateTemplateNuget("FlatRedBalliOS", "FlatRedBalliOSMonoGameTemplate");
+                UpdateTemplateNuget(strippedEngineName, templateName);
+            }
         }
 
         private void UpdateTemplateNuget(string engineName, string templateName)

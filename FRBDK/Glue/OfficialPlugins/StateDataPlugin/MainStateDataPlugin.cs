@@ -6,7 +6,7 @@ using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.StateDataPlugin.Controls;
 using OfficialPlugins.StateDataPlugin.StateError;
 using OfficialPlugins.StateDataPlugin.ViewModels;
-using OfficialPluginsCore.StateDataPlugin.Managers;
+using OfficialPlugins.StateDataPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -45,7 +45,7 @@ namespace OfficialPlugins.StateDataPlugin
 
         public override void StartUp()
         {
-            this.ReactToItemSelectHandler += HandleReactToItemSelect;
+            this.ReactToItemsSelected += HandleItemsSelected;
             this.ReactToStateRemovedHandler += HandleStateRemoved;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             this.ReactToStateCategoryExcludedVariablesChanged += HandleStateCategoryVariableChange;
@@ -53,6 +53,7 @@ namespace OfficialPlugins.StateDataPlugin
             stateErrorReporter = new StateErrorReporter();
             this.AddErrorReporter(stateErrorReporter);
         }
+
 
         private void HandleGluxUnloaded()
         {
@@ -64,9 +65,9 @@ namespace OfficialPlugins.StateDataPlugin
             GlueCommands.Self.RefreshCommands.RefreshErrorsFor(stateErrorReporter);
         }
 
-        private void HandleReactToItemSelect(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> list)
         {
-            if(GlueState.Self.CurrentTreeNode?.IsStateCategoryNode() == true)
+            if(list.Any(item => item.IsStateCategoryNode()))
             {
                 ShowCategory(GlueState.Self.CurrentStateSaveCategory);
             }
@@ -103,7 +104,21 @@ namespace OfficialPlugins.StateDataPlugin
             }
             tab.Show();
 
+            var existing = control.DataContext as StateCategoryViewModel;
+
             var viewModel = new StateCategoryViewModel(currentStateSaveCategory, GlueState.Self.CurrentElement);
+
+            if(existing != null)
+            {
+                // This code can trigger as a result of the state changing in the UI itself, so we need to make sure 
+                // we preserve variables beteween vm recreation.
+                viewModel.IsVariableManagementVisible = existing.IsVariableManagementVisible;
+                viewModel.TopSectionHeight = existing.TopSectionHeight;
+                viewModel.SelectedIndex = existing.SelectedIndex;
+                viewModel.SelectedIncludedVariable = existing.SelectedIncludedVariable;
+                viewModel.SelectedExcludedVariable = existing.SelectedExcludedVariable;
+                viewModel.SelectedState = existing.SelectedState;
+            }
 
             var variablesToConsider = GlueState.Self.CurrentElement.CustomVariables
                 .Where(item=> VariableInclusionManager.ShouldIncludeVariable(item, currentStateSaveCategory))

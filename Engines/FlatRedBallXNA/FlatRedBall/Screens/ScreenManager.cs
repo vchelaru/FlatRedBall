@@ -159,6 +159,12 @@ namespace FlatRedBall.Screens
         /// </remarks>
         public static event Action<Screen> AfterScreenDestroyed;
 
+        private static Type startScreen;
+        /// <summary>
+        /// Gets the screen type used when ScreenManager.Start was called.
+        /// </summary>
+        public static Type StartScreen => startScreen;
+
         #region Methods
 
         static ScreenManager()
@@ -222,9 +228,25 @@ namespace FlatRedBall.Screens
                 var isFullyQualified = type?.Contains(".") == true;
                 if(!isFullyQualified && !string.IsNullOrEmpty(type))
                 {
+                    var unqualifiedType = type;
                     // try to prepend the current type to make the next screen fully qualified:
                     var prepend = mCurrentScreen.GetType().Namespace;
                     type = prepend + "." + type;
+
+                    // Update October 5, 2024 - the type may not exist in this namespace because
+                    // we now support screens in folders, so the screens may have different namespaces.
+                    // Therefore we have to check the type
+                    var assembly = mCurrentScreen.GetType().Assembly;
+                    var foundType = assembly.GetType(type);
+
+                    if(foundType == null)
+                    {
+                        foundType = assembly.GetTypes().FirstOrDefault(item => item.Name == unqualifiedType);
+                        if(foundType != null)
+                        {
+                            type = foundType?.FullName;
+                        }
+                    }
                 }
 
                 Screen asyncLoadedScreen = mCurrentScreen.mNextScreenToLoadAsync;
@@ -248,6 +270,7 @@ namespace FlatRedBall.Screens
                 {
                     InputManager.Xbox360GamePads[i].Clear();
                 }
+                InputManager.Keyboard.Clear();
                 if(Input.InputManager.InputReceiver != null)
                 {
                     Input.InputManager.InputReceiver = null;
@@ -257,7 +280,13 @@ namespace FlatRedBall.Screens
                 // silent accumulation. Do we warn or just destroy?
                 Instructions.InstructionManager.Instructions.Clear();
 
-                FlatRedBallServices.singleThreadSynchronizationContext.Clear();
+
+                // Don't clear anymore, we instead cancel to get rid of any tasks that are running
+                // which use the cancellation token. All FRB calls like AnimateAsync are handled by 
+                // TimeManager.ClearTasks.
+                //FlatRedBallServices.singleThreadSynchronizationContext.Clear();
+                mCurrentScreen.CancellationTokenSource.Cancel();
+
                 TimeManager.ClearTasks();
 
                 //mCurrentScreen.Destroy();
@@ -357,7 +386,7 @@ namespace FlatRedBall.Screens
         /// <param name="screenToStartWithType">Qualified name of the class to load.</param>
         public static void Start(Type screenToStartWithType)
         {
-
+            startScreen = screenToStartWithType;
 #if WINDOWS_8 || UWP
             MainAssembly =
                 screenToStartWithType.GetTypeInfo().Assembly;
@@ -373,8 +402,6 @@ namespace FlatRedBall.Screens
             }
             else
             {
-                StateManager.Current.Initialize();
-
                 if (ShouldActivateScreen && RehydrateAction != null)
                 {
 					RehydrateAction(screenToStartWith);
@@ -525,8 +552,8 @@ namespace FlatRedBall.Screens
                 // We want to set time factor back to non-zero if in edit mode so objects can move and update
                 if (IsInEditMode || ( mCurrentScreen.ActivityCallCount == 1 && mWasFixedTimeStep.HasValue))
                 {
-                    FlatRedBallServices.Game.IsFixedTimeStep = mWasFixedTimeStep.Value;
-                    TimeManager.TimeFactor = mLastTimeFactor.Value;
+                    FlatRedBallServices.Game.IsFixedTimeStep = mWasFixedTimeStep ?? IsInEditMode;
+                    TimeManager.TimeFactor = mLastTimeFactor ?? 1;
                 }
 
                 ScreenLoaded?.Invoke(mCurrentScreen);

@@ -253,8 +253,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     var resolutionAspectRatio = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth / (decimal)FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;
                     int destinationRectangleWidth;
                     int destinationRectangleHeight;
-                    int x = 0;
-                    int y = 0;
+
                     if (Data.EffectiveAspectRatio.Value > resolutionAspectRatio)
                     {
                         destinationRectangleWidth = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth;
@@ -749,7 +748,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 var ifBlock = methodContents.If("Data.IsFullScreen");
                 {
 
-                    ifBlock.Line("#if DESKTOP_GL");
+                    ifBlock.Line("#if DESKTOP_GL && !KNI");
 
                     // We used to do this on WINDOWS too but that isn't stable so we use borderless
                     // Actually no, we should just use borderless everywhere so it works the same on all platforms:
@@ -788,7 +787,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     }
 
-                    ifBlock.Line("#elif FNA");
+                    ifBlock.Line("#elif FNA || KNI");
                     // If in fullscreen we want the widow to take up just the resolution of the screen:
                     ifBlock.Line(
                         "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(" +
@@ -824,7 +823,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     elseBlock.Line("width = System.Math.Min(width, maxWidth);");
                     elseBlock.Line("height = System.Math.Min(height, maxHeight);");
 
-                    elseBlock.Line("#if MONOGAME");
+                    elseBlock.Line("#if MONOGAME && !KNI");
                     var innerIf = elseBlock.If("FlatRedBall.FlatRedBallServices.Game.Window.Position.Y < 25");
                     innerIf.Line("FlatRedBall.FlatRedBallServices.Game.Window.Position = new Microsoft.Xna.Framework.Point(FlatRedBall.FlatRedBallServices.Game.Window.Position.X, 25);");
                     elseBlock.Line("#endif");

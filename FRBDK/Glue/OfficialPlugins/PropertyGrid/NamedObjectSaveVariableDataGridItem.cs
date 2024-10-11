@@ -237,6 +237,11 @@ namespace OfficialPlugins.PropertyGrid
 
             PushChangesToPluginManager = wasPushing;
 
+            if(variableDefinition?.SubtextFunc != null) 
+            {
+                this.DetailText = variableDefinition.SubtextFunc(Container, NamedObjectSave);
+            }
+
         }
         public object HandleCustomGet(object throwaway)
         {

@@ -1,4 +1,6 @@
-﻿using OfficialPlugins.FrbSourcePlugin.Managers;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.VSHelpers.Projects;
+using OfficialPlugins.FrbSourcePlugin.Managers;
 using OfficialPlugins.FrbSourcePlugin.ViewModels;
 using System;
 using System.Linq;
@@ -33,6 +35,19 @@ namespace OfficialPlugins.FrbSourcePlugin.Views
             category.Name = "";
 
             RemoveFromGrid(nameof(ViewModel.AlreadyLinkedMessageVisibility));
+
+            var shouldRemoveSkiaGum = GlueState.Self.CurrentMainProject is not MonoGameDesktopGlNetCoreProject;
+
+            if(!shouldRemoveSkiaGum)
+            {
+                shouldRemoveSkiaGum = GlueState.Self.SyncedProjects.Any(item => item is not MonoGameDesktopGlNetCoreProject);
+            }
+
+            if (shouldRemoveSkiaGum)
+            {
+                ViewModel.IncludeGumSkia = false;
+                RemoveFromGrid(nameof(ViewModel.IncludeGumSkia));
+            }
 
             MakeMemberFileSelectionDisplay(category.Members.First(item => item.Name == nameof(ViewModel.FrbRootFolder)));
             MakeMemberFileSelectionDisplay(category.Members.First(item => item.Name == nameof(ViewModel.GumRootFolder)));

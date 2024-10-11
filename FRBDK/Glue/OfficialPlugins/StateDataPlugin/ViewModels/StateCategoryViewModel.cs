@@ -3,7 +3,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using OfficialPluginsCore.StateDataPlugin.Managers;
+using OfficialPlugins.StateDataPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,7 +27,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         /// </summary>
         bool ignoreExcludedVariableChanges;
 
-        public IElement Element { get; private set; }
+        public GlueElement Element { get; private set; }
         StateSaveCategory category;
 
         public ObservableCollection<StateViewModel> States
@@ -86,26 +86,10 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             set { Set(value); }
         }
 
-        public Visibility VariableManagementVisibility
+        public bool IsVariableManagementVisible
         {
-            get { return Get<Visibility>(); }
-            set { Set(value); }
-        }
-
-        [DependsOn(nameof(VariableManagementVisibility))]
-        public Visibility ExpandVariableManagementButtonVisibility
-        {
-            get
-            {
-                if(VariableManagementVisibility == Visibility.Collapsed)
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
-            }
+            get => Get<bool>();
+            set => Set(value);
         }
 
         public GridLength TopSectionHeight
@@ -120,7 +104,9 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
         public StateCategoryViewModel(StateSaveCategory category, GlueElement element)
         {
-            this.VariableManagementVisibility = Visibility.Collapsed;
+            this.ignoreExcludedVariableChanges = true;
+
+            this.IsVariableManagementVisible = false;
             this.Element = element;
             this.category = category;
 
@@ -148,6 +134,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             this.Name = category.Name;
 
             this.PropertyChanged += HandlePropertyChanged;
+            this.ignoreExcludedVariableChanges = false;
         }
 
         private void RefreshExcludedAndIncludedVariables()
@@ -350,17 +337,29 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 var oldSelectedIndex = ExcludedVariables.IndexOf(SelectedExcludedVariable);
 
                 var whatToMove = SelectedExcludedVariable;
-                IncludedVariables.Add(whatToMove);
-                ExcludedVariables.Remove(whatToMove);
-                SelectedIncludedVariable = whatToMove;
 
-                if(oldSelectedIndex < ExcludedVariables.Count)
+                var canBeIncludedResponse =
+                    GlueCommands.Self.GluxCommands.ElementCommands.CanVariableBeIncludedInStates(
+                        whatToMove, Element);
+
+                if(!canBeIncludedResponse.Succeeded)
                 {
-                    SelectedExcludedVariable = ExcludedVariables[oldSelectedIndex];
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(canBeIncludedResponse.Message, "Cannot include variable");
                 }
-                else if(ExcludedVariables.Count > 0)
+                else
                 {
-                    SelectedExcludedVariable = ExcludedVariables[ExcludedVariables.Count - 1];
+                    IncludedVariables.Add(whatToMove);
+                    ExcludedVariables.Remove(whatToMove);
+                    SelectedIncludedVariable = whatToMove;
+
+                    if(oldSelectedIndex < ExcludedVariables.Count)
+                    {
+                        SelectedExcludedVariable = ExcludedVariables[oldSelectedIndex];
+                    }
+                    else if(ExcludedVariables.Count > 0)
+                    {
+                        SelectedExcludedVariable = ExcludedVariables[ExcludedVariables.Count - 1];
+                    }
                 }
             }
         }
@@ -498,35 +497,43 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             }
         }
 
-        private void HandleExcludedVariablesChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private async void HandleExcludedVariablesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            // Probably easier to just blast and refresh the list:
-            var needToAdd = this.ExcludedVariables.Except(category.ExcludedVariables).Any();
-            var needToRemove = category.ExcludedVariables.Except(this.ExcludedVariables).Any();
+            //////////////////////Early Out///////////////////////////
+            if(ignoreExcludedVariableChanges)
+            {
+                return;
+            }
+            ////////////////////End Early Out/////////////////////////
 
-            if (!ignoreExcludedVariableChanges && ( needToAdd || needToRemove))
+
+            // Probably easier to just blast and refresh the list:
+            var newlyExcludedVariables = this.ExcludedVariables.Except(category.ExcludedVariables).ToArray();
+            var newlyIncludedVariables = category.ExcludedVariables.Except(this.ExcludedVariables).ToArray();
+
+            var addedNewExclusions = newlyExcludedVariables.Length > 0;
+            var addedNewInclusions = newlyIncludedVariables.Length > 0;
+
+            if (addedNewExclusions || addedNewInclusions)
             {
                 category.ExcludedVariables.Clear();
                 category.ExcludedVariables.AddRange(this.ExcludedVariables);
+
+                foreach(var newExclusion in newlyExcludedVariables)
+                {
+                    await PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(category, newExclusion, StateCategoryVariableAction.Excluded);
+                }
+                foreach(var newInclusion in newlyIncludedVariables)
+                {
+                    await PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(category, newInclusion, StateCategoryVariableAction.Included);
+                }
+                //PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync()
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 // I guess this isn't needed because the states in the tree view didn't change
                 //GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
             }
-        }
-
-        public void ExpandVariableManagement()
-        {
-            VariableManagementVisibility = Visibility.Visible;
-            TopSectionHeight = new GridLength(100);
-        }
-
-        public void CollapseVariableManagement()
-        {
-            VariableManagementVisibility = Visibility.Collapsed;
-            TopSectionHeight = new GridLength(1);
-
         }
     }
 }

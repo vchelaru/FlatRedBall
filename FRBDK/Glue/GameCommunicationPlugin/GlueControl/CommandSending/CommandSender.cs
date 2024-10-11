@@ -106,6 +106,14 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
         string lastFinishedSend;
         private async Task<ToolsUtilities.GeneralResponse<string>> SendCommand(string text, SendImportance importance = SendImportance.Normal, bool waitForResponse = true)
         {
+            /////////////////////////////////Early Out/////////////////////////////////////
+            if(GlueState.Self.CurrentGlueProject == null)
+            {
+                return ToolsUtilities.GeneralResponse<string>.UnsuccessfulWith("No project loaded");
+            }
+            ///////////////////////////////End Early Out///////////////////////////////////
+
+
             // commands cannot be sent when receiving commands or we get a deadlock:
             var isImportant = importance != SendImportance.IfNotBusy;
             var shouldPrint = isImportant && text?.StartsWith("SelectObjectDto:") == false;

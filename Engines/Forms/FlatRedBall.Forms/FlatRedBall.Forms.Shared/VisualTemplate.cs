@@ -33,11 +33,19 @@ namespace FlatRedBall.Forms
             Initialize((throwaway) => constructor.Invoke(null) as GraphicalUiElement);
         }
 
+        /// <summary>
+        /// Creates a new VisualTemplate with a Func which creates a new GraphicalUiElement.
+        /// </summary>
+        /// <param name="creationFunc">The Func to call when CreateContent is called.</param>
         public VisualTemplate(Func<GraphicalUiElement> creationFunc)
         {
             Initialize((throwaway) => creationFunc());
         }
 
+        /// <summary>
+        /// Instantiates a new VisualTemplate with the provided creation function.
+        /// </summary>
+        /// <param name="creationFunc">The creation function which takes a ViewModel and returns a new GraphicalUiElement.</param>
         public VisualTemplate(Func<object, GraphicalUiElement> creationFunc)
         {
             Initialize(creationFunc);
@@ -49,6 +57,11 @@ namespace FlatRedBall.Forms
             this.creationFunc = creationFunc;
         }
 
+        /// <summary>
+        /// Invokes the constructor for the GraphicalUiElement type and returns the result.
+        /// </summary>
+        /// <param name="bindingContext">The binding context to pass in to the newly-created GraphicalUiElement</param>
+        /// <returns>The new GraphicalUiElement instance</returns>
         public GraphicalUiElement CreateContent(object bindingContext)
         {
             return creationFunc(bindingContext);

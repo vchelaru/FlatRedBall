@@ -191,6 +191,19 @@ namespace FlatRedBall.Forms.Controls.Primitives
                 }
             }
 
+            for(int i = 0; i < GuiManager.InputDevicesForUiControl.Count; i++)
+            {
+                var inputDevice = GuiManager.InputDevicesForUiControl[i];
+
+                HandleInputDeviceNavigation(inputDevice);
+
+                if (inputDevice.DefaultConfirmInput.WasJustPressed && IsEnabled)
+                {
+                    //this.HandlePush(null);
+                    this.HandleClick(null);
+                }
+            }
+
             FocusUpdate?.Invoke(this);
         }
 

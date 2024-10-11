@@ -1,5 +1,5 @@
 //#if DESKTOP_GL || WINDOWS
-#if WINDOWS || MONOGAME_381
+#if (WINDOWS || MONOGAME_381)
 #define USE_CUSTOM_SHADER
 #endif
 
@@ -938,7 +938,6 @@ namespace FlatRedBall.Graphics
             #endregion
 
 
-
             #region Set device settings for rendering
 
             // do nothing???
@@ -948,7 +947,6 @@ namespace FlatRedBall.Graphics
             ForceSetTextureAddressMode(Microsoft.Xna.Framework.Graphics.TextureAddressMode.Clamp);
 
             #endregion
-
 
 
 
@@ -1164,11 +1162,6 @@ namespace FlatRedBall.Graphics
 
             for (int i = 0; i < SpriteManager.Cameras.Count; i++)
             {
-                // July 25, 2014
-                // I don't think we need to do this anymore.  This is old code that
-                // doesn't really fit the pattern.  The Camera should be passed in rather
-                // than set through this function:
-                //Camera camera = SpriteManager.SetCurrentCamera(c);
                 Camera camera = SpriteManager.Cameras[i];
 
                 lock (Renderer.Graphics.GraphicsDevice)
@@ -1242,9 +1235,14 @@ namespace FlatRedBall.Graphics
                     mCurrentEffect.FogEnabled = false;
 
 
+                    // not sure why we enable vertex color, but this
+                    // causes problems on Web, so let's disable it there
+#if WEB
+                    mCurrentEffect.VertexColorEnabled = false;
 
+#else
                     mCurrentEffect.VertexColorEnabled = true;
-                    
+#endif               
 
                     break;
                 case FlatRedBall.Graphics.ColorOperation.Add:
@@ -1276,12 +1274,10 @@ namespace FlatRedBall.Graphics
                     break;
 
                 case FlatRedBall.Graphics.ColorOperation.Modulate:
+                    mCurrentEffect.TextureEnabled = true;
+                    mCurrentEffect.FogEnabled = false;
 
                     mCurrentEffect.VertexColorEnabled = true;
-
-                    mCurrentEffect.FogEnabled = false;
-                    mCurrentEffect.TextureEnabled = true;
-
                     break;
                 default:
                     throw new InvalidOperationException("The color operation " + value + " is not supported");
@@ -1311,7 +1307,7 @@ namespace FlatRedBall.Graphics
                 mCurrentEffect.CurrentTechnique = technique;
             }
 #endif
-        }
+            }
 
 
         public static BlendState AddBlendState = new BlendState()
@@ -2345,7 +2341,6 @@ namespace FlatRedBall.Graphics
             int verticesPerVertexBuffer, int vbIndex, ref int renderBreakIndex) where T : struct
             , IVertexType
         {
-
             bool startedOnNonZeroVBIndex = vbIndex != 0;
 
             if (numberOfPrimitives == 0) return;
@@ -2495,11 +2490,14 @@ namespace FlatRedBall.Graphics
 
                         if (drawToOnThisVB - extraVertices != drawnOnThisVB)
                         {
+                            var start = verticesPerPrimitive * drawnOnThisVB;
+                            var count = drawToOnThisVB - drawnOnThisVB - extraVertices;
+
                             mGraphics.GraphicsDevice.DrawUserPrimitives<T>(
                                 primitiveType,
                                 vertexList[VBOn],
-                                verticesPerPrimitive * drawnOnThisVB,
-                                drawToOnThisVB - drawnOnThisVB - extraVertices);
+                                vertexOffset: start,
+                                primitiveCount: count);
                         }
                     }
 #elif XNA4
@@ -2510,11 +2508,19 @@ namespace FlatRedBall.Graphics
 
                         if (drawToOnThisVB - extraVertices != drawnOnThisVB)
                         {
-                            mGraphics.GraphicsDevice.DrawUserPrimitives<T>(
-                                primitiveType,
-                                vertexList[VBOn],
-                                verticesPerPrimitive * drawnOnThisVB,
-                                drawToOnThisVB - drawnOnThisVB - extraVertices);
+                            try
+                            {
+                                mGraphics.GraphicsDevice.DrawUserPrimitives<T>(
+                                    primitiveType,
+                                    vertexList[VBOn],
+                                    verticesPerPrimitive * drawnOnThisVB,
+                                    drawToOnThisVB - drawnOnThisVB - extraVertices);
+
+                            }
+                            catch (Exception e)
+                            {
+                                int m = 3;
+                            }
                         }
                     }
 #endif

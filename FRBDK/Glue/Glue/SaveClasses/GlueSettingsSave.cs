@@ -12,6 +12,7 @@ using FlatRedBall.IO.Csv;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views;
 using System.Windows;
 using Newtonsoft.Json;
+using FlatRedBall.Glue.Themes;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -48,6 +49,8 @@ namespace FlatRedBall.Glue.SaveClasses
         public string FileName { get; set; }
         public bool IsFavorite { get; set; }
         public DateTime LastTimeAccessed { get; set; }
+
+        public string PlatformType { get; set; }
 
         public override string ToString() => $"{FileName} {LastTimeAccessed}";
     }
@@ -118,6 +121,8 @@ namespace FlatRedBall.Glue.SaveClasses
         public List<string> BottomTabs { get; set; } = new List<string>();
 
         public double? LeftTabWidthPixels { get; set; }
+        public double? RightTabWidthPixels { get; set; }
+        public double? BottomTabHeightPixels { get; set; }
 
         public ExternalSeparatingList<BuildToolAssociation> BuildToolAssociations = new ExternalSeparatingList<BuildToolAssociation>();
 
@@ -127,6 +132,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public bool IsBookmarksListVisible { get; set; }
         public double BookmarkRowHeight { get; set; }
+
+        public ThemeConfig ThemeConfig { get; set; } = new();
 
         /// <summary>
         /// XML cannot serialize CultureInfo because it doesn't have a parameterless constructor;

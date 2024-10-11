@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
               d:DesignWidth="400">
     <Grid>
@@ -38,12 +39,8 @@
             <Separator></Separator>
             <StackPanel Margin="8,0,0,0">
                 <StackPanel Orientation="Horizontal" Margin="3">
-                    <Button x:Name="PlayButton" Click="PlayButton_Click">
-                        <Image Source="/OfficialPluginsCore;component/Content/Icons/Unpause.png" IsHitTestVisible="False"></Image>
-                    </Button>
-                    <Button x:Name="StopButton" Click="StopButton_Click" Margin="3,0,0,0">
-                        <Image Source="/OfficialPluginsCore;component/Content/Icons/stop.png" IsHitTestVisible="False"></Image>
-                    </Button>
+                    <Button x:Name="PlayButton" Width="24" Height="24" Click="PlayButton_Click" Style="{DynamicResource ToolIcon}" Content="{materialDesign:PackIcon Play}"/>
+                    <Button x:Name="StopButton" Width="24" Height="24"  Click="StopButton_Click" Margin="3,0,0,0" Style="{DynamicResource ToolIcon}" Content="{materialDesign:PackIcon Stop}"/>
                 </StackPanel>
                 <Label Content="{Binding DurationDescription, FallbackValue=0.32 seconds}"></Label>
 

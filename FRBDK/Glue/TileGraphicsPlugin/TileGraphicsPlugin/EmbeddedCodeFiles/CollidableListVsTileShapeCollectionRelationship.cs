@@ -136,6 +136,10 @@ namespace FlatRedBall.Math.Collision
                 throw new NotImplementedException();
             }
 
+#if ShapeCollectionHasLastCollisionCallDeepCheckCount || REFERENCES_FRB_SOURCE
+            this.DeepCollisionsThisFrame += this.data.TileShapeCollection.LastCollisionCallDeepCheckCount;
+#endif
+
             return didCollide;
         }
     }

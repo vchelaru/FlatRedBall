@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="OfficialPluginsCore.Wizard.Views.ElementImportItem"
+﻿<UserControl x:Class="OfficialPlugins.Wizard.Views.ElementImportItem"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -30,8 +30,8 @@
             </TextBlock.Style>
         </TextBlock>
         <Button Grid.Column="1" Width="22" Click="Button_Click" Visibility="{Binding XButtonVisibility}">X</Button>
-        <Image Grid.Column="2" Width="20" Visibility="{Binding CheckVisibility}" Source="/OfficialPluginsCore;component/Wizard/Icons/CheckIcon.png"></Image>
-        <Image Grid.Column="2" Width="20" Visibility="{Binding ErrorVisibility}" Source="/OfficialPluginsCore;component/Wizard/Icons/Error.png"></Image>
+        <Image Grid.Column="2" Width="20" Visibility="{Binding CheckVisibility}" Source="/OfficialPlugins;component/Wizard/Icons/CheckIcon.png"></Image>
+        <Image Grid.Column="2" Width="20" Visibility="{Binding ErrorVisibility}" Source="/OfficialPlugins;component/Wizard/Icons/Error.png"></Image>
 
         <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="{Binding ErrorMessage}"></TextBlock>
 

@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
@@ -51,15 +52,19 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             FillCreateNew("Microsoft.Xna.Framework.Vector3 position", "position.X, position.Y", element, classBlock);
             FillCreateNew("float x = 0, float y = 0", "x, y", element, classBlock);
            
+            var glueElement = (GlueElement)element;
 
             CreateVariableFields(element, classBlock);
 
-            CreateFromNameMethod(element, derivedElements, classBlock);
+            CreateFromNameMethod(glueElement, derivedElements, classBlock);
 
             foreach (var derivedElement in derivedElements)
             {
                 CreateDerivedVariantClass(element, typeOrVariant, classBlock, derivedElement);
             }
+
+            // The base class itself may need a variant so the user can access variables on it:
+            CreateDerivedVariantClass(element, typeOrVariant, classBlock, element as GlueElement);
 
             classBlock.Line($"public static List<{element.ClassName}{typeOrVariant}> All = new List<{element.ClassName}{typeOrVariant}>{{");
             var innerList = classBlock.CodeBlockIndented();
@@ -76,7 +81,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             var block = classBlock.Block();
             block.Line($"Name = \"{derivedElement.ClassName}\",");
             block.Line($"Type = typeof({derivedElement.Name.Replace("/", ".").Replace("\\", ".")}),");
-            var hasFactory = derivedElement is EntitySave derivedEntity && derivedEntity.CreatedByOtherEntities;
+            var hasFactory = derivedElement is EntitySave derivedEntity && derivedEntity.CreatedByOtherEntities && derivedElement.IsAbstract == false;
             if (hasFactory)
             {
                 block.Line($"Factory = Factories.{derivedElement.ClassName}Factory.Self,");
@@ -168,7 +173,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
         }
 
 
-        private static void CreateFromNameMethod(IElement element, List<GlueElement> derivedElements, ICodeBlock classBlock)
+        private static void CreateFromNameMethod(GlueElement element, List<GlueElement> derivedElements, ICodeBlock classBlock)
         {
             var glueProject = GlueState.Self.CurrentGlueProject;
 
@@ -179,9 +184,23 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             var switchBlock = fromName.Switch("name");
             foreach (var derivedElement in derivedElements)
             {
+                // need to support both fully qualified and unqualified so let's add a line:
+                
+                var fullyQualified = $"{CodeWriter.GetGlueElementNamespace(element)}.{derivedElement.ClassName}";
+                switchBlock.Line($"case \"{fullyQualified}\":");
                 switchBlock.CaseNoBreak($"\"{derivedElement.ClassName}\"")
                     .Line($"return {derivedElement.ClassName};");
             }
+
+            // In case the user wants to access variables on the base type:
+            {
+                var fullyQualified = $"{CodeWriter.GetGlueElementNamespace(element)}.{element.ClassName}";
+                switchBlock.Line($"case \"{fullyQualified}\":");
+                switchBlock.CaseNoBreak($"\"{element.ClassName}\"")
+                    .Line($"return {element.ClassName};");
+            }
+
+
             fromName.Line("return null;");
         }
 
@@ -257,7 +276,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 
         string QualifiedTypeName(GlueElement element)
         {
-            return ProjectManager.ProjectNamespace + '.' + element.Name.Replace('\\', '.');
+            return "global::" + ProjectManager.ProjectNamespace + '.' + element.Name.Replace('\\', '.');
         }
     }
 }

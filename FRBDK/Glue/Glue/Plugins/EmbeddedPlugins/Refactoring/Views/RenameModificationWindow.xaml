@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.Refactoring.Views"
         mc:Ignorable="d"
-        Title="RenameModificationWindow" Height="450" Width="800">
+        Title="Rename Modifications" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -13,7 +13,7 @@
         </Grid.RowDefinitions>
         <TreeView x:Name="TreeViewInstance"></TreeView>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="1">
-            <Button Width="100" Click="Button_Click">OK</Button>
+            <Button Width="100" x:Name="OkButton" Click="Button_Click">OK</Button>
         </StackPanel>
     </Grid>
 </Window>

@@ -80,7 +80,6 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
             bldr.AppendLine("using GlueControl.Dtos;");
             bldr.AppendLine("using GlueControl.Models;");
             bldr.AppendLine("using System;");
-            bldr.AppendLine("using System.Collections.Generic;");
             bldr.AppendLine("using System.Text;");
             bldr.AppendLine("using System.Threading.Tasks;");
             bldr.AppendLine("using Newtonsoft.Json.Linq;");

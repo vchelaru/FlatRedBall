@@ -1,118 +1,30 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{8600173A-6281-45E1-8076-54366E42CBDE}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TMXGlueLib</RootNamespace>
-    <AssemblyName>TMXGlueLib</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SUPPORTS_ZLIB</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;SUPPORTS_ZLIB</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SUPPORTS_ZLIB</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;SUPPORTS_ZLIB</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="MonoGame.Framework, Version=3.8.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\FRBDK\Glue\packages\MonoGame.Framework.DesktopGL.Core.3.8.0.1\lib\net452\MonoGame.Framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml" />
+    <Compile Remove="Reduced\**" />
+    <EmbeddedResource Remove="Reduced\**" />
+    <None Remove="Reduced\**" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="AbstractMapLayer.cs" />
-    <Compile Include="DataTypes\NamedValue.cs" />
-    <Compile Include="DataTypes\ReducedTileMapInfo.cs" />
-    <Compile Include="DataTypes\ReducedTileMapInfo.TiledMapSave.cs" />
-    <Compile Include="DotNetZip\Zlib\Crc32.cs" />
-    <Compile Include="DotNetZip\Zlib\Deflate.cs" />
-    <Compile Include="DotNetZip\Zlib\GZipStream.cs" />
-    <Compile Include="DotNetZip\Zlib\Inflate.cs" />
-    <Compile Include="DotNetZip\Zlib\InfTree.cs" />
-    <Compile Include="DotNetZip\Zlib\Tree.cs" />
-    <Compile Include="DotNetZip\Zlib\Zlib.cs" />
-    <Compile Include="DotNetZip\Zlib\ZlibBaseStream.cs" />
-    <Compile Include="DotNetZip\Zlib\ZlibCodec.cs" />
-    <Compile Include="DotNetZip\Zlib\ZlibConstants.cs" />
-    <Compile Include="DotNetZip\Zlib\ZlibStream.cs" />
-    <Compile Include="ExternalTileset.cs" />
-    <Compile Include="ImageHeader.cs" />
-    <Compile Include="MapLayer.cs" />
-    <Compile Include="MapTileset.cs" />
-    <Compile Include="MapTilesetTile.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TileAnimation.cs" />
-    <Compile Include="TileAnimationFrame.cs" />
-    <Compile Include="TiledMapSave.Serialization.cs" />
-    <Compile Include="TiledMapSave.Conversion.cs" />
-    <Compile Include="TiledMapSaveToolsUtilities.cs" />
-    <Compile Include="TiledMapToShapeCollectionConverter.cs" />
-    <Compile Include="TilesetExtensionMethods.cs" />
+    <Compile Remove="AnimationChainContainer.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj">
-      <Project>{26dd17aa-55ae-46ab-9394-a2319728869a}</Project>
-      <Name>FlatRedBallStandard</Name>
-    </ProjectReference>
+    <None Remove="packages.config" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="packages.config" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 
 	<PropertyGroup>
@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>Npc</RootNamespace>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

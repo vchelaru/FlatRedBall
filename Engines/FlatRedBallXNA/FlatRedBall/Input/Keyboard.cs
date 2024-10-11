@@ -9,6 +9,10 @@ using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBall.Input
 {
+    /// <summary>
+    /// Class which stores and reports the state of the keyboard. This is typically accessed through
+    /// InputManager.Keyboard, and is automatically updated by the FlatRedBall engine.
+    /// </summary>
     public partial class Keyboard : IInputReceiverKeyboard, IInputDevice
     {
         #region Enums
@@ -35,6 +39,8 @@ namespace FlatRedBall.Input
         char[] mKeyToChar;
 
         bool[] mKeysIgnoredForThisFrame;
+
+        bool wasJustCleared = false;
 
         Dictionary<Keys, KeyReference> cachedKeys = new Dictionary<Keys, KeyReference>();
 
@@ -68,23 +74,18 @@ namespace FlatRedBall.Input
             }
         }
 
+        /// <summary>
+        /// The main keyboard for the game.
+        /// </summary>
+        public static Keyboard Main => InputManager.Keyboard;
 
         #endregion
 
         #region Methods
 
         #region Constructor
-#if FRB_MDX
-        internal Keyboard(System.Windows.Forms.Control owner)
-#else
         internal Keyboard()
-#endif
         {
-
-#if SILVERLIGHT
-            Microsoft.Xna.Framework.Input.Keyboard.CreatesNewState = false;
-#endif
-
             mKeysTyped = new bool[NumberOfKeys];
             mLastTimeKeyTyped = new double[NumberOfKeys];
             mLastTypedFromPush = new bool[NumberOfKeys];
@@ -98,57 +99,37 @@ namespace FlatRedBall.Input
                 mKeysTyped[i] = false;
                 mLastTypedFromPush[i] = false;
 
-//                textCodes[i] = (char)0;
             }
 
-#if FRB_MDX
-			// Create a new Device with the keyboard guid
-			mKeyboardDevice = new Device(SystemGuid.Keyboard);
+            DefaultUpPressable = GetKey(Keys.W);
+            DefaultDownPressable = GetKey(Keys.S);
+            DefaultLeftPressable = GetKey(Keys.A);
+            DefaultRightPressable = GetKey(Keys.D);
 
-			// Set data format to keyboard data
-            mKeyboardDevice.SetDataFormat(DeviceDataFormat.Keyboard);
-
-			// Set the cooperative level to foreground non-exclusive
-			// and deactivate windows key
-            mKeyboardDevice.SetCooperativeLevel(owner, CooperativeLevelFlags.NonExclusive | 
-				CooperativeLevelFlags.Foreground | CooperativeLevelFlags.NoWindowsKey);
-
-			// Try to access keyboard
-
-            try
-            {
-                mKeyboardDevice.Acquire();
-            }
-            catch (InputLostException)
-            {
-                int m = 3;
-            }
-            catch (OtherApplicationHasPriorityException)
-            {
-                int m = 3;
-            }
-
-            // i don't know why this doesn't work, but input still works without it.
-
-            mKeyboardDevice.Properties.BufferSize = 5;
-
-
-#endif
-
+            Default2DInput = Get2DInput(Keys.A, Keys.D, Keys.W, Keys.S);
         }
 
         #endregion
 
         #region Public Methods
 
+        /// <summary>
+        /// Loops through all keys and checks if any have been pushed this frame.
+        /// </summary>
+        /// <returns>Whether any key has been pushed this frame.</returns>
         public bool AnyKeyPushed()
         {
             return keyboardStateProcessor.AnyKeyPushed();
         }
 
+        /// <summary>
+        /// Clears the keyboard state and stores a flag to match the previous frame to next frame as to prevent
+        /// pushes from being triggered immediately on the next frame.
+        /// </summary>
         public void Clear()
         {
             keyboardStateProcessor.Clear();
+            wasJustCleared = true;
         }
 
 
@@ -284,34 +265,6 @@ namespace FlatRedBall.Input
                     returnString += KeyToStringAtCurrentState(i);
                 }
             }
-
-            #region Add Text if the user presses CTRL+V
-            if (
-                isCtrlPressed
-                && InputManager.Keyboard.KeyPushed(Keys.V)
-                )
-            {
-
-#if !MONOGAME && !FNA
-                bool isSTAThreadUsed =
-                    System.Threading.Thread.CurrentThread.GetApartmentState() == System.Threading.ApartmentState.STA;
-
-#if DEBUG
-                if (!isSTAThreadUsed)
-                {
-                    throw new InvalidOperationException("Need to set [STAThread] on Main to support copy/paste");
-                }
-#endif
-
-                if (isSTAThreadUsed && System.Windows.Forms.Clipboard.ContainsText())
-                {
-                    returnString += System.Windows.Forms.Clipboard.GetText();
-
-                }
-#endif
-
-            }
-            #endregion
 
             return returnString;
 #endif
@@ -470,11 +423,18 @@ namespace FlatRedBall.Input
         }
 
         /// <summary>
-        /// Returns an I2DInput using WASD keys.
+        /// Returns an I2DInput using WASD keys, typical for QWERTY keyboard layouts.
         /// </summary>
         /// <returns>An input using WASD as an I2DInput object.</returns>
         public I2DInput GetWasdInput() =>
             Get2DInput(Keys.A, Keys.D, Keys.W, Keys.S);
+
+        /// <summary>
+        /// Returns an I2DInput using ZQSD keys, typical for AZERTY keyboard layouts.
+        /// </summary>
+        /// <returns>An input using ZQSD as an I2DInput object.</returns>
+        public I2DInput GetZqsdInput() =>
+            Get2DInput(Keys.Q, Keys.D, Keys.Z, Keys.S);
 
         #endregion
 
@@ -486,7 +446,16 @@ namespace FlatRedBall.Input
 			ProcessAndroidKeys();
 #endif
 
-            keyboardStateProcessor.Update();
+            if(wasJustCleared)
+            {
+                wasJustCleared = false;
+                keyboardStateProcessor.Update(useCurrentKeyboardStateAsLast:true);
+            }
+            else
+            {
+                keyboardStateProcessor.Update();
+            }
+
 
             for (int i = 0; i < NumberOfKeys; i++)
             {
@@ -626,13 +595,6 @@ namespace FlatRedBall.Input
         {
             bool isShiftDown = KeyDown(Keys.LeftShift) || KeyDown(Keys.RightShift);
 
-#if !MONOGAME && !FNA
-            if (System.Windows.Forms.Control.IsKeyLocked(System.Windows.Forms.Keys.CapsLock))
-            {
-                isShiftDown = !isShiftDown;
-            }
-#endif
-
             #region If Shift is down, return a different key
             if (isShiftDown && IsKeyLetter((Keys)key))
             {
@@ -691,18 +653,13 @@ namespace FlatRedBall.Input
 
         #region IInputDevice Explicit Implementation
 
-        I2DInput IInputDevice.Default2DInput
-        {
-            get
-            {
-                return this.Get2DInput(Keys.A, Keys.D, Keys.W, Keys.S);
-            }
-        }
+        public I2DInput Default2DInput { get; set; }
+        
 
-        IRepeatPressableInput IInputDevice.DefaultUpPressable => GetKey(Keys.W);
-        IRepeatPressableInput IInputDevice.DefaultDownPressable => GetKey(Keys.S);
-        IRepeatPressableInput IInputDevice.DefaultLeftPressable => GetKey(Keys.A);
-        IRepeatPressableInput IInputDevice.DefaultRightPressable => GetKey(Keys.D); 
+        public IRepeatPressableInput DefaultUpPressable { get; set; }
+        public IRepeatPressableInput DefaultDownPressable { get; set; }
+        public IRepeatPressableInput DefaultLeftPressable { get; set; }
+        public IRepeatPressableInput DefaultRightPressable { get; set; }
 
         I1DInput IInputDevice.DefaultHorizontalInput => Get1DInput(Keys.A, Keys.D);
 

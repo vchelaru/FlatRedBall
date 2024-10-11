@@ -32,9 +32,14 @@ public class BehaviorCodeGenerator : Singleton<BehaviorCodeGenerator>
 
     public string GetStrippedBehavorName(BehaviorSave behavior) => $"I{behavior.Name}";
 
-    public string GetFullyQualifiedBehaviorName(BehaviorSave behavior)
+    public string GetFullyQualifiedBehaviorName(BehaviorSave behavior, bool prefixGlobal = true)
     {
-        return GueDerivingClassCodeGenerator.GueRuntimeNamespace + "." + GetStrippedBehavorName(behavior);
+        var toReturn = GueDerivingClassCodeGenerator.GueRuntimeNamespace + "." + GetStrippedBehavorName(behavior);
+        if(prefixGlobal)
+        {
+            toReturn = "global::" + toReturn;
+        }
+        return toReturn;
     }
 
     private void GenerateInterface(ICodeBlock codeBlock, BehaviorSave behavior)
@@ -73,36 +78,37 @@ public class BehaviorCodeGenerator : Singleton<BehaviorCodeGenerator>
 
                     var propertyBlock = codeBlock.Property(behaviorPropertyType, propertyName);
                     var setter = propertyBlock.Set();
-                    var switchBlock = setter.Switch("value");
-
-                    var matchingElementCategory = elementSave.Categories.FirstOrDefault(item => item.Name ==  behaviorCategory.Name);
-
-                    foreach(var state in behaviorCategory.States)
+                    if(behaviorCategory.States.Count > 0)
                     {
-                        var caseBlock = switchBlock.Case($"{behaviorPropertyType}.{state.Name}");
+                        var switchBlock = setter.Switch("value");
 
-                        var matchingElementState = matchingElementCategory?.States.FirstOrDefault(item => item.Name ==  state.Name);
-                        if(matchingElementState == null)
+                        var matchingElementCategory = elementSave.Categories.FirstOrDefault(item => item.Name ==  behaviorCategory.Name);
+
+                        foreach(var state in behaviorCategory.States)
                         {
-                            if(matchingElementCategory == null)
+                            var caseBlock = switchBlock.Case($"{behaviorPropertyType}.{state.Name}");
+
+                            var matchingElementState = matchingElementCategory?.States.FirstOrDefault(item => item.Name ==  state.Name);
+                            if(matchingElementState == null)
                             {
-                                caseBlock.Line($"//Cannot assign this state because this element is missing the category {behaviorCategory.Name}");
+                                if(matchingElementCategory == null)
+                                {
+                                    caseBlock.Line($"//Cannot assign this state because this element is missing the category {behaviorCategory.Name}");
+
+                                }
+                                else // has the category, but not the state....
+                                {
+                                    caseBlock.Line($"//Cannot assign this state because this element is missing the state {state.Name}");
+                                }
+                                caseBlock.Line($"//this.Current{behaviorCategory.Name}State = {behaviorCategory.Name}.{state.Name};");
 
                             }
-                            else // has the category, but not the state....
+                            else
                             {
-                                caseBlock.Line($"//Cannot assign this state because this element is missing the state {state.Name}");
+                                caseBlock.Line($"this.Current{behaviorCategory.Name}State = {behaviorCategory.Name}.{state.Name};");
                             }
-                            caseBlock.Line($"//this.Current{behaviorCategory.Name}State = {behaviorCategory.Name}.{state.Name};");
-
-                        }
-                        else
-                        {
-                            caseBlock.Line($"this.Current{behaviorCategory.Name}State = {behaviorCategory.Name}.{state.Name};");
                         }
                     }
-
-
                 }
             }
         }

@@ -245,7 +245,7 @@ public class ObjectFinder : IObjectFinder
             {
                 EntitySave entitySave = GlueProject.Entities[i];
 
-                if (FileManager.RemovePath(entitySave.Name) == entityName && entitySave != toIgnore)
+                if (entitySave != toIgnore && FileManager.RemovePath(entitySave.Name) == entityName)
                 {
                     return entitySave;
                 }
@@ -293,7 +293,7 @@ public class ObjectFinder : IObjectFinder
         return null;
     }
 
-    public ScreenSave GetScreenSaveUnqualified(string screenName)
+    public ScreenSave GetScreenSaveUnqualified(string screenName, ScreenSave screenToIgnore = null)
     {
         if (GlueProject != null)
         {
@@ -301,7 +301,7 @@ public class ObjectFinder : IObjectFinder
             {
                 ScreenSave screenSave = GlueProject.Screens[i];
 
-                if (FileManager.RemovePath(screenSave.Name) == screenName)
+                if (screenToIgnore != screenSave && FileManager.RemovePath(screenSave.Name) == screenName)
                 {
                     return screenSave;
                 }
@@ -871,6 +871,12 @@ public class ObjectFinder : IObjectFinder
     }
 
 
+    /// <summary>
+    /// Returns all NamedObjectSaves which have any reference to the argument entity. This includes references such as
+    /// variant variables.
+    /// </summary>
+    /// <param name="entity">The entity to find the references for</param>
+    /// <returns>The NamedObjects that reference the entity.</returns>
     public List<NamedObjectSave> GetAllNamedObjectsThatUseEntity(EntitySave entity)
     {
         return GetAllNamedObjectsThatUseEntity(entity.Name);
@@ -922,7 +928,11 @@ public class ObjectFinder : IObjectFinder
                     // have been renamed, so we just have to trust that the value matches...
                     var startsWithScreensOrEntities =
                         variable.Type.StartsWith("Screens.") || variable.Type.StartsWith("Entities.");
-                    var endsWithType = variable.Type.EndsWith("Type");
+                    var endsWithType = 
+                        // old style:
+                        variable.Type.EndsWith("Type") || 
+                        // new style:
+                        variable.Type.EndsWith("Variant");
                     if (startsWithScreensOrEntities && endsWithType && (variable.Value as string) == entityType)
                     {
                         namedObjects.Add(nos);
@@ -972,7 +982,17 @@ public class ObjectFinder : IObjectFinder
                     listToAddTo.Add(nos);
                 }
             }
-
+            else
+            {
+                foreach(var variable in nos.InstructionSaves)
+                {
+                    if(variable.Type?.StartsWith("Entities.") == true && variable.Value is string asString && asString == name)
+                    {
+                        listToAddTo.Add(nos);
+                        break;
+                    }
+                }
+            }
             GetAllNamedObjectsThatUseElement(nos.ContainedObjects, listToAddTo, name, sourceType, parentGlueElement);
         }
 

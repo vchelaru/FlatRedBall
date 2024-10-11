@@ -6,8 +6,10 @@ using RenderingLibrary;
 using SkiaGum.GueDeriving;
 using SkiaGum.Wpf;
 using SkiaSharp;
+using SkiaSharp.Views.Desktop;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,11 +36,18 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
         SolidRectangleRuntime GumBackground { get; set; }
 
         CameraLogic CameraLogic;
+
+        SettingsViewModel settingsViewModel;
+
         #endregion
 
 
-        public TopWindowManager(GumSKElement topGumCanvas, UserControl userControl, CameraLogic cameraLogic, ZoomViewModel wholeZoom)
+        public TopWindowManager(GumSKElement topGumCanvas, UserControl userControl, 
+            CameraLogic cameraLogic, ZoomViewModel wholeZoom, SettingsViewModel settingsViewModel)
         {
+
+            this.settingsViewModel = settingsViewModel;
+            this.settingsViewModel.PropertyChanged += HandleSettingsViewModelPropertyChanged;
 
             TopGumCanvas = topGumCanvas;
             this.CameraLogic = cameraLogic;
@@ -51,6 +60,25 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
             cameraLogic.Initialize(userControl, wholeZoom, this.TopGumCanvas, this.GumBackground);
             TopGumCanvas.SystemManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
+
+            // Refresh after creating the sprite
+            RefreshBackgroundColor();
+        }
+
+        private void HandleSettingsViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(SettingsViewModel.BackgroundColor):
+                    RefreshBackgroundColor();
+                    break;
+            }
+        }
+
+        private void RefreshBackgroundColor()
+        {
+            GumBackground.Color = settingsViewModel.BackgroundColor.ToSKColor();
+            TopGumCanvas.InvalidateSurface();
         }
 
         private void CreateMainSprite()
@@ -66,7 +94,6 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
         void CreateBackground()
         {
             GumBackground = new SolidRectangleRuntime();
-            GumBackground.Color = new SKColor(68, 34, 136);
             GumBackground.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
             GumBackground.Width = 100;
             GumBackground.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;

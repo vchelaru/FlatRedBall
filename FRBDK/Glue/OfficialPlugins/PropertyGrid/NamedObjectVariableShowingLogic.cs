@@ -78,7 +78,7 @@ namespace OfficialPlugins.VariableDisplay
             // on the instance, and the VariableDefinition is the root variable definition.
             // Note that the variable name will often match the VariableDefinition name, but not necessarily,
             // if the NamedObjectSave has tunneled the variable.
-            Dictionary<string, VariableDefinition> variableDefinitions = GetVariableDefinitions(instance, ati);
+            Dictionary<string, VariableDefinition> variableDefinitions = GetVariableDefinitions(instance, ati, container);
 
             foreach (var kvp in variableDefinitions)
             {
@@ -113,16 +113,26 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static Dictionary<string, VariableDefinition> GetVariableDefinitions(NamedObjectSave instance, AssetTypeInfo ati)
+        private static Dictionary<string, VariableDefinition> GetVariableDefinitions(NamedObjectSave instance, AssetTypeInfo ati, GlueElement container)
         {
             Dictionary<string, VariableDefinition> variableDefinitions = new Dictionary<string, VariableDefinition>();
 
             if (ati?.VariableDefinitions.Count > 0)
             {
+
                 foreach (var definition in ati.VariableDefinitions)
                 {
-                    variableDefinitions[definition.Name] = definition;
+                    var shouldAdd = true;
 
+                    if(definition.IsVariableVisibleInEditor != null)
+                    {
+                        shouldAdd = definition.IsVariableVisibleInEditor(container, instance);
+                    }
+
+                    if(shouldAdd)
+                    {
+                        variableDefinitions[definition.Name] = definition;
+                    }
                 }
             }
             else if(instance.SourceType == SourceType.Entity)
@@ -211,7 +221,7 @@ namespace OfficialPlugins.VariableDisplay
 
 
             List<MemberCategory> categories = new List<MemberCategory>();
-            var defaultCategory = new MemberCategory(Localization.Texts.Variables);
+            var defaultCategory = new MemberCategory("Variables");
             defaultCategory.FontSize = 14;
             categories.Add(defaultCategory);
 
@@ -266,7 +276,7 @@ namespace OfficialPlugins.VariableDisplay
             else
             {
                 var ati = instance.GetAssetTypeInfo();
-                Dictionary<string, VariableDefinition> variableDefinitions = GetVariableDefinitions(instance, ati);
+                Dictionary<string, VariableDefinition> variableDefinitions = GetVariableDefinitions(instance, ati, container);
 
                 for (int i = 0; i < grid.Categories.Count; i++)
                 {
@@ -297,6 +307,72 @@ namespace OfficialPlugins.VariableDisplay
                 }
 
                 grid.Refresh();
+            }
+        }
+
+        public static void UpdateConditionalVisibility(DataUiGrid grid, NamedObjectSave instance, GlueElement container, AssetTypeInfo ati)
+        {
+            var needsFullRefresh = false;
+            foreach(var category in grid.Categories)
+            {
+                foreach(var member in category.Members)
+                {
+                    if(member is NamedObjectSaveVariableDataGridItem namedObjectSaveVariableDataGridItem)
+                    {
+                        if(namedObjectSaveVariableDataGridItem.VariableDefinition.IsVariableVisibleInEditor != null)
+                        {
+                            // Is it true?
+                            var shouldBeVisible = namedObjectSaveVariableDataGridItem.VariableDefinition.IsVariableVisibleInEditor(container, instance);
+                            if(!shouldBeVisible)
+                            {
+                                // this shouldn't be here, we need a refresh
+                                needsFullRefresh = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(!needsFullRefresh && ati != null)
+            {
+                foreach(var variableDefinition in ati.VariableDefinitions)
+                {
+                    if(variableDefinition.IsVariableVisibleInEditor != null)
+                    {
+                        var shouldBeShown = variableDefinition.IsVariableVisibleInEditor(container, instance);
+                        if(shouldBeShown)
+                        {
+                            var wasFound = false;
+                            // This better be in one of the categories
+                            foreach(var category in grid.Categories)
+                            {
+                                foreach(var member in category.Members)
+                                {
+                                    if(member is NamedObjectSaveVariableDataGridItem namedObjectSaveVariableDataGridItem)
+                                    {
+                                        if(namedObjectSaveVariableDataGridItem.VariableDefinition.Name == variableDefinition.Name)
+                                        {
+                                            // This is good, we found it
+                                            wasFound = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if(!wasFound)
+                            {
+                                needsFullRefresh = true;
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            if(needsFullRefresh)
+            {
+                UpdateShownVariables(grid, instance, container, ati);
             }
         }
 
@@ -747,13 +823,13 @@ namespace OfficialPlugins.VariableDisplay
 
                 }
 
-                if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Math.Geometry.AxisAlignedRectangle")
+                if (ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle)
                 {
                     return name == "ScaleX" || name == "ScaleY" || name == "Top" || name == "Bottom" ||
                         name == "Left" || name == "Right";
                 }
 
-                if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Graphics.Text")
+                if (ati == AvailableAssetTypes.CommonAtis.Text)
                 {
                     return
                         name == "AlphaRate" || name == "RedRate" || name == "GreenRate" || name == "BlueRate" ||
@@ -761,32 +837,33 @@ namespace OfficialPlugins.VariableDisplay
                         name == "ScaleXVelocity" || name == "ScaleYVelocity" ||
                         // These used to be the standard way to size text, but now we just
                         // use "TextureScale"
+                        // Note that these can still be exposed - see the Text 
                         name == "Scale" || name == "Spacing" || name == "NewLineDistance"
 
                         ;
                 }
 
-                if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Camera")
+                if (ati == AvailableAssetTypes.CommonAtis.Camera)
                 {
                     return
                         name == "AspectRatio" || name == "DestinationRectangle" || name == "CameraModelCullMode";
 
                 }
 
-                if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Math.Geometry.Polygon")
+                if (ati == AvailableAssetTypes.CommonAtis.Polygon)
                 {
                     return
                         name == "RotationX" || name == "RotationY" || name == "Points";
                 }
 
 
-                if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Graphics.Layer")
+                if (ati == AvailableAssetTypes.CommonAtis.Layer)
                 {
                     return
                         name == "LayerCameraSettings";
                 }
 
-                if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Sprite")
+                if (ati == AvailableAssetTypes.CommonAtis.Sprite)
                 {
                     return
                         name == "AlphaRate" || name == "RedRate" || name == "GreenRate" || name == "BlueRate" ||

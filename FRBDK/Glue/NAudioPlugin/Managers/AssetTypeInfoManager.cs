@@ -73,10 +73,28 @@ namespace NAudioPlugin.Managers
             return ati;
         }
 
+        static bool HasISong => GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ISongInFrb ||
+            GlueState.Self.IsReferencingFrbSource;
+
         private static string HandleSongAddToManagers(IElement element, NamedObjectSave namedObjectSave, ReferencedFileSave rfs, string layer)
         {
             var supportsEditMode = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
-            string addToManagersMethod = $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(\"{rfs.GetInstanceName()}\"); ";
+            string addToManagersMethod = string.Empty;
+
+            addToManagersMethod += "{";
+
+            if(HasISong)
+            {
+                addToManagersMethod += $"var restartSong = " +
+                    $"(FlatRedBall.Audio.AudioManager.CurrentlyPlayingSong == null && FlatRedBall.Audio.AudioManager.CurrentlyPlayingISong == null) || " +
+                    $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers({rfs.GetInstanceName()}.Name); ";
+            }
+            else
+            {
+                addToManagersMethod += $"var restartSong = FlatRedBall.Audio.AudioManager.CurrentlyPlayingSong == null || FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(\"{rfs.GetInstanceName()}\"); ";
+            }
+
+            
             if (supportsEditMode)
             {
                 addToManagersMethod +=
@@ -90,7 +108,9 @@ namespace NAudioPlugin.Managers
                 forceGlobal ? "true" : "ContentManagerName == \"Global\"";
 
             addToManagersMethod +=
-                    $"FlatRedBall.Audio.AudioManager.PlaySong({rfs.GetInstanceName()}, false, {isGlobal});";
+                    $"FlatRedBall.Audio.AudioManager.PlaySong({rfs.GetInstanceName()}, restartSong, {isGlobal});";
+
+            addToManagersMethod += "}";
 
             return addToManagersMethod;
         }

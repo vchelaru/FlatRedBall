@@ -12,6 +12,7 @@ using FlatRedBall.Gui;
 using Microsoft.Xna.Framework.Input;
 using FlatRedBall.Input;
 using FlatRedBall.Math.Geometry;
+using System.Data;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -54,7 +55,39 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        bool canListItemsLoseFocus = true;
+        /// <summary>
+        /// Whether pressing the B button (back/cancel) should result in individual items losing focus and
+        /// returning focus to the top level. This should be false if the list box is the only object in the 
+        /// screen which can receive focus.
+        /// </summary>
+        public bool CanListItemsLoseFocus 
+        {
+            get => canListItemsLoseFocus;
+            set
+            {
+                canListItemsLoseFocus = value;
+                if(!canListItemsLoseFocus && IsFocused)
+                {
+                    DoListItemsHaveFocus = true;
+                }
+            }
+        } 
+
         int selectedIndex = -1;
+
+        public override bool IsFocused 
+        { 
+            get => base.IsFocused;
+            set
+            {
+                base.IsFocused = value;
+                if(IsFocused && canListItemsLoseFocus == false)
+                {
+                    DoListItemsHaveFocus = true;
+                }
+            }
+        }
 
         public Type ListBoxItemGumType
         {
@@ -168,8 +201,13 @@ namespace FlatRedBall.Forms.Controls
         public event FocusUpdateDelegate FocusUpdate;
 
         /// <summary>
-        /// Event raised when the user presses a button at the top-level (if the list box has focus, but the individual items do not)
+        /// Event raised when the user presses a button, whether at the top level or internally on
+        /// an item.
         /// </summary>
+        /// <remarks>
+        /// Until July 2024 this was only firing at the top level. July 2024 version also raises
+        /// this event when a button is pushed on an item.
+        /// </remarks>
         public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
         public event Action<int> GenericGamepadButtonPushed;
 
@@ -305,6 +343,10 @@ namespace FlatRedBall.Forms.Controls
             {
                 Visual.SetProperty(category, "Enabled");
             }
+
+            // The default state may update the visibility of the scroll bar. Whenever setting the state
+            // we should forcefully apply the list box visibility:
+            base.UpdateVerticalScrollBarValues();
         }
 
         #region IInputReceiver Methods
@@ -363,6 +405,26 @@ namespace FlatRedBall.Forms.Controls
                     gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.B);
 
                 DoListItemFocusUpdate(direction, pressedButton);
+
+                void RaiseIfPushedAndEnabled(FlatRedBall.Input.Xbox360GamePad.Button button)
+                {
+                    if (IsEnabled && gamepad.ButtonPushed(button))
+                    {
+                        ControllerButtonPushed?.Invoke(button);
+                    }
+                }
+
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.A);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.B);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.X);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Y);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Start);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Back);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.DPadLeft);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.DPadRight);
+
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.LeftStickAsDPadLeft);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.LeftStickAsDPadRight);
             }
 
             var genericGamePads = GuiManager.GenericGamePadsForUiControl;
@@ -445,8 +507,15 @@ namespace FlatRedBall.Forms.Controls
         {
             var wraps = InnerPanel.WrapsChildren;
             var handledByWrapping = false;
+
+            if(direction != null)
+            {
+                LoseHighlight();
+            }
+
             if(wraps && direction != null)
             {
+
                 if(SelectedIndex > -1 && SelectedIndex < ListBoxItems.Count)
                 {
                     var currentSelection = this.ListBoxItemsInternal[SelectedIndex].Visual;
@@ -535,7 +604,19 @@ namespace FlatRedBall.Forms.Controls
 
             if (pressedButton)
             {
-                DoListItemsHaveFocus = false;
+                if(CanListItemsLoseFocus)
+                {
+                    DoListItemsHaveFocus = false;
+                }
+            }
+        }
+
+        private void LoseHighlight()
+        {
+            for(int i = 0; i < this.ListBoxItems.Count; i++)
+            {
+                var item = this.ListBoxItems[i];
+                item.IsHighlighted = false;
             }
         }
 
@@ -605,6 +686,9 @@ namespace FlatRedBall.Forms.Controls
         {
         }
 
+        /// <summary>
+        /// Removes focus from the ListBox, both at the top level and at the individual item level, even if CanListItemsLoseFocus is set to false.
+        /// </summary>
         public void LoseFocus()
         {
             IsFocused = false;

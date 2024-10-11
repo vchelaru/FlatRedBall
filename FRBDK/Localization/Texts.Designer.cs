@@ -448,7 +448,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Auto Take Snapshot.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string AutoTakeSnapshot {
             get {
@@ -529,7 +529,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Browse....
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string Browse {
             get {
@@ -1096,7 +1096,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Copyright.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string Copyright {
             get {
@@ -1267,6 +1267,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string DamageInGeneratedCode {
+            get {
+                return ResourceManager.GetString("DamageInGeneratedCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default Air Control.
         /// </summary>
         public static string DefaultAirControl {
@@ -1402,7 +1411,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download File.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string DownloadFile {
             get {
@@ -1699,7 +1708,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter URL Name:.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string EnterUrlName {
             get {
@@ -1753,16 +1762,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add Entity.
-        /// </summary>
-        public static string EntityAdd {
-            get {
-                return ResourceManager.GetString("EntityAdd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Add Derived Entity.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string EntityAddDerived {
             get {
@@ -1789,7 +1789,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Base Entity:.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string EntityBase {
             get {
@@ -2077,7 +2077,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find file association for Gum files and could not find Gum relative to the FlatRedBall Editor. Associations need to be set before attempting to rebuild font files.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string ErrorGumFileAssociationNotFound {
             get {
@@ -2307,6 +2307,15 @@ namespace Localization {
         public static string FailedFindWindowHandle {
             get {
                 return ResourceManager.GetString("FailedFindWindowHandle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string FailedToSetGameEditModeToX {
+            get {
+                return ResourceManager.GetString("FailedToSetGameEditModeToX", resourceCulture);
             }
         }
         
@@ -2599,7 +2608,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Find all references to this.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string FindAllReferences {
             get {
@@ -2806,7 +2815,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FlatRedBall Glue Version.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string FrbGlueVersion {
             get {
@@ -2910,6 +2919,15 @@ namespace Localization {
         public static string FromTmxCollision {
             get {
                 return ResourceManager.GetString("FromTmxCollision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string Fullscreen {
+            get {
+                return ResourceManager.GetString("Fullscreen", resourceCulture);
             }
         }
         
@@ -3058,7 +3076,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GlobalContent Membership.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string GlobalContentMembership {
             get {
@@ -3094,11 +3112,20 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Glue Project Version.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string GlueProjectVersion {
             get {
                 return ResourceManager.GetString("GlueProjectVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string GlueWillDownloadFileAndDependencies {
+            get {
+                return ResourceManager.GetString("GlueWillDownloadFileAndDependencies", resourceCulture);
             }
         }
         
@@ -3554,7 +3581,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The list above shows all files in the game&apos;s content folder. &lt;LineBreak&gt;&lt;/LineBreak&gt;To add files from outside of the content folder, click the Browse button. Files from outside of the content folder will be copied to the content folder..
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string HintExistingFileList {
             get {
@@ -3734,7 +3761,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Moves the selected point down in the list..
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string HintMovePointDownList {
             get {
@@ -3743,7 +3770,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Moves the selected point up in the list..
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string HintMovePointUpList {
             get {
@@ -3770,7 +3797,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This value may not be applied since this object has IsContainer set to true.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string HintObjectIsContainerNotApply {
             get {
@@ -3842,7 +3869,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Resize the polygon by moving the contained points..
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string HintResizePolygon {
             get {
@@ -4328,7 +4355,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Latest Version.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string LatestVersion {
             get {
@@ -4454,7 +4481,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Link to Source.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string LinkToSource {
             get {
@@ -4589,7 +4616,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Local Files.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string LocalFiles {
             get {
@@ -5192,6 +5219,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string ObjectNoPartitioning {
+            get {
+                return ResourceManager.GetString("ObjectNoPartitioning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is an object named {0} in the base Element but it is not Set By Derived..
         /// </summary>
         public static string ObjectNotSetInDerived {
@@ -5633,7 +5669,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adds or replaces all points on the polygon to create a multi-sided polygon..
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string PolygonToMultiSided {
             get {
@@ -5642,7 +5678,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adds or replaces all points on the polygon to create a rectangle..
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string PolygonToRectangle {
             get {
@@ -5660,7 +5696,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Preferences.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string Preferences {
             get {
@@ -5930,7 +5966,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New Synced Project.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string ProjectNewSynced {
             get {
@@ -6047,7 +6083,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open New Project Wizard:.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string ProjectWizardOpen {
             get {
@@ -6407,7 +6443,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Run In Edit Mode.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string RunEditMode {
             get {
@@ -7028,7 +7064,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to State.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string State {
             get {
@@ -7676,7 +7712,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Variables.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string Variables {
             get {
@@ -7685,7 +7721,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Excluded Variables.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string VariablesExcluded {
             get {

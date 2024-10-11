@@ -138,7 +138,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         /// <summary>
-        /// Returns the name of variable generated in code.
+        /// Returns the name of (property) variable generated in code. This does not return the field.
         /// </summary>
         /// <param name="instance">The ReferencedFileSave to generate.</param>
         /// <returns>The name as generated.</returns>
@@ -303,6 +303,13 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        /// <summary>
+        /// Returns the associated AssetTypeInfo for the ReferencedFileSave. If the ReferencedFileSave
+        /// specifies a runtime type, then this will return the AssetTypeInfo for that runtime type. Otherwise
+        /// the AssetTypeInfo for the extension will be returned.
+        /// </summary>
+        /// <param name="referencedFileSave">The argument ReferencedFileSave</param>
+        /// <returns>The AssetTypeInfo for the argument ReferencedFileSave.</returns>
         public static AssetTypeInfo GetAssetTypeInfo(this ReferencedFileSave referencedFileSave)
         {
             string extension = FileManager.GetExtension(referencedFileSave.Name);

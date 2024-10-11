@@ -16,7 +16,7 @@ namespace FlatRedBall
     /// </summary>
     /// <remarks>
     /// The PositionedObject is a common object in FlatRedBall.  It is the root class
-    /// for a number of FlatRedBall classes including Sprites, Texts, SpriteFrames, PositionedModels,
+    /// for a number of FlatRedBall classes including Sprites, Texts, SpriteFrames,
     /// and all Shapes.
     /// <para>
     /// The PositionedObject class is also used as the base class for Glue entities.
@@ -330,11 +330,9 @@ namespace FlatRedBall
             get { return mListsBelongingTo; }
         }
 
-        #region XML Docs
         /// <summary>
         /// The instance's name.
         /// </summary>
-        #endregion
         public string Name
         {
             get { return mName; }
@@ -393,22 +391,14 @@ namespace FlatRedBall
             get { return RelativePosition.X; }
             set
             {
-                RelativePosition.X = value;
-
 #if DEBUG
-                if (float.IsNaN(RelativePosition.X))
+                if (float.IsInfinity(value) || float.IsNaN(value))
                 {
-                    throw new NaNException("The RelativePosition X value has been set to an invalid number (float.NaN)", "RelativeX");
-                }
-                if (float.IsPositiveInfinity(RelativePosition.X))
-                {
-                    throw new Exception("Value can't be positive infinity");
-                }
-                if (float.IsNegativeInfinity(RelativePosition.X))
-                {
-                    throw new Exception("Value can't be negative infinity");
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeX));
                 }
 #endif
+
+                RelativePosition.X = value;
             }
         }
 
@@ -423,21 +413,14 @@ namespace FlatRedBall
             get { return RelativePosition.Y; }
             set 
             { 
-                RelativePosition.Y = value;
 #if DEBUG
-                if (float.IsNaN(RelativePosition.Y))
+                if (float.IsInfinity(value) || float.IsNaN(value))
                 {
-                    throw new NaNException("The RelativePosition Y value has been set to an invalid number (float.NaN)", "RelativeY");
-                }
-                if (float.IsPositiveInfinity(RelativePosition.Y))
-                {
-                    throw new Exception("Value can't be positive infinity");
-                }
-                if (float.IsNegativeInfinity(RelativePosition.Y))
-                {
-                    throw new Exception("Value can't be negative infinity");
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeY));
                 }
 #endif
+
+                RelativePosition.Y = value;
             }
         }
 
@@ -451,15 +434,15 @@ namespace FlatRedBall
         {
             get { return RelativePosition.Z; }
             set
-            { 
-                RelativePosition.Z = value;
-
+            {
 #if DEBUG
-                if (float.IsNaN(RelativePosition.Z))
+                if (float.IsInfinity(value) || float.IsNaN(value))
                 {
-                    throw new NaNException("The RelativePosition Z value has been set to an invalid number (float.NaN)", "RelativeZ");
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeZ));
                 }
 #endif
+                
+                RelativePosition.Z = value;
             }
         }
 
@@ -469,7 +452,17 @@ namespace FlatRedBall
         public float RelativeXVelocity
         {
             get { return RelativeVelocity.X; }
-            set { RelativeVelocity.X = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeXVelocity));
+                }
+#endif
+
+                RelativeVelocity.X = value;
+            }
         }
 
         /// <summary>
@@ -478,7 +471,17 @@ namespace FlatRedBall
         public float RelativeYVelocity
         {
             get { return RelativeVelocity.Y; }
-            set { RelativeVelocity.Y = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeYVelocity));
+                }
+#endif
+
+                RelativeVelocity.Y = value;
+            }
         }
 
         /// <summary>
@@ -487,7 +490,17 @@ namespace FlatRedBall
         public float RelativeZVelocity
         {
             get { return RelativeVelocity.Z; }
-            set { RelativeVelocity.Z = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeZVelocity));
+                }
+#endif
+
+                RelativeVelocity.Z = value;
+            }
         }
 
         /// <summary>
@@ -496,7 +509,17 @@ namespace FlatRedBall
         public float RelativeXAcceleration
         {
             get { return RelativeAcceleration.X; }
-            set { RelativeAcceleration.X = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeXAcceleration));
+                }
+#endif
+
+                RelativeAcceleration.X = value;
+            }
         }
 
         /// <summary>
@@ -505,7 +528,17 @@ namespace FlatRedBall
         public float RelativeYAcceleration
         {
             get { return RelativeAcceleration.Y; }
-            set { RelativeAcceleration.Y = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeYAcceleration));
+                }
+#endif
+
+                RelativeAcceleration.Y = value;
+            }
         }
 
         /// <summary>
@@ -514,7 +547,17 @@ namespace FlatRedBall
         public float RelativeZAcceleration
         {
             get { return RelativeAcceleration.Z; }
-            set { RelativeAcceleration.Z = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeZAcceleration));
+                }
+#endif
+
+                RelativeAcceleration.Z = value;
+            }
         }
 
         /// <summary>
@@ -525,6 +568,13 @@ namespace FlatRedBall
             get { return mRelativeRotationX; }
             set
             {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeRotationX));
+                }
+#endif
+
                 mRelativeRotationX = value;
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRelativeRotationX);
 
@@ -542,6 +592,13 @@ namespace FlatRedBall
             get { return mRelativeRotationY; }
             set
             {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeRotationY));
+                }
+#endif
+
                 mRelativeRotationY = value;
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRelativeRotationY);
 
@@ -568,6 +625,13 @@ namespace FlatRedBall
             get { return mRelativeRotationZ; }
             set
             {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeRotationZ));
+                }
+#endif
+
                 mRelativeRotationZ = value;
 
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRelativeRotationZ);
@@ -651,7 +715,17 @@ namespace FlatRedBall
         public float RelativeRotationXVelocity
         {
             get { return mRelativeRotationXVelocity; }
-            set { mRelativeRotationXVelocity = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeRotationXVelocity));
+                }
+#endif
+
+                mRelativeRotationXVelocity = value;
+            }
         }
 
         /// <summary>
@@ -660,7 +734,17 @@ namespace FlatRedBall
         public float RelativeRotationYVelocity
         {
             get { return mRelativeRotationYVelocity; }
-            set { mRelativeRotationYVelocity = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeRotationYVelocity));
+                }
+#endif
+
+                mRelativeRotationYVelocity = value;
+            }
         }
 
         /// <summary>
@@ -669,7 +753,17 @@ namespace FlatRedBall
         public float RelativeRotationZVelocity
         {
             get { return mRelativeRotationZVelocity; }
-            set { mRelativeRotationZVelocity = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeRotationZVelocity));
+                }
+#endif
+
+                mRelativeRotationZVelocity = value;
+            }
         }
 
         /// <summary>
@@ -705,6 +799,13 @@ namespace FlatRedBall
             }
             set
             {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeX));
+                }
+#endif
+
                 mRotationX = value;
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRotationX);
 
@@ -735,6 +836,12 @@ namespace FlatRedBall
             }
             set
             {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RotationY));
+                }
+#endif
 
                 mRotationY = value;
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRotationY);
@@ -770,6 +877,12 @@ namespace FlatRedBall
             }
             set
             {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RotationZ));
+                }
+#endif
 
                 mRotationZ = value;
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRotationZ);
@@ -980,8 +1093,18 @@ namespace FlatRedBall
         /// </remarks>
         public float RotationXVelocity
         {
-            get => mRotationXVelocity; 
-            set => mRotationXVelocity = value; 
+            get => mRotationXVelocity;
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RotationXVelocity));
+                }
+#endif
+
+                mRotationXVelocity = value;
+            }
         }
 
         /// <summary>
@@ -993,8 +1116,18 @@ namespace FlatRedBall
         /// </remarks>
         public float RotationYVelocity
         {
-            get => mRotationYVelocity; 
-            set => mRotationYVelocity = value; 
+            get => mRotationYVelocity;
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RotationYVelocity));
+                }
+#endif
+
+                mRotationYVelocity = value;
+            }
         }
 
         /// <summary>
@@ -1010,11 +1143,12 @@ namespace FlatRedBall
             set
             {
 #if DEBUG
-                if (float.IsInfinity(value) || float.IsNegativeInfinity(value))
+                if (float.IsInfinity(value) || float.IsNaN(value))
                 {
-                    throw new Exception("Invalid RotationZVelocity value");
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RotationZVelocity));
                 }
 #endif
+
                 mRotationZVelocity = value;
             }
         }
@@ -1040,15 +1174,14 @@ namespace FlatRedBall
             get { return Position.X; }
             set 
             { 
-                Position.X = value; 
-
 #if DEBUG
-                if (float.IsNaN(Position.X))
+                if (float.IsInfinity(value) || float.IsNaN(value))
                 {
-                    throw new NaNException("The X value has been set to an invalid number (float.NaN)", "X");
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(X));
                 }
 #endif
-            
+
+                Position.X = value; 
             }
         }
 
@@ -1061,14 +1194,14 @@ namespace FlatRedBall
             get { return Position.Y; }
             set 
             { 
-                Position.Y = value;
-
 #if DEBUG
-                if (float.IsNaN(Position.Y))
+                if (float.IsInfinity(value) || float.IsNaN(value))
                 {
-                    throw new NaNException("The Y value has been set to an invalid number (float.NaN)", "Y");
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(Y));
                 }
 #endif
+
+                Position.Y = value;
             }
         }
 
@@ -1081,14 +1214,14 @@ namespace FlatRedBall
             get { return Position.Z; }
             set 
             { 
-                Position.Z = value;
-
 #if DEBUG
-                if (float.IsNaN(Position.Z))
+                if (float.IsInfinity(value) || float.IsNaN(value))
                 {
-                    throw new NaNException("The Z value has been set to an invalid number (float.NaN)", "Z");
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(Z));
                 }
 #endif
+
+                Position.Z = value;
             }
         }
 
@@ -1098,7 +1231,17 @@ namespace FlatRedBall
         public float XVelocity
         {
             get { return Velocity.X; }
-            set { Velocity.X = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(XVelocity));
+                }
+#endif
+
+                Velocity.X = value;
+            }
         }
 
         /// <summary>
@@ -1107,7 +1250,17 @@ namespace FlatRedBall
         public float YVelocity
         {
             get { return Velocity.Y; }
-            set { Velocity.Y = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(YVelocity));
+                }
+#endif
+
+                Velocity.Y = value;
+            }
         }
 
         /// <summary>
@@ -1116,7 +1269,17 @@ namespace FlatRedBall
         public float ZVelocity
         {
             get { return Velocity.Z; }
-            set { Velocity.Z = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(ZVelocity));
+                }
+#endif
+
+                Velocity.Z = value;
+            }
         }
 
         /// <summary>
@@ -1125,7 +1288,17 @@ namespace FlatRedBall
         public float XAcceleration
         {
             get { return Acceleration.X; }
-            set { Acceleration.X = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(XAcceleration));
+                }
+#endif
+
+                Acceleration.X = value;
+            }
         }
 
         /// <summary>
@@ -1134,7 +1307,17 @@ namespace FlatRedBall
         public float YAcceleration
         {
             get { return Acceleration.Y; }
-            set { Acceleration.Y = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(YAcceleration));
+                }
+#endif
+
+                Acceleration.Y = value;
+            }
         }
 
         /// <summary>
@@ -1143,7 +1326,17 @@ namespace FlatRedBall
         public float ZAcceleration
         {
             get { return Acceleration.Z; }
-            set { Acceleration.Z = value; }
+            set
+            {
+#if DEBUG
+                if (float.IsInfinity(value) || float.IsNaN(value))
+                {
+                    throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(ZAcceleration));
+                }
+#endif
+
+                Acceleration.Z = value;
+            }
         }
 
         /// <summary>

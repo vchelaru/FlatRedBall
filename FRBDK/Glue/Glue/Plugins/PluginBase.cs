@@ -33,7 +33,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Windows;
 using System.Windows.Media;
+using FlatRedBall.Glue.MVVM;
 using WpfDataUi.DataTypes;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -69,14 +73,49 @@ namespace FlatRedBall.Glue.Plugins
     #endregion
 
     #region PluginTab
-    public class PluginTab
+    public class PluginTab : ViewModel
     {
         public event EventHandler AfterHide;
 
         public string Title
         {
-            get => Page.Title;
-            set => Page.Title = value;
+            get => Get<string>();
+            set => Set(value);
+        }
+        public override string ToString() => Title;
+
+        public TabContainerViewModel ParentContainer
+        {
+            get => Get<TabContainerViewModel>();
+            set
+            {
+                if (ParentContainer is not null)
+                {
+                    ParentContainer.PropertyChanged -= OnParentContainerChanged;
+                }
+                if (value is not null)
+                {
+                    value.PropertyChanged += OnParentContainerChanged;
+                }
+                Set(value);
+            }
+        }
+        private void OnParentContainerChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(TabContainerViewModel.SelectedTab))
+            {
+                NotifyPropertyChanged(nameof(IsSelected));
+            }
+        }
+
+        [DependsOn(nameof(ParentContainer))]
+        public TabLocation CurrentLocation => ParentContainer?.Location ?? TabLocation.Center;
+
+        public FrameworkElement Content { get; set; }
+
+        public DateTime LastTimeClicked
+        {
+            get; private set;
         }
 
         public TabLocation SuggestedLocation
@@ -84,76 +123,79 @@ namespace FlatRedBall.Glue.Plugins
             get; set;
         } = TabLocation.Center;
 
-        PluginTabPage page;
-        internal PluginTabPage Page
+        public bool IsSelected
         {
-            get => page;
+            get => ParentContainer?.SelectedTab == this;
             set
             {
-                if (page != value)
+                if (value)
                 {
-                    page = value;
-                    page.TabSelected = RaiseTabShown;
+                    if (ParentContainer is not null)
+                    {
+                        ParentContainer.SelectedTab = this;
+                    }
+                    RecordLastClick();
                 }
             }
         }
-
-        public void RaiseTabShown() => TabShown?.Invoke();
 
         public event Action TabShown;
 
         public void Hide()
         {
-            var items = Page.ParentTabControl;
-            items?.Remove(Page);
-            Page.ParentTabControl = null;
+            ParentContainer?.Remove(this);
+            ParentContainer = null;
             AfterHide?.Invoke(this, null);
         }
 
-        public bool IsShown => Page.ParentTabControl != null;
+        public bool IsShown => ParentContainer != null;
 
         public void Show()
         {
-            if (Page.ParentTabControl == null)
+            if (ParentContainer == null)
             {
-                var items = GetTabContainerFromLocation(SuggestedLocation);
-                items.Add(Page);
-                Page.ParentTabControl = items;
-                Page.RefreshRightClickCommands();
-
+                var container = GetTabContainerFromLocation(SuggestedLocation);
+                container.Add(this);
+                TabShown?.Invoke();
             }
         }
 
         /// <summary>
         /// Selects this tab so it is visible in its tab group.
         /// </summary>
-        public void Focus()
-        {
-            GlueCommands.Self.DoOnUiThread(() => Page.Focus());
-            Page.RecordLastClick();
-        }
+        public void Focus() => IsSelected = true;
 
         public bool CanClose
         {
-            get => Page.DrawX;
-            set => Page.DrawX = value;
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public PluginTab()
+        {
+            CanClose = true;
+            CloseCommand = new (Hide, nameof(CanClose), this);
+            MoveTabCommand = new (MoveTab, nameof(CanMoveTo), nameof(CurrentLocation), this);
+        }
+
+        public void RecordLastClick()
+        {
+            if (GlueFormsCore.ViewModels.TabControlViewModel.IsRecordingSelection)
+            {
+                LastTimeClicked = DateTime.Now;
+            }
         }
 
         public void ForceLocation(TabLocation tabLocation)
         {
             var desiredTabControl = GetTabContainerFromLocation(tabLocation);
-            var parentTabControl = Page.ParentTabControl;
+            var parentTabControl = ParentContainer;
 
             if (desiredTabControl != parentTabControl)
             {
-                if (parentTabControl != null)
-                {
-                    parentTabControl.Remove(Page);
-                }
+                parentTabControl?.Remove(this);
 
-                desiredTabControl.Add(Page);
-                Page.ParentTabControl = desiredTabControl;
-                Page.RefreshRightClickCommands();
+                desiredTabControl.Add(this);
             }
         }
 
@@ -173,12 +215,39 @@ namespace FlatRedBall.Glue.Plugins
             return tabContainer;
         }
 
-        public Func<string, bool> IsPreferredDisplayerForType
+        public Func<string, bool> IsPreferredDisplayerForType { get; set; } = _ => false;
+
+        public void OnMouseEvent(MouseButtonEventArgs args)
         {
-            get => page.IsPreferredDisplayerForType;
-            set => page.IsPreferredDisplayerForType = value;
+            if (args.MiddleButton == MouseButtonState.Pressed && CanClose)
+            {
+                Hide();
+            }
         }
-    }
+
+        public CommandBase CloseCommand { get; }
+        public CommandBase<string> MoveTabCommand { get; }
+
+        private void MoveTab(string location)
+        {
+            if (Enum.TryParse<TabLocation>(location, true, out var tabLocation))
+            {
+                ForceLocation(tabLocation);
+                SuggestedLocation = tabLocation;
+                Focus();
+            }
+        }
+
+        private bool CanMoveTo(string location)
+        {
+            if (Enum.TryParse<TabLocation>(location, true, out var tabLocation))
+            {
+                return tabLocation != CurrentLocation;
+            }
+            return true;
+        }
+
+}
     #endregion
 
     #region VariableChangeArguments
@@ -217,8 +286,6 @@ namespace FlatRedBall.Glue.Plugins
         public virtual string GithubRepoName => null;
         public virtual bool CheckGithubForNewRelease => false;
 
-        protected PluginTabPage PluginTab { get; private set; } // This is the tab that will hold our control
-
         List<AssetTypeInfo> AddedAssetTypeInfos = new List<AssetTypeInfo>();
 
         #endregion
@@ -253,9 +320,14 @@ namespace FlatRedBall.Glue.Plugins
         /// Delegate raised whenever a property on either a variable or an element has changed.
         /// </summary>
         /// <remarks>
-        /// New plugins should use ReactToChangedNamedObjectVariableList instead if they intend to handle variables specifically
+        /// New plugins should use ReactToChangedNamedObjectVariableList instead since it allows handling of individual variables and it allows
+        /// checking what type of variable assignment occurred (Intermediate vs Full)
         /// </remarks>
         public ReactToChangedPropertyDelegate ReactToChangedPropertyHandler { get; protected set; }
+
+        /// <summary>
+        /// Delegate raised whenever a property changes on a NamedObjectSave. 
+        /// </summary>
         public Action<List<NamedObjectSavePropertyChange>> ReactToChangedNamedObjectPropertyList { get; protected set; }
         [Obsolete("Use ReactToFileChange")]
         public ReactToFileChangeDelegate ReactToFileChangeHandler { get; protected set; }
@@ -271,6 +343,7 @@ namespace FlatRedBall.Glue.Plugins
         /// Delegate raised when a tree node is selected. If multiple tree nodes are selected, only the first is passed
         /// to this delegate. For multi-select support, use ReactToItemsSelected;
         /// </summary>
+        [Obsolete("Use ReactToItemsSelected which properly handles multiple tree nodes")]
         public ReactToItemSelectDelegate ReactToItemSelectHandler { get; protected set; }
 
         /// <summary>
@@ -322,9 +395,15 @@ namespace FlatRedBall.Glue.Plugins
         public ReactToTreeViewRightClickDelegate ReactToTreeViewRightClickHandler { get; protected set; }
 
         public Action<StateSave, StateSaveCategory> ReactToStateCreated { get; protected set; }
+
+        /// <summary>
+        /// Delegate raised whenever a state variable is changed. The first argument is the StateSave, the second is the StateSaveCategory, and the third is the name of the variable that changed.
+        /// </summary>
         public Action<StateSave, StateSaveCategory, string> ReactToStateVariableChanged { get; protected set; }
         public ReactToStateNameChangeDelegate ReactToStateNameChangeHandler { get; protected set; }
         public ReactToStateRemovedDelegate ReactToStateRemovedHandler { get; protected set; }
+
+        public Action<StateSaveCategory, string, StateCategoryVariableAction> ReactToStateCategoryExcludedVariablesChanged;
 
         public Action<IElement, ReferencedFileSave> ReactToFileRemoved { get; protected set; }
 
@@ -350,6 +429,10 @@ namespace FlatRedBall.Glue.Plugins
         [Obsolete("Use ReactToGlueElementVariableChanged")]
         public Action<IElement, CustomVariable> ReactToElementVariableChange { get; protected set; }
 
+        /// <summary>
+        /// Action raised when a variable changes. The GlueElement is the container of the variable, the CustomVariable is the changed variable, and
+        /// the object is the old value.
+        /// </summary>
         public Action<GlueElement, CustomVariable, object> ReactToGlueElementVariableChanged { get; protected set; }
 
         /// <summary>
@@ -376,6 +459,8 @@ namespace FlatRedBall.Glue.Plugins
         /// react to a specific project unloading (such as by saving content).
         /// </summary>
         public Action ReactToUnloadedGlux { get; protected set; }
+
+
         public TryHandleCopyFileDelegate TryHandleCopyFile { get; protected set; }
 
         /// <summary>
@@ -400,9 +485,18 @@ namespace FlatRedBall.Glue.Plugins
         public Func<FilePath, List<FilePath>, GeneralResponse> FillWithReferencedFiles { get; protected set; }
         public Action<FilePath, GeneralResponse> ReactToFileReadError { get; protected set; }
 
+        /// <summary>
+        /// Returns all files needed on disk by the argument file. Files on disk include built files such as content pipeline, or files 
+        /// built by command line tools such as .csv files built from .ods files.
+        /// </summary>
         public Action<string, List<FilePath>> GetFilesNeededOnDiskBy { get; protected set; }
 
         public Action ResolutionChanged { get; protected set; }
+
+        /// <summary>
+        /// Events raised when Gum Scale values change.
+        /// </summary>
+        public Action ScaleGumChanged { get; protected set; }
 
         /// <summary>
         /// Responsible for returning whether the argument file can return content.  The file shouldn't be opened
@@ -492,7 +586,6 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action ReactToGlobalTimer;
 
-        public Action<StateSaveCategory, string, StateCategoryVariableAction> ReactToStateCategoryExcludedVariablesChanged;
 
         public Action<string, string> ReactToScreenJsonSave;
         public Action<string, string> ReactToEntityJsonSave;
@@ -502,6 +595,11 @@ namespace FlatRedBall.Glue.Plugins
         public Action<string, string> ReactToEntityJsonLoad;
         public Action<string> ReactToGlueJsonLoad;
 
+        /// <summary>
+        /// Event raised when an index is selected inside an object which has multiple parts. This is not 
+        /// raised for list objects, but rather objects which do not display multiple objects in the tree view, such
+        /// as points in a Polygon, or segments of a Path.
+        /// </summary>
         public Action<int?> ReactToSelectedSubIndexChanged;
 
         public event Action<IPlugin, string, string> ReactToPluginEventAction;
@@ -616,7 +714,11 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (ToolStripMenuItem item in GlueGui.MenuStrip.Items)
             {
-                if (item.Name == name)
+                if (
+                    // This depends on localization...
+                    item.Name == name || 
+                    // ...and this not, since localization is getting removed as of Sept 2024
+                    item.Text == name)
                 {
                     return item;
                 }
@@ -665,10 +767,6 @@ namespace FlatRedBall.Glue.Plugins
                 control.Margin = new System.Windows.Thickness(3, 0, 3, 0);
             }
 
-            // Remove default color for background
-            control.Background = ToolbarBackgroundBrush;
-            control.BorderBrush = ToolbarBackgroundBrush;
-
             if(control.Parent == null)
             {
                 toAddTo.Items.Add(control);
@@ -693,10 +791,6 @@ namespace FlatRedBall.Glue.Plugins
             {
                 mainPanelBorder.Margin = new Thickness(0);
             }
-
-            // Remove default color for background
-            toolBar.Background = ToolbarBackgroundBrush;
-            toolBar.BorderBrush = ToolbarBackgroundBrush;
         }
 
         protected bool RemoveFromToolbar(System.Windows.Controls.UserControl control, string toolbarName)
@@ -803,6 +897,7 @@ namespace FlatRedBall.Glue.Plugins
             {
                 AvailableAssetTypes.Self.RemoveAssetType(ati);
             }
+            AddedAssetTypeInfos.Clear();
         }
 
         #region Tab Methods
@@ -815,23 +910,10 @@ namespace FlatRedBall.Glue.Plugins
             //wpfHost.Child = control;
 
             //return CreateTab(wpfHost, tabName);
-            var page = new PluginTabPage();
-            page.Resources = MainPanelControl.ResourceDictionary;
-
-            page.Title = tabName;
-            page.Content = control;
-            control.Resources = MainPanelControl.ResourceDictionary;
 
             PluginTab pluginTab = new PluginTab();
-            pluginTab.Page = page;
-            page.MoveToTabSelected += async (newLocation) =>
-            {
-                pluginTab.ForceLocation(newLocation);
-                pluginTab.SuggestedLocation = newLocation;
-                pluginTab.Focus();
-
-                await GlueCommands.Self.UpdateGlueSettingsFromCurrentGlueStateAsync();
-            };
+            pluginTab.Title = tabName;
+            pluginTab.Content = control;
 
             var settings = GlueState.Self.GlueSettingsSave;
             if (settings.TopTabs.Contains(tabName))
@@ -858,12 +940,6 @@ namespace FlatRedBall.Glue.Plugins
             {
                 pluginTab.SuggestedLocation = defaultLocation;
             }
-
-            page.ClosedByUser += (sender) =>
-            {
-                pluginTab.Hide();
-                //OnClosedByUser(sender);
-            };
 
             return pluginTab;
 

@@ -24,6 +24,8 @@ namespace FlatRedBall.Glue.SetVariable
     {
         internal async void ReactToEntityChangedProperty(string changedMember, object oldValue, EntitySave entitySave)
         {
+            // for Name, see ElementCommands.RenameElement
+
             entitySave = entitySave ?? GlueState.Self.CurrentEntitySave;
 
             #region BaseEntity changed

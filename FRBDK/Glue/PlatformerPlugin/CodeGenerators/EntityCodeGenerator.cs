@@ -988,7 +988,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                             didTryCollision = true;
                             rectangle.RepositionDirections = oldReposition;
 
-                            if(this.Y <= LastPosition.Y)
+                            if(this.Y <= LastPosition.Y
+                                // This 2nd part of the check is needed here:
+                                //https://github.com/vchelaru/FlatRedBall/issues/1436
+                                && this.Y > positionBefore.Y
+                                )
                             {
                                 didRedoWithUpward = true;
                                 //break;

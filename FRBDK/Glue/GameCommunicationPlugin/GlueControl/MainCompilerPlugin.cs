@@ -20,12 +20,12 @@ using Newtonsoft.Json;
 using CompilerLibrary.Models;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
-using OfficialPluginsCore.Compiler.ViewModels;
-using OfficialPluginsCore.Compiler.Managers;
+using OfficialPlugins.Compiler.ViewModels;
+using OfficialPlugins.Compiler.Managers;
 using System.Diagnostics;
 using System.Timers;
 using Glue;
-using OfficialPluginsCore.Compiler.CommandReceiving;
+using OfficialPlugins.Compiler.CommandReceiving;
 using FlatRedBall.Glue.Elements;
 using GameCommunicationPlugin.GlueControl.Dtos;
 using GameCommunicationPlugin.GlueControl.CommandSending;
@@ -53,6 +53,7 @@ namespace GameCommunicationPlugin.GlueControl
 
 
         public CompilerViewModel CompilerViewModel { get; private set; }
+
         public GlueViewSettingsViewModel GlueViewSettingsViewModel { get; private set; }
         
 
@@ -150,7 +151,7 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToNewFileHandler += _refreshManager.HandleNewFile;
             this.ReactToFileChange += manager.HandleFileChanged;
             this.ReactToCodeFileChange += _refreshManager.HandleFileChanged;
-            this.ReactToElementRenamed += ToolbarController.Self.HandleScreenRenamed;
+            this.ReactToElementRenamed += HanleElementRenamed;
 
             this.ReactToChangedPropertyHandler += HandlePropertyChanged;
 
@@ -205,6 +206,13 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToSelectedSubIndexChanged += (index) => _refreshManager.ReactToSelectedSubIndexChanged(index);
 
             this.ReactToObjectReordered += _refreshManager.HandleObjectReordered;
+        }
+
+        private void HanleElementRenamed(IElement elementAsIElement, string oldName)
+        {
+            var element = (GlueElement)elementAsIElement;
+            ToolbarController.Self.HandleScreenRenamed(element, element.Name);
+            _refreshManager.HandleElementRenamed(element, oldName);
         }
 
         private void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> listToAddTo)
@@ -375,6 +383,8 @@ namespace GameCommunicationPlugin.GlueControl
         {
             return CompilerViewModel.IsEditChecked && CompilerViewModel.IsRunning;
         }
+
+        public bool GetIfIsRunning() => CompilerViewModel.IsRunning;
 
         public async Task<string> MakeGameBorderless(bool isBorderless)
         {
@@ -646,11 +656,19 @@ namespace GameCommunicationPlugin.GlueControl
 
                 if(waitForResponse)
                 {
-                    var response = await GameJsonCommunicationPlugin.Common.GameConnectionManager.Self.SendItemWithResponse(whatToSend);
-
                     var toReturn = new global::ToolsUtilities.GeneralResponse<string>();
-                    toReturn.SetFrom(response);
-                    toReturn.Data = response?.Data;    
+                    try
+                    {
+                        var response = await GameJsonCommunicationPlugin.Common.GameConnectionManager.Self.SendItemWithResponse(whatToSend);
+
+                        toReturn.SetFrom(response);
+                        toReturn.Data = response?.Data;    
+                    }
+                    catch(Exception e)
+                    {
+                        toReturn.Succeeded = false;
+                        toReturn.Message = $"Failed to send packet: {e}";
+                    }
 
                     return toReturn;
                 }
@@ -778,12 +796,18 @@ namespace GameCommunicationPlugin.GlueControl
 
         private async Task ReactToPlayOrEditSet()
         {
-            var inEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
+            var isInEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
             var dto = new Dtos.SetEditMode 
             { 
-                IsInEditMode = inEditMode ,
+                IsInEditMode = isInEditMode ,
                 AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName?.FullPath
             };
+
+            if(isInEditMode)
+            {
+                dto.CurrentGlueElementName = GlueState.Self.CurrentElement?.Name ?? GlueState.Self.CurrentGlueProject.StartUpScreen;
+            }
+
             var response = await CommandSender.Self.Send<Dtos.GeneralCommandResponse>(dto, SendImportance.RetryOnFailure);
 
             if (response?.Succeeded != true)
@@ -805,7 +829,7 @@ namespace GameCommunicationPlugin.GlueControl
             {
                 var message = $"Failed to set game/edit mode to {CompilerViewModel.PlayOrEdit} because the game is not connected.";
             }
-            else if (inEditMode)
+            else if (isInEditMode)
             {
                 var currentEntity = GlueState.Self.CurrentEntitySave;
                 if (currentEntity != null)
@@ -856,19 +880,24 @@ namespace GameCommunicationPlugin.GlueControl
 
             var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
 
-            if (inEditMode)
+            if (isInEditMode)
             {
                 setCameraAspectRatioDto.AspectRatio = null;
+
             }
             else
             {
                 if(displaySettings != null &&
                     displaySettings.AspectRatioHeight > 0 &&
-                    // need to reearch at some time - do we want to worry about variable aspect ratio?
-                    displaySettings.AspectRatioBehavior == AspectRatioBehavior.FixedAspectRatio)
+                    displaySettings.AspectRatioBehavior != AspectRatioBehavior.NoAspectRatio)
                 {
-                    setCameraAspectRatioDto.AspectRatio = GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioWidth /
-                        GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioHeight;
+                    setCameraAspectRatioDto.AspectRatio = displaySettings.AspectRatioWidth /
+                        displaySettings.AspectRatioHeight;
+
+                    if(displaySettings.AspectRatioBehavior == AspectRatioBehavior.RangedAspectRatio)
+                    {
+                        setCameraAspectRatioDto.AspectRatio2 = displaySettings.AspectRatioWidth2 / displaySettings.AspectRatioHeight2;
+                    }
                 }
             }
                     
@@ -1030,6 +1059,11 @@ namespace GameCommunicationPlugin.GlueControl
             CompilerViewModel.IsPrintEditorToGameCheckboxChecked = isLoggingSentCommands;
         }
 
+        public void SetIsLoggingReceivedCommands(bool isLoggingReceivedCommands)
+        {
+            CompilerViewModel.IsPrintGameToEditorCheckboxChecked = isLoggingReceivedCommands;
+        }
+
 
         private void HandleGrabbedTreeNodeChanged(ITreeNode treeNode, TreeNodeAction action)
         {
@@ -1186,6 +1220,8 @@ namespace GameCommunicationPlugin.GlueControl
             }
         }
         #endregion
+
+
 
     }
 

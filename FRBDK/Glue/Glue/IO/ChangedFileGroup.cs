@@ -338,7 +338,13 @@ namespace FlatRedBall.Glue.IO
         {
             var extension = FileManager.GetExtension(e.Name);
 
-
+            ///////////////early out////////////////
+            if(string.IsNullOrEmpty(e.Name))
+            {
+                // early out
+                return;
+            }
+            ////////////end early out///////////////
             var shouldProcess = extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension) == false &&
                 !IsSkippedBasedOnTypeOrLocation(e.Name);
 

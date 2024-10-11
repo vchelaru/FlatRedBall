@@ -29,6 +29,15 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
 
     #endregion
 
+    /// <summary>
+    /// Represents a command which is performed in a specific element. The ElementNameGlue is used to determine
+    /// if a command should be execited when a specific element is created;
+    /// </summary>
+    public interface IInElementCommand
+    {
+        public string ElementNameGlue { get; set; }
+    }
+
     #region RemoveObjectDto
     public class RemoveObjectDto : UpdateCurrentElementDto
     {
@@ -67,11 +76,23 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
 
     #endregion
 
+    #region RenameElementDto
+
+    public class RenameElementDto
+    {
+        public string OldName { get; set; }
+        public string NewName { get; set; }
+    }
+
+    #endregion
+
     #region SetEditMode
     class SetEditMode
     {
         public bool IsInEditMode { get; set; }
         public string AbsoluteGlueProjectFilePath { get; set; }
+        public string CurrentGlueElementName { get; set; }
+
     }
     #endregion
 
@@ -139,13 +160,10 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
         public List<GlueVariableSetData> Data { get; set; } = new List<GlueVariableSetData>();
     }
 
-    public class GlueVariableSetData : UpdateCurrentElementDto
+    public class GlueVariableSetData : UpdateCurrentElementDto, IInElementCommand
     {
         public AssignOrRecordOnly AssignOrRecordOnly { get; set; }
-        /// <summary>
-        /// The owner of the NamedObjectSave, which is either the current screen or the current entity save
-        /// </summary>
-        public string InstanceOwnerGameType { get; set; }
+        public string ElementNameGlue { get; set; }
         public string VariableName { get; set; }
         public string VariableValue { get; set; }
         public string Type { get; set; }
@@ -230,16 +248,16 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
         public List<AddObjectDto> Data { get; set; } = new List<AddObjectDto>();
     }
 
-    public class AddObjectDto : UpdateCurrentElementDto
+    public class AddObjectDto : UpdateCurrentElementDto, IInElementCommand
     {
         public NamedObjectSave NamedObjectSave { get; set; }
         public string CopyOriginalName { get; set; }
-        public string ElementNameGame { get; set; }
+        public string ElementNameGlue { get; set; }
         public bool SelectNewObject { get; set; }
 
         public override string ToString()
         {
-            return $"Add NOS {NamedObjectSave.InstanceName} ({NamedObjectSave.SourceClassType})";
+            return $"Add NOS {NamedObjectSave.InstanceName} ({NamedObjectSave.SourceClassType}) to {ElementNameGlue}";
         }
     }
     #endregion
@@ -331,6 +349,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     public class SetCameraAspectRatioDto
     {
         public decimal? AspectRatio { get; set; }
+        public decimal? AspectRatio2 { get; set; }
     }
 
     #endregion
@@ -494,7 +513,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
 
     public class GetProfilingDataDto
     {
-
+        public bool IsTimestepDisabled { get; set; }
     }
 
     public class ProfilingDataDto

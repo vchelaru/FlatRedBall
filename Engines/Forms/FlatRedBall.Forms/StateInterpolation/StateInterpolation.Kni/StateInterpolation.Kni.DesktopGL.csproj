@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <DefineConstants>FNA;XNA4</DefineConstants>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+  </PropertyGroup>
+  <Import Project="..\..\..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems" Label="Shared" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\FlatRedBallXNA\KniDesktopGL\FlatRedBallDesktopKniDesktopGL.csproj" />
+  </ItemGroup>
+</Project>

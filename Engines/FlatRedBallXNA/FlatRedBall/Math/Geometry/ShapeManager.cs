@@ -317,8 +317,12 @@ namespace FlatRedBall.Math.Geometry
         #region Add Methods
 
 #if DEBUG
-        static void ThrowExceptionIfNotPrimaryThread()
+        static void ThrowExceptionIfNotPrimaryThreadOrNotInitialized()
         {
+            if(!FlatRedBallServices.IsInitialized)
+            {
+                throw new InvalidOperationException("This operation is not supported because FlatRedBall has not yet been initialized.");
+            }
             if (!FlatRedBallServices.IsThreadPrimary())
             {
                 throw new InvalidOperationException("Objects can only be added, removed, made visible, or made invisible on the primary thread");
@@ -338,7 +342,7 @@ namespace FlatRedBall.Math.Geometry
         static public AxisAlignedRectangle AddAxisAlignedRectangle()
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             AxisAlignedRectangle aar = new AxisAlignedRectangle();
             if (SpriteManager.Camera.Orthogonal == true)
@@ -360,7 +364,7 @@ namespace FlatRedBall.Math.Geometry
         static public AxisAlignedRectangle AddAxisAlignedRectangle(AxisAlignedRectangle axisAlignedRectangle)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             mAutomaticallyUpdated.Add(axisAlignedRectangle);
 
@@ -422,7 +426,7 @@ namespace FlatRedBall.Math.Geometry
         static public Capsule2D AddCapsule2D(Capsule2D capsule2D)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             mAutomaticallyUpdated.Add(capsule2D);
             capsule2D.Visible = true;
@@ -469,7 +473,7 @@ namespace FlatRedBall.Math.Geometry
         static public Circle AddCircle(Circle circle)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             mAutomaticallyUpdated.Add(circle);
             circle.Visible = true;
@@ -530,7 +534,7 @@ namespace FlatRedBall.Math.Geometry
         static public Sphere AddSphere(Sphere sphere)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             mAutomaticallyUpdated.Add(sphere);
             sphere.Visible = true;
@@ -572,7 +576,7 @@ namespace FlatRedBall.Math.Geometry
         public static AxisAlignedCube AddAxisAlignedCube(AxisAlignedCube axisAlignedCube)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             mAutomaticallyUpdated.Add(axisAlignedCube);
             axisAlignedCube.Visible = true;
@@ -618,7 +622,7 @@ namespace FlatRedBall.Math.Geometry
         static public Polygon AddPolygon(Polygon polygon)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             if (mAutomaticallyUpdated.Contains(polygon) == false)
             {
@@ -682,7 +686,7 @@ namespace FlatRedBall.Math.Geometry
         static public Line AddLine(Line line)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 
             if (mAutomaticallyUpdated.Contains(line))
             {
@@ -1478,7 +1482,7 @@ namespace FlatRedBall.Math.Geometry
         public static void MakeAllLinesInvisible()
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             for (int i = 0; i < mLines.Count; i++)
             {
@@ -1506,7 +1510,7 @@ namespace FlatRedBall.Math.Geometry
         static public void Remove(AxisAlignedRectangle axisAlignedRectangleToRemove)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             axisAlignedRectangleToRemove.RemoveSelfFromListsBelongingTo();
         }
@@ -1519,7 +1523,7 @@ namespace FlatRedBall.Math.Geometry
         static public void Remove(AxisAlignedCube axisAlignedCubeToRemove)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             axisAlignedCubeToRemove.RemoveSelfFromListsBelongingTo();
         }
@@ -1534,7 +1538,7 @@ namespace FlatRedBall.Math.Geometry
         static public void Remove(Capsule2D capsule2DToRemove)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             capsule2DToRemove.RemoveSelfFromListsBelongingTo();
         }
@@ -1548,7 +1552,7 @@ namespace FlatRedBall.Math.Geometry
         static public void Remove(Circle circleToRemove)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             circleToRemove.RemoveSelfFromListsBelongingTo();
         }
@@ -1562,7 +1566,7 @@ namespace FlatRedBall.Math.Geometry
         static public void Remove(Sphere sphereToRemove)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             sphereToRemove.RemoveSelfFromListsBelongingTo();
         }
@@ -1576,7 +1580,7 @@ namespace FlatRedBall.Math.Geometry
         static public void Remove(Polygon polygonToRemove)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             polygonToRemove.RemoveSelfFromListsBelongingTo();
         }
@@ -1588,7 +1592,7 @@ namespace FlatRedBall.Math.Geometry
         static public void Remove(Line lineToRemove)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             lineToRemove.RemoveSelfFromListsBelongingTo();
         }
@@ -1596,7 +1600,7 @@ namespace FlatRedBall.Math.Geometry
         public static void RemoveOneWay(Circle circleToRemove)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             mAutomaticallyUpdated.Remove(circleToRemove);
             circleToRemove.Visible = false;
@@ -1609,7 +1613,7 @@ namespace FlatRedBall.Math.Geometry
         static public void RemoveOneWay(Polygon polygonToRemove)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             mAutomaticallyUpdated.Remove(polygonToRemove);
             polygonToRemove.Visible = false;
@@ -1622,7 +1626,7 @@ namespace FlatRedBall.Math.Geometry
         static public void RemoveOneWay(AxisAlignedRectangle axisAlignedRectangleToRemove)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             mAutomaticallyUpdated.Remove(axisAlignedRectangleToRemove);
             axisAlignedRectangleToRemove.Visible = false;
@@ -1631,7 +1635,7 @@ namespace FlatRedBall.Math.Geometry
         public static void RemoveOneWay(Line lineToRemove)
         {
 #if DEBUG
-            ThrowExceptionIfNotPrimaryThread();
+            ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
             mAutomaticallyUpdated.Remove(lineToRemove);
             lineToRemove.Visible = false;
@@ -1716,14 +1720,14 @@ namespace FlatRedBall.Math.Geometry
             if (!SuppressAddingOnVisibilityTrue && sphere.Visible && sphere.ListsBelongingTo.Contains(mSpheres) == false)
             {
 #if DEBUG
-                ThrowExceptionIfNotPrimaryThread();
+                ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                 mSpheres.Add(sphere);
             }
             else if (sphere.Visible == false && sphere.ListsBelongingTo.Contains(mSpheres))
             {
 #if DEBUG
-                ThrowExceptionIfNotPrimaryThread();
+                ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                 mSpheres.Remove(sphere);
             }
@@ -1737,14 +1741,14 @@ namespace FlatRedBall.Math.Geometry
                 if (!SuppressAddingOnVisibilityTrue && axisAlignedCube.Visible && axisAlignedCube.ListsBelongingTo.Contains(mCubes) == false)
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     mCubes.Add(axisAlignedCube);
                 }
                 else if (axisAlignedCube.Visible == false && axisAlignedCube.ListsBelongingTo.Contains(mCubes))
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     mCubes.Remove(axisAlignedCube);
                 }
@@ -1754,14 +1758,14 @@ namespace FlatRedBall.Math.Geometry
                 if (!SuppressAddingOnVisibilityTrue && axisAlignedCube.Visible && axisAlignedCube.ListsBelongingTo.Contains(axisAlignedCube.mLayerBelongingTo.mCubes) == false)
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     axisAlignedCube.mLayerBelongingTo.mCubes.Add(axisAlignedCube);
                 }
                 else if (axisAlignedCube.Visible == false && axisAlignedCube.ListsBelongingTo.Contains(axisAlignedCube.mLayerBelongingTo.mCubes))
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     axisAlignedCube.mLayerBelongingTo.mCubes.Remove(axisAlignedCube);
                 }
@@ -1774,14 +1778,14 @@ namespace FlatRedBall.Math.Geometry
             if (!SuppressAddingOnVisibilityTrue && capsule2D.Visible && capsule2D.ListsBelongingTo.Contains(mCapsule2Ds) == false)
             {
 #if DEBUG
-                ThrowExceptionIfNotPrimaryThread();
+                ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                 mCapsule2Ds.Add(capsule2D);
             }
             else if (capsule2D.Visible == false && capsule2D.ListsBelongingTo.Contains(mCapsule2Ds))
             {
 #if DEBUG
-                ThrowExceptionIfNotPrimaryThread();
+                ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                 mCapsule2Ds.Remove(capsule2D);
             }
@@ -1795,14 +1799,14 @@ namespace FlatRedBall.Math.Geometry
                 if (!SuppressAddingOnVisibilityTrue && circle.Visible && circle.ListsBelongingTo.Contains(mCircles) == false)
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     mCircles.Add(circle);
                 }
                 else if (circle.Visible == false && circle.ListsBelongingTo.Contains(mCircles))
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     mCircles.Remove(circle);
                 }
@@ -1812,14 +1816,14 @@ namespace FlatRedBall.Math.Geometry
                 if (!SuppressAddingOnVisibilityTrue && circle.Visible && circle.ListsBelongingTo.Contains(circle.mLayerBelongingTo.mCircles) == false)
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     circle.mLayerBelongingTo.mCircles.Add(circle);
                 }
                 else if (circle.Visible == false && circle.ListsBelongingTo.Contains(circle.mLayerBelongingTo.mCircles))
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     circle.mLayerBelongingTo.mCircles.Remove(circle);
                 }
@@ -1834,14 +1838,14 @@ namespace FlatRedBall.Math.Geometry
                 if (!SuppressAddingOnVisibilityTrue && rectangle.Visible && rectangle.ListsBelongingTo.Contains(mRectangles) == false)
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     mRectangles.Add(rectangle);
                 }
                 else if (rectangle.Visible == false && rectangle.ListsBelongingTo.Contains(mRectangles))
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     mRectangles.Remove(rectangle);
                 }
@@ -1851,14 +1855,14 @@ namespace FlatRedBall.Math.Geometry
                 if (!SuppressAddingOnVisibilityTrue && rectangle.Visible && rectangle.ListsBelongingTo.Contains(rectangle.mLayerBelongingTo.mRectangles) == false)
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     rectangle.mLayerBelongingTo.mRectangles.Add(rectangle);
                 }
                 else if (rectangle.Visible == false && rectangle.ListsBelongingTo.Contains(rectangle.mLayerBelongingTo.mRectangles))
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     rectangle.mLayerBelongingTo.mRectangles.Remove(rectangle);
                 }
@@ -1874,14 +1878,14 @@ namespace FlatRedBall.Math.Geometry
                 if (!SuppressAddingOnVisibilityTrue && polygon.Visible && polygon.ListsBelongingTo.Contains(polygon.mLayerBelongingTo.mPolygons) == false)
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     polygon.mLayerBelongingTo.mPolygons.Add(polygon);
                 }
                 else if (polygon.Visible == false && polygon.ListsBelongingTo.Contains(polygon.mLayerBelongingTo.mPolygons))
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     polygon.mLayerBelongingTo.mPolygons.Remove(polygon);
                 }
@@ -1892,14 +1896,14 @@ namespace FlatRedBall.Math.Geometry
                 if (!SuppressAddingOnVisibilityTrue && polygon.Visible && polygon.ListsBelongingTo.Contains(mPolygons) == false)
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     mPolygons.Add(polygon);
                 }
                 else if (polygon.Visible == false && polygon.ListsBelongingTo.Contains(mPolygons))
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     mPolygons.Remove(polygon);
                 }
@@ -1914,14 +1918,14 @@ namespace FlatRedBall.Math.Geometry
                 if (!SuppressAddingOnVisibilityTrue && line.Visible && line.ListsBelongingTo.Contains(mLines) == false)
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     mLines.Add(line);
                 }
                 else if (line.Visible == false && line.ListsBelongingTo.Contains(mLines))
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     mLines.Remove(line);
                 }
@@ -1931,14 +1935,14 @@ namespace FlatRedBall.Math.Geometry
                 if (!SuppressAddingOnVisibilityTrue && line.Visible && line.ListsBelongingTo.Contains(line.mLayerBelongingTo.mLines) == false)
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     line.mLayerBelongingTo.mLines.Add(line);
                 }
                 else if (line.Visible == false && line.ListsBelongingTo.Contains(line.mLayerBelongingTo.mLines))
                 {
 #if DEBUG
-                    ThrowExceptionIfNotPrimaryThread();
+                    ThrowExceptionIfNotPrimaryThreadOrNotInitialized();
 #endif
                     line.mLayerBelongingTo.mLines.Remove(line);
                 }

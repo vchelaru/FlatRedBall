@@ -27,6 +27,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         IEnumerable<FilePath> GetAllFilesNeededOnDisk();
 
         List<FilePath> GetAllReferencedFileNames();
+
+        /// <summary>
+        /// Returns all FilePaths referenced by ReferencedFileSaves, both directly and indirectly. This only includes source file, not built files.
+        /// For built files, see GetAllFilesNeededOnDisk.
+        /// </summary>
+        /// <returns></returns>
         List<FilePath> GetAllReferencedFilePaths();
 
         List<FilePath> GetAllReferencedFileNames(TopLevelOrRecursive topLevelOrRecursive);

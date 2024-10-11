@@ -178,25 +178,29 @@ public static class ProjectCreationHelper
         return generalResponse.Succeeded;
     }
 
-    
+
     private static void RenameEverything(NewProjectViewModel viewModel, string stringToReplace, string unpackDirectory)
     {
-        var newProjectName = viewModel.ProjectName;
+        RenameProject(viewModel.ProjectName, stringToReplace, viewModel.DifferentNamespace, unpackDirectory);
+    }
 
-        if(stringToReplace != newProjectName)
+
+
+    public static void RenameProject(string newProjectName, string oldProjectName, string? newNamespace, string projectRootDirectory)
+    { 
+        if(oldProjectName != newProjectName)
         {
-            RenameFiles(unpackDirectory, stringToReplace,
+            RenameFiles(projectRootDirectory, oldProjectName,
                 newProjectName);
 
-            UpdateSolutionContents(unpackDirectory, stringToReplace,
+            UpdateSolutionContents(projectRootDirectory, oldProjectName,
                 newProjectName);
         }
 
-        var newNamespace = viewModel.DifferentNamespace ?? viewModel.ProjectName;
-        if(stringToReplace != newNamespace)
+        newNamespace = newNamespace ?? newProjectName;
+        if(oldProjectName != newNamespace)
         {
-            UpdateNamespaces(unpackDirectory, stringToReplace,
-                newNamespace);
+            UpdateNamespaces(projectRootDirectory, oldProjectName, newNamespace, newProjectName);
         }
 
     }
@@ -310,42 +314,17 @@ public static class ProjectCreationHelper
         return isFileNameValid;
     }
 
-    private static GeneralResponse DownloadFileSync(NewProjectViewModel viewModel, string zipToUnpack, string fileToDownoad)
+    private static GeneralResponse DownloadFileSync(NewProjectViewModel viewModel, string destinationZip, string fileToDownoad)
     {
         var urs = new UpdaterRuntimeSettings();
         urs.FileToDownload = fileToDownoad;
         urs.FormTitle = "Downloading " + viewModel.SelectedProject.FriendlyName;
 
-        //if (string.IsNullOrEmpty(zipToUnpack))
-        //{
-        //    throw new Exception("The zipToUnpack argument is null - it shouldn't be");
-        //}
-
-        urs.LocationToSaveFile = zipToUnpack;
+        urs.LocationToSaveFile = destinationZip;
 
         string whereToSaveSettings =
             FileManager.UserApplicationDataForThisApplication + "DownloadInformation." + UpdaterRuntimeSettings.RuntimeSettingsExtension;
 
-
-        //ProcessStartInfo psi = new ProcessStartInfo();
-        //psi.FileName = resultingLocation;
-
-        //// The username for the user may have a space in it
-        //// so we need to have quotes around the path
-
-        //psi.Arguments = "\"" + whereToSaveSettings + "\"";
-
-
-        //Process process = Process.Start(psi);
-
-        //while (!process.HasExited)
-        //{
-        //    System.Threading.Thread.Sleep(200);
-        //}
-        //bool succeeded = process.ExitCode == 0;
-
-
-        //return succeeded;
 
         var window = new UpdaterWpf.Views.MainWindow(whereToSaveSettings, urs);
         window.CancelButtonVisibility = viewModel.IsCancelButtonVisible
@@ -386,8 +365,8 @@ public static class ProjectCreationHelper
     /// </summary>
     /// <param name="unpackDirectory">The directory containing all of the files to rename.</param>
     /// <param name="stringToReplace">What to replace - usually this is the platform name.</param>
-    /// <param name="stringToReplaceWith">What to replace with - this is the project name.</param>
-    private static void RenameFiles(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
+    /// <param name="newProjectName">What to replace with - this is the project name.</param>
+    private static void RenameFiles(string unpackDirectory, string stringToReplace, string newProjectName)
     {
         List<string> filesToReplace = FileManager.GetAllFilesInDirectory(
             unpackDirectory, "csproj");
@@ -426,6 +405,9 @@ public static class ProjectCreationHelper
         filesToReplace.AddRange(FileManager.GetAllFilesInDirectory(
             unpackDirectory, "pfx"));
 
+        filesToReplace.AddRange(FileManager.GetAllFilesInDirectory(
+            unpackDirectory, "mgcb"));
+
 
         foreach (string fileName in filesToReplace)
         {
@@ -434,7 +416,7 @@ public static class ProjectCreationHelper
                 string directory = FileManager.GetDirectory(fileName);
                 string fileWithoutPath = FileManager.RemovePath(fileName);
 
-                fileWithoutPath = fileWithoutPath.Replace(stringToReplace, stringToReplaceWith);
+                fileWithoutPath = fileWithoutPath.Replace(stringToReplace, newProjectName);
 
                 TryMultipleTimes(() => File.Move(fileName, directory + fileWithoutPath), 5);
             }
@@ -462,7 +444,7 @@ public static class ProjectCreationHelper
                     string beforeLastIndex = fileName.Substring(0, lastIndexOfWhatToReplace);
 
                     string after = fileName.Substring(lastIndexOfWhatToReplace, fileName.Length - lastIndexOfWhatToReplace);
-                    after = after.Replace(stringToReplace, stringToReplaceWith);
+                    after = after.Replace(stringToReplace, newProjectName);
 
                     string targetDirectory = beforeLastIndex + after;
 
@@ -541,8 +523,9 @@ public static class ProjectCreationHelper
         streamWrite.Write(fileContents);
         streamWrite.Close();
     }
-    private static void UpdateNamespaces(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
+    private static void UpdateNamespaces(string unpackDirectory, string stringToReplace, string projectNamespace, string projectName)
     {
+        #region cs/xaml/aspx/html/user/appxmanifest
         // simple replacements:
         List<string> 
             filesToFix = FileManager.GetAllFilesInDirectory(unpackDirectory, "cs");
@@ -558,11 +541,14 @@ public static class ProjectCreationHelper
         {
             string contents = FileManager.FromFileText(fileName);
 
-            contents = contents.Replace(stringToReplace, stringToReplaceWith);
+            contents = contents.Replace(stringToReplace, projectNamespace);
 
             FileManager.SaveText(contents, fileName);
         }
 
+        #endregion
+
+        #region CSV
         filesToFix.Clear();
 
         filesToFix = FileManager.GetAllFilesInDirectory(unpackDirectory, "csv");
@@ -571,11 +557,14 @@ public static class ProjectCreationHelper
         {
             string contents = FileManager.FromFileText(fileName);
             // to catch namespaces:
-            contents = contents.Replace(stringToReplace + ".", stringToReplaceWith + ".");
+            contents = contents.Replace(stringToReplace + ".", projectNamespace + ".");
 
             FileManager.SaveText(contents, fileName);
         }
 
+        #endregion
+
+        #region CSPROJ
         filesToFix.Clear();
 
         filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "csproj"));
@@ -591,24 +580,34 @@ public static class ProjectCreationHelper
                 "<RootNamespace>" + stringToReplace + "</RootNamespace>";
 
             string namespaceLineReplacement =
-                "<RootNamespace>" + stringToReplaceWith + "</RootNamespace>";
+                "<RootNamespace>" + projectNamespace + "</RootNamespace>";
 
             contents = contents.Replace(namespaceLine, namespaceLineReplacement);
 
             string originalStartup = "<StartupObject>" + stringToReplace + ".Program</StartupObject>";
-            string replacementStartup = "<StartupObject>" + stringToReplaceWith + ".Program</StartupObject>";
+            string replacementStartup = "<StartupObject>" + projectNamespace + ".Program</StartupObject>";
             contents = contents.Replace(originalStartup, replacementStartup);
 
             string originalAssemblyName = $"<AssemblyName>{stringToReplace}</AssemblyName>";
-            string newAssemblyName = $"<AssemblyName>{stringToReplaceWith}</AssemblyName>";
+            string newAssemblyName = $"<AssemblyName>{projectNamespace}</AssemblyName>";
             contents = contents.Replace(originalAssemblyName, newAssemblyName);
 
             string originalProjectReference = $@"<ProjectReference Include=""..\{stringToReplace}Content\{stringToReplace}Content.contentproj"">";
-            string newProjectReference = $@"<ProjectReference Include=""..\{stringToReplaceWith}Content\{stringToReplaceWith}Content.contentproj"">";
+            string newProjectReference = $@"<ProjectReference Include=""..\{projectNamespace}Content\{projectNamespace}Content.contentproj"">";
             contents = contents.Replace(originalProjectReference, newProjectReference);
+
+            string originalMgcb = $@"<KniContentReference Include=""Content\{stringToReplace}Content.mgcb"" />";
+            // use the project name, not the project namespace because we want the mgcb to have the same name as the project
+            // when making a synced project
+            string newMgcb = $@"<KniContentReference Include=""Content\{projectName}Content.mgcb"" />";
+            contents = contents.Replace(originalMgcb, newMgcb);
 
             System.IO.File.WriteAllText(fileName, contents, Encoding.UTF8);
         }
+
+        #endregion
+
+        #region contentproj
 
         filesToFix.Clear();
         filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "contentproj"));
@@ -617,14 +616,16 @@ public static class ProjectCreationHelper
             string contents = FileManager.FromFileText(fileName);
 
             string whatToReplace = $"\\{stringToReplace}\\Libraries\\";
-            string whatToReplaceWith = $"\\{stringToReplaceWith}\\Libraries\\";
+            string whatToReplaceWith = $"\\{projectNamespace}\\Libraries\\";
 
             contents = contents.Replace(whatToReplace, whatToReplaceWith);
 
             System.IO.File.WriteAllText(fileName, contents, Encoding.UTF8);
         }
 
+        #endregion
 
+        #region GLUX/GLUJ
         filesToFix.Clear();
         filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "glux"));
         filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "gluj"));
@@ -634,14 +635,89 @@ public static class ProjectCreationHelper
             string contents = FileManager.FromFileText(fileName);
 
             string whatToSearchFor = stringToReplace + ".";
-            string replacement = stringToReplaceWith + ".";
+            string replacement = projectNamespace + ".";
 
             contents = contents.Replace(whatToSearchFor, replacement);
 
             FileManager.SaveText(contents, fileName);
         }
+
+        #endregion
+
+        #region GLEJ/GLSJ
+        filesToFix.Clear();
+        filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "glej"));
+        filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "glsj"));
+        foreach(string fileName in filesToFix)
+        {
+            string contents = FileManager.FromFileText(fileName);
+
+            // June 15, 2024
+            // We used to do ".DataTypes" to catch references to
+            // CSVs but it misses references to NamedObjectSaves, so we
+            // need to update those. We can be more general by just looking for 
+            // the old name plus a dot at the end
+            string whatToSearchFor = stringToReplace + ".";
+            string replacement = projectNamespace + ".";
+
+            contents = contents.Replace(whatToSearchFor, replacement);
+
+            FileManager.SaveText(contents, fileName);
+        }
+        #endregion
+
+        #region RAZOR
+        filesToFix.Clear();
+        filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "razor"));
+        foreach (string fileName in filesToFix)
+        {
+            string contents = FileManager.FromFileText(fileName);
+
+            // June 15, 2024
+            // We used to do ".DataTypes" to catch references to
+            // CSVs but it misses references to NamedObjectSaves, so we
+            // need to update those. We can be more general by just looking for 
+            // the old name plus a dot at the end
+            string whatToSearchFor = $"@using {stringToReplace}";
+            string replacement = $"@using {projectNamespace}";
+
+            contents = contents.Replace(whatToSearchFor, replacement);
+
+            if(contents.Contains($"<PageTitle>{stringToReplace}</PageTitle>"))
+            {
+                whatToSearchFor = $"<PageTitle>{stringToReplace}</PageTitle>";
+                replacement = $"<PageTitle>{projectNamespace}</PageTitle>";
+
+                contents = contents.Replace(whatToSearchFor, replacement);
+            }
+
+            FileManager.SaveText(contents, fileName);
+        }
+        #endregion
+
+        #region launchSettings.json
+
+        filesToFix.Clear();
+        filesToFix.AddRange(FileManager.GetAllFilesInDirectory(unpackDirectory, "json"));
+        foreach(var fileName in filesToFix)
+        {
+            if (fileName.ToLowerInvariant().EndsWith("launchsettings.json") == false)
+            {
+                continue;
+            }
+
+            string contents = FileManager.FromFileText(fileName);
+            string whatToSearchFor = "\"" + stringToReplace + "\": {";
+            string replacement = "\"" + projectNamespace + "\": {";
+
+            contents = contents.Replace(whatToSearchFor, replacement);
+
+            FileManager.SaveText(contents, fileName);
+        }
+
+        #endregion
     }
-    
+
     /*
     private static void UpdateJavaFiles(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
     {
@@ -701,7 +777,7 @@ public static class ProjectCreationHelper
     }
 
 
-    internal static string GetWhyProjectNameIsntValid(string projectName)
+    public static string GetWhyProjectNameIsntValid(string projectName)
     {
         if (string.IsNullOrEmpty(projectName))
         {

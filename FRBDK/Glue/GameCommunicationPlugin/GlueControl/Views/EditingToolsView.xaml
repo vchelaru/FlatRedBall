@@ -4,11 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignWidth="28">
     <StackPanel>
-        <ToggleButton x:Name="SelectToggleButton" Height="24" Width="24" Click="SelectObjectsToggleClicked">
-            <Image Source="/GameCommunicationPlugin;component/GlueControl/Icons/SelectObjectsIcon.png" ></Image>
+        <ToggleButton x:Name="SelectToggleButton" Height="20" Click="SelectObjectsToggleClicked" Style="{DynamicResource IconToggleButton}" Content="{materialDesign:PackIcon CursorDefaultOutline}">
         </ToggleButton>
         <StackPanel x:Name="TileButtonsStack">
         </StackPanel>

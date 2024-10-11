@@ -9,7 +9,7 @@ using System.Windows.Data;
 using System.Windows.Shapes;
 using ToolsUtilities;
 
-namespace OfficialPluginsCore.Wizard.Models
+namespace OfficialPlugins.Wizard.Models
 {
     #region Enums
 

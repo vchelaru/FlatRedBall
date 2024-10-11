@@ -131,7 +131,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 #endregion
 
-                CreateVariableResetField(namedObjectSave, typeName, codeBlock);
+                var typeNoGlobal = typeName;
+                if(typeNoGlobal.StartsWith("global::"))
+                {
+                    typeNoGlobal = typeNoGlobal.Substring("global::".Length);
+                }
+                CreateVariableResetField(namedObjectSave, typeNoGlobal, codeBlock);
 
                 // If this NamedObjectSave has children, then create fields for those too
                 foreach (NamedObjectSave childNos in namedObjectSave.ContainedObjects)
@@ -476,6 +481,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
+        #region Activity
+
         public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
             #region Loop through all NamedObjects
@@ -490,6 +497,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
+        #endregion
+
         public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
             return codeBlock;
@@ -503,7 +512,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             foreach (NamedObjectSave nos in element.NamedObjects)
             {
-                string qualifiedType = GetQualifiedTypeName(nos);
+                string qualifiedType = GetQualifiedTypeName(nos, prefixGlobal:true);
 
                 if ((nos.SourceType == SourceType.Entity) && !typesAlreadyLoaded.Contains(qualifiedType) && nos.IsFullyDefined)
                 {
@@ -1326,24 +1335,40 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public static string GetQualifiedTypeName(NamedObjectSave namedObjectSave)
+        public static string GetQualifiedTypeName(NamedObjectSave namedObjectSave, bool prefixGlobal=true)
         {
             AssetTypeInfo ati = null;
             if (namedObjectSave.SourceType == SaveClasses.SourceType.Entity &&
                 !string.IsNullOrEmpty(namedObjectSave.SourceClassType))
             {
-
-                return ProjectManager.ProjectNamespace + '.' + namedObjectSave.SourceClassType.Replace('\\', '.');
+                if(prefixGlobal)
+                {
+                    return "global::" + ProjectManager.ProjectNamespace + '.' + namedObjectSave.SourceClassType.Replace('\\', '.');
+                }
+                else
+                {
+                    return ProjectManager.ProjectNamespace + '.' + namedObjectSave.SourceClassType.Replace('\\', '.');
+                }
             }
             else if(namedObjectSave.IsList)
             {
-                return GetQualifiedClassType(namedObjectSave);
+                return GetQualifiedClassType(namedObjectSave, prefixGlobal);
             }
             else if ((ati = namedObjectSave.GetAssetTypeInfo()) != null)
             {
-                return
+                var toReturn =
                     ati.QualifiedRuntimeTypeName.PlatformFunc?.Invoke(namedObjectSave) ?? 
-                    ati.QualifiedRuntimeTypeName.QualifiedType;             }
+                    ati.QualifiedRuntimeTypeName.QualifiedType;             
+
+                if(prefixGlobal && !string.IsNullOrEmpty(toReturn)&& !toReturn.StartsWith("global::"))
+                {
+                    toReturn = "global::" + toReturn;
+                }
+
+                return toReturn;
+            }
+
+
             else
             {
                 return GetQualifiedClassType(namedObjectSave);
@@ -1351,8 +1376,9 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
-        static string GetQualifiedClassType(NamedObjectSave instance)
+        static string GetQualifiedClassType(NamedObjectSave instance, bool prefixGlobal=true)
         {
+            var globalPrefix = prefixGlobal ? "global::" : "";
             if (instance.SourceType == SourceType.FlatRedBallType && !string.IsNullOrEmpty(instance.InstanceType) &&
                 instance.InstanceType.Contains("<T>"))
             {
@@ -1368,24 +1394,24 @@ namespace FlatRedBall.Glue.CodeGeneration
                     var ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(genericType, true);
                     if (ati != null)
                     {
-                        genericType = ati.QualifiedRuntimeTypeName.QualifiedType;
+                        genericType = globalPrefix + ati.QualifiedRuntimeTypeName.QualifiedType;
                     }
 
                     string instanceType = instance.InstanceType;
 
                     if (instanceType == "List<T>")
                     {
-                        instanceType = "System.Collections.Generic.List<T>";
+                        instanceType = globalPrefix + "System.Collections.Generic.List<T>";
                     }
                     else if (instanceType?.Contains("PositionedObjectList<T>") == true)
                     {
-                        instanceType = "FlatRedBall.Math.PositionedObjectList<T>";
+                        instanceType = globalPrefix + "FlatRedBall.Math.PositionedObjectList<T>";
                     }
 
                     if (genericType.StartsWith("Entities\\") || genericType.StartsWith("Entities/"))
                     {
                         genericType =
-                            ProjectManager.ProjectNamespace + '.' + genericType.Replace('\\', '.');
+                            globalPrefix + ProjectManager.ProjectNamespace + '.' + genericType.Replace('\\', '.');
                         return instanceType.Replace("<T>", "<" + genericType + ">");
 
                     }
@@ -1430,38 +1456,71 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 string variableToReset = namedObjectSave.VariablesToReset[i];
 
-                string typeOfResetVariable = "";
-                MemberInfo memberInfo = null;
+                var ati = namedObjectSave.GetAssetTypeInfo();
+                var variable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == variableToReset);
+                var typeOfResetVariable = variable?.Type;  
 
-                try
+                if(string.IsNullOrEmpty(typeOfResetVariable))
                 {
-                    memberInfo = GetMemberInfoForMember(namedObjectSave, typeName, variableToReset);
-                }
-                catch (InvalidOperationException)
-                {
-                    // If we got here that means that the object doesn't have a variable matching what was passed in.
-                    // That's okay, we can just continue...well, after we tell the user about the problem.
-                }
 
-                if (memberInfo == null)
-                {
-                    GlueGui.ShowMessageBox("Error generating code for " + namedObjectSave.ToString() + ":\nCould not find variable " + variableToReset + " in " + namedObjectSave.SourceClassType);
-                }
-                else
-                {
-                    if (memberInfo is PropertyInfo)
+                    MemberInfo memberInfo = null;
+
+                    try
                     {
-                        var memberInfoPropertyType = ((PropertyInfo)memberInfo).PropertyType;
-                        var memberInfoPropertyTypeString = ToCSharpTypeString( memberInfoPropertyType);
-                        
-                        typeOfResetVariable = TypeManager.GetCommonTypeName(memberInfoPropertyTypeString);
+                        memberInfo = GetMemberInfoForMember(namedObjectSave, typeName, variableToReset);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // If we got here that means that the object doesn't have a variable matching what was passed in.
+                        // That's okay, we can just continue...well, after we tell the user about the problem.
+                    }
+
+                    if (memberInfo == null)
+                    {
+                        var stringBuilder = new StringBuilder();
+                        stringBuilder.AppendLine("Error generating code for " + namedObjectSave.ToString());
+
+                        if(ati == null)
+                        {
+                            stringBuilder.AppendLine("the AssetTypeInfo for this object could not be found. The following asset type infos are used:");
+
+                            foreach(var existingAti in AvailableAssetTypes.Self.AllAssetTypes.OrderBy(item => item.FriendlyName))
+                            {
+                                stringBuilder.AppendLine($"{existingAti.FriendlyName} ({existingAti.QualifiedRuntimeTypeName})");
+                            }
+                        }
+                        else
+                        {
+                            stringBuilder.AppendLine($"Found the AssetTypeInfo {ati.FriendlyName} but missing the variable {variableToReset}. The following variables exist in the AssetTypeInfo:");
+                            foreach (var foundVariable in ati.VariableDefinitions)
+                            {
+                                stringBuilder.AppendLine(foundVariable.Name + " (" + foundVariable.Type + ")");
+                            }
+                        }
+
+                        GlueCommands.Self.PrintError(stringBuilder.ToString());
                     }
                     else
                     {
-                        typeOfResetVariable = TypeManager.GetCommonTypeName(((FieldInfo)memberInfo).FieldType.ToString());
+                        if (memberInfo is PropertyInfo)
+                        {
+                            var memberInfoPropertyType = ((PropertyInfo)memberInfo).PropertyType;
+                            var memberInfoPropertyTypeString = ToCSharpTypeString( memberInfoPropertyType);
+                        
+                            typeOfResetVariable = TypeManager.GetCommonTypeName(memberInfoPropertyTypeString);
+                        }
+                        else
+                        {
+                            typeOfResetVariable = TypeManager.GetCommonTypeName(((FieldInfo)memberInfo).FieldType.ToString());
+
+                        }
 
                     }
 
+                }
+
+                if(!string.IsNullOrEmpty(typeOfResetVariable))
+                {
                     // 1/2/2011
                     // The following
                     // used to be protected
@@ -1471,7 +1530,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // these variables static and we'll see
                     // if this causes problems.
                     codeBlock.Line(StringHelper.SpaceStrings("static", typeOfResetVariable, namedObjectSave.InstanceName) +
-                                   variableToReset.Replace(".", "") + "Reset;");
+                                    variableToReset.Replace(".", "") + "Reset;");
                 }
             }
         }
@@ -2080,7 +2139,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                         {
                             if (isInsideVisibleProperty)
                             {
-                                codeBlock.Line(namedObject.FieldName + ".ReAddToManagers(" + layerName + ");");
+                                // October 2, 2024
+                                // There is no ReAddToManagers
+                                // available anymore so this generates
+                                // invalid code. I think that this code
+                                // path is used anymore otherwise others
+                                // would have reported it,but we'll modify
+                                // the code so it compiles at least for the
+                                // auto test:
+                                //codeBlock.Line(namedObject.FieldName + ".ReAddToManagers(" + layerName + ");");
+                                codeBlock.Line(namedObject.FieldName + ".AddToManagers(" + layerName + ");");
                             }
                             else
                             {
@@ -2321,7 +2389,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             int index = 0;
             
             if (ati.AddToManagersMethod.Count > 1 && namedObject.SourceType == SourceType.FlatRedBallType &&
-                    (namedObject.SourceClassType == "Sprite" || namedObject.SourceClassType == "SpriteFrame") &&
+                    (namedObject.SourceClassType == "Sprite" || namedObject.SourceClassType == "SpriteFrame" || namedObject.SourceClassType == "FlatRedBall.Sprite") &&
                     namedObject.IsZBuffered)
             {
                 index = 1;

@@ -1,4 +1,4 @@
-﻿using OfficialPluginsCore.Compiler.ViewModels;
+﻿using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Linq;
 using System.Windows;

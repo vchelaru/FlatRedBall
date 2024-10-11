@@ -330,6 +330,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             {
                 save.LeftTabWidthPixels = null;
             }
+
+            if (MainPanelControl.ViewModel.RightPanelWidth.GridUnitType == System.Windows.GridUnitType.Pixel)
+            {
+                save.RightTabWidthPixels = MainPanelControl.ViewModel.RightPanelWidth.Value;
+            }
+            else
+            {
+                save.RightTabWidthPixels = null;
+            }
+
+            if (MainPanelControl.ViewModel.BottomPanelHeight.GridUnitType == System.Windows.GridUnitType.Pixel)
+            {
+                save.BottomTabHeightPixels = MainPanelControl.ViewModel.BottomPanelHeight.Value;
+            }
+            else
+            {
+                save.BottomTabHeightPixels = null;
+            }
+
             // do we care about the other panels?
 
 

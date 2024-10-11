@@ -149,7 +149,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
 
         private static void ImplementIEntityFactory(string factoryClassName, CodeBlockBase codeBlock)
         {
-            codeBlock.Function("object", "IEntityFactory.CreateNew", "float x = 0, float y = 0")
+            // Do not speify the optional parameters as they have no impact:
+            //codeBlock.Function("object", "IEntityFactory.CreateNew", "float x = 0, float y = 0")
+            // From https://stackoverflow.com/a/23141985/789380
+            // This resolves warnings in generated code
+            codeBlock.Function("object", "IEntityFactory.CreateNew", "float x, float y")
                 .Line($"return {factoryClassName}.CreateNew(x, y);");
 
 
@@ -372,19 +376,19 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             codeBlock
                 .Function("private static void", "FactoryInitialize", "");
 
-            functionBlock.Line("int numberToPreAllocate = " + numberToPreAllocate + ";");
-
-            var glueProject = GlueState.Self.CurrentGlueProject;
-            var hasEditMode = glueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
-            if (hasEditMode)
-            {
-                functionBlock.Line("// If in edit mode and viewing a screen, don't pre-allocate because the content manager may not be set which would cause a crash");
-                functionBlock.If("FlatRedBall.Screens.ScreenManager.IsInEditMode && FlatRedBall.Screens.ScreenManager.CurrentScreen?.GetType().Name == \"EntityViewingScreen\"")
-                    .Line("numberToPreAllocate = 0;");
-            }
 
             if (entity.PooledByFactory)
             {
+                functionBlock.Line("int numberToPreAllocate = " + numberToPreAllocate + ";");
+
+                var glueProject = GlueState.Self.CurrentGlueProject;
+                var hasEditMode = glueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
+                if (hasEditMode)
+                {
+                    functionBlock.Line("// If in edit mode and viewing a screen, don't pre-allocate because the content manager may not be set which would cause a crash");
+                    functionBlock.If("FlatRedBall.Screens.ScreenManager.IsInEditMode && FlatRedBall.Screens.ScreenManager.CurrentScreen?.GetType().Name == \"EntityViewingScreen\"")
+                        .Line("numberToPreAllocate = 0;");
+                }
                 functionBlock
                         .For("int i = 0; i < numberToPreAllocate; i++")
                             .Line(string.Format("{0} instance = new {0}(mContentManagerName, false);", entityClassName))

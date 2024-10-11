@@ -11,12 +11,19 @@ using System.Linq;
 using System.Text;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
-namespace GumPluginCore.CodeGeneration
+namespace GumPlugin.CodeGeneration
 {
     public class FormsClassCodeGenerator : Singleton<FormsClassCodeGenerator>
     {
-        public static string FormsRuntimeNamespace =>
-            FlatRedBall.Glue.ProjectManager.ProjectNamespace + ".FormsControls";
+        public static string FormsRuntimeNamespace => GetFormsRuntimeNamespace(prefixGlobal:true);
+
+        private static string GetFormsRuntimeNamespace(bool prefixGlobal)
+        {
+            string global = prefixGlobal ? "global::" : "";
+
+
+            return global + FlatRedBall.Glue.ProjectManager.ProjectNamespace + ".FormsControls";
+        }
 
         public string GenerateCodeFor(ElementSave gumElement)
         {
@@ -30,7 +37,7 @@ namespace GumPluginCore.CodeGeneration
             if (shouldGenerate)
             {
                 var topBlock = new CodeBlockBase();
-                var fullNamespace = GetFullRuntimeNamespaceFor(gumElement);
+                var fullNamespace = GetFullRuntimeNamespaceFor(gumElement, prefixGlobal:false);
                 var currentBlock = topBlock.Namespace(fullNamespace);
                 GenerateScreenAndComponentCodeFor(gumElement, currentBlock);
                 return topBlock.ToString();
@@ -268,23 +275,27 @@ namespace GumPluginCore.CodeGeneration
             return currentBlock;
         }
 
-        public string GetUnqualifiedRuntimeTypeFor(ElementSave elementSave)
+        public string GetUnqualifiedRuntimeTypeFor(ElementSave gumElement)
         {
-            return FlatRedBall.IO.FileManager.RemovePath(elementSave.Name) + "Forms";
+            return FlatRedBall.IO.FileManager.RemovePath(gumElement.Name) + "Forms";
         }
 
-        public string GetFullRuntimeNamespaceFor(ElementSave elementSave)
+        public string GetFullRuntimeNamespaceFor(ElementSave gumElement, bool prefixGlobal=true)
         {
-            string elementName = elementSave.Name;
+            string elementName = gumElement.Name;
 
-            var subfolder = elementSave is ScreenSave ? "Screens" : "Components";
+            var subfolder = gumElement is ScreenSave ? "Screens" : "Components";
 
-            return GetFullRuntimeNamespaceFor(elementName, subfolder);
+            return GetFullRuntimeNamespaceFor(elementName, subfolder, prefixGlobal);
         }
 
-        public string GetFullRuntimeNamespaceFor(string elementName, string screensOrComponents)
+        public string GetFullRuntimeNamespaceFor(string elementName, string screensOrComponents, bool prefixGlobal=true)
         {
             string subNamespace;
+
+            // standardize it:
+            elementName = elementName.Replace("\\", "/");
+
             if ((elementName.Contains('/')))
             {
                 subNamespace = elementName.Substring(0, elementName.LastIndexOf('/')).Replace('/', '.');
@@ -302,7 +313,17 @@ namespace GumPluginCore.CodeGeneration
             }
 
 
-            var fullNamespace = FormsRuntimeNamespace + "." + screensOrComponents + subNamespace;
+
+
+            string fullNamespace = "";
+            if(!string.IsNullOrEmpty(screensOrComponents))
+            {
+                fullNamespace = GetFormsRuntimeNamespace(prefixGlobal) + "." + screensOrComponents + subNamespace;
+            }
+            else
+            {
+                fullNamespace = GetFormsRuntimeNamespace(prefixGlobal) + subNamespace;
+            }
 
             return fullNamespace;
         }

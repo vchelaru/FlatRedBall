@@ -1804,11 +1804,58 @@ namespace FlatRedBall.Math.Geometry
 
         }
 
+        /// <summary>
+        /// Gets a random point inside of a polygon which can be convex or concave.
+        /// However, concave polygons use a brute force approach, which can be slow
+        /// and may not find a valid point within the provided number of tries.
+        /// 
+        /// Convex polygons will always return a valid Vector3 on the first try.
+        /// </summary>
+        /// <param name="numberOfTries">The number of tries to get a point in concave polygon</param>
+        /// <returns>A random position in the polygon if possible.</returns>
+        public Vector3? GetRandomPositionInThisSlow(int numberOfTries = 100)
+        {
+            Vector3? result = null;
+            for(var i = 0; i < numberOfTries; i++)
+            {
+                var point = GetRandomPositionInThisWithOverride(true);
+                if(IsPointInside(ref point))
+                {
+                    result = point;
+                    break;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Gets a random point inside of this polygon. This does
+        /// not support random points in a concave polygon.
+        /// 
+        /// For concave polygons, consider using GetRandomPositionInThisSlow.
+        /// </summary>
+        /// <returns>A random position in this shape.</returns>
+        /// <exception cref="InvalidOperationException">This method cannot get random points in a concave Polygon.</exception>
+        /// <exception cref="InvalidOperationException">Cannot get random points in a Polygon with fewer than three vertices</exception>
         public Vector3 GetRandomPositionInThis()
         {
-            if (IsConcave())
+            return GetRandomPositionInThisWithOverride(false);
+        }
+
+        /// <summary>
+        /// This private method does the heavy lifting for finding points but has an internal-use-only
+        /// argument to force explicit overriding for concave polygons
+        /// </summary>
+        /// <param name="overrideConcaveWarning">Whether to get a point that may not actually be inside 
+        /// the polygon if the polygon is concave.</param>
+        /// <returns>A point which may not be inside if the polygon is concave</returns>
+        /// <exception cref="InvalidOperationException">An exception thrown for concave polygons if the warning isn't overridden.</exception>
+        /// <exception cref="InvalidOperationException">An exception thrown when the polygon has insufficient vertices.</exception>
+        private Vector3 GetRandomPositionInThisWithOverride(bool overrideConcaveWarning = false)
+        {
+            if (IsConcave() && overrideConcaveWarning == false)
             {
-                throw new NotImplementedException("Cannot get random points inside a concave Polygon.");
+                throw new InvalidOperationException("Cannot get random points inside a concave Polygon with this algorithm. Consider using GetRandomPositionInThisSlow.");
             }
 
             if (mPoints.Length < 4)
@@ -1873,8 +1920,6 @@ namespace FlatRedBall.Math.Geometry
             relativePoint += this.Position;
 
             return relativePoint.ToVector3();
-
-
         }
 
 
@@ -2017,10 +2062,14 @@ namespace FlatRedBall.Math.Geometry
 
         }
 
-        // From:
-        // https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
+        /// <summary>
+        /// Loops through all points to determine if the Polygon is in Clockwise order.
+        /// </summary>
+        /// <returns>Whether the points on the Polygon are in clockwise order.</returns>
         public bool IsClockwise()
         {
+            // From:
+            // https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
             double sum = 0;
             for (int i = 0; i < Points.Count - 1; i++)
             {
@@ -2121,6 +2170,9 @@ namespace FlatRedBall.Math.Geometry
 
         #endregion
 
+        /// <summary>
+        /// Inverts the order of the points so that the first point becomes the last, the second becomes the second to last, etc.
+        /// </summary>
         public void InvertPointOrder()
         {
             Point temporaryPoint = new Point();
@@ -2134,6 +2186,7 @@ namespace FlatRedBall.Math.Geometry
 
                 mPoints[invertValue] = temporaryPoint;
             }
+            isClockwiseCache = IsClockwise();
         }
 
         public void KeepThisInsideOf(AxisAlignedRectangle rectangle)

@@ -268,6 +268,20 @@ namespace GlueControl
                 dto.AssignOrRecordOnly = AssignOrRecordOnly.Assign;
             }
 
+            // remove any existing variable assignments which set the same variable in the same element, preventing
+            // an accumulation of unnecessary variable assignments
+            for (int i = GlobalGlueToGameCommands.Count - 1; i > -1; i--)
+            {
+                if (GlobalGlueToGameCommands[i] is GlueVariableSetData existingSetData)
+                {
+                    if (existingSetData.ElementNameGlue == dto.ElementNameGlue &&
+                        existingSetData.VariableName == dto.VariableName)
+                    {
+                        GlobalGlueToGameCommands.RemoveAt(i);
+                    }
+                }
+            }
+
             GlobalGlueToGameCommands.Add(dto);
 
             return response;
@@ -281,6 +295,10 @@ namespace GlueControl
         {
             var value = setEditMode.IsInEditMode;
 #if SupportsEditMode
+
+
+
+
             var response = new Dtos.GeneralCommandResponse
             {
                 Succeeded = true,
@@ -342,6 +360,15 @@ namespace GlueControl
             {
                 response.Succeeded = false;
                 response.Message = $"Unexpected error:\n{ex.ToString()}";
+            }
+
+            if( !string.IsNullOrEmpty(setEditMode.CurrentGlueElementName))
+            {
+                var element = ObjectFinder.Self.GetElement(setEditMode.CurrentGlueElementName);
+                if(element != null)
+                {
+                    Editing.EditingManager.Self.SetCurrentGlueElement(element);
+                }
             }
 
             return response;
@@ -592,26 +619,29 @@ namespace GlueControl
             }
             /////////////End Early Out/////////////////////
 
-            var entityType = entity.GetType();
+            // always give dynamics preferential treatment:
+            var wasSetByRuntimeState = SelectStateAddedAtRuntime(stateName, stateCategoryName, entity, GlueState.Self.CurrentElement);
 
-            var stateTypeName = entityType.FullName + "+" + stateCategoryName ?? "VariableState";
-
-            var stateType = entityType.Assembly.GetType(stateTypeName);
-
-            if (stateType != null)
+            if (!wasSetByRuntimeState)
             {
-                SelectStateByType(stateName, stateCategoryName, entity, stateType);
-            }
-            else
-            {
-                // this should be in the dynamic list of states
-                SelectStateAddedAtRuntime(stateName, stateCategoryName, entity);
+                // if there is no runtime replacement for a state, then try to set the
+                // normal state through reflection:
+
+                var entityType = entity.GetType();
+                var stateTypeName = entityType.FullName + "+" + stateCategoryName ?? "VariableState";
+                var stateType = entityType.Assembly.GetType(stateTypeName);
+                if (stateType != null)
+                {
+                    SelectStateByType(stateName, stateCategoryName, entity, stateType);
+                }
             }
         }
 
-        private static void SelectStateAddedAtRuntime(string stateName, string stateCategoryName, PositionedObject entity)
+        private static bool SelectStateAddedAtRuntime(string stateName, string stateCategoryName, PositionedObject entity, GlueElement owner)
         {
             var entityType = entity.GetType();
+
+            var gameElementType = CommandReceiver.GlueToGameElementName(owner.Name);
 
             StateSaveCategory category = null;
             if (InstanceLogic.Self.StatesAddedAtRuntime.ContainsKey(entityType.FullName))
@@ -630,11 +660,29 @@ namespace GlueControl
 
             if (stateSave != null)
             {
+                GlueVariableSetDataResponse throwawayResponse = new GlueVariableSetDataResponse();
                 foreach (var instruction in stateSave.InstructionSaves)
                 {
-                    InstanceLogic.Self.AssignVariable(entity, instruction, convertFileNamesToObjects: true);
+                    var value = instruction.Value;
+                    string conversionReport = "";
+                    bool convertFileNamesToObjects = true;
+                    if (instruction.Value is string valueAsString)
+                    {
+                        value = VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, false, out conversionReport, convertFileNamesToObjects);
+                        //value = GlueControl.Editing.VariableAssignmentLogic.ConvertStringToValue(asString, instruction.Member.Type);
+                    }
+
+                    //InstanceLogic.Self.AssignVariable(entity, instruction, convertFileNamesToObjects: true, owner:owner);
+                    GlueControl.Editing.VariableAssignmentLogic.SetVariable(
+                        // prefix "this." so that the underlying system knows that it's a variable on the entity
+                        // This is just how it's done...
+                        "this." + instruction.Member,
+                        value, null,
+                        gameElementType, throwawayResponse);
                 }
             }
+
+            return stateSave != null;
         }
 
         private static void SelectStateByType(string stateName, string stateCategoryName, PositionedObject entity, Type stateType)
@@ -795,6 +843,7 @@ namespace GlueControl
         private static void HandleDto(SetCameraAspectRatioDto dto)
         {
             CameraSetup.Data.AspectRatio = dto.AspectRatio;
+            CameraSetup.Data.AspectRatio2 = dto.AspectRatio2;
 
             CameraSetup.ResetCamera();
 
@@ -830,17 +879,85 @@ namespace GlueControl
 
         #region Rename
 
+
+        static Dictionary<string, string> GameElementTypeToGlueRenames = new Dictionary<string, string>();
+        static Dictionary<string, string> GlueToGameElementRenames = new Dictionary<string, string>();
+
+        private static void HandleDto(RenameElementDto renameElementDto)
+        {
+            var oldGlueElementName = renameElementDto.OldName;
+            var newGlueElementName = renameElementDto.NewName;
+
+            var gameElementName = GlueToGameElementName(oldGlueElementName);
+
+            var element = ObjectFinder.Self.GetElement(oldGlueElementName);
+            if (element != null)
+            {
+                element.Name = newGlueElementName;
+            }
+            // todo - do we need to update any BaseElement references?
+
+            // do this instead of relying on the dictionary because names can repeat and that can result
+            // in incorrect behavior.
+            foreach (var item in CommandReceiver.GlobalGlueToGameCommands)
+            {
+                if (item is Dtos.AddObjectDto addObjectDtoReplay)
+                {
+                    if (addObjectDtoReplay.ElementNameGlue == oldGlueElementName)
+                    {
+                        addObjectDtoReplay.ElementNameGlue = newGlueElementName;
+                    }
+                }
+                else if (item is Dtos.GlueVariableSetData glueVariableSetDataRerun)
+                {
+                    if (glueVariableSetDataRerun.ElementNameGlue == oldGlueElementName)
+                    {
+                        glueVariableSetDataRerun.ElementNameGlue = newGlueElementName;
+                    }
+                }
+                else if (item is RemoveObjectDto removeObjectDtoRerun)
+                {
+                    for (int i = 0; i < removeObjectDtoRerun.ElementNamesGlue.Count; i++)
+                    {
+                        if (removeObjectDtoRerun.ElementNamesGlue[i] == oldGlueElementName)
+                        {
+                            removeObjectDtoRerun.ElementNamesGlue[i] = newGlueElementName;
+                        }
+                    }
+                }
+            }
+
+            // todo - we probably need to get the entire gluj
+
+            GameElementTypeToGlueRenames[gameElementName] = newGlueElementName;
+            GlueToGameElementRenames[newGlueElementName] = gameElementName;
+
+        }
+
         public static string GlueToGameElementName(string elementName)
         {
-            
-            return $"{ProjectNamespace}.{elementName.Replace("\\", ".")}";
+            if (GlueToGameElementRenames.ContainsKey(elementName))
+            {
+                return GlueToGameElementRenames[elementName];
+            }
+            else
+            {
+                return $"{ProjectNamespace}.{elementName.Replace("\\", ".")}";
+            }
         }
 
         public static string GameElementTypeToGlueElement(string gameType)
         {
-            var strings = gameType.Split('.');
+            if (GameElementTypeToGlueRenames.ContainsKey(gameType))
+            {
+                return GameElementTypeToGlueRenames[gameType];
+            }
+            else
+            {
+                var strings = gameType.Split('.');
 
-            return string.Join("\\", strings.Skip(1).ToArray());
+                return string.Join("\\", strings.Skip(1).ToArray());
+            }
         }
 
         #endregion
@@ -905,7 +1022,7 @@ namespace GlueControl
             ApplyNewNamedObjects(dto);
 
             var createdObject =
-                GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto, GlobalGlueToGameCommands.Count, forcedParent: null);
+                GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto, forcedParent: null);
 
             var response = new OptionallyAttemptedGeneralResponse();
             response.Succeeded = createdObject != null;
@@ -970,6 +1087,11 @@ namespace GlueControl
 
             category.States.Add(newStateSave);
 
+            foreach (var instruction in newStateSave.InstructionSaves)
+            {
+                instruction.Value = GlueControl.Models.IElementExtensionMethods.FixValue(instruction.Value, instruction.Type);
+            }
+
             // If there is already a runtime State object, we need to update that object's properties
             // in case those are set through code directly. Direct assignments in game code do not use the InstanceLogic.Self.StatesAddedAtRuntime
             var stateType = VariableAssignmentLogic.TryGetStateType(elementGameType + "." + (categoryName ?? "VariableState"));
@@ -990,14 +1112,26 @@ namespace GlueControl
                     allStates[newStateSave.Name] = existingState;
                 }
 
-                // what if a value has been nulled out?
-                // Categories require all values to be set
-                // so it won't matter there, and Vic thinks we
-                // should phase out uncategorized states so maybe
-                // there's no need to handle that here?
+                GlueVariableSetDataResponse throwawayResponse = new GlueVariableSetDataResponse();
+
+
                 foreach (var instruction in newStateSave.InstructionSaves)
                 {
-                    InstanceLogic.Self.AssignVariable(existingState, instruction, convertFileNamesToObjects: false);
+                    var value = instruction.Value;
+                    string conversionReport = "";
+                    bool convertFileNamesToObjects = true;
+                    if (instruction.Value is string valueAsString)
+                    {
+                        value = VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, false, out conversionReport, convertFileNamesToObjects);
+                        //value = GlueControl.Editing.VariableAssignmentLogic.ConvertStringToValue(asString, instruction.Member.Type);
+                    }
+
+                    GlueControl.Editing.VariableAssignmentLogic.SetVariable(
+                        // prefix "this." so that the underlying system knows that it's a variable on the entity
+                        // This is just how it's done...
+                        "this." + instruction.Member,
+                        value, null,
+                        elementGameType, throwawayResponse);
                 }
             }
         }
@@ -1295,12 +1429,49 @@ namespace GlueControl
             var responseDto = new GetCommandsDtoResponse();
 #if SupportsEditMode
 
-            var arrayCopy = GlobalGlueToGameCommands.ToArray();
+            var elementNameGlue = GlueState.Self.CurrentElement?.Name;
 
-            foreach(var item in arrayCopy)
+            if(elementNameGlue != null)
             {
-                var combined = item.GetType().Name + ":" + JsonConvert.SerializeObject(item);
-                responseDto.Commands.Add(combined);
+                var element = GlueControl.Managers.ObjectFinder.Self.GetElement(elementNameGlue);
+                HashSet<string> allElementNames = new HashSet<string>();
+                allElementNames.Add(elementNameGlue);
+
+                if (element != null)
+                {
+                    var baseElements = GlueControl.Managers.ObjectFinder.Self.GetAllBaseElementsRecursively(element);
+                    foreach (var baseElement in baseElements)
+                    {
+                        allElementNames.Add(baseElement.Name);
+                    }
+                }
+
+                var arrayCopy = CommandReplayLogic.GetDtosToReplayFor(elementNameGlue).ToArray();
+
+                foreach(var item in arrayCopy)
+                {
+                    if(item is RemoveObjectDto removeObjectDto)
+                    {
+                        RemoveObjectDtoResponse response = new RemoveObjectDtoResponse();
+
+                        for (int j = 0; j < removeObjectDto.ObjectNames.Count; j++)
+                        {
+                            var shouldRerun = allElementNames.Contains(removeObjectDto.ElementNamesGlue[j]);
+
+                            if (shouldRerun)
+                            {
+                                var objectName = removeObjectDto.ObjectNames[j];
+                                var removeObjectElement = removeObjectDto.ElementNamesGlue[j];
+                                responseDto.Commands.Add($"Remove {objectName}");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        responseDto.Commands.Add(item.ToString());
+                    }
+                }
+
             }
 #endif
 
@@ -1317,8 +1488,9 @@ namespace GlueControl
             FlatRedBallServices.Game.Window.IsBorderless = dto.IsBorderless;
 #elif FNA
             FlatRedBallServices.Game.Window.IsBorderlessEXT = dto.IsBorderless;
-
 #endif
+            // FRB Editor sets this to true to embed the game:
+            EmbeddedWindowLogic.IsEmbedded = dto.IsBorderless;
         }
 
         #endregion
@@ -1374,6 +1546,19 @@ namespace GlueControl
         {
             var response = new ProfilingDataDto();
 
+#if HasFrbServicesGraphicsDeviceManager || REFERENCES_FRB_SOURCE
+            var isFixed = !dto.IsTimestepDisabled;
+
+
+            FlatRedBallServices.Game.IsFixedTimeStep = isFixed;
+            if(FlatRedBallServices.GraphicsDeviceManager.SynchronizeWithVerticalRetrace !=
+                isFixed)
+            {
+                FlatRedBallServices.GraphicsDeviceManager.SynchronizeWithVerticalRetrace = isFixed;
+                FlatRedBallServices.GraphicsDeviceManager.ApplyChanges();
+            }
+#endif
+
             response.SummaryData = FlatRedBall.Debugging.Debugger.GetFullPerformanceInformation();
 
             response.CollisionData = GetCollisionDataDto();
@@ -1385,7 +1570,6 @@ namespace GlueControl
         {
             var collisionManager = FlatRedBall.Math.Collision.CollisionManager.Self;
             int numberOfCollisions = 0;
-            int? maxCollisions = null;
 
             List<CollisionRelationshipInfo> toReturn = new List<CollisionRelationshipInfo>();
             foreach (var relationship in collisionManager.Relationships)
@@ -1447,7 +1631,7 @@ namespace GlueControl
             return toReturn;
         }
 
-        #endregion
+#endregion
     }
 
 

@@ -28,6 +28,8 @@ namespace FlatRedBall.Forms.Controls
 
     public class ScrollViewer : FrameworkElement
     {
+        public const string VerticalScrollBarInstanceName = "VerticalScrollBarInstance";
+
         #region Fields/Properties
 
         bool reactToInnerPanelPositionOrSizeChanged = true;
@@ -56,6 +58,18 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        public double SmallChange
+        {
+            get => verticalScrollBar.SmallChange;
+            set => verticalScrollBar.SmallChange = value;
+        }
+
+        public double LargeChange
+        {
+            get => verticalScrollBar.LargeChange;
+            set => verticalScrollBar.LargeChange = value;
+        }
+
         #endregion
 
         #region Initialize
@@ -66,7 +80,7 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void ReactToVisualChanged()
         {
-            var scrollBarVisual = Visual.GetGraphicalUiElementByName("VerticalScrollBarInstance"); 
+            var scrollBarVisual = Visual.GetGraphicalUiElementByName(VerticalScrollBarInstanceName); 
             if(scrollBarVisual.FormsControlAsObject == null)
             {
                 verticalScrollBar = new ScrollBar(scrollBarVisual);
@@ -76,6 +90,16 @@ namespace FlatRedBall.Forms.Controls
                 verticalScrollBar = scrollBarVisual.FormsControlAsObject as ScrollBar;
             }
             verticalScrollBar.ValueChanged += HandleVerticalScrollBarValueChanged;
+
+            // Not sure if we want to set these here. This was moved out of 
+            // UpdateVerticalScrollBarValues so that it's only set once before
+            // CustomInitialize for UI, so usually this is okay. But eventually 
+            // the user may want to swap out controls and doing so might reset this
+            // value causing confusion? If so, we'd need to store off a temp value.
+            verticalScrollBar.SmallChange = 10;
+            verticalScrollBar.LargeChange = verticalScrollBar.ViewportSize;
+
+
             // Depending on the height and width units, the scroll bar may get its update
             // called before or after this. We can't bet on the order, so we have to handle
             // both this and the scroll bar's height value changes, and adjust according to both:
@@ -127,6 +151,11 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+
+        #endregion
+
+        #region Scroll Methods
+
         private void HandleMouseWheelScroll(IWindow window, FlatRedBall.Gui.RoutedEventArgs args)
         {
             var valueBefore = verticalScrollBar.Value;
@@ -136,11 +165,6 @@ namespace FlatRedBall.Forms.Controls
 
             args.Handled = verticalScrollBar.Value != valueBefore;
         }
-
-
-        #endregion
-
-        #region Scroll Methods
 
         public void ScrollToBottom()
         {
@@ -211,9 +235,9 @@ namespace FlatRedBall.Forms.Controls
 
             verticalScrollBar.Maximum = maxValue;
 
-            verticalScrollBar.SmallChange = 10;
-            verticalScrollBar.LargeChange = verticalScrollBar.ViewportSize;
-
+            // We now expose the SmallChange and LargeChange properties so that the user can set them
+            // We don't want to overwrite them here anymore...
+            
             switch(verticalScrollBarVisibility)
             {
                 case ScrollBarVisibility.Hidden:

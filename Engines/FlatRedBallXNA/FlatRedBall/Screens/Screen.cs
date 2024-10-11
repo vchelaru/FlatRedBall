@@ -37,6 +37,11 @@ namespace FlatRedBall.Screens
     {
         #region Fields
 
+        /// <summary>
+        /// Cancellation token source which can be used by any async call to cancel whenever the screen is destroyed.
+        /// </summary>
+        public CancellationTokenSource CancellationTokenSource { get; private set; } = new CancellationTokenSource();
+
         int mNumberOfThreadsBeforeAsync = -1;
 
         public bool IsPaused { get; private set; } = false;
@@ -241,6 +246,9 @@ namespace FlatRedBall.Screens
         Action ActivatingAction;
         Action DeactivatingAction;
 
+        /// <summary>
+        /// Event raised before CustomInitialize is called.
+        /// </summary>
         public Action BeforeCustomInitialize;
 
         #endregion
@@ -249,7 +257,30 @@ namespace FlatRedBall.Screens
 
         #region Constructor
 
+        /// <summary>
+        /// Creates a new Screen using the Global content manager
+        /// </summary>
+        public Screen()
+        {
+            DoConstructorLogic(FlatRedBallServices.GlobalContentManager);
+        }
+
+        /// <summary>
+        /// Creates a new Screen using the specified content manager name
+        /// </summary>
+        /// <param name="contentManagerName">The content manager name to use when loading content for this screen.</param>
         public Screen(string contentManagerName)
+        {
+            // June 13, 2024
+            // Added this constructor
+            // to allow code-only projects
+            // to instantiate using global if
+            // they don't care about which content
+            // manager to use.
+            DoConstructorLogic(contentManagerName);
+        }
+
+        private void DoConstructorLogic(string contentManagerName)
         {
             this.Instructions = new InstructionList();
             ShouldRemoveLayer = true;
@@ -263,10 +294,7 @@ namespace FlatRedBall.Screens
             ActivatingAction = new Action(Activating);
             DeactivatingAction = new Action(OnDeactivating);
 
-            StateManager.Current.Activating += ActivatingAction;
-            StateManager.Current.Deactivating += DeactivatingAction;
-
-			if (ScreenManager.ShouldActivateScreen)
+            if (ScreenManager.ShouldActivateScreen)
             {
                 Activating();
             }
@@ -278,18 +306,18 @@ namespace FlatRedBall.Screens
         public virtual void Activating()
         {
             this.PreActivate();// for generated code to override, to reload the statestack
-            this.OnActivate(PlatformServices.State);// for user created code
+            this.OnActivate();// for user created code
         }
 
         private void OnDeactivating()
         {
             this.PreDeactivate();// for generated code to override, to save the statestack
-            this.OnDeactivate(PlatformServices.State);// for user generated code;
+            this.OnDeactivate();// for user generated code;
         }
 
         #region Activation Methods
 #if !FRB_MDX
-        protected virtual void OnActivate(StateManager state)
+        protected virtual void OnActivate()
         {
         }
 
@@ -297,7 +325,7 @@ namespace FlatRedBall.Screens
         {
         }
 
-        protected virtual void OnDeactivate(StateManager state)
+        protected virtual void OnDeactivate()
         {
         }
 
@@ -425,9 +453,6 @@ namespace FlatRedBall.Screens
         public virtual void Destroy()
         {
 
-		    StateManager.Current.Activating -= ActivatingAction;
-            StateManager.Current.Deactivating -= DeactivatingAction;
-
             if (mLastLoadedScene != null)
             {
                 mLastLoadedScene.Clear();
@@ -517,7 +542,7 @@ namespace FlatRedBall.Screens
         /// <remarks>
         /// This can be used to begin a level from the beginning or to reload a screen for debugging.
         /// </remarks>
-        /// <param name="reloadContent">Whether the screen's content should be reloaded. 
+        /// <param name="reloadScreenContent">Whether the screen's content should be reloaded. 
         /// If true, then any content that belongs
         /// to this Screen's content manager will be reloaded. 
         /// Global content will not be reloaded.</param>
@@ -564,6 +589,13 @@ namespace FlatRedBall.Screens
             }
         }
 
+        /// <summary>
+        /// Returns the instance of the object represented by the variable name. This must begin with "this.". For example, 
+        /// passing "this.PlayerInstance" will return the PlayerInstance object.
+        /// </summary>
+        /// <param name="variableName"></param>
+        /// <param name="container"></param>
+        /// <returns></returns>
         public object GetInstanceRecursive(string variableName, object container = null)
         {
             if(variableName.Contains("."))
@@ -572,8 +604,8 @@ namespace FlatRedBall.Screens
 
                 return GetInstanceRecursive(afterDot, instance);
             }
-
             return container;
+
         }
 
         /// <summary>
@@ -841,7 +873,7 @@ namespace FlatRedBall.Screens
         #region Protected Methods
 
         /// <param name="state">This should be a valid enum value of the concrete screen type.</param>
-        [Obsolete("This is no longer used for anything as of March 27 2022, and will be removed in a future version")]
+        [Obsolete("This is no longer used for anything as of March 27 2022, and will be removed in a future version", error:true)]
         public virtual void MoveToState(int state)
         {
             // no-op

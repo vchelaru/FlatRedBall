@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TopDownPluginCore.CodeGenerators
+namespace TopDownPlugin.CodeGenerators
 {
     public class AiTargetLogicCodeGenerator : FullFileCodeGenerator
     {

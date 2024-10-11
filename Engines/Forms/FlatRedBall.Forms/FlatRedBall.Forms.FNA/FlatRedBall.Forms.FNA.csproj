@@ -1,9 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-	<DefineConstants>FNA;DESKTOP_GL;XNA4;FRB_XNA;WINDOWS</DefineConstants>
-	<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DefineConstants>FNA;DESKTOP_GL;XNA4;FRB_XNA;WINDOWS</DefineConstants>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1591</NoWarn>
 
   </PropertyGroup>
   <ItemGroup>

@@ -21,7 +21,7 @@ using System.Windows.Navigation;
 
 using FileManager = ToolsUtilities.FileManager;
 
-namespace OfficialPluginsCore.AnimationChainPlugin
+namespace OfficialPlugins.AnimationChainPlugin
 {
     [Export(typeof(PluginBase))]
     public class MainAnimationChainPlugin : PluginBase
@@ -51,13 +51,14 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             this.ReactToFileChange += HandleFileChanged;
             this.ReactToNamedObjectChangedValue += NamedObjectVariableChangeLogic.HandleNamedObjectChangedValue;
             this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
-            this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
+            this.ReactToItemsSelected += HandleItemsSelected;
             this.ReactToLoadedGluxEarly += HandleLoadedGluxEarly;
             this.ReactToUnloadedGlux += HandleUnloadedGlux;
             this.IsHandlingHotkeys += GetIfIsHandlingHotkeys;
             //this.FillWithReferencedFiles += HandleFillWithReferencedFiles;
             this.FillWithReferencedFiles += HandleFillWithReferencedFilesNew;
         }
+
 
         // See HandleFillWithReferencedFilesNew for info on why this isn't used
         private ToolsUtilities.GeneralResponse HandleFillWithReferencedFiles(FilePath path, List<FilePath> list)
@@ -142,6 +143,9 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             {
                 base.AddAssetTypeInfo(ati);
             }
+
+            // Add a Gum animation too:
+            base.AddAssetTypeInfo(AssetTypeInfoManager.Self.GetGumAnimationChainListAti());
         }
 
         private void HandleUnloadedGlux()
@@ -168,15 +172,15 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             return false;
         }
 
-        private void HandleTreeViewItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> list) 
         {
             var file = GlueState.Self.CurrentReferencedFileSave;
 
-            AchxManager.HideTab();
 
             /////////////////Early Out///////////////////
             if (file == null)
             {
+                AchxManager.HideTab();
                 return;
             }
             ///////////////End Early Out/////////////////
@@ -189,6 +193,9 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             {
                 case "achx":
                     AchxManager.ShowTab(filePath);
+                    break;
+                default:
+                    AchxManager.HideTab();
                     break;
             }
         }

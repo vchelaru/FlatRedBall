@@ -41,7 +41,7 @@ namespace TileGraphicsPlugin.Managers
 
             var thisTime =
                 System.IO.File.GetLastWriteTime(
-                Assembly.GetAssembly(typeof(TileGraphicsPluginClass)).Location);
+                Assembly.GetAssembly(typeof(MainTiledPluginClass)).Location);
 
             foreach (string name in allNames.ToArray().Where(item => item.StartsWith(prefix)))
             {

@@ -79,6 +79,19 @@ namespace FlatRedBall.Content
         /// </summary>
         public static bool LoadFromGlobalIfExists = true;
 
+        /// <summary>
+        /// Contains file aliases which can be used to load files using an alternative name. The most common
+        /// use case for this is to add aliases for files which are using the content pipeline.
+        /// </summary>
+        /// <example>
+        /// When a file (such as a .png file) is using the content pipeline, it produces an .xnb file. This .xnb file
+        /// is loaded at runtime without the extension. For example:
+        /// var texture = ContentManager.Load&lt;Texture2D&gt;("Content/MyTexture");
+        /// If this file is loaded in generated code, the generated code knows to exclude the extension. However, if this
+        /// file is referenced by another file, such as by a Gum screen, then the Gum loading does not know to exclude the
+        /// extension. Therefore, we can add the following:
+        /// ContentManager.FileAliases.Add("c:/FullPath/Content/MyTexture.png", "c:/FullPath/Content/MyTexture");
+        /// </example>
         public static Dictionary<FilePath, FilePath> FileAliases { get; private set; } = new Dictionary<FilePath, FilePath>();
 		
 #if FRB_XNA && !MONOGAME
@@ -327,7 +340,14 @@ namespace FlatRedBall.Content
 
 			assetName = FileManager.Standardize(assetName);
 
-			var assetNameNoExtension = FileManager.RemoveExtension(assetName);
+#if WEB
+            if(assetName.StartsWith("./"))
+			{
+				assetName = assetName.Substring(1);
+			}
+#endif
+
+            var assetNameNoExtension = FileManager.RemoveExtension(assetName);
 
 			string combinedName = assetName + typeof(T).Name;
 
@@ -465,14 +485,6 @@ namespace FlatRedBall.Content
 			}
 #endif
 
-#if !MONOGAME && !FNA
-			if (!FileManager.IsRelative(assetName))
-			{
-				assetName = FileManager.MakeRelative(
-					assetName, System.Windows.Forms.Application.StartupPath + "/");
-			}
-#endif
-
 #if USES_DOT_SLASH_ABOLUTE_FILES
 
             T asset;
@@ -487,6 +499,16 @@ namespace FlatRedBall.Content
 
 			}
 #else
+
+#if WEB
+			if(assetName.StartsWith("/"))
+			{
+				assetName = assetName.Substring(1);
+			}
+#endif
+
+
+
 			T asset = base.Load<T>(assetName);
 #endif
 			if (!mAssets.ContainsKey(assetName))
@@ -509,6 +531,13 @@ namespace FlatRedBall.Content
 				assetName = FileManager.RelativeDirectory + assetName;
 			}
 
+			// on web we don't prefix a period before the forward slash, so check if it does start with "./" and make it just start with "/"
+#if WEB
+			if(assetName.StartsWith("./"))
+            {
+                assetName = assetName.Substring(1);
+            }
+#endif
 
 
 			string fullNameWithType = assetName + typeof(T).Name;
@@ -529,7 +558,11 @@ namespace FlatRedBall.Content
 			}
 			else if (mNonDisposableDictionary.ContainsKey(fullNameStandardizeWithType))
 			{
-				return ((T)mNonDisposableDictionary[fullNameStandardizeWithType]);
+#if PROFILE
+				mHistory.Add(new ContentLoadHistory(
+					TimeManager.CurrentTime, typeof(T).Name, fullNameWithType, ContentLoadDetail.Cached));
+#endif
+                return ((T)mNonDisposableDictionary[fullNameStandardizeWithType]);
 			}
 			else
 			{
@@ -546,7 +579,10 @@ namespace FlatRedBall.Content
 				// in the dictionaries.  But whatever is held
 				// in there may not really be a file so let's check
 				// if the file exists after we check the dictionaries.
+#if !WEB
+// can't check if a file exists (for now) on web, so just skip throwing an exception...
 				FileManager.ThrowExceptionIfFileDoesntExist(assetName);
+#endif
 #endif
 
 				IDisposable loadedAsset = null;
@@ -646,7 +682,7 @@ namespace FlatRedBall.Content
 				}
 				#endregion
 
-#region PositionedObjectList<Polygon>
+				#region PositionedObjectList<Polygon>
 
 				else if (typeof(T) == typeof(PositionedObjectList<FlatRedBall.Math.Geometry.Polygon>))
 				{
@@ -656,7 +692,7 @@ namespace FlatRedBall.Content
 					return (T)((object)polygons);
 				}
 
-#endregion
+				#endregion
 
 				#region AnimationChainList
 
@@ -702,40 +738,43 @@ namespace FlatRedBall.Content
 
                 else if (typeof(T) == typeof(SoundEffect))
                 {
-                    T soundEffect;
+                    SoundEffect soundEffect = null;
 
-                    if (assetName.StartsWith(@".\") || assetName.StartsWith(@"./"))
-                    {
-                        soundEffect = base.Load<T>(assetName.Substring(2));
+					var modifiedAssetName = (assetName.StartsWith(@".\") || assetName.StartsWith(@"./")
+						? assetName.Substring(2)
+						: assetName);
+
+					if(string.IsNullOrEmpty(extension))
+					{
+						soundEffect = base.Load<SoundEffect>(assetName.Substring(2));
+						// return here so we don't add the asset to the dictionary
+						return (T)(object)soundEffect;
+					}
+					else
+					{
+#if WEB || FNA
+						using var stream = FileManager.GetStreamForFile(assetName);
+						soundEffect = SoundEffect.FromStream(stream);
+#elif NET6_0_OR_GREATER
+						soundEffect = SoundEffect.FromFile(assetName);
+#endif
+                        loadedAsset = soundEffect;
                     }
-                    else
-                    {
-                        soundEffect = base.Load<T>(assetName);
 
-                    }
-
-                    return soundEffect;
                 }
 #endif
 
-#region RuntimeCsvRepresentation
+							#region RuntimeCsvRepresentation
 
-#if !SILVERLIGHT
-                else if (typeof(T) == typeof(RuntimeCsvRepresentation))
+				else if (typeof(T) == typeof(RuntimeCsvRepresentation))
                 {
-#if XBOX360
-					throw new NotImplementedException("Can't load CSV from file.  Try instead to use the content pipeline.");
-#else
 
                     return (T)((object)CsvFileManager.CsvDeserializeToRuntime(assetName));
-#endif
                 }
-#endif
 
+				#endregion
 
-#endregion
-
-#region SplineList
+				#region SplineList
 
                 else if (typeof(T) == typeof(List<Spline>))
                 {
@@ -756,9 +795,9 @@ namespace FlatRedBall.Content
                     return (T)asObject;
                 }
 
-#endregion
+				#endregion
 
-#region BitmapFont
+				#region BitmapFont
 
                 else if (typeof(T) == typeof(BitmapFont))
                 {
@@ -774,7 +813,7 @@ namespace FlatRedBall.Content
                     return (T)bitmapFontAsObject;
                 }
 
-#endregion
+				#endregion
 
 
 #region Text
@@ -835,6 +874,32 @@ namespace FlatRedBall.Content
 				return ((T)loadedAsset);
 			}
 		}
+
+        protected override Stream OpenStream(string assetName)
+        {
+#if WEB
+            // When we go to TitleContainer.OpenStream, we normally don't want a / prefix.
+			// But "/" is the absolute prefix for web projects so we have to add it back.
+            if (assetName.StartsWith("/") == false)
+			{
+				assetName = "/" + assetName;
+            }
+#endif
+
+
+			if(FileManager.StreamByteDictionary.ContainsKey(assetName))
+			{
+                return new MemoryStream(FileManager.StreamByteDictionary[assetName]);
+            }
+			else if(FileManager.StreamByteDictionary.ContainsKey(assetName + ".xnb"))
+			{
+				return new MemoryStream(FileManager.StreamByteDictionary[assetName + ".xnb"]);
+            }
+			else
+			{
+                return base.OpenStream(assetName);
+			}
+        }
 
         /// <summary>
         /// Removes an IDisposable from the ContentManager.  This method does not call Dispose on the argument Disposable.  It 
@@ -954,10 +1019,13 @@ namespace FlatRedBall.Content
 
 			mHistory.Add(history);
 		}
+#endif
 
-		public static void SaveContentLoadingHistory(string fileToSaveTo)
+		public static string GetContentLoadingHistoryText()
 		{
 			StringBuilder stringBuilder = new StringBuilder();
+#if PROFILE
+
 			foreach (ContentLoadHistory clh in mHistory)
 			{
 				if (!string.IsNullOrEmpty(clh.SpecialEvent))
@@ -976,18 +1044,25 @@ namespace FlatRedBall.Content
 					stringBuilder.AppendLine();
 				}
 			}
-
-			FileManager.SaveText(stringBuilder.ToString(), fileToSaveTo);
+#endif
+			return stringBuilder.ToString();
 		}
 
-#endif
+		public static void SaveContentLoadingHistory(string fileToSaveTo)
+		{
+			var text = GetContentLoadingHistoryText();
+
+
+			FileManager.SaveText(text, fileToSaveTo);
+		}
+
 
 #endregion
 
 		#region Internal Methods
 
-		// Vic says: I don't think we need this anymore
-		internal void RefreshTextureOnDeviceLost()
+        // Vic says: I don't think we need this anymore
+        internal void RefreshTextureOnDeviceLost()
 		{
 			//List<string> texturesToReload = new List<string>();
 
@@ -1008,7 +1083,7 @@ namespace FlatRedBall.Content
 
 		#endregion
 
-#region Private Methods
+		#region Private Methods
 
 		private T AdjustNewAsset<T>(T asset, string assetName)
 		{
@@ -1031,8 +1106,8 @@ namespace FlatRedBall.Content
 
 		}
 
-#endregion
+		#endregion
 
-#endregion
+		#endregion
 	}
 }

@@ -170,10 +170,6 @@ namespace GlueControl
             byte[] intBytes = await GetByteArrayFromStream(stm, 4, new byte[4]);
             var length = BitConverter.ToInt32(intBytes, 0);
 
-            if (length > 1_000_000)
-            {
-                int m = 3;
-            }
             if (length > 0)
             {
                 byte[] byteArray = await GetByteArrayFromStream(stm, length);
@@ -276,10 +272,6 @@ namespace GlueControl
 
             if (!isGet)
             {
-                if (message.Contains(":") == false)
-                {
-                    int m = 3;
-                }
                 if (runSetImmediately)
                 {
                     response = ApplySetMessage(message) ?? null;
@@ -304,17 +296,6 @@ namespace GlueControl
                 throw new System.InvalidOperationException("Objects can only be added, removed, made visible, or made invisible on the primary thread");
             }
             return CommandReceiver.Receive(message);
-        }
-
-        public void ReRunAllGlueToGameCommands()
-        {
-            var toProcess = CommandReceiver.GlobalGlueToGameCommands.ToArray();
-            CommandReceiver.GlobalGlueToGameCommands.Clear();
-
-            foreach (var dto in toProcess)
-            {
-                CommandReceiver.ReceiveDto(dto);
-            }
         }
 
         private bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
@@ -405,31 +386,10 @@ namespace GlueControl
 #endif
         }
 
-        int nextRespondableId = 1;
         public async Task<object> SendToGlue(RespondableDto respondableDto)
         {
-            var semaphoreSlim = new SemaphoreSlim(0, 1);
-
-            var idToUse = nextRespondableId;
-            nextRespondableId++;
-
-            var awaitedResponse = new AwaitedResponse
-            {
-                Semaphore = semaphoreSlim
-            };
-
-            AwaitedResponses[idToUse] = awaitedResponse;
-
-            respondableDto.Id = idToUse;
-
-            SendToGlue((object)respondableDto);
-
-            await semaphoreSlim.WaitAsync();
-            AwaitedResponses.TryRemove(idToUse, out AwaitedResponse _);
-            semaphoreSlim.Dispose();
-
-            return awaitedResponse.Response;
-            // return response?
+            var response = await SendToGlue((object)respondableDto);
+            return response;
         }
 
         public void NotifyResponse(int id, object response)
@@ -442,17 +402,17 @@ namespace GlueControl
             }
         }
 
-        public void SendToGlue(object dto)
+        public async Task<string> SendToGlue(object dto)
         {
             var type = dto.GetType().Name;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(dto);
-            SendCommandToGlue($"{type}:{json}");
+            return await SendCommandToGlue($"{type}:{json}");
         }
 
-        private void SendCommandToGlue(string command)
+        private async Task<string> SendCommandToGlue(string command)
         {
             // Send immediately to glue
-            GameConnectionManager.SendItem(new GameConnectionManager.Packet
+            return await GameConnectionManager.SendItem(new GameConnectionManager.Packet
             {
                 Payload = command,
                 PacketType = "OldDTO",

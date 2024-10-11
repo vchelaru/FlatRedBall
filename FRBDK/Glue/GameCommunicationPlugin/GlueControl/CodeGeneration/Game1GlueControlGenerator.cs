@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using GameCommunicationPlugin.GlueControl.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,6 +74,26 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 codeBlock.Line("}");
 
                 codeBlock.Line("CameraSetup.SetupCamera(FlatRedBall.Camera.Main, graphics);");
+
+                codeBlock.Line("#if WEB");
+                codeBlock.Line("global::FlatRedBall.FlatRedBallServices.ForceClientSizeUpdates();");
+                codeBlock.Line("#endif");
+
+                codeBlock.Line("#if GameCanStartInEditMode || REFERENCES_FRB_SOURCE");
+                codeBlock.Line("var isInEditMode = args.FirstOrDefault(item => item.StartsWith(\"IsInEditMode=\"));");
+                codeBlock.Line("if (!string.IsNullOrEmpty(isInEditMode))");
+                codeBlock.Line("{");
+                
+                codeBlock.Line("    //I started working on this, but decided to drop it because it's more complicated than simply setting");
+                codeBlock.Line("    //IsNextScreenInEditMode. The code that handles SetEditMode dto needs to run, which is a bigger refator. ");
+                codeBlock.Line("    //I'll keep this code in here for now, and return later when I'm ready to do a bigger refactor. ");
+                codeBlock.Line("    //var afterEqual = isInEditMode.Split('=')[1];");
+                codeBlock.Line("    //FlatRedBall.Screens.ScreenManager.IsNextScreenInEditMode = bool.Parse(afterEqual);");
+                codeBlock.Line("    //this.IsMouseVisible = true;");
+                codeBlock.Line("}");
+                codeBlock.Line("#endif");
+
+
             }
         }
 
@@ -108,7 +129,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 var startUpScreen = GetStartupScreenUnqualified();
                 if(!string.IsNullOrEmpty(startUpScreen))
                 {
-                    startUpScreen = GlueState.Self.ProjectNamespace + "." + startUpScreen.Replace("\\", ".");
+                    startUpScreen = "global::" + GlueState.Self.ProjectNamespace + "." + startUpScreen.Replace("\\", ".");
                     codeBlock.Line($"System.Type startScreenType = typeof({startUpScreen});");
 
                 }
@@ -158,34 +179,10 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 sizeChangedInnerBlockIf.Line("GlueControl.Editing.CameraLogic.UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);");
                 sizeChangedInnerBlock.Line("GlueControl.Editing.CameraLogic.PushZoomLevelToEditor();");
                 codeBlock.Line(";");
-                // Vic says - We run all Glue commands before running custom initialize. The reason is - custom initialize
-                // may make modifications to objects that are created by glue commands (such as assigning acceleration to objects
-                // in a list), but it is unlikely that scripts will make modifications to objects created in CustomInitialize because
-                // objects created in CustomInitialize cannot be modified by level editor.
-                codeBlock.Line("FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += (newScreen) => ");
-                var innerBlock = codeBlock.Block();
 
-                innerBlock.Line("// for info on why we have this if-check, see this issue: https://github.com/vchelaru/FlatRedBall/issues/1046");
-                innerBlock.If("newScreen.GetType().Name != \"EntityViewingScreen\"")
-                    .Line("glueControlManager.ReRunAllGlueToGameCommands();");
-                var isFirst = true;
-                foreach (var entity in GlueState.Self.CurrentGlueProject.Entities)
-                {
-                    if (entity.CreatedByOtherEntities && !entity.IsAbstract)
-                    {
-                        if (isFirst)
-                        {
-                            innerBlock.Line("// These get nulled out when screens are destroyed so we have to re-assign them");
-                        }
-                        // this has a factory, so we should += the 
-                        // turns out we don't qualify factories in namespaces.....well maybe we should but not going to bother with that now.
-                        // If this ever changes, we'll have to tie it to a new gluj version.
-                        var entityClassName = entity.ClassName;
-                        innerBlock.Line($"Factories.{entityClassName.Replace("\\", ".").Replace("/", ".")}Factory.EntitySpawned += (newEntity) =>  GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(newEntity);");
-                        isFirst = false;
-                    }
-                }
-                codeBlock.Line(";");
+
+
+
                 EndIfDebug(codeBlock);
 
                 if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasScreenManagerAfterScreenDestroyed)

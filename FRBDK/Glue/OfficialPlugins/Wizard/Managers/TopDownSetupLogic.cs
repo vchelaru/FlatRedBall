@@ -1,4 +1,4 @@
-﻿using OfficialPluginsCore.Wizard.Models;
+﻿using OfficialPlugins.Wizard.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

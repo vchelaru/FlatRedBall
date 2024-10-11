@@ -7,6 +7,7 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
 using GlueFormsCore.ViewModels;
+using ToolsUtilities;
 using static FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
@@ -21,13 +22,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
     {
         #region AddEntity
 
-        SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false);
+        SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false, bool notifyPluginsOfNewEntity = true);
 
-        Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel, string directory = null);
+        Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel);
 
-        void AddEntity(EntitySave entitySave);
-        void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage);
-
+        void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage = false, bool notifyPluginsOfNewEntity = true);
 
         #endregion
 
@@ -43,6 +42,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #region StateSaveCategory
 
         Task AddStateSaveCategoryAsync(string categoryName, GlueElement element);
+
+        GeneralResponse CanVariableBeIncludedInStates(string variableName, GlueElement element);
+
 
         #endregion
 
@@ -63,7 +65,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #endregion
 
         #region Add CustomVariable
-        Task AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true);
+        Task<GeneralResponse> AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true);
 
 
         void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true);

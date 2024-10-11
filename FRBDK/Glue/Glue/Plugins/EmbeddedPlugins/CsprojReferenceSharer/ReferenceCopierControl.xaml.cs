@@ -46,11 +46,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
             foreach (var sourceProject in sourceSolution.ReferencedProjects)
             {
 
-
-                var strippedSource = FileManager.RemovePath(sourceProject);
+                var projectName = sourceProject.Name;
+                var strippedSource = FileManager.RemovePath(projectName);
 
                 var found = destinationSolution.ReferencedProjects.FirstOrDefault(item => 
-                    FileManager.RemovePath(item) == strippedSource);
+                    FileManager.RemovePath(item.Name) == strippedSource);
 
 
 
@@ -75,7 +75,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
         private static List<VSSolution> GetSyncedSolutions()
         {
             return GlueState.Self.SyncedProjects
-                .Select(project => VSSolution.FromFile(ProjectSyncer.LocateSolution(project.FullFileName.FullPath)))
+                .Select(project => VSSolution.FromFile(ProjectSyncer.LocateSolution(project.FullFileName)))
                 .ToList();
         }
 

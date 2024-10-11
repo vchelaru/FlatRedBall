@@ -3,14 +3,14 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using Gum.DataTypes;
 using GumPlugin.Managers;
-using GumPluginCore.Managers;
+using GumPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FrbObjectFinder = FlatRedBall.Glue.Elements.ObjectFinder;
 
-namespace GumPluginCore.ErrorReporting
+namespace GumPlugin.ErrorReporting
 {
     class ErrorReporter : ErrorReporterBase
     {
@@ -39,7 +39,7 @@ namespace GumPluginCore.ErrorReporting
                     // is it referenced?
                     var absoluteFile = GlueCommands.Self.GetAbsoluteFilePath(rfs);
 
-                    var relativeToGumFolder = absoluteFile.RemoveExtension().RelativeTo(gumProjectFolder).Substring("Screens/".Length);
+                    var relativeToGumFolder = absoluteFile.RemoveExtension().RelativeTo(gumProjectFolder).Substring("Screens/".Length).Replace('\\', '/');
 
                     var references = gumProject.ScreenReferences.Any(item => item.Name.ToLowerInvariant() == relativeToGumFolder.ToLowerInvariant());
 

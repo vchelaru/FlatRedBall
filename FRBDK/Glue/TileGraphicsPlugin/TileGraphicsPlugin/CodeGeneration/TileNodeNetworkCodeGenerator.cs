@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using TiledPluginCore.ViewModels;
+using TiledPlugin.ViewModels;
 using TileGraphicsPlugin;
 using TileGraphicsPlugin.CodeGeneration;
 
-namespace TiledPluginCore.CodeGeneration
+namespace TiledPlugin.CodeGeneration
 {
     class TileNodeNetworkCodeGenerator : ElementComponentCodeGenerator
     {

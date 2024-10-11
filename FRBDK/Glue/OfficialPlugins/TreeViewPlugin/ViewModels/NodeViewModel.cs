@@ -264,7 +264,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             BitmapImage LoadIcon(string iconName)
             {
-                var location = $"/OfficialPluginsCore;component/TreeViewPlugin/Content/{iconName}.png";
+                var location = $"/OfficialPlugins;component/TreeViewPlugin/Content/{iconName}.png";
                 var bitmapImage = new BitmapImage(new Uri(location, UriKind.Relative));
                 return bitmapImage;
             }
@@ -332,7 +332,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var child in this.Children)
             {
-                child.CollapseToDefinitions();
+                child.CollapseRecursively();
             }
         }
 

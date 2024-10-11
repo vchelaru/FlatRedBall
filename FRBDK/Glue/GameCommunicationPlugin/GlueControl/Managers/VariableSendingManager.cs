@@ -615,7 +615,17 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             if (value == null && !isState && type != null)
             {
-                value = TypeManager.GetDefaultForType(type);
+                // for strings we send return "null" for the default that is displayed, so we need to check that here:
+                if(type != "string" && type != "String"
+                    && type != "System.String"
+                    && type != "string?"
+                    && type != "String?"
+                    && type != "Nullable<string>"
+                    && type != "Nullable<String>"
+                    )
+                {
+                    value = TypeManager.GetDefaultForType(type);
+                }
             }
         }
 
@@ -686,7 +696,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 throw new ArgumentNullException(nameof(currentElement));
             }
             var data = new GlueVariableSetData();
-            data.InstanceOwnerGameType = ToGameType(currentElement);
+            data.ElementNameGlue = currentElement.Name;
             data.Type = type;
             data.VariableValue = value;
             data.VariableName = rawMemberName;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 
-namespace GumPluginCore.ViewModels
+namespace GumPlugin.ViewModels
 {
     public class GumToolbarViewModel : ViewModel
     {

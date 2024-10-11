@@ -336,9 +336,9 @@ namespace FlatRedBall.Glue.Reflection
             {
                 return "VariableState";
             }
-            else if (TryGetStateInCategory(memberName, entitySave, out toReturn))
+            else if (TryGetStateInCategory(memberName, entitySave, out string unqualifiedCategoryName))
             {
-                return toReturn;
+                return entitySave.Name.Replace("\\", ".") + "." + unqualifiedCategoryName;
             }
             else
             {
@@ -346,9 +346,9 @@ namespace FlatRedBall.Glue.Reflection
             }
         }
 
-        private static bool TryGetStateInCategory(string memberName, IElement entitySave, out string foundType)
+        private static bool TryGetStateInCategory(string memberName, IElement entitySave, out string foundUnqualifiedCategoryName)
         {
-            foundType = "";
+            foundUnqualifiedCategoryName = "";
             if (entitySave.StateCategoryList.Count != 0 && memberName.StartsWith("Current") && memberName.EndsWith("State"))
             {
                 string possibleCategory = StateSaveExtensionMethods.GetStateTypeFromCurrentVariableName(memberName);
@@ -359,7 +359,7 @@ namespace FlatRedBall.Glue.Reflection
 
                 if (category != null)
                 {
-                    foundType = category.Name;
+                    foundUnqualifiedCategoryName = category.Name;
                     return true;
                 }
             }
@@ -1086,6 +1086,21 @@ namespace FlatRedBall.Glue.Reflection
                         if(hasDerived)
                         {
                             var typeName = entity.Name.Replace("\\", ".") + typeOrVariant;
+                            toReturn.Add(typeName);
+                        }
+                    }
+                }
+
+                foreach (var screen in glueProject.Screens)
+                {
+                    var isBaseScreen = string.IsNullOrEmpty(screen.BaseElement);
+
+                    if (isBaseScreen)
+                    {
+                        var hasDerived = glueProject.Screens.Any(item => item.BaseElement == screen.Name);
+                        if (hasDerived)
+                        {
+                            var typeName = screen.Name.Replace("\\", ".") + typeOrVariant;
                             toReturn.Add(typeName);
                         }
                     }

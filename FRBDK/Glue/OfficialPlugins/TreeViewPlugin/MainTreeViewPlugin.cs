@@ -91,7 +91,6 @@ namespace OfficialPlugins.TreeViewPlugin
 
         private void AssignEvents()
         {
-            ReactToLoadedGluxEarly += HandleGluxLoadedEarly;
             ReactToLoadedGlux += HandleGluxLoadLate;
             ReactToUnloadedGlux += HandleUnloadedGlux;
             RefreshTreeNodeFor += HandleRefreshTreeNodeFor;
@@ -120,6 +119,9 @@ namespace OfficialPlugins.TreeViewPlugin
         {
             GlueCommands.Self.DoOnUiThread(() =>
             {
+                pluginTab.Show();
+                MainViewModel.AddDirectoryNodes();
+                MainViewModel.RefreshGlobalContentTreeNodes();
                 var project = GlueState.Self.CurrentGlueProject;
                 var entities = project.Entities.ToArray();
                 var screens = project.Screens.ToArray();
@@ -141,6 +143,9 @@ namespace OfficialPlugins.TreeViewPlugin
                 {
                     TreeViewPluginSettingsManager.ApplySettingsToViewModel(settings, MainViewModel);
                 }
+
+                // bookmarks have to be refreshed after the main nodes have been created
+                MainViewModel.RefreshBookmarks();
             });
         }
 
@@ -234,15 +239,6 @@ namespace OfficialPlugins.TreeViewPlugin
                     SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
                 }
             }
-        }
-
-        private void HandleGluxLoadedEarly()
-        {
-            pluginTab.Show();
-            MainViewModel.AddDirectoryNodes();
-            MainViewModel.RefreshGlobalContentTreeNodes();
-            MainViewModel.RefreshBookmarks();
-
         }
 
         private void HandleUnloadedGlux()

@@ -41,6 +41,7 @@ namespace FlatRedBall
     {
         public double Time;
         public TaskCompletionSource<object> TaskCompletionSource;
+        public CancellationToken CancellationToken;
     }
 
     struct PredicateTask
@@ -80,7 +81,8 @@ namespace FlatRedBall
         /// The amount of time in seconds since the game started running. 
         /// This value is updated once-per-frame so it will 
         /// always be the same value until the next frame is called.
-        /// This value does not consider pausing. To consider pausing, see CurrentScreenTime.
+        /// This value does not consider pausing, and it does not reset when
+        /// a new screen starts. To consider pausing, see CurrentScreenTime.
         /// </summary>
         /// <remarks>
         /// This value can be used to uniquely identify a frame.
@@ -509,7 +511,6 @@ namespace FlatRedBall
         /// A timed section is the amount of time (in seconds) since the last time either Update
         /// or TimeSection has been called.  The sections are reset every time Update is called.
         /// The sections can be retrieved through the GetTimedSections method.
-        /// <seealso cref="FRB.TimeManager.GetTimedSection"/>
         /// </remarks>
         public static void TimeSection()
         {
@@ -524,7 +525,6 @@ namespace FlatRedBall
         /// A timed section is the amount of time (in seconds) since the last time either Update
         /// or TimeSection has been called.  The sections are reset every time Update is called.
         /// The sections can be retrieved through the GetTimedSections method.
-        /// <seealso cref="FRB.TimeManager.GetTimedSection"/>
         /// </remarks>
         /// <param name="label">The label for the timed section.</param>
         public static void TimeSection(string label)
@@ -594,8 +594,9 @@ namespace FlatRedBall
         /// Returns a task which completes after the argument seconds have passed in screen time. This considers slow-motion and pausing.
         /// </summary>
         /// <param name="seconds">The number of seconds to wait.</param>
+        /// <param name="cancellationToken">The cancellation token to use to cancel the task.</param>
         /// <returns>The task which will complete when the argument time passes.</returns>
-        public static Task DelaySeconds(double seconds)
+        public static Task DelaySeconds(double seconds, CancellationToken cancellationToken = default(CancellationToken))
         {
             if(seconds <= 0)
             {
@@ -614,7 +615,7 @@ namespace FlatRedBall
                 }
             }
 
-            screenTimeDelayedTasks.Insert(index, new TimedTasks { Time = time, TaskCompletionSource = taskSource});
+            screenTimeDelayedTasks.Insert(index, new TimedTasks { CancellationToken = cancellationToken, Time = time, TaskCompletionSource = taskSource});
 
             return taskSource.Task;
         }
@@ -751,15 +752,24 @@ namespace FlatRedBall
             while (screenTimeDelayedTasks.Count > 0)
             {
                 var first = screenTimeDelayedTasks[0];
-                if (first.Time <= CurrentScreenTime)
+                if (first.Time <= CurrentScreenTime || first.TaskCompletionSource.Task.IsCompleted)
                 {
                     screenTimeDelayedTasks.RemoveAt(0);
-                    first.TaskCompletionSource.SetResult(null);
+                    // Try is needed since it could have already been cancelled:
+                    first.TaskCompletionSource.TrySetResult(null);
                 }
                 else
                 {
                     // The earliest task is not ready to be completed, so we can stop checking
                     break;
+                }
+            }
+
+            for(int i = 0; i < screenTimeDelayedTasks.Count; i++)
+            {
+                if(screenTimeDelayedTasks[i].CancellationToken.IsCancellationRequested == true)
+                {
+                    screenTimeDelayedTasks[i].TaskCompletionSource.TrySetCanceled(screenTimeDelayedTasks[i].CancellationToken);
                 }
             }
 

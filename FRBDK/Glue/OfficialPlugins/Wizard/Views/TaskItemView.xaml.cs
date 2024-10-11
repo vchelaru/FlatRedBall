@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace OfficialPluginsCore.Wizard.Views
+namespace OfficialPlugins.Wizard.Views
 {
     /// <summary>
     /// Interaction logic for TaskItemView.xaml

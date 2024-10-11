@@ -219,7 +219,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)IO\FilePath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\GifLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\Gif\ImageDataList.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IO\StateManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\LocalizationManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ManagedSpriteGroups\SpriteFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ManagedSpriteGroups\SpriteGrid\SpriteGrid.cs" />
@@ -309,8 +308,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringFunctions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\TaskHelper.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Gui\Behaviors\" />
   </ItemGroup>
 </Project>

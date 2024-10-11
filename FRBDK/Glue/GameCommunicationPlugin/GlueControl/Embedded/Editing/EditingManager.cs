@@ -220,6 +220,9 @@ namespace GlueControl.Editing
 
         bool wasPushedInWindow;
 
+        public bool IsEmbeddedInActiveGlue => EmbeddedWindowLogic.IsParentGlueFocused;
+
+        public bool IsGameOrGlueActive => IsEmbeddedInActiveGlue || FlatRedBallServices.Game.IsActive;
 
         #endregion
 
@@ -263,7 +266,7 @@ namespace GlueControl.Editing
             HighlightMarker.ExtraPaddingInPixels = 4;
             // do we want to show multiple highlights? Probably?
             HighlightMarker.Owner = itemsOver.FirstOrDefault();
-            HighlightMarker.Update(!wasGameActive && FlatRedBallServices.Game.IsActive);
+            HighlightMarker.Update(!wasGameActive && IsGameOrGlueActive);
 
             UpdateSelectedMarkers();
 
@@ -284,7 +287,7 @@ namespace GlueControl.Editing
                 var marker = SelectedMarkers[i];
                 var item = itemsSelected[i];
 
-                marker.Update(!wasGameActive && FlatRedBallServices.Game.IsActive);
+                marker.Update(!wasGameActive && IsGameOrGlueActive);
 
                 if (item == itemGrabbed)
                 {
@@ -448,7 +451,7 @@ namespace GlueControl.Editing
                 }
 
                 // Vic says - not sure how much should be inside the IsActive check
-                if (FlatRedBallServices.Game.IsActive && mouse.IsInGameWindow())
+                if (IsGameOrGlueActive && mouse.IsInGameWindow())
                 {
                     if (itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false))
                     {
@@ -486,7 +489,7 @@ namespace GlueControl.Editing
                 var didChangeItemOver = itemsOverLastFrame.Any(item => !itemsOver.Contains(item)) ||
                     itemsOver.Any(item => !itemsOverLastFrame.Contains(item));
 
-                if (FlatRedBallServices.Game.IsActive)
+                if (IsGameOrGlueActive)
                 {
                     if (mouse.IsInGameWindow())
                     {
@@ -591,7 +594,7 @@ namespace GlueControl.Editing
                         NamedObjectSave nos = null;
                         if (itemOver?.Name != null)
                         {
-                            nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
+                            nos = GetNosFromItemName(itemOver.Name);
                         }
 
                         if (nos != null)
@@ -614,7 +617,7 @@ namespace GlueControl.Editing
                     NamedObjectSave nos = null;
                     if (itemOver?.Name != null)
                     {
-                        nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
+                        nos = GetNosFromItemName(itemOver.Name);
                     }
                     if (nos != null)
                     {
@@ -650,7 +653,25 @@ namespace GlueControl.Editing
             }
         }
 
+        private NamedObjectSave GetNosFromItemName(string itemName)
+        {
+            NamedObjectSave nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemName);
+            if (nos == null && CurrentGlueElement != null)
+            {
+                // This could be a nos defined in a base screen and we're viewing a derived screen.
+                var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(CurrentGlueElement);
+                foreach (var baseElement in baseElements)
+                {
+                    nos = baseElement.AllNamedObjects.FirstOrDefault(nos => nos.InstanceName == itemName);
+                    if (nos != null)
+                    {
+                        break;
+                    }
+                }
+            }
 
+            return nos;
+        }
 
         private void DoReleaseLogic()
         {
@@ -719,11 +740,11 @@ namespace GlueControl.Editing
             var mouse = InputManager.Mouse;
             if (mouse.ButtonPushed(Mouse.MouseButtons.XButton1))
             {
-                GlueControlManager.Self.SendToGlue(new Dtos.SelectPreviousDto());
+                _=GlueControlManager.Self.SendToGlue(new Dtos.SelectPreviousDto());
             }
             else if (mouse.ButtonPushed(Mouse.MouseButtons.XButton2))
             {
-                GlueControlManager.Self.SendToGlue(new Dtos.SelectNextDto());
+                _=GlueControlManager.Self.SendToGlue(new Dtos.SelectNextDto());
             }
         }
 
@@ -733,7 +754,7 @@ namespace GlueControl.Editing
 
             if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.F12))
             {
-                GlueControlManager.Self.SendToGlue(new Dtos.GoToDefinitionDto());
+                _=GlueControlManager.Self.SendToGlue(new Dtos.GoToDefinitionDto());
             }
         }
 
@@ -1337,5 +1358,59 @@ namespace GlueControl.Editing
 
         #endregion
     }
+
+
+    internal class EmbeddedWindowLogic
+    {
+
+        static DateTime lastUpdate;
+
+        public static bool IsEmbedded { get; set; }
+
+        static System.Diagnostics.Process glueProcess;
+
+        public static bool IsParentGlueFocused
+        {
+            get
+            {
+                if (DateTime.Now - lastUpdate > TimeSpan.FromSeconds(5))
+                {
+                    lastUpdate = DateTime.Now;
+                    RefreshGlueProcess();
+                }
+                return IsEmbedded 
+                    && glueProcess?.MainWindowHandle == GetForegroundWindow()
+                    ;
+            }
+        }
+
+#if WINDOWS
+
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+
+#else
+        static IntPtr GetForegroundWindow() => IntPtr.Zero;
+
+
+#endif
+        private static void RefreshGlueProcess()
+        {
+            glueProcess = null;
+
+            var processes = System.Diagnostics.Process.GetProcesses();
+            // see if the foreground window is Glue:
+            foreach (var process in processes)
+            {
+                if (process.ProcessName == "GlueFormsCore")
+                {
+                    glueProcess = process;
+                    break;
+                }
+            }
+        }
+    }
+
 
 }

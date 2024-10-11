@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace OfficialPluginsCore.PropertyGrid.Views
+namespace OfficialPlugins.PropertyGrid.Views
 {
     /// <summary>
     /// Interaction logic for VariableView.xaml

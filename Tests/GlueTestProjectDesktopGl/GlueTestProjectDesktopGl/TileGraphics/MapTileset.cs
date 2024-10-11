@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
@@ -310,24 +310,25 @@ namespace TMXGlueLib
                     throw new System.InvalidOperationException(
                         $"Could not load tileset {_sourceField} because it uses the .json format which is currently not supported. Try saving your tileset as tsx instead of json.");
                 }
+                string fileAttemptedToLoad = _sourceField;
+                if (FileManager.IsRelative(_sourceField))
+                {
+                    fileAttemptedToLoad = FileManager.RemoveDotDotSlash( FileManager.RelativeDirectory + _sourceField);
+                }
 
                 try
                 {
 
-                    xts = FileManager.XmlDeserialize<tileset>(_sourceField);
+                    xts = FileManager.XmlDeserialize<tileset>(fileAttemptedToLoad);
                 }
                 catch (FileNotFoundException)
                 {
-                    string fileAttemptedToLoad = _sourceField;
-                    if (FileManager.IsRelative(_sourceField))
-                    {
-                        fileAttemptedToLoad = FileManager.RemoveDotDotSlash( FileManager.RelativeDirectory + _sourceField);
-                    }
 
                     string message = "Could not find the shared tsx file \n" + fileAttemptedToLoad + 
                         "\nIf this is a relative file name, then the loader will use " +
                         "the FileManager's RelativeDirectory to make the file absolute.  Therefore, be sure to set the FileManger's RelativeDirectory to the file represented by " +
-                        "this fileset before setting this property if setting this property manually.";
+                        "this fileset before setting this property if setting this property manually.\n\nIf you are loading this TMX in a tool and you do not want to recursively" +
+                        "load all content, then set Tileset.ShouldLoadValuesFromSource to false prior to loading.";
 
 
                     throw new FileNotFoundException(message);

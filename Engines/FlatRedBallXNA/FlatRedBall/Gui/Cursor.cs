@@ -32,7 +32,8 @@ namespace FlatRedBall.Gui
 
     /// <summary>
     /// The cursor is a controllable graphical icon which can interact with FRB elements and
-    /// stores information about mouse activity.
+    /// stores information about mouse activity. By default the Cursor is controlled by the mouse
+    /// but it can be controlled by gamepads or custom delegates.
     /// </summary>
     public partial class Cursor
     {
@@ -41,6 +42,11 @@ namespace FlatRedBall.Gui
         DelegateBasedPressableInput mPrimaryButton;
         DelegateBasedPressableInput mSecondaryButton;
         DelegateBasedPressableInput mMiddleButton;
+
+        /// <summary>
+        /// Gets the main cursor. If multiple Cursors have been added, returns the first one.
+        /// </summary>
+        public static Cursor Main => GuiManager.Cursor;
 
         IWindow mWindowPushed;
 
@@ -83,7 +89,13 @@ namespace FlatRedBall.Gui
         /// </remarks>
         public IWindow WindowGrabbed;
 
-        internal Sides mSidesGrabbed = Sides.None;
+        Sides mSidesGrabbed = Sides.None;
+
+        /// <summary>
+        /// Matrix used to apply a transformation to the Cursor's position. This should only be used
+        /// to adjust the crusor position relative to the Camera's destination rectangle.
+        /// </summary>
+        public Matrix TransformationMatrix = Matrix.Identity;
 
         double mScreenX;
         double mScreenY;
@@ -92,8 +104,8 @@ namespace FlatRedBall.Gui
         float mGrabbedWindowRelativeY;
 
         // these are used to calculate the velocity of the windows Cursor
-        int mLastScreenX;
-        int mLastScreenY;
+        double mLastScreenX;
+        double mLastScreenY;
 
         // On Windows RT we need to scale the values.  We will
         // only read values from the hardware (mouse or touch)
@@ -195,18 +207,27 @@ namespace FlatRedBall.Gui
         internal bool mLastSecondaryDown;
         //double mLastTimeSecondaryClick;
 
+        /// <summary>
+        /// Whether the middle mouse button is down this frame.
+        /// </summary>
         public bool MiddleDown
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Whether the middle mouse button was pushed this frame (not down last frame but down this frame).
+        /// </summary>
         public bool MiddlePush
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Whether the middle mouse button was clicked (released) this frame.
+        /// </summary>
         public bool MiddleClick
         {
             get;
@@ -338,6 +359,9 @@ namespace FlatRedBall.Gui
             set;
         }
 
+        /// <summary>
+        /// The lsat InputDevice that controlled the cursor. Typically this would be a touch screen or mouse.
+        /// </summary>
         public InputDevice LastInputDevice
         {
             get;
@@ -499,13 +523,7 @@ namespace FlatRedBall.Gui
             set;
         }
 
-        public bool ResizingWindow
-        {
-            get
-            {
-                return WindowPushed != null && mSidesGrabbed == Sides.BottomRight;
-            }
-        }
+
 
         /// <summary>
         /// The number of pixels between the left of the screen and the cursor. Note that this does not consider
@@ -537,14 +555,14 @@ namespace FlatRedBall.Gui
 
         public int LastScreenX
         {
-            get { return mLastScreenX; }
+            get { return (int)mLastScreenX; }
             // set made public for custom modification of cursor
             set { mLastScreenX = value; }
         }
 
         public int LastScreenY
         {
-            get { return mLastScreenY; }
+            get { return (int)mLastScreenY; }
             // set made public for custom modification of cursor
             set { mLastScreenY = value; }
 
@@ -594,9 +612,29 @@ namespace FlatRedBall.Gui
             }
         }
 
+        /// <summary>
+        /// A shortcut property for WorldXAt(0) providing the world X coordinate of the cursor.
+        ///
+        /// Safe for orthogonal 2D games or 3D games where gameplay happens at 0 on
+        /// the Z axis. For accurate cursor picking in 3D games, use WorldXAt(z).
+        /// </summary>
         public float WorldX => WorldXAt(0);
+
+        /// <summary>
+        /// A shortcut property for WorldYAt(0) providing the world Y coordinate of the cursor.
+        ///
+        /// Safe for orthogonal 2D games or 3D games where gameplay happens at 0 on
+        /// the Z axis. For accurate cursor picking in 3D games, use WorldYAt(z).
+        /// </summary>
         public float WorldY => WorldYAt(0);
 
+        /// <summary>
+        /// Shortcut vector to get the X and Y coordinates of the cursor in world space at
+        /// a Z index of 0.
+        /// 
+        /// Safe for orthogonal 2D games or 3D games where you only need to track the cursor
+        /// at a Z coordinate of 0. Use WorldXAt(z) and WorldYAt(z) if 3D picking is needed.
+        /// </summary>
         public Vector2 WorldPosition => new Vector2(WorldX, WorldY);
 
         /// <summary>
@@ -667,14 +705,12 @@ namespace FlatRedBall.Gui
         /// </summary>
         /// <remarks>
         /// If the CustomUpdate delegate assigns Click, Push, and DoubleClick
-        /// values internally, then it should return false, indicating that the
-        /// Cursor logic itself shouldn't.  If the CustomUpdate only modifies the
+        /// values internally, then it should return false, indicating that the default
+        /// Cursor logic shouldn't change these values.  If the CustomUpdate only modifies the
         /// down states, then the CustomUpdate delegate should return true so that
-        /// the Click, Push, and DoubleClick values are 
+        /// the Click, Push, and DoubleClick values are automatically managed based on the custom down states.
         /// </remarks>
         public Func<Cursor, bool> CustomUpdate;
-
-        #region Methods
 
         #region Constructor
 
@@ -716,16 +752,6 @@ namespace FlatRedBall.Gui
                     mLastScreenX = InputManager.Mouse.X + FlatRedBallServices.Game.Window.ClientBounds.X;
                     mLastScreenX = InputManager.Mouse.Y + FlatRedBallServices.Game.Window.ClientBounds.Y;
                 }
-                else
-                {
-#if !MONOGAME && !UNIT_TESTS && !FNA
-                    var windowLocation =
-                                System.Windows.Forms.Form.FromHandle(FlatRedBallServices.WindowHandle).Location;
-
-                    mLastScreenX = InputManager.Mouse.X + windowLocation.X;
-                    mLastScreenX = InputManager.Mouse.Y + windowLocation.Y;
-#endif
-                }
             }
             else
             {
@@ -735,11 +761,9 @@ namespace FlatRedBall.Gui
         }
         #endregion
 
-
         #region Public Methods
 
 
-        #region XML Docs
         /// <summary>
         /// Returns the world X Velocity of the Cursor at a particular Z.
         /// </summary>
@@ -750,7 +774,6 @@ namespace FlatRedBall.Gui
         /// </remarks>
         /// <param name="z">The z value to measure the velocity at.</param>
         /// <returns>The X velocity at the particular Z.</returns>
-        #endregion
         public float ActualXVelocityAt(float z)
         {
             // Update November 14, 2011
@@ -802,7 +825,6 @@ namespace FlatRedBall.Gui
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the yVelocity of the cursor at a particular Z.
         /// </summary>
@@ -813,7 +835,6 @@ namespace FlatRedBall.Gui
         /// </remarks>
         /// <param name="z">The z value to measure the velocity at.</param>
         /// <returns>The Y velocity at the particular Z.</returns>
-        #endregion
         public float ActualYVelocityAt(float z)
         {
             // See the comment in ActualXVelocityAt
@@ -884,7 +905,6 @@ namespace FlatRedBall.Gui
             WindowGrabbed = null;
         }
 
-        #region XML Docs
         /// <summary>
         /// Modifies the x and y arguments to show the point of the cursor's tip at at the z value.
         /// </summary>
@@ -895,7 +915,6 @@ namespace FlatRedBall.Gui
         /// <param name="x">The x value to change.</param>
         /// <param name="y">The y value to change.</param>
         /// <param name="absoluteZ">The z value to use.</param>
-        #endregion
         [Obsolete("Use WorldXAt and WorldYAt instead of this function.  This function will be removed at some point in the future")]
         public void GetCursorPosition(out float x, out float y, float absoluteZ)
         {
@@ -903,7 +922,6 @@ namespace FlatRedBall.Gui
             y = WorldYAt(absoluteZ);
         }
 
-        #region XML Docs
         /// <summary>
         /// Modifies the x and y arguments to show the position that the grabbed Sprite should be at.
         /// </summary>
@@ -916,7 +934,6 @@ namespace FlatRedBall.Gui
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="absolute"></param>
-        #endregion
         public void GetCursorPositionForSprite(ref float x, ref float y, float absoluteZ)
         {
             x = WorldXAt(absoluteZ);
@@ -939,7 +956,6 @@ namespace FlatRedBall.Gui
 
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets the cursor's position and sets the argument positionedObject's
         /// x and y values to the cursor's position at the argument Z value.
@@ -950,21 +966,16 @@ namespace FlatRedBall.Gui
         /// </remarks>
         /// <param name="positionedObject">Reference to the positioned object.</param>
         /// <param name="absoluteZ">The Z value at which the position should be set.</param>
-        #endregion
         public void GetCursorPosition(PositionedObject positionedObject, float absoluteZ)
         {
             positionedObject.X = WorldXAt(0);
             positionedObject.Y = WorldYAt(0);
         }
 
-
-
         public Ray GetLastRay()
         {
             return mLastRay;
         }
-
-
 
         public Ray GetRay()
         {
@@ -979,7 +990,6 @@ namespace FlatRedBall.Gui
             return MathFunctions.GetRay((int)mScreenX, (int)mScreenY, 1, this.mCamera);
         }
 
-
         public Ray GetRay(Layer layer)
         {
             if (layer == null)
@@ -991,7 +1001,6 @@ namespace FlatRedBall.Gui
                 return MathFunctions.GetRay((int)mScreenX, (int)mScreenY, 1, this.mCamera, layer.LayerCameraSettings);
             }
         }
-
 
         /// <summary>
         /// Returns the Sprite the cursor is over giving preference to the closest Sprite to the Camera.
@@ -1006,7 +1015,6 @@ namespace FlatRedBall.Gui
         {
             return GetSpriteOver(spriteArray, false);
         }
-
 
         public T GetSpriteOver<T>(IList<T> spriteArray, bool considerInactives) where T : ICursorSelectable, IAttachable
         {
@@ -1069,13 +1077,11 @@ namespace FlatRedBall.Gui
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the Sprite the cursor is over giving preference to the closest Sprite to the Camera.
         /// </summary>
         /// <param name="spriteArrayArray">The SpriteArrayArray to search through.</param>
         /// <returns>The Sprite that is found, or null if the cursor is not over any Sprites.</returns>
-        #endregion
         public Sprite GetSpriteOver(IList<SpriteList> spriteArrayArray)
         {
             Sprite spriteOver = null;
@@ -1101,19 +1107,16 @@ namespace FlatRedBall.Gui
             return closestSprite;
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the Sprite the cursor is over giving preference to the closest Sprite to the Camera.
         /// </summary>
         /// <param name="spriteLayer">The SpriteLayer to search through.</param>
         /// <returns>The Sprite that is found, or null if the Cursor is not over any Sprites.</returns>
-        #endregion
         public Sprite GetSpriteOver(Layer spriteLayer)
         {
             return GetSpriteOver(spriteLayer.Sprites);
         }
 
-        #region XML Docs
         /// <summary>
         /// Grabs a Window with the Cursor.
         /// </summary>
@@ -1123,7 +1126,6 @@ namespace FlatRedBall.Gui
         /// <seealso cref="FlatRedBall.Gui.GuiManager.Control"/>
         /// </remarks>
         /// <param name="windowToGrab">The Window to grab.</param>
-        #endregion
         public void GrabWindow(IWindow windowToGrab)
         {
             this.WindowGrabbed = windowToGrab;
@@ -1793,30 +1795,17 @@ namespace FlatRedBall.Gui
         #endregion
 
 
-        #region XML Docs
         /// <summary>
         /// Determines whether the cursor is currently in the active Control which owns the application.
         /// </summary>
         /// <returns>Whether the cursor is currently in the active Control which owns the application.</returns>
-        #endregion
         public bool IsInWindow()
         {
             return InputManager.Mouse.IsInGameWindow();
         }
 
 
-#if !MONOGAME && !FNA
-        public bool IsInWindow(System.Windows.Forms.Control control)
-        {
-            if (!mUsingWindowsCursor)
-            {
-                return true;
-            }
 
-            // If mUsingWindowsCursor, we can just use the Mouse call
-            return InputManager.Mouse.IsInGameWindow();
-        }
-#endif
 
         public void ResetCursor()
         {
@@ -1864,7 +1853,6 @@ namespace FlatRedBall.Gui
             devicesControllingCursor.Add(InputManager.Mouse);
         }
 
-        #region XML Docs
         /// <summary>
         /// Tells the Cursor to store the relative position of the Sprite to the Cursor's tip.
         /// </summary>
@@ -1873,7 +1861,6 @@ namespace FlatRedBall.Gui
         /// keep objects from "snapping" to the center of the cursor when grabbed.
         /// </remarks>
         /// <param name="objectSetTo">The PositionedObject that the relative values should be set to.</param>
-        #endregion
         public void SetObjectRelativePosition(IStaticPositionable objectSetTo)
         {
             if (objectSetTo == null) return;
@@ -1959,17 +1946,24 @@ namespace FlatRedBall.Gui
             }
 
         }
+        #endregion
+
+        #region Positions (WorldX/Y At)
+
 
         /// <summary>
-        /// Returns the X world coordinate of the cursor at the argument Z position. 
+        /// Returns the X world coordiante of the cursor at the argument Z position.
         /// This method requires a Z value to properly work with perspective cameras.
         /// This method assumes an unrotated camera.
+        /// 
+        /// For 2D games, the Z value is usually always 0.
         /// </summary>
         /// <param name="zPosition">The world Z to check at.</param>
-        /// <returns>The world X coordinate.</returns>
+        /// <returns>The world X coordiante.</returns>
         public float WorldXAt(float zPosition)
         {
-            return Camera.WorldXAt(this.ScreenX, zPosition, Camera.Orthogonal, Camera.OrthogonalWidth);
+            var camera = Camera;
+            return camera.WorldXAt(this.ScreenX, zPosition, camera.Orthogonal, camera.OrthogonalWidth);
         }
 
         public float WorldXAt(float zPosition, Layer layer)
@@ -1992,6 +1986,8 @@ namespace FlatRedBall.Gui
         /// Returns the Y world coordiante of the cursor at the argument Z position.
         /// This method requires a Z value to properly work with perspective cameras.
         /// This method assumes an unrotated camera.
+        /// 
+        /// For 2D games, the Z value is usually always 0.
         /// </summary>
         /// <param name="zPosition">The world Z to check at.</param>
         /// <returns>The world Y coordiante.</returns>
@@ -2137,7 +2133,6 @@ namespace FlatRedBall.Gui
             }
         }
 
-
         float WorldYChangeAt(float zPosition, bool orthogonal, float orthogonalHeight)
         {
 #if ANDROID || IOS
@@ -2165,10 +2160,10 @@ namespace FlatRedBall.Gui
             }
         }
 
-        
 
 
         #endregion
+
 
         #region Internal Methods
 
@@ -2226,8 +2221,8 @@ namespace FlatRedBall.Gui
 			mLastSecondaryDown = SecondaryDown;
             mLastMiddleDown = MiddleDown;
 
-            mLastScreenX = (int)mScreenX;
-            mLastScreenY = (int)mScreenY;
+            mLastScreenX = mScreenX;
+            mLastScreenY = mScreenY;
 
             #endregion
 
@@ -2292,8 +2287,8 @@ namespace FlatRedBall.Gui
             // causes a huge change
             if (!lastFrameActive)
             {
-                mLastScreenX = (int)mScreenX;
-                mLastScreenY = (int)mScreenY;
+                mLastScreenX = mScreenX;
+                mLastScreenY = mScreenY;
             }
 
             if (PrimaryPush)
@@ -2308,8 +2303,6 @@ namespace FlatRedBall.Gui
             {
                 mHasDraggedAwayFromPushPoint = !HasMovedLessThanXPixelsSincePush(ClickNoSlideThreshold);
             }
-
-            WindowResizingActivity();
 
             WindowMovingActivity();
 
@@ -2397,29 +2390,29 @@ namespace FlatRedBall.Gui
         {
             if (gamepad != null)
             {
-                var xPosition = gamepad.LeftStick.Position.X;
-                var yPosition = gamepad.LeftStick.Position.Y;
+                var inputXPosition = gamepad.LeftStick.Position.X;
+                var inputYPosition = gamepad.LeftStick.Position.Y;
 
                 if(gamepad.ButtonDown(Xbox360GamePad.Button.DPadLeft))
                 {
-                    xPosition = -1;
+                    inputXPosition = -1;
                 }
                 if (gamepad.ButtonDown(Xbox360GamePad.Button.DPadRight))
                 {
-                    xPosition = 1;
+                    inputXPosition = 1;
                 }
                 if (gamepad.ButtonDown(Xbox360GamePad.Button.DPadUp))
                 {
-                    yPosition = 1;
+                    inputYPosition = 1;
                 }
                 if (gamepad.ButtonDown(Xbox360GamePad.Button.DPadDown))
                 {
-                    yPosition = -1;
+                    inputYPosition = -1;
                 }
 
                 var thisFrameMultiplier = GamepadPixelsPerSecondMovementSpeed * TimeManager.SecondDifference;
-                mScreenX += xPosition * thisFrameMultiplier;
-                mScreenY -= yPosition * thisFrameMultiplier;
+                mScreenX += inputXPosition * thisFrameMultiplier;
+                mScreenY -= inputYPosition * thisFrameMultiplier;
 
                 if(mScreenX < 0)
                 {
@@ -2499,7 +2492,7 @@ namespace FlatRedBall.Gui
                         }
                     }
 
-
+                    // First record the values from the hardware...
                     if (handled)
                     {
                         mLastXFromHardware = (int)mScreenX;
@@ -2510,7 +2503,19 @@ namespace FlatRedBall.Gui
                         mScreenX = mLastXFromHardware;
                         mScreenY = mLastYFromHardware;
                     }
-                    
+                    // ...then modify the mScreenX and mScreenY according to the Matrix
+                    if(TransformationMatrix != Matrix.Identity)
+                    {
+                        Vector3 screenPosition;
+                        screenPosition.X = (float)mScreenX;
+                        screenPosition.Y = (float)mScreenY;
+                        screenPosition.Z = 0;
+
+                        screenPosition = Vector3.Transform(screenPosition, TransformationMatrix);
+
+                        mScreenX = screenPosition.X;
+                        mScreenY = screenPosition.Y;
+                    }
 
 
                     ZVelocity = InputManager.Mouse.ScrollWheelChange;
@@ -2565,8 +2570,8 @@ namespace FlatRedBall.Gui
                     // is a moue involved we want to use that position
                     if (SupportedInputDevices == Gui.InputDevice.TouchScreen)
                     {
-                        mLastScreenX = (int)mScreenX;
-                        mLastScreenY = (int)mScreenY;
+                        mLastScreenX = mScreenX;
+                        mLastScreenY = mScreenY;
                     }
                 }
 
@@ -2624,24 +2629,6 @@ namespace FlatRedBall.Gui
                 }
                 #endregion
 
-                #region Check for the end of the resize
-
-                if (this.ResizingWindow && this.PrimaryClick)
-                {
-                    // Vic says:  This code used to sit in the Window
-                    // class instead of in the Cursor class.  However, a
-                    // Window's collision code (TestCollisionBase) is only
-                    // called when the user is over that window.  Its click
-                    // logic is only called when the user is over that window
-                    // and not over any other Window (like one of its children).
-                    // However, resize end code should be called on the grabbed Window
-                    // whether the cursor is over it or not.  Otherwise, it's possible to
-                    // begin a resize without ever executing its end.  This can cause bugs
-                    // in UI.
-                    this.WindowPushed.OnResizeEnd();
-                }
-
-                #endregion
             }
         }
 
@@ -2709,23 +2696,10 @@ namespace FlatRedBall.Gui
 
         private void UpdatePositionToMouse()
         {
-#if !XBOX360
             // Is this method only called when using a windows cursor?
             float outX = 0;
             float outY = 0;
 
-#if FRB_MDX
-
-            MathFunctions.ScreenToAbsolute(
-                System.Windows.Forms.Cursor.Position.X,
-                System.Windows.Forms.Cursor.Position.Y,
-                ref outX,
-                ref outY,
-                mCamera.Z + 100,
-                mCamera, this.mOwner,
-                SpriteManager.settings.fullScreen);
-            
-#else
             float xEdge = GuiManager.XEdge;
             float yEdge = GuiManager.YEdge;
 
@@ -2735,7 +2709,6 @@ namespace FlatRedBall.Gui
                 xEdge = yEdge * SpriteManager.Camera.AspectRatio;
 
             }
-
 
             FlatRedBall.Math.MathFunctions.WindowToAbsolute(
                 InputManager.Mouse.X,
@@ -2749,12 +2722,7 @@ namespace FlatRedBall.Gui
                 SpriteManager.Camera.DestinationRectangle,
                 Camera.CoordinateRelativity.RelativeToCamera);
 
-#endif
-
-#endif
         }
-
-        #endregion
 
         #endregion
 

@@ -37,6 +37,10 @@ If you prefer, you can also file issues on Github: https://github.com/vchelaru/F
 
 Of course, FlatRedBall has the best documentation: https://docs.flatredball.com/
 
+## Contributing to FlatRedBall
+
+If you're interested in helping out, check out our Contributors section here: https://docs.flatredball.com/flatredball/contributing
+
 ## FlatRedBall Games
 
 FlatRedBall has been used to build dozens of commercial games. Here are some of our favorites:
@@ -45,6 +49,11 @@ FlatRedBall has been used to build dozens of commercial games. Here are some of 
 https://store.steampowered.com/app/441510/The_Incredible_Baron/
 ![](https://cdn.akamai.steamstatic.com/steam/apps/441510/ss_e5c57fb9e20cf5bc30fbca294c34625996b74c13.1920x1080.jpg?t=1467392584)
 ![](https://cdn.akamai.steamstatic.com/steam/apps/441510/ss_1a5d77330dfd090e41c006c5f79ecd8bba3b142b.1920x1080.jpg?t=1467392584)
+
+### Cranky Chibi Cthulhu
+https://store.steampowered.com/app/2631990/Cranky_Chibi_Cthulhu/
+![image](https://github.com/vchelaru/FlatRedBall/assets/729631/d4a0bef8-dc40-41da-b190-d6c9b06f45d9)
+![image](https://github.com/vchelaru/FlatRedBall/assets/729631/fd77bf43-b2de-4996-9ba1-8d8a9ac7d6ce)
 
 ### Battlecrypt Bombers
 https://store.steampowered.com/app/2188930/BattleCrypt_Bombers/

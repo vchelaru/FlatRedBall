@@ -5,6 +5,7 @@ using System.Text;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System.Security.RightsManagement;
 
 namespace FlatRedBall.Glue.Controls.ProjectSync
 {
@@ -44,12 +45,15 @@ namespace FlatRedBall.Glue.Controls.ProjectSync
             }
         }
 
+
         public SyncedProjectViewModel SelectedItem
         {
-            get;
-            set;
+            get => Get<SyncedProjectViewModel>();
+            set => Set(value);
         }
 
+        [DependsOn(nameof(SelectedItem))]
+        public bool IsProjectSelected => SelectedItem != null;
 
         internal void Refresh()
         {

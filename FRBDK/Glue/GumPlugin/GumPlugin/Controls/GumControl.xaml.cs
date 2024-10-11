@@ -6,7 +6,7 @@ using Gum.DataTypes.Behaviors;
 using GumPlugin.DataGeneration;
 using GumPlugin.Managers;
 using GumPlugin.ViewModels;
-using GumPluginCore.Managers;
+using GumPlugin.Managers;
 using HQ.Util.Unmanaged;
 using System;
 using System.Collections.Generic;
@@ -130,20 +130,6 @@ namespace GumPlugin.Controls
             {
                 _ = FormsControlAdder.SaveElements(assembly);
             }
-        }
-
-
-
-        private void AdvancedClick(object sender, RoutedEventArgs e)
-        {
-            var viewModel = DataContext as GumViewModel;
-            viewModel.ShowAdvanced = true;
-        }
-
-        private void SimpleClick(object sender, RoutedEventArgs e)
-        {
-            var viewModel = DataContext as GumViewModel;
-            viewModel.ShowAdvanced = false;
         }
 
         private void RegenerateFontsClicked(object sender, RoutedEventArgs e)

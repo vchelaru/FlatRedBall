@@ -14,6 +14,13 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             get => Get<bool>();
             set => Set(value);
         }
+
+        public bool IsDisableFixedTimestepChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsGameRunning
         {
             get => Get<bool>();

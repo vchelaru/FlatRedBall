@@ -155,7 +155,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             get => snapshot.CurrentNamedObjectSaves;
             set
             {
-                if( value == null)
+                if( value == null || value.Count == 0)
                 {
                     CurrentTreeNode = null;
                 }
@@ -285,7 +285,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         /// <summary>
         /// Returns the current Glue code project file name
         /// </summary>
-        public FilePath CurrentCodeProjectFileName { get { return ProjectManager.ProjectBase?.FullFileName; } }
+        public FilePath CurrentCodeProjectFileName => CurrentMainProject?.FullFileName; 
 
         public string CurrentGlueProjectDirectory
         {
@@ -295,22 +295,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
-        public VisualStudioProject CurrentMainProject { get { return ProjectManager.ProjectBase; } }
+        public VisualStudioProject CurrentMainProject => ProjectManager.ProjectBase;
 
         public VisualStudioProject CurrentMainContentProject { get { return ProjectManager.ContentProject; } }
 
-        public FilePath CurrentSlnFileName
+        public FilePath CurrentSlnFileName => SlnFileForProject(CurrentMainProject);
+
+        public FilePath SlnFileForProject(VisualStudioProject vsproject)
         {
-            get
+            if (vsproject == null)
             {
-                if(CurrentCodeProjectFileName == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return VSHelpers.ProjectSyncer.LocateSolution(CurrentCodeProjectFileName.FullPath);
-                }
+                return null;
+            }
+            else
+            {
+                var csprojLocation = vsproject.FullFileName;
+                return VSHelpers.ProjectSyncer.LocateSolution(csprojLocation);
             }
         }
 

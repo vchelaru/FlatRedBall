@@ -159,7 +159,13 @@ class ProjectCommands : IProjectCommands
 
 
             bool useContentPipeline = referencedFileSave.UseContentPipeline || (assetTypeInfo != null && assetTypeInfo.MustBeAddedToContentPipeline);
-
+            if(assetTypeInfo != null && useContentPipeline)
+            {
+                if(!assetTypeInfo.CanBeAddedToContentPipeline)
+                {
+                    useContentPipeline = false;
+                }
+            }
             var projectName = GlueState.Self.CurrentMainProject.Name;
             var isExcludedFromProject = referencedFileSave.ProjectsToExcludeFrom.Contains(projectName);
             if (!isExcludedFromProject)
@@ -191,13 +197,15 @@ class ProjectCommands : IProjectCommands
     /// <param name="shouldLink"></param>
     /// <param name="parentFile"></param>
     /// <returns>Whether the project was modified.</returns>
-    public bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null, ReferencedFileSave fileRfs = null)
+    public bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink, 
+        string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null, ReferencedFileSave fileRfs = null)
     {
         bool wasProjectModified = false;
         ///////////////////Early Out/////////////////////
         if (project == null || GlueState.Self.CurrentMainProject == null) return wasProjectModified;
 
         /////////////////End Early Out//////////////////
+        bool preserveCase = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CaseSensitiveLoading;
 
         string fileToAddAbsolute = fileName.FullPath;
 
@@ -242,9 +250,22 @@ class ProjectCommands : IProjectCommands
 
             isFileAlreadyPartOfProject = project.ContentProject.IsFilePartOfProject(fileRelativeToContent, bimt);
 
+            // If we care about case sensitivity, we need to make sure the file is added with the right case or else it won't work on case-sensitive platforms.
+            ProjectItem buildItem = null;
+            if (preserveCase && isFileAlreadyPartOfProject)
+            {
+                buildItem = ((VisualStudioProject)project.ContentProject).GetItem(fileRelativeToContent);
+
+                if (buildItem != null && buildItem.EvaluatedInclude != fileRelativeToContent)
+                {
+                    // treat it as if it's not part of the project already
+                    isFileAlreadyPartOfProject = false;
+                }
+            }
+
             if (!isFileAlreadyPartOfProject)
             {
-                var buildItem = ((VisualStudioProject)project.ContentProject).GetItem(fileRelativeToContent);
+                buildItem = ((VisualStudioProject)project.ContentProject).GetItem(fileRelativeToContent);
                 if (buildItem != null)
                 {
                     // The item is here but it's using the wrong build types.  Let's
@@ -351,7 +372,8 @@ class ProjectCommands : IProjectCommands
         bool useContentPipeline = false;
         if (rfs != null && rfs.UseContentPipeline)
         {
-            useContentPipeline = true;
+            var ati = rfs.GetAssetTypeInfo();
+            useContentPipeline = ati == null || ati.CanBeAddedToContentPipeline == true;
         }
 
         if (!useContentPipeline)
@@ -507,8 +529,23 @@ class ProjectCommands : IProjectCommands
         CopyToBuildFolder(source);
     }
 
+    public string CopyToBuildFolderTaskIdFor(FilePath filePath) =>
+        $"{nameof(CopyToBuildFolder)} {filePath}";
+
+
     public void CopyToBuildFolder(FilePath absoluteSource)
     {
+        var taskExecutionPreference = TaskExecutionPreference.AddOrMoveToEnd;
+
+        var isRunning = (bool)PluginManager.CallPluginMethod(
+            "Glue Compiler",
+            "GetIfIsRunning");
+
+        if(isRunning)
+        {
+            taskExecutionPreference = TaskExecutionPreference.Asap;
+        }
+
         TaskManager.Self.AddOrRunIfTasked(() =>
         {
             // This is the location when running from Glue
@@ -550,7 +587,7 @@ class ProjectCommands : IProjectCommands
 
             }
 
-        }, $"{nameof(CopyToBuildFolder)} {absoluteSource}", TaskExecutionPreference.AddOrMoveToEnd);
+        }, CopyToBuildFolderTaskIdFor(absoluteSource), taskExecutionPreference);
     }
 
     private static void CopyToBuildFolder(FilePath absoluteSource, string outputPathRelativeToCsProj)
@@ -603,6 +640,12 @@ class ProjectCommands : IProjectCommands
         {
             string directory = GlueState.Self.CurrentGlueProjectDirectory + "Entities/" +
                 folderName;
+
+            Directory.CreateDirectory(directory);
+        }
+        else if(treeNodeToAddTo.IsRootScreenNode())
+        {
+            string directory = GlueState.Self.CurrentGlueProjectDirectory + "Screens/" + folderName;
 
             Directory.CreateDirectory(directory);
         }

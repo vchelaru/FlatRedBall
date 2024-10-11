@@ -822,7 +822,16 @@ namespace FlatRedBall.Instructions.Reflection
 
                 Type foundType = alreadyKnownType;
 
-                if(foundType == null)
+
+                var shouldTryToGetType = foundType == null;
+
+                if(alreadyKnownType != null)
+                {
+                    // see if the type after "new" matches the alreadyKnownType;
+                    shouldTryToGetType = alreadyKnownType.FullName != typeAfterNewString && alreadyKnownType.Name != typeAfterNewString;
+                }
+
+                if(shouldTryToGetType)
                 {
                     if (mUnqualifiedTypeDictionary.ContainsKey(typeAfterNewString))
                     {

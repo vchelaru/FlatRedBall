@@ -98,7 +98,10 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         private void HandleGluxLoaded()
         {
             var mainProject = GlueState.Self.CurrentMainProject;
-            if (mainProject is MonoGameDesktopGlBaseProject or FnaDesktopProject or AndroidProject or IosMonogameProject or Xna4Project or AndroidMonoGameNet8Project or IosMonoGameNet8Project)
+            if (mainProject is MonoGameDesktopGlBaseProject 
+                or FnaDesktopProject or AndroidProject 
+                or IosMonogameProject or Xna4Project or AndroidMonoGameNet8Project 
+                or IosMonoGameNet8Project or KniWebProject)
             {
                 miLinkSource.Enabled = true;
             }
@@ -138,8 +141,11 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             control.DataContext = ViewModel;
             control.LinkToSourceClicked += async () =>
             {
+                GlueCommands.Self.DialogCommands.ShowToast("Adding Source...", TimeSpan.FromSeconds(999));
                 await AddSourceManager.HandleLinkToSourceClicked(ViewModel);
                 Tab.Hide();
+                GlueCommands.Self.DialogCommands.HideToast();
+
             };
             Tab = CreateTab(control, Localization.Texts.AddFrbSource);
         }

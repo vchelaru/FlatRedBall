@@ -14,6 +14,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         public ZoomViewModel TopWindowZoom { get; set; }
         public ZoomViewModel BottomWindowZoom { get; set; }
 
+        public SettingsViewModel Settings { get => Get<SettingsViewModel>(); private set => Set(value); }
+
         public FilePath AchxFilePath { get; set; }
 
         public int ResolutionWidth
@@ -44,11 +46,6 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             private set => Set(value);
         }
 
-        public bool IsShowGuidesChecked
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
 
         [DependsOn(nameof(SelectedItem))]
         public AnimationFrameViewModel SelectedAnimationFrame => 
@@ -128,6 +125,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public AchxViewModel()
         {
+            Settings = new SettingsViewModel();
             TopWindowZoom = new ZoomViewModel();
             BottomWindowZoom = new ZoomViewModel();
 

@@ -1,22 +1,18 @@
+using FlatRedBall.Math;
+using FlatRedBall.Math.Geometry;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
-
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
-
-using FlatRedBall;
-using FlatRedBall.Math;
-using FlatRedBall.Math.Geometry;
-
-using FlatRedBall.Graphics;
 
 namespace FlatRedBall.Input
 {
     public delegate void ModifyMouseState(ref MouseState mouseState);
 
+    /// <summary>
+    /// Represents the mouse hardware.
+    /// </summary>
     public class Mouse : IEquatable<Mouse>, IInputDevice
     {
         #region Enums
@@ -36,7 +32,6 @@ namespace FlatRedBall.Input
 
         public const int NumberOfButtons = (int)MouseButtons.XButton2 + 1;
 
-        public const float MaximumSecondsBetweenClickForDoubleClick = .25f;
         #endregion
 
         MouseState mMouseState;
@@ -87,6 +82,10 @@ namespace FlatRedBall.Input
 
         #region Properties
 
+        /// <summary>
+        /// Returns whether any mouse button was pushed.
+        /// </summary>
+        /// <returns></returns>
         public bool AnyButtonPushed()
         {
             bool valueToReturn = false;
@@ -99,6 +98,12 @@ namespace FlatRedBall.Input
             return valueToReturn;
         }
 
+
+        /// <summary>
+        /// The maximum duration between clicks for it to be considered a double
+        /// click instead of two single clicks.
+        /// </summary>
+        public float MaximumSecondsBetweenClickForDoubleClick { get; set; } = .25f;
 
         public MouseState MouseState => mMouseState;
 
@@ -134,6 +139,9 @@ namespace FlatRedBall.Input
 
         DelegateBased1DInput scrollWheel;
 
+        /// <summary>
+        /// A 1D Input for the scroll wheel, where scroll wheel values will be normalized to be between -1 and 1 per wheel "tick".
+        /// </summary>
         public I1DInput ScrollWheel
         {
             get
@@ -163,84 +171,39 @@ namespace FlatRedBall.Input
             }
         }
 
+        /// <summary>
+        /// The main mouse for the game.
+        /// </summary>
+        public static Mouse Main => InputManager.Mouse;
 
-#if !MONOGAME && !FNA
-        public bool IsOwnerFocused
-        {
-            get
-            {
-                //bool value = false;
-
-                System.Windows.Forms.Control control = FlatRedBallServices.Owner;
-
-                bool returnValue = false;
-                while (true)
-                {
-                    if (control == null)
-                    {
-                        returnValue = false;
-                        break;
-                    }
-                    else if (control.Focused)
-                    {
-                        returnValue = true;
-                        break;
-                    }
-
-                    control = control.Parent;
-                }
-                
-                return returnValue;
-            }
-
-        }
-#endif
-
-        #region XML Docs
         /// <summary>
         /// Returns the client rectangle-relative X pixel coordinate of the cursor.
         /// </summary>
-        #endregion
         public int X
         {
             get 
             {
-                #if FRB_MDX
 
-                return mOwner.PointToClient( System.Windows.Forms.Cursor.Position ).X;
-                #elif XBOX360
-                return 0;
-                #else
                 return mMouseState.X; 
-                #endif
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the client rectangle-Y pixel coordinate of the cursor.
         /// </summary>
-        #endregion
         public int Y
         {
             get 
             { 
-                #if FRB_MDX
-                return mOwner.PointToClient( System.Windows.Forms.Cursor.Position ).Y;
-                #elif XBOX360
-                return 0;
-                #else
-                return mMouseState.Y; 
-                #endif
+
+                return mMouseState.Y;
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The number of pixels that the mouse has moved on the
-        /// X axis during the last frame.
+        /// X axis since the last frame.
         /// </summary>
-        #endregion
         public int XChange
         {
             get 
@@ -253,12 +216,10 @@ namespace FlatRedBall.Input
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The number of pixels that the mouse has moved on the
-        /// Y axis during the last frame.
+        /// Y axis since the last frame.
         /// </summary>
-        #endregion
         public int YChange
         {
             get 
@@ -271,23 +232,19 @@ namespace FlatRedBall.Input
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The rate of change of the X property in 
         /// pixels per second.
         /// </summary>
-        #endregion
         public float XVelocity
         {
             get { return mXVelocity; }
         }
 
-        #region XML Docs
         /// <summary>
         /// The rate of change of the Y property in 
         /// pixels per second.
         /// </summary>
-        #endregion
         public float YVelocity
         {
             get { return mYVelocity; }
@@ -365,6 +322,12 @@ namespace FlatRedBall.Input
 
         #region Button state methods (pushed, down, released, double clicked)
       
+        /// <summary>
+        /// Whether the provided button was just pushed. This is only true for
+        /// the first frame after a button is Down having been Up in the previous frame.
+        /// </summary>
+        /// <param name="button">The button to check</param>
+        /// <returns>Boolean indicating whether the provided button was just pressed in this frame.</returns>
         public bool ButtonPushed(MouseButtons button)
         {
 #if !XBOX360
@@ -422,6 +385,12 @@ namespace FlatRedBall.Input
 #endif
         }
 
+        /// <summary>
+        /// Whether the provided button was just released. This is only true for the first frame after
+        /// a button enters Up having been Down in the previous frame.
+        /// </summary>
+        /// <param name="button">The button to check</param>
+        /// <returns>Boolean indicating whether the provided button was just released in this frame.</returns>
         public bool ButtonReleased(MouseButtons button)
         {
             bool isMouseStateNull = false;
@@ -448,7 +417,11 @@ namespace FlatRedBall.Input
             }
         }
 
-
+        /// <summary>
+        /// Whether the provided button is Down
+        /// </summary>
+        /// <param name="button">The button to check.</param>
+        /// <returns>Boolean indicating whether the provided button is down.</returns>
         public bool ButtonDown(MouseButtons button)
         {
             if (mActive == false)
@@ -474,12 +447,23 @@ namespace FlatRedBall.Input
 #if !XBOX360
 
 
-
+        /// <summary>
+        /// Whether the provided button was just pressed and released twice. Will only be true for the
+        /// frame immediately following the double click event.
+        /// </summary>
+        /// <param name="button">The button to check</param>
+        /// <returns>Boolean indicating whether the provieded button was just double clicked.</returns>
         public bool ButtonDoubleClicked(MouseButtons button)
         {
             return mActive && !InputManager.CurrentFrameInputSuspended && mDoubleClick[(int)button];
         }
 
+        /// <summary>
+        /// Whether the provided button was pressed, released, and pressed again (but not yet released).
+        /// Will only be true for the frame immediately following the double press event.
+        /// </summary>
+        /// <param name="button">The button to check</param>
+        /// <returns>Boolean indicating whether the provided button was just double pushed.</returns>
         public bool ButtonDoublePushed(MouseButtons button)
         {
             return mActive && !InputManager.CurrentFrameInputSuspended && mDoublePush[(int)button];
@@ -623,7 +607,7 @@ namespace FlatRedBall.Input
             return X > camera.LeftDestination && X < camera.RightDestination &&
                 Y > camera.TopDestination && Y < camera.BottomDestination;
         }
-#if !XBOX360
+
         public bool IsOn3D(FlatRedBall.Graphics.Text text, bool relativeToCamera)
         {
 			Vector3 offset = new Vector3();
@@ -653,9 +637,7 @@ namespace FlatRedBall.Input
 
 			return value;
         }
-#endif
 
-#if !XBOX360
 
         public bool IsOn3D<T>(T objectToTest, bool relativeToCamera) where T : IPositionable, IRotatable, IReadOnlyScalable
         {
@@ -724,8 +706,12 @@ namespace FlatRedBall.Input
 
             }
         }
-#endif
 
+        /// <summary>
+        /// Returns whether the mouse position is within the bounds of the game window. This may be true even
+        /// if the game window does not have focus since this is only performing a bounds check.
+        /// </summary>
+        /// <returns>Whether the mouse is within the bounds of the game window.</returns>
         public bool IsInGameWindow()
         {
 
@@ -738,24 +724,16 @@ namespace FlatRedBall.Input
 
         public void SetScreenPosition(int newX, int newY)
         {
-#if XNA
-            // The velocity should not change when positions are set.
-            mThisFrameRepositionX += newX - System.Windows.Forms.Cursor.Position.X;
-            mThisFrameRepositionY += newY - System.Windows.Forms.Cursor.Position.Y;
 
-            System.Windows.Forms.Cursor.Position = new System.Drawing.Point( 
-                   newX,
-                   newY);
-#else
             // The velocity should not change when positions are set.
             MouseState currentState = Microsoft.Xna.Framework.Input.Mouse.GetState();
             mThisFrameRepositionX += newX - currentState.X;
             mThisFrameRepositionY += newY - currentState.Y;
 
             Microsoft.Xna.Framework.Input.Mouse.SetPosition(newX, newY);
-#endif
         }
 
+        [Obsolete("This method is not supported, and will be removed in future versions of FRB.")]
         public void ShowNativeWindowsCursor()
         {
 

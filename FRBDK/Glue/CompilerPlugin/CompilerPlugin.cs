@@ -60,6 +60,7 @@ namespace CompilerPlugin
             LoadOrCreateBuildSettings();
             _compiler.BuildSettingsUser = BuildSettingsUser;
             _compilerViewModel.HasLoadedGlux = true;
+            _compilerViewModel.HasDoneNugetRestore = false;
         }
 
         private void HandleGluxUnLoaded()
@@ -134,12 +135,17 @@ namespace CompilerPlugin
             {
                 var compileResponse = await _compiler.Compile(
                     (value) => HandleOutput(value), 
-                    (value) => ReactToPluginEvent("Compiler_Output_Error", value), 
+                    (value) => ReactToPluginEvent("Compiler_Output_Error", value),
+                    !_compilerViewModel.HasDoneNugetRestore,
                     _compilerViewModel.Configuration, 
                     _compilerViewModel.IsPrintMsBuildCommandChecked);
                 if (!compileResponse.Succeeded)
                 {
                     GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
+                }
+                else
+                {
+                    _compilerViewModel.HasDoneNugetRestore = true;
                 }
             };
 
@@ -150,11 +156,17 @@ namespace CompilerPlugin
 
             MainControl.RunClicked += async (not, used) =>
             {
-                var response = await _compiler.Compile((value) => HandleOutput(value), (value) => ReactToPluginEvent("Compiler_Output_Error", value), _compilerViewModel.Configuration, _compilerViewModel.IsPrintMsBuildCommandChecked);
+                var response = await _compiler.Compile(
+                    (value) => HandleOutput(value), 
+                    (value) => ReactToPluginEvent("Compiler_Output_Error", value),
+                    !_compilerViewModel.HasDoneNugetRestore,
+
+                    _compilerViewModel.Configuration, _compilerViewModel.IsPrintMsBuildCommandChecked);
                 if (response.Succeeded)
                 {
+                    _compilerViewModel.HasDoneNugetRestore = true;
                     _runner.IsRunning = false;
-                    _runner.Run(preventFocus: false);
+                    _=_runner.Run(preventFocus: false);
                 }
                 else
                 {
@@ -162,7 +174,7 @@ namespace CompilerPlugin
                     var innerResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage);
                     if(innerResult == System.Windows.MessageBoxResult.Yes)
                     {
-                        _runner.Run(preventFocus: false);
+                        _=_runner.Run(preventFocus: false);
                     }
                 }
             };
@@ -234,10 +246,16 @@ namespace CompilerPlugin
             {
                 var result = await _compiler.Compile(
                     (value) => HandleOutput(value), 
-                    (value) => ReactToPluginEvent("Compiler_Output_Error", value), 
+                    (value) => ReactToPluginEvent("Compiler_Output_Error", value),
+                    !_compilerViewModel.HasDoneNugetRestore,
                     configuration, 
                     printMsBuildCommand
                 );
+
+                if(result.Succeeded)
+                {
+                    _compilerViewModel.HasDoneNugetRestore = true;
+                }
 
                 generalResponse.SetFrom(result);
             }
@@ -250,7 +268,9 @@ namespace CompilerPlugin
 
         public async Task DoRun(bool preventFocus, string runArguments, GeneralResponse generalResponse)
         {
-            var response = await _runner.Run(preventFocus, runArguments);
+
+
+            var response = await _runner.Run(preventFocus, runArguments, numberOfSecondsToWait:20);
             generalResponse.SetFrom(response);
         }
 

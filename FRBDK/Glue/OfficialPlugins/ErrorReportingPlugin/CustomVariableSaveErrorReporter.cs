@@ -22,7 +22,28 @@ namespace OfficialPlugins.ErrorReportingPlugin
             // fill with bad type references:
             FillWithBadTypeReferences(errors);
 
+            FillWithMissingSourceObjects(errors);
+
             return errors.ToArray();
+        }
+
+        private void FillWithMissingSourceObjects(List<ErrorViewModel> errors)
+        {
+            var project = GlueState.Self.CurrentGlueProject;
+            foreach (var screen in project.Screens)
+            {
+                foreach (var variable in screen.CustomVariables)
+                {
+                    FillWithMissingSourceObjects(screen, variable, errors);
+                }
+            }
+            foreach (var entity in project.Entities)
+            {
+                foreach (var variable in entity.CustomVariables)
+                {
+                    FillWithMissingSourceObjects(entity, variable, errors);
+                }
+            }
         }
 
         private void FillWithBadTypeReferences(List<ErrorViewModel> errors)
@@ -46,37 +67,17 @@ namespace OfficialPlugins.ErrorReportingPlugin
 
         private void FillWithBadTypeReferences(GlueElement element, CustomVariable variable, List<ErrorViewModel> errors)
         {
-            var type = variable.Type;
-
-            var doesTypeExist = true;
-
-            if(variable.Type.Contains("."))
+            if (InvalidVariableTypeErrorViewModel.GetIfHasError(element, variable)) 
             {
-                var baseDefiningVariable = ObjectFinder.Self.GetRootCustomVariable(variable);
-
-                // for now we'll skip anything that is a tunneled variable because that gets way more complicated, and
-                // this check was added to catch missing CSV references
-                if (string.IsNullOrEmpty(baseDefiningVariable?.SourceObject))
-                {
-                    // it better be a CSV or state or Texture
-                    var found = 
-                        variable.Type == "Microsoft.Xna.Framework.Graphics.Texture2D" ||
-                        variable.GetIsCsv() || 
-                        variable.GetIsVariableState() || 
-                        variable.GetIsBaseElementType();
-
-                    if (!found)
-                    {
-                        doesTypeExist = false;
-                    }
-                }
+                errors.Add(new InvalidVariableTypeErrorViewModel(variable, element));
             }
+        }
 
-            if(!doesTypeExist)
+        private void FillWithMissingSourceObjects(GlueElement element, CustomVariable variable, List<ErrorViewModel> errors)
+        {
+            if (MissingSourceObjectErrorViewModel.GetIfHasError(element, variable))
             {
-                var error = new InvalidVariableTypeErrorViewModel(variable, element);
-                //var error = asdfasdf;
-                errors.Add(error);
+                errors.Add(new MissingSourceObjectErrorViewModel(variable, element));
             }
         }
     }

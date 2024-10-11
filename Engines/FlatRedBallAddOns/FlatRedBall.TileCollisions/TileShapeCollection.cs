@@ -213,8 +213,12 @@ namespace FlatRedBall.TileCollisions
 
         public RepositionUpdateStyle RepositionUpdateStyle { get; set; } = RepositionUpdateStyle.Outward;
 
+#if ShapeCollectionHasLastCollisionCallDeepCheckCount || REFERENCES_FRB_SOURCE
 
-#endregion
+        public int LastCollisionCallDeepCheckCount => this.mShapes.LastCollisionCallDeepCheckCount;
+#endif
+
+        #endregion
 
         public TileShapeCollection()
         {

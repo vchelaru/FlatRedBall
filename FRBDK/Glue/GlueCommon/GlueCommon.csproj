@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Platforms>AnyCPU</Platforms>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,23 +15,6 @@
     <None Remove="Plugins\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\Glue\Events\EventResponseSave.cs" Link="SaveClasses\EventResponseSave.cs" />
-    <Compile Include="..\Glue\Events\EventSave.cs" Link="SaveClasses\EventSave.cs" />
-    <Compile Include="..\Glue\Events\IEventContainer.cs" Link="SaveClasses\Interfaces\IEventContainer.cs" />
-    <Compile Include="..\Glue\SaveClasses\CustomClassSave.cs" Link="SaveClasses\CustomClassSave.cs" />
-    <Compile Include="..\Glue\SaveClasses\ElementReference.cs" Link="SaveClasses\ElementReference.cs" />
-    <Compile Include="..\Glue\SaveClasses\EntitySave.cs" Link="SaveClasses\EntitySave.cs" />
-    <Compile Include="..\Glue\SaveClasses\GlobalContentSettingsSave.cs" Link="SaveClasses\GlobalContentSettingsSave.cs" />
-    <Compile Include="..\Glue\SaveClasses\GlueProjectSave.cs" Link="SaveClasses\GlueProjectSave.cs" />
-    <Compile Include="..\Glue\SaveClasses\IElement.cs" Link="SaveClasses\Interfaces\IElement.cs" />
-    <Compile Include="..\Glue\SaveClasses\IFileReferencer.cs" Link="SaveClasses\Interfaces\IFileReferencer.cs" />
-    <Compile Include="..\Glue\SaveClasses\INamedObjectContainer.cs" Link="SaveClasses\Interfaces\INamedObjectContainer.cs" />
-    <Compile Include="..\Glue\SaveClasses\PerformanceSettingsSave.cs" Link="SaveClasses\PerformanceSettingsSave.cs" />
-    <Compile Include="..\Glue\SaveClasses\ReferencedFileSave.cs" Link="SaveClasses\ReferencedFileSave.cs" />
-    <Compile Include="..\Glue\SaveClasses\ScreenSave.cs" Link="SaveClasses\ScreenSave.cs" />
-    <Compile Include="..\Glue\SaveClasses\StateSaveCategory.cs" Link="SaveClasses\StateSaveCategory.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />

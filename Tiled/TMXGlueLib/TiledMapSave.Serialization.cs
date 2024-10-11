@@ -397,15 +397,6 @@ namespace TMXGlueLib
                 this.imageField = value;
             }
         }
-
-
-        [XmlAttribute("opacity")]
-        public float Opacity
-        {
-            get;
-            set;
-        } = 1.0f;
-
     }
 
     #endregion
@@ -653,7 +644,7 @@ namespace TMXGlueLib
                                 data = new Ionic.Zlib.ZlibStream(data, Ionic.Zlib.CompressionMode.Decompress, false);
                                 break;
 #else
-                                throw new NotImplementedException("Does not support zlib");
+                                throw new NotImplementedException("Does not support zlib, try using GZIP compression or csv format");
 #endif
                             case null:
                                 // Not compressed. Data is already decoded.

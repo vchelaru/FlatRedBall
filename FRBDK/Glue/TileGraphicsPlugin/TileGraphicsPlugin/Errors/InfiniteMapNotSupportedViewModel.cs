@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using TMXGlueLib;
 
-namespace TiledPluginCore.Errors
+namespace TiledPlugin.Errors
 {
     internal class InfiniteMapNotSupportedViewModel : ErrorViewModel
     {

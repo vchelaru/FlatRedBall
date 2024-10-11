@@ -8,7 +8,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math;
 using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
-using OfficialPluginsCore.CollisionPlugin.ExtensionMethods;
+using OfficialPlugins.CollisionPlugin.ExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -50,21 +50,45 @@ namespace OfficialPlugins.CollisionPlugin
             var collisionType = (CollisionType)Get<int>(
                 nameof(CollisionRelationshipViewModel.CollisionType));
 
-            var firstMass = Get<float>(
-                nameof(CollisionRelationshipViewModel.FirstCollisionMass))
-                .ToString(CultureInfo.InvariantCulture) + "f";
+            // 1.0 is the default for masses, and there may be glue projects that do not specify the mass, but the UI shows them as 1. Therefore, also default to 1 here:
+            var firstMass = "1.0f";
+            var secondMass = "1.0f";
+            var elasticity = "1.0f";
+            var softCollisionCoefficient = "1.0f";
 
-            var secondMass = Get<float>(
-                nameof(CollisionRelationshipViewModel.SecondCollisionMass))
-                .ToString(CultureInfo.InvariantCulture) + "f";
+            if(namedObject.Properties.Any(item => item.Name == nameof(CollisionRelationshipViewModel.FirstCollisionMass)))
+            {
+                firstMass = Get<float>(
+                    nameof(CollisionRelationshipViewModel.FirstCollisionMass))
+                    .ToString(CultureInfo.InvariantCulture) + "f";
 
-            var elasticity = Get<float>(
-                nameof(CollisionRelationshipViewModel.CollisionElasticity))
-                .ToString(CultureInfo.InvariantCulture) + "f";
+            }
 
-            var softCollisionCoefficient = Get<float>(
-                nameof(CollisionRelationshipViewModel.SoftCollisionCoefficient))
-                .ToString(CultureInfo.InvariantCulture) + "f";
+
+            if (namedObject.Properties.Any(item => item.Name == nameof(CollisionRelationshipViewModel.SecondCollisionMass)))
+            {
+                secondMass = Get<float>(
+                    nameof(CollisionRelationshipViewModel.SecondCollisionMass))
+                    .ToString(CultureInfo.InvariantCulture) + "f";
+
+            }
+
+
+            if (namedObject.Properties.Any(item => item.Name == nameof(CollisionRelationshipViewModel.CollisionElasticity)))
+            {
+                elasticity = Get<float>(
+                    nameof(CollisionRelationshipViewModel.CollisionElasticity))
+                    .ToString(CultureInfo.InvariantCulture) + "f";
+            }
+
+
+            if (namedObject.Properties.Any(item => item.Name == nameof(CollisionRelationshipViewModel.SoftCollisionCoefficient)))
+            {
+                softCollisionCoefficient = Get<float>(
+                    nameof(CollisionRelationshipViewModel.SoftCollisionCoefficient))
+                    .ToString(CultureInfo.InvariantCulture) + "f";
+            }
+
 
             var firstSubCollision = Get<string>(
                 nameof(CollisionRelationshipViewModel.FirstSubCollisionSelectedItem));

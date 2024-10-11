@@ -36,7 +36,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region Screen
 
-        void ShowAddNewScreenDialog();
+        void ShowAddNewScreenDialog(AddScreenViewModel viewModel = null);
 
         #endregion
 
@@ -72,11 +72,33 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void FocusTab(string dialogTitle);
 
+        #region Variable
 
         void ShowAddNewVariableDialog(Controls.CustomVariableType variableType = Controls.CustomVariableType.Exposed, 
             string tunnelingObject = "",
             string tunneledVariableName = "", GlueElement container = null);
+        #endregion
 
+        #region Spinners
+
+        void ShowSpinner(string text);
+        void HideSpinner();
+
+        #endregion
+
+        #region Toast
+
+        /// <summary>
+        /// Shows toast for the argument amount of time. If null, the default time is used.
+        /// Calling this multiple times changes the text and resets the timer.
+        /// </summary>
+        /// <param name="text">The text to display</param>
+        /// <param name="timeToShowToast">The amount of time. If null, the default time is used.</param>
+        void ShowToast(string text, TimeSpan? timeToShowToast = null);
+
+        void HideToast();
+
+        #endregion
 
         void SetFormOwner(System.Windows.Forms.Form form);
         void FocusOnTreeView();

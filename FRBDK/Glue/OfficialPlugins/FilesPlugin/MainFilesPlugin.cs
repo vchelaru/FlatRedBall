@@ -11,7 +11,7 @@ using OfficialPlugins.FilesPlugin.Controls;
 using OfficialPlugins.FilesPlugin.ViewModels;
 using System.ComponentModel.Composition;
 using FlatRedBall.Glue.Controls;
-using OfficialPluginsCore.FilesPlugin.Managers;
+using OfficialPlugins.FilesPlugin.Managers;
 using FlatRedBall.Glue.FormHelpers;
 
 namespace OfficialPlugins.FilesPlugin
@@ -51,18 +51,14 @@ namespace OfficialPlugins.FilesPlugin
 
         public override void StartUp()
         {
-            this.ReactToItemSelectHandler += HandleItemSelected;
+            this.ReactToItemsSelected += HandleItemsSelected;
             this.ReactToTreeViewRightClickHandler +=
                 RightClickManager.HandleRightClick;
         }
 
-        private void HandleItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> list)
         {
-            ReferencedFileSave rfs = null;
-            if(selectedTreeNode != null)
-            {
-                rfs = selectedTreeNode.Tag as ReferencedFileSave;
-            }
+            var rfs = list.FirstOrDefault(item => item.Tag is ReferencedFileSave)?.Tag as ReferencedFileSave;
 
             if(rfs != null)
             {

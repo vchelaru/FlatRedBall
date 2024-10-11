@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace TiledPluginCore.Views
+namespace TiledPlugin.Views
 {
     /// <summary>
     /// Interaction logic for TileNodeNetworkProperties.xaml

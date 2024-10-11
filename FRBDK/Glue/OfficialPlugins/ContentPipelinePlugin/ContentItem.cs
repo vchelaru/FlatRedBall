@@ -31,7 +31,7 @@ namespace OfficialPlugins.MonoGameContent
         /// <summary>
         /// The raw (prebuilt) file to build to XNB.
         /// </summary>
-        public string BuildFileName { get; set; }
+        public FilePath BuildFileName { get; set; }
 
         // /intermediateDir:/outputDir:C:\Users\vchel\Documents\FlatRedBallProjects\GlTest8\GlTest8\Content\obj
         public string IntermediateDirectory { get; set; }
@@ -159,7 +159,7 @@ namespace OfficialPlugins.MonoGameContent
 
             // iOS and Android have case sensitive file systems, so we'll to-lower it here
 
-            string buildArgument = BuildFileName;
+            string buildArgument = BuildFileName.FullPath;
 
             if(Platform == "Android" || Platform == "iOS")
             {
@@ -181,10 +181,10 @@ namespace OfficialPlugins.MonoGameContent
 
         public bool GetIfNeedsBuild(string destinationDirectory)
         {
-            var lastSourceWrite = System.IO.File.GetLastWriteTime(BuildFileName);
+            var lastSourceWrite = System.IO.File.GetLastWriteTime(BuildFileName.FullPath);
             foreach(var extension in GetBuiltExtensions())
             {
-                string rawFileName = FileManager.RemovePath(FileManager.RemoveExtension(BuildFileName));
+                string rawFileName = BuildFileName.NoPathNoExtension;
                 foreach(var outputExtension in GetBuiltExtensions())
                 {
                     var outputFile = destinationDirectory + rawFileName + "." + outputExtension;
@@ -226,13 +226,21 @@ namespace OfficialPlugins.MonoGameContent
                     // Yes it does:
                     yield return "xnb";
 
-                    if(Platform == "Android")
+                    if (Platform == "Android")
                     {
                         yield return "m4a";
                     }
-                    else if(Platform == "WindowsStoreApp")
+                    else if (Platform == "WindowsStoreApp")
                     {
                         yield return "wma";
+                    }
+                    else if (Platform == "BlazorGL")
+                    {
+                        var builtExtension = BuildFileName.Extension;
+                        if (builtExtension == "mp3")
+                        {
+                            yield return "mp3";
+                        }
                     }
                     else
                     {
@@ -248,7 +256,7 @@ namespace OfficialPlugins.MonoGameContent
 
         public override string ToString()
         {
-            return $"{BuildFileName} {Importer} {Processor}";
+            return $"{BuildFileName.FullPath} {Importer} {Processor}";
         }
 
         #endregion

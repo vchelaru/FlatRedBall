@@ -362,7 +362,7 @@ namespace FlatRedBall.Graphics
         {
             var hasAlreadyIncludedType = false;
             string toReturn = "<null texture>";
-            if (this.Texture != null)
+            if (this.Texture?.Name != null)
             {
                 if(!FlatRedBall.IO.FileManager.IsRelative(Texture.Name))
                 {

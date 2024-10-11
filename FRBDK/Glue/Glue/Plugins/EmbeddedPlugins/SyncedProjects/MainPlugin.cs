@@ -34,6 +34,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
         private void HandleGluxUnload()
         {
             toolbarControlViewModel.HasProjectLoaded = false;
+            toolbarControlViewModel.ProjectItems.Clear();
         }
 
         private void HandleGluxLoad()
@@ -51,6 +52,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             {
                 ProjectListEntry.OpenInVisualStudio(
                     GlueState.Self.CurrentMainProject);
+            }
+            foreach(var item in GlueState.Self.SyncedProjects)
+            {
+
+               toolbarControlViewModel.ProjectItems.Add(new ProjectItemViewModel
+                {
+                    Name = item.Name
+                });
             }
         }
 

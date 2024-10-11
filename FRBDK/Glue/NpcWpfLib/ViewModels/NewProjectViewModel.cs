@@ -12,7 +12,7 @@ namespace Npc.ViewModels
     {
         public Window owner;
 
-        char[] invalidNamespaceCharacters = new char[]
+        public static char[] InvalidNamespaceCharacters = new char[]
         {
                 '~', '`', '!', '@', '#', '$', '%', '^', '&', '*',
                 '(', ')', '-', '=', '+', ';', '\'', ':', '"', '<',
@@ -124,26 +124,6 @@ namespace Npc.ViewModels
         }
 
         [DependsOn(nameof(ValidationResponse))]
-        public SolidColorBrush FinalDirectoryForeground
-        {
-            get
-            {
-                var validation = ValidationResponse;
-                if(validation.Succeeded)
-                {
-                    return Brushes.Black;
-                }
-                else
-                {
-
-                }
-                {
-                    return Brushes.Red;
-                }
-            }
-        }
-
-        [DependsOn(nameof(ValidationResponse))]
         public string ProjectLocationError => ValidationResponse.Message;
 
         [DependsOn(nameof(FinalDirectory))]
@@ -180,7 +160,11 @@ namespace Npc.ViewModels
             set => Set(value);
         }
 
-
+        public Visibility NewProjectWizardVisibility
+        {
+            get => Get<Visibility>();
+            set => Set(value);
+        }
 
         public bool IsOpenNewProjectWizardChecked
         {
@@ -201,6 +185,7 @@ namespace Npc.ViewModels
             ProjectName = "MyProject";
             UseLocalCopy = false;
             IsOpenNewProjectWizardChecked = true;
+            NewProjectWizardVisibility = Visibility.Visible;
             IsAddGitIgnoreChecked = true;
         }
 
@@ -221,9 +206,9 @@ namespace Npc.ViewModels
                 {
                     whyIsntValid = "The namespace can't have any spaces.";
                 }
-                else if (DifferentNamespace.IndexOfAny(invalidNamespaceCharacters) != -1)
+                else if (DifferentNamespace.IndexOfAny(InvalidNamespaceCharacters) != -1)
                 {
-                    whyIsntValid = "The namespace can't contain invalid character " + DifferentNamespace[DifferentNamespace.IndexOfAny(invalidNamespaceCharacters)];
+                    whyIsntValid = "The namespace can't contain invalid character " + DifferentNamespace[DifferentNamespace.IndexOfAny(InvalidNamespaceCharacters)];
                 }
             }
 

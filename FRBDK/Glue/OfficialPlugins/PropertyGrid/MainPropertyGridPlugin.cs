@@ -11,8 +11,8 @@ using WpfDataUi;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Elements;
-using OfficialPluginsCore.PropertyGrid.Views;
-using OfficialPluginsCore.PropertyGrid.ViewModels;
+using OfficialPlugins.PropertyGrid.Views;
+using OfficialPlugins.PropertyGrid.ViewModels;
 using OfficialPlugins.PropertyGrid.Managers;
 using WpfDataUi.EventArguments;
 using FlatRedBall.Glue.SetVariable;
@@ -45,12 +45,31 @@ namespace OfficialPlugins.VariableDisplay
         {
             VariableDisplayerTypeManager.FillTypeNameAssociations();
 
-            this.ReactToItemSelectHandler += HandleItemSelect;
+            this.ReactToItemsSelected += HandleItemsSelected;
 
             this.ReactToLoadedGlux += HandleLoadedGlux;
 
-            this.ReactToChangedPropertyHandler += HandleRefreshProperties;
+            //this.ReactToChangedPropertyHandler += HandleRefreshProperties;
+            this.ReactToNamedObjectChangedValueList += HandleChangedValues;
 
+        }
+
+        private void HandleItemsSelected(List<ITreeNode> list)
+        {
+            var first = list.FirstOrDefault();
+            if(first != null)
+            {
+                HandleItemSelect(GlueState.Self.CurrentTreeNode);
+            }
+
+        }
+
+        private void HandleChangedValues(List<VariableChangeArguments> list)
+        {
+            if(list.Any(item => item.CommitType == WpfDataUi.DataTypes.SetPropertyCommitType.Full) && VariableGrid != null)
+            {
+                RefreshLogic.RefreshGrid(VariableGrid.DataUiGrid);
+            }
         }
 
         private void HandleLoadedGlux()
@@ -115,6 +134,7 @@ namespace OfficialPlugins.VariableDisplay
             }
             else if(GlueState.Self.CurrentReferencedFileSave != null)
             {
+                variableTab?.Hide();
                 ShowPropertiesForReferencedFileSave(GlueState.Self.CurrentReferencedFileSave);
             }
             else

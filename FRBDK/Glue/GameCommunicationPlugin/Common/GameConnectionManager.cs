@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using FlatRedBall.Glue.Plugins;
+using Mono.Cecil;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -221,14 +224,58 @@ namespace GameJsonCommunicationPlugin.Common
 
                                 if(response != null)
                                 {
-                                    toReturn = JsonConvert.SerializeObject(response);
+                                    try
+                                    {
+                                        if(response is string)
+                                        {
+                                            toReturn = response as string;
+                                        }
+                                        else
+                                        {
+                                            toReturn = JsonConvert.SerializeObject(response);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Debug.WriteLine($"Error serializing response: {ex}");
+                                        break;
+                                    }
                                 }
-
                             }
                         }
 
+
                         // todo - need to send the string...
-                        gameToGlueSocket.Send(new byte[] { 0 });
+                        //gameToGlueSocket.Send(new byte[] { 0 });
+                        if (toReturn != null)
+                        {
+                            // This is a little noisy, but can be uncommented for more diagnostic info:
+                            //PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", $"Sending back {toReturn}");
+                            var sendBytes = Encoding.ASCII.GetBytes(toReturn);
+                            long size = sendBytes.LongLength;
+
+                            //Send size
+                            var bytesForSize = BitConverter.GetBytes(size);
+                            gameToGlueSocket.Send(bytesForSize);
+
+                            System.Diagnostics.Debug.WriteLine($"{DateTime.Now}-Sent long for {size} size ({bytesForSize.Length})");
+
+                            //Send payload
+                            gameToGlueSocket.Send(sendBytes);
+
+                            System.Diagnostics.Debug.WriteLine($"{DateTime.Now}-Sent body with {sendBytes.Length} bytes");
+                        }
+                        else
+                        {
+
+                            var bytesForSize = BitConverter.GetBytes((long)0);
+                            var sentBytes = gameToGlueSocket.Send(bytesForSize);
+
+                            System.Diagnostics.Debug.WriteLine($"{DateTime.Now}-Sent long(0) with {sentBytes} bytes");
+
+
+                        }
+
                     }
                 }
                 catch (Exception ex)

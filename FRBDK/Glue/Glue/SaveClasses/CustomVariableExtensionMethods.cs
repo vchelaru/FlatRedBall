@@ -101,6 +101,14 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     return element != null;
                 }
+                if(type.StartsWith("Screens.") && type.EndsWith(typeOrVariant))
+                {
+                    var screenName = type.Substring(0, type.Length - typeOrVariant.Length).Replace(".", "\\");
+
+                    element = GlueState.CurrentGlueProject.Screens.FirstOrDefault(item => item.Name == screenName);
+
+                    return element != null;
+                }
             }
 
             return false;

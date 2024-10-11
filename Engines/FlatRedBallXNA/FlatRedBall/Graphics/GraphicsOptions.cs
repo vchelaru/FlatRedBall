@@ -6,10 +6,6 @@ using FlatRedBall.IO;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-#if !MONOGAME && !FNA
-    using System.Windows.Forms;
-#endif
-
 namespace FlatRedBall.Graphics
 {
 
@@ -56,11 +52,6 @@ namespace FlatRedBall.Graphics
 
 
         private WindowedFullscreenMode windowedFullscreenMode = WindowedFullscreenMode.Windowed;
-
-#if !MONOGAME && !FNA
-        // For some reason setting to fullscreen can crash things but setting the border style to none helps.
-        System.Windows.Forms.FormBorderStyle mWindowedBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D; 
-#endif
 
         bool mUseMultiSampling;
     

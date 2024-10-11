@@ -95,9 +95,19 @@ namespace FlatRedBall.Localization
                 headerList.Add(header.Name);
             }
 
-            Languages = new ReadOnlyCollection<string>(headerList);
+            if(Languages == null || Languages.Count == 0)
+            {
+                // Only add additional languages if there are no extra languages
+                Languages = new ReadOnlyCollection<string>(headerList);
+            }
 
-            mStringDatabase.Clear();
+            // October 2, 2024
+            // The "Add" suffix
+            // on the method implies
+            // that this method does not
+            // clear anything, so why are
+            // we doing this? We shouldn't.
+            //mStringDatabase.Clear();
 
             LocalizationEntry lastEntry = new LocalizationEntry();
 

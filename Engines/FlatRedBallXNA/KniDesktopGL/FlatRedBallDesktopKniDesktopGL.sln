@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallDesktopKniDesktopGL", "FlatRedBallDesktopKniDesktopGL.csproj", "{BC5A32AB-96FB-4605-8CAB-09E02D9648DC}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BC5A32AB-96FB-4605-8CAB-09E02D9648DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC5A32AB-96FB-4605-8CAB-09E02D9648DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC5A32AB-96FB-4605-8CAB-09E02D9648DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC5A32AB-96FB-4605-8CAB-09E02D9648DC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {05407A93-C0A0-49CB-97BE-0FE86BD40B50}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
+		..\FlatRedBall\FlatRedBallShared.projitems*{bc5a32ab-96fb-4605-8cab-09e02d9648dc}*SharedItemsImports = 5
+	EndGlobalSection
+EndGlobal

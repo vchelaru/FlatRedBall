@@ -2,7 +2,7 @@
 #define USE_ISOLATED_STORAGE
 #endif
 
-#if IOS || ANDROID
+#if IOS || ANDROID || WEB
 #define USES_DOT_SLASH_ABOLUTE_FILES
 #endif
 
@@ -71,18 +71,6 @@ namespace FlatRedBall.IO
             System.IO.Path.GetDirectoryName(AppContext.BaseDirectory) + "/";
 #elif MONOGAME
         public static string DefaultRelativeDirectory = "./";
-
-#else
-        // Vic says - this used to be:
-        //static string mRelativeDirectory = (System.IO.Directory.GetCurrentDirectory() + "/").Replace("\\", "/");
-        // But the current directory is the directory that launched the application, not the directory of the .exe.
-        // We want to make sure that we use the .exe so that the game/tool can reference the proper path when loading
-        // content.
-        // Update: Made this per-thread so we can do multi-threaded loading.
-        // static string mRelativeDirectory = (System.Windows.Forms.Application.StartupPath + "/").Replace("\\", "/");
-        // Update October 22, 2012 - Projects like Glue may be multi-threaded, but they want the default directory to be preset to
-        // something specific.  But I think we only want this for tools (on the PC).
-        public static string DefaultRelativeDirectory = (System.Windows.Forms.Application.StartupPath + "/").Replace("\\", "/");
 
 #endif
 
@@ -230,11 +218,6 @@ namespace FlatRedBall.IO
 				return "./";
 #elif FRB_RAW || DESKTOP_GL || STANDARD
                 return System.IO.Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ) + "/";
-
-#else
-
-
-                return (System.Windows.Forms.Application.StartupPath + "/");
 #endif
 			}
         }
@@ -433,67 +416,99 @@ namespace FlatRedBall.IO
             }
             else
             {
-#if  USE_ISOLATED_STORAGE
-                bool isIsolatedStorageFile = IsInIsolatedStorage(fileName);
+                var isIsolatedStorageFile = false;
+
+#if USE_ISOLATED_STORAGE
+
+                isIsolatedStorageFile = IsInIsolatedStorage(fileName);
+#endif
 
                 if (isIsolatedStorageFile)
                 {
+#if USE_ISOLATED_STORAGE
+
                     return FileExistsInIsolatedStorage(fileName);
+#endif
+                }
+
+
+#if IOS||ANDROID||WEB
+
+
+                if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
+                    fileName = fileName.Substring(2);
+                fileName = fileName.Replace("\\", "/");
+
+
+                // I think we can make this to-lower on iOS and Android so we don't have to spread to-lowers everywhere else:
+#if !NET8_0_OR_GREATER
+                fileName = fileName.ToLowerInvariant();
+#endif
+
+#if ANDROID
+                // We may be checking for a file outside of the title container
+                if (System.IO.File.Exists(fileName))
+                {
+                    return true;
+                }
+#endif
+
+
+                Stream stream = null;
+                // This method tells us if a file exists.  I hate that we have 
+                // to do it this way - the TitleContainer should have a FileExists
+                // property to avoid having to do logic off of exceptions.  <sigh>
+                try
+                {
+                    fileName = RemoveDotDotSlash(fileName);
+                    // Currently StreamByteDictionary does have prefix of / for web, so we need to check
+                    // that before going to OpenStream
+
+#if WEB
+                    if(!fileName.StartsWith('/'))
+                    {
+                        fileName = "/" + fileName;
+                    }
+#endif
+
+                    if (StreamByteDictionary.ContainsKey(fileName))
+                    {
+                        return true;
+                    }
+
+#if WEB
+                    if(fileName.StartsWith("/"))
+                    {
+                        fileName = fileName.Substring(1);
+                    }
+#endif
+
+                    stream = TitleContainer.OpenStream(fileName);
+                }
+#if ANDROID
+                catch (Java.IO.FileNotFoundException)
+                {
+                    return false;
+                }
+#endif
+                catch (FileNotFoundException fnfe)
+                {
+                    return false;
+                }
+
+                if (stream != null)
+                {
+                    stream.Dispose();
+                    return true;
                 }
                 else
                 {
-
-                    if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
-                        fileName = fileName.Substring(2);
-                    fileName = fileName.Replace("\\", "/");
-
-
-                    // I think we can make this to-lower on iOS and Android so we don't have to spread to-lowers everywhere else:
-#if !NET8_0_OR_GREATER
-                    fileName = fileName.ToLowerInvariant();
-#endif
-
-#if ANDROID
-                    // We may be checking for a file outside of the title container
-                    if (System.IO.File.Exists(fileName))
-                    {
-                        return true;
-                    }
-#endif
-
-
-                    Stream stream = null;
-                    // This method tells us if a file exists.  I hate that we have 
-                    // to do it this way - the TitleContainer should have a FileExists
-                    // property to avoid having to do logic off of exceptions.  <sigh>
-                    try
-                    {
-                        stream = TitleContainer.OpenStream(fileName);
-                    }
-#if ANDROID
-                    catch (Java.IO.FileNotFoundException)
-                    {
-                        return false;
-                    }
-#endif
-                    catch (FileNotFoundException fnfe)
-                    {
-                        return false;
-                    }
-
-                    if (stream != null)
-                    {
-                        stream.Dispose();
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
+                
 #else
 
-                    if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
+                if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
 					fileName = fileName.Substring(2);
 
                 return System.IO.File.Exists(fileName);
@@ -994,11 +1009,11 @@ namespace FlatRedBall.IO
         {
 #if USE_ISOLATED_STORAGE
 
-    #if IOS || UWP
+#if IOS || UWP
             // I don't know if we need to get anything here
-    #else
+#else
             mIsolatedStorageFile = IsolatedStorageFile.GetUserStoreForApplication();
-    #endif
+#endif
             mHasUserFolderBeenInitialized = true;
 
 #else
@@ -1009,12 +1024,12 @@ namespace FlatRedBall.IO
 
             if (!Directory.Exists(directory))
             {
-    #if IOS
+#if IOS
                 if(directory.StartsWith("./"))
                 {
                     directory = directory.Substring(1);
                 }
-    #endif
+#endif
 
                 Directory.CreateDirectory(directory);
             }
@@ -1059,11 +1074,13 @@ namespace FlatRedBall.IO
             {
                 return false;
             }
+#if !WEB
             // If it's isolated storage, then it's not relative:
             else if (fileName.Contains(IsolatedStoragePrefix))
             {
                 return false;
             }
+#endif
             else
             {
                 return true;
@@ -1332,6 +1349,8 @@ namespace FlatRedBall.IO
                 {
                     directory = FileManager.MakeAbsolute(directory);
                 }
+
+
 
                 if (System.IO.Directory.Exists(directory))
                 {
@@ -1746,10 +1765,7 @@ namespace FlatRedBall.IO
             if (FileManager.IsRelative(fileName))
                 fileName = FileManager.RelativeDirectory + fileName;
 
-            // Do this check before removing the ./ at the end of the file name
-
             ThrowExceptionIfFileDoesntExist(fileName);
-
 
             bool handled = false;
 
@@ -1818,6 +1834,14 @@ namespace FlatRedBall.IO
             return GetStreamForFile(fileName, FileMode.Open);
         }
 
+        /// <summary>
+        /// A dictionary containing byte arrays by file name, allowing games to pre-load
+        /// data and store it here for faster access. This is especially important for
+        /// web games.
+        /// </summary>
+        public static Dictionary<string, byte[]> StreamByteDictionary { get; private set; } =
+            new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
+
         public static Stream GetStreamForFile(string fileName, FileMode mode)
         {
             // This used to
@@ -1841,27 +1865,69 @@ namespace FlatRedBall.IO
             {
                 fileName = fileName.Substring(2);
             }
+
+            var streamName = fileName;
+#if WEB
+            if(!streamName.StartsWith("/"))
+            {
+                streamName = "/" + streamName;
+            }
+#endif
+            if (StreamByteDictionary.ContainsKey(streamName))
+            {
+                var bytes = StreamByteDictionary[streamName];
+                return new System.IO.MemoryStream(bytes);
+            }
+
+            if (StreamByteDictionary.ContainsKey(fileName))
+            {
+                var bytes = StreamByteDictionary[fileName];
+                return new System.IO.MemoryStream(bytes);
+            }
+
             Stream stream = null;
 #if USES_DOT_SLASH_ABOLUTE_FILES
             if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
                 fileName = fileName.Substring(2);
 
+            var usesIsolatedStorage = false;
 
+#if !WEB
+            usesIsolatedStorage = fileName.Contains(IsolatedStoragePrefix) || fileName.Contains(IsolatedStoragePrefix.ToLowerInvariant());
+#endif
 
-            if (fileName.Contains(IsolatedStoragePrefix) || fileName.Contains(IsolatedStoragePrefix.ToLowerInvariant()))
+            if (usesIsolatedStorage)
             {
+#if !WEB
                 fileName = GetIsolatedStorageFileName(fileName);
 
                 IsolatedStorageFileStream isfs = new IsolatedStorageFileStream(fileName, mode, mIsolatedStorageFile);
 
                 stream = isfs;
+#endif
             }
             else
             {
 
 
-#if ANDROID || IOS 
+#if ANDROID || IOS
+
+
+
                 stream = TitleContainer.OpenStream(fileName);
+#elif WEB
+
+                fileName.Replace("\\", "/");
+                if(fileName.StartsWith("/"))
+                {
+                    fileName = fileName.Substring(1);
+                }
+
+                var suffix =
+                    "?token=" + DateTime.Now.Ticks;
+
+                stream = TitleContainer.OpenStream(fileName + suffix);
+
 #else
 
                 fileName = fileName.Replace("\\", "/");
@@ -1881,19 +1947,19 @@ namespace FlatRedBall.IO
 #endif
             }
 #else
-            // If the file is locked (like by excel) then
-            // this will fail. We only want to read it, so it shouldn't...
-            //stream = File.OpenRead(fileName);
-            // https://stackoverflow.com/questions/12942717/read-log-file-being-used-by-another-process
+                // If the file is locked (like by excel) then
+                // this will fail. We only want to read it, so it shouldn't...
+                //stream = File.OpenRead(fileName);
+                // https://stackoverflow.com/questions/12942717/read-log-file-being-used-by-another-process
 
-            //stream = File.OpenRead(fileName);
-            stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                //stream = File.OpenRead(fileName);
+                stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 #endif
 
             return stream;
         }
 
-
+#if !NET7_0_OR_GREATER
         public static object BinaryDeserialize(Type type, string fileName)
         {
             object objectToReturn = null;
@@ -1917,6 +1983,7 @@ namespace FlatRedBall.IO
             return objectToReturn;
 
         }
+#endif
 
         public static object XmlDeserialize(Type type, string fileName)
         {
@@ -1942,12 +2009,14 @@ namespace FlatRedBall.IO
 
 
 
+#if !NET7_0_OR_GREATER
 
 
         public static void BinarySerialize<T>(T objectToSerialize, string fileName)
         {
             BinarySerialize(typeof(T), objectToSerialize, fileName);
         }
+
 
         public static void BinarySerialize(Type type, object objectToSerialize, string fileName)
         {
@@ -1982,7 +2051,7 @@ namespace FlatRedBall.IO
             }
 
         }
-
+#endif
 
         public static void XmlSerialize(Type type, object objectToSerialize, string fileName)
         {
@@ -2112,9 +2181,9 @@ namespace FlatRedBall.IO
 			return new XElement(xmlDocument.Name.LocalName, xmlDocument.Elements().Select(el => RemoveAllNamespaces(el)));
 		}
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
         #region Internal Methods
 

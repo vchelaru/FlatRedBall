@@ -6,9 +6,18 @@
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
              xmlns:pt="http://propertytools.org/wpf" 
              xmlns:controls="clr-namespace:GlueFormsCore.Controls;assembly=GlueFormsCore"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              PreviewKeyDown="UserControl_PreviewKeyDown"
              d:DesignHeight="450" d:DesignWidth="350">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/GlueFormsCore;component/Themes/Frb.Buttons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" x:Name="ButtonsToolBar"></RowDefinition>
@@ -19,54 +28,58 @@
             <RowDefinition Height="Auto" x:Name="SelectedItemsGrid"></RowDefinition>
 
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
-            <Button IsEnabled="{Binding IsBackButtonEnabled}" Click="BackButtonClicked" Width="24" Margin="2,2,0,2">
+        <StackPanel Orientation="Horizontal" Margin="0,2">
+            <StackPanel.Resources>
+                <Style x:Key="ExplorerButton" TargetType="{x:Type Button}" BasedOn="{StaticResource IconButton}">
+                    <Setter Property="Height" Value="16"/>
+                    <Setter Property="Margin" Value="0,0,4,0"/>
+                </Style>
+            </StackPanel.Resources>
+            <Button IsEnabled="{Binding IsBackButtonEnabled}" Click="BackButtonClicked" Style="{StaticResource ExplorerButton}" Content="{materialDesign:PackIcon ArrowLeft}">
                 <Button.ToolTip>
                     <StackPanel>
                         <TextBlock FontWeight="Bold"><Label Content="{x:Static localization:Texts.Back}" /> (ALT + &lt;-)</TextBlock>
                         <TextBlock Text="{x:Static localization:Texts.SelectPreviousItem}" />
                     </StackPanel>
                 </Button.ToolTip>
-                <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_back.png">
-
-                </Image>
+                
             </Button>
-            <Button Click="NextButtonClicked" IsEnabled="{Binding IsForwardButtonEnabled}"  Width="24" Margin="2,2,0,2">
+            <Button Click="NextButtonClicked" IsEnabled="{Binding IsForwardButtonEnabled}" Style="{StaticResource ExplorerButton}" Content="{materialDesign:PackIcon ArrowRight}">
                 <Button.ToolTip>
                     <StackPanel>
                         <TextBlock FontWeight="Bold"><Label Content="{x:Static localization:Texts.Forward}" /> (ALT + -&gt;)</TextBlock>
                         <TextBlock Text="{x:Static localization:Texts.SelectionStackNext}" />
                     </StackPanel>
                 </Button.ToolTip>
-                <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_forward.png">
-
-                </Image>
             </Button>
-            <Button Click="CollapseAllClicked" Width="24" Margin="2,2,0,2">
+            <Button Click="CollapseAllClicked" Style="{StaticResource ExplorerButton}" Content="{materialDesign:PackIcon CollapseAll}">
                 <Button.ToolTip>
                     <StackPanel>
                         <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.CollapseAll}" />
                         <TextBlock Text="{x:Static localization:Texts.CollapseAllFolders}" />
                     </StackPanel>
                 </Button.ToolTip>
-                <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_contract.png">
-                    
-                </Image>
             </Button>
-            <Button Click="CollapseToDefinitionsClicked" Width="24" Margin="2,2,0,2">
+            <Button Click="CollapseToDefinitionsClicked" Style="{StaticResource ExplorerButton}" Content="{materialDesign:PackIcon CollapseAllOutline}">
                 <Button.ToolTip>
                     <StackPanel>
                         <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.ScopeDefinitions}" />
                         <TextBlock  Text="{x:Static localization:Texts.CollapseFoldersExpandsTopLevel}" />
                     </StackPanel>
                 </Button.ToolTip>
-                <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_collapse_to_definitions.png">
-
-                </Image>
             </Button>
-            <ToggleButton Width="24" Margin="2,2,0,2" IsChecked="{Binding IsBookmarkListVisible}">
-                <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/StarFilled.png">
-                </Image>
+            <ToggleButton Height="16"  IsChecked="{Binding IsBookmarkListVisible}" >
+                <ToggleButton.Style>
+                    <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                        <Setter Property="Content" Value="{materialDesign:PackIcon Star}"/>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Content" Value="{materialDesign:PackIcon StarOutline}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
             </ToggleButton>
 
         </StackPanel>
@@ -83,6 +96,7 @@
                  MouseDoubleClick="Bookmarks_MouseDoubleClick"
                  ItemsSource="{Binding Bookmarks}"
                  SelectedItem="{Binding SelectedBookmark}"
+                 Margin="0,2"
                  >
             <ListBox.Resources>
 
@@ -116,7 +130,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <GridSplitter Grid.Row="2" Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+        <GridSplitter Grid.Row="2" Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,-2" 
                 Visibility="{Binding BookmarkListVisibility}"
                       />
 
@@ -125,6 +139,7 @@
                             DismissHintTextClicked="SearchBar_DismissHintTextClicked"
                             ArrowKeyPushed="SearchBar_ArrowKeyPushed"
                             EnterPressed="SearchBar_EnterPressed"
+                            Margin="0,2"
                             ></controls:SearchBar>
 
         <ListBox x:Name="FlatList" 
@@ -151,7 +166,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        
+
         <pt:TreeListBox x:Name="MainTreeView" 
                         Visibility="{Binding MainTreeViewVisibility}"
                         Grid.Row="4" 
@@ -172,13 +187,14 @@
                         DragEnter="MainTreeView_DragEnter"
                         DragOver="MainTreeView_DragOver"
                         MouseDoubleClick="MainTreeView_MouseDoubleClick"
-                        MouseMove="MainTreeView_MouseMove">
-            
+                        MouseMove="MainTreeView_MouseMove"
+                        ContextMenuOpening="MainTreeView_OnContextMenuOpening_">
+
             <pt:TreeListBox.ContextMenu>
                 <ContextMenu x:Name="RightClickContextMenu"/>
             </pt:TreeListBox.ContextMenu>
             <pt:TreeListBox.ItemTemplate>
-                
+
                 <DataTemplate>
                     <Grid x:Name="ItemGrid" Visibility="{Binding Visibility}">
                         <Grid.ColumnDefinitions>
@@ -195,8 +211,6 @@
                 </DataTemplate>
             </pt:TreeListBox.ItemTemplate>
         </pt:TreeListBox>
-        <Grid x:Name="SelectionPanel" Grid.Row="5">
-            <Label Visibility="{Binding SelectedItemInfoVisibility}" Content="{Binding SelectedItemInfoDisplay}"></Label>
-        </Grid>
+        <TextBlock Grid.Row="5" Visibility="{Binding SelectedItemInfoVisibility}" Text="{Binding SelectedItemInfoDisplay}" FontFamily="Consolas" Margin="0,2,0,0" Foreground="{DynamicResource Frb.Brushes.Foreground.Subtle}" />
     </Grid>
 </UserControl>

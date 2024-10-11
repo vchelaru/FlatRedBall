@@ -1,6 +1,8 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.VSHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +17,8 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
         public static string GetGame1GeneratedContents()
         {
             var topBlock = new CodeDocument(0);
+            var predefines = CodeBuildItemAdder.GetGlueVersionsString();
+            topBlock.Line(predefines);
             topBlock.Line("using System.Linq;");
 
             var namespaceBlock = topBlock.Namespace( GlueState.Self.ProjectNamespace);
@@ -74,9 +78,27 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
 
             // Should this go in a generator?
             var gluxVersion = GlueState.Self.CurrentGlueProject.FileVersion;
-            if(gluxVersion>= (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly)
+
+            var shouldGenerateGlobalContentInitialize =
+                gluxVersion >= (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly &&
+                GlueState.Self.CurrentGlueProject.GlobalContentSettingsSave.GenerateLoadGlobalContentCode;
+
+            if(shouldGenerateGlobalContentInitialize)
             {
-                method.Line($"{GlueState.Self.ProjectNamespace}.GlobalContent.Initialize();");
+                // if the startup screen has IsBeforeGlobalContentLoaded, set this to false
+                var startupScreenName = GlueState.Self.CurrentGlueProject.StartUpScreen;
+                var startupScreen = ObjectFinder.Self.GetScreenSave(startupScreenName);
+
+                if(startupScreen?.IsBeforeGlobalContentLoaded == true)
+                {
+                    shouldGenerateGlobalContentInitialize = false;
+                    method.Line($"// The startup screen {startupScreenName} is set to load before GlobalContent, so we won't load GlobalContent here");
+                }
+            }
+
+            if (shouldGenerateGlobalContentInitialize)
+            {
+                method.Line($"global::{GlueState.Self.ProjectNamespace}.GlobalContent.Initialize();");
             }
 
             foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.StandardGenerated))

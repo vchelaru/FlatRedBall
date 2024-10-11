@@ -28,9 +28,6 @@ namespace FlatRedBall.ManagedSpriteGroups
     /// Delegate for methods which can be assigned to the SpriteFrame
     /// for every-frame custom logic.
     /// </summary>
-    /// <remarks>
-    /// <seealso cref="FlatRedBall.ManagedSpriteGroups.SpriteFrame.CustomBehavior"/>
-    /// </remarks>
     /// <param name="spriteFrame">The SpriteFrame on which the logic should execute.</param>
     #endregion
     public delegate void SpriteFrameCustomBehavior(SpriteFrame spriteFrame);

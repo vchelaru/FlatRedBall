@@ -93,7 +93,9 @@ namespace GlueTestProject.Screens
             // Let's try addition/removal:
             RecyclableEntity recyclableInstance = new RecyclableEntity();
             recyclableInstance.Destroy();
-            recyclableInstance.ReAddToManagers(null);
+            // I believe this has been unified:
+            recyclableInstance.AddToManagers(null);
+            //recyclableInstance.ReAddToManagers(null);
 
             recyclableInstance.Destroy();
         }

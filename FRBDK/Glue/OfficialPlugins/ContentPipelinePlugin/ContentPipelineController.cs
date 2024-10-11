@@ -40,14 +40,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
 
             this.viewModel = viewModel;
             viewModel.PropertyChanged += HandleViewModelPropertyChanged;
-            if(settings != null)
-            {
-                viewModel.UseContentPipelineOnPngs = settings.UseContentPipelineOnAllPngs;
-            }
-            else
-            {
-                viewModel.UseContentPipelineOnPngs = false;
-            }
+            viewModel.UseContentPipelineOnPngs = settings?.UseContentPipelineOnAllPngs == true;
         }
 
         private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 
-namespace OfficialPluginsCore.Compiler.ViewModels
+namespace OfficialPlugins.Compiler.ViewModels
 {
     #region ScreenReferenceViewModel class
     public class ScreenReferenceViewModel : ViewModel

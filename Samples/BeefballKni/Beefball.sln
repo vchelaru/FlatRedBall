@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32519.379
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beefball", "Beefball\Beefball.csproj", "{D7079294-70C6-4204-B29E-C505EC181815}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallDesktopKniDesktopGL", "..\..\Engines\FlatRedBallXNA\KniDesktopGL\FlatRedBallDesktopKniDesktopGL.csproj", "{58BD880D-CA76-4CA5-8EAF-5B02B22A7FB0}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StateInterpolation.Kni.DesktopGL", "..\..\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.Kni\StateInterpolation.Kni.DesktopGL.csproj", "{40C257DA-0DFE-45BA-8F16-42896E5A3BD5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D7079294-70C6-4204-B29E-C505EC181815}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7079294-70C6-4204-B29E-C505EC181815}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7079294-70C6-4204-B29E-C505EC181815}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7079294-70C6-4204-B29E-C505EC181815}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58BD880D-CA76-4CA5-8EAF-5B02B22A7FB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58BD880D-CA76-4CA5-8EAF-5B02B22A7FB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58BD880D-CA76-4CA5-8EAF-5B02B22A7FB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58BD880D-CA76-4CA5-8EAF-5B02B22A7FB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40C257DA-0DFE-45BA-8F16-42896E5A3BD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40C257DA-0DFE-45BA-8F16-42896E5A3BD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40C257DA-0DFE-45BA-8F16-42896E5A3BD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40C257DA-0DFE-45BA-8F16-42896E5A3BD5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19F0E96B-A930-4730-AD7A-3E93D29343B5}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
+		..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{40c257da-0dfe-45ba-8f16-42896e5a3bd5}*SharedItemsImports = 5
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{58bd880d-ca76-4ca5-8eaf-5b02b22a7fb0}*SharedItemsImports = 5
+	EndGlobalSection
+EndGlobal

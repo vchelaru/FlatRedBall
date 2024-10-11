@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="TiledPluginCore.Views.LevelWithVisualsSelectionView"
+﻿<UserControl x:Class="TiledPlugin.Views.LevelWithVisualsSelectionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TiledPluginCore.Views"
+             xmlns:local="clr-namespace:TiledPlugin.Views"
              mc:Ignorable="d" 
              d:DesignWidth="300">
     <Grid>
@@ -24,19 +24,19 @@
         <RadioButton Margin="5" IsChecked="{Binding IsOverworldPlatformerASelected}" Visibility="{Binding PlatformerLevelVisibility}">
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center">Platformer A</TextBlock>
-                <Image Width="100" Height="100" Source="/TiledPluginCore;component/Content/Icons/OverworldPlatformerAPreview.png" />
+                <Image Width="100" Height="100" Source="/TiledPlugin;component/Content/Icons/OverworldPlatformerAPreview.png" />
             </StackPanel>
         </RadioButton>
         <RadioButton  Margin="5"  IsChecked="{Binding IsOverworldPlatformerBSelected}" Grid.Column="1" Visibility="{Binding PlatformerLevelVisibility}">
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center">Platformer B</TextBlock>
-                <Image Width="100" Height="100" Source="/TiledPluginCore;component/Content/Icons/OverworldPlatformerBPreview.png" />
+                <Image Width="100" Height="100" Source="/TiledPlugin;component/Content/Icons/OverworldPlatformerBPreview.png" />
             </StackPanel>
         </RadioButton>
         <RadioButton Grid.Row="1"  IsChecked="{Binding IsOverworldPlatformerCSelected}" Margin="5" Visibility="{Binding PlatformerLevelVisibility}">
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center">Platformer C</TextBlock>
-                <Image Width="100" Height="100" Source="/TiledPluginCore;component/Content/Icons/OverworldPlatformerCPreview.png" />
+                <Image Width="100" Height="100" Source="/TiledPlugin;component/Content/Icons/OverworldPlatformerCPreview.png" />
             </StackPanel>
         </RadioButton>
 
@@ -44,19 +44,19 @@
         <RadioButton Margin="5" IsChecked="{Binding IsOverworldTopDownASelected}" Grid.Row="2" Visibility="{Binding TopDownLevelVisibility}">
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center">Top Down A</TextBlock>
-                <Image Width="100" Height="100" Source="/TiledPluginCore;component/Content/Icons/OverworldTopDownAPreview.png" />
+                <Image Width="100" Height="100" Source="/TiledPlugin;component/Content/Icons/OverworldTopDownAPreview.png" />
             </StackPanel>
         </RadioButton>
         <RadioButton  Margin="5"  IsChecked="{Binding IsOverworldTopDownBSelected}" Grid.Row="2" Grid.Column="1" Visibility="{Binding TopDownLevelVisibility}">
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center">Top Down B</TextBlock>
-                <Image Width="100" Height="100" Source="/TiledPluginCore;component/Content/Icons/OverworldTopDownBPreview.png" />
+                <Image Width="100" Height="100" Source="/TiledPlugin;component/Content/Icons/OverworldTopDownBPreview.png" />
             </StackPanel>
         </RadioButton>
         <RadioButton IsChecked="{Binding IsOverworldTopDownCSelected}" Grid.Row="3" Margin="5" Visibility="{Binding TopDownLevelVisibility}">
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center">Top Down C</TextBlock>
-                <Image Width="100" Height="100" Source="/TiledPluginCore;component/Content/Icons/OverworldTopDownCPreview.png" />
+                <Image Width="100" Height="100" Source="/TiledPlugin;component/Content/Icons/OverworldTopDownCPreview.png" />
             </StackPanel>
         </RadioButton>
 

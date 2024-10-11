@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<DefineConstants>FNA;DESKTOP_GL;XNA4;FRB_XNA;KNI;WEB;BLAZORGL</DefineConstants>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1591</NoWarn>
+
+  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="TextCopy" Version="6.1.0" />
+		<ProjectReference Include="..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCore.Kni.Web\GumCore.Kni.Web.csproj" />
+	</ItemGroup>
+	<Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
+</Project>

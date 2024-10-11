@@ -1,15 +1,15 @@
 ﻿using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.Interfaces;
-using OfficialPluginsCore.QuickActionPlugin.Managers;
-using OfficialPluginsCore.QuickActionPlugin.Views;
+using OfficialPlugins.QuickActionPlugin.Managers;
+using OfficialPlugins.QuickActionPlugin.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Text;
 using System.Windows.Forms;
 
-namespace OfficialPluginsCore.QuickActionPlugin
+namespace OfficialPlugins.QuickActionPlugin
 {
     [Export(typeof(PluginBase))]
     public class MainQuickActionPlugin : PluginBase
@@ -59,7 +59,7 @@ namespace OfficialPluginsCore.QuickActionPlugin
 
         private void AssignEvents()
         {
-            this.ReactToItemSelectHandler += (notUsed) =>
+            this.ReactToItemsSelected += _ =>
                 buttonVisibilityManager.UpdateVisibility();
 
             this.ReactToLoadedGlux += () =>

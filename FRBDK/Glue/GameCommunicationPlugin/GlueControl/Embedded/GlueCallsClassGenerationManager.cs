@@ -75,10 +75,22 @@ namespace GlueControl
                 
                 if(subType.IsGenericType && subType.GetGenericTypeDefinition() == typeof(List<>))
                 {
+                    if (returnValue is string asString)
+                    {
+                        // convert it to a jaray
+                        returnValue = Newtonsoft.Json.JsonConvert.DeserializeObject(asString);
+                    }
+
                     return ConvertResponseList(subType.GetGenericArguments()[0], returnValue as JArray);
                 }
                 else
                 {
+                    if (returnValue is string asString)
+                    {
+                        // convert it to a jaray
+                        returnValue = Newtonsoft.Json.JsonConvert.DeserializeObject(asString);
+                    }
+
                     return ConvertResponseItem(subType, (returnValue as JObject).ToObject(subType));
                 }
             }

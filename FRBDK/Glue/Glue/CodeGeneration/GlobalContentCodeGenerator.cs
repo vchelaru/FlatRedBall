@@ -162,7 +162,7 @@ namespace FlatRedBall.Glue.Parsing
             var toReturn = CodeWriter.CreateClass(classProperties);
 
             var block = new CodeBlockBaseNoIndent(null);
-            block.Line("#if ANDROID || IOS || DESKTOP_GL");
+            block.Line("#if ANDROID || IOS || DESKTOP_GL || WEB");
             block.Line("// Android doesn't allow background loading. iOS doesn't allow background rendering (which is used by converting textures to use premult alpha)");
             block.Line("#define REQUIRES_PRIMARY_THREAD_LOADING");
             block.Line("#endif");
@@ -279,7 +279,18 @@ namespace FlatRedBall.Glue.Parsing
                     {
                         blockToUse.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
 
+                        if(!string.IsNullOrEmpty(rfs.ConditionalCompilationSymbols))
+                        {
+                            blockToUse.Line($"#if {rfs.ConditionalCompilationSymbols}");
+                        }
+
                         blockToUse.Line("m" + rfs.GetInstanceName() + "Mre.Set();");
+
+                        if (!string.IsNullOrEmpty(rfs.ConditionalCompilationSymbols))
+                        {
+                            blockToUse.Line($"#endif");
+                        }
+
                         blockToUse.Line("#endif");
 
                         blockToUse.End();
@@ -362,12 +373,6 @@ namespace FlatRedBall.Glue.Parsing
                 classLevelBlock
                     .Function("static void", "AsyncInitialize", "")
 
-                        .Line("#if XBOX360")
-                        .Line("// We can not use threads 0 or 2")
-                        .Line("// Async screen loading uses thread 4, so we'll use 3 here")
-                        .Line("Thread.CurrentThread.SetProcessorAffinity(3);")
-                        .Line("#endif")
-
                         .Line("bool shouldLoop = LoadMethodList.Count != 0;")
 
                         .While("shouldLoop")
@@ -384,8 +389,35 @@ namespace FlatRedBall.Glue.Parsing
                         .Line("IsInitialized = true;")
                         ._()
                     .End();
-                classLevelBlock.Line("#endif");
 
+                classLevelBlock.Line("#else");
+
+                var asyncLoadInfoClass = classLevelBlock.Class("AsyncLoadInfo", Public: true);
+                asyncLoadInfoClass.AutoProperty("public int ", "TotalItemCount");
+                asyncLoadInfoClass.AutoProperty("public int ", "LoadedItemCount");
+
+                var funcBlock = classLevelBlock
+                    .Function("public static async System.Threading.Tasks.Task", "InitializeAsync", "System.Action<AsyncLoadInfo> actionBetweenEachLoad");
+
+                funcBlock.Line("AsyncLoadInfo loadInfo = new AsyncLoadInfo();");
+
+                var filesToLoad = ProjectManager.GlueProjectSave.GlobalFiles.Where(
+                    item => !ReferencedFileSaveCodeGenerator.IsRfsHighPriority(item) && 
+                    !item.LoadedOnlyWhenReferenced && 
+                    item.LoadedAtRuntime).ToList();
+
+                funcBlock.Line($"loadInfo.TotalItemCount = {filesToLoad.Count};");
+
+
+                foreach (ReferencedFileSave rfs in filesToLoad)
+                {
+                    funcBlock.Line("Load" + rfs.Name.Replace("/", "_").Replace(".", "_") + "();");
+                    funcBlock.Line("loadInfo.LoadedItemCount++;");
+                    funcBlock.Line("actionBetweenEachLoad?.Invoke(loadInfo);");
+                    funcBlock.Line("await global::FlatRedBall.TimeManager.DelayFrames(1);");
+                }
+
+                classLevelBlock.Line("#endif");
                 //stringBuilder.AppendLine("\t\t\tstring ContentManagerName = \"Global\";");
 
             }

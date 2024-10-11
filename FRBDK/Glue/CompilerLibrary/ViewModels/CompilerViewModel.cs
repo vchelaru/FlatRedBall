@@ -330,6 +330,9 @@ namespace CompilerLibrary.ViewModels
         [DependsOn(nameof(IsPlayChecked))]
         public Visibility RunDisabledIconVisibility => (!IsPlayChecked).ToVisibility();
 
+        /// <summary>
+        /// Whether the user is in Edit mode (as opposed to Play mode)
+        /// </summary>
         [DependsOn(nameof(PlayOrEdit))]
         public bool IsEditChecked
         {
@@ -409,6 +412,16 @@ namespace CompilerLibrary.ViewModels
         public ObservableCollection<ToolbarEntityAndStateViewModel> ToolbarEntitiesAndStates
         {
             get => Get<ObservableCollection<ToolbarEntityAndStateViewModel>>();
+            set => Set(value);
+        }
+
+        /// <summary>
+        /// Whether the currently loaded project has had a nuget restore. We only do this one
+        /// time to make builds faster, and only do it again if the project is reloaded.
+        /// </summary>
+        public bool HasDoneNugetRestore
+        {
+            get => Get<bool>();
             set => Set(value);
         }
 

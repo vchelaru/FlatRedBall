@@ -56,6 +56,7 @@ namespace GlueControl.Editing
         bool CanMoveItem { get; set; }
         Vector3 LastUpdateMovement { get; }
         bool UsesRightMouseButton { get; }
+        bool IsSuppressingPunchThrough { get; }
 
         INameable Owner { get; }
 
@@ -523,6 +524,7 @@ namespace GlueControl.Editing
         #region Fields/Properties
 
         bool IsGrabbed = false;
+        public bool IsSuppressingPunchThrough => false;
 
         public bool UsesRightMouseButton => false;
 
@@ -587,8 +589,14 @@ namespace GlueControl.Editing
         {
             get; set;
         } = Color.White;
-        bool IsFadingInAndOut { get; set; } = true;
-
+        bool IsFadingInAndOut
+        {
+            get
+            {
+                return IsPlayingBump == false && PolygonPointHandles?.PointIndexSelected == null;
+            }
+        }
+        bool IsPlayingBump { get; set; }
         string name;
         public string Name
         {
@@ -714,7 +722,7 @@ namespace GlueControl.Editing
             var endingExtraPadding = endingExtraPaddingBeforeZoom;
             TweenerManager.Self.StopAllTweenersOwnedBy(mainPolygon);
 
-            IsFadingInAndOut = false;
+            IsPlayingBump = true;
             ExtraPaddingInPixels = 0;
             const float growTime = 0.25f;
             float extraPaddingFromBump = 10;
@@ -732,7 +740,7 @@ namespace GlueControl.Editing
 
                 tweener2.Ended += () =>
                 {
-                    IsFadingInAndOut = true;
+                    IsPlayingBump = false;
                     if (!isSynchronized)
                     {
                         FadingSeed = TimeManager.CurrentTime;
@@ -893,6 +901,10 @@ namespace GlueControl.Editing
             if (IsFadingInAndOut)
             {
                 value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
+            }
+            else if (PolygonPointHandles?.PointIndexSelected != null)
+            {
+                value = .5f;
             }
 
             mainPolygon.Color = new Color(

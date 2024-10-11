@@ -4,13 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
-             xmlns:TopDownViews="clr-namespace:TopDownPlugin.Views;assembly=TopDownPluginCore"
-             xmlns:PlatformerViews="clr-namespace:FlatRedBall.PlatformerPlugin.Views;assembly=PlatformerPluginCore"
+             xmlns:TopDownViews="clr-namespace:TopDownPlugin.Views;assembly=TopDownPlugin"
+             xmlns:PlatformerViews="clr-namespace:FlatRedBall.PlatformerPlugin.Views;assembly=PlatformerPlugin"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.Resources>
-            <Style TargetType="{x:Type RadioButton}">
+            <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource {x:Type RadioButton}}">
                 <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
         </Grid.Resources>
@@ -18,8 +18,8 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" >
-            <GroupBox Header="{x:Static localization:Texts.InputMovementType}" IsEnabled="{Binding CanUserSelectMovementType}">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+            <GroupBox Header="{x:Static localization:Texts.InputMovementType}" IsEnabled="{Binding CanUserSelectMovementType}" Margin="0,0,2,0">
                 <GroupBox.ToolTip><Label Content="{x:Static localization:Texts.HintSetInputMovementType}" /> </GroupBox.ToolTip>
                 <StackPanel>
                     <RadioButton IsChecked="{Binding IsNoneRadioChecked}" >

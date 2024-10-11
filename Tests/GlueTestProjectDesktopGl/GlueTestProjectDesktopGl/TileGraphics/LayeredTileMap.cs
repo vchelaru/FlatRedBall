@@ -1,3 +1,4 @@
+// The following #defines come from the version of your GLUJ/GLUX file. For more information see https://docs.flatredball.com/flatredball/glue-reference/glujglux
 #define PreVersion
 #define HasFormsObject
 #define AddedGeneratedGame1
@@ -471,8 +472,6 @@ namespace FlatRedBall.TileGraphics
             {
                 foreach (var tile in tileset.TileDictionary.Values)
                 {
-                    int propertyCountFromTileset = 0;
-
                     if (tile.properties.Count != 0)
                     {
                         // this needs a name:

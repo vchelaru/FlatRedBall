@@ -26,15 +26,15 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Managers;
 using System.Diagnostics;
 using FlatRedBall.Glue.Errors;
-using GumPluginCore.Managers;
+using GumPlugin.Managers;
 using FlatRedBall.Glue.Controls;
-using GumPluginCore.ViewModels;
+using GumPlugin.ViewModels;
 using GumPlugin.DataGeneration;
 using FlatRedBall.Glue.FormHelpers;
 using System.Threading.Tasks;
 using HQ.Util.Unmanaged;
 using System.IO;
-using GumPluginCore.CodeGeneration;
+using GumPlugin.CodeGeneration;
 
 namespace GumPlugin;
 
@@ -315,7 +315,7 @@ public class MainGumPlugin : PluginBase
 
         addGumProjectMenuItem = this.AddMenuItemTo(Localization.Texts.ProjectNewGum, Localization.MenuIds.ProjectNewGumId, HandleAddNewGumProjectMenuItemClicked, Localization.MenuIds.ContentId);
         //var bmp = new Bitmap(WindowsFormsApplication1.Properties.Resources.myimage);
-        addGumProjectMenuItem.Image = new Bitmap(GumPluginCore.Resource1.GumIcon);
+        addGumProjectMenuItem.Image = new Bitmap(GumPlugin.Resource1.GumIcon);
 
         AssignEvents();
 
@@ -331,7 +331,7 @@ public class MainGumPlugin : PluginBase
 
 
         //EditorObjects.IoC.Container.Get<IErrorContainer>().
-        var error = new GumPluginCore.ErrorReporting.ErrorReporter();
+        var error = new GumPlugin.ErrorReporting.ErrorReporter();
 
         AddErrorReporter(error);
 
@@ -397,6 +397,8 @@ public class MainGumPlugin : PluginBase
         this.GetAvailableAssetTypes = HandleGetAvailableAssetTypes;
 
         this.ResolutionChanged += HandleResolutionChanged;
+
+        this.ScaleGumChanged += HandleScaleGumChanged;
     }
 
 
@@ -405,6 +407,14 @@ public class MainGumPlugin : PluginBase
     #region Methods
 
     private void HandleResolutionChanged()
+    {
+        if (viewModel?.IsMatchGameResolutionInGumChecked == true)
+        {
+            GumPluginCommands.Self.UpdateGumToGlueResolution();
+        }
+    }
+
+    private void HandleScaleGumChanged()
     {
         if (viewModel?.IsMatchGameResolutionInGumChecked == true)
         {
@@ -507,7 +517,7 @@ public class MainGumPlugin : PluginBase
 
             var foundItem = AssetTypeInfoManager.Self.AssetTypesForThisProject
                 .Where(item => item.QualifiedRuntimeTypeName.QualifiedType ==
-                    GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element));
+                    GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element, prefixGlobal:false));
 
             if (foundItem.Any())
             {
@@ -555,7 +565,7 @@ public class MainGumPlugin : PluginBase
     {
         if (AppState.Self.GumProjectSave != null)
         {
-            var gumScreenName = GumPluginCommands.Self.GetGumScreenNameFor(glueScreen);
+            var gumScreenName = GumPluginCommands.Self.GetExpectedGumScreenNameFor(glueScreen);
 
             var gumScreen = AppState.Self.GumProjectSave.Screens.FirstOrDefault(item => item.Name == gumScreenName);
 
@@ -880,7 +890,17 @@ public class MainGumPlugin : PluginBase
 
         if (string.IsNullOrEmpty(executable))
         {
-            GlueCommands.Self.DialogCommands.ShowMessageBox(Localization.Texts.ErrorGumFileAssociationNotFound);
+            var message = 
+                "Could not find file association for Gum files and could not find Gum relative to the FlatRedBall Editor." +
+                "Associations need to be set before attempting to rebuild font files. Alternatively you can have Gum located at" +
+                "one of the following locations: \n\n" +
+                "As part of FRBDK (prebuilt):\n\t" +
+                GumPrebuiltLocation + "\n\n" +
+                "Built from source at default checkout locations: \n\t" +
+                GumFromSourceLocation                
+                ;
+
+            GlueCommands.Self.DialogCommands.ShowMessageBox(message);
         }
         else
         {
@@ -909,6 +929,12 @@ public class MainGumPlugin : PluginBase
         }
     }
 
+    static FilePath GumPrebuiltLocation =>
+        GlueState.Self.GlueExeDirectory + "../Gum/Data/Gum.exe";
+
+    static FilePath GumFromSourceLocation =>
+        GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+
     public static string GetGumExecutableLocation()
     {
         var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension("gumx");
@@ -918,7 +944,7 @@ public class MainGumPlugin : PluginBase
         // see if the prebuilt location exists:
         if (string.IsNullOrEmpty(executable))
         {
-            FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../Gum/Data/Gum.exe";
+            FilePath prebuiltLocation = GumPrebuiltLocation;
             if (prebuiltLocation.Exists())
             {
                 executable = prebuiltLocation.FullPath;
@@ -931,7 +957,7 @@ public class MainGumPlugin : PluginBase
             if (string.IsNullOrEmpty(executable))
             {
                 // \FlatRedBall\FRBDK\Glue\Glue\bin\x86\Debug to \Gum\Gum\bin\Debug\Data
-                FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                FilePath prebuiltLocation = GumFromSourceLocation;
                 if (prebuiltLocation.Exists())
                 {
                     executable = prebuiltLocation.FullPath;
@@ -979,7 +1005,7 @@ public class MainGumPlugin : PluginBase
 
     private async void HandleGluxLoad()
     {
-        base.AddToToolBar(gumToolbar, Localization.Texts.Tools);
+        base.AddToToolBar(gumToolbar, "Tools");
 
         var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
@@ -1007,7 +1033,7 @@ public class MainGumPlugin : PluginBase
                 // the UpdatecodeInProjectPresence may add new files, so save:
                 GlueCommands.Self.ProjectCommands.SaveProjects();
 
-            }, Localization.Texts.GumPluginGluxLoad);
+            }, "Gum Plugin reacting to Glue Project Load");
 
             await UpdateGumParentProject();
 

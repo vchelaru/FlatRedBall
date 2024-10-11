@@ -125,7 +125,7 @@ namespace GlueCommunication
                 {
                     while (_isConnected)
                     {
-                        string stringFromGlue = await ReceiveString(glueToGameSocket);
+                        string stringFromGlue = await ReceiveStringAsync(glueToGameSocket);
 
 #if GLUE
 
@@ -190,36 +190,139 @@ namespace GlueCommunication
                 StartConnecting();
             }
         }
-#endregion
+        #endregion
 
         #region publicMethods
 
-        public void SendItem(Packet item)
+        public async Task<string> SendItem(Packet item)
         {
             if (_isConnected)
-                _=SendItemImmediately(item);
+            {
+                return await SendItemImmediately(item);
+            }
+            else
+            {
+                return String.Empty;
+            }
+        }
+
+        // we can't have multiple sends overlap, so use a semaphore to prevent that:
+        SemaphoreSlim sendSemaphore = new SemaphoreSlim(1, 1);
+        Packet lastSentPacket = null;
+        DateTime? lastSentPacketTime;
+        SendStatus? lastSendStatus;
+
+        enum SendStatus
+        {
+            Serializing,
+            SendingSize,
+            SendingBytes,
+            GettingResponse,
+            GettingResponseBytes,
+            GettingResponseBody
         }
 
         private async Task<string> SendItemImmediately(Packet item)
         {
-            var packet = JsonConvert.SerializeObject(item);
-            var sendBytes = Encoding.ASCII.GetBytes(packet);
-            long size = sendBytes.LongLength;
 
-            //Send size
-            gameToGlueSocket.Send(BitConverter.GetBytes(size));
+            await sendSemaphore.WaitAsync();
 
-            //Send payload
-            gameToGlueSocket.Send(sendBytes);
+            try
+            {
+                lastSentPacket = item;
+                lastSentPacketTime = DateTime.Now;
+                lastSendStatus = SendStatus.Serializing;
+                var packet = JsonConvert.SerializeObject(item);
+                var sendBytes = Encoding.ASCII.GetBytes(packet);
+                long size = sendBytes.LongLength;
 
-            string responseString = await ReceiveString(gameToGlueSocket);
-            return responseString;
+                lastSendStatus = SendStatus.SendingSize;
+                //Send size
+                gameToGlueSocket.Send(BitConverter.GetBytes(size));
+
+                lastSendStatus = SendStatus.SendingBytes;
+                //Send payload
+                gameToGlueSocket.Send(sendBytes);
+
+                lastSendStatus = SendStatus.GettingResponse;
+
+                // August 24, 2024
+                // Vic was able to get
+                // a deadlock by making
+                // this async. By making
+                // it not async, the game
+                // freezes a little bit when
+                // waiting for commands from Glue,
+                // but it's better than it breaking.
+                // Also by not making this async we might
+                // be able to track down other desyncs better
+                // so I'm going to leave it like this for now.
+                // Update - by making this not async, we do solve
+                // the problem of selecting one screen then the other
+                // but we break being able to launch the game and view
+                // it in the editor, so it must be async
+#if ScreenHasCancellationToken || REFERENCES_FRB_SOURCE
+                string responseString = await ReceiveStringBackFromGame(gameToGlueSocket);
+#else
+                string responseString = await ReceiveStringAsync(gameToGlueSocket);
+#endif
+                return responseString;
+            }
+            finally
+            {
+                lastSendStatus = null;
+                sendSemaphore.Release();
+            }
         }
 
-        private static async Task<string> ReceiveString(Socket socket)
+#if ScreenHasCancellationToken || REFERENCES_FRB_SOURCE
+        private async Task<string> ReceiveStringBackFromGame(Socket socket)
         {
             byte[] bufferSize = new byte[sizeof(long)];
             ArraySegment<byte> buffer = new ArraySegment<byte>(bufferSize);
+            lastSendStatus = SendStatus.GettingResponseBytes;
+
+            string responseString = null;
+            try
+            {
+                var amountReceived = await socket.ReceiveAsync(buffer,
+                    SocketFlags.None);
+                var packetSize = BitConverter.ToInt64(bufferSize, 0);
+
+                System.Diagnostics.Debug.WriteLine($"{DateTime.Now}-Received {amountReceived}, body size {packetSize}");
+
+                if (packetSize > 0)
+                {
+                    lastSendStatus = SendStatus.GettingResponseBody;
+
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        var remainingBytes = packetSize;
+                        while (remainingBytes > 0)
+                        {
+                            var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
+                            byte[] bufferData = new byte[pullSize];
+                            var amountRead = socket.Receive(bufferData);
+                            stream.Write(bufferData, 0, bufferData.Length);
+                            remainingBytes -= amountRead;
+                        }
+
+                        responseString = Encoding.ASCII.GetString(stream.ToArray());
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+
+            return responseString;
+        }
+#endif
+        private async Task<string> ReceiveStringAsync(Socket socket)
+        {
+            byte[] bufferSize = new byte[sizeof(long)];
+            ArraySegment<byte> buffer = new ArraySegment<byte>(bufferSize);
+            lastSendStatus = SendStatus.GettingResponseBytes;
 
             await socket.ReceiveAsync(buffer, SocketFlags.None);
 
@@ -227,19 +330,24 @@ namespace GlueCommunication
 
             string responseString = null;
 
-            using (MemoryStream stream = new MemoryStream())
+            if (packetSize > 0)
             {
-                var remainingBytes = packetSize;
-                while (remainingBytes > 0)
-                {
-                    var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
-                    byte[] bufferData = new byte[pullSize];
-                    socket.Receive(bufferData);
-                    stream.Write(bufferData, 0, bufferData.Length);
-                    remainingBytes -= pullSize;
-                }
+                lastSendStatus = SendStatus.GettingResponseBody;
 
-                responseString = Encoding.ASCII.GetString(stream.ToArray());
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    var remainingBytes = packetSize;
+                    while (remainingBytes > 0)
+                    {
+                        var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
+                        byte[] bufferData = new byte[pullSize];
+                        socket.Receive(bufferData);
+                        stream.Write(bufferData, 0, bufferData.Length);
+                        remainingBytes -= pullSize;
+                    }
+
+                    responseString = Encoding.ASCII.GetString(stream.ToArray());
+                }
             }
 
             return responseString;
@@ -267,7 +375,7 @@ namespace GlueCommunication
             try { glueToGameSocket?.Dispose(); } catch { }
         }
 
-        #endregion
+#endregion
 
         #region classes
         public class Packet

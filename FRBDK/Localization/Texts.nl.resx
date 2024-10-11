@@ -258,9 +258,6 @@
   <data name="PerformanceSettings" xml:space="preserve">
     <value>Prestatie-instellingen</value>
   </data>
-  <data name="Preferences" xml:space="preserve">
-    <value>Voorkeuren</value>
-  </data>
   <data name="CustomGameClass" xml:space="preserve">
     <value>Maatwerk Game Class</value>
   </data>
@@ -360,14 +357,14 @@
   <data name="Tools" xml:space="preserve">
     <value>Hulpmiddelen</value>
   </data>
-  <data name="GumProjectFileCanOnlyAddedToGlobal" xml:space="preserve">
-    <value>Het Gum-projectbestand (.gumx) kan alleen aan globale inhoud worden toegevoegd.</value>
+  <data name="GumPluginHandleNewFrbScreen" xml:space="preserve">
+    <value>Gum Plugin - nieuw FRB-scherm {0} verwerken </value>
   </data>
   <data name="GumConfirmDeleteScreen" xml:space="preserve">
     <value>Het Gum-scherm {0}\nvoor {1} verwijderen?</value>
   </data>
-  <data name="GumPluginHandleNewFrbScreen" xml:space="preserve">
-    <value>Gum Plugin - nieuw FRB-scherm {0} verwerken </value>
+  <data name="GumProjectFileCanOnlyAddedToGlobal" xml:space="preserve">
+    <value>Het Gum-projectbestand (.gumx) kan alleen aan globale inhoud worden toegevoegd.</value>
   </data>
   <data name="GumReordering" xml:space="preserve">
     <value>.gumx opnieuw ordenen</value>
@@ -392,9 +389,6 @@
   </data>
   <data name="GumProperties" xml:space="preserve">
     <value>Gum eigenschappen</value>
-  </data>
-  <data name="ErrorGumFileAssociationNotFound" xml:space="preserve">
-    <value>Kan geen bestandsassociatie vinden voor Gum-bestanden en kan Gum niet vinden ten opzichte van de FlatRedBall Editor. Associaties moeten worden ingesteld voordat u probeert lettertypebestanden opnieuw op te bouwen</value>
   </data>
   <data name="RefreshingFontCache" xml:space="preserve">
     <value>Lettertypecache vernieuwen</value>
@@ -422,9 +416,6 @@
   </data>
   <data name="EnableGameEmbedInSettings" xml:space="preserve">
     <value>Schakel Game insluiten en bewerken in via de instellingen</value>
-  </data>
-  <data name="RunEditMode" xml:space="preserve">
-    <value>Uitvoeren in bewerkingsmodus</value>
   </data>
   <data name="StartGameInEditMode" xml:space="preserve">
     <value>Start het spel in de bewerkingsmodus op het opstartscherm.</value>
@@ -497,9 +488,6 @@
   </data>
   <data name="IncreaseGameSpeedFastForward" xml:space="preserve">
     <value>Verhoogt de spelsnelheid (laat het snel vooruitspoelen)</value>
-  </data>
-  <data name="AutoTakeSnapshot" xml:space="preserve">
-    <value>Automatische momentopname</value>
   </data>
   <data name="TakeSnapshot" xml:space="preserve">
     <value>Maak snapshot</value>
@@ -783,6 +771,9 @@
   <data name="HintDirectionUpdateInCustomCode" xml:space="preserve">
     <value>De Richting-eigenschap moet niet worden bijgewerkt in de gegenereerde code, maar kan worden ingesteld in aangepaste code.</value>
   </data>
+  <data name="PropsAdd" xml:space="preserve">
+    <value>Props toevoegen</value>
+  </data>
   <data name="HintEntityInheritsFromTopDown" xml:space="preserve">
     <value>Deze entiteit erft van een Top-Down Entiteit</value>
   </data>
@@ -809,12 +800,6 @@
   </data>
   <data name="GitignoreAdd" xml:space="preserve">
     <value>Voeg .gitignore toe:</value>
-  </data>
-  <data name="ProjectWizardOpen" xml:space="preserve">
-    <value>Open het nieuwe projectwizard:</value>
-  </data>
-  <data name="GlobalContentMembership" xml:space="preserve">
-    <value>GlobalContent lidmaatschap</value>
   </data>
   <data name="UpdateLibraries" xml:space="preserve">
     <value>Bibliotheken bijwerken</value>
@@ -903,12 +888,6 @@
   <data name="AddXnbToMonogame" xml:space="preserve">
     <value>XNB's toevoegen aan Monogame-project(en)</value>
   </data>
-  <data name="EnterNameForEntity" xml:space="preserve">
-    <value>Voer een naam in voor de nieuwe entiteit:</value>
-  </data>
-  <data name="EntityBase" xml:space="preserve">
-    <value>Basisentiteit:</value>
-  </data>
   <data name="Sprite" xml:space="preserve">
     <value>Sprite</value>
   </data>
@@ -947,24 +926,6 @@
   </data>
   <data name="IncludeListsInGameScreen" xml:space="preserve">
     <value>Lijsten opnemen in GameScreen</value>
-  </data>
-  <data name="LocalFiles" xml:space="preserve">
-    <value>Lokale bestanden</value>
-  </data>
-  <data name="DownloadFile" xml:space="preserve">
-    <value>Download bestand</value>
-  </data>
-  <data name="HintExistingFileList" xml:space="preserve">
-    <value>De bovenstaande lijst toont alle bestanden in de inhoudsmap van het spel. &lt;LineBreak&gt;&lt;/LineBreak&gt;Om bestanden van buiten de inhoudsmap toe te voegen, klikt u op de knop Bladeren. Bestanden van buiten de inhoudsmap worden naar de inhoudsmap gekopieerd.</value>
-  </data>
-  <data name="Browse" xml:space="preserve">
-    <value>Bladeren...</value>
-  </data>
-  <data name="EnterUrlName" xml:space="preserve">
-    <value>Voer URL-naam in:</value>
-  </data>
-  <data name="GlueWillDownloadFileAndDependencies" xml:space="preserve">
-    <value>Glue downloadt het hierboven ingevoerde bestand, samen met eventuele afhankelijkheden.</value>
   </data>
   <data name="SelectFileOrClickBrowse" xml:space="preserve">
     <value>Selecteer een bestand of klik op de Bladeren knop </value>
@@ -1022,9 +983,6 @@
   </data>
   <data name="EnterFile" xml:space="preserve">
     <value>Voer de naam van het nieuwe bestand in:</value>
-  </data>
-  <data name="SelectFileType" xml:space="preserve">
-    <value>Selecteer het bestandstype:</value>
   </data>
   <data name="Label" xml:space="preserve">
     <value>Etiket</value>
@@ -1086,20 +1044,8 @@
   <data name="DeleteQuestion" xml:space="preserve">
     <value>Weet je zeker dat je wilt verwijderen?</value>
   </data>
-  <data name="FrbGlueVersion" xml:space="preserve">
-    <value>FlatRedBall Glue Versie</value>
-  </data>
-  <data name="LatestVersion" xml:space="preserve">
-    <value>Laatste versie</value>
-  </data>
   <data name="InstallUpdate" xml:space="preserve">
     <value>Installeer update</value>
-  </data>
-  <data name="Copyright" xml:space="preserve">
-    <value>Copyright</value>
-  </data>
-  <data name="GlueProjectVersion" xml:space="preserve">
-    <value>Glue Projectversie</value>
   </data>
   <data name="InheritFromGameScreen" xml:space="preserve">
     <value>Erven van GameScreen</value>
@@ -1163,9 +1109,6 @@
   </data>
   <data name="TextureFilter" xml:space="preserve">
     <value>Textuurfilter</value>
-  </data>
-  <data name="Fullscreen" xml:space="preserve">
-    <value>Volledig scherm</value>
   </data>
   <data name="WindowResizingAllow" xml:space="preserve">
     <value>Venstergrootte aanpassen toestaan</value>
@@ -1253,9 +1196,6 @@
   </data>
   <data name="ProjectRemove" xml:space="preserve">
     <value>Project verwijderen</value>
-  </data>
-  <data name="ProjectNewSynced" xml:space="preserve">
-    <value>Nieuw gesynchroniseerd project</value>
   </data>
   <data name="ProjectAddExisting" xml:space="preserve">
     <value>Bestaand project toevoegen</value>
@@ -1395,6 +1335,9 @@
   <data name="ProjectFormsAddUpdate" xml:space="preserve">
     <value>Formulieren toevoegen/bijwerken aan project</value>
   </data>
+  <data name="FormClickAgainReAdd" xml:space="preserve">
+    <value>(Als u nogmaals klikt, wordt alle formulierinhoud opnieuw toegevoegd)</value>
+  </data>
   <data name="Advanced" xml:space="preserve">
     <value>Geavanceerd</value>
   </data>
@@ -1403,9 +1346,6 @@
   </data>
   <data name="FormsAddDefaultToGum" xml:space="preserve">
     <value>Voeg standaardformulieren toe aan associaties van tandvleescomponenten</value>
-  </data>
-  <data name="FormClickAgainReAdd" xml:space="preserve">
-    <value>(Als u nogmaals klikt, wordt alle formulierinhoud opnieuw toegevoegd)</value>
   </data>
   <data name="FrbGenerateBehaviors" xml:space="preserve">
     <value>Genereer FlatRedBall-gedrag</value>
@@ -1431,9 +1371,6 @@
   <data name="RegenEverything" xml:space="preserve">
     <value>Alles opnieuw genereren</value>
   </data>
-  <data name="PropsAdd" xml:space="preserve">
-    <value>Props toevoegen</value>
-  </data>
   <data name="PerformCollisionPartitioning" xml:space="preserve">
     <value>Voer botsingspartitionering uit</value>
   </data>
@@ -1457,9 +1394,6 @@
   </data>
   <data name="ListSortEveryFrame" xml:space="preserve">
     <value>Sorteer Lijst tijdens elke frame</value>
-  </data>
-  <data name="ObjectNoPartitioning" xml:space="preserve">
-    <value>Voor dit object zijn geen partitieopties beschikbaar.</value>
   </data>
   <data name="HintObjectAutoPartition" xml:space="preserve">
     <value>Dit object wordt automatisch gepartitioneerd, of hoeft niet te worden gepartitioneerd</value>
@@ -1545,9 +1479,6 @@
   <data name="CollisionApplyPhysics" xml:space="preserve">
     <value>Pas fysica automatisch toe bij botsing</value>
   </data>
-  <data name="DamageInGeneratedCode" xml:space="preserve">
-    <value>Breng schade aan in gegenereerde code</value>
-  </data>
   <data name="Always" xml:space="preserve">
     <value>Altijd</value>
   </data>
@@ -1596,9 +1527,6 @@
   <data name="PropertyString" xml:space="preserve">
     <value>Tekenreeks eigenschap:</value>
   </data>
-  <data name="LinkToSource" xml:space="preserve">
-    <value>Link naar bron</value>
-  </data>
   <data name="Angle" xml:space="preserve">
     <value>Hoek:</value>
   </data>
@@ -1616,21 +1544,6 @@
   </data>
   <data name="Remove" xml:space="preserve">
     <value>Verwijderen</value>
-  </data>
-  <data name="PolygonToRectangle" xml:space="preserve">
-    <value>Voegt alle punten op de polygoon toe of vervangt deze om een rechthoek te creëren.</value>
-  </data>
-  <data name="PolygonToMultiSided" xml:space="preserve">
-    <value>Voegt alle punten op de polygoon toe of vervangt deze om een meerzijdige polygoon te creëren.</value>
-  </data>
-  <data name="HintMovePointUpList" xml:space="preserve">
-    <value>Verplaatst het geselecteerde punt omhoog in de lijst.</value>
-  </data>
-  <data name="HintMovePointDownList" xml:space="preserve">
-    <value>Verplaatst het geselecteerde punt naar beneden in de lijst.</value>
-  </data>
-  <data name="HintResizePolygon" xml:space="preserve">
-    <value>Pas het formaat van de polygoon aan door de aanwezige punten te verplaatsen.</value>
   </data>
   <data name="ClearPointsAddRectangle" xml:space="preserve">
     <value>Wilt u de punten wissen en vervangen door punten voor een rechthoekige vorm?</value>
@@ -1719,9 +1632,6 @@
   <data name="AddScreenLevelDescription" xml:space="preserve">
     <value>Elk spel heeft minimaal één scherm nodig. Meestal bevindt de spellogica zich in een scherm genaamd GameScreen. Normaal gesproken vereist elk niveau een nieuw scherm.</value>
   </data>
-  <data name="EntityAdd" xml:space="preserve">
-    <value>Entiteit toevoegen</value>
-  </data>
   <data name="EntityAddDescription" xml:space="preserve">
     <value>Entiteiten vertegenwoordigen spelobjecten zoals de speler, vijanden, kogels en pick-ups.</value>
   </data>
@@ -1757,12 +1667,6 @@
   </data>
   <data name="TextureSize" xml:space="preserve">
     <value>Textuurgrootte</value>
-  </data>
-  <data name="Variables" xml:space="preserve">
-    <value>Variabelen</value>
-  </data>
-  <data name="VariablesExcluded" xml:space="preserve">
-    <value>Uitgesloten variabelen</value>
   </data>
   <data name="CollapseAll" xml:space="preserve">
     <value>Alles inklappen</value>
@@ -2145,9 +2049,6 @@
   <data name="Volume" xml:space="preserve">
     <value>Volume</value>
   </data>
-  <data name="State" xml:space="preserve">
-    <value>Status</value>
-  </data>
   <data name="TmxCreationOptions" xml:space="preserve">
     <value>Opties voor het maken van TMX</value>
   </data>
@@ -2187,14 +2088,8 @@
   <data name="FactoryAddX" xml:space="preserve">
     <value>Voeg {0} fabriek toe</value>
   </data>
-  <data name="NameCannotBeEmpty" xml:space="preserve">
-    <value>De naam mag niet leeg zijn.</value>
-  </data>
   <data name="NameCannotStartWithNumber" xml:space="preserve">
     <value>Namen mogen niet met een cijfer beginnen.</value>
-  </data>
-  <data name="NameCannotContainInvalidChar" xml:space="preserve">
-    <value>De naam mag geen ongeldig teken {0} bevatten</value>
   </data>
   <data name="NameCannotHaveSpaces" xml:space="preserve">
     <value>De naam mag geen spaties bevatten.</value>
@@ -2421,17 +2316,11 @@
   <data name="EventNew" xml:space="preserve">
     <value>Nieuw evenement</value>
   </data>
-  <data name="HintObjectIsContainerNotApply" xml:space="preserve">
-    <value>Deze waarde kan niet worden toegepast omdat IsContainer voor dit object is ingesteld op true</value>
-  </data>
   <data name="Velocity" xml:space="preserve">
     <value>Snelheid</value>
   </data>
   <data name="AnimationSpeed" xml:space="preserve">
     <value>Animatie snelheid</value>
-  </data>
-  <data name="FailedToSetGameEditModeToX" xml:space="preserve">
-    <value>Kan de spel-/bewerkingsmodus niet instellen op {0}</value>
   </data>
   <data name="CouldNotLoadProjectSeeOutput" xml:space="preserve">
     <value>Kan het project niet laden. Controleer het uitvoervenster voor meer informatie.</value>
@@ -2574,9 +2463,6 @@
   <data name="ViewSourceExplorer" xml:space="preserve">
     <value>Bekijk het bronbestand in verkenner</value>
   </data>
-  <data name="FindAllReferences" xml:space="preserve">
-    <value>Vind alle verwijzingen hiernaar</value>
-  </data>
   <data name="VariableAdd" xml:space="preserve">
     <value>Variabele toevoegen</value>
   </data>
@@ -2648,9 +2534,6 @@
   </data>
   <data name="FileOpenCs" xml:space="preserve">
     <value>Open het .cs-bestand</value>
-  </data>
-  <data name="EntityAddDerived" xml:space="preserve">
-    <value>Afgeleide entiteit toevoegen</value>
   </data>
   <data name="ScreenLevelCreate" xml:space="preserve">
     <value>Niveauscherm maken</value>
@@ -2753,5 +2636,107 @@
   </data>
   <data name="FrbEditor" xml:space="preserve">
     <value>FlatRedBall-Editor</value>
+  </data>
+  <data name="Preferences" xml:space="preserve">
+    <value>Voorkeuren</value>
+  </data>
+  <data name="ErrorGumFileAssociationNotFound" xml:space="preserve">
+    <value>Kan geen bestandsassociatie vinden voor Gum-bestanden en kan Gum niet vinden ten opzichte van de FlatRedBall Editor. Associaties moeten worden ingesteld voordat u probeert lettertypebestanden opnieuw op te bouwen</value>
+  </data>
+  <data name="RunEditMode" xml:space="preserve">
+    <value>Uitvoeren in bewerkingsmodus</value>
+  </data>
+  <data name="AutoTakeSnapshot" xml:space="preserve">
+    <value>Automatische momentopname</value>
+  </data>
+  <data name="ProjectWizardOpen" xml:space="preserve">
+    <value>Open het nieuwe projectwizard:</value>
+  </data>
+  <data name="GlobalContentMembership" xml:space="preserve">
+    <value>GlobalContent lidmaatschap</value>
+  </data>
+  <data name="EntityBase" xml:space="preserve">
+    <value>Basisentiteit:</value>
+  </data>
+  <data name="LocalFiles" xml:space="preserve">
+    <value>Lokale bestanden</value>
+  </data>
+  <data name="DownloadFile" xml:space="preserve">
+    <value>Download bestand</value>
+  </data>
+  <data name="HintExistingFileList" xml:space="preserve">
+    <value>De bovenstaande lijst toont alle bestanden in de inhoudsmap van het spel. &lt;LineBreak&gt;&lt;/LineBreak&gt;Om bestanden van buiten de inhoudsmap toe te voegen, klikt u op de knop Bladeren. Bestanden van buiten de inhoudsmap worden naar de inhoudsmap gekopieerd.</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Bladeren...</value>
+  </data>
+  <data name="EnterUrlName" xml:space="preserve">
+    <value>Voer URL-naam in:</value>
+  </data>
+  <data name="GlueWillDownloadFileAndDependencies" xml:space="preserve">
+    <value>Glue downloadt het hierboven ingevoerde bestand, samen met eventuele afhankelijkheden.</value>
+  </data>
+  <data name="FrbGlueVersion" xml:space="preserve">
+    <value>FlatRedBall Glue Versie</value>
+  </data>
+  <data name="LatestVersion" xml:space="preserve">
+    <value>Laatste versie</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>Copyright</value>
+  </data>
+  <data name="GlueProjectVersion" xml:space="preserve">
+    <value>Glue Projectversie</value>
+  </data>
+  <data name="Fullscreen" xml:space="preserve">
+    <value>Volledig scherm</value>
+  </data>
+  <data name="ProjectNewSynced" xml:space="preserve">
+    <value>Nieuw gesynchroniseerd project</value>
+  </data>
+  <data name="ObjectNoPartitioning" xml:space="preserve">
+    <value>Voor dit object zijn geen partitieopties beschikbaar.</value>
+  </data>
+  <data name="DamageInGeneratedCode" xml:space="preserve">
+    <value>Breng schade aan in gegenereerde code</value>
+  </data>
+  <data name="LinkToSource" xml:space="preserve">
+    <value>Link naar bron</value>
+  </data>
+  <data name="PolygonToRectangle" xml:space="preserve">
+    <value>Voegt alle punten op de polygoon toe of vervangt deze om een rechthoek te creëren.</value>
+  </data>
+  <data name="PolygonToMultiSided" xml:space="preserve">
+    <value>Voegt alle punten op de polygoon toe of vervangt deze om een meerzijdige polygoon te creëren.</value>
+  </data>
+  <data name="HintMovePointUpList" xml:space="preserve">
+    <value>Verplaatst het geselecteerde punt omhoog in de lijst.</value>
+  </data>
+  <data name="HintMovePointDownList" xml:space="preserve">
+    <value>Verplaatst het geselecteerde punt naar beneden in de lijst.</value>
+  </data>
+  <data name="HintResizePolygon" xml:space="preserve">
+    <value>Pas het formaat van de polygoon aan door de aanwezige punten te verplaatsen.</value>
+  </data>
+  <data name="Variables" xml:space="preserve">
+    <value>Variabelen</value>
+  </data>
+  <data name="VariablesExcluded" xml:space="preserve">
+    <value>Uitgesloten variabelen</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="HintObjectIsContainerNotApply" xml:space="preserve">
+    <value>Deze waarde kan niet worden toegepast omdat IsContainer voor dit object is ingesteld op true</value>
+  </data>
+  <data name="FailedToSetGameEditModeToX" xml:space="preserve">
+    <value>Kan de spel-/bewerkingsmodus niet instellen op {0}</value>
+  </data>
+  <data name="FindAllReferences" xml:space="preserve">
+    <value>Vind alle verwijzingen hiernaar</value>
+  </data>
+  <data name="EntityAddDerived" xml:space="preserve">
+    <value>Afgeleide entiteit toevoegen</value>
   </data>
 </root>

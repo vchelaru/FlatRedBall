@@ -35,12 +35,28 @@ namespace FlatRedBall.Forms.MVVM
         }
     }
 
+    /// <summary>
+    /// Enum defining the possible behaviors when a ViewModel attempts to retrieve a value of a different type than the property stored.
+    /// </summary>
     public enum TypeMismatchBehavior
     {
+        /// <summary>
+        /// Error is ignored - the default value for the type is returned.
+        /// </summary>
         IgnoreError,
+        /// <summary>
+        /// An InvalidCastException is thrown.
+        /// </summary>
         ThrowException
     }
 
+    /// <summary>
+    /// Standard implementation of an observable view model.
+    /// This class implements the INotifyPropertyChanged interface 
+    /// so it is suitable for use as a base class for any ViewModel
+    /// in an MVVM architecture. Typically this is used with Gum and 
+    /// FlatRedBall.Forms.
+    /// </summary>
     public class ViewModel : INotifyPropertyChanged
     {
         Dictionary<string, List<string>> notifyRelationships = new Dictionary<string, List<string>>();
@@ -51,6 +67,11 @@ namespace FlatRedBall.Forms.MVVM
 
         private List<string> dependsOnOwners;
 
+        /// <summary>
+        /// The behavior of the ViewModel when the Get function attempts to retrieve a value of a different type 
+        /// than the property stored. If set to Ignore, then no error is raised and the default for the type is returned.
+        /// If this value is set to ThrowException, then an InvalidCastException is thrown.
+        /// </summary>
         public static TypeMismatchBehavior DefaultTypeMismatchBehavior = TypeMismatchBehavior.IgnoreError;
 
         public int PropertyChangedSubscriptionCount => this.PropertyChanged?.GetInvocationList().Length ?? 0;

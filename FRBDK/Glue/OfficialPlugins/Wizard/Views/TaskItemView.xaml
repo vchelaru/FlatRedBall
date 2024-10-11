@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="OfficialPluginsCore.Wizard.Views.TaskItemView"
+﻿<UserControl x:Class="OfficialPlugins.Wizard.Views.TaskItemView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -11,7 +11,7 @@
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Image Width="32" Visibility="{Binding CheckVisibility}"  Source="/OfficialPluginsCore;component/Wizard/Icons/CheckIcon.png"></Image>
+        <Image Width="32" Visibility="{Binding CheckVisibility}"  Source="/OfficialPlugins;component/Wizard/Icons/CheckIcon.png"></Image>
         <controls:ActivitySpinner Visibility="{Binding SpinnerVisibility}"></controls:ActivitySpinner>
 
         <StackPanel Grid.Column="1" >

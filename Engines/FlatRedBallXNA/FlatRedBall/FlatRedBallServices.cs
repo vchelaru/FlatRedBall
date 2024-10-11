@@ -117,7 +117,7 @@ namespace FlatRedBall
         public int Version;
     }
 
-    [SyntaxVersion(Version=56)]
+    [SyntaxVersion(Version=60)]
     public static partial class FlatRedBallServices
     {
         internal static SingleThreadSynchronizationContext singleThreadSynchronizationContext;
@@ -130,11 +130,7 @@ namespace FlatRedBall
 
         static IntPtr mWindowHandle;
 
-        static int mPrimaryThreadId;
-
-#if !MONOGAME && !FNA
-        static System.Windows.Forms.Control mOwner;
-#endif
+        static int? mPrimaryThreadId = null;
 
         static internal Dictionary<string, FlatRedBall.Content.ContentManager> mContentManagers; // keep this null, it's used by Initialization to know if the engine needs pre-initialization
         static List<FlatRedBall.Content.ContentManager> mContentManagersWaitingToBeDestroyed = new List<Content.ContentManager>();
@@ -142,6 +138,11 @@ namespace FlatRedBall
         static object mSuspendLockObject = new object();
 
         static internal GraphicsDeviceManager mGraphics = null;
+
+        /// <summary>
+        /// Provides access to the GraphicsDeviceManager used by the game.
+        /// </summary>
+        public static GraphicsDeviceManager GraphicsDeviceManager => mGraphics;
         static internal GraphicsDevice mGraphicsDevice;
 
 #if !MONOGAME
@@ -209,12 +210,6 @@ namespace FlatRedBall
             }
         }
 
-#if !MONOGAME && !FNA
-        public static System.Windows.Forms.Control Owner
-        {
-            get { return mOwner; }
-        }
-#endif
         public static Game Game
         {
             get
@@ -308,17 +303,7 @@ namespace FlatRedBall
                 }
                 else
                 {
-#if MONOGAME || FNA
                     throw new NotSupportedException("Game required on the this platform");
-#else
-                    System.Windows.Forms.Control window = System.Windows.Forms.Form.FromHandle(mWindowHandle);
-                    mClientHeight = window.Height;
-                    mClientWidth = window.Width;
-#endif
-                    foreach (Camera camera in SpriteManager.Cameras)
-                    {
-                        camera.UpdateOnResize();
-                    }
                 }
 
 
@@ -334,7 +319,7 @@ namespace FlatRedBall
                     // above
                     mGraphicsOptions.ResumeDeviceReset();
 
-#if WINDOWS || FNA
+#if WINDOWS || FNA || WEB
                     FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
 #endif
 
@@ -359,7 +344,7 @@ namespace FlatRedBall
 
             mGraphicsOptions.ResumeDeviceReset();
 
-    #if WINDOWS || FNA
+    #if WINDOWS || FNA || WEB
             FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
     #endif
             //mGraphicsOptions.ResumeDeviceReset();
@@ -554,17 +539,6 @@ namespace FlatRedBall
             // use one of them.
 
 #if WINDOWS && !STANDARD
-            mOwner =
-                System.Windows.Forms.Form.FromHandle(mWindowHandle);
-
-
-            mOwner.MinimumSize = new System.Drawing.Size(mOwner.MinimumSize.Width, 35);
-
-            mOwner.GotFocus += new EventHandler(mOwner_GotFocus);
-
-#endif
-
-#if WINDOWS && !STANDARD
 
             mOwner.Resize += new EventHandler(Window_ClientSizeChanged);
 #else
@@ -657,10 +631,6 @@ namespace FlatRedBall
 
             graphics.DeviceReset += new EventHandler<EventArgs>(graphics_DeviceReset);
 
-#if !MONOGAME && !FNA
-            System.Windows.Forms.Form.FromHandle(mWindowHandle).Resize += new EventHandler(Window_ClientSizeChanged);
-
-#endif
             CommonInitialize(graphics);
         }
 
@@ -763,15 +733,9 @@ namespace FlatRedBall
             // We'll make a content manager that is never disposed. At this
             // point the FRB engine is not initialized so we can't use the global
             // content manager. That should be okay as global content is never unloaded
-            // and this shader i snever exposed for any good reason in diagnostics (like
+            // and this shader is never exposed for any good reason in diagnostics (like
             // render breaks. I don't know if we'll ever need to do something different but
             // this is simple code that works well enough for now.
-            // Update August 25, 2018
-            // MonoGame 3.7 (pre-release) has at least one bug related to shaders
-            // which impact rendering. That is, point filtering isn't working.
-            // So I'm going to revert monogame back to the old way for now
-            //using Stream testStream = TitleContainer.OpenStream("Content/shader.xnb");
-
 
             var shaderFileName =
                 "Content/Shader";
@@ -1005,6 +969,10 @@ namespace FlatRedBall
 
         public static bool IsThreadPrimary()
         {
+            if(mPrimaryThreadId == null)
+            {
+                throw new InvalidOperationException("Cannot determine if the thread is primary because the PrimaryThreadID is null - did you forget to initialize FlatRedBall?");
+            }
 #if UWP
             int threadId = Environment.CurrentManagedThreadId;
 #else
@@ -1042,21 +1010,17 @@ namespace FlatRedBall
 #endif
 )
             {
-                if (contentManagerName != GlobalContentManager &&
-                    IsLoaded<T>(assetName, GlobalContentManager))
+                if (IsLoaded<T>(assetName, GlobalContentManager))
                 {
-
-                    if (FlatRedBall.Content.ContentManager.LoadFromGlobalIfExists)
-                    {
-                        return GetContentManagerByName(GlobalContentManager).Load<T>(assetName);
-                    }
 #if DEBUG
-                    if (FlatRedBall.Content.ContentManager.ThrowExceptionOnGlobalContentLoadedInNonGlobal)
+                    if (FlatRedBall.Content.ContentManager.ThrowExceptionOnGlobalContentLoadedInNonGlobal&& contentManagerName != GlobalContentManager)
                     {
                         throw new Exception("The file " + assetName + " is already loaded in the Global ContentManager.  " +
                             "The game is attempting to load it in the following ContentManager: " + contentManagerName);
                     }
 #endif
+
+                    return GetContentManagerByName(GlobalContentManager).Load<T>(assetName);
                 }
 
             }
@@ -1421,16 +1385,13 @@ namespace FlatRedBall
             PrintProfilingInformation();
 #endif
             }
-#if !FRB_MDX
             else
             {
                 PerformSuspendedDraw();
             }
-#endif
 
         }
 
-#if !FRB_MDX
         private static void PerformSuspendedDraw()
         {
             GraphicsDevice.Clear(Color.Black);
@@ -1462,7 +1423,6 @@ namespace FlatRedBall
                 _loadingScreenSpriteBatch.End();
             }
         }
-#endif
 
         public static void RenderAll(Section section)
         {

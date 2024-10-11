@@ -40,18 +40,6 @@ namespace GlueTestProject.Screens
 
             //InitializeLevel("Level1");
 
-
-            foreach (var item in Level1Info)
-            {
-                if(item.EmbeddedAnimation != null && item.EmbeddedAnimation.Count != 0)
-                {
-                    AnimationChain animationChain = new AnimationChain();
-                    foreach(var frame in item.EmbeddedAnimation)
-                    {
-                    }
-                }
-            }
-
             if (CreatedByTiledList.Count == 0)
             {
                 throw new Exception("Entities created from tiled are not appearing in the screen's list");

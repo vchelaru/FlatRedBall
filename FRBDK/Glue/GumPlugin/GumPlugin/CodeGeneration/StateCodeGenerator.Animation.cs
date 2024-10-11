@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.SaveClasses;
-using GumPluginCore.Managers;
+using GumPlugin.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace GumPlugin.CodeGeneration

@@ -15,6 +15,13 @@ namespace FlatRedBall.Audio
         public SoundEffect SoundEffect;
         public double LastPlayTime;
 
-
     }
+
+    //public struct SoundEffectInstancePlayInfo
+    //{
+    //    public SoundEffectInstance SoundEffect;
+    //    public double LastPlayTime;
+
+    //}
+
 }

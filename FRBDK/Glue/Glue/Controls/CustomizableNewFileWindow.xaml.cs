@@ -20,7 +20,7 @@ namespace FlatRedBall.Glue.Controls
         //List<object> allOptions = new List<object>();
         //ObservableCollection<object> filteredOptions = new ObservableCollection<object>();
 
-        AddNewFileViewModel ViewModel => DataContext as AddNewFileViewModel;
+        public AddNewFileViewModel ViewModel => DataContext as AddNewFileViewModel;
 
 
         public List<string> NamesAlreadyUsed

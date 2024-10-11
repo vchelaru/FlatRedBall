@@ -1100,7 +1100,7 @@ namespace GumPlugin.Managers
                 var screenFolder = gumFolderRelative + ElementReference.ScreenSubfolder + "/";
 
                 string elementName = FileManager.RemoveExtension(FileManager.MakeRelative(buildItem.UnevaluatedInclude, screenFolder))
-                    .Replace("/", "\\");
+                    .Replace("\\", "/");
 
                 bool exists = gumProject.Screens.Any(item => item.Name.Equals(elementName, StringComparison.InvariantCultureIgnoreCase));
 

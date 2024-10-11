@@ -194,7 +194,7 @@ namespace FlatRedBall.Debugging
                 ? @"hh\:mm\:ss"
                 : @"mm\:ss";
 
-#if MONOGAME && !UWP && !__IOS__
+#if MONOGAME && !UWP && !__IOS__ && !KNI
             var currentTime = song.Position.ToString(format);
 #else
             var currentTime = song == AudioManager.CurrentSong ?  Microsoft.Xna.Framework.Media.MediaPlayer.PlayPosition.ToString(format) : new TimeSpan(0).ToString(format);
@@ -414,6 +414,10 @@ namespace FlatRedBall.Debugging
         }
 
         static StringBuilder stringBuilder = new StringBuilder();
+        /// <summary>
+        /// Returns a string with performance information for the running game. This provides a starting point for improving performance issues.
+        /// </summary>
+        /// <returns>A string including all performance information.</returns>
         public static string GetFullPerformanceInformation()
         {
             if(Renderer.RecordRenderBreaks == false)
@@ -422,12 +426,41 @@ namespace FlatRedBall.Debugging
             }
             stringBuilder.Clear();
 
+            // only include fps if the game is running without a fixed time step
+            var isFixedTimeStep = FlatRedBallServices.Game.IsFixedTimeStep;
+            var isSynchronized = FlatRedBallServices.GraphicsDeviceManager.SynchronizeWithVerticalRetrace;
+
+            var fpsText = $"FPS: {1 / TimeManager.SecondDifference}";
+
+            string fpsReducers = "";
+
+            if (isFixedTimeStep)
+            {
+                fpsReducers += " IsFixedTimeStep=true";
+            }
+            if(isSynchronized)
+            {
+                fpsReducers += " SynchronizeWithVerticalRetrace=true";
+            }
+            if(FlatRedBallServices.Game.IsActive == false)
+            {
+                fpsReducers += " Game.IsActive=false";
+            }
+
+            if(!string.IsNullOrEmpty(fpsReducers))
+            {
+                fpsText += $" ({fpsReducers.Trim()})";
+            }
+
+            stringBuilder.AppendLine(fpsText);
+
             var objectCount = GetAutomaticallyUpdatedObjectInformation();
             stringBuilder.AppendLine(objectCount);
             stringBuilder.AppendLine();
 
             stringBuilder.Append(GetInstructionInformation());
 
+            stringBuilder.AppendLine();
             stringBuilder.AppendLine();
             stringBuilder.AppendLine($"Render breaks: {Renderer.LastFrameRenderBreakList.Count}");
 

@@ -17,8 +17,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
     {
         public void SyncContentFromTo(VisualStudioProject from, VisualStudioProject to)
         {
+            var evaluatedItems = ((VisualStudioProject)from.ContentProject).EvaluatedItems;
             var contentItemsToSync =
-                ((VisualStudioProject)from.ContentProject).EvaluatedItems.Where(item => IsContentFile(item, from.ContentProject, to))
+                evaluatedItems
+                .Where(item => IsContentFile(item, from.ContentProject, to))
                 .ToList();
 
             foreach (var bi in contentItemsToSync)
@@ -47,7 +49,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 // Skip trying to add the folder.  We don't need to do this because if it
                 // contains anything, then the contained objects will automatically put themselves in a folder
                 shouldSkipContent = true;
+            }
 
+            // MGCBs from one project type to another are not compatible, so do not sync them.
+            if(bi.UnevaluatedInclude.EndsWith(".mgcb"))
+            {
+                shouldSkipContent = true;
             }
 
             if (!shouldSkipContent)
@@ -68,6 +75,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 }
             }
 
+            // Unevaluated could be something like *.*...
+            //var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(bi.UnevaluatedInclude);
             var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(bi.UnevaluatedInclude);
 
             if (!shouldSkipContent)
@@ -114,6 +123,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
         public bool GetIfHandledByContentPipelinePlugin(VisualStudioProject targetProject, string extension, ReferencedFileSave rfs)
         {
+            if(rfs?.GetAssetTypeInfo()?.CanBeAddedToContentPipeline == false)
+            {
+                return false;
+            }
+
             // this depends on the type of project:
             if(targetProject is AndroidProject or AndroidMonoGameNet8Project)
             {
@@ -147,7 +161,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             {
                 return extension == "fbx" || extension == "wav" || extension == "mp3";
             }
-            return false;
+            else
+            {
+                return rfs?.UseContentPipeline == true &&
+                    (extension == "wav" || extension == "mp3");
+            }
             //return targetProject.ExtensionsToIgnore.Contains(extension);
         }
     }

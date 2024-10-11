@@ -398,7 +398,9 @@ namespace FlatRedBall.Input
 
         /// <summary>
         /// Returns whether the current Xbox360GamePad hardware is connected, or if 
-        /// the FakeIsConnected property is set to true.
+        /// the FakeIsConnected property is set to true. For FlatRedBall Web this property returns
+        /// false even if the Gamepad is connected until input is detected. Other platforms properly
+        /// return true before any input is detected.
         /// </summary>
         /// <seealso cref="FakeIsConnected"/>
         public bool IsConnected
@@ -1298,7 +1300,10 @@ namespace FlatRedBall.Input
         /// </summary>
         public void Clear()
         {
+#if !WEB
+// Web does not support gamepad setting vibration as of July 25, 2024, and may never...
             this.SetVibration(0, 0);
+#endif
 
             // do these before setting the states:
             for (int i = 0; i < NumberOfButtons; i++)
@@ -1330,11 +1335,11 @@ namespace FlatRedBall.Input
             }
             else
             {
-#if FNA
+#if FNA || KNI
                 mGamePadState = new GamePadState();
 #endif
 
-#if MONOGAME
+#if MONOGAME && !KNI
                 mGamePadState = GamePadState.Default;
 #endif
             }
@@ -1344,11 +1349,11 @@ namespace FlatRedBall.Input
             }
             else
             {
-#if FNA
+#if FNA || KNI
                 mLastGamePadState = new GamePadState();
 #endif
 
-#if MONOGAME
+#if MONOGAME && !KNI
                 mLastGamePadState = GamePadState.Default;
 #endif
             }
@@ -1846,7 +1851,7 @@ namespace FlatRedBall.Input
         }
 
 
-        #endregion
+#endregion
 
         #region Internal Methods
 
@@ -1859,6 +1864,8 @@ namespace FlatRedBall.Input
 #if MONOGAME_381
             // Using PlayerIndex gives us only Xbox controllers. Using int indexes gives us all:
             //gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
+
+
             gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState((int)mPlayerIndex, GamePadDeadZone.None);
 
             if (mCapabilities.DisplayName == null || WasConnectedThisFrame)
@@ -1878,7 +1885,7 @@ namespace FlatRedBall.Input
                 catch (NullReferenceException) { }
             }
 #else
-            gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
+                    gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
 
             mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities(mPlayerIndex);
 #endif

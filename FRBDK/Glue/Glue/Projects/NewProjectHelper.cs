@@ -61,6 +61,11 @@ public static class NewProjectHelper
 
         var window = new Npc.MainWindow();
         window.ViewModel.OpenSlnFolderAfterCreation = false;
+        if(creatingSyncedProject)
+        {
+            window.ViewModel.IsOpenNewProjectWizardChecked = false;
+            window.ViewModel.NewProjectWizardVisibility = System.Windows.Visibility.Collapsed;
+        }
         window.ProcessCommandLineArguments(commandLineArguments);
 
 
@@ -89,7 +94,13 @@ public static class NewProjectHelper
             createdProject = $@"{viewModel.FinalDirectory}\{viewModel.ProjectName}\{viewModel.ProjectName}.csproj";
         }
 
-        if (!String.IsNullOrEmpty(createdProject))
+        GlueCommands.Self.DialogCommands.ShowSpinner("Preparing Project...");
+
+        if(string.IsNullOrEmpty(createdProject))
+        {
+            GlueCommands.Self.DialogCommands.HideSpinner();
+        }
+        else //if (!string.IsNullOrEmpty(createdProject))
         {
             // see if the default directory changed:
             var newDefaultDirectory = viewModel.ProjectDestinationLocation;
@@ -99,16 +110,26 @@ public static class NewProjectHelper
                 GlueCommands.Self.GluxCommands.SaveSettings();
             }
 
+            GlueCommands.Self.DialogCommands.ShowSpinner("Loading Project...");
+
+
             await GlueCommands.Self.LoadProjectAsync(createdProject);
+
+            GlueCommands.Self.DialogCommands.ShowSpinner("Waiting for Tasks to finish...");
+
 
             await TaskManager.Self.WaitForAllTasksFinished();
 
-            if(GlueState.Self.CurrentGlueProject == null)
+            GlueCommands.Self.DialogCommands.HideSpinner();
+
+
+            if (GlueState.Self.CurrentGlueProject == null)
             {
                 GlueCommands.Self.DialogCommands.ShowMessageBox(L.Texts.CouldNotLoadProjectSeeOutput);
             }
             else
             {
+
                 if(viewModel.IsAddGitIgnoreChecked)
                 {
                     PluginManager.CallPluginMethod("Git Plugin", "AddGitIgnore");

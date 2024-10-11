@@ -62,6 +62,10 @@ namespace FlatRedBall.Math.Collision
         /// </summary>
         public bool CollidedThisFrame { get; protected set; }
 
+        /// <summary>
+        /// The number of individual shape vs shape checks performed this frame. This value is affected by partitioning so it may be lower
+        /// than the number of collisions which would have occurred if partitioning is not set.
+        /// </summary>
         public int DeepCollisionsThisFrame { get; set; }
 
         public CollisionLimit CollisionLimit { get; set; }
@@ -133,6 +137,12 @@ namespace FlatRedBall.Math.Collision
 
         public virtual void SetBounceCollision(float firstMass, float secondMass, float elasticity)
         {
+#if DEBUG
+            if(firstMass == 0 && secondMass == 0)
+            {
+                throw new ArgumentException("Both masses cannot be 0 in a bounce collision. For equal masses pick a non-zero value.");
+            }
+#endif
             this.CollisionType = CollisionType.BounceCollision;
             this.moveFirstMass = firstMass;
             this.moveSecondMass = secondMass;

@@ -28,6 +28,7 @@ using FlatRedBall.ManagedSpriteGroups;
 using FlatRedBall.Utilities;
 using FlatRedBall.Graphics.Texture;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlatRedBall
 {
@@ -779,7 +780,7 @@ namespace FlatRedBall
         /// <remarks>
         /// The index begins counting at the bottom left (index 0)
         /// and increases moving counterclockwise.
-        ////3----2
+        /// 3----2
         /// |    |
         /// |    |
         /// 0----1
@@ -856,7 +857,7 @@ namespace FlatRedBall
             }
             get
             {
-                if (mCurrentChainIndex != -1 && mAnimationChains.Count > 0 && mCurrentChainIndex < mAnimationChains.Count)
+                if (mCurrentChainIndex != -1 && mAnimationChains != null && mAnimationChains.Count > 0 && mCurrentChainIndex < mAnimationChains.Count)
                 {
                     return mAnimationChains[mCurrentChainIndex];
                 }
@@ -916,11 +917,19 @@ namespace FlatRedBall
             set
             {
 #if DEBUG
-                if (mAnimationChains == null)
+                if (mAnimationChains == null && !string.IsNullOrEmpty(value))
                 {
-                    throw new NullReferenceException("AnimationChains is null - this must be assigned first before setting the CurrentChainName?");
+                    throw new NullReferenceException("AnimationChains is null - this must be assigned first before setting the CurrentChainName. The reason is because " +
+                        "the Sprite doesn't store the CurrentChainName, only the CurrentChainIndex. Setting the CurrentChainName is a shortcut.");
                 }
 #endif
+                ///////////////////Early Out/////////////////////
+                if(string.IsNullOrEmpty(value))
+                {
+                    mCurrentChainIndex = -1;
+                    return;
+                }
+                /////////////////End Early Out//////////////////
 
                 if (mCurrentChainIndex == -1 ||
                     mCurrentChainIndex >= mAnimationChains.Count ||
@@ -1833,6 +1842,30 @@ namespace FlatRedBall
             }
         }
 
+        public async Task PlayAnimationsAsync(CancellationToken cancellationToken, params string[] animations)
+        {
+            if (animations.Length > 0)
+            {
+                this.Animate = true;
+            }
+            foreach (var animation in animations)
+            {
+                CurrentChainName = animation;
+
+                if (CurrentChain == null)
+                {
+                    throw new InvalidOperationException($"Could not set the current chain to {animation} because this animation does not exist");
+                }
+                // This should not try/catch. If it does, then any caller will continue after it's finished, causing additional logic to run after a screen has ended:
+                //try
+                //{
+                await TimeManager.DelaySeconds(CurrentChain.TotalLength, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                //}
+                //catch (TaskCanceledException) { return; }
+            }
+        }
+
 #if DEBUG
         double lastTimeAnimated= 0;
 #endif
@@ -1968,7 +2001,7 @@ namespace FlatRedBall
         /// collidable.Collision should be created and added.</param>
         public void SetCollisionFromAnimation(ICollidable collidable, bool createMissingShapes = false)
         {
-            CurrentFrame?.ShapeCollectionSave?.SetValuesOn(collidable.Collision, this, createMissingShapes);
+            CurrentFrame?.ShapeCollectionSave?.SetValuesOn(collidable.Collision, this.TopParent, createMissingShapes);
         }
 
         /// <summary>

@@ -1289,6 +1289,13 @@ namespace FlatRedBall
 
                 if (mOrderedSortType == SortType.Z)
                 {
+                    // the point of inserting is to speed up sort later. Of course, this 
+                    // incurs a cost here on add, and we could make sorting much faster so
+                    // this isn't needed by keeping track of the last Z insert. 
+                    // The idea is that when an item is oved back through sorting, the next item
+                    // may also be moved back through sorting since it has the same value. If so, then
+                    // remembering the insertion of the first item can make the next item insert faster.
+                    // We'll worry about that later, though.
                     mOrderedByDistanceFromCameraSprites.AddSortedZAscending(spriteToAdd);
                 }
                 else

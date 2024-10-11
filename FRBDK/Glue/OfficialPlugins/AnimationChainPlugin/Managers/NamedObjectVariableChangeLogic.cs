@@ -1,9 +1,10 @@
 ﻿using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Content.Aseprite;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using OfficialPluginsCore.AnimationChainPlugin;
+using OfficialPlugins.AnimationChainPlugin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,25 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 string firstAnimationName = null;
                 if(string.IsNullOrEmpty(currentChainName) && achxFullFile?.Exists() == true)
                 {
-                    var achx = AnimationChainListSave.FromFile(achxFullFile.FullPath);
+                    AnimationChainListSave achx = null;
+                    var extension = achxFullFile.Extension;
+                    try
+                    {
+                        if (extension == "aseprite")
+                        {
+                            achx = AsepriteAnimationChainLoader.ToAnimationChainListSave(achxFullFile.FullPath);
+                        }
+                        else
+                        {
+                            achx = AnimationChainListSave.FromFile(achxFullFile.FullPath);
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        // The file could be corrupted. We don't want to have the entire plugin crash, so we catch
+                        // the exception and output an error:
+                        GlueCommands.Self.PrintError($"Error loading AnimationChain file {achxFullFile}:\n{e}");
+                    }
                     firstAnimationName = achx?.AnimationChains.FirstOrDefault()?.Name;
                 }
 

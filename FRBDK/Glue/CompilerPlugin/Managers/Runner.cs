@@ -277,8 +277,7 @@ namespace CompilerPlugin.Managers
 
         SemaphoreSlim runCallSemaphore = new SemaphoreSlim(1, 1);
 
-
-        internal async Task<GeneralResponse> Run(bool preventFocus, string runArguments = null)
+        internal async Task<GeneralResponse> Run(bool preventFocus, string runArguments = null, int numberOfSecondsToWait = 15)
         {
             // early out
             if(TryFindGameProcess(false) != null)
@@ -286,10 +285,9 @@ namespace CompilerPlugin.Managers
                 return GeneralResponse.UnsuccessfulWith("Found game process, so not building");
             }
 
-
-            int numberOfTimesToTryGettingProcess = 140;
+            const int millisecondsToWaitBeforeRetry = 100;
+            int numberOfTimesToTryGettingProcess = numberOfSecondsToWait * 1000 / millisecondsToWaitBeforeRetry;
             int numberOfTimesToTryGettingHandle = 60;
-            int millisecondsToWaitBeforeRetry = 100;
             bool didTimeoutOnProcess = false;
 
             IsWaitingForGameToStart = true;
@@ -385,7 +383,7 @@ namespace CompilerPlugin.Managers
                             string error;
                             if (didTimeoutOnProcess)
                             {
-                                error = $"Launching game .exe timed out after {numberOfTimesToTryGettingProcess * millisecondsToWaitBeforeRetry / 1000} seconds.";
+                                error = $"Launching game .exe timed out after {numberOfSecondsToWait} seconds.";
                             }
                             else
                             {

@@ -28,6 +28,8 @@ using GameCommunicationPlugin.Common;
 using CompilerLibrary.ViewModels;
 using static FlatRedBall.Glue.Plugins.PluginManager;
 using CompilerLibrary.Error;
+using FlatRedBall;
+using FlatRedBall.Content.Instructions;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -165,7 +167,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             var rfsesUsingSource = GlueCommands.Self.FileCommands.GetReferencedFilesUsingSourceFile(fileName);
 
-            if(shouldReactToFileChange && rfsesUsingSource.Count > 0)
+            if (shouldReactToFileChange && rfsesUsingSource.Count > 0)
             {
                 // If this file is used to build other files (like an ODS -> CSV), then do not
                 // react to this change since the built file should result in a reaction:
@@ -196,55 +198,62 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                     var containerNames = rfses.Select(item => item.GetContainer()?.Name).Where(item => item != null).ToHashSet();
 
+
                     var shouldCopy = false;
                     shouldCopy = containerNames.Any() || GlueCommands.Self.FileCommands.IsContent(fileName);
 
-                    if (shouldCopy)
+                    if (shouldCopy && ViewModel.IsRunning)
                     {
                         // Right now we'll assume the screen owns this file, although it is possible that it's 
                         // global but not part of global content. That's a special case we'll have to handle later
+                        var timeBefore = TimeManager.CurrentSystemTime;
                         printOutput($"Waiting for file to be copied: {strippedName}");
-                        await Task.Delay(600);
+                        //await Task.Delay(600);
+                        await TaskManager.Self.WaitForTaskToFinish(
+                            GlueCommands.Self.ProjectCommands.CopyToBuildFolderTaskIdFor(fileName));
+                        var timeAfter = TimeManager.CurrentSystemTime;
+                        printOutput($"Waited {timeAfter - timeBefore} seconds");
+
+
                         try
                         {
-                            if (ViewModel.IsRunning)
+                            var extension = fileName.Extension;
+                            var shouldReloadFile = extension == "csv";
+
+                            var shouldReloadScreen = false;
+
+                            if (shouldReloadFile)
                             {
-                                var extension = fileName.Extension;
-                                var shouldReloadFile = extension == "csv";
+                                printOutput($"Sending force reload for file: {strippedName}");
 
-                                var shouldReloadScreen = false;
+                                var dto = new Dtos.ForceReloadFileDto();
+                                dto.ElementsContainingFile = containerNames.ToList();
+                                dto.LoadInGlobalContent = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Contains(firstRfs);
+                                dto.IsLocalizationDatabase = firstRfs.IsDatabaseForLocalizing;
+                                dto.FileRelativeToProject =
+                                    ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(firstRfs);
+                                dto.StrippedFileName = fileName.NoPathNoExtension;
+                                await CommandSender.Self.Send(dto);
 
-                                if (shouldReloadFile)
-                                {
-                                    printOutput($"Sending force reload for file: {strippedName}");
-
-                                    var dto = new Dtos.ForceReloadFileDto();
-                                    dto.ElementsContainingFile = containerNames.ToList();
-                                    dto.LoadInGlobalContent = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Contains(firstRfs);
-                                    dto.IsLocalizationDatabase = firstRfs.IsDatabaseForLocalizing;
-                                    dto.FileRelativeToProject =
-                                        ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(firstRfs);
-                                    dto.StrippedFileName = fileName.NoPathNoExtension;
-                                    await CommandSender.Self.Send(dto);
-
-                                    // Typically localization is applied in custom code, so we can't
-                                    // apply these changes without reloading the screen
-                                    shouldReloadScreen = dto.IsLocalizationDatabase;
-                                }
-                                else
-                                {
-                                    shouldReloadScreen = true;
-                                }
-
-                                if (shouldReloadScreen)
-                                {
-                                    printOutput($"Telling game to restart screen");
-                                    var dto = new RestartScreenDto();
-                                    dto.ReloadGlobalContent = isGlobalContent;
-                                    await CommandSender.Self.Send(dto);
-                                }
+                                // Typically localization is applied in custom code, so we can't
+                                // apply these changes without reloading the screen
+                                shouldReloadScreen = dto.IsLocalizationDatabase;
+                            }
+                            else
+                            {
+                                shouldReloadScreen = true;
                             }
 
+                            if (shouldReloadScreen)
+                            {
+                                printOutput($"Telling game to restart screen");
+
+                                GlueCommands.Self.PrintOutput($"Telling game to restart screen {DateTime.Now}");
+
+                                var dto = new RestartScreenDto();
+                                dto.ReloadGlobalContent = isGlobalContent;
+                                await CommandSender.Self.Send(dto);
+                            }
                             handled = true;
                         }
                         catch (Exception e)
@@ -252,7 +261,6 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                             printError($"Error trying to send command:{e.ToString()}");
                         }
                     }
-
                     var isContentPipeline = firstRfs?.UseContentPipeline == true || firstRfs?.GetAssetTypeInfo()?.MustBeAddedToContentPipeline == true;
                     // the game should reload only after copying the file
                     if (isGlobalContent &&
@@ -315,7 +323,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 return false;
             }
-            if(string.IsNullOrEmpty(filePath.Extension))
+            if (string.IsNullOrEmpty(filePath.Extension))
             {
                 return false;
             }
@@ -383,6 +391,28 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         #endregion
 
+        #region Entity Renamed
+
+
+        internal async void HandleElementRenamed(GlueElement element, string oldName)
+        {
+            if(element is ScreenSave)
+            {
+                // this is a big deal, we don't currently handle this, so need to return an error to restart
+            }
+            else if(element is EntitySave asEntity)
+            {
+                var dto = new RenameElementDto();
+                dto.OldName = oldName;
+                dto.NewName = element.Name;
+
+                await CommandSender.Self.Send(dto);
+            }
+
+        }
+
+        #endregion
+
         #region State Created
 
         internal async void HandleStateCreated(StateSave state, StateSaveCategory category)
@@ -423,9 +453,21 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         #region NamedObject Created
 
+        public class NewObjectListPositionValues
+        {
+            public System.Numerics.Vector2? ForcedNextObjectPosition { get; set; }
+            public bool SkipPositioningForNextGroup { get; set; }
+        }
+
+        public NewObjectListPositionValues NextPositionValues { get; set; }
 
         internal async Task HandleNewObjectList(List<NamedObjectSave> newObjectList)
         {
+            var shouldSkipPositioning = NextPositionValues?.SkipPositioningForNextGroup == true;
+            if(NextPositionValues != null)
+            {
+                NextPositionValues = null;
+            }
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 var list = new Dtos.AddObjectDtoList();
@@ -440,20 +482,23 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 var response = await CommandSender.Self.Send<AddObjectDtoListResponse>(list);
 
                 if (response.Succeeded == false ||
-                    response.Data.Data == null ||
+                    response.Data?.Data == null ||
                     response.Data.Data.Any(item => item.CreationResponse.Succeeded == false))
                 {
                     CreateStopAndRestartTask("Restarting because the add object group failed");
                 }
                 else
                 {
-                    var firstPositionedObject = newObjectList.FirstOrDefault(item =>
-                        item.SourceType == SourceType.Entity ||
-                        item.GetAssetTypeInfo()?.IsPositionedObject == true);
-
-                    if(firstPositionedObject != null)
+                    if(!shouldSkipPositioning)
                     {
-                        await AdjustNewObjectToCameraPosition(firstPositionedObject);
+                        var firstPositionedObject = newObjectList.FirstOrDefault(item =>
+                            item.SourceType == SourceType.Entity ||
+                            item.GetAssetTypeInfo()?.IsPositionedObject == true);
+
+                        if (firstPositionedObject != null)
+                        {
+                            await AdjustNewObjectToCameraPosition(firstPositionedObject, NextPositionValues?.ForcedNextObjectPosition);
+                        }
                     }
                 }
             }
@@ -472,11 +517,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             var addObjectDto = new AddObjectDto();
             addObjectDto.NamedObjectSave = nosCopy;
+
             var containerElement = ObjectFinder.Self.GetElementContaining(newNamedObject);
             NamedObjectSave nosList = null;
             if (containerElement != null)
             {
-                addObjectDto.ElementNameGame = GetGameTypeFor(containerElement);
+                addObjectDto.ElementNameGlue = containerElement.Name;
                 nosList = containerElement.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(newNamedObject));
             }
 
@@ -489,15 +535,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             return addObjectDto;
         }
 
-        public Vector2? ForcedNextObjectPosition { get; set; }
-        private async Task AdjustNewObjectToCameraPosition(NamedObjectSave newNamedObject)
+        private async Task AdjustNewObjectToCameraPosition(NamedObjectSave newNamedObject, Vector2? forcedNextObjectPosition)
         {
             Vector2 newPosition = Vector2.Zero;
 
-            if (ForcedNextObjectPosition != null)
+            if (forcedNextObjectPosition != null)
             {
-                newPosition = ForcedNextObjectPosition.Value;
-                ForcedNextObjectPosition = null;
+                newPosition = forcedNextObjectPosition.Value;
+                forcedNextObjectPosition = null;
             }
             else
             {
@@ -513,7 +558,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             if (newPosition.X != 0)
             {
-                await gluxCommands.SetVariableOnAsync(newNamedObject, "X", newPosition.X, false, updateUi:false);
+                await gluxCommands.SetVariableOnAsync(newNamedObject, "X", newPosition.X, false, updateUi: false);
                 didSetValue = true;
             }
             if (newPosition.Y != 0)
@@ -611,28 +656,47 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             // Let's look at the possible variables that are added:
             // * New variables - which by default have no functionality until code is written for them
             // * Exposed variables - these do have functionality but they ultimately are just setting other variables
-            // If it's a new variable, we are going to restart. Otherwise if it's expoed, send that to the game to use 
+            // If it's a new variable, we are going to restart. Otherwise if it's exposed, send that to the game to use 
             // for assigning real values
             var isTunneled = !string.IsNullOrWhiteSpace(newVariable.SourceObject) &&
                 !string.IsNullOrWhiteSpace(newVariable.SourceObjectProperty);
 
+            // send this down to the game
+            var dto = new AddVariableDto();
+            // clone it because we may modify it...
+            dto.CustomVariable = newVariable.Clone();
+            var variableOwner = ObjectFinder.Self.GetElementContaining(newVariable);
+            dto.ElementGameType = GetGameTypeFor(variableOwner ?? GlueState.Self.CurrentElement);
+
             if (isTunneled)
             {
-                // send this down to the game
-                var dto = new AddVariableDto();
-                dto.CustomVariable = newVariable;
+                var property =
+                    dto.CustomVariable.SourceObjectProperty;
+                if (property is "X" or "Y" or "Z" or "RotationX" or "RotationY" or "RotationZ")
+                {
+                    // If this thing is attached, then let's use relatives:
+                    var owner = ObjectFinder.Self.GetElementContaining(newVariable);
 
-                var variableOwner = ObjectFinder.Self.GetElementContaining(newVariable);
-
-                dto.ElementGameType = GetGameTypeFor(variableOwner ?? GlueState.Self.CurrentElement);
-
-                await CommandSender.Self.Send(dto);
+                    var instance = owner?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == newVariable.SourceObject);
+                    if(instance?.AttachToContainer == true && owner is EntitySave)
+                    {
+                        var instanceAti = instance?.GetAssetTypeInfo();
+                        if(instanceAti?.IsPositionedObject == true || instance.SourceType == SourceType.Entity)
+                        {
+                            dto.CustomVariable.SourceObjectProperty = "Relative" + dto.CustomVariable.SourceObjectProperty;
+                        }
+                    }
+                }
             }
             else
             {
                 // it's a brand new variable, so let's restart it...
-                CreateStopAndRestartTask($"Restarting because of added variable {newVariable}");
+                // Update - why restart? Users can still assign it, but
+                // they'll have to restart if they want to make changes in 
+                // code or make it functional. I don't see a reason to restart.
+                //CreateStopAndRestartTask($"Restarting because of added variable {newVariable}");
             }
+            await CommandSender.Self.Send(dto);
         }
 
         #endregion
@@ -679,7 +743,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         // needed to determine this.
         SelectObjectDto LastDtoPushedToGame;
         private Func<string, string, Task<string>> _eventCallerWithReturn;
-        
+
         private Action<string, string> _eventCaller;
 
         public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null, GlueElement forcedElement = null, bool bringIntoFocus = false)
@@ -713,7 +777,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             else if (element != null)
             {
                 // Let's try this to go faster...
-                if(shouldPushElement)
+                if (shouldPushElement)
                 {
                     dto.ScreenSave = element as ScreenSave;
                     dto.EntitySave = element as EntitySave;
@@ -736,7 +800,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 // If its abstract and there's no derived, don't try to select it
                 if (canSend)
                 {
-                    
+
                     dto.BringIntoFocus = bringIntoFocus;
                     dto.NamedObjectNames.AddRange(namedObjects);
                     dto.ElementNameGlue = element.Name;
@@ -851,6 +915,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             if (excludedOrIncluded == StateCategoryVariableAction.Excluded)
             {
+                // todo - this would require detecting what is compiled in and if we remove a compiled- in value, we need to 
+                // explicitly unset it. For now, let's just restart
                 CreateStopAndRestartTask($"Restarting because variable {variableName} removed from category {category}, and codegen currently assigns that value");
             }
             else
@@ -858,11 +924,53 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 var container = ObjectFinder.Self.GetElementContaining(category);
 
                 var dto = new UpdateStateSaveCategory();
-                dto.Category =  category.Clone();
+                StateSaveCategory clone = CreateCloneWithPropagatedVariables(category);
+
+                dto.Category = clone;
                 dto.ElementNameGame = GetGameTypeFor(container);
 
                 await CommandSender.Self.Send(dto);
             }
+        }
+
+        private static StateSaveCategory CreateCloneWithPropagatedVariables(StateSaveCategory category)
+        {
+            var owner = ObjectFinder.Self.GetElementContaining(category);
+
+            var clone = category.Clone();
+
+            if (owner != null)
+            {
+                foreach (var variable in owner.CustomVariables)
+                {
+                    if (!clone.ExcludedVariables.Contains(variable.Name))
+                    {
+                        // for now let's make sure it's not a state:
+                        var isState = owner.GetCustomVariableRecursively(variable.Name)?.GetIsVariableState() == true;
+
+                        if(!isState)
+                        {
+                            // find any states that don't have this variable assigned, then assign it:
+                            foreach(var state in clone.States)
+                            {
+                                var existingVariable= state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
+
+                                if(existingVariable == null)
+                                {
+                                    // need to create a new one:
+                                    var instruction = new InstructionSave();
+                                    // todo - this may need to be recursive....
+                                    instruction.Value = variable.DefaultValue;
+                                    instruction.Member = variable.Name;
+                                    instruction.Type = variable.Type;
+                                    state.InstructionSaves.Add(instruction);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return clone;
         }
 
         #endregion
@@ -944,23 +1052,23 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal async Task HandleObjectReordered(object reorderedObject, int oldIndex, int newIndex)
         {
-            if(reorderedObject is NamedObjectSave nos)
+            if (reorderedObject is NamedObjectSave nos)
             {
                 var ownerElement = ObjectFinder.Self.GetElementContaining(nos);
-                if(ownerElement != null)
+                if (ownerElement != null)
                 {
                     var dto = new NamedObjectReorderedDto
                     {
-                        NamedObjectName = nos.InstanceName, 
-                        OldIndex = oldIndex, 
+                        NamedObjectName = nos.InstanceName,
+                        OldIndex = oldIndex,
                         NewIndex = newIndex
                     };
 
-                    if(ownerElement is ScreenSave screenSave)
+                    if (ownerElement is ScreenSave screenSave)
                     {
                         dto.ScreenSave = screenSave;
                     }
-                    else if(ownerElement is EntitySave entitySave)
+                    else if (ownerElement is EntitySave entitySave)
                     {
                         dto.EntitySave = entitySave;
                     }
@@ -1049,7 +1157,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         ViewModel.IsEditChecked = true;
                     }
 
-                }, $"{nameof(CreateStopAndRestartTask)} : {reason}" , TaskExecutionPreference.AddOrMoveToEnd);
+                }, $"{nameof(CreateStopAndRestartTask)} : {reason}", TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
 
@@ -1133,5 +1241,6 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         {
             ViewModel.IsHotReloadAvailable = ShouldRestartOnChange;
         }
+
     }
 }
