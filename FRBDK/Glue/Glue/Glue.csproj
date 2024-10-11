@@ -331,6 +331,9 @@
 		<None Update="Content\FilesForAddNewFile\SampleSound.wav">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Content\FilesForAddNewFile\Torch.aseprite">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Libraries\BMFont\bmfont.exe">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

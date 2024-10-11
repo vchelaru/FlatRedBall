@@ -35,7 +35,8 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 // As of October 9, 2024 we do not have a sample .aseprite file to use so Glue
                 // attempts to create a new .achx file but save it as an .aseprite file, which causes
                 // corruption.
-                clone.HideFromNewFileWindow = true;
+                // Update October 10, 2024 - we now have a file added to the FilesForAddNewFile
+                clone.HideFromNewFileWindow = false;
                 return clone;
             }
             else
