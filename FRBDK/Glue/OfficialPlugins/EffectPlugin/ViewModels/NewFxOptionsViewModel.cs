@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using OfficialPlugins.EffectPlugin.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +60,7 @@ namespace OfficialPlugins.EffectPlugin.ViewModels
                 }
             }
         }
-        
+
         [DependsOn(nameof(ShaderType))]
         public bool IsEmptyChecked
         {
@@ -73,10 +74,34 @@ namespace OfficialPlugins.EffectPlugin.ViewModels
             }
         }
 
+
+        public ShaderContentsType ShaderContentsType
+        {
+            get => Get<ShaderContentsType>();
+            set => Set(value);
+        }
+
+        public bool IsGradientContentsChecked
+        {
+            get => ShaderContentsType == ShaderContentsType.GradientColors;
+            set { if (value) ShaderContentsType = ShaderContentsType.GradientColors; }
+        }
+
+        public bool IsSaturationChecked
+        {
+            get => ShaderContentsType == ShaderContentsType.Saturation;
+            set { if (value) ShaderContentsType = ShaderContentsType.Saturation; }
+        }
+
         [DependsOn(nameof(IsPostProcessingChecked))]
         public Visibility PostProcessOptionsVisibility => IsPostProcessingChecked.ToVisibility();
 
         // todo - realtime validation - does the file exist?
+
+        public NewFxOptionsViewModel()
+        {
+            IsIncludePostProcessCsFileChecked = true;
+        }
     }
 
     enum ShaderType
@@ -85,4 +110,6 @@ namespace OfficialPlugins.EffectPlugin.ViewModels
         Sprite,
         Empty,
     }
+
+
 }

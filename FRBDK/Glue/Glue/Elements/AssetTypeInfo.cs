@@ -365,6 +365,7 @@ namespace FlatRedBall.Glue.Elements
 			return FriendlyName;
 		}
 
-		#endregion
-	}
+
+        #endregion
+    }
 }

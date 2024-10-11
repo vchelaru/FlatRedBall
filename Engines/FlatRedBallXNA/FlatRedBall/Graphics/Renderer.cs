@@ -27,6 +27,7 @@ using Microsoft.Xna.Framework.Content;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Performance.Measurement;
 using FlatRedBall.Graphics.PostProcessing;
+using FlatRedBall.Input;
 
 namespace FlatRedBall.Graphics
 {
@@ -1078,6 +1079,8 @@ namespace FlatRedBall.Graphics
             // Post processing 
             ForceSetBlendOperation();
             ForceSetColorOperation(Renderer.ColorOperation);
+
+            Renderer.SwapChain.ResetForFrame();
 
             // Set the RenderTarget before drawing anything
             GraphicsDevice.SetRenderTarget(Renderer.SwapChain.CurrentRenderTarget);

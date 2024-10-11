@@ -14,6 +14,8 @@ namespace OfficialPlugins.EffectPlugin.Managers
         public static AssetTypeInfo FxbEffectAssetTypeInfo =>
             fxbEffectAssetTypeInfo = fxbEffectAssetTypeInfo ?? CreateFxbEffectAssetTypeInfo();
 
+
+
         private static AssetTypeInfo CreateFxbEffectAssetTypeInfo()
         {
             var originalEffect = AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => 
@@ -30,6 +32,14 @@ namespace OfficialPlugins.EffectPlugin.Managers
             fbxEffect.ContentProcessor = null;
 
             return fbxEffect;
+        }
+
+        public static bool IsFx(AssetTypeInfo ati) => ati?.Extension == "fx";
+        internal static void Initialize()
+        {
+            var fxAti = AvailableAssetTypes.Self.AllAssetTypes.First(item => IsFx(item));
+            fxAti.HideFromNewFileWindow = false;
+
         }
     }
 }

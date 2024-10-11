@@ -7,9 +7,11 @@ namespace FlatRedBall.Graphics.PostProcessing
 {
     public class SwapChain
     {
+        
         RenderTarget2D RenderTargetA;
         RenderTarget2D RenderTargetB;
         SpriteBatch spriteBatch;
+        SurfaceFormat _surfaceFormat;
 
         public bool ShouldSwapClearRenderTarget { get; set; }
 
@@ -21,11 +23,26 @@ namespace FlatRedBall.Graphics.PostProcessing
         public SwapChain(int width, int height, bool shouldSwapClearRenderTarget = true,
             SurfaceFormat? surfaceFormat = null)
         {
-            surfaceFormat = surfaceFormat ?? FlatRedBallServices.GraphicsDevice.DisplayMode.Format;
+            _surfaceFormat = surfaceFormat ?? FlatRedBallServices.GraphicsDevice.DisplayMode.Format;
             ShouldSwapClearRenderTarget = shouldSwapClearRenderTarget;
-            CreateRenderTarget(ref RenderTargetA, width, height, surfaceFormat.Value);
-            CreateRenderTarget(ref RenderTargetB, width, height, surfaceFormat.Value);
+            CreateRenderTarget(ref RenderTargetA, width, height, _surfaceFormat);
+            RenderTargetA.Name = "SwapChain RenderTarget A";
+            CreateRenderTarget(ref RenderTargetB, width, height, _surfaceFormat);
+            RenderTargetB.Name = "SwapChain RenderTarget B";
             spriteBatch = new SpriteBatch(FlatRedBallServices.GraphicsDevice);
+        }
+
+        public void UpdateRenderTargetSize(int newWidth, int newHeight)
+        {
+            var shouldRecreate = RenderTargetA.Width != newWidth || RenderTargetA.Height != newHeight;
+
+            if(shouldRecreate)
+            {
+                CreateRenderTarget(ref RenderTargetA, newWidth, newHeight, _surfaceFormat);
+                RenderTargetA.Name = "SwapChain RenderTarget A";
+                CreateRenderTarget(ref RenderTargetB, newWidth, newHeight, _surfaceFormat);
+                RenderTargetB.Name = "SwapChain RenderTarget B";
+            }
         }
 
         public void RenderToScreen()
@@ -39,6 +56,11 @@ namespace FlatRedBall.Graphics.PostProcessing
             spriteBatch.Draw(Renderer.SwapChain.CurrentRenderTarget, destinationRectangle, 
                 Microsoft.Xna.Framework.Color.White);
             spriteBatch.End();
+        }
+
+        public void ResetForFrame()
+        {
+            isSwapped = false;
         }
 
         public void Swap()

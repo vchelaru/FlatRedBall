@@ -18,13 +18,17 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Newtonsoft.Json;
 using System.IO;
+using OfficialPlugins.EffectPlugin.CodeGenerators;
+using OfficialPlugins.EffectPlugin.Data;
 
 namespace OfficialPlugins.EffectPlugin
 {
     [Export(typeof(PluginBase))]
     public class MainEffectPlugin : PluginBase
     {
-        public override string FriendlyName => "Effect Plugin"; 
+        public override string FriendlyName => "Effect Plugin";
+
+        Dictionary<ShaderContentsType, ShaderContents> ShaderContentsDictionary = new Dictionary<ShaderContentsType, ShaderContents>();
 
         public override void StartUp()
         {
@@ -33,6 +37,12 @@ namespace OfficialPlugins.EffectPlugin
             this.AddNewFileOptionsHandler += ShowFxFileOptions;
             this.ReactToNewFileHandler = ReactToNewFile;
 
+            AddToDictionary(new GradientColorContents());
+            AddToDictionary(new SaturationContents());
+
+            AssetTypeInfoManager.Initialize();
+
+            void AddToDictionary(ShaderContents contents) => ShaderContentsDictionary[contents.ShaderContentsType] = contents;
         }
 
         private void ShowFxFileOptions(CustomizableNewFileWindow newFileWindow)
@@ -46,7 +56,7 @@ namespace OfficialPlugins.EffectPlugin
             newFileWindow.SelectionChanged += (_, _) =>
             {
                 var ati = newFileWindow.SelectedItem;
-                view.Visibility = IsFx(ati).ToVisibility();
+                view.Visibility = AssetTypeInfoManager.IsFx(ati).ToVisibility();
             };
 
             newFileWindow.FileNameChanged += (newName) =>
@@ -57,7 +67,7 @@ namespace OfficialPlugins.EffectPlugin
             newFileWindow.GetCreationOption += () =>
             {
                 var ati = newFileWindow.SelectedItem;
-                return IsFx(ati) ?
+                return AssetTypeInfoManager.IsFx(ati) ?
                     vm :
                     null;
             };
@@ -94,7 +104,11 @@ namespace OfficialPlugins.EffectPlugin
                 if(viewModel.IsIncludePostProcessCsFileChecked)
                 {
                     IncludeFullscreenEffectWrapper();
-                    IncludePostProcessCsFile(newFile.Name);
+
+                    var contents = ShaderContentsDictionary[viewModel.ShaderContentsType];
+
+                    PostProcessCodeGenerator.ReplaceContents(newFile.Name, contents);
+                    FxContentsGenerator.ReplaceContents(newFile.Name, contents);
                 }
             }
         }
@@ -128,61 +142,6 @@ namespace OfficialPlugins.EffectPlugin
                 GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(destinationFile.FullPath);
             }
         }
-
-        private void IncludePostProcessCsFile(string fxFileName)
-        {
-            string newDirectory = Path.Combine("Graphics", Path.GetDirectoryName(fxFileName) ?? "");
-            string newFileName = Path.GetFileName(Path.ChangeExtension(fxFileName, "cs") ?? "");
-            string newFileNameOnly = Path.GetFileNameWithoutExtension(Path.GetFileName(Path.ChangeExtension(fxFileName, "cs")) ?? "");
-            string newFileRelativePath = Path.Combine(newDirectory, newFileName);
-            FilePath destinationFile = GlueState.Self.CurrentGlueProjectDirectory + newFileRelativePath;
-
-            var assemblyContainingResource = GetType().Assembly;
-
-            var resourceName = "OfficialPlugins.EffectPlugin.EmbeddedCodeFiles.PostProcessTemplate.cs";
-
-            using var stream =
-                assemblyContainingResource.GetManifestResourceStream(resourceName);
-            if (stream != null)
-            {
-                using var reader = new StreamReader(stream);
-                string fileContent = reader.ReadToEnd();
-
-                fileContent = fileContent.Replace("ReplaceNamespace", $"{GlueState.Self.ProjectNamespace}.{newDirectory.Replace('\\', '.')}");
-
-                if (newFileNameOnly.Length < 1)
-                {
-                    throw new ArgumentException("FX file name must have at least 1 character");
-                }
-                
-                char firstLetter = char.ToUpper(newFileNameOnly[0]);
-                fileContent = fileContent.Replace("ReplaceClassName", firstLetter + newFileNameOnly[1..]);
-                
-                fileContent = fileContent.Replace("ReplaceClassMembers",
-                    "protected FullscreenEffectWrapper Wrapper { get; set; } = new FullscreenEffectWrapper();");
-
-                fileContent = fileContent.Replace("ReplaceApplyBody", @"_effect.Parameters[""TexWeight""].SetValue(1.0f);
-            _effect.Parameters[""PixelPosWeight""].SetValue(0.0f);
-            _effect.Parameters[""ScreenPosWeight""].SetValue(1.0f);
-            _effect.Parameters[""WorldPosWeight""].SetValue(0.0f);
-            _effect.Parameters[""ColorWeight""].SetValue(0.0f);
-            _effect.Parameters[""UvWeight""].SetValue(0.0f);
-            
-            Wrapper.Draw(Camera.Main, _effect, sourceTexture);");
-                
-                var directory = destinationFile.GetDirectoryContainingThis();
-                if(!System.IO.Directory.Exists(directory.FullPath))
-                {
-                    System.IO.Directory.CreateDirectory(directory.FullPath);
-                }
-
-                System.IO.File.WriteAllText(destinationFile.FullPath, fileContent);
-
-                GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(destinationFile.FullPath);
-            }
-        }
-
-        bool IsFx(AssetTypeInfo ati) => ati?.Extension == "fx";
 
         private void HandleLoadGlux()
         {

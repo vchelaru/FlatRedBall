@@ -6,33 +6,40 @@
              xmlns:local="clr-namespace:OfficialPlugins.PostProcessingPlugin.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+  <Grid>
+    <StackPanel>
+      <GroupBox Header="FX Creation Options">
         <StackPanel>
-            <GroupBox Header="FX Creation Options">
-                <StackPanel>
-                    <RadioButton Content="Post Processing Shader"
+          <RadioButton Content="Post Processing Shader"
                                  IsChecked="{Binding IsPostProcessingChecked}"></RadioButton>
-                    <RadioButton Content="Sprite Shader"
+          <RadioButton Content="Sprite Shader"
                                  IsChecked="{Binding IsSpriteChecked}"></RadioButton>
-                    <RadioButton Content="Empty Shader"
+          <RadioButton Content="Empty Shader"
                                  IsChecked="{Binding IsEmptyChecked}"></RadioButton>
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Header="Post Processing Options"
+        </StackPanel>
+      </GroupBox>
+      <GroupBox Header="Post Processing Options"
                       Visibility="{Binding PostProcessOptionsVisibility}">
-                <StackPanel>
-                    <CheckBox
+        <StackPanel>
+          <CheckBox
                         Content="{Binding IncludePostProcessCsMessage, FallbackValue=IncludeXXXX.cs}"
                         IsChecked="{Binding IsIncludePostProcessCsFileChecked}"
                     ></CheckBox>
-                    <RadioButton>
-                        <StackPanel>
-                            <TextBlock>Empty Template</TextBlock>
-                            <Image Width="100" Height="100" Source="../Content/PostProcessingTemplate.png"></Image>
-                        </StackPanel>
-                    </RadioButton>
-                </StackPanel>
-            </GroupBox>
+          
+          <RadioButton Margin="0,12,0,0" IsChecked="{Binding IsGradientContentsChecked}">
+            <StackPanel>
+              <TextBlock>Example Gradient</TextBlock>
+              <Image Width="100" Height="100" Source="/OfficialPlugins;component/EffectPlugin/Content/PostProcessingTemplate.png"></Image>
+            </StackPanel>
+          </RadioButton>
+          <RadioButton Margin="0,12,0,0" IsChecked="{Binding IsSaturationChecked}">
+            <StackPanel>
+              <TextBlock>Saturation</TextBlock>
+              <Image Width="100" Height="100" Source="/OfficialPlugins;component/EffectPlugin/Content/SaturationPreview.png"></Image>
+            </StackPanel>
+          </RadioButton>
         </StackPanel>
-    </Grid>
+      </GroupBox>
+    </StackPanel>
+  </Grid>
 </UserControl>

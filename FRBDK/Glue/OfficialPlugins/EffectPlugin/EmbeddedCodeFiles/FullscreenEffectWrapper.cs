@@ -3,7 +3,7 @@ using FlatRedBall;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace PostProcessingTest.Graphics;
+namespace ReplaceNamespace;
 
 public class FullscreenEffectWrapper
 {
@@ -11,7 +11,7 @@ public class FullscreenEffectWrapper
     protected VertexBuffer VertexBuffer;
     
     public float Period { get; set; } = 1;
-    
+
     public Vector3 TopRight { get; set; } = new(1f, 1f, 0f);
     public Vector3 BottomRight { get; set; } = new(1f, -1f, 0f);
     public Vector3 TopLeft { get; set; } = new(-1f, 1f, 0f);
@@ -59,7 +59,7 @@ public class FullscreenEffectWrapper
         effect.Parameters["Resolution"]?.SetValue(new Vector2(camera.OrthogonalWidth, camera.OrthogonalHeight));
     }
 
-    public virtual void SetVertexData(Camera camera, VertexPositionColorNormalTexture[] vertices, float zDepth)
+    void SetVertexData(Camera camera, VertexPositionColorNormalTexture[] vertices, float zDepth)
     {
         float internalAspectRatio = camera.OrthogonalWidth / camera.OrthogonalHeight;
         float externalAspectRatio = (float)FlatRedBallServices.GraphicsOptions.ResolutionWidth / FlatRedBallServices.GraphicsOptions.ResolutionHeight;
@@ -71,7 +71,7 @@ public class FullscreenEffectWrapper
         {
             // gameScreenWidth = internalAspectRatio / externalAspectRatio;
         }
-        
+
         if (externalAspectRatio < internalAspectRatio)
         {
             // gameScreenHeight = externalAspectRatio / internalAspectRatio;

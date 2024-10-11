@@ -1,0 +1,74 @@
+﻿#define VS_SHADERMODEL vs_3_0
+#define PS_SHADERMODEL ps_3_0
+
+//==============================================================================
+// External Parameters
+//==============================================================================
+ReplaceExternalParameters
+
+texture ScreenTexture; // Texture data for the whole game screen
+sampler screenTextureSampler = sampler_state
+{
+    Texture = <ScreenTexture>;
+    MipFilter = Point;
+    MinFilter = Point;
+    MagFilter = Point;
+    AddressU = Wrap; // X direction sampling
+    AddressV = Wrap; // Y direction sampling
+    // MipFilter = Linear;
+    // MinFilter = Linear;
+    // MagFilter = Linear;
+    // AddressU = Clamp;
+    // AddressV = Clamp;
+};
+
+//==============================================================================
+// Shader Stage Parameters
+//==============================================================================
+struct AssemblerToVertex
+{
+    float4 Position : POSITION0;
+    float4 Color : COLOR0;
+    float4 TexCoord : TEXCOORD0;
+    float4 Normal : NORMAL0;
+};
+
+struct VertexToPixel
+{
+    float4 Position : SV_Position0;
+    float4 Color : COLOR0;
+    float4 TexCoord : TEXCOORD0;
+    float4 ScreenPosition : TEXCOORD1;
+    float4 WorldPosition : TEXCOORD2;
+};
+
+//==============================================================================
+// Vertex Shaders
+//==============================================================================
+ReplaceVertexShader
+
+//==============================================================================
+// Pixel Shaders
+//==============================================================================
+ReplacePixelShader
+
+//==============================================================================
+// Techniques
+//==============================================================================
+technique DrawPrimitives
+{
+    pass Pass0
+    {
+        VertexShader = compile VS_SHADERMODEL VsMain();
+        PixelShader = compile PS_SHADERMODEL PsMain();
+    }
+}
+
+technique SpriteBatch
+{
+    pass Pass0
+    {
+        PixelShader = compile PS_SHADERMODEL PsMain();
+    }
+}
+

@@ -20,6 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="EffectPlugin\EmbeddedCodeFiles\FullscreenEffectWrapper.cs" />
+    <Compile Remove="EffectPlugin\EmbeddedCodeFiles\PostProcessTemplate.cs" />
     <Compile Remove="FRBDKUpdater\FrbdkUpdaterSettings.cs" />
     <Compile Remove="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
@@ -32,6 +34,9 @@
     <None Remove="Content\Icons\Pause.png" />
     <None Remove="Content\Icons\stop.png" />
     <None Remove="Content\Icons\Unpause.png" />
+    <None Remove="EffectPlugin\Content\FxTemplate.txt" />
+    <None Remove="EffectPlugin\Content\PostProcessingTemplate.png" />
+    <None Remove="EffectPlugin\Content\SaturationPreview.png" />
     <None Remove="ErrorPlugin\Icons\CopyAll.png" />
     <None Remove="ErrorPlugin\Icons\CopySingle.png" />
     <None Remove="ErrorPlugin\Icons\ErrorWindowError.png" />
@@ -92,6 +97,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="EffectPlugin\Content\FxTemplate.txt" />
+    <EmbeddedResource Include="EffectPlugin\EmbeddedCodeFiles\FullscreenEffectWrapper.cs" />
+    <EmbeddedResource Include="EffectPlugin\EmbeddedCodeFiles\PostProcessTemplate.cs" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Levels\Level1Map.tmx" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Levels\Level2Map.tmx" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Levels\Level3Map.tmx" />
@@ -135,6 +143,8 @@
     <Resource Include="Content\Icons\Pause.png" />
     <Resource Include="Content\Icons\stop.png" />
     <Resource Include="Content\Icons\Unpause.png" />
+    <Resource Include="EffectPlugin\Content\SaturationPreview.png" />
+    <Resource Include="EffectPlugin\Content\PostProcessingTemplate.png" />
     <Resource Include="ErrorPlugin\Icons\CopyAll.png" />
     <Resource Include="ErrorPlugin\Icons\CopySingle.png" />
     <Resource Include="ErrorPlugin\Icons\ErrorWindowError.png" />

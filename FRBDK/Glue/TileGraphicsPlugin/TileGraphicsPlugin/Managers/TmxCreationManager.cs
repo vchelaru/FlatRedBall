@@ -327,37 +327,6 @@ namespace TiledPlugin.Managers
             Tileset.ShouldLoadValuesFromSource = old;
         }
 
-        public void HandleAddNewFileOptions(CustomizableNewFileWindow newFileWindow)
-        {
-            var view = new NewTmxOptionsView();
-            var viewModel = new NewTmxViewModel();
-            viewModel.IncludeDefaultTileset = true;
-            viewModel.IncludeGameplayLayer = true;
-            // January 23, 2022
-            // This is so common,
-            // at least according to
-            // Vic's usage, that we should
-            // just make it default to true.
-            viewModel.IsSolidCollisionBorderChecked = true;
-            view.DataContext = viewModel;
-
-            newFileWindow.AddCustomUi(view);
-
-            newFileWindow.SelectionChanged += (not, used) =>
-            {
-                var ati = newFileWindow.SelectedItem;
-                view.Visibility = IsTmx(ati).ToVisibility();
-            };
-
-            newFileWindow.GetCreationOption += () =>
-            {
-                var ati = newFileWindow.SelectedItem;
-                return IsTmx(ati) ?
-                    viewModel :
-                    null;
-            };
-        }
-
         public bool IsTmx(AssetTypeInfo ati) =>
             ati?.Extension == "tmx";
     }
