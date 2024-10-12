@@ -18,6 +18,10 @@ internal class PostProcessCodeGenerator
         string newDirectory = Path.Combine("Graphics", Path.GetDirectoryName(rfsName) ?? "");
         string newFileName = Path.GetFileName(Path.ChangeExtension(rfsName, "cs") ?? "");
         string newFileNameOnly = Path.GetFileNameWithoutExtension(Path.GetFileName(Path.ChangeExtension(rfsName, "cs")) ?? "");
+        if (newFileNameOnly.Length < 1)
+        {
+            throw new ArgumentException("FX file name must have at least 1 character");
+        }
         string newFileRelativePath = Path.Combine(newDirectory, newFileName);
         FilePath destinationFile = GlueState.Self.CurrentGlueProjectDirectory + newFileRelativePath;
 
@@ -25,35 +29,55 @@ internal class PostProcessCodeGenerator
 
         var resourceName = "OfficialPlugins.EffectPlugin.EmbeddedCodeFiles.PostProcessTemplate.cs";
 
+
         using var stream =
                 assemblyContainingResource.GetManifestResourceStream(resourceName);
+
         if (stream != null)
         {
-            using var reader = new StreamReader(stream);
-            string fileContent = reader.ReadToEnd();
-
-            fileContent = fileContent.Replace("ReplaceNamespace", $"{GlueState.Self.ProjectNamespace}.{newDirectory.Replace('\\', '.')}");
-
-            if (newFileNameOnly.Length < 1)
+            GlueCommands.Self.TryMultipleTimes(() =>
             {
-                throw new ArgumentException("FX file name must have at least 1 character");
-            }
+                var newNamespace =
+                    $"{GlueState.Self.ProjectNamespace}.{newDirectory.Replace('\\', '.')}";
 
-            char firstLetter = char.ToUpper(newFileNameOnly[0]);
-            fileContent = fileContent.Replace("ReplaceClassName", firstLetter + newFileNameOnly[1..]);
+                char firstLetter = char.ToUpper(newFileNameOnly[0]);
+                var newClassName = firstLetter + newFileNameOnly[1..];
 
-            fileContent = fileContent.Replace("ReplaceClassMembers", shaderContents.ClassMembers);
-            fileContent = fileContent.Replace("ReplaceApplyBody", shaderContents.ApplyBody);
+                string fileContents = null;
+                if (shaderContents.EntireCsFileContents != null)
+                {
+                    fileContents = shaderContents.EntireCsFileContents;
+                    if (fileContents.Contains("ReplaceNamespace"))
+                    {
+                        fileContents = fileContents.Replace("ReplaceNamespace", newNamespace);
+                    }
+                    fileContents = fileContents.Replace("ReplaceClassName", newClassName);
 
-            var directory = destinationFile.GetDirectoryContainingThis();
-            if (!System.IO.Directory.Exists(directory.FullPath))
-            {
-                System.IO.Directory.CreateDirectory(directory.FullPath);
-            }
+                }
+                else
+                {
+                    using var reader = new StreamReader(stream);
+                    fileContents = reader.ReadToEnd();
 
-            System.IO.File.WriteAllText(destinationFile.FullPath, fileContent);
+                    fileContents = fileContents.Replace("ReplaceNamespace", newNamespace);
 
-            GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(destinationFile.FullPath);
+                    fileContents = fileContents.Replace("ReplaceClassName", newClassName);
+
+                    fileContents = fileContents.Replace("ReplaceClassMembers", shaderContents.ClassMembers);
+                    fileContents = fileContents.Replace("ReplaceApplyBody", shaderContents.ApplyBody);
+
+                }
+
+                var directory = destinationFile.GetDirectoryContainingThis();
+                if (!System.IO.Directory.Exists(directory.FullPath))
+                {
+                    System.IO.Directory.CreateDirectory(directory.FullPath);
+                }
+
+                System.IO.File.WriteAllText(destinationFile.FullPath, fileContents);
+
+                GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(destinationFile.FullPath);
+            });
         }
     }
 }

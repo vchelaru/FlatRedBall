@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.PostProcessingPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="600" d:DesignWidth="300">
   <Grid>
     <StackPanel>
       <GroupBox Header="FX Creation Options">
@@ -32,12 +32,21 @@
               <Image Width="100" Height="100" Source="/OfficialPlugins;component/EffectPlugin/Content/PostProcessingTemplate.png"></Image>
             </StackPanel>
           </RadioButton>
+
           <RadioButton Margin="0,12,0,0" IsChecked="{Binding IsSaturationChecked}">
             <StackPanel>
               <TextBlock>Saturation</TextBlock>
               <Image Width="100" Height="100" Source="/OfficialPlugins;component/EffectPlugin/Content/SaturationPreview.png"></Image>
             </StackPanel>
           </RadioButton>
+
+          <RadioButton Margin="0,12,0,0" IsChecked="{Binding IsBloomChecked}">
+            <StackPanel>
+              <TextBlock>Bloom</TextBlock>
+              <Image Width="100" Height="100" Source="/OfficialPlugins;component/EffectPlugin/Content/BloomPreview.png"></Image>
+            </StackPanel>
+          </RadioButton>
+
         </StackPanel>
       </GroupBox>
     </StackPanel>

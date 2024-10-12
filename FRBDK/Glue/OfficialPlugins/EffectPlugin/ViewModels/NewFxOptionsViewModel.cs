@@ -93,6 +93,12 @@ namespace OfficialPlugins.EffectPlugin.ViewModels
             set { if (value) ShaderContentsType = ShaderContentsType.Saturation; }
         }
 
+        public bool IsBloomChecked
+        {
+            get => ShaderContentsType == ShaderContentsType.Bloom;
+            set { if (value) ShaderContentsType = ShaderContentsType.Bloom; }
+        }
+
         [DependsOn(nameof(IsPostProcessingChecked))]
         public Visibility PostProcessOptionsVisibility => IsPostProcessingChecked.ToVisibility();
 
