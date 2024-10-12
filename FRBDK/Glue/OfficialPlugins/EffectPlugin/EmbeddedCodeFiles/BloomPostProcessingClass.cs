@@ -29,6 +29,7 @@ internal class ReplaceClassName : IPostProcess
 {
     #region Fields/Properties
 
+    public bool IsEnabled { get; set; } = true;
     SpriteBatch _spriteBatch;
 
     public float Threshold = .6f;

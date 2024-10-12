@@ -51,7 +51,10 @@ float4 PsMain(VertexToPixel input) : SV_TARGET
 ";
 
         ClassMembers = @"protected FullscreenEffectWrapper Wrapper { get; set; } = new FullscreenEffectWrapper();
-        public float Saturation { get; set; } = 0.5f;";
+        public float Saturation { get; set; } = 0.5f;
+        public bool IsEnabled { get; set; } = true;
+
+";
 
         ApplyBody =
            @"if(_effect?.IsDisposed == true) return;

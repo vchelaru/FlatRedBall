@@ -1393,5 +1393,22 @@ namespace FlatRedBall.Graphics
                     false, camera, section);
             }
         }
+
+        /// <summary>
+        /// Creates a SwapChain instance matching the game's resolution which automatically adjusts when the game window resizes
+        /// </summary>
+        public static void CreateDefaultSwapChain()
+        {
+            Renderer.SwapChain = new PostProcessing.SwapChain(
+                FlatRedBallServices.Game.Window.ClientBounds.Width,
+                FlatRedBallServices.Game.Window.ClientBounds.Height);
+
+            FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (_, _) =>
+            {
+                Renderer.SwapChain.UpdateRenderTargetSize(
+                    FlatRedBallServices.Game.Window.ClientBounds.Width,
+                    FlatRedBallServices.Game.Window.ClientBounds.Height);
+            };
+        }
     }
 }

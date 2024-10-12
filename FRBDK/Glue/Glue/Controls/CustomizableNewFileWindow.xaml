@@ -6,7 +6,8 @@
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              SizeToContent="{Binding SizeToContent}"
-             Height="400"  Width="450">
+             Height="400"
+             Width="650">
     <Grid Margin="3">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>

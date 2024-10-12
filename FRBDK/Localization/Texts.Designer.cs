@@ -6641,15 +6641,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select the file type:.
-        /// </summary>
-        public static string SelectFileType {
-            get {
-                return ResourceManager.GetString("SelectFileType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Select a game type:.
         /// </summary>
         public static string SelectGameType {

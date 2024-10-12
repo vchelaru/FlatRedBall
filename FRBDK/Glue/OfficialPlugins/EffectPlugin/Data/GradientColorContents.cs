@@ -60,6 +60,13 @@ float4 PsMain(VertexToPixel input) : SV_TARGET
         + UvWeight * input.TexCoord);
 }";
 
+
+        ClassMembers = @"protected FullscreenEffectWrapper Wrapper { get; set; } = new FullscreenEffectWrapper();
+        public float Saturation { get; set; } = 0.5f;
+        public bool IsEnabled { get; set; } = true;
+
+";
+
         ApplyBody =
            @"_effect.Parameters[""TexWeight""].SetValue(1.0f);
             _effect.Parameters[""PixelPosWeight""].SetValue(0.0f);
@@ -69,5 +76,7 @@ float4 PsMain(VertexToPixel input) : SV_TARGET
             _effect.Parameters[""UvWeight""].SetValue(0.0f);
             
             Wrapper.Draw(Camera.Main, _effect, sourceTexture);";
+
+
     }
 }

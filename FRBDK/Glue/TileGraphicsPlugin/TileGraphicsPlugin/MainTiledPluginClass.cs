@@ -880,6 +880,24 @@ public class MainTiledPluginClass : PluginBase
         }
     }
 
+
+
+    /// <summary>
+    /// Saves a TMX with visuals to the location matching the
+    /// newFile location. 
+    /// </summary>
+    /// <remarks>
+    /// This method must be left here so that the Wizard can call it!!
+    /// </remarks>
+    /// <param name="newFile">The ReferencedFileSave to replace, which should be a TMX, probably in a Level screen.</param>
+    /// <param name="levelName">The unqualified name of the TMX, such as 
+    /// "OverworldPlatformerA"</param>
+    public void SaveFileWithVisuals(ReferencedFileSave newFile, string levelName)
+    {
+        TmxCreationManager.Self.SaveTmxWithVisuals(newFile, levelName);
+    }
+
+
     #endregion
 
 }

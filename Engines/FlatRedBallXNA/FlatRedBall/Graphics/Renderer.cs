@@ -1051,7 +1051,16 @@ namespace FlatRedBall.Graphics
         // renders.
         public static void Draw(Section section)
         {
-            var hasGlobalPostProcessing = GlobalPostProcesses.Count > 0;
+
+            var hasGlobalPostProcessing = false;
+            foreach(var item in GlobalPostProcesses)
+            {
+                if(item.IsEnabled)
+                {
+                    hasGlobalPostProcessing = true;
+                    break;
+                }
+            }
 #if DEBUG
             if (hasGlobalPostProcessing && SwapChain == null)
             {
@@ -1062,6 +1071,12 @@ namespace FlatRedBall.Graphics
             if(hasGlobalPostProcessing)
             {
                 SetRenderTargetForPostProcessing();
+            }
+            else 
+            {
+                // Just in case we removed all post processing, but are on
+                // "B"
+                SwapChain?.ResetForFrame();
             }
 
 
@@ -1090,9 +1105,12 @@ namespace FlatRedBall.Graphics
         {
             foreach (var postProcess in Renderer.GlobalPostProcesses)
             {
-                mRenderBreaks.Add(new RenderBreak() { ObjectCausingBreak = postProcess});
-                Renderer.SwapChain.Swap();
-                postProcess.Apply(Renderer.SwapChain.CurrentTexture);
+                if(postProcess.IsEnabled)
+                {
+                    mRenderBreaks.Add(new RenderBreak() { ObjectCausingBreak = postProcess});
+                    Renderer.SwapChain.Swap();
+                    postProcess.Apply(Renderer.SwapChain.CurrentTexture);
+                }
             }
 
             mRenderBreaks.Add(new RenderBreak() { ObjectCausingBreak = SwapChain });

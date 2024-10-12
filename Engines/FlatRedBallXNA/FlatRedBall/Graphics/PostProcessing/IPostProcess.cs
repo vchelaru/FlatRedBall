@@ -7,6 +7,7 @@ namespace FlatRedBall.Graphics.PostProcessing
 {
     public interface IPostProcess
     {
+        bool IsEnabled { get; }
         void Apply(Texture2D sourceTexture);
     }
 }
