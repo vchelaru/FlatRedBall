@@ -40,6 +40,7 @@ namespace OfficialPlugins.EffectPlugin
             AddToDictionary(new GradientColorContents());
             AddToDictionary(new SaturationContents());
             AddToDictionary(new BloomContents());
+            AddToDictionary(new CrtContents());
 
             AssetTypeInfoManager.Initialize();
 

@@ -47,6 +47,13 @@
             </StackPanel>
           </RadioButton>
 
+          <RadioButton Margin="0,12,0,0" IsChecked="{Binding IsCrtChecked}">
+            <StackPanel>
+              <TextBlock>CRT</TextBlock>
+              <Image Width="100" Height="100" Source="/OfficialPlugins;component/EffectPlugin/Content/CrtPreview.png"></Image>
+            </StackPanel>
+          </RadioButton>
+
         </StackPanel>
       </GroupBox>
     </StackPanel>

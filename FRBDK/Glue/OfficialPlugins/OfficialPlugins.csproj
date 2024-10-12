@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <Compile Remove="EffectPlugin\EmbeddedCodeFiles\BloomPostProcessingClass.cs" />
+    <Compile Remove="EffectPlugin\EmbeddedCodeFiles\CrtPostProcessingClass.cs" />
     <Compile Remove="EffectPlugin\EmbeddedCodeFiles\FullscreenEffectWrapper.cs" />
     <Compile Remove="EffectPlugin\EmbeddedCodeFiles\PostProcessTemplate.cs" />
     <Compile Remove="FRBDKUpdater\FrbdkUpdaterSettings.cs" />
@@ -37,6 +38,8 @@
     <None Remove="Content\Icons\Unpause.png" />
     <None Remove="EffectPlugin\Content\Bloom.fx" />
     <None Remove="EffectPlugin\Content\BloomPreview.png" />
+    <None Remove="EffectPlugin\Content\Crt.fx" />
+    <None Remove="EffectPlugin\Content\CrtPreview.png" />
     <None Remove="EffectPlugin\Content\FxTemplate.txt" />
     <None Remove="EffectPlugin\Content\PostProcessingTemplate.png" />
     <None Remove="EffectPlugin\Content\SaturationPreview.png" />
@@ -101,8 +104,10 @@
 
   <ItemGroup>
     <EmbeddedResource Include="EffectPlugin\Content\Bloom.fx" />
+    <EmbeddedResource Include="EffectPlugin\Content\Crt.fx" />
     <EmbeddedResource Include="EffectPlugin\Content\FxTemplate.txt" />
     <EmbeddedResource Include="EffectPlugin\EmbeddedCodeFiles\BloomPostProcessingClass.cs" />
+    <EmbeddedResource Include="EffectPlugin\EmbeddedCodeFiles\CrtPostProcessingClass.cs" />
     <EmbeddedResource Include="EffectPlugin\EmbeddedCodeFiles\FullscreenEffectWrapper.cs" />
     <EmbeddedResource Include="EffectPlugin\EmbeddedCodeFiles\PostProcessTemplate.cs" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Levels\Level1Map.tmx" />
@@ -149,6 +154,7 @@
     <Resource Include="Content\Icons\stop.png" />
     <Resource Include="Content\Icons\Unpause.png" />
     <Resource Include="EffectPlugin\Content\BloomPreview.png" />
+    <Resource Include="EffectPlugin\Content\CrtPreview.png" />
     <Resource Include="EffectPlugin\Content\SaturationPreview.png" />
     <Resource Include="EffectPlugin\Content\PostProcessingTemplate.png" />
     <Resource Include="ErrorPlugin\Icons\CopyAll.png" />

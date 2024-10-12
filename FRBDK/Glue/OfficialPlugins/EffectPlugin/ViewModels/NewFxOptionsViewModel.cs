@@ -65,13 +65,7 @@ namespace OfficialPlugins.EffectPlugin.ViewModels
         public bool IsEmptyChecked
         {
             get => ShaderType == ShaderType.Empty;
-            set
-            {
-                if (value)
-                {
-                    ShaderType = ShaderType.Empty;
-                }
-            }
+            set { if (value) { ShaderType = ShaderType.Empty; } }
         }
 
 
@@ -97,6 +91,12 @@ namespace OfficialPlugins.EffectPlugin.ViewModels
         {
             get => ShaderContentsType == ShaderContentsType.Bloom;
             set { if (value) ShaderContentsType = ShaderContentsType.Bloom; }
+        }
+
+        public bool IsCrtChecked
+        {
+            get => ShaderContentsType == ShaderContentsType.Crt;
+            set { if (value) ShaderContentsType = ShaderContentsType.Crt; }
         }
 
         [DependsOn(nameof(IsPostProcessingChecked))]

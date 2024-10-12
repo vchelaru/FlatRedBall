@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace OfficialPlugins.EffectPlugin.Data;
 
-internal class BloomContents : ShaderContents
+internal class CrtContents : ShaderContents
 {
-    public BloomContents()
+    public CrtContents()
     {
-        ShaderContentsType = ShaderContentsType.Bloom;
+        ShaderContentsType = ShaderContentsType.Crt;
         AssignEntireCsFileContents();
         AssignEntireFxFileContents();
     }

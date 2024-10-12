@@ -1403,7 +1403,7 @@ namespace FlatRedBall.Graphics
                 FlatRedBallServices.Game.Window.ClientBounds.Width,
                 FlatRedBallServices.Game.Window.ClientBounds.Height);
 
-            FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (_, _) =>
+            FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) =>
             {
                 Renderer.SwapChain.UpdateRenderTargetSize(
                     FlatRedBallServices.Game.Window.ClientBounds.Width,
