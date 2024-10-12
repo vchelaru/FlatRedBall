@@ -259,6 +259,7 @@ namespace OfficialPlugins.MonoGameContent
 
             foreach(var file in newFiles)
             {
+                // This is also handled by the live edit system, do we still want this here?
                 GlueCommands.Self.ProjectCommands.CopyToBuildFolder(file);
             }
 

@@ -564,7 +564,9 @@ class ProjectCommands : IProjectCommands
                     var link = fileToCopyItem.GetLink();
                     if (!string.IsNullOrEmpty(link))
                     {
-                        destination = outputDirectory + link;
+                        // it seems that links have Content already appended so we should not have content
+
+                        destination = GlueState.Self.CurrentMainProject.GetOutputDirectory() + link;
                     }
 
                     try

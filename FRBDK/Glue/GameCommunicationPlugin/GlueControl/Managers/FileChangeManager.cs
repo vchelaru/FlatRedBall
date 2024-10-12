@@ -73,6 +73,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             if (shouldCopy)
             {
+                // This is also handled by the MainContentPipelinePlugin - do we want to remove that one and keep only this call?
                 GlueCommands.Self.ProjectCommands.CopyToBuildFolder(filePath);
 
             }

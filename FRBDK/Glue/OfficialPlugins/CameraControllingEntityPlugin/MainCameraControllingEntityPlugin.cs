@@ -92,8 +92,12 @@ namespace OfficialPlugins.CameraControllingEntityPlugin
 
             ati.VariableDefinitions.Add(new VariableDefinition
             {
+                // This is a warning but we cannot swap this because it would break existing projects which
+                // use the name of this variable. If we want to change this, we need to do so in a new gluj version
                 Name = nameof(FlatRedBall.Entities.CameraControllingEntity.LerpSmooth),
                 Type = "bool",
+                // This is a warning but we cannot swap this because it would break existing projects which
+                // use the name of this variable. If we want to change this, we need to do so in a new gluj version
                 DefaultValue = ValueToString(defaultInstance.LerpSmooth),
                 Category = "Coefficients"
 
@@ -101,9 +105,11 @@ namespace OfficialPlugins.CameraControllingEntityPlugin
 
             ati.VariableDefinitions.Add(new VariableDefinition
             {
+                // This is a warning but we cannot swap this because it would break existing projects which
+                // use the name of this variable. If we want to change this, we need to do so in a new gluj version
                 Name = nameof(FlatRedBall.Entities.CameraControllingEntity.LerpCoefficient),
                 Type = "float",
-                DefaultValue = ValueToString(defaultInstance.LerpCoefficient),
+                DefaultValue = ValueToString(defaultInstance.TargetApproachCoefficient),
                 Category = "Coefficients"
             });
 

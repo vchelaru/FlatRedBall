@@ -55,7 +55,9 @@ namespace OfficialPlugins.SpritePlugin.Views
         }
         public SKBitmap Texture => MainSprite.Texture;
         SpriteRuntime MainSprite;
-        public SolidRectangleRuntime Background { get; private set; }
+        public SolidRectangleRuntime BackgroundRectangle { get; private set; }
+
+        public TextureCoordinateSelectionView(SolidRectangleRuntime backgroundRectangle) => BackgroundRectangle = backgroundRectangle;
 
         public LineGridRuntime linegrid { get; private set; }
 
@@ -118,7 +120,7 @@ namespace OfficialPlugins.SpritePlugin.Views
 
             // Initialize CameraLogic after initializing the background so the background
             // position can be set
-            CameraLogic.Initialize(this, ViewModel, this.Canvas, this.Background);
+            CameraLogic.Initialize(this, ViewModel, this.Canvas, this.BackgroundRectangle);
             MouseEditingLogic.Initialize(this, cameraLogic);
 
             this.Canvas.Children.Add(MainSprite);
@@ -186,13 +188,13 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         private void CreateBackground()
         {
-            Background = new SolidRectangleRuntime();
-            Background.Color = new SKColor(68, 34, 136);
-            Background.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
-            Background.Width = 100;
-            Background.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
-            Background.Height = 100;
-            this.Canvas.Children.Add(Background);
+            BackgroundRectangle = new SolidRectangleRuntime();
+            BackgroundRectangle.Color = new SKColor(68, 34, 136);
+            BackgroundRectangle.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            BackgroundRectangle.Width = 100;
+            BackgroundRectangle.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            BackgroundRectangle.Height = 100;
+            this.Canvas.Children.Add(BackgroundRectangle);
         }
 
         private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)

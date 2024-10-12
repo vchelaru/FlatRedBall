@@ -131,6 +131,8 @@ namespace FlatRedBall.Glue.IO
             }
 
             var contentDirectory = new FilePath(GlueState.Self.ContentDirectory);
+            var solutionFolder = GlueState.Self.CurrentSlnFileName?.GetDirectoryContainingThis();
+
             var objFolder = new FilePath(projectDirectory.FullPath + "obj/");
             var binFolder = new FilePath(projectDirectory.FullPath + "bin/");
             // This block of code checks
@@ -142,8 +144,17 @@ namespace FlatRedBall.Glue.IO
                 !contentDirectory.IsRootOf(filePath) && 
                 filePath.Extension != "csproj" )
             {
-                reason = IgnoreReason.OutsideOfProject;
-                isIgnored = true;
+
+                // don't ignore if it's a built XNB, we want those copied over:
+                if(filePath.Extension == "xnb" && solutionFolder != null && filePath.IsRelativeTo(solutionFolder))
+                {
+                    // don't ignore it!
+                }
+                else
+                {
+                    reason = IgnoreReason.OutsideOfProject;
+                    isIgnored = true;
+                }
             }
 
             if(!isIgnored && objFolder.IsRootOf(filePath))
