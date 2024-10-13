@@ -903,10 +903,8 @@ namespace FlatRedBall.Content
                 {
                     assetName = assetName.Substring(1);
                 }
-
-                return base.OpenStream(assetName);
-
 #endif
+                return base.OpenStream(assetName);
             }
         }
 

@@ -154,9 +154,9 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             System.IO.Directory.Exists(AddSourceManager.DefaultFrbFilePath) &&
             System.IO.Directory.Exists(AddSourceManager.DefaultGumFilePath);
 
-        public async Task AddFrbSourceToDefaultLocation()
+        public async Task AddFrbSourceToDefaultLocation(VisualStudioProject visualStudioProject)
         {
-            await AddSourceManager.LinkToSourceUsingDefaults();
+            await AddSourceManager.LinkToSourceUsingDefaults(visualStudioProject);
         }
     }
 }

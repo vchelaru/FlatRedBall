@@ -9,6 +9,8 @@ using Npc.ViewModels;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Managers;
 using L = Localization;
+using System.Threading.Tasks;
+using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace FlatRedBall.Glue.Projects;
 
@@ -137,7 +139,7 @@ public static class NewProjectHelper
 
                 if(viewModel.IsIncludeSourceEffectivelyChecked)
                 {
-                    await PluginManager.CallPluginMethodAsync("FRB Source", "AddFrbSourceToDefaultLocation");
+                    await PluginManager.CallPluginMethodAsync("FRB Source", "AddFrbSourceToDefaultLocation", GlueState.Self.CurrentMainProject);
                 }
 
                 // open the project
@@ -150,11 +152,11 @@ public static class NewProjectHelper
         }
     }
 
-    public static NewProjectViewModel CreateNewSyncedProject()
+    public static async Task<NewProjectViewModel> CreateNewSyncedProject()
     {
         if(ProjectManager.ProjectBase == null)
         {
-            MessageBox.Show(L.Texts.CouldNotCreateSyncedProject);
+            MessageBox.Show("Can not create a new Synced Project because there is no open project.");
             return null;
         }
 
@@ -170,7 +172,7 @@ public static class NewProjectHelper
             // The return value could be null if the project being added
             // already exists as a synced project, but this should never be
             // the case here.
-            var newProjectBase = ProjectManager.AddSyncedProject(createdProject);
+            var newProjectBase = ProjectManager.AddSyncedProject(createdProject) as VisualStudioProject;
             ProjectManager.SyncedProjects[^1].SaveAsRelativeSyncedProject = true;
 
             GluxCommands.Self.SaveProjectAndElements();
@@ -194,6 +196,13 @@ public static class NewProjectHelper
             {
                 newProjectBase.RemoveItem(newProjectBase.Directory + "Game1.cs");
                 File.Delete(newProjectBase.Directory + "Game1.cs");
+            }
+
+            await PluginManager.CallPluginMethodAsync("MonoGame Content Plugin", "RefreshXnbsForProject", newProjectBase);
+
+            if (viewModel.IsIncludeSourceEffectivelyChecked)
+            {
+                await PluginManager.CallPluginMethodAsync("FRB Source", "AddFrbSourceToDefaultLocation", newProjectBase);
             }
 
             // This line is slow. Not sure why..maybe the project is saving after every file is added?

@@ -2325,9 +2325,6 @@
   <data name="CouldNotLoadProjectSeeOutput" xml:space="preserve">
     <value>Impossible de charger le projet. Consultez la fenêtre de sortie pour plus d’informations.</value>
   </data>
-  <data name="CouldNotCreateSyncedProject" xml:space="preserve">
-    <value>Impossible de créer un nouveau projet synchronisé car aucun projet n'est ouvert.</value>
-  </data>
   <data name="Files" xml:space="preserve">
     <value>Fichiers</value>
   </data>
@@ -2433,9 +2430,6 @@
   <data name="ResetVariablesPoolingAdd" xml:space="preserve">
     <value>Ajouter des variables de réinitialisation pour le pooling</value>
   </data>
-  <data name="PipelineContentToggle" xml:space="preserve">
-    <value>Toggle Utiliser le pipeline de contenu</value>
-  </data>
   <data name="VariableFillValues" xml:space="preserve">
     <value>Remplir les valeurs à partir de variables</value>
   </data>
@@ -2453,9 +2447,6 @@
   </data>
   <data name="MakeRequiredAtStartup" xml:space="preserve">
     <value>Rendre obligatoire au démarrage</value>
-  </data>
-  <data name="FileRebuild" xml:space="preserve">
-    <value>Reconstruire le fichier</value>
   </data>
   <data name="ViewSourceExplorer" xml:space="preserve">
     <value>Afficher le fichier source dans l'explorateur</value>

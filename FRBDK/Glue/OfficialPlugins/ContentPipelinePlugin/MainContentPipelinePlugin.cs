@@ -21,6 +21,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.FormHelpers;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Elements;
+using Microsoft.Build.Evaluation;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -293,6 +294,9 @@ namespace OfficialPlugins.MonoGameContent
             aliasCodeGenerator.GenerateFileAliasLogicCode();
             _ = BuildLogic.Self.RefreshBuiltFilesFor(GlueState.CurrentMainProject, viewModel.UseContentPipelineOnPngs, controller);
         }
+
+        public Task RefreshXnbsForProject(VisualStudioProject visualStudioProject) =>
+            BuildLogic.Self.RefreshBuiltFilesFor(visualStudioProject, viewModel.UseContentPipelineOnPngs, controller);
 
         private void HandleLoadedSyncedProject(ProjectBase project)
         {

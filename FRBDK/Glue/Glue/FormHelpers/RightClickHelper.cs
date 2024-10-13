@@ -882,7 +882,7 @@ public static class RightClickHelper
         mMakeRequiredAtStartup = new GeneralToolStripMenuItem(L.Texts.MakeRequiredAtStartup);
         mMakeRequiredAtStartup.Click += ToggleRequiredAtStartupClick;
 
-        mRebuildFile = new GeneralToolStripMenuItem(L.Texts.FileRebuild);
+        mRebuildFile = new GeneralToolStripMenuItem("Rebuild File");
         mRebuildFile.Click += RebuildFileClick;
 
         mViewSourceInExplorer = new GeneralToolStripMenuItem(L.Texts.ViewSourceExplorer);

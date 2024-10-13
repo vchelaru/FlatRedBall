@@ -45,6 +45,11 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
+        public async Task RefreshBuiltFilesFor(VisualStudioProject project)
+        {
+            await RefreshBuiltFilesFor(project, forcePngsToContentPipeline: false, controller: null);
+        }
+
         public async Task RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline, ContentPipelineController controller)
         {
 
@@ -87,7 +92,7 @@ namespace OfficialPlugins.MonoGameContent
 
             if(forcePngsToContentPipeline)
             {
-                controller.AddPngXnbsReferencesAndBuild();
+                controller?.AddPngXnbsReferencesAndBuild();
             }
 
             //foreach (var file in GlueState.Self.CurrentGlueProject.GetAllReferencedFiles())

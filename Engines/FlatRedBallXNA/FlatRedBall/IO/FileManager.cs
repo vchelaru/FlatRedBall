@@ -594,6 +594,7 @@ namespace FlatRedBall.IO
                 fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 #else
                 fileStream = GetStreamForFile(fileName);
+#endif
 
                 using (System.IO.StreamReader sr = new StreamReader(fileStream))
                 {
@@ -613,7 +614,6 @@ namespace FlatRedBall.IO
 
 
             return containedText;
-#endif
         }
 
 

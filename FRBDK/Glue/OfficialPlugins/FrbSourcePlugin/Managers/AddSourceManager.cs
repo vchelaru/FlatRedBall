@@ -217,31 +217,32 @@ internal static class AddSourceManager
     #endregion
 
     public static async Task HandleLinkToSourceClicked(AddFrbSourceViewModel viewModel) =>
-        await LinkToSourceInternal(viewModel.FrbRootFolder, viewModel.GumRootFolder, viewModel.IncludeGumSkia);
+        await LinkToSourceInternal(viewModel.FrbRootFolder, viewModel.GumRootFolder, viewModel.IncludeGumSkia, GlueState.Self.CurrentMainProject);
 
-    public static async Task LinkToSourceUsingDefaults()
+    public static async Task LinkToSourceUsingDefaults(VisualStudioProject visualStudioProject)
     {
-        var includeGumSkia = GlueState.Self.CurrentMainProject is MonoGameDesktopGlNetCoreProject;
+        var includeGumSkia = visualStudioProject is MonoGameDesktopGlNetCoreProject;
 
-        await LinkToSourceInternal(DefaultFrbFilePath, DefaultGumFilePath, includeGumSkia);
+        await LinkToSourceInternal(DefaultFrbFilePath, DefaultGumFilePath, includeGumSkia, visualStudioProject);
     }
-    private static async Task LinkToSourceInternal(string frbRootFolder, string gumRootFolder, bool includeGumSkia)
+    private static async Task LinkToSourceInternal(string frbRootFolder, string gumRootFolder, bool includeGumSkia, VisualStudioProject vsProject)
     {
-        var vsProject = GlueState.Self.CurrentMainProject;
-
         List<VisualStudioProject> projects = new List<VisualStudioProject>();
 
-        if(GlueState.Self.CurrentMainProject != null)
+        if(vsProject != null)
         {
-            projects.Add(GlueState.Self.CurrentMainProject);
-
-            foreach(var project in GlueState.Self.SyncedProjects)
+            projects.Add(vsProject);
+            if(vsProject == GlueState.Self.CurrentMainProject)
             {
-                if(project is VisualStudioProject asVsProject)
+                foreach(var project in GlueState.Self.SyncedProjects)
                 {
-                    projects.Add(asVsProject);
+                    if(project is VisualStudioProject asVsProject)
+                    {
+                        projects.Add(asVsProject);
+                    }
                 }
             }
+
         }
 
         await TaskManager.Self.AddAsync(() =>

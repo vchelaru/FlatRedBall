@@ -1105,15 +1105,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can not create a new Synced Project because there is no open project..
-        /// </summary>
-        public static string CouldNotCreateSyncedProject {
-            get {
-                return ResourceManager.GetString("CouldNotCreateSyncedProject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Could not load the project. Check the output window for more information..
         /// </summary>
         public static string CouldNotLoadProjectSeeOutput {
@@ -5433,15 +5424,7 @@ namespace Localization {
                 return ResourceManager.GetString("Perspective", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Toggle Use Content Pipeline.
-        /// </summary>
-        public static string PipelineContentToggle {
-            get {
-                return ResourceManager.GetString("PipelineContentToggle", resourceCulture);
-            }
-        }
+     
         
         /// <summary>
         ///   Looks up a localized string similar to Platform:.

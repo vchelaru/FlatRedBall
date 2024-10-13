@@ -2325,9 +2325,6 @@
   <data name="CouldNotLoadProjectSeeOutput" xml:space="preserve">
     <value>Kan het project niet laden. Controleer het uitvoervenster voor meer informatie.</value>
   </data>
-  <data name="CouldNotCreateSyncedProject" xml:space="preserve">
-    <value>Kan geen nieuw gesynchroniseerd project maken omdat er geen open project is.</value>
-  </data>
   <data name="Files" xml:space="preserve">
     <value>Bestanden</value>
   </data>
@@ -2436,9 +2433,6 @@
   <data name="ResetVariablesPoolingAdd" xml:space="preserve">
     <value>Voeg resetvariabelen toe voor pooling</value>
   </data>
-  <data name="PipelineContentToggle" xml:space="preserve">
-    <value>Toggle Inhoudspijplijn gebruiken</value>
-  </data>
   <data name="VariableFillValues" xml:space="preserve">
     <value>Vul waarden uit variabelen in</value>
   </data>
@@ -2456,9 +2450,6 @@
   </data>
   <data name="MakeRequiredAtStartup" xml:space="preserve">
     <value>Vereist maken bij opstarten</value>
-  </data>
-  <data name="FileRebuild" xml:space="preserve">
-    <value>Bestand opnieuw opbouwen</value>
   </data>
   <data name="ViewSourceExplorer" xml:space="preserve">
     <value>Bekijk het bronbestand in verkenner</value>

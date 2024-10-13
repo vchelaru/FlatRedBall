@@ -2326,9 +2326,6 @@ for {1}?</value>
   <data name="CouldNotLoadProjectSeeOutput" xml:space="preserve">
     <value>Could not load the project. Check the output window for more information.</value>
   </data>
-  <data name="CouldNotCreateSyncedProject" xml:space="preserve">
-    <value>Can not create a new Synced Project because there is no open project.</value>
-  </data>
   <data name="Files" xml:space="preserve">
     <value>Files</value>
   </data>
@@ -2437,9 +2434,6 @@ for {1}?</value>
   <data name="ResetVariablesPoolingAdd" xml:space="preserve">
     <value>Add Reset Variables For Pooling</value>
   </data>
-  <data name="PipelineContentToggle" xml:space="preserve">
-    <value>Toggle Use Content Pipeline</value>
-  </data>
   <data name="VariableFillValues" xml:space="preserve">
     <value>Fill Values From Variables</value>
   </data>
@@ -2457,9 +2451,6 @@ for {1}?</value>
   </data>
   <data name="MakeRequiredAtStartup" xml:space="preserve">
     <value>Make Required at StartUp</value>
-  </data>
-  <data name="FileRebuild" xml:space="preserve">
-    <value>Rebuild File</value>
   </data>
   <data name="ViewSourceExplorer" xml:space="preserve">
     <value>View source file in explorer</value>
