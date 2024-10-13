@@ -508,8 +508,7 @@ namespace FlatRedBall.Content
 #endif
 
 
-
-			T asset = base.Load<T>(assetName);
+            T asset = base.Load<T>(assetName);
 #endif
 			if (!mAssets.ContainsKey(assetName))
 			{
@@ -897,8 +896,18 @@ namespace FlatRedBall.Content
             }
 			else
 			{
+
+#if WEB
+                // If we got back in here, we need to once-again remove the slash:
+                if (assetName.StartsWith("/"))
+                {
+                    assetName = assetName.Substring(1);
+                }
+
                 return base.OpenStream(assetName);
-			}
+
+#endif
+            }
         }
 
         /// <summary>

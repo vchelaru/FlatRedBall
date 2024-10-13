@@ -563,24 +563,6 @@ namespace FlatRedBall.IO
 
         public static string FromFileText(string fileName)
         {
-#if SILVERLIGHT
-            string containedText;
-
-            Uri uri = new Uri(fileName, UriKind.Relative);
-
-            StreamResourceInfo sri = Application.GetResourceStream(uri);
-            Stream stream = sri.Stream;
-            StreamReader reader = new StreamReader(stream);
-
-            containedText = reader.ReadToEnd();
-
-            stream.Close();
-            reader.Close();
-            
-            return containedText;
-
-#else
-
             if (IsRelative(fileName))
             {
                 fileName = MakeAbsolute(fileName);
@@ -613,7 +595,6 @@ namespace FlatRedBall.IO
 #else
                 fileStream = GetStreamForFile(fileName);
 
-#endif
                 using (System.IO.StreamReader sr = new StreamReader(fileStream))
                 {
                     containedText = sr.ReadToEnd();
