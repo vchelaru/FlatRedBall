@@ -21,6 +21,7 @@ public enum CrtModeOption
 
 internal class ReplaceClassName : IPostProcess
 {
+    #region Fields/Properties
 
     public bool IsEnabled { get; set; } = true;
 
@@ -76,13 +77,12 @@ internal class ReplaceClassName : IPostProcess
 
     SpriteBatch _spriteBatch;
 
+    #endregion
 
     public ReplaceClassName(Effect effect)
     {
         PostProcessingHelper.BaseWidth = 320;
         PostProcessingHelper.BaseHeight = 180;
-        PostProcessingHelper.PresentationWidth = FlatRedBallServices.Game.Window.ClientBounds.Width;
-        PostProcessingHelper.PresentationHeight = FlatRedBallServices.Game.Window.ClientBounds.Height;
 
         _spriteBatch = new SpriteBatch(FlatRedBallServices.GraphicsDevice);
 
@@ -127,21 +127,32 @@ internal class ReplaceClassName : IPostProcess
             _caBlueOffsetParameter = _effect.Parameters["CaBlueOffset"];
         }
 
+        CreateRenderTargets();
+
+        FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) =>
+        {
+            CreateRenderTargets();
+        };
+
+        ApplySettings();
+    }
+
+    private void CreateRenderTargets()
+    {
         PostProcessingHelper.CreateRenderTarget(
             ref _intermediatePass,
-            PostProcessingHelper.PresentationWidth,
-            PostProcessingHelper.PresentationHeight,
+            FlatRedBallServices.Game.Window.ClientBounds.Width,
+            FlatRedBallServices.Game.Window.ClientBounds.Height,
             SurfaceFormat.HalfVector4);
-        ApplySettings();
     }
 
     void ApplySettings()
     {
 
         _originalSizeParameter.SetValue(new Vector2(PostProcessingHelper.BaseWidth, PostProcessingHelper.BaseHeight));
-        _outputSizeParameter.SetValue(new Vector2(PostProcessingHelper.PresentationWidth, PostProcessingHelper.PresentationHeight));
-        _pixelWidthParameter.SetValue(1f / PostProcessingHelper.PresentationWidth);
-        _pixelHeightParameter.SetValue(1f / PostProcessingHelper.PresentationHeight);
+        _outputSizeParameter.SetValue(new Vector2(FlatRedBallServices.Game.Window.ClientBounds.Width, FlatRedBallServices.Game.Window.ClientBounds.Height));
+        _pixelWidthParameter.SetValue(1f / FlatRedBallServices.Game.Window.ClientBounds.Width);
+        _pixelHeightParameter.SetValue(1f / FlatRedBallServices.Game.Window.ClientBounds.Height);
 
         _exposureParameter.SetValue(Exposure);
         _vibranceParameter.SetValue(Vibrance);
@@ -256,14 +267,13 @@ internal class ReplaceClassName : IPostProcess
 
     }
 
+    #region PostProcessingHelper
 
     internal static class PostProcessingHelper
     {
         internal static int BaseWidth { get; set; }
         internal static int BaseHeight { get; set; }
 
-        internal static int PresentationWidth { get; set; }
-        internal static int PresentationHeight { get; set; }
 
         static GraphicsDevice GraphicsDevice => FlatRedBallServices.GraphicsDevice;
 
@@ -295,4 +305,6 @@ internal class ReplaceClassName : IPostProcess
             }
         }
     }
+
+    #endregion
 }

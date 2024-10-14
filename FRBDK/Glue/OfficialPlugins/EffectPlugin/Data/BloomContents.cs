@@ -20,7 +20,7 @@ internal class BloomContents : ShaderContents
     private void AssignEntireCsFileContents()
     {
         var assemblyContainingResource = GetType().Assembly;
-        const string resourceName = "OfficialPlugins.EffectPlugin.EmbeddedCodeFiles.CrtPostProcessingClass.cs";
+        const string resourceName = "OfficialPlugins.EffectPlugin.EmbeddedCodeFiles.BloomPostProcessingClass.cs";
         using var stream = assemblyContainingResource.GetManifestResourceStream(resourceName);
         using var reader = new StreamReader(stream);
         var fileContents = reader.ReadToEnd();
@@ -30,7 +30,7 @@ internal class BloomContents : ShaderContents
     private void AssignEntireFxFileContents()
     {
         var assemblyContainingResource = GetType().Assembly;
-        const string resourceName = "OfficialPlugins.EffectPlugin.Content.Crt.fx";
+        const string resourceName = "OfficialPlugins.EffectPlugin.Content.Bloom.fx";
         using var stream = assemblyContainingResource.GetManifestResourceStream(resourceName);
         using var reader = new StreamReader(stream);
         var fileContents = reader.ReadToEnd();
