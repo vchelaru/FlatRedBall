@@ -1,0 +1,105 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Global Properties -->
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net8.0-ios;net8.0-android;netstandard2.0;net6.0;</TargetFrameworks>
+    <MonoGameVersion>3.8.1.303</MonoGameVersion>
+    <FNA>false</FNA>
+    <DefineConstants>FRB_XNA;XNA4;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Define properties for TargetFramework checks -->
+    <IsNet8 Condition="'$(TargetFramework)' == 'net8.0'">true</IsNet8>
+    <IsNet6 Condition="'$(TargetFramework)' == 'net6.0'">true</IsNet6>
+    <IsNetStandard20 Condition="'$(TargetFramework)' == 'netstandard2.0'">true</IsNetStandard20>
+    <IsNet8Windows Condition="'$(TargetFramework)' == 'net8.0-windows'">true</IsNet8Windows>
+    <IsAndroid Condition="'$(TargetFramework)' == 'net8.0-android'">true</IsAndroid>
+    <IsIOS Condition="'$(TargetFramework)' == 'net8.0-ios'">true</IsIOS>
+  </PropertyGroup>
+
+  <!-- Pre-emptively remove platform all specific files, to be later included by the platform itself -->
+  <ItemGroup>
+    <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\Input\InputManager.Android.cs" />
+    <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\Input\Keyboard.Android.cs" />
+    <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\IO\FileManager.IsolatedStorage.cs" />
+  </ItemGroup>
+
+  <!--Troubled Files-->
+  <ItemGroup>
+    <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\Graphics\Renderer.SpriteBatch.cs" />
+    <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\Instructions\Reflection\HashSet.cs" />
+    <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\Input\JoystickState.cs" />
+    <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\Graphics\PostProcessing\*" />
+  </ItemGroup>
+
+  <!-- For DesktopGL, without KNI -->
+  <PropertyGroup Condition="$(IsNet8) == 'true'">
+    <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;DESKTOP_GL;</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(IsNet8) == 'true'">
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="$(MonoGameVersion)">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- For DesktopGL, without KNI -->
+  <PropertyGroup Condition="$(IsNet6) == 'true'">
+    <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;DESKTOP_GL;</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(IsNet6) == 'true'">
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="$(MonoGameVersion)" />
+  </ItemGroup>
+
+  <!-- For WindowsDX -->
+  <PropertyGroup Condition="$(IsNet8Windows) == 'true'">
+    <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;WINDOWS;</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(IsNet8Windows) == 'true'">
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="$(MonoGameVersion)" />
+  </ItemGroup>
+
+  <!--For NetStandard20-->
+  <PropertyGroup Condition="$(IsNetStandard20) == 'true'">
+    <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;NETSTANDARD;NO_CODE_EMIT;STANDARD;WINDOWS;DESKTOP_GL</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(IsNetStandard20) == 'true'">
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+  <!-- For Android -->
+  <PropertyGroup Condition="$(IsAndroid) == 'true'">
+    <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;ANDROID;USE_ISOLATED_STORAGE</DefineConstants>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(IsAndroid) == 'true'">
+    <PackageReference Include="MonoGame.Framework.Android" Version="$(MonoGameVersion)" />
+    <Compile Include="..\Engines\FlatRedBallXNA\FlatRedBall\Input\AndroidGamePad.cs" Link="Input\AndroidGamePad.cs" />
+    <Compile Include="..\Engines\FlatRedBallXNA\FlatRedBall\Input\InputManager.Android.cs" Link="Input\InputManager.Android.cs" />
+    <Compile Include="..\Engines\FlatRedBallXNA\FlatRedBall\Input\Keyboard.Android.cs" Link="Input\Keyboard.Android.cs" />
+    <Compile Include="..\Engines\FlatRedBallXNA\FlatRedBall\IO\FileManager.IsolatedStorage.cs" Link="IO\FileManager.IsolatedStorage.cs" />
+  </ItemGroup>
+
+  <!-- For iOS -->
+  <PropertyGroup Condition="$(IsIOS) == 'true'">
+    <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;IOS;USE_ISOLATED_STORAGE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(IsIOS) == 'true'">
+    <PackageReference Include="MonoGame.Framework.iOS" Version="$(MonoGameVersion)" />
+    <Compile Include="..\Engines\FlatRedBallXNA\FlatRedBall\IO\FileManager.IsolatedStorage.cs" Link="IO\FileManager.IsolatedStorage.cs" />
+  </ItemGroup>
+  
+  <!-- Additional package reference for AsepriteDotNet -->
+  <ItemGroup Condition="$(IsNetStandard20) == ''">
+    <PackageReference Include="AsepriteDotNet" Version="1.8.1" />
+  </ItemGroup>
+  <Import Project="..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
+
+</Project>

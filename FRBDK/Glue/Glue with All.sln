@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{EC6F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared Libraries", "Shared Libraries", "{07985C4C-B3CF-432C-8A27-36FDD006231F}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GumCoreProjects", "GumCoreProjects", "{1D66D67D-064B-4AAC-94E1-AF754D281FA0}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GumCoreShared", "..\..\..\Gum\GumCoreShared.shproj", "{F919C045-EAC7-4806-9A1F-CE421F923E97}"
@@ -22,8 +20,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tiled Plugin", "Tiled Plugin", "{DABAF6E1-1075-4CD2-959A-78FFB46B868D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlueCommon", "GlueCommon\GlueCommon.csproj", "{9403B27A-6E3A-4083-8A42-0EB62B699246}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallStandard", "..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj", "{26DD17AA-55AE-46AB-9394-A2319728869A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Glue", "Glue\Glue.csproj", "{C953AF0B-B890-40CE-888D-8F60579CD03E}"
 EndProject
@@ -93,6 +89,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugin Base Libraries", "Pl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{60818A85-E5BC-4B05-97F9-24402B4B0CCE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{58B4F9F1-EC0A-4DCB-BCAD-EAAABABFE4B8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBall", "..\..\FlatRedBall\FlatRedBall.csproj", "{70A4BE37-617A-4B58-ACB9-9FBF62CB38A9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frb", "Frb", "{69D428BA-766B-491B-8256-F0B68425B7DD}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,10 +111,6 @@ Global
 		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Release|Any CPU.Build.0 = Release|Any CPU
-		{26DD17AA-55AE-46AB-9394-A2319728869A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{26DD17AA-55AE-46AB-9394-A2319728869A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{26DD17AA-55AE-46AB-9394-A2319728869A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{26DD17AA-55AE-46AB-9394-A2319728869A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C953AF0B-B890-40CE-888D-8F60579CD03E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C953AF0B-B890-40CE-888D-8F60579CD03E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C953AF0B-B890-40CE-888D-8F60579CD03E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -223,6 +223,10 @@ Global
 		{82348794-B260-45E4-AC62-68BD68E76A10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82348794-B260-45E4-AC62-68BD68E76A10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82348794-B260-45E4-AC62-68BD68E76A10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70A4BE37-617A-4B58-ACB9-9FBF62CB38A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70A4BE37-617A-4B58-ACB9-9FBF62CB38A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70A4BE37-617A-4B58-ACB9-9FBF62CB38A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70A4BE37-617A-4B58-ACB9-9FBF62CB38A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -230,12 +234,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5FE94178-9907-4878-AFAC-8F347CA86B50} = {60818A85-E5BC-4B05-97F9-24402B4B0CCE}
 		{3DDD0995-4B47-47A2-82A4-F0A6367C9FF2} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
-		{0BB8CBE3-8503-46C1-9272-D98E153A230E} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 		{1D66D67D-064B-4AAC-94E1-AF754D281FA0} = {3DDD0995-4B47-47A2-82A4-F0A6367C9FF2}
 		{F919C045-EAC7-4806-9A1F-CE421F923E97} = {1D66D67D-064B-4AAC-94E1-AF754D281FA0}
 		{728151F0-03E0-4253-94FE-46B9C77EDEA6} = {3DDD0995-4B47-47A2-82A4-F0A6367C9FF2}
 		{DABAF6E1-1075-4CD2-959A-78FFB46B868D} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
-		{26DD17AA-55AE-46AB-9394-A2319728869A} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 		{D784E25F-320D-47F5-9397-63E33B81A64F} = {1D05DDEE-051E-4280-A9E5-5F343B7084BC}
 		{C5D613DF-0E6A-4BE5-BEAC-E5524DC1EC93} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
 		{6F58A8DD-C47E-4157-85BE-70E5371293FA} = {DABAF6E1-1075-4CD2-959A-78FFB46B868D}
@@ -267,14 +269,16 @@ Global
 		{48261027-DFD2-4571-948E-129136A6E6BE} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 		{74CBDCBC-7458-4668-8D11-56867CA62E94} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 		{82348794-B260-45E4-AC62-68BD68E76A10} = {3DDD0995-4B47-47A2-82A4-F0A6367C9FF2}
+		{70A4BE37-617A-4B58-ACB9-9FBF62CB38A9} = {69D428BA-766B-491B-8256-F0B68425B7DD}
+		{0BB8CBE3-8503-46C1-9272-D98E153A230E} = {69D428BA-766B-491B-8256-F0B68425B7DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {878CCBB8-EADE-4F25-9DE7-D55D999D414A}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
-		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{26dd17aa-55ae-46ab-9394-a2319728869a}*SharedItemsImports = 5
 		StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{48261027-dfd2-4571-948e-129136a6e6be}*SharedItemsImports = 5
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{70a4be37-617a-4b58-acb9-9fbf62cb38a9}*SharedItemsImports = 5
 		..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{728151f0-03e0-4253-94fe-46b9c77edea6}*SharedItemsImports = 13
 		StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{d00d287d-385b-42fb-bf5f-04401e7d37d0}*SharedItemsImports = 13
 		..\..\..\Gum\GumCoreShared.projitems*{f919c045-eac7-4806-9a1f-ce421f923e97}*SharedItemsImports = 13

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
+    <ProjectReference Include="..\..\..\FlatRedBall\FlatRedBall.csproj" />
     <ProjectReference Include="..\Glue\Glue.csproj" />
   </ItemGroup>
 
@@ -32,10 +33,8 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
     <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
-    <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
   </ItemGroup>
 
 

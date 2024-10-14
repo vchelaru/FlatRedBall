@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Platforms>AnyCPU</Platforms>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+    <ProjectReference Include="..\..\..\FlatRedBall\FlatRedBall.csproj" />
     <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
     <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\Glue\Glue.csproj" />
