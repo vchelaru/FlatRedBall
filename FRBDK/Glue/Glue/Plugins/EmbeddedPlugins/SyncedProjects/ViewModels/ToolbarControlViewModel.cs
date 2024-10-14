@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.VSHelpers.Projects;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -40,6 +41,54 @@ class ToolbarControlViewModel : ViewModel
     public ToolbarControlViewModel()
     {
     }
+
+
+    public void HandleGluxUnload()
+    {
+        HasProjectLoaded = false;
+        ProjectItems.Clear();
+    }
+    public void HandleGluxLoad()
+    {
+        var glueProject = GlueState.Self.CurrentGlueProject;
+
+        var openAutomaticallyProperty = glueProject.Properties
+                    .FirstOrDefault(item => item.Name == nameof(IsOpenVisualStudioAutomaticallyChecked));
+
+        var value = openAutomaticallyProperty?.Value as bool? == true;
+        IsOpenVisualStudioAutomaticallyChecked = value;
+        HasProjectLoaded = true;
+
+        if (value)
+        {
+            ProjectListEntry.OpenInVisualStudio(
+                GlueState.Self.CurrentMainProject);
+        }
+        RefreshProjectItems();
+    }
+
+    public void HandleLoadedSyncedProject(ProjectBase project)
+    {
+        RefreshProjectItems();
+    }
+
+    private void RefreshProjectItems()
+    {
+        ProjectItems.Clear();
+        foreach (var item in GlueState.Self.SyncedProjects)
+        {
+            ProjectItems.Add(new ProjectItemViewModel
+            {
+                Name = item.Name
+            });
+        }
+    }
+
+    public void HandleLoadedSyncedProject()
+    {
+
+    }
+
 }
 
 class ProjectItemViewModel
@@ -59,7 +108,7 @@ class ProjectItemViewModel
     {
         var project = GlueState.Self.SyncedProjects.FirstOrDefault(
             item => item.Name == Name);
-        if(project != null)
+        if (project != null)
         {
             ProjectListEntry.OpenInVisualStudio(project);
         }

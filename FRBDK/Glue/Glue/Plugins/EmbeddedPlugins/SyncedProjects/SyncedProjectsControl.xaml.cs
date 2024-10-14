@@ -49,7 +49,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
         }
 
-        private void AddProjectClick(object sender, RoutedEventArgs e)
+        private void AddExistingProjectClick(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new System.Windows.Forms.OpenFileDialog();
             openFileDialog.Filter =
@@ -58,7 +58,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
 
-                var newProject = ProjectManager.AddSyncedProject(openFileDialog.FileName);
+                var newProject = GlueCommands.Self.ProjectCommands.AddSyncedProject(
+                    openFileDialog.FileName);
 
                 // If newProject is null, then no project was added
                 if (newProject != null)
@@ -69,10 +70,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 {
                     GlueGui.ShowMessageBox(L.Texts.ProjectIsAlreadySynced);
                 }
-
-                GluxCommands.Self.SaveProjectAndElements();
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-
             }
         }
 
@@ -81,7 +78,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             var selectedItem = ViewModel.SelectedItem;
             if(selectedItem != null && selectedItem.ProjectBase != GlueState.Self.CurrentMainProject)
             {
-                ProjectManager.RemoveSyncedProject(selectedItem.ProjectBase);
+                GlueState.Self.SyncedProjects.Remove(selectedItem.ProjectBase);
                 ViewModel.Refresh();
 
                 GluxCommands.Self.SaveProjectAndElements();

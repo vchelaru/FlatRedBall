@@ -836,8 +836,6 @@ namespace FlatRedBall.Glue.IO
             bool succeeded = false;
 
 
-
-
             if(!File.Exists(absoluteFileName))
             {
                 MessageBox.Show("Could not find the project" + absoluteFileName + ", removing project from synched project list.");
@@ -879,8 +877,8 @@ namespace FlatRedBall.Glue.IO
 
                     lock (ProjectManager.SyncedProjects)
                     {
-                        ProjectManager.AddSyncedProject(vsp);
-
+                        GlueState.Self.SyncedProjects.Add(vsp);
+                        PluginManager.ReactToSyncedProjectLoad(vsp);
                     }
                     succeeded = true;
                 }

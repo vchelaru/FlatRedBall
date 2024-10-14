@@ -24,7 +24,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects.Controls
             }
             else
             {
-                MessageBox.Show(L.Texts.NoLoadedGlueProject);
+                MessageBox.Show("There is no loaded Glue project");
             }
         }
 
@@ -37,7 +37,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects.Controls
             }
             else
             {
-                GlueCommands.Self.DialogCommands.ShowMessageBox(L.Texts.NoLoadedGlueProject);
+                GlueCommands.Self.DialogCommands.ShowMessageBox("There is no loaded Glue project");
             }
         }
     }

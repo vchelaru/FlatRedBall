@@ -28,7 +28,7 @@
         </ListBox>
         <StackPanel Grid.Column="1">
             <Button Click="AddNewProjectClick" Content="New Synced Project" Style="{StaticResource ActionButton}" />
-            <Button Click="AddProjectClick"   Content="{x:Static localization:Texts.ProjectAddExisting}" Style="{StaticResource ActionButton}" />
+            <Button Click="AddExistingProjectClick"   Content="{x:Static localization:Texts.ProjectAddExisting}" Style="{StaticResource ActionButton}" />
             <Button Click="RemoveProjectClick"  Content="{x:Static localization:Texts.ProjectRemove}" IsEnabled="{Binding IsProjectSelected}" Style="{StaticResource ActionButton}" />
             <Button Click="RenameProjectClick"  Content="Rename Project" IsEnabled="{Binding IsProjectSelected}" Style="{StaticResource ActionButton}" />
         </StackPanel>

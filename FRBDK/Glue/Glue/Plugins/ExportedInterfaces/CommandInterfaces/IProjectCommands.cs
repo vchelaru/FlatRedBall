@@ -98,6 +98,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null,
             ReferencedFileSave fileRfs = null);
 
+        ProjectBase AddSyncedProject(FilePath filePath);
+
         void CreateNewProject();
     }
 }

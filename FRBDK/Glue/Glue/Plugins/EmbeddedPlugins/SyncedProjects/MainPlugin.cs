@@ -27,41 +27,21 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
             this.ReactToLoadedGlux += HandleGluxLoad;
             this.ReactToUnloadedGlux += HandleGluxUnload;
+            this.ReactToLoadedSyncedProject += HandleLoadedSyncedProject;
 
             AddToolbarUi();
         }
 
-        private void HandleGluxUnload()
-        {
-            toolbarControlViewModel.HasProjectLoaded = false;
-            toolbarControlViewModel.ProjectItems.Clear();
-        }
+        private void HandleGluxLoad() =>
+            toolbarControlViewModel.HandleGluxLoad();
+        private void HandleGluxUnload() =>
+            toolbarControlViewModel.HandleGluxUnload();
+        private void HandleLoadedSyncedProject(ProjectBase projectBase) =>
+            toolbarControlViewModel.HandleLoadedSyncedProject(projectBase);
 
-        private void HandleGluxLoad()
-        {
-            var glueProject = GlueState.Self.CurrentGlueProject;
 
-            var openAutomaticallyProperty = glueProject.Properties
-                        .FirstOrDefault(item => item.Name == nameof(toolbarControlViewModel.IsOpenVisualStudioAutomaticallyChecked));
 
-            var value = openAutomaticallyProperty?.Value as bool? == true;
-            toolbarControlViewModel.IsOpenVisualStudioAutomaticallyChecked = value;
-            toolbarControlViewModel.HasProjectLoaded = true;
 
-            if (value)
-            {
-                ProjectListEntry.OpenInVisualStudio(
-                    GlueState.Self.CurrentMainProject);
-            }
-            foreach(var item in GlueState.Self.SyncedProjects)
-            {
-
-               toolbarControlViewModel.ProjectItems.Add(new ProjectItemViewModel
-                {
-                    Name = item.Name
-                });
-            }
-        }
 
         private void AddToolbarUi()
         {

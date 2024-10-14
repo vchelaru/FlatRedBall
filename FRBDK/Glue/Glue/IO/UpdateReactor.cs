@@ -261,9 +261,9 @@ namespace FlatRedBall.Glue.IO
                 else
                 {
                     // Just reload the synced project
-                    if (ProjectManager.SyncedProjects.Contains(project))
+                    if (GlueState.Self.SyncedProjects.Contains(project))
                     {
-                        ProjectManager.RemoveSyncedProject(project);
+                        GlueState.Self.SyncedProjects.Remove(project);
                     }
 
                     ProjectLoader.AddSyncedProjectToProjectManager(project.FullFileName.FullPath);

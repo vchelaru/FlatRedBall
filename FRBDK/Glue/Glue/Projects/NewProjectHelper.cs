@@ -154,11 +154,14 @@ public static class NewProjectHelper
 
     public static async Task<NewProjectViewModel> CreateNewSyncedProject()
     {
-        if(ProjectManager.ProjectBase == null)
+        //////////////////////Early Out//////////////////////
+        if(GlueState.Self.CurrentMainProject == null)
         {
-            MessageBox.Show("Can not create a new Synced Project because there is no open project.");
+            GlueCommands.Self.PrintError(
+                "Can not create a new Synced Project because there is no open project.");
             return null;
         }
+        ///////////////////End Early Out/////////////////////
 
         // Gotta find the .sln of this project so we can put the synced project in there
         var directory = GlueState.Self.CurrentSlnFileName?.GetDirectoryContainingThis();
@@ -172,24 +175,8 @@ public static class NewProjectHelper
             // The return value could be null if the project being added
             // already exists as a synced project, but this should never be
             // the case here.
-            var newProjectBase = ProjectManager.AddSyncedProject(createdProject) as VisualStudioProject;
+            var newProjectBase = GlueCommands.Self.ProjectCommands.AddSyncedProject(createdProject) as VisualStudioProject;
             ProjectManager.SyncedProjects[^1].SaveAsRelativeSyncedProject = true;
-
-            GluxCommands.Self.SaveProjectAndElements();
-
-            // These are now part of the engine, so don't do anything here.
-            // Wait, these may be part of old templates, so let's keep this here.
-            if (File.Exists(newProjectBase.Directory + "Screens/Screen.cs"))
-            {
-                newProjectBase.RemoveItem(newProjectBase.Directory + "Screens/Screen.cs");
-                File.Delete(newProjectBase.Directory + "Screens/Screen.cs");
-            }
-
-            if (File.Exists(newProjectBase.Directory + "Screens/ScreenManager.cs"))
-            {
-                newProjectBase.RemoveItem(newProjectBase.Directory + "Screens/ScreenManager.cs");
-                File.Delete(newProjectBase.Directory + "Screens/ScreenManager.cs");
-            }
 
             // Remove Game1.cs so that it will just use the same Game1 of the master project.
             if (File.Exists(newProjectBase.Directory + "Game1.cs"))
@@ -207,7 +194,7 @@ public static class NewProjectHelper
 
             // This line is slow. Not sure why..maybe the project is saving after every file is added?
             // I could make it an async call but I want to figure out why it's slow at the core.
-            newProjectBase.SyncTo(ProjectManager.ProjectBase, false);
+            newProjectBase.SyncTo(GlueState.Self.CurrentMainProject, false);
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
         }

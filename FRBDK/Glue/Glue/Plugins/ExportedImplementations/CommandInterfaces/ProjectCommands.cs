@@ -159,9 +159,9 @@ class ProjectCommands : IProjectCommands
 
 
             bool useContentPipeline = referencedFileSave.UseContentPipeline || (assetTypeInfo != null && assetTypeInfo.MustBeAddedToContentPipeline);
-            if(assetTypeInfo != null && useContentPipeline)
+            if (assetTypeInfo != null && useContentPipeline)
             {
-                if(!assetTypeInfo.CanBeAddedToContentPipeline)
+                if (!assetTypeInfo.CanBeAddedToContentPipeline)
                 {
                     useContentPipeline = false;
                 }
@@ -197,7 +197,7 @@ class ProjectCommands : IProjectCommands
     /// <param name="shouldLink"></param>
     /// <param name="parentFile"></param>
     /// <returns>Whether the project was modified.</returns>
-    public bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink, 
+    public bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink,
         string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null, ReferencedFileSave fileRfs = null)
     {
         bool wasProjectModified = false;
@@ -541,7 +541,7 @@ class ProjectCommands : IProjectCommands
             "Glue Compiler",
             "GetIfIsRunning");
 
-        if(isRunning)
+        if (isRunning)
         {
             taskExecutionPreference = TaskExecutionPreference.Asap;
         }
@@ -574,7 +574,7 @@ class ProjectCommands : IProjectCommands
                         // Maybe the project was never built...
                         System.IO.Directory.CreateDirectory(destination.GetDirectoryContainingThis().FullPath);
                         System.IO.File.Copy(absoluteSource.FullPath, destination.FullPath, true);
-                        if(FileWatchManager.IsPrintingDiagnosticOutput)
+                        if (FileWatchManager.IsPrintingDiagnosticOutput)
                         {
                             PluginManager.ReceiveOutput("Copied " + absoluteSource.FullPath + " ==> " + destination.FullPath);
                         }
@@ -584,7 +584,7 @@ class ProjectCommands : IProjectCommands
                         // this could really overwhelm the user with popups, so let's just show output:
                         PluginManager.ReceiveOutput("Error copying file:\n\n" + e.ToString());
                     }
-                    
+
                 }
 
             }
@@ -645,7 +645,7 @@ class ProjectCommands : IProjectCommands
 
             Directory.CreateDirectory(directory);
         }
-        else if(treeNodeToAddTo.IsRootScreenNode())
+        else if (treeNodeToAddTo.IsRootScreenNode())
         {
             string directory = GlueState.Self.CurrentGlueProjectDirectory + "Screens/" + folderName;
 
@@ -948,4 +948,52 @@ class ProjectCommands : IProjectCommands
             doc.Save(appConfig);
         }
     }
+
+    public ProjectBase AddSyncedProject(FilePath filePath)
+    {
+        bool doesProjectAlreadyExist = false;
+
+        ProjectBase syncedProject = null;
+
+        if (ProjectManager.ProjectBase.FullFileName == filePath)
+        {
+            doesProjectAlreadyExist = true;
+        }
+
+        if (!doesProjectAlreadyExist)
+        {
+            foreach (var project in GlueState.Self.SyncedProjects)
+            {
+                var existingFileName = project.FullFileName;
+                if (existingFileName == filePath)
+                {
+                    doesProjectAlreadyExist = true;
+                    break;
+                }
+            }
+        }
+
+        if (!doesProjectAlreadyExist)
+        {
+            syncedProject = ProjectCreator.CreateProject(filePath.FullPath).Project;
+
+            syncedProject.OriginalProjectBaseIfSynced = GlueState.Self.CurrentMainProject;
+
+            syncedProject.Load(filePath.FullPath);
+
+            lock (ProjectManager.SyncedProjects)
+            {
+                GlueState.Self.SyncedProjects.Add(syncedProject);
+            }
+
+            ProjectManager.HaveNewProjectsBeenSyncedSinceSave = true;
+
+            PluginManager.ReactToSyncedProjectLoad(syncedProject);
+
+            GluxCommands.Self.SaveGlujFile();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+        }
+        return syncedProject;
+    }
+
 }

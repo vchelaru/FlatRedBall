@@ -267,6 +267,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        public List<ProjectBase> SyncedProjects { get; private set; } = new List<ProjectBase>();
+        IEnumerable<ProjectBase> IGlueState.SyncedProjects
+        {
+            get => SyncedProjects;
+        }
+
         #endregion
 
         #region Project Properties
@@ -295,7 +301,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
-        public VisualStudioProject CurrentMainProject => ProjectManager.ProjectBase;
+        public VisualStudioProject CurrentMainProject { get; set; }
 
         public VisualStudioProject CurrentMainContentProject { get { return ProjectManager.ContentProject; } }
 
@@ -369,7 +375,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public FilePath ProjectSpecificSettingsPath => new FilePath(ProjectSpecificSettingsFolder);
 
-        public IEnumerable<ProjectBase> SyncedProjects => ProjectManager.SyncedProjects;
 
         public GlueProjectSave CurrentGlueProject => ObjectFinder.Self.GlueProject; 
 

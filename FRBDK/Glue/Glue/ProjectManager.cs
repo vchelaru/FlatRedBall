@@ -64,12 +64,6 @@ namespace FlatRedBall.Glue
 
         #region Fields
 
-
-
-        static ProjectBase mProjectBase;
-        //static VisualStudioProject mContentProject;
-
-        static List<ProjectBase> mSyncedProjects = new List<ProjectBase>();
         static ReadOnlyCollection<ProjectBase> mSyncedProjectsReadOnly;
         internal static MainGlueWindow mForm;
 
@@ -162,15 +156,16 @@ namespace FlatRedBall.Glue
             }
         }
 
+        [Obsolete("Use GlueState.Self.CurrentMainProject")]
         public static VisualStudioProject ProjectBase
         {
-            get => mProjectBase as VisualStudioProject; 
-            set => mProjectBase = (VisualStudioProject)value;
+            get => GlueState.Self.CurrentMainProject;
+            set => GlueState.Self.CurrentMainProject = value;
         }
 
         public static VisualStudioProject ContentProject
         {
-            get => mProjectBase?.ContentProject as VisualStudioProject;
+            get => GlueState.Self.CurrentMainProject?.ContentProject as VisualStudioProject;
         }
 
         public static string ProjectNamespace
@@ -180,13 +175,13 @@ namespace FlatRedBall.Glue
 #if TEST
                 return "TestProjectNamespace";
 #else
-                if (mProjectBase == null)
+                if (GlueState.Self.CurrentMainProject == null)
                 {
                     return null;
                 }
                 else
                 {
-                    return mProjectBase.RootNamespace;
+                    return GlueState.Self.CurrentMainProject.RootNamespace;
                 }
 #endif
                 //return FileManager.RemovePath(FileManager.RemoveExtension(mProject.FullFileName));
@@ -240,7 +235,8 @@ namespace FlatRedBall.Glue
 
         static ProjectManager()
         {
-            mSyncedProjectsReadOnly = new ReadOnlyCollection<ProjectBase>(mSyncedProjects);
+            mSyncedProjectsReadOnly = new ReadOnlyCollection<ProjectBase>(
+                GlueState.Self.SyncedProjects);
 
             self = new ProjectManager();
         }
@@ -249,48 +245,6 @@ namespace FlatRedBall.Glue
         {
             CodeProjectHelper = new Projects.CodeProjectHelper();
             VerificationId = 0;
-        }
-
-        public static ProjectBase AddSyncedProject(FilePath fileName)
-        {
-            bool doesProjectAlreadyExist = false;
-
-            ProjectBase syncedProject = null;
-
-            if (ProjectManager.ProjectBase.FullFileName == fileName)
-            {
-                doesProjectAlreadyExist = true;
-            }
-
-            if (!doesProjectAlreadyExist)
-            {
-                foreach (var project in mSyncedProjects)
-                {
-                    var existingFileName = project.FullFileName;
-                    if (existingFileName == fileName)
-                    {
-                        doesProjectAlreadyExist = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!doesProjectAlreadyExist)
-            {
-                syncedProject = ProjectCreator.CreateProject(fileName.FullPath).Project;
-
-                syncedProject.OriginalProjectBaseIfSynced = ProjectManager.ProjectBase;
-
-                syncedProject.Load(fileName.FullPath);
-
-                lock (ProjectManager.SyncedProjects)
-                {
-                    mSyncedProjects.Add(syncedProject);
-                }
-
-                mHaveNewProjectsBeenSyncedSinceSave = true;
-            }
-            return syncedProject;
         }
 
         public static ProjectBase GetProjectByTypeId(string projectId)
@@ -369,14 +323,14 @@ namespace FlatRedBall.Glue
         /// <param name="performSave">Whether to save after removal.</param>
         internal static void RemoveItemFromAllProjects(string itemName, bool performSave)
         {
-            var wasRemoved = mProjectBase.RemoveItem(itemName);
-            if (mProjectBase.ContentProject != null)
+            var wasRemoved = GlueState.Self.CurrentMainProject.RemoveItem(itemName);
+            if (GlueState.Self.CurrentMainProject.ContentProject != null)
             {
-                var wasRemovedContent = mProjectBase.ContentProject.RemoveItem(itemName);
+                var wasRemovedContent = GlueState.Self.CurrentMainProject.ContentProject.RemoveItem(itemName);
                 wasRemoved |= wasRemovedContent;
             }
             // We want to make this absolute so that we can pass the same arugment to the projects and each will standardize appropriately
-            string absoluteName = mProjectBase.MakeAbsolute(itemName);
+            string absoluteName = GlueState.Self.CurrentMainProject.MakeAbsolute(itemName);
             foreach (ProjectBase project in SyncedProjects)
             {
                 var wasRemovedSynced = project.RemoveItem(absoluteName);
@@ -436,23 +390,23 @@ namespace FlatRedBall.Glue
                 PluginManager.ReactToGluxClose();
             }
 
-            if(mProjectBase != null)
+            if(GlueState.Self.CurrentMainProject != null)
             {
-                mProjectBase.Unload();
+                GlueState.Self.CurrentMainProject.Unload();
             }
 
             GlueState.Self.TiledCache.ReactToClosedProject();
 
-            mProjectBase = null;
+            GlueState.Self.CurrentMainProject = null;
 
             GlueProjectSave = null;
 
-            foreach (var syncedProject in mSyncedProjects)
+            foreach (var syncedProject in GlueState.Self.SyncedProjects)
             {
                 syncedProject.Unload();
             }
 
-            mSyncedProjects.Clear();
+            GlueState.Self.SyncedProjects.Clear();
 
             if(isExiting)
             {
@@ -503,12 +457,16 @@ namespace FlatRedBall.Glue
 
         internal static void FindGameClass()
         {
-            mGameClass = FindGameClass((VisualStudioProject)mProjectBase);
+            mGameClass = FindGameClass((VisualStudioProject)GlueState.Self.CurrentMainProject);
 
         }
 
         internal static string FindGameClass(VisualStudioProject projectBase)
         {
+            if(projectBase == null)
+            {
+                throw new ArgumentNullException(nameof(projectBase));
+            }
             foreach (var bi in projectBase.EvaluatedItems)
             {
                 if (bi.ItemType == "Compile" && bi.UnevaluatedInclude.EndsWith(".cs") && !bi.UnevaluatedInclude.EndsWith("Generated.cs") &&
@@ -690,15 +648,5 @@ namespace FlatRedBall.Glue
 
         #endregion
 
-        internal static void RemoveSyncedProject(VSHelpers.Projects.ProjectBase project)
-        {
-            mSyncedProjects.Remove(project);
-        }
-
-        internal static void AddSyncedProject(VSHelpers.Projects.ProjectBase vsp)
-        {
-            mSyncedProjects.Add(vsp);
-            PluginManager.ReactToSyncedProjectLoad(vsp);
-        }
     }
 }
