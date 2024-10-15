@@ -194,10 +194,14 @@ internal class ReplaceClassName : IPostProcess
 
         PostProcessingHelper.BaseWidth = 320;
         PostProcessingHelper.BaseHeight = 180;
-        PostProcessingHelper.PresentationWidth = FlatRedBallServices.Game.Window.ClientBounds.Width;
-        PostProcessingHelper.PresentationHeight = FlatRedBallServices.Game.Window.ClientBounds.Height;
 
         ApplySettings();
+        // todo - may need to re-create render targets if the user changes the Quality property 
+        CreateRenderTargets();
+        FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) =>
+        {
+            CreateRenderTargets();
+        };
     }
 
     void UpdateDownsampleOffsetParameter()
@@ -251,18 +255,6 @@ internal class ReplaceClassName : IPostProcess
 
     void ApplySettings()
     {
-        int width = (int)(FlatRedBallServices.ClientWidth * Quality);
-        int height = (int)(FlatRedBallServices.ClientHeight * Quality);
-
-        var usage = PreserveContents ? RenderTargetUsage.PreserveContents : RenderTargetUsage.DiscardContents;
-
-        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip0, width, height, SurfaceFormat.HalfVector4);
-        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip1, width / 2, height / 2, SurfaceFormat.HalfVector4, usage);
-        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip2, width / 4, height / 4, SurfaceFormat.HalfVector4, usage);
-        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip3, width / 8, height / 8, SurfaceFormat.HalfVector4, usage);
-        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip4, width / 16, height / 16, SurfaceFormat.HalfVector4, usage);
-        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip5, width / 32, height / 32, SurfaceFormat.HalfVector4, usage);
-
         SetBloomPreset(this.BloomPreset);
         _radiusMultiplier = RadiusMultiplier;
         BloomThreshold = Threshold;
@@ -270,6 +262,19 @@ internal class ReplaceClassName : IPostProcess
         BloomUseLuminance = UseLuminance;
         _bloomCombineBLIntensityParameter.SetValue(Intensity);
         _bloomCombineBLSaturationParameter.SetValue(Saturation);
+    }
+
+    private void CreateRenderTargets()
+    {
+        var usage = PreserveContents ? RenderTargetUsage.PreserveContents : RenderTargetUsage.DiscardContents;
+        int width = (int)(FlatRedBallServices.ClientWidth * Quality);
+        int height = (int)(FlatRedBallServices.ClientHeight * Quality);
+        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip0, width, height, SurfaceFormat.HalfVector4);
+        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip1, width / 2, height / 2, SurfaceFormat.HalfVector4, usage);
+        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip2, width / 4, height / 4, SurfaceFormat.HalfVector4, usage);
+        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip3, width / 8, height / 8, SurfaceFormat.HalfVector4, usage);
+        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip4, width / 16, height / 16, SurfaceFormat.HalfVector4, usage);
+        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip5, width / 32, height / 32, SurfaceFormat.HalfVector4, usage);
     }
 
     void SetBloomPreset(BloomPresets preset)
@@ -384,12 +389,12 @@ internal class ReplaceClassName : IPostProcess
 
         BloomScreenTexture = source;
 
-        int clientScale = (int)Math.Ceiling((float)PostProcessingHelper.PresentationHeight / PostProcessingHelper.BaseHeight);
+        int clientScale = (int)Math.Ceiling((float)FlatRedBallServices.Game.Window.ClientBounds.Height / PostProcessingHelper.BaseHeight);
 
         // According to Miguel this is no longer needed
         //HalfPixel = new Vector2(1.0f / PostProcessingHelper.PresentationWidth, 1.0f / PostProcessingHelper.PresentationHeight) / clientScale;
         HalfPixel = Vector2.Zero;
-        BloomInverseResolution = new Vector2(1.0f / PostProcessingHelper.PresentationWidth, 1.0f / PostProcessingHelper.PresentationHeight);
+        BloomInverseResolution = new Vector2(1.0f / FlatRedBallServices.Game.Window.ClientBounds.Width, 1.0f / FlatRedBallServices.Game.Window.ClientBounds.Height);
 
         device.SamplerStates[0] = SamplerState.LinearClamp;
 
@@ -828,13 +833,13 @@ internal class ReplaceClassName : IPostProcess
 
     #endregion
 
+    #region PostProcessingHelper
+
     internal static class PostProcessingHelper
     {
         internal static int BaseWidth { get; set; }
         internal static int BaseHeight { get; set; }
 
-        internal static int PresentationWidth { get; set; }
-        internal static int PresentationHeight { get; set; }
 
         static GraphicsDevice GraphicsDevice => FlatRedBallServices.GraphicsDevice;
 
@@ -866,5 +871,7 @@ internal class ReplaceClassName : IPostProcess
             }
         }
     }
+
+    #endregion
 }
 
