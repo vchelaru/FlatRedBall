@@ -204,6 +204,22 @@ internal class ReplaceClassName : IPostProcess
         _scanTechniqueToUse = IsChromaticAberrationEnabled ? _effectTechniqueCrtScanCa : _effectTechniqueCrtScan;
     }
 
+
+    public void Apply(Texture2D source, RenderTarget2D target)
+    {
+        var device = FlatRedBallServices.GraphicsDevice;
+
+        var oldRt = device.GetRenderTargets().FirstOrDefault().RenderTarget as RenderTarget2D;
+        device.SetRenderTarget(target);
+        Apply(source);
+        device.SetRenderTarget(oldRt);
+    }
+
+
+
+
+
+
     public void Apply(Texture2D source)
     {
         // This could be smarter to only apply when it changes, but for now this will do:

@@ -117,7 +117,7 @@ namespace OfficialPlugins.EffectPlugin
 
         private void IncludeFullscreenEffectWrapper()
         {
-            FilePath destinationFile = GlueState.Self.CurrentGlueProjectDirectory + $"Graphics/FullscreenEffectWrapper.cs";
+            FilePath destinationFile = PostProcessCodeGenerator.CodeDestinationDirectory + $"FullscreenEffectWrapper.cs";
 
             var assemblyContainingResource = GetType().Assembly;
 
@@ -131,7 +131,7 @@ namespace OfficialPlugins.EffectPlugin
                 using var reader = new StreamReader(stream);
                 string fileContent = reader.ReadToEnd();
 
-                fileContent = fileContent.Replace("ReplaceNamespace", $"{GlueState.Self.ProjectNamespace}.Graphics");
+                fileContent = fileContent.Replace("ReplaceNamespace", $"{GlueState.Self.ProjectNamespace}.EffectWrappers");
                 
                 var directory = destinationFile.GetDirectoryContainingThis();
                 if(!System.IO.Directory.Exists(directory.FullPath))
