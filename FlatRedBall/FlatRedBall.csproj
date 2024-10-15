@@ -4,12 +4,11 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net8.0-ios;net8.0-android;netstandard2.0;net6.0;</TargetFrameworks>
     <MonoGameVersion>3.8.1.303</MonoGameVersion>
-    <FNA>false</FNA>
     <DefineConstants>FRB_XNA;XNA4;</DefineConstants>
   </PropertyGroup>
-
+  
+  <!-- These just make condition checks less verbose -->
   <PropertyGroup>
-    <!-- Define properties for TargetFramework checks -->
     <IsNet8 Condition="'$(TargetFramework)' == 'net8.0'">true</IsNet8>
     <IsNet6 Condition="'$(TargetFramework)' == 'net6.0'">true</IsNet6>
     <IsNetStandard20 Condition="'$(TargetFramework)' == 'netstandard2.0'">true</IsNetStandard20>
@@ -18,14 +17,18 @@
     <IsIOS Condition="'$(TargetFramework)' == 'net8.0-ios'">true</IsIOS>
   </PropertyGroup>
 
-  <!-- Pre-emptively remove platform all specific files, to be later included by the platform itself -->
+  <!-- Reference shared code until we migrate everything to this project -->
+  <Import Project="..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
+
+  <!-- Pre-emptively remove all platform-specific files, to be later be conditionally included by platform -->
   <ItemGroup>
+    <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\Input\AndroidGamePad.cs" />
     <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\Input\InputManager.Android.cs" />
     <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\Input\Keyboard.Android.cs" />
     <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\IO\FileManager.IsolatedStorage.cs" />
   </ItemGroup>
 
-  <!--Troubled Files-->
+  <!-- Remove troubled files (ones which are causing build issues, possibly obsolete?) -->
   <ItemGroup>
     <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\Graphics\Renderer.SpriteBatch.cs" />
     <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\Instructions\Reflection\HashSet.cs" />
@@ -33,7 +36,7 @@
     <Compile Remove="..\Engines\FlatRedBallXNA\FlatRedBall\Graphics\PostProcessing\*" />
   </ItemGroup>
 
-  <!-- For DesktopGL, without KNI -->
+  <!-- DesktopGL Net8-->
   <PropertyGroup Condition="$(IsNet8) == 'true'">
     <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;DESKTOP_GL;</DefineConstants>
   </PropertyGroup>
@@ -44,7 +47,7 @@
     </PackageReference>
   </ItemGroup>
 
-  <!-- For DesktopGL, without KNI -->
+  <!-- DesktopGL Net6-->
   <PropertyGroup Condition="$(IsNet6) == 'true'">
     <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;DESKTOP_GL;</DefineConstants>
   </PropertyGroup>
@@ -53,7 +56,7 @@
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="$(MonoGameVersion)" />
   </ItemGroup>
 
-  <!-- For WindowsDX -->
+  <!-- WindowsDX Net8-->
   <PropertyGroup Condition="$(IsNet8Windows) == 'true'">
     <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;WINDOWS;</DefineConstants>
   </PropertyGroup>
@@ -62,7 +65,7 @@
     <PackageReference Include="MonoGame.Framework.WindowsDX" Version="$(MonoGameVersion)" />
   </ItemGroup>
 
-  <!--For NetStandard20-->
+  <!-- DesktopGL NetStandard20 -->
   <PropertyGroup Condition="$(IsNetStandard20) == 'true'">
     <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;NETSTANDARD;NO_CODE_EMIT;STANDARD;WINDOWS;DESKTOP_GL</DefineConstants>
   </PropertyGroup>
@@ -72,7 +75,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
-  <!-- For Android -->
+  <!-- Android Net8 -->
   <PropertyGroup Condition="$(IsAndroid) == 'true'">
     <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;ANDROID;USE_ISOLATED_STORAGE</DefineConstants>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -86,7 +89,7 @@
     <Compile Include="..\Engines\FlatRedBallXNA\FlatRedBall\IO\FileManager.IsolatedStorage.cs" Link="IO\FileManager.IsolatedStorage.cs" />
   </ItemGroup>
 
-  <!-- For iOS -->
+  <!-- iOS Net8-->
   <PropertyGroup Condition="$(IsIOS) == 'true'">
     <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;IOS;USE_ISOLATED_STORAGE</DefineConstants>
   </PropertyGroup>
@@ -96,10 +99,9 @@
     <Compile Include="..\Engines\FlatRedBallXNA\FlatRedBall\IO\FileManager.IsolatedStorage.cs" Link="IO\FileManager.IsolatedStorage.cs" />
   </ItemGroup>
   
-  <!-- Additional package reference for AsepriteDotNet -->
+  <!-- Additional package references -->
   <ItemGroup Condition="$(IsNetStandard20) == ''">
     <PackageReference Include="AsepriteDotNet" Version="1.8.1" />
-  </ItemGroup>
-  <Import Project="..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
+  </ItemGroup>  
 
 </Project>
