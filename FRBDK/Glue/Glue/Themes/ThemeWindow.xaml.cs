@@ -16,10 +16,29 @@ using GlueFormsCore.Controls;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Windows.Threading;
+using Microsoft.Win32;
 
 #nullable enable
 namespace FlatRedBall.Glue.Themes
 {
+    public static class ThemeHelper
+    {
+        public static bool IsSystemLight => Registry.CurrentUser.OpenSubKey(
+            @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")?.GetValue("SystemUsesLightTheme") as int? is 1;
+
+        static ThemeHelper()
+        {
+            SystemEvents.UserPreferenceChanged += (sender, args) =>
+            {
+                if (args.Category is UserPreferenceCategory.General &&
+                    GlueState.Self.GlueSettingsSave.ThemeConfig?.Mode is ThemeMode.System)
+                {
+                    MainPanelControl.Self.SwitchThemes(new (IsSystemLight is false ? ThemeMode.Dark : ThemeMode.Light));
+                }
+            };
+        }
+    }
+
     /// <summary>
     /// Interaction logic for ThemeWindow.xaml
     /// </summary>
@@ -28,8 +47,6 @@ namespace FlatRedBall.Glue.Themes
         public ThemeWindow()
         {
             InitializeComponent();
-
-                        
             Loaded += (_,_) => GlueCommands.Self.DialogCommands.MoveToCursor(this);
         }
 
@@ -52,8 +69,6 @@ namespace FlatRedBall.Glue.Themes
     {
         public ThemeWindowViewModel()
         {
-
-
             if (GlueState.Self.GlueSettingsSave.ThemeConfig is { } savedConfig)
             {
 
@@ -75,7 +90,6 @@ namespace FlatRedBall.Glue.Themes
                 {
                     MainPanelControl.Self.SwitchThemes(config);
                 }
-                
             };
         }
 
@@ -94,26 +108,26 @@ namespace FlatRedBall.Glue.Themes
         public Array ThemeModes { get; } = Enum.GetValues(typeof(ThemeMode));
         public List<SolidColorBrush> AccentOptions { get; } = new ()
         {
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3E9ECE")), // Default FRB Blue
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F44336")), // Red
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E91E63")), // Pink
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9C27B0")), // Purple
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#673AB7")), // Deep Purple
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3F51B5")), // Indigo
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2196F3")), // Blue
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#03A9F4")), // Light Blue
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00BCD4")), // Cyan
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#009688")), // Teal
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4CAF50")), // Green
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8BC34A")), // Light Green
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CDDC39")), // Lime
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFEB3B")), // Yellow
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFC107")), // Amber
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF9800")), // Orange
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF5722")), // Deep Orange
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#795548")), // Brown
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9E9E9E")), // Grey
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString("#607D8B"))  // Blue Grey
+            new ((Color)ColorConverter.ConvertFromString("#3E9ECE")), // Default FRB Blue
+            new ((Color)ColorConverter.ConvertFromString("#F44336")), // Red
+            new ((Color)ColorConverter.ConvertFromString("#E91E63")), // Pink
+            new ((Color)ColorConverter.ConvertFromString("#9C27B0")), // Purple
+            new ((Color)ColorConverter.ConvertFromString("#673AB7")), // Deep Purple
+            new ((Color)ColorConverter.ConvertFromString("#3F51B5")), // Indigo
+            new ((Color)ColorConverter.ConvertFromString("#2196F3")), // Blue
+            new ((Color)ColorConverter.ConvertFromString("#03A9F4")), // Light Blue
+            new ((Color)ColorConverter.ConvertFromString("#00BCD4")), // Cyan
+            new ((Color)ColorConverter.ConvertFromString("#009688")), // Teal
+            new ((Color)ColorConverter.ConvertFromString("#4CAF50")), // Green
+            new ((Color)ColorConverter.ConvertFromString("#8BC34A")), // Light Green
+            new ((Color)ColorConverter.ConvertFromString("#CDDC39")), // Lime
+            new ((Color)ColorConverter.ConvertFromString("#FFEB3B")), // Yellow
+            new ((Color)ColorConverter.ConvertFromString("#FFC107")), // Amber
+            new ((Color)ColorConverter.ConvertFromString("#FF9800")), // Orange
+            new ((Color)ColorConverter.ConvertFromString("#FF5722")), // Deep Orange
+            new ((Color)ColorConverter.ConvertFromString("#795548")), // Brown
+            new ((Color)ColorConverter.ConvertFromString("#9E9E9E")), // Grey
+            new ((Color)ColorConverter.ConvertFromString("#607D8B"))  // Blue Grey
         };
 
         public void SaveConfig()
@@ -126,7 +140,8 @@ namespace FlatRedBall.Glue.Themes
     public enum ThemeMode
     {
         Light,
-        Dark
+        Dark,
+        System
     }
 
     public record ThemeConfig(ThemeMode? Mode = null, Color? Accent = null)
