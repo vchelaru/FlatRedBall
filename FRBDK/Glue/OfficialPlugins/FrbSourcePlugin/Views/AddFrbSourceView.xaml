@@ -13,7 +13,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel>
-            <TextBlock TextWrapping="Wrap" Padding="5" Background="Yellow" FontSize="19" Visibility="{Binding AlreadyLinkedMessageVisibility}">This project is already linked to source</TextBlock>
+            <TextBlock TextWrapping="Wrap" Padding="5" Background="Yellow" Foreground="Black" FontSize="19" Visibility="{Binding AlreadyLinkedMessageVisibility}">This project is already linked to source</TextBlock>
             <wpfdataui:DataUiGrid x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
         </StackPanel>
         <Button Grid.Row="1" x:Name="LinkToSourceButton" Click="LinkToSourceButton_Click" Content="Link to Source" />
