@@ -152,7 +152,7 @@
 		<ProjectReference Include="..\..\..\..\Gum\SkiaGumMonogame\SkiaGumMonogame.csproj" />
 		<ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
 		<ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
-		<ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+		<ProjectReference Include="..\..\..\FlatRedBall\FlatRedBall.csproj" />
 		<ProjectReference Include="..\..\..\Tiled\TMXGlueLib\TMXGlueLib.csproj" />
 		<ProjectReference Include="..\..\FRBDKUpdater\UpdaterWpf\UpdaterWpf\UpdaterWpf.csproj" />
 		<ProjectReference Include="..\..\Localization\Localization.csproj" />

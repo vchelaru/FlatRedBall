@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
-             xmlns:TopDownViews="clr-namespace:TopDownPlugin.Views;assembly=TopDownPlugin"
-             xmlns:PlatformerViews="clr-namespace:FlatRedBall.PlatformerPlugin.Views;assembly=PlatformerPlugin"
+             xmlns:topDownViews="clr-namespace:TopDownPlugin.Views;assembly=TopDownPlugin"
+             xmlns:platformerViews="clr-namespace:FlatRedBall.PlatformerPlugin.Views;assembly=PlatformerPlugin"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -64,7 +64,7 @@
                 </StackPanel>
             </GroupBox>
         </StackPanel>
-        <TopDownViews:MainEntityView Visibility="{Binding TopDownUiVisibility}" x:Name="TopDownView" Grid.Row="1"></TopDownViews:MainEntityView>
-        <PlatformerViews:MainControl Visibility="{Binding PlatformerUiVisibility}" x:Name="PlatformerView" Grid.Row="1"></PlatformerViews:MainControl>
+        <topDownViews:MainEntityView Visibility="{Binding TopDownUiVisibility}" x:Name="TopDownView" Grid.Row="1"></topDownViews:MainEntityView>
+        <platformerViews:MainControl Visibility="{Binding PlatformerUiVisibility}" x:Name="PlatformerView" Grid.Row="1"></platformerViews:MainControl>
     </Grid>
 </UserControl>

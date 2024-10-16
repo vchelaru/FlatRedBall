@@ -10,7 +10,7 @@
   <Import Project="..\StateInterpolationPlugin\StateInterpolationShared.projitems" Label="Shared" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+    <ProjectReference Include="..\..\..\..\FlatRedBall\FlatRedBall.csproj" />
   </ItemGroup>
 
 </Project>
