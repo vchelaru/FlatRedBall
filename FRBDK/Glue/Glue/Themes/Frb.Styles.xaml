@@ -1350,4 +1350,70 @@
         </Style.Resources>
     </Style>
 
+  <Style TargetType="RepeatButton" x:Key="SliderRepeatButtonStyle">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RepeatButton">
+          <Border Background="Transparent" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <ControlTemplate x:Key="SliderThumbTemplate" TargetType="Slider">
+    <Grid>
+      <Border Background="{TemplateBinding Background}" 
+                        Opacity="0.4" 
+                        Height="4" 
+                        CornerRadius="4" />
+      <Track x:Name="PART_Track">
+        <Track.DecreaseRepeatButton>
+          <RepeatButton Style="{StaticResource SliderRepeatButtonStyle}" Command="{x:Static Slider.DecreaseLarge}" />
+        </Track.DecreaseRepeatButton>
+        <Track.IncreaseRepeatButton>
+          <RepeatButton  Style="{StaticResource SliderRepeatButtonStyle}"  Command="{x:Static Slider.IncreaseLarge}" />
+        </Track.IncreaseRepeatButton>
+        <Track.Thumb>
+          <Thumb x:Name="Thumb">
+            <Thumb.Style>
+              <Style TargetType="{x:Type Thumb}">
+                <Setter Property="RenderTransform">
+                  <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                  </Setter.Value>
+                </Setter>
+                <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                <Setter Property="OverridesDefaultStyle" Value="True"/>
+                <Setter Property="Template">
+                  <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                      <Border Background="Transparent" Padding="2">
+                        <Border Height="12" Width="12" CornerRadius="16" VerticalAlignment="Center" Background="{TemplateBinding Foreground}" />
+                      </Border>
+                    </ControlTemplate>
+                  </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="RenderTransform">
+                      <Setter.Value>
+                        <ScaleTransform ScaleX="1.2" ScaleY="1.2" />
+                      </Setter.Value>
+                    </Setter>
+                  </Trigger>
+                </Style.Triggers>
+              </Style>
+            </Thumb.Style>
+          </Thumb>
+        </Track.Thumb>
+      </Track>
+    </Grid>
+  </ControlTemplate>
+
+  <Style TargetType="Slider">
+    <Setter Property="Foreground" Value="{DynamicResource Frb.Brushes.Primary}" />
+    <Setter Property="Background" Value="{DynamicResource Frb.Brushes.Primary}" />
+    <Setter Property="Template" Value="{StaticResource SliderThumbTemplate}" />
+  </Style>
+
 </ResourceDictionary>
