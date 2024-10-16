@@ -247,6 +247,13 @@ public partial class MainGlueWindow : Form
 
         if (GlueState.Self.GlueSettingsSave.ThemeConfig is { } config)
         {
+            if (config.Mode is null)
+            {
+                GlueState.Self.GlueSettingsSave.ThemeConfig = config = config with
+                {
+                    Mode = ThemeMode.System
+                };
+            }
             MainWpfControl.SwitchThemes(config);
         }
 

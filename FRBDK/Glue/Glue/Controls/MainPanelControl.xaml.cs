@@ -156,6 +156,7 @@ namespace GlueFormsCore.Controls
                         {
                             ThemeMode.Light => new Uri(source.Replace("Dark", "Light"), UriKind.RelativeOrAbsolute),
                             ThemeMode.Dark => new Uri(source.Replace("Light", "Dark"), UriKind.RelativeOrAbsolute),
+                            ThemeMode.System => new Uri(System(source), UriKind.RelativeOrAbsolute),
                             _ => throw new NotImplementedException()
                         };
                     }
@@ -180,6 +181,12 @@ namespace GlueFormsCore.Controls
                 }
 
                 MainGlueWindow.Self.SyncMenuStripWithTheme(Self);
+            }
+
+            string System(string source)
+            {
+                string mode = ThemeHelper.IsSystemLight ? "Light" : "Dark";
+                return source.Replace("Dark", mode).Replace("Light", mode);
             }
         }
 
