@@ -107,7 +107,6 @@ namespace FlatRedBall.Glue.SaveClasses
         public string FileCreatedBy;
         private string mLayerOn;
 
-        string mClickEvent;
         string mCurrentState;
 
 

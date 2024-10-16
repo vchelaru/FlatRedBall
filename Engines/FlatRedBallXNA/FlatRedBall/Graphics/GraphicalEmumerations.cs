@@ -311,6 +311,7 @@ namespace FlatRedBall.Graphics
 
         #region AreaEmissionType
 
+        [Obsolete]
         public static Emitter.AreaEmissionType TranslateAreaEmissionType(string op)
         {
             switch (op)
@@ -333,6 +334,7 @@ namespace FlatRedBall.Graphics
             }
         }
 
+        [Obsolete]
         public static string TranslateAreaEmissionType(Emitter.AreaEmissionType op)
         {
             switch (op)

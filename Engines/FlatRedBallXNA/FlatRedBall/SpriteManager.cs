@@ -232,6 +232,7 @@ namespace FlatRedBall
 
         #region Particle Sprite Fields
 
+        [Obsolete]
         static EmitterList mEmitters;
         //static ListBuffer<Emitter> mEmitterBuffer;
 
@@ -522,6 +523,7 @@ namespace FlatRedBall
         //        get { return mAutomaticallyUpdatedSprites; }
         //  }
 
+        [Obsolete]
         static internal EmitterList Emitters
         {
             get { return mEmitters; }
@@ -1655,6 +1657,7 @@ namespace FlatRedBall
 
         #region Add Emitter
 
+        [Obsolete]
         static public Emitter AddEmitter(string textureToUse, string contentManagerName)
         {
             Emitter emitter = new Emitter();
@@ -1666,6 +1669,7 @@ namespace FlatRedBall
             return emitter;
         }
 
+        [Obsolete]
         public static void AddEmitter(Emitter emitterToManage)
         {
 #if DEBUG
@@ -1678,6 +1682,7 @@ namespace FlatRedBall
             mEmitters.Add(emitterToManage);
         }
 
+        [Obsolete]
         public static void AddEmitter(Emitter emitterToManage, Layer layerToEmitOn)
         {
 #if DEBUG
@@ -2269,11 +2274,13 @@ namespace FlatRedBall
             }
         }
 
+        [Obsolete]
         public static void RemoveEmitter(Emitter emitterToRemove)
         {
             emitterToRemove.RemoveSelfFromListsBelongingTo();
         }
 
+        [Obsolete]
         public static void RemoveEmitterOneWay(Emitter emitterToRemove)
         {
             mEmitters.Remove(emitterToRemove);

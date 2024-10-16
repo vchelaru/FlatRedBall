@@ -149,7 +149,7 @@ namespace FlatRedBall.Glue.Plugins
             {
                 this.Plugin.ShutDown(PluginShutDownReason.PluginException);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 this.FailureDetails += "\nPlugin also failed during shutdown";
             }

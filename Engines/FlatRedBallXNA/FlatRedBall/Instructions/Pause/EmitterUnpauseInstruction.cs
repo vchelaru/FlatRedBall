@@ -4,6 +4,7 @@ using System.Text;
 
 namespace FlatRedBall.Instructions.Pause
 {
+    [Obsolete]
     class EmitterUnpauseInstruction : PositionedObjectUnpauseInstruction<FlatRedBall.Graphics.Particle.Emitter>
     {
         bool mTimedEmission;

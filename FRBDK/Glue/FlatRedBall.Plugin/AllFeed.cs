@@ -49,7 +49,7 @@ namespace FlatRedBall.Glue.Plugins.Rss
 
                     result = DownloadState.InformationDownloaded;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     result = DownloadState.Error;
                 }

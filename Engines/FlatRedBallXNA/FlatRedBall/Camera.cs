@@ -1725,6 +1725,7 @@ namespace FlatRedBall
             MathFunctions.AbsoluteToWindow(position.X, position.Y, position.Z, ref screenX, ref screenY, this);
         }
 
+        /// <summary>
         /// Sets the viewport for this camera to a standard split-screen viewport
         /// </summary>
         /// <param name="viewport">The viewport to use for this camera. If null, the camera will not automatically 

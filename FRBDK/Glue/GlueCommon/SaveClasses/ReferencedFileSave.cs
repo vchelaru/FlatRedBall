@@ -27,7 +27,7 @@ namespace FlatRedBall.Glue.SaveClasses
             List.Remove(projectSpecificFile);
         }
 
-        public int Count
+        public new int Count
         {
             get
             {

@@ -84,6 +84,7 @@ namespace FlatRedBall.Content.Particle
 
         #region Public Static "From" Methods
 
+        [Obsolete]
         public static EmitterSaveList FromEmitterList(IEnumerable<Emitter> emittersToSave)
         {
             EmitterSaveList emitterSaveList = new EmitterSaveList();
@@ -211,7 +212,7 @@ namespace FlatRedBall.Content.Particle
 			return referencedFiles;
 		}
 
-
+        [Obsolete]
         public EmitterList ToEmitterList(string contentManagerName)
         {
 			string oldRelativeDirectory = FileManager.RelativeDirectory;

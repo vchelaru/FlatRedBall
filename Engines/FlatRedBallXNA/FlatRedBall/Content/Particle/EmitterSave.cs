@@ -35,6 +35,7 @@ namespace FlatRedBall.Content.Particle
 
         }
 
+        [Obsolete]
         public static EmitterSave FromEmitter(Emitter emitterToCreateFrom)
 		{
             EmitterSave emitterToReturn = new EmitterSave();
@@ -104,6 +105,7 @@ namespace FlatRedBall.Content.Particle
             return emitterToReturn;
         }
 
+        [Obsolete]
         public Emitter ToEmitter(string contentManagerName)
         {
             Emitter emitter = new Emitter();

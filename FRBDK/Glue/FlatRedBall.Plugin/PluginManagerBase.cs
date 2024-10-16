@@ -522,9 +522,7 @@ namespace FlatRedBall.Glue.Plugins
             {
                 LoadExternalReferenceList(filepath);
 
-                string output;
                 string name = Assembly.GetEntryAssembly().GetName().Name;
-                string details;
                 // need to fix this, or pass it a root folder or something.
                 CompilerResults results = null;
 

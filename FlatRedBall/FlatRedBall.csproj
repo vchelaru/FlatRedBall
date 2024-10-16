@@ -18,7 +18,6 @@
   </PropertyGroup>
 
   <!-- Reference shared code until we migrate everything to this project -->
-  <Import Project="..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
 
   <!-- Pre-emptively remove all platform-specific files, to be later be conditionally included by platform -->
   <ItemGroup>
@@ -102,6 +101,7 @@
   <!-- Additional package references -->
   <ItemGroup Condition="$(IsNetStandard20) == ''">
     <PackageReference Include="AsepriteDotNet" Version="1.8.1" />
-  </ItemGroup>  
+  </ItemGroup>
+  <Import Project="..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />  
 
 </Project>

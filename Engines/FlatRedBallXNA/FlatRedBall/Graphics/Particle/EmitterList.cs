@@ -6,14 +6,13 @@ using FlatRedBall.Math;
 
 namespace FlatRedBall.Graphics.Particle
 {
-    #region XML Docs
     /// <summary>
     /// List of Emitters provoding shortcut methods for interacting with all contained Emittes.
     /// </summary>
     /// <remarks>
     /// This is the runtime object created when loading .emix files.
     /// </remarks>
-    #endregion
+    [Obsolete]
     public class EmitterList : PositionedObjectList<Emitter>, IEquatable<EmitterList>
     {
         #region Methods

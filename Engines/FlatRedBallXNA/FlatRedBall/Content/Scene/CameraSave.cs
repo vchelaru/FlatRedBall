@@ -97,6 +97,7 @@ namespace FlatRedBall.Content.Scene
             return cameraSave;
         }
 
+        /// <summary>
         /// Sets the argument Camera's properties to the properties stored in this CameraSave.
         /// </summary>
         /// <remarks>
