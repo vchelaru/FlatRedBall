@@ -374,6 +374,17 @@ internal class ReplaceClassName : IPostProcess
         }
     }
 
+    public void Apply(Texture2D source, RenderTarget2D target)
+    {
+        var device = FlatRedBallServices.GraphicsDevice;
+
+        var oldRt = device.GetRenderTargets().FirstOrDefault().RenderTarget as RenderTarget2D;
+        device.SetRenderTarget(target);
+        Apply(source);
+        device.SetRenderTarget(oldRt);
+    }
+
+
     public void Apply(Texture2D source)
     {
         var device = FlatRedBallServices.GraphicsDevice;

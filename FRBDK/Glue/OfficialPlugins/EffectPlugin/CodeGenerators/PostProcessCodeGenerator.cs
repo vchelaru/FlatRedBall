@@ -13,17 +13,18 @@ namespace OfficialPlugins.EffectPlugin.CodeGenerators;
 
 internal class PostProcessCodeGenerator
 {
+    public static FilePath CodeDestinationDirectory =>
+        GlueState.Self.CurrentGlueProjectDirectory + "EffectWrappers/";
+
     internal static void ReplaceContents(string rfsName, ShaderContents shaderContents)
     {
-        string newDirectory = Path.Combine("Graphics", Path.GetDirectoryName(rfsName) ?? "");
         string newFileName = Path.GetFileName(Path.ChangeExtension(rfsName, "cs") ?? "");
         string newFileNameOnly = Path.GetFileNameWithoutExtension(Path.GetFileName(Path.ChangeExtension(rfsName, "cs")) ?? "");
         if (newFileNameOnly.Length < 1)
         {
             throw new ArgumentException("FX file name must have at least 1 character");
         }
-        string newFileRelativePath = Path.Combine(newDirectory, newFileName);
-        FilePath destinationFile = GlueState.Self.CurrentGlueProjectDirectory + newFileRelativePath;
+        FilePath destinationFile = CodeDestinationDirectory + newFileNameOnly + ".cs";
 
         var assemblyContainingResource = typeof(PostProcessCodeGenerator).Assembly;
 
@@ -38,7 +39,7 @@ internal class PostProcessCodeGenerator
             GlueCommands.Self.TryMultipleTimes(() =>
             {
                 var newNamespace =
-                    $"{GlueState.Self.ProjectNamespace}.{newDirectory.Replace('\\', '.')}";
+                    $"{GlueState.Self.ProjectNamespace}.EffectWrappers";
 
                 char firstLetter = char.ToUpper(newFileNameOnly[0]);
                 var newClassName = firstLetter + newFileNameOnly[1..];
