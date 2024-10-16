@@ -67,7 +67,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBox Height="20" VerticalAlignment="Top"  Grid.Column="0" Text="{Binding ProjectDestinationLocation}" />
-                <Button Grid.Column="1" Width="18" VerticalAlignment="Top" Click="SelectLocationClicked">...</Button>
+                <Button Grid.Column="1" VerticalAlignment="Top" Click="SelectLocationClicked">...</Button>
             </Grid>
 
             <TextBlock FontWeight="Bold" Grid.Row="5" Margin="0,0,16,10"  Text="{x:Static localization:Texts.ProjectDirectoryCreate}" />
