@@ -2,7 +2,7 @@
 
   <!-- Global Properties -->
   <PropertyGroup>
-    <TargetFrameworks>net8.0;netstandard2.0;net6.0;</TargetFrameworks>
+    <TargetFrameworks>net8.0;netstandard2.0;net6.0;net6.0-windows</TargetFrameworks>
     <MonoGameVersion>3.8.1.303</MonoGameVersion>
     <DefineConstants>FRB_XNA;XNA4;</DefineConstants>
   </PropertyGroup>
@@ -10,9 +10,11 @@
   
   <!-- These just make condition checks less verbose -->
   <PropertyGroup>
+    
     <IsNet8 Condition="'$(TargetFramework)' == 'net8.0'">true</IsNet8>
     <IsNet6 Condition="'$(TargetFramework)' == 'net6.0'">true</IsNet6>
     <IsNetStandard20 Condition="'$(TargetFramework)' == 'netstandard2.0'">true</IsNetStandard20>
+    <IsNet6Windows Condition="'$(TargetFramework)' == 'net6.0-windows'">true</IsNet6Windows>
     <IsNet8Windows Condition="'$(TargetFramework)' == 'net8.0-windows'">true</IsNet8Windows>
   </PropertyGroup>
 
@@ -51,6 +53,14 @@
   </PropertyGroup>
 
   <ItemGroup Condition="$(IsNet6) == 'true'">
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="$(MonoGameVersion)" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="$(IsNet6Windows) == 'true'">
+    <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;WINDOWS;STANDARD</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(IsNet6Windows) == 'true'">
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="$(MonoGameVersion)" />
   </ItemGroup>
 
