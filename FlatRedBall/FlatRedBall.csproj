@@ -2,9 +2,15 @@
 
   <!-- Global Properties -->
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net8.0-ios;net8.0-android;netstandard2.0;net6.0;</TargetFrameworks>
+    <TargetFrameworks>net8.0;netstandard2.0;net6.0;</TargetFrameworks>
     <MonoGameVersion>3.8.1.303</MonoGameVersion>
     <DefineConstants>FRB_XNA;XNA4;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IncludeMobile)' == 'true'">
+    <TargetFrameworks>net8.0-ios;net8.0-android;</TargetFrameworks>
+    <IsAndroid Condition="'$(TargetFramework)' == 'net8.0-android'">true</IsAndroid>
+    <IsIOS Condition="'$(TargetFramework)' == 'net8.0-ios'">true</IsIOS>
   </PropertyGroup>
   
   <!-- These just make condition checks less verbose -->
@@ -13,8 +19,7 @@
     <IsNet6 Condition="'$(TargetFramework)' == 'net6.0'">true</IsNet6>
     <IsNetStandard20 Condition="'$(TargetFramework)' == 'netstandard2.0'">true</IsNetStandard20>
     <IsNet8Windows Condition="'$(TargetFramework)' == 'net8.0-windows'">true</IsNet8Windows>
-    <IsAndroid Condition="'$(TargetFramework)' == 'net8.0-android'">true</IsAndroid>
-    <IsIOS Condition="'$(TargetFramework)' == 'net8.0-ios'">true</IsIOS>
+
   </PropertyGroup>
 
   <!-- Reference shared code until we migrate everything to this project -->
