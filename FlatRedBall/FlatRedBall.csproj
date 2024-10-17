@@ -7,11 +7,6 @@
     <DefineConstants>FRB_XNA;XNA4;</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(IncludeMobile)' == 'true'">
-    <TargetFrameworks>net8.0-ios;net8.0-android;</TargetFrameworks>
-    <IsAndroid Condition="'$(TargetFramework)' == 'net8.0-android'">true</IsAndroid>
-    <IsIOS Condition="'$(TargetFramework)' == 'net8.0-ios'">true</IsIOS>
-  </PropertyGroup>
   
   <!-- These just make condition checks less verbose -->
   <PropertyGroup>
@@ -19,7 +14,6 @@
     <IsNet6 Condition="'$(TargetFramework)' == 'net6.0'">true</IsNet6>
     <IsNetStandard20 Condition="'$(TargetFramework)' == 'netstandard2.0'">true</IsNetStandard20>
     <IsNet8Windows Condition="'$(TargetFramework)' == 'net8.0-windows'">true</IsNet8Windows>
-
   </PropertyGroup>
 
   <!-- Reference shared code until we migrate everything to this project -->
@@ -79,7 +73,15 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
-  <!-- Android Net8 -->
+
+
+  <!--
+  <PropertyGroup Condition="'$(IncludeMobile)' == 'true'">
+    <TargetFrameworks>net8.0-ios;net8.0-android;</TargetFrameworks>
+    <IsAndroid Condition="'$(TargetFramework)' == 'net8.0-android'">true</IsAndroid>
+    <IsIOS Condition="'$(TargetFramework)' == 'net8.0-ios'">true</IsIOS>
+  </PropertyGroup>
+
   <PropertyGroup Condition="$(IsAndroid) == 'true'">
     <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;ANDROID;USE_ISOLATED_STORAGE</DefineConstants>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -93,7 +95,6 @@
     <Compile Include="..\Engines\FlatRedBallXNA\FlatRedBall\IO\FileManager.IsolatedStorage.cs" Link="IO\FileManager.IsolatedStorage.cs" />
   </ItemGroup>
 
-  <!-- iOS Net8-->
   <PropertyGroup Condition="$(IsIOS) == 'true'">
     <DefineConstants>$(DefineConstants);MONOGAME;MONOGAME_381;IOS;USE_ISOLATED_STORAGE</DefineConstants>
   </PropertyGroup>
@@ -102,6 +103,18 @@
     <PackageReference Include="MonoGame.Framework.iOS" Version="$(MonoGameVersion)" />
     <Compile Include="..\Engines\FlatRedBallXNA\FlatRedBall\IO\FileManager.IsolatedStorage.cs" Link="IO\FileManager.IsolatedStorage.cs" />
   </ItemGroup>
+  -->
+
+
+
+
+
+
+
+
+
+
+
   
   <!-- Additional package references -->
   <ItemGroup Condition="$(IsNetStandard20) == ''">
