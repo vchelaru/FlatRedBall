@@ -19,7 +19,8 @@ using EditorObjects.IoC;
 namespace FlatRedBall.Glue.SetVariable
 {
     /// <summary>
-    /// Initial responder to when an object property (not variable) get changed.  This handles determing the type 
+    /// Initial responder to when an object property (not variable) get changed.  This
+    /// handles determing the type 
     /// of change that occurred and calling methods on object-based handlers - like 
     /// NamedObjectSave vs. ReferencedFileSave.
     /// </summary>

@@ -1177,6 +1177,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
         GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
+        if(GlueState.Self.CurrentElement == element)
+        {
+            GlueCommands.Self.RefreshCommands.RefreshVariables();
+        }
+
         UpdateInstanceCustomVariables(element);
 
         PluginManager.ReactToVariableAdded(newVariable);

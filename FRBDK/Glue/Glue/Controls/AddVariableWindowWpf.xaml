@@ -115,7 +115,6 @@
                     Content="{x:Static localization:Texts.StaticAllObjectsShareVariable}" />
                 <CheckBox
                     IsChecked="{Binding SetByDerived}"
-                    Visibility="{Binding SetByDerivedVisibility}" 
                     Content="{x:Static localization:Texts.CanBeSetByDerived}" />
             </StackPanel>
         </Grid>

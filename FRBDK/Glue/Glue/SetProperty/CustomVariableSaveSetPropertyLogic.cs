@@ -343,7 +343,9 @@ public class CustomVariableSaveSetPropertyLogic
         // base class, and have those overridden 
         // in the derived. For example, an Enemy's
         // display name should be defined in base, but
-        // set on derived like "Skeleton" or "Goblin".
+        // set on derived like "Skeleton" or "Goblin". This
+        // display name would be a static variable rather than
+        // set per instance.
         //if (customVariable.SetByDerived && customVariable.IsShared)
         //{
             //GlueCommands.Self.DialogCommands.ShowMessageBox("Variables that are IsShared cannot be SetByDerived");
