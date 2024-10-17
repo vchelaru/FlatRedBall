@@ -39,6 +39,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
 
         }
+        public virtual void GenerateStaticConstructor(ICodeBlock codeBlock, GlueElement element) { }
 
         #region Initialize
 

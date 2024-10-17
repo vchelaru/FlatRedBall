@@ -136,7 +136,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             //set.Line("bool hasChanged = value != mVisible;");
             #endregion
 
-            EventCodeGenerator.GenerateEventRaisingCode(set, BeforeOrAfter.Before, "Visible", entitySave);
+            EventCodeGenerator.GenerateEventRaisingCode(set, BeforeOrAfter.Before, "Visible", entitySave, isStatic:false);
 
             if (entitySave.GetInheritsFromIVisible())
             {
@@ -155,7 +155,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // is a concept of relative visibility.
             // WriteVisibleSetForNamedObjectSaves(set, entitySave);
             
-            EventCodeGenerator.GenerateEventRaisingCode(set, BeforeOrAfter.After, "Visible", entitySave);
+            EventCodeGenerator.GenerateEventRaisingCode(set, BeforeOrAfter.After, "Visible", entitySave, isStatic:false);
         }
 
         private static NamedObjectSave GetEntireFileNos(EntitySave entitySave, string sourceFileName)
