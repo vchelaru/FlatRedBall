@@ -120,7 +120,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (customVariable.CreatesEvent)
                 {
-                    EventCodeGenerator.GenerateEventsForVariable(codeBlock, customVariable.Name, customVariableType);
+                    EventCodeGenerator.GenerateEventsForVariable(codeBlock, customVariable.Name, customVariableType, isStatic:customVariable.IsShared);
                 }
 
                 if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
@@ -301,7 +301,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if (EventCodeGenerator.ShouldGenerateEventsForVariable(customVariable, element))
                     {
-                        EventCodeGenerator.GenerateEventRaisingCode(set, BeforeOrAfter.Before, customVariable.Name, element);
+                        EventCodeGenerator.GenerateEventRaisingCode(set, BeforeOrAfter.Before, customVariable.Name, element, customVariable.IsShared);
                     }
 
                     set.Line(variableToAssignInProperty + " = value;");
@@ -311,7 +311,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                     if (EventCodeGenerator.ShouldGenerateEventsForVariable(customVariable, element))
                     {
-                        EventCodeGenerator.GenerateEventRaisingCode(set, BeforeOrAfter.After, customVariable.Name, element);
+                        EventCodeGenerator.GenerateEventRaisingCode(set, BeforeOrAfter.After, customVariable.Name, element, customVariable.IsShared);
                     }
 
                     ICodeBlock get = set.End().Get();
@@ -423,7 +423,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (EventCodeGenerator.ShouldGenerateEventsForVariable(customVariable, saveObject))
             {
-                EventCodeGenerator.GenerateEventRaisingCode(setter, BeforeOrAfter.Before, customVariable.Name, saveObject);
+                EventCodeGenerator.GenerateEventRaisingCode(setter, BeforeOrAfter.Before, customVariable.Name, saveObject, customVariable.IsShared);
             }
 
             NamedObjectSave nos = saveObject.GetNamedObjectRecursively(customVariable.SourceObject);
@@ -596,7 +596,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (EventCodeGenerator.ShouldGenerateEventsForVariable(customVariable, saveObject))
             {
 
-                EventCodeGenerator.GenerateEventRaisingCode(setter, BeforeOrAfter.After, customVariable.Name, saveObject);
+                EventCodeGenerator.GenerateEventRaisingCode(setter, BeforeOrAfter.After, customVariable.Name, saveObject, customVariable.IsShared);
             }
         }
 

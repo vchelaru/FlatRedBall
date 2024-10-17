@@ -20,6 +20,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
+using System.Security.Cryptography.X509Certificates;
 
 namespace FlatRedBall.Glue.Parsing;
 
@@ -317,6 +318,9 @@ namespace FlatRedBallAddOns.Entities
 
         GenerateFieldsAndProperties(element, codeBlock);
 
+        GenerateStaticConstructor(element, codeBlock);
+        
+
         GenerateConstructors(element, codeBlock);
 
         GenerateInitialize(element, codeBlock);
@@ -547,11 +551,6 @@ namespace FlatRedBallAddOns.Entities
     #region Constructor
 
 
-    /// <summary>
-    /// Generates constructor(s) for <paramref name="element"/> and writes them to <paramref name="codeBlock"/>.
-    /// </summary>
-    /// <param name="element">Element to write constructor(s) for.</param>
-    /// <param name="codeBlock">Code block to write the constructor(s) to.</param>
     private static void GenerateConstructors(GlueElement element, ICodeBlock codeBlock)
     {
         ICodeBlock constructor;
@@ -615,6 +614,30 @@ namespace FlatRedBallAddOns.Entities
             }
         }
     }
+    #endregion
+
+    #region Static Constructor
+
+    private static void GenerateStaticConstructor(GlueElement element, ICodeBlock codeBlock)
+    {
+        string elementName = FileManager.RemovePath(element.Name);
+
+
+        var tempblock = new CodeBlockBase();
+        foreach (var generator in CodeGenerators)
+        {
+            generator.GenerateStaticConstructor(tempblock, element);
+        }
+        if (tempblock.BodyCodeLines?.Count > 0)
+        {
+            codeBlock = codeBlock.Function("static", elementName, "");
+            foreach (var line in tempblock.BodyCodeLines)
+            {
+                codeBlock.Line(line.ToString());
+            }
+        }
+    }
+
     #endregion
 
     #region Load Static Content

@@ -105,7 +105,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             var setBlock = property.Set();
             if (hasEvents)
             {
-                EventCodeGenerator.GenerateEventRaisingCode(setBlock, BeforeOrAfter.Before, exposedEnabledVariable.Name, element);
+                EventCodeGenerator.GenerateEventRaisingCode(setBlock, BeforeOrAfter.Before, exposedEnabledVariable.Name, element, isStatic:false);
             }
 
             var setIf = setBlock.If("mEnabled != value");
@@ -113,7 +113,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             setIf.Line("EnabledChange?.Invoke(this);");
             if (hasEvents)
             {
-                EventCodeGenerator.GenerateEventRaisingCode(setIf, BeforeOrAfter.After, exposedEnabledVariable.Name, element);
+                EventCodeGenerator.GenerateEventRaisingCode(setIf, BeforeOrAfter.After, exposedEnabledVariable.Name, element, isStatic:false);
             }
         }
 

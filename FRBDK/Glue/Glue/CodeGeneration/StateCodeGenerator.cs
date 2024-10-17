@@ -280,7 +280,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (hasEvent)
             {
-                EventCodeGenerator.GenerateEventRaisingCode(setBlock, BeforeOrAfter.Before, variableToLookFor, element);
+                EventCodeGenerator.GenerateEventRaisingCode(setBlock, BeforeOrAfter.Before, variableToLookFor, element, isStatic:false);
             }
 
             if (stillNeedsToAssignValue)
@@ -354,7 +354,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (hasEvent)
             {
-                EventCodeGenerator.GenerateEventRaisingCode(setBlock, BeforeOrAfter.After, variableToLookFor, element);
+                EventCodeGenerator.GenerateEventRaisingCode(setBlock, BeforeOrAfter.After, variableToLookFor, element, isStatic:false);
             }
 
             return codeBlock;

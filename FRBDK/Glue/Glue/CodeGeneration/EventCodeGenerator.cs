@@ -16,13 +16,32 @@ using FlatRedBall.Utilities;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Instructions.Pause;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
     public class EventCodeGenerator : ElementComponentCodeGenerator
     {
 
-        #region ElementComponentCodeGenerator methods
+        #region Field/Property/Event generation
+
+        internal static void GenerateEventsForVariable(ICodeBlock codeBlock, string variableName, string variableType, bool isEventNew = false, bool isStatic = false)
+        {
+            string prefix = "public ";
+
+            if(isStatic)
+            {
+                prefix += "static ";
+            }
+
+            if (isEventNew)
+            {
+                prefix += "new ";
+            }
+            codeBlock.Line(prefix + $"event Action<{variableType}> Before" + variableName + "Set;");
+            codeBlock.Line(prefix + "event System.EventHandler After" + variableName + "Set;");
+
+        }
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
@@ -52,6 +71,96 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
+        public static bool ShouldGenerateEventsForVariable(CustomVariable customVariable, IElement container)
+        {
+
+            // Victor Chelaru
+            // August 17, 2013
+            // I debated whether
+            // static variables should
+            // create events or not.  They
+            // technically could, but that means
+            // that the custom code events would have
+            // to be modified when switching between static
+            // and instance.  This could have some impacts on
+            // GlueView code parsing, and it currently seems to
+            // be something that is either rare or something which
+            // has some pretty simple workarounds.  Therefore, I'm going
+            // to say that only instance variables can create events.
+            // Update November 16, 2024
+            // We are going to now allow
+            // this so that we can have centralized
+            // "static" variables in entities like DebuggingVariables
+            // which raise events that will be applied during live edit.
+            // GView is dead, and the user may have to do some maintenance
+            // when changing between static and non static.
+            //bool shouldGenerate = customVariable.CreatesEvent && !customVariable.IsShared;
+            bool shouldGenerate = customVariable.CreatesEvent;
+
+            if (shouldGenerate && customVariable.DefinedByBase)
+            {
+                var baseContainers = ObjectFinder.Self.GetAllBaseElementsRecursively(container as GlueElement);
+
+                foreach (var baseContainer in baseContainers)
+                {
+                    if (baseContainer.CustomVariables.Any(item => item.DefinedByBase == false && item.Name == customVariable.Name && item.CreatesEvent))
+                    {
+                        shouldGenerate = false;
+                        break;
+                    }
+                }
+            }
+
+            return shouldGenerate;
+        }
+
+        internal static void TryGenerateEventsForVariable(ICodeBlock codeBlock, CustomVariable customVariable, IElement container)
+        {
+            var shouldGenerate = ShouldGenerateEventsForVariable(customVariable, container);
+            // Currently we don't support events on static variables
+            if (shouldGenerate)
+            {
+                var variableType = customVariable.Type;
+                if (customVariable.GetIsCsv())
+                {
+                    var referencedFile = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(variableType);
+
+                    if (referencedFile != null)
+                    {
+                        variableType = referencedFile.GetTypeForCsvFile();
+                    }
+                }
+                EventCodeGenerator.GenerateEventsForVariable(codeBlock, customVariable.Name, variableType, isStatic:customVariable.IsShared);
+            }
+        }
+
+        #endregion
+
+        static bool IsEventStatic(EventResponseSave eventResponse, GlueElement element)
+        {
+            var variable = element.GetCustomVariable(eventResponse.SourceVariable);
+            return variable?.IsShared == true;
+        }
+
+        public override void GenerateStaticConstructor(ICodeBlock codeBlock, GlueElement element)
+        {
+            foreach(var eventSave in element.Events)
+            {
+                // only do static events here:
+                if(!string.IsNullOrEmpty(eventSave.SourceVariable))
+                {
+                    if(IsEventStatic(eventSave, element))
+                    {
+                        GenerateInitializeForEvent(codeBlock, element, eventSave);
+                    }
+                }
+            }
+        }
+
+        #region ElementComponentCodeGenerator methods
+
+
+
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
         {
             foreach (EventResponseSave ers in element.Events)
@@ -69,9 +178,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static void GeneratePostInitialize(ICodeBlock codeBlock, IElement element)
         {
+            var asGlueElement = element as GlueElement;
             foreach (EventResponseSave ers in element.Events)
             {
-                GenerateInitializeForEvent(codeBlock, element, ers);
+                if(!IsEventStatic(ers, asGlueElement))
+                {
+                    GenerateInitializeForEvent(codeBlock, element, ers);
+                }
             }
 
             if (element.Events.FirstOrDefault(item => item.EventName == "InitializeEvent") != null)
@@ -90,6 +203,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             bool hasIfStatementForNos;
             string leftSide;
             GetEventGenerationInfo(element, ers, out hasIfStatementForNos, out leftSide);
+
 
             if (!string.IsNullOrEmpty(leftSide))
             {
@@ -150,7 +264,13 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // event name itself
                 string eventName = ers.BeforeOrAfter.ToString() + ers.SourceVariable + "Set";
 
-                leftSide = "this." + eventName;
+                // Oct 16, 2024
+                // This could be
+                // a static event,
+                // so don't prefix "this"
+                // anymore
+                //leftSide = "this." + eventName;
+                leftSide = eventName;
             }
 
             else if (string.IsNullOrEmpty(ers.SourceObject) || ers.SourceObject == "<NONE>")
@@ -159,7 +279,13 @@ namespace FlatRedBall.Glue.CodeGeneration
                 EventSave eventSave = ers.GetEventSave();
                 if (eventSave == null || string.IsNullOrEmpty(eventSave.ExternalEvent))
                 {
-                    leftSide = "this." + ers.EventName;
+                    // Oct 16, 2024
+                    // This could be
+                    // a static event,
+                    // so don't prefix "this"
+                    // anymore
+                    //leftSide = "this." + ers.EventName;
+                    leftSide = ers.EventName;
                 }
                 else
                 {
@@ -240,8 +366,19 @@ namespace FlatRedBall.Glue.CodeGeneration
                         }
                         else
                         {
-                            // only null it out if it doesn't have a source object. Otherwise, we can't assign null on an event that isn't owned by this class
-                            codeBlock.Line(leftSide + " = null;");
+                            bool isStatic = false;
+                            if( !string.IsNullOrEmpty(ers.SourceVariable ))
+                            {
+                                var variable = element.GetCustomVariable(ers.SourceVariable);
+                                isStatic = variable?.IsShared == true;
+                            }
+
+                            // If it's static, never un-assign it.
+                            if(!isStatic)
+                            {
+                                // only null it out if it doesn't have a source object. Otherwise, we can't assign null on an event that isn't owned by this class
+                                codeBlock.Line(leftSide + " = null;");
+                            }
                         }
                     }
 
@@ -262,19 +399,9 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
-        internal static void GenerateEventsForVariable(ICodeBlock codeBlock, string variableName, string variableType, bool isEventNew = false)
-        {
-            string prefix = "public ";
-            if (isEventNew)
-            {
-                prefix += "new ";
-            }
-            codeBlock.Line(prefix + $"event Action<{variableType}> Before" + variableName + "Set;");
-            codeBlock.Line(prefix + "event System.EventHandler After" + variableName + "Set;");
 
-        }
 
-        internal static void GenerateEventRaisingCode(ICodeBlock codeBlock, BeforeOrAfter beforeOrAfter, string variableName, IElement saveObject)
+        internal static void GenerateEventRaisingCode(ICodeBlock codeBlock, BeforeOrAfter beforeOrAfter, string variableName, IElement saveObject, bool isStatic)
         {
             PerformancePluginCodeGenerator.CodeBlock = codeBlock;
             PerformancePluginCodeGenerator.SaveObject = saveObject;
@@ -284,7 +411,14 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (beforeOrAfter == BeforeOrAfter.After)
             {
                 beforeOrAfterAsString = "After";
-                parameters = "this, null";
+                if(isStatic)
+                {
+                    parameters = "null, null";
+                }
+                else
+                {
+                    parameters = "this, null";
+                }
             }
             PerformancePluginCodeGenerator.GenerateStart(beforeOrAfterAsString + " set " + variableName);
 
@@ -506,7 +640,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // event in Glue, but then mdoify
             // the event in Visual Studio.  The
             // user shouldn't be forced into adding
-            // some content in Glue first to wdit the
+            // some content in Glue first to edit the
             // event in Visual Studio.
             // 2:  A designer may decide to remove the 
             // contents of a method.  If this happens then
@@ -517,8 +651,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 // Need to modify the event CSV to include the arguments for this event
 
+                var isStatic = IsEventStatic(ers, element);
+
+                var prefix = isStatic ? "static void" : "void";
+
                 currentBlock = currentBlock
-                    .Function("void", "On" + ers.EventName, args);
+                    .Function(prefix, "On" + ers.EventName, args);
 
                 currentBlock.TabCharacter = "";
 
@@ -811,59 +949,5 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public static bool ShouldGenerateEventsForVariable(CustomVariable customVariable, IElement container)
-        {
-
-            // Victor Chelaru
-            // August 17, 2013
-            // I debated whether
-            // static variables should
-            // create events or not.  They
-            // technically could, but that means
-            // that the custom code events would have
-            // to be modified when switching between static
-            // and instance.  This could have some impacts on
-            // GlueView code parsing, and it currently seems to
-            // be something that is either rare or something which
-            // has some pretty simple workarounds.  Therefore, I'm going
-            // to say that only instance variables can create events.
-            bool shouldGenerate = customVariable.CreatesEvent && !customVariable.IsShared;
-
-            if(shouldGenerate && customVariable.DefinedByBase)
-            {
-                var baseContainers = ObjectFinder.Self.GetAllBaseElementsRecursively(container as GlueElement);
-
-                foreach(var baseContainer in baseContainers)
-                {
-                    if(baseContainer.CustomVariables.Any(item=>item.DefinedByBase == false && item.Name == customVariable.Name && item.CreatesEvent))
-                    {
-                        shouldGenerate = false;
-                        break;
-                    }
-                }
-            }
-
-            return shouldGenerate;
-        }
-
-        internal static void TryGenerateEventsForVariable(ICodeBlock codeBlock, CustomVariable customVariable, IElement container)
-        {
-            var shouldGenerate = ShouldGenerateEventsForVariable(customVariable, container);
-            // Currently we don't support events on static variables
-            if (shouldGenerate)
-            {
-                var variableType = customVariable.Type;
-                if(customVariable.GetIsCsv())
-                {
-                    var referencedFile = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(variableType);
-
-                    if(referencedFile != null)
-                    {
-                        variableType = referencedFile.GetTypeForCsvFile();
-                    }
-                }
-                EventCodeGenerator.GenerateEventsForVariable(codeBlock, customVariable.Name, variableType);
-            }
-        }
     }
 }
