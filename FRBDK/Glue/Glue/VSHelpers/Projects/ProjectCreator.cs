@@ -66,7 +66,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     }
                     else
                     {
-                        throw exception;
+                        throw;
                     }
                 }
 

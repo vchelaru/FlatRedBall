@@ -1600,7 +1600,6 @@ public class DragDropManager : Singleton<DragDropManager>
             rfsAti == namedObjectAti && rfsAti != null;
 
         /////////////////Early Out////////////////////////
-        ///
         if(!doFileAndNamedObjectHaveMatchingTypes)
         {
             return false;

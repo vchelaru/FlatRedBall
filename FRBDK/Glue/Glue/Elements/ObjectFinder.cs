@@ -1199,13 +1199,13 @@ public class ObjectFinder : IObjectFinder
         }
 
         //////////////////////Early Out/////////////////////////
-        /// Update July 24, 2023 - 
-        /// Variables can be passed
-        /// in to this method to generate
-        /// code even if they are not contained
-        /// in a GlueElement, such as variables which
-        /// are used to generate the {ElementName}Type.
-        /// Therefore, tolerate a null containingElement
+        // Update July 24, 2023 - 
+        // Variables can be passed
+        // in to this method to generate
+        // code even if they are not contained
+        // in a GlueElement, such as variables which
+        // are used to generate the {ElementName}Type.
+        // Therefore, tolerate a null containingElement
         //if(containingElement == null)
         //{
         //    return (isState, category);

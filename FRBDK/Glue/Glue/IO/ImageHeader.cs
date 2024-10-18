@@ -69,7 +69,7 @@ namespace Glue.IO
         /// <summary>        
         /// Gets the dimensions of an image.        
         /// </summary>        
-        /// <param name="path">The path of the image to get the dimensions of.</param>        
+        /// <param name="binaryReader">The binary reader which stores the image data</param>
         /// <returns>The dimensions of the specified image.</returns>        
         /// <exception cref="ArgumentException">The image was of an unrecognised format.</exception>            
         public static Size GetDimensions(BinaryReader binaryReader)

@@ -205,7 +205,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// </summary>
         /// <param name="absoluteFile">The absolute file name to add.</param>
         /// <returns>The ProjectItem which was created and added to the project.</returns>
-        public ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained, bool forceToContentPipeline = false, ReferencedFileSave rfs = null)
+        public ProjectItem AddContentBuildItem(string absoluteFile,
+            SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained, bool forceToContentPipeline = false, ReferencedFileSave rfs = null)
         {
             /////////////////////////Early Out////////////////////////////
             string extension = FileManager.GetExtension(absoluteFile);
