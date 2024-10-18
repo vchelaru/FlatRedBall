@@ -1107,13 +1107,17 @@ namespace FlatRedBall.Graphics
             {
                 if(postProcess.IsEnabled)
                 {
+#if DEBUG
                     mRenderBreaks.Add(new RenderBreak() { ObjectCausingBreak = postProcess});
+#endif
                     Renderer.SwapChain.Swap();
                     postProcess.Apply(Renderer.SwapChain.CurrentTexture);
                 }
             }
 
+#if DEBUG
             mRenderBreaks.Add(new RenderBreak() { ObjectCausingBreak = SwapChain });
+#endif
             SwapChain.RenderToScreen();
         }
 
@@ -1263,7 +1267,7 @@ namespace FlatRedBall.Graphics
 
 #else
                     mCurrentEffect.VertexColorEnabled = true;
-#endif               
+#endif
 
                     break;
                 case FlatRedBall.Graphics.ColorOperation.Add:
@@ -1431,7 +1435,7 @@ namespace FlatRedBall.Graphics
         }
 
 
-        #endregion
+#endregion
 
         #region Private Methods
 
@@ -3339,6 +3343,6 @@ namespace FlatRedBall.Graphics
 
         #endregion
 
-        #endregion
+#endregion
     }
 }
