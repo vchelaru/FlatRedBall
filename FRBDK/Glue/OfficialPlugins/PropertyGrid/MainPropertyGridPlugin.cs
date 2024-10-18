@@ -57,7 +57,9 @@ namespace OfficialPlugins.VariableDisplay
         private void HandleItemsSelected(List<ITreeNode> list)
         {
             var first = list.FirstOrDefault();
-            if(first != null)
+            // If the user deselects something in game, we want to still pass that down
+            // so that we don't show anything
+            //if(first != null)
             {
                 HandleItemSelect(GlueState.Self.CurrentTreeNode);
             }
@@ -124,11 +126,11 @@ namespace OfficialPlugins.VariableDisplay
                 variableTab?.Hide();
             }
             else if(GlueState.Self.CurrentElement != null && 
-                (selectedTreeNode.IsRootCustomVariablesNode() 
+                (selectedTreeNode?.IsRootCustomVariablesNode() == true 
                 // Feb 18, 2021 - It's annoying to have to select the Variables
                 // node. The user should be able to see variables just by selecting
                 // the entity itself.
-                || selectedTreeNode.IsElementNode()))
+                || selectedTreeNode?.IsElementNode() == true))
             {
                 ShowVariablesForCurrentElement();
             }

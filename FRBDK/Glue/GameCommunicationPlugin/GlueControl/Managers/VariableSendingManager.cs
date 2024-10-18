@@ -92,6 +92,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         public async Task HandleNamedObjectVariableChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, object forcedCurrentValue = null)
         {
+            if(nos == null)
+            {
+                throw new ArgumentNullException(nameof(nos));
+            }
             var gameScreenName = await CommandSender.Self.GetScreenName();
             var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
 
