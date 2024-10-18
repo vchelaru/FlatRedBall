@@ -413,19 +413,20 @@ public class CustomVariableSaveSetPropertyLogic
         //}
         // Update Feb 9 2023 - for more info on why this is the
         // case, see https://github.com/vchelaru/FlatRedBall/issues/959
+        // Update October 18, 2024 - we now allow the combination of SetByDerived + IsShared, so we can remove this:
+        //bool didErrorOccur = false;
+        //if (customVariable.SetByDerived && customVariable.IsShared)
+        //{
+        //    GlueCommands.Self.DialogCommands.ShowMessageBox("Variables which are SetByDerived cannot set IsShared to true");
+        //    didErrorOccur = true;
+        //}
+        //if (customVariable.GetIsExposingVariable(GlueState.Self.CurrentElement) && customVariable.IsShared)
+        //{
+        //    GlueCommands.Self.DialogCommands.ShowMessageBox("Exposed variables cannot set IsShared to true");
+        //    didErrorOccur = true;
+        //}
+
         bool didErrorOccur = false;
-        if (customVariable.SetByDerived && customVariable.IsShared)
-        {
-            GlueCommands.Self.DialogCommands.ShowMessageBox("Variables which are SetByDerived cannot set IsShared to true");
-            didErrorOccur = true;
-        }
-
-        if (customVariable.GetIsExposingVariable(GlueState.Self.CurrentElement) && customVariable.IsShared)
-        {
-            GlueCommands.Self.DialogCommands.ShowMessageBox("Exposed variables cannot set IsShared to true");
-            didErrorOccur = true;
-        }
-
         if (didErrorOccur)
         {
             customVariable.IsShared = (bool)oldValue;
