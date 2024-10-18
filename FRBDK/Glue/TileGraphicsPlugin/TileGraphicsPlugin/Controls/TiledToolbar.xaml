@@ -11,6 +11,7 @@
             ToolTip="Open Tiled"
             Opened="HandleOpened"
             Closed="DropDownButton_Closed"
+            Click="HandleButtonClick"
             x:Name="DropDownButton">
             <xctk:SplitButton.DropDownContent>
                 <StackPanel x:Name="TiledDropdown" MinWidth="100">
