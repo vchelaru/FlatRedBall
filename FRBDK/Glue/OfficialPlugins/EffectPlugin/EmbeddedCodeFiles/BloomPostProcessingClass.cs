@@ -75,8 +75,6 @@ internal class ReplaceClassName : IPostProcess
     float mBloomStrength4 = 1.0f;
     float mBloomStrength5 = 1.0f;
 
-    float mRadiusMultiplier = 1.0f;
-
     bool mNeedsCreateRenderTargets;
     bool mNeedsApplySettings;
 
