@@ -82,6 +82,9 @@ internal class ReplaceClassName : IPostProcess
 
     #region Exposed settings
 
+    /// <summary>
+    /// Sets the <see cref="BloomPreset"/> to use. These are pre-made presets.
+    /// </summary>
     public BloomPresets BloomPreset
     {
         get { return mBloomPreset; }
@@ -95,6 +98,9 @@ internal class ReplaceClassName : IPostProcess
     }
     BloomPresets mBloomPreset;
 
+    /// <summary>
+    /// Brightness threshold value at which bloom starts to be produced.
+    /// </summary>
     public float Threshold
     {
         get { return mThreshold; }
@@ -108,6 +114,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mThreshold = .6f;
 
+    /// <summary>
+    /// Strength multiplier used to scale bloom intensity between passes.
+    /// </summary>
     public float StrengthMultiplier
     {
         get { return mStrengthMultiplier; }
@@ -121,6 +130,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mStrengthMultiplier = 1f;
 
+    /// <summary>
+    /// Radius multiplier used to scale bloom radius between passes.
+    /// </summary>
     public float RadiusMultiplier
     {
         get { return mRadiusMultiplier; }
@@ -134,6 +146,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mRadiusMultiplier = 1f;
 
+    /// <summary>
+    /// Whether to use luminance for assessing color brightness.
+    /// </summary>
     public bool UseLuminance
     {
         get { return mUseLuminance; }
@@ -147,6 +162,9 @@ internal class ReplaceClassName : IPostProcess
     }
     bool mUseLuminance = false;
 
+    /// <summary>
+    /// Intensity of the final bloom image when mixed with the non-bloomed image.
+    /// </summary>
     public float Intensity
     {
         get { return mIntensity; }
@@ -160,6 +178,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mIntensity = 0.25f;
 
+    /// <summary>
+    /// Amount of saturation for the bloom effect.
+    /// </summary>
     public float Saturation
     {
         get { return mSaturation; }
@@ -173,6 +194,10 @@ internal class ReplaceClassName : IPostProcess
     }
     float mSaturation = 1.3f;
 
+    /// <summary>
+    /// Texture quality for the bloom effect. Half quality is considered best for image
+    /// quality since bloom needs to be blurred anyway and it is very performant.
+    /// </summary>
     public float Quality
     {
         get { return mQuality; }
@@ -186,6 +211,10 @@ internal class ReplaceClassName : IPostProcess
     }
     float mQuality = .5f;
 
+    /// <summary>
+    /// Whether to preserve bloom render target contents for accumulation effect. The effect
+    /// might be weak if this is disabled.
+    /// </summary>
     public bool PreserveContents
     {
         get { return mPreserveContents; }
