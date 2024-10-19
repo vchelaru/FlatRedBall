@@ -81,12 +81,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mCrtMode; }
         set
         {
-            if (mCrtMode != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mCrtMode == value) return;
 
             mCrtMode = value;
+            mNeedsApplySettings = true;
         }
     }
     CrtModeOption mCrtMode = CrtModeOption.Full;
@@ -96,12 +94,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mIsSmoothingFilterEnabled; }
         set
         {
-            if (mIsSmoothingFilterEnabled != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mIsSmoothingFilterEnabled == value) return;
 
             mIsSmoothingFilterEnabled = value;
+            mNeedsApplySettings = true;
         }
     }
     bool mIsSmoothingFilterEnabled = true;
@@ -111,12 +107,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mIsChromaticAberrationEnabled; }
         set
         {
-            if (mIsChromaticAberrationEnabled != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mIsChromaticAberrationEnabled == value) return;
 
             mIsChromaticAberrationEnabled = value;
+            mNeedsApplySettings = true;
         }
     }
     bool mIsChromaticAberrationEnabled = true;
@@ -126,12 +120,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mExposure; }
         set
         {
-            if (mExposure != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mExposure == value) return;
 
             mExposure = value;
+            mNeedsApplySettings = true;
         }
     }
     float mExposure = 1.00f;
@@ -141,12 +133,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mVibrance; }
         set
         {
-            if (mVibrance != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mVibrance == value) return;
 
             mVibrance = value;
+            mNeedsApplySettings = true;
         }
     }
     float mVibrance = 0.18f;
@@ -156,12 +146,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mSmoothingWeightB; }
         set
         {
-            if (mSmoothingWeightB != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mSmoothingWeightB == value) return;
 
             mSmoothingWeightB = value;
+            mNeedsApplySettings = true;
         }
     }
     float mSmoothingWeightB = 0.68f;
@@ -171,12 +159,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mSmoothingWeightS; }
         set
         {
-            if (mSmoothingWeightS != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mSmoothingWeightS == value) return;
 
             mSmoothingWeightS = value;
+            mNeedsApplySettings = true;
         }
     }
     float mSmoothingWeightS = 0.32f;
@@ -186,12 +172,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mSmoothingWeightP1B; }
         set
         {
-            if (mSmoothingWeightP1B != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mSmoothingWeightP1B == value) return;
 
             mSmoothingWeightP1B = value;
+            mNeedsApplySettings = true;
         }
     }
     float mSmoothingWeightP1B = 0.7f;
@@ -201,12 +185,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mSmoothingWeightP1H; }
         set
         {
-            if (mSmoothingWeightP1H != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mSmoothingWeightP1H == value) return;
 
             mSmoothingWeightP1H = value;
+            mNeedsApplySettings = true;
         }
     }
     float mSmoothingWeightP1H = 0.15f;
@@ -216,12 +198,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mSmoothingWeightP1V; }
         set
         {
-            if (mSmoothingWeightP1V != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mSmoothingWeightP1V == value) return;
 
             mSmoothingWeightP1V = value;
+            mNeedsApplySettings = true;
         }
     }
     float mSmoothingWeightP1V = 0.15f;
@@ -231,12 +211,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mSmoothingWeightP2B; }
         set
         {
-            if (mSmoothingWeightP2B != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mSmoothingWeightP2B == value) return;
 
             mSmoothingWeightP2B = value;
+            mNeedsApplySettings = true;
         }
     }
     float mSmoothingWeightP2B = 0.3f;
@@ -246,12 +224,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mSmoothingWeightP2H; }
         set
         {
-            if (mSmoothingWeightP2H != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mSmoothingWeightP2H == value) return;
 
             mSmoothingWeightP2H = value;
+            mNeedsApplySettings = true;
         }
     }
     float mSmoothingWeightP2H = 0.5f;
@@ -261,12 +237,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mSmoothingWeightP2V; }
         set
         {
-            if (mSmoothingWeightP2V != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mSmoothingWeightP2V == value) return;
 
             mSmoothingWeightP2V = value;
+            mNeedsApplySettings = true;
         }
     }
     float mSmoothingWeightP2V = 0.2f;
@@ -276,12 +250,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mScanMaskStrenght; }
         set
         {
-            if (mScanMaskStrenght != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mScanMaskStrenght == value) return;
 
             mScanMaskStrenght = value;
+            mNeedsApplySettings = true;
         }
     }
     float mScanMaskStrenght = 0.525f;
@@ -291,27 +263,23 @@ internal class ReplaceClassName : IPostProcess
         get { return mScanScale; }
         set
         {
-            if (mScanScale != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mScanScale == value) return;
 
             mScanScale = value;
+            mNeedsApplySettings = true;
         }
     }
     float mScanScale = -8.0f;
 
     public float ScanKernelShape
     {
-        get { return mScanScale; }
+        get { return mScanKernelShape; }
         set
         {
-            if (mScanKernelShape != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mScanKernelShape == value) return;
 
             mScanKernelShape = value;
+            mNeedsApplySettings = true;
         }
     }
     float mScanKernelShape = 2.0f;
@@ -321,12 +289,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mScanBrightnessBoost; }
         set
         {
-            if (mScanBrightnessBoost != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mScanBrightnessBoost == value) return;
 
             mScanBrightnessBoost = value;
+            mNeedsApplySettings = true;
         }
     }
     float mScanBrightnessBoost = 1.11f;
@@ -336,12 +302,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mWarpX; }
         set
         {
-            if (mWarpX != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mWarpX == value) return;
 
             mWarpX = value;
+            mNeedsApplySettings = true;
         }
     }
     float mWarpX = 0.01f;
@@ -351,12 +315,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mWarpY; }
         set
         {
-            if (mWarpY != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mWarpY == value) return;
 
             mWarpY = value;
+            mNeedsApplySettings = true;
         }
     }
     float mWarpY = 0.02f;
@@ -366,12 +328,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mCaRedOffset; }
         set
         {
-            if (mCaRedOffset != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mCaRedOffset == value) return;
 
             mCaRedOffset = value;
+            mNeedsApplySettings = true;
         }
     }
     float mCaRedOffset = 0.0006f;
@@ -381,12 +341,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mCaBlueOffset; }
         set
         {
-            if (mCaBlueOffset != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mCaBlueOffset == value) return;
 
             mCaBlueOffset = value;
+            mNeedsApplySettings = true;
         }
     }
     float mCaBlueOffset = 0.0006f;
