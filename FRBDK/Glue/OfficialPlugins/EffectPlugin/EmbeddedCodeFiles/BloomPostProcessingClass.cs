@@ -77,7 +77,7 @@ internal class ReplaceClassName : IPostProcess
 
     float mRadiusMultiplier = 1.0f;
 
-    bool mNeedsCreateRT;
+    bool mNeedsCreateRenderTargets;
     bool mNeedsApplySettings;
 
     #endregion
@@ -194,7 +194,7 @@ internal class ReplaceClassName : IPostProcess
         {
             if (mQuality != value)
             {
-                mNeedsCreateRT = true;
+                mNeedsCreateRenderTargets = true;
                 mNeedsApplySettings = true;
             }
 
@@ -210,7 +210,7 @@ internal class ReplaceClassName : IPostProcess
         {
             if (mPreserveContents != value)
             {
-                mNeedsCreateRT = true;
+                mNeedsCreateRenderTargets = true;
                 mNeedsApplySettings = true;
             }
 
@@ -382,6 +382,8 @@ internal class ReplaceClassName : IPostProcess
         BloomThreshold = mThreshold;
         mBloomCombineBLIntensityParameter.SetValue(mIntensity);
         mBloomCombineBLSaturationParameter.SetValue(mSaturation);
+
+        mNeedsApplySettings = false;
     }
 
     private void CreateRenderTargets()
@@ -395,6 +397,8 @@ internal class ReplaceClassName : IPostProcess
         PostProcessingHelper.CreateRenderTarget(ref mBloomRenderTarget2DMip3, width / 8, height / 8, SurfaceFormat.HalfVector4, usage);
         PostProcessingHelper.CreateRenderTarget(ref mBloomRenderTarget2DMip4, width / 16, height / 16, SurfaceFormat.HalfVector4, usage);
         PostProcessingHelper.CreateRenderTarget(ref mBloomRenderTarget2DMip5, width / 32, height / 32, SurfaceFormat.HalfVector4, usage);
+
+        mNeedsCreateRenderTargets = false;
     }
 
     void SetBloomPreset(BloomPresets preset)
@@ -506,7 +510,7 @@ internal class ReplaceClassName : IPostProcess
 
     public void Apply(Texture2D source)
     {
-        if (mNeedsCreateRT)
+        if (mNeedsCreateRenderTargets)
             CreateRenderTargets();
 
         if (mNeedsApplySettings)
