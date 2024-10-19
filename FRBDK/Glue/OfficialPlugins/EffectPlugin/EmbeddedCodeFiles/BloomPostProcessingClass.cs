@@ -407,7 +407,15 @@ internal class ReplaceClassName : IPostProcess
         HalfPixel = Vector2.Zero;
         BloomInverseResolution = new Vector2(1.0f / FlatRedBallServices.Game.Window.ClientBounds.Width, 1.0f / FlatRedBallServices.Game.Window.ClientBounds.Height);
 
+        // Miguel 19/10/2024
+        // When Vic migrated the .fx files to FRB he merged Bloom.fx and BloomCombine.fx into one,
+        // resulting in a rearrange of the sampler states order. BloomCombine.fx sampler states
+        // became r0 and r1 while Bloom.fx became r2. This broke the clamping and, as a consecuence,
+        // bloom bleed from the opposite sides of the screen. Fixed by ensuring all three sampler states
+        // are set to clamp mode:
         device.SamplerStates[0] = SamplerState.LinearClamp;
+        device.SamplerStates[1] = SamplerState.LinearClamp;
+        device.SamplerStates[2] = SamplerState.LinearClamp;
 
         if (BloomUseLuminance) _bloomPassExtractLuminance.Apply();
         else _bloomPassExtract.Apply();
@@ -573,8 +581,6 @@ internal class ReplaceClassName : IPostProcess
             else _bloomPassUpsample.Apply();
             QuadRenderer.RenderFitViewport();
         }
-
-        device.SamplerStates[1] = SamplerState.LinearClamp;
 
         // Combine base image and bloom image.
         _bloomCombineEffect.CurrentTechnique = _bloomTechniqueCombine;
