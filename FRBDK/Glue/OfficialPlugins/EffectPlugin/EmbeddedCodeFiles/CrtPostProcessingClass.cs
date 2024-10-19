@@ -68,14 +68,328 @@ internal class ReplaceClassName : IPostProcess
     EffectParameter mCaRedOffsetParameter;
     EffectParameter mCaBlueOffsetParameter;
 
-    public float Exposure { get; set; } = 1.00f;
-    public float Vibrance { get; set; } = 0.18f;
-    public float ScanBrightnessBoost { get; set; } = 1.11f;
-    public CrtModeOption CrtMode { get; set; } = CrtModeOption.Full;
-    public bool IsSmoothingFilterEnabled { get; set; } = true;
-    public bool IsChromaticAberrationEnabled { get; set; } = true;
-
     SpriteBatch mSpriteBatch;
+
+    bool mNeedsApplySettings;
+
+    #endregion
+
+    #region Exposed settings
+
+    public CrtModeOption CrtMode
+    {
+        get { return mCrtMode; }
+        set
+        {
+            if (mCrtMode != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mCrtMode = value;
+        }
+    }
+    CrtModeOption mCrtMode = CrtModeOption.Full;
+
+    public bool IsSmoothingFilterEnabled
+    {
+        get { return mIsSmoothingFilterEnabled; }
+        set
+        {
+            if (mIsSmoothingFilterEnabled != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mIsSmoothingFilterEnabled = value;
+        }
+    }
+    bool mIsSmoothingFilterEnabled = true;
+
+    public bool IsChromaticAberrationEnabled
+    {
+        get { return mIsChromaticAberrationEnabled; }
+        set
+        {
+            if (mIsChromaticAberrationEnabled != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mIsChromaticAberrationEnabled = value;
+        }
+    }
+    bool mIsChromaticAberrationEnabled = true;
+
+    public float Exposure
+    {
+        get { return mExposure; }
+        set
+        {
+            if (mExposure != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mExposure = value;
+        }
+    }
+    float mExposure = 1.00f;
+
+    public float Vibrance
+    {
+        get { return mVibrance; }
+        set
+        {
+            if (mVibrance != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mVibrance = value;
+        }
+    }
+    float mVibrance = 0.18f;
+
+    public float SmoothingWeightB
+    {
+        get { return mSmoothingWeightB; }
+        set
+        {
+            if (mSmoothingWeightB != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mSmoothingWeightB = value;
+        }
+    }
+    float mSmoothingWeightB = 0.68f;
+
+    public float SmoothingWeightS
+    {
+        get { return mSmoothingWeightS; }
+        set
+        {
+            if (mSmoothingWeightS != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mSmoothingWeightS = value;
+        }
+    }
+    float mSmoothingWeightS = 0.32f;
+
+    public float SmoothingWeightP1B
+    {
+        get { return mSmoothingWeightP1B; }
+        set
+        {
+            if (mSmoothingWeightP1B != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mSmoothingWeightP1B = value;
+        }
+    }
+    float mSmoothingWeightP1B = 0.7f;
+
+    public float SmoothingWeightP1H
+    {
+        get { return mSmoothingWeightP1H; }
+        set
+        {
+            if (mSmoothingWeightP1H != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mSmoothingWeightP1H = value;
+        }
+    }
+    float mSmoothingWeightP1H = 0.15f;
+
+    public float SmoothingWeightP1V
+    {
+        get { return mSmoothingWeightP1V; }
+        set
+        {
+            if (mSmoothingWeightP1V != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mSmoothingWeightP1V = value;
+        }
+    }
+    float mSmoothingWeightP1V = 0.15f;
+
+    public float SmoothingWeightP2B
+    {
+        get { return mSmoothingWeightP2B; }
+        set
+        {
+            if (mSmoothingWeightP2B != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mSmoothingWeightP2B = value;
+        }
+    }
+    float mSmoothingWeightP2B = 0.3f;
+
+    public float SmoothingWeightP2H
+    {
+        get { return mSmoothingWeightP2H; }
+        set
+        {
+            if (mSmoothingWeightP2H != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mSmoothingWeightP2H = value;
+        }
+    }
+    float mSmoothingWeightP2H = 0.5f;
+
+    public float SmoothingWeightP2V
+    {
+        get { return mSmoothingWeightP2V; }
+        set
+        {
+            if (mSmoothingWeightP2V != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mSmoothingWeightP2V = value;
+        }
+    }
+    float mSmoothingWeightP2V = 0.2f;
+
+    public float ScanMaskStrenght
+    {
+        get { return mScanMaskStrenght; }
+        set
+        {
+            if (mScanMaskStrenght != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mScanMaskStrenght = value;
+        }
+    }
+    float mScanMaskStrenght = 0.525f;
+
+    public float ScanScale
+    {
+        get { return mScanScale; }
+        set
+        {
+            if (mScanScale != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mScanScale = value;
+        }
+    }
+    float mScanScale = -8.0f;
+
+    public float ScanKernelShape
+    {
+        get { return mScanScale; }
+        set
+        {
+            if (mScanKernelShape != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mScanKernelShape = value;
+        }
+    }
+    float mScanKernelShape = 2.0f;
+
+    public float ScanBrightnessBoost
+    {
+        get { return mScanBrightnessBoost; }
+        set
+        {
+            if (mScanBrightnessBoost != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mScanBrightnessBoost = value;
+        }
+    }
+    float mScanBrightnessBoost = 1.11f;
+
+    public float WarpX
+    {
+        get { return mWarpX; }
+        set
+        {
+            if (mWarpX != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mWarpX = value;
+        }
+    }
+    float mWarpX = 0.01f;
+
+    public float WarpY
+    {
+        get { return mWarpY; }
+        set
+        {
+            if (mWarpY != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mWarpY = value;
+        }
+    }
+    float mWarpY = 0.02f;
+
+    public float ChromaticAberrationRedOffset
+    {
+        get { return mCaRedOffset; }
+        set
+        {
+            if (mCaRedOffset != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mCaRedOffset = value;
+        }
+    }
+    float mCaRedOffset = 0.0006f;
+
+    public float ChromaticAberrationBlueOffset
+    {
+        get { return mCaBlueOffset; }
+        set
+        {
+            if (mCaBlueOffset != value)
+            {
+                mNeedsApplySettings = true;
+            }
+
+            mCaBlueOffset = value;
+        }
+    }
+    float mCaBlueOffset = 0.0006f;
 
     #endregion
 
@@ -128,13 +442,13 @@ internal class ReplaceClassName : IPostProcess
         }
 
         CreateRenderTargets();
+        ApplySettings();
 
         FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) =>
         {
             CreateRenderTargets();
+            ApplySettings();
         };
-
-        ApplySettings();
     }
 
     private void CreateRenderTargets()
@@ -153,21 +467,21 @@ internal class ReplaceClassName : IPostProcess
         mPixelWidthParameter.SetValue(1f / FlatRedBallServices.Game.Window.ClientBounds.Width);
         mPixelHeightParameter.SetValue(1f / FlatRedBallServices.Game.Window.ClientBounds.Height);
 
-        mExposureParameter.SetValue(Exposure);
-        mVibranceParameter.SetValue(Vibrance);
+        mExposureParameter.SetValue(mExposure);
+        mVibranceParameter.SetValue(mVibrance);
 
-        mSmoothingWeightBParameter.SetValue(0.68f);
-        mSmoothingWeightSParameter.SetValue(0.32f);
+        mSmoothingWeightBParameter.SetValue(mSmoothingWeightB);
+        mSmoothingWeightSParameter.SetValue(mSmoothingWeightS);
 
-        mCrtSmoothingWeightP1BParameter.SetValue(0.7f);
-        mCrtSmoothingWeightP1HParameter.SetValue(0.15f);
-        mCrtSmoothingWeightP1VParameter.SetValue(0.15f);
-        mCrtSmoothingWeightP2BParameter.SetValue(0.3f);
-        mCrtSmoothingWeightP2HParameter.SetValue(0.5f);
-        mCrtSmoothingWeightP2VParameter.SetValue(0.2f);
+        mCrtSmoothingWeightP1BParameter.SetValue(mSmoothingWeightP1B);
+        mCrtSmoothingWeightP1HParameter.SetValue(mSmoothingWeightP1H);
+        mCrtSmoothingWeightP1VParameter.SetValue(mSmoothingWeightP1V);
+        mCrtSmoothingWeightP2BParameter.SetValue(mSmoothingWeightP2B);
+        mCrtSmoothingWeightP2HParameter.SetValue(mSmoothingWeightP2H);
+        mCrtSmoothingWeightP2VParameter.SetValue(mSmoothingWeightP2V);
 
-        float scanMaskStrenght = 0.525f;
-        float scanBrightnessBoost = ScanBrightnessBoost;
+        float scanMaskStrenght = mScanMaskStrenght;
+        float scanBrightnessBoost = mScanBrightnessBoost;
 
         if (CrtMode == CrtModeOption.SoftScans)
         {
@@ -181,8 +495,8 @@ internal class ReplaceClassName : IPostProcess
         }
 
         mScanMaskStrenghtParameter.SetValue(scanMaskStrenght);
-        mScanScaleParameter.SetValue(-8.0f);
-        mScanKernelShapeParameter.SetValue(2.0f);
+        mScanScaleParameter.SetValue(mScanScale);
+        mScanKernelShapeParameter.SetValue(mScanKernelShape);
         mScanBrightnessBoostParameter.SetValue(scanBrightnessBoost);
 
         if (CrtMode == CrtModeOption.NoScansNoCurvature)
@@ -192,15 +506,17 @@ internal class ReplaceClassName : IPostProcess
         }
         else
         {
-            mWarpXParameter.SetValue(0.01f);
-            mWarpYParameter.SetValue(0.02f);
+            mWarpXParameter.SetValue(mWarpX);
+            mWarpYParameter.SetValue(mWarpY);
         }
 
-        mCaRedOffsetParameter.SetValue(0.0006f);
-        mCaBlueOffsetParameter.SetValue(0.0006f);
+        mCaRedOffsetParameter.SetValue(mCaRedOffset);
+        mCaBlueOffsetParameter.SetValue(mCaBlueOffset);
 
         mBaseTechniqueToUse = IsSmoothingFilterEnabled ? mEffectTechniqueBaseAndSmoothing : mEffectTechniqueBase;
         mScanTechniqueToUse = IsChromaticAberrationEnabled ? mEffectTechniqueCrtScanCa : mEffectTechniqueCrtScan;
+
+        mNeedsApplySettings = false;
     }
 
     public void Apply(Texture2D source, RenderTarget2D target)
@@ -215,8 +531,8 @@ internal class ReplaceClassName : IPostProcess
 
     public void Apply(Texture2D source)
     {
-        // This could be smarter to only apply when it changes, but for now this will do:
-        ApplySettings();
+        if (mNeedsApplySettings)
+            ApplySettings();
 
         var device = FlatRedBallServices.GraphicsDevice;
         var output = device.GetRenderTargets()[0].RenderTarget as RenderTarget2D;
