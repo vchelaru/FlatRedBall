@@ -39,7 +39,9 @@
         <Setter Property="TextOptions.TextRenderingMode" Value="Auto" />
     </Style>
 
-    <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource MaterialDesignScrollViewer}" />
+  <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource MaterialDesignScrollViewer}">
+    <Setter Property="converters:ScrollThrottleBehavior.IsEnabled" Value="True" />
+  </Style>
 
     <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource MaterialDesignScrollBar}">
         <Style.Resources>
