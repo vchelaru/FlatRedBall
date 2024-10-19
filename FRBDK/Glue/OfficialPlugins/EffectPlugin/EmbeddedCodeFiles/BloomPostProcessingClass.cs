@@ -102,12 +102,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mThreshold; }
         set
         {
-            if (mThreshold != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mThreshold == value) return;
 
             mThreshold = value;
+            mNeedsApplySettings = true;
         }
     }
     float mThreshold = .6f;
@@ -117,12 +115,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mStrengthMultiplier; }
         set
         {
-            if (mStrengthMultiplier != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mStrengthMultiplier == value) return;
 
             mStrengthMultiplier = value;
+            mNeedsApplySettings = true;
         }
     }
     float mStrengthMultiplier = 1f;
@@ -132,12 +128,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mRadiusMultiplier; }
         set
         {
-            if (mRadiusMultiplier != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mRadiusMultiplier == value) return;
 
             mRadiusMultiplier = value;
+            mNeedsApplySettings = true;
         }
     }
     float mRadiusMultiplier = 1f;
@@ -147,12 +141,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mUseLuminance; }
         set
         {
-            if (mUseLuminance != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mUseLuminance == value) return;
 
             mUseLuminance = value;
+            mNeedsApplySettings = true;
         }
     }
     bool mUseLuminance = false;
@@ -162,12 +154,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mIntensity; }
         set
         {
-            if (mIntensity != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mIntensity == value) return;
 
             mIntensity = value;
+            mNeedsApplySettings = true;
         }
     }
     float mIntensity = 0.25f;
@@ -177,12 +167,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mSaturation; }
         set
         {
-            if (mSaturation != value)
-            {
-                mNeedsApplySettings = true;
-            }
+            if (mSaturation == value) return;
 
             mSaturation = value;
+            mNeedsApplySettings = true;
         }
     }
     float mSaturation = 1.3f;
@@ -192,13 +180,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mQuality; }
         set
         {
-            if (mQuality != value)
-            {
-                mNeedsCreateRenderTargets = true;
-                mNeedsApplySettings = true;
-            }
+            if (mQuality == value) return;
 
             mQuality = value;
+            mNeedsCreateRenderTargets = true;
         }
     }
     float mQuality = .5f;
@@ -208,13 +193,10 @@ internal class ReplaceClassName : IPostProcess
         get { return mPreserveContents; }
         set
         {
-            if (mPreserveContents != value)
-            {
-                mNeedsCreateRenderTargets = true;
-                mNeedsApplySettings = true;
-            }
+            if (mPreserveContents == value) return;
 
             mPreserveContents = value;
+            mNeedsCreateRenderTargets = true;
         }
     }
     bool mPreserveContents = true;
