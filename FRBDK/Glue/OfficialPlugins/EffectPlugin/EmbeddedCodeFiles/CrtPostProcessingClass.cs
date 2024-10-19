@@ -76,6 +76,10 @@ internal class ReplaceClassName : IPostProcess
 
     #region Exposed settings
 
+    /// <summary>
+    /// Sets the <see cref="CrtMode"/> to display. If disabled this
+    /// effect will still apply a mild smoothing filter if enabled.
+    /// </summary>
     public CrtModeOption CrtMode
     {
         get { return mCrtMode; }
@@ -89,6 +93,9 @@ internal class ReplaceClassName : IPostProcess
     }
     CrtModeOption mCrtMode = CrtModeOption.Full;
 
+    /// <summary>
+    /// Whether to apply smoothing filter when <see cref="CrtMode"/> is <see cref="CrtModeOption.Disabled"/>.
+    /// </summary>
     public bool IsSmoothingFilterEnabled
     {
         get { return mIsSmoothingFilterEnabled; }
@@ -102,6 +109,9 @@ internal class ReplaceClassName : IPostProcess
     }
     bool mIsSmoothingFilterEnabled = true;
 
+    /// <summary>
+    /// Whether to apply chromatic aberration effect.
+    /// </summary>
     public bool IsChromaticAberrationEnabled
     {
         get { return mIsChromaticAberrationEnabled; }
@@ -115,6 +125,9 @@ internal class ReplaceClassName : IPostProcess
     }
     bool mIsChromaticAberrationEnabled = true;
 
+    /// <summary>
+    /// Level of exposure for the output image.
+    /// </summary>
     public float Exposure
     {
         get { return mExposure; }
@@ -128,6 +141,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mExposure = 1.00f;
 
+    /// <summary>
+    /// Level of vibrance for the output image.
+    /// </summary>
     public float Vibrance
     {
         get { return mVibrance; }
@@ -141,6 +157,10 @@ internal class ReplaceClassName : IPostProcess
     }
     float mVibrance = 0.18f;
 
+    /// <summary>
+    /// Amount of weight for the center pixel when
+    /// blurring with the smoothing filter.
+    /// </summary>
     public float SmoothingWeightB
     {
         get { return mSmoothingWeightB; }
@@ -154,6 +174,10 @@ internal class ReplaceClassName : IPostProcess
     }
     float mSmoothingWeightB = 0.68f;
 
+    /// <summary>
+    /// Amount of weight for the adjacent pixels when
+    /// blurring with the smoothing filter.
+    /// </summary>
     public float SmoothingWeightS
     {
         get { return mSmoothingWeightS; }
@@ -167,6 +191,10 @@ internal class ReplaceClassName : IPostProcess
     }
     float mSmoothingWeightS = 0.32f;
 
+    /// <summary>
+    /// Amount of weight for the center pixel when
+    /// blurring with the CRT mode at pass 1.
+    /// </summary>
     public float SmoothingWeightP1B
     {
         get { return mSmoothingWeightP1B; }
@@ -180,6 +208,10 @@ internal class ReplaceClassName : IPostProcess
     }
     float mSmoothingWeightP1B = 0.7f;
 
+    /// <summary>
+    /// Amount of weight for the adjacent horizontal
+    /// pixels when blurring with the CRT mode at pass 1.
+    /// </summary>
     public float SmoothingWeightP1H
     {
         get { return mSmoothingWeightP1H; }
@@ -193,6 +225,10 @@ internal class ReplaceClassName : IPostProcess
     }
     float mSmoothingWeightP1H = 0.15f;
 
+    /// <summary>
+    /// Amount of weight for the adjacent vertical
+    /// pixels when blurring with the CRT mode at pass 1.
+    /// </summary>
     public float SmoothingWeightP1V
     {
         get { return mSmoothingWeightP1V; }
@@ -206,6 +242,10 @@ internal class ReplaceClassName : IPostProcess
     }
     float mSmoothingWeightP1V = 0.15f;
 
+    /// <summary>
+    /// Amount of weight for the center pixel
+    /// when blurring with the CRT mode at pass 2.
+    /// </summary>
     public float SmoothingWeightP2B
     {
         get { return mSmoothingWeightP2B; }
@@ -219,6 +259,10 @@ internal class ReplaceClassName : IPostProcess
     }
     float mSmoothingWeightP2B = 0.3f;
 
+    /// <summary>
+    /// Amount of weight for the adjacent horizontal
+    /// pixels when blurring with the CRT mode at pass 2.
+    /// </summary>
     public float SmoothingWeightP2H
     {
         get { return mSmoothingWeightP2H; }
@@ -232,6 +276,10 @@ internal class ReplaceClassName : IPostProcess
     }
     float mSmoothingWeightP2H = 0.5f;
 
+    /// <summary>
+    /// Amount of weight for the adjacent vertical
+    /// pixels when blurring with the CRT mode at pass 2.
+    /// </summary>
     public float SmoothingWeightP2V
     {
         get { return mSmoothingWeightP2V; }
@@ -245,6 +293,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mSmoothingWeightP2V = 0.2f;
 
+    /// <summary>
+    /// Strenght for the scan mask.
+    /// </summary>
     public float ScanMaskStrenght
     {
         get { return mScanMaskStrenght; }
@@ -258,6 +309,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mScanMaskStrenght = 0.525f;
 
+    /// <summary>
+    /// Scale of the scan gaussian effect.
+    /// </summary>
     public float ScanScale
     {
         get { return mScanScale; }
@@ -271,6 +325,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mScanScale = -8.0f;
 
+    /// <summary>
+    /// Shape of the blur filter kernel.
+    /// </summary>
     public float ScanKernelShape
     {
         get { return mScanKernelShape; }
@@ -284,6 +341,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mScanKernelShape = 2.0f;
 
+    /// <summary>
+    /// Brightness boost to compensate for scan darkness.
+    /// </summary>
     public float ScanBrightnessBoost
     {
         get { return mScanBrightnessBoost; }
@@ -297,6 +357,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mScanBrightnessBoost = 1.11f;
 
+    /// <summary>
+    /// Amount of horizontal curvature.
+    /// </summary>
     public float WarpX
     {
         get { return mWarpX; }
@@ -310,6 +373,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mWarpX = 0.01f;
 
+    /// <summary>
+    /// Amount of vertical curvature.
+    /// </summary>
     public float WarpY
     {
         get { return mWarpY; }
@@ -323,6 +389,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mWarpY = 0.02f;
 
+    /// <summary>
+    /// Amount of red channel distortion for chromatic aberration.
+    /// </summary>
     public float ChromaticAberrationRedOffset
     {
         get { return mCaRedOffset; }
@@ -336,6 +405,9 @@ internal class ReplaceClassName : IPostProcess
     }
     float mCaRedOffset = 0.0006f;
 
+    /// <summary>
+    /// Amount of blue channel distortion for chromatic aberration.
+    /// </summary>
     public float ChromaticAberrationBlueOffset
     {
         get { return mCaBlueOffset; }
