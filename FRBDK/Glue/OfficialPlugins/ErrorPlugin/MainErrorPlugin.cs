@@ -97,7 +97,7 @@ namespace OfficialPlugins.ErrorPlugin
             RefreshLogic.HandleFileReadError(fileName, errorListViewModel);
         }
 
-        private void HandleFileRemoved(IElement container, ReferencedFileSave removedFile)
+        private void HandleFileRemoved(GlueElement container, ReferencedFileSave removedFile)
         {
             RefreshLogic.HandleReferencedFileRemoved(removedFile, errorListViewModel);
         }

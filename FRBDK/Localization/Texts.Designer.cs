@@ -1654,15 +1654,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter a name for the new entity:.
-        /// </summary>
-        public static string EnterNameForEntity {
-            get {
-                return ResourceManager.GetString("EnterNameForEntity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Enter new CSV name.
         /// </summary>
         public static string EnterNewCSVName {
@@ -2415,15 +2406,6 @@ namespace Localization {
         public static string FileOpenCs {
             get {
                 return ResourceManager.GetString("FileOpenCs", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Rebuild File.
-        /// </summary>
-        public static string FileRebuild {
-            get {
-                return ResourceManager.GetString("FileRebuild", resourceCulture);
             }
         }
         
@@ -4904,29 +4886,11 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name cannot be empty..
-        /// </summary>
-        public static string NameCannotBeEmpty {
-            get {
-                return ResourceManager.GetString("NameCannotBeEmpty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The name {0} is a reserved class name, so it can&apos;t be used for a State Category.
         /// </summary>
         public static string NameCannotBeReservedClassName {
             get {
                 return ResourceManager.GetString("NameCannotBeReservedClassName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name can&apos;t contain invalid character {0}.
-        /// </summary>
-        public static string NameCannotContainInvalidChar {
-            get {
-                return ResourceManager.GetString("NameCannotContainInvalidChar", resourceCulture);
             }
         }
         
@@ -5424,7 +5388,6 @@ namespace Localization {
                 return ResourceManager.GetString("Perspective", resourceCulture);
             }
         }
-     
         
         /// <summary>
         ///   Looks up a localized string similar to Platform:.
@@ -7889,15 +7852,6 @@ namespace Localization {
         public static string Welcome {
             get {
                 return ResourceManager.GetString("Welcome", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to What would you like to do with the following files:.
-        /// </summary>
-        public static string WhatToDoWithFiles {
-            get {
-                return ResourceManager.GetString("WhatToDoWithFiles", resourceCulture);
             }
         }
         

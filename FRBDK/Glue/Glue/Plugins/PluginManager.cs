@@ -991,11 +991,10 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        internal static void ReactToFileRemoved(IElement element, ReferencedFileSave file) =>
+        internal static void ReactToFileRemoved(GlueElement element, ReferencedFileSave file) =>
             CallMethodOnPlugin(
                 (plugin) => plugin.ReactToFileRemoved(element, file),
-                (plugin) => plugin.ReactToFileRemoved != null,
-                nameof(ReactToFileRemoved));
+                (plugin) => plugin.ReactToFileRemoved != null);
 
         internal static void ReactToEntityRemoved(EntitySave entity, List<string> filesToRemove) =>
             CallMethodOnPlugin(

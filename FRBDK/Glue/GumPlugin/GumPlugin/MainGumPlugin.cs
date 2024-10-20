@@ -480,7 +480,7 @@ public class MainGumPlugin : PluginBase
 
     public bool HasGum() => AppState.Self.GumProjectSave != null;
 
-    private void HandleFileRemoved(IElement container, ReferencedFileSave file)
+    private void HandleFileRemoved(GlueElement container, ReferencedFileSave file)
     {
         if (file.Name.EndsWith(".gumx"))
         {
