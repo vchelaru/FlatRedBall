@@ -47,7 +47,7 @@ public class MainGumPlugin : PluginBase
     GumViewModel viewModel;
     GumToolbarViewModel toolbarViewModel;
     GumxPropertiesManager propertiesManager;
-
+    NewGumProjectCreationLogic newGumProjectCreationLogic;
     ToolStripMenuItem addGumProjectMenuItem;
 
     GlobalContentCodeGenerator globalContentCodeGenerator;
@@ -313,7 +313,18 @@ public class MainGumPlugin : PluginBase
 
         AssetTypeInfoManager.Self.AddCommonAtis();
 
-        addGumProjectMenuItem = this.AddMenuItemTo(Localization.Texts.ProjectNewGum, Localization.MenuIds.ProjectNewGumId, HandleAddNewGumProjectMenuItemClicked, Localization.MenuIds.ContentId);
+        newGumProjectCreationLogic = new NewGumProjectCreationLogic(propertiesManager);
+
+        addGumProjectMenuItem = this.AddMenuItemTo(
+            "New Gum Project",
+            Localization.MenuIds.ProjectNewGumId,
+            async () =>
+            {
+                await newGumProjectCreationLogic.AskToCreateGumProject();
+
+                UpdateAfterProjectCreation();
+            },
+            Localization.MenuIds.ContentId);
         //var bmp = new Bitmap(WindowsFormsApplication1.Properties.Resources.myimage);
         addGumProjectMenuItem.Image = new Bitmap(GumPlugin.Resource1.GumIcon);
 
@@ -471,11 +482,11 @@ public class MainGumPlugin : PluginBase
 
     private void CreateToolbar()
     {
-        toolbarViewModel = new GumToolbarViewModel();
+        toolbarViewModel = new GumToolbarViewModel(newGumProjectCreationLogic);
 
         gumToolbar = new GumToolbar();
         gumToolbar.DataContext = toolbarViewModel;
-        gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
+        gumToolbar.GumButtonClicked += (_,_) => toolbarViewModel.OnToolbarClicked();
     }
 
     public bool HasGum() => AppState.Self.GumProjectSave != null;
@@ -490,22 +501,6 @@ public class MainGumPlugin : PluginBase
 
         toolbarViewModel.HasGumProject =
             AppState.Self.GumProjectSave != null;
-    }
-
-    private void HandleToolbarButtonClick(object sender, EventArgs e)
-    {
-        var alreadyHasGumProject = AppState.Self.GumProjectSave != null;
-
-        if (alreadyHasGumProject == false)
-        {
-            HandleAddNewGumProjectMenuItemClicked(null, null);
-        }
-        else
-        {
-            GlueCommands.Self.FileCommands.OpenFileInDefaultProgram(AppState.Self.GumProjectSave.FullFileName);
-        }
-
-        toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
     }
 
     private List<AssetTypeInfo> HandleGetAvailableAssetTypes(ReferencedFileSave referencedFileSave)
@@ -742,7 +737,7 @@ public class MainGumPlugin : PluginBase
         UpdateMenuItemVisibility();
     }
 
-    private static FileAdditionBehavior GetBehavior(ReferencedFileSave gumRfs)
+    public static FileAdditionBehavior GetBehavior(ReferencedFileSave gumRfs)
     {
         var behavior = FileAdditionBehavior.EmbedCodeFiles;
         if (gumRfs != null)
@@ -762,112 +757,32 @@ public class MainGumPlugin : PluginBase
         return behavior;
     }
 
-    private void HandleAddNewGumProjectMenuItemClicked(object sender, EventArgs e)
-    {
-        AskToCreateGumProject();
-    }
-
     public async Task CreateGumProjectWithForms(bool askToOverwrite)
     {
-        await CreateGumProjectInternal(shouldAlsoAddForms: true, askToOverwrite: askToOverwrite);
+        await newGumProjectCreationLogic.CreateGumProjectInternal(
+            shouldAlsoAddForms: true,
+            askToOverwrite: askToOverwrite);
+
+        UpdateAfterProjectCreation();
+
     }
 
     public async Task CreateGumProjectNoForms(bool askToOverwrite)
     {
-        await CreateGumProjectInternal(shouldAlsoAddForms: false, askToOverwrite: askToOverwrite);
+        await newGumProjectCreationLogic.CreateGumProjectInternal(shouldAlsoAddForms: false, askToOverwrite: askToOverwrite);
+
+        UpdateAfterProjectCreation();
     }
 
-    public async void AskToCreateGumProject()
+    private void UpdateAfterProjectCreation()
     {
-        var mbmb = new MultiButtonMessageBoxWpf();
-        mbmb.AddButton(Localization.Texts.GumIncludeRecommendedFormsControls, true);
-        mbmb.AddButton(Localization.Texts.GumNoForms, false);
-        mbmb.MessageText = Localization.Texts.GumAddFRBForms;
-        var showDialogResult = mbmb.ShowDialog();
-
-        if (showDialogResult == true)
+        if (control == null)
         {
-            var shouldAlsoAddForms = (bool)mbmb.ClickedResult;
-            await CreateGumProjectInternal(shouldAlsoAddForms, askToOverwrite:true);
+            GlueCommands.Self.DoOnUiThread(CreateGumControl);
         }
-    }
-
-    private async Task CreateGumProjectInternal(bool shouldAlsoAddForms, bool askToOverwrite)
-    {
-        var assembly = typeof(FormsControlAdder).Assembly;
-        var shouldSave = true;
-        if (askToOverwrite)
-        {
-            shouldSave = FormsControlAdder.AskToSaveIfOverwriting(assembly);
-        }
-
-        if (GlueState.Self.CurrentGlueProject == null)
-        {
-            MessageBox.Show(Localization.Texts.GumErrorCreateFRBFirst);
-            shouldSave = false;
-        }
-
-        else if (GumProjectManager.Self.GetIsGumProjectAlreadyInGlueProject())
-        {
-            MessageBox.Show(Localization.Texts.GumProjectAlreadyExists);
-            shouldSave = false;
-        }
-
-        if (shouldSave)
-        {
-
-            if (control == null)
-            {
-                GlueCommands.Self.DoOnUiThread(CreateGumControl);
-            }
-            await TaskManager.Self.AddAsync(async () =>
-            {
-                propertiesManager.IsReactingToProperyChanges = false;
-                GumProjectManager.Self.AddNewGumProject();
-
-                var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
-
-                var behavior = GetBehavior(gumRfs);
-                EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
-
-                // show the tab for the new file:
-                tab.Focus();
-
-                // When we first add the RFS to Glue, the RFS tries to refresh its file cache.
-                // But since the .glux hasn't yet been assigned as the currently-loaded project, 
-                // the Gum plugin doesn't track its references and returns an empty list. That empty
-                // list return is then cached, and future calls will always treat the .gumx as having 
-                // no referenced files. Now that we've assigned the custom project, clear the cache so
-                // it can properly be set up.
-                GlueCommands.Self.FileCommands.ClearFileCache(GlueCommands.Self.GetAbsoluteFilePath(gumRfs));
-                GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(gumRfs);
-
-
-
-                if (shouldAlsoAddForms == true)
-                {
-                    // add forms:
-
-                    //viewModel.IncludeFormsInComponents = true;
-                    gumRfs.SetProperty(nameof(GumViewModel.IncludeFormsInComponents), true);
-                    //viewModel.IncludeComponentToFormsAssociation = true;
-                    gumRfs.SetProperty(nameof(GumViewModel.IncludeComponentToFormsAssociation), true);
-
-                    await FormsControlAdder.SaveElements(assembly);
-                    await FormsControlAdder.SaveBehaviors(assembly);
-
-                    await HandleBuildMissingFonts();
-
-                }
-                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
-
-                await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync(forceReload:true);
-
-                propertiesManager.IsReactingToProperyChanges = true;
-
-                toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
-            }, Localization.Texts.GumProjectCreating);
-        }
+        // show the tab for the new file:
+        tab.Focus();
+        toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
     }
 
     private void CreateGumControl()
@@ -881,7 +796,7 @@ public class MainGumPlugin : PluginBase
         tab = this.CreateTab(control, Localization.Texts.GumProperties);
     }
 
-    public async Task HandleBuildMissingFonts()
+    public static async Task HandleBuildMissingFonts()
     {
         // --rebuildfonts "C:\Users\Victor\Documents\TestProject2\TestProject2\Content\GumProject\GumProject.gumx"
         var gumFileName = AppState.Self.GumProjectSave.FullFileName;
