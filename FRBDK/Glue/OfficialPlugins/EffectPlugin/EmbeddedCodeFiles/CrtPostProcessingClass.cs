@@ -25,52 +25,52 @@ internal class ReplaceClassName : IPostProcess
 
     public bool IsEnabled { get; set; } = true;
 
-    RenderTarget2D mIntermediatePass;
+    RenderTarget2D _intermediatePass;
 
-    Effect mEffect;
+    Effect _effect;
 
-    EffectTechnique mEffectTechniqueBase;
-    EffectTechnique mEffectTechniqueBaseAndSmoothing;
-    EffectTechnique mEffectTechniqueCrtBaseAndSmoothingPass1;
-    EffectTechnique mEffectTechniqueCrtScan;
-    EffectTechnique mEffectTechniqueCrtScanCa;
-    EffectTechnique mEffectTechniqueCrtSmoothingPass2;
+    EffectTechnique _effectTechniqueBase;
+    EffectTechnique _effectTechniqueBaseAndSmoothing;
+    EffectTechnique _effectTechniqueCrtBaseAndSmoothingPass1;
+    EffectTechnique _effectTechniqueCrtScan;
+    EffectTechnique _effectTechniqueCrtScanCa;
+    EffectTechnique _effectTechniqueCrtSmoothingPass2;
 
-    EffectTechnique mBaseTechniqueToUse;
-    EffectTechnique mScanTechniqueToUse;
+    EffectTechnique _baseTechniqueToUse;
+    EffectTechnique _scanTechniqueToUse;
 
-    EffectParameter mOriginalSizeParameter;
-    EffectParameter mOutputSizeParameter;
-    EffectParameter mPixelWidthParameter;
-    EffectParameter mPixelHeightParameter;
+    EffectParameter _originalSizeParameter;
+    EffectParameter _outputSizeParameter;
+    EffectParameter _pixelWidthParameter;
+    EffectParameter _pixelHeightParameter;
 
-    EffectParameter mExposureParameter;
-    EffectParameter mVibranceParameter;
+    EffectParameter _exposureParameter;
+    EffectParameter _vibranceParameter;
 
-    EffectParameter mSmoothingWeightBParameter;
-    EffectParameter mSmoothingWeightSParameter;
+    EffectParameter _smoothingWeightBParameter;
+    EffectParameter _smoothingWeightSParameter;
 
-    EffectParameter mCrtSmoothingWeightP1BParameter;
-    EffectParameter mCrtSmoothingWeightP1HParameter;
-    EffectParameter mCrtSmoothingWeightP1VParameter;
-    EffectParameter mCrtSmoothingWeightP2BParameter;
-    EffectParameter mCrtSmoothingWeightP2HParameter;
-    EffectParameter mCrtSmoothingWeightP2VParameter;
+    EffectParameter _crtSmoothingWeightP1BParameter;
+    EffectParameter _crtSmoothingWeightP1HParameter;
+    EffectParameter _crtSmoothingWeightP1VParameter;
+    EffectParameter _crtSmoothingWeightP2BParameter;
+    EffectParameter _crtSmoothingWeightP2HParameter;
+    EffectParameter _crtSmoothingWeightP2VParameter;
 
-    EffectParameter mScanMaskStrenghtParameter;
-    EffectParameter mScanScaleParameter;
-    EffectParameter mScanKernelShapeParameter;
-    EffectParameter mScanBrightnessBoostParameter;
+    EffectParameter _scanMaskStrenghtParameter;
+    EffectParameter _scanScaleParameter;
+    EffectParameter _scanKernelShapeParameter;
+    EffectParameter _scanBrightnessBoostParameter;
 
-    EffectParameter mWarpXParameter;
-    EffectParameter mWarpYParameter;
+    EffectParameter _warpXParameter;
+    EffectParameter _warpYParameter;
 
-    EffectParameter mCaRedOffsetParameter;
-    EffectParameter mCaBlueOffsetParameter;
+    EffectParameter _caRedOffsetParameter;
+    EffectParameter _caBlueOffsetParameter;
 
-    SpriteBatch mSpriteBatch;
+    SpriteBatch _spriteBatch;
 
-    bool mNeedsApplySettings;
+    bool _needsApplySettings;
 
     #endregion
 
@@ -78,276 +78,276 @@ internal class ReplaceClassName : IPostProcess
 
     public CrtModeOption CrtMode
     {
-        get { return mCrtMode; }
+        get { return _crtMode; }
         set
         {
-            if (mCrtMode == value) return;
+            if (_crtMode == value) return;
 
-            mCrtMode = value;
-            mNeedsApplySettings = true;
+            _crtMode = value;
+            _needsApplySettings = true;
         }
     }
-    CrtModeOption mCrtMode = CrtModeOption.Full;
+    CrtModeOption _crtMode = CrtModeOption.Full;
 
     public bool IsSmoothingFilterEnabled
     {
-        get { return mIsSmoothingFilterEnabled; }
+        get { return _isSmoothingFilterEnabled; }
         set
         {
-            if (mIsSmoothingFilterEnabled == value) return;
+            if (_isSmoothingFilterEnabled == value) return;
 
-            mIsSmoothingFilterEnabled = value;
-            mNeedsApplySettings = true;
+            _isSmoothingFilterEnabled = value;
+            _needsApplySettings = true;
         }
     }
-    bool mIsSmoothingFilterEnabled = true;
+    bool _isSmoothingFilterEnabled = true;
 
     public bool IsChromaticAberrationEnabled
     {
-        get { return mIsChromaticAberrationEnabled; }
+        get { return _isChromaticAberrationEnabled; }
         set
         {
-            if (mIsChromaticAberrationEnabled == value) return;
+            if (_isChromaticAberrationEnabled == value) return;
 
-            mIsChromaticAberrationEnabled = value;
-            mNeedsApplySettings = true;
+            _isChromaticAberrationEnabled = value;
+            _needsApplySettings = true;
         }
     }
-    bool mIsChromaticAberrationEnabled = true;
+    bool _isChromaticAberrationEnabled = true;
 
     public float Exposure
     {
-        get { return mExposure; }
+        get { return _exposure; }
         set
         {
-            if (mExposure == value) return;
+            if (_exposure == value) return;
 
-            mExposure = value;
-            mNeedsApplySettings = true;
+            _exposure = value;
+            _needsApplySettings = true;
         }
     }
-    float mExposure = 1.00f;
+    float _exposure = 1.00f;
 
     public float Vibrance
     {
-        get { return mVibrance; }
+        get { return _vibrance; }
         set
         {
-            if (mVibrance == value) return;
+            if (_vibrance == value) return;
 
-            mVibrance = value;
-            mNeedsApplySettings = true;
+            _vibrance = value;
+            _needsApplySettings = true;
         }
     }
-    float mVibrance = 0.18f;
+    float _vibrance = 0.18f;
 
     public float SmoothingWeightB
     {
-        get { return mSmoothingWeightB; }
+        get { return _smoothingWeightB; }
         set
         {
-            if (mSmoothingWeightB == value) return;
+            if (_smoothingWeightB == value) return;
 
-            mSmoothingWeightB = value;
-            mNeedsApplySettings = true;
+            _smoothingWeightB = value;
+            _needsApplySettings = true;
         }
     }
-    float mSmoothingWeightB = 0.68f;
+    float _smoothingWeightB = 0.68f;
 
     public float SmoothingWeightS
     {
-        get { return mSmoothingWeightS; }
+        get { return _smoothingWeightS; }
         set
         {
-            if (mSmoothingWeightS == value) return;
+            if (_smoothingWeightS == value) return;
 
-            mSmoothingWeightS = value;
-            mNeedsApplySettings = true;
+            _smoothingWeightS = value;
+            _needsApplySettings = true;
         }
     }
-    float mSmoothingWeightS = 0.32f;
+    float _smoothingWeightS = 0.32f;
 
     public float SmoothingWeightP1B
     {
-        get { return mSmoothingWeightP1B; }
+        get { return _smoothingWeightP1B; }
         set
         {
-            if (mSmoothingWeightP1B == value) return;
+            if (_smoothingWeightP1B == value) return;
 
-            mSmoothingWeightP1B = value;
-            mNeedsApplySettings = true;
+            _smoothingWeightP1B = value;
+            _needsApplySettings = true;
         }
     }
-    float mSmoothingWeightP1B = 0.7f;
+    float _smoothingWeightP1B = 0.7f;
 
     public float SmoothingWeightP1H
     {
-        get { return mSmoothingWeightP1H; }
+        get { return _smoothingWeightP1H; }
         set
         {
-            if (mSmoothingWeightP1H == value) return;
+            if (_smoothingWeightP1H == value) return;
 
-            mSmoothingWeightP1H = value;
-            mNeedsApplySettings = true;
+            _smoothingWeightP1H = value;
+            _needsApplySettings = true;
         }
     }
-    float mSmoothingWeightP1H = 0.15f;
+    float _smoothingWeightP1H = 0.15f;
 
     public float SmoothingWeightP1V
     {
-        get { return mSmoothingWeightP1V; }
+        get { return _smoothingWeightP1V; }
         set
         {
-            if (mSmoothingWeightP1V == value) return;
+            if (_smoothingWeightP1V == value) return;
 
-            mSmoothingWeightP1V = value;
-            mNeedsApplySettings = true;
+            _smoothingWeightP1V = value;
+            _needsApplySettings = true;
         }
     }
-    float mSmoothingWeightP1V = 0.15f;
+    float _smoothingWeightP1V = 0.15f;
 
     public float SmoothingWeightP2B
     {
-        get { return mSmoothingWeightP2B; }
+        get { return _smoothingWeightP2B; }
         set
         {
-            if (mSmoothingWeightP2B == value) return;
+            if (_smoothingWeightP2B == value) return;
 
-            mSmoothingWeightP2B = value;
-            mNeedsApplySettings = true;
+            _smoothingWeightP2B = value;
+            _needsApplySettings = true;
         }
     }
-    float mSmoothingWeightP2B = 0.3f;
+    float _smoothingWeightP2B = 0.3f;
 
     public float SmoothingWeightP2H
     {
-        get { return mSmoothingWeightP2H; }
+        get { return _smoothingWeightP2H; }
         set
         {
-            if (mSmoothingWeightP2H == value) return;
+            if (_smoothingWeightP2H == value) return;
 
-            mSmoothingWeightP2H = value;
-            mNeedsApplySettings = true;
+            _smoothingWeightP2H = value;
+            _needsApplySettings = true;
         }
     }
-    float mSmoothingWeightP2H = 0.5f;
+    float _smoothingWeightP2H = 0.5f;
 
     public float SmoothingWeightP2V
     {
-        get { return mSmoothingWeightP2V; }
+        get { return _smoothingWeightP2V; }
         set
         {
-            if (mSmoothingWeightP2V == value) return;
+            if (_smoothingWeightP2V == value) return;
 
-            mSmoothingWeightP2V = value;
-            mNeedsApplySettings = true;
+            _smoothingWeightP2V = value;
+            _needsApplySettings = true;
         }
     }
-    float mSmoothingWeightP2V = 0.2f;
+    float _smoothingWeightP2V = 0.2f;
 
     public float ScanMaskStrenght
     {
-        get { return mScanMaskStrenght; }
+        get { return _scanMaskStrenght; }
         set
         {
-            if (mScanMaskStrenght == value) return;
+            if (_scanMaskStrenght == value) return;
 
-            mScanMaskStrenght = value;
-            mNeedsApplySettings = true;
+            _scanMaskStrenght = value;
+            _needsApplySettings = true;
         }
     }
-    float mScanMaskStrenght = 0.525f;
+    float _scanMaskStrenght = 0.525f;
 
     public float ScanScale
     {
-        get { return mScanScale; }
+        get { return _scanScale; }
         set
         {
-            if (mScanScale == value) return;
+            if (_scanScale == value) return;
 
-            mScanScale = value;
-            mNeedsApplySettings = true;
+            _scanScale = value;
+            _needsApplySettings = true;
         }
     }
-    float mScanScale = -8.0f;
+    float _scanScale = -8.0f;
 
     public float ScanKernelShape
     {
-        get { return mScanKernelShape; }
+        get { return _scanKernelShape; }
         set
         {
-            if (mScanKernelShape == value) return;
+            if (_scanKernelShape == value) return;
 
-            mScanKernelShape = value;
-            mNeedsApplySettings = true;
+            _scanKernelShape = value;
+            _needsApplySettings = true;
         }
     }
-    float mScanKernelShape = 2.0f;
+    float _scanKernelShape = 2.0f;
 
     public float ScanBrightnessBoost
     {
-        get { return mScanBrightnessBoost; }
+        get { return _scanBrightnessBoost; }
         set
         {
-            if (mScanBrightnessBoost == value) return;
+            if (_scanBrightnessBoost == value) return;
 
-            mScanBrightnessBoost = value;
-            mNeedsApplySettings = true;
+            _scanBrightnessBoost = value;
+            _needsApplySettings = true;
         }
     }
-    float mScanBrightnessBoost = 1.11f;
+    float _scanBrightnessBoost = 1.11f;
 
     public float WarpX
     {
-        get { return mWarpX; }
+        get { return _warpX; }
         set
         {
-            if (mWarpX == value) return;
+            if (_warpX == value) return;
 
-            mWarpX = value;
-            mNeedsApplySettings = true;
+            _warpX = value;
+            _needsApplySettings = true;
         }
     }
-    float mWarpX = 0.01f;
+    float _warpX = 0.01f;
 
     public float WarpY
     {
-        get { return mWarpY; }
+        get { return _warpY; }
         set
         {
-            if (mWarpY == value) return;
+            if (_warpY == value) return;
 
-            mWarpY = value;
-            mNeedsApplySettings = true;
+            _warpY = value;
+            _needsApplySettings = true;
         }
     }
-    float mWarpY = 0.02f;
+    float _warpY = 0.02f;
 
     public float ChromaticAberrationRedOffset
     {
-        get { return mCaRedOffset; }
+        get { return _caRedOffset; }
         set
         {
-            if (mCaRedOffset == value) return;
+            if (_caRedOffset == value) return;
 
-            mCaRedOffset = value;
-            mNeedsApplySettings = true;
+            _caRedOffset = value;
+            _needsApplySettings = true;
         }
     }
-    float mCaRedOffset = 0.0006f;
+    float _caRedOffset = 0.0006f;
 
     public float ChromaticAberrationBlueOffset
     {
-        get { return mCaBlueOffset; }
+        get { return _caBlueOffset; }
         set
         {
-            if (mCaBlueOffset == value) return;
+            if (_caBlueOffset == value) return;
 
-            mCaBlueOffset = value;
-            mNeedsApplySettings = true;
+            _caBlueOffset = value;
+            _needsApplySettings = true;
         }
     }
-    float mCaBlueOffset = 0.0006f;
+    float _caBlueOffset = 0.0006f;
 
     #endregion
 
@@ -356,47 +356,47 @@ internal class ReplaceClassName : IPostProcess
         PostProcessingHelper.BaseWidth = 320;
         PostProcessingHelper.BaseHeight = 180;
 
-        mSpriteBatch = new SpriteBatch(FlatRedBallServices.GraphicsDevice);
+        _spriteBatch = new SpriteBatch(FlatRedBallServices.GraphicsDevice);
 
-        if (mEffect == null || mEffect.IsDisposed)
+        if (_effect == null || _effect.IsDisposed)
         {
-            mEffect = effect;
+            _effect = effect;
 
-            mEffectTechniqueBase = mEffect.Techniques["Base"];
-            mEffectTechniqueBaseAndSmoothing = mEffect.Techniques["BaseAndSmoothing"];
-            mEffectTechniqueCrtBaseAndSmoothingPass1 = mEffect.Techniques["CrtBaseAndSmoothingPass1"];
-            mEffectTechniqueCrtScan = mEffect.Techniques["CrtScan"];
-            mEffectTechniqueCrtScanCa = mEffect.Techniques["CrtScanCa"];
-            mEffectTechniqueCrtSmoothingPass2 = mEffect.Techniques["CrtSmoothingPass2"];
+            _effectTechniqueBase = _effect.Techniques["Base"];
+            _effectTechniqueBaseAndSmoothing = _effect.Techniques["BaseAndSmoothing"];
+            _effectTechniqueCrtBaseAndSmoothingPass1 = _effect.Techniques["CrtBaseAndSmoothingPass1"];
+            _effectTechniqueCrtScan = _effect.Techniques["CrtScan"];
+            _effectTechniqueCrtScanCa = _effect.Techniques["CrtScanCa"];
+            _effectTechniqueCrtSmoothingPass2 = _effect.Techniques["CrtSmoothingPass2"];
 
-            mOriginalSizeParameter = mEffect.Parameters["OriginalSize"];
-            mOutputSizeParameter = mEffect.Parameters["OutputSize"];
-            mPixelWidthParameter = mEffect.Parameters["PixelWidth"];
-            mPixelHeightParameter = mEffect.Parameters["PixelHeight"];
+            _originalSizeParameter = _effect.Parameters["OriginalSize"];
+            _outputSizeParameter = _effect.Parameters["OutputSize"];
+            _pixelWidthParameter = _effect.Parameters["PixelWidth"];
+            _pixelHeightParameter = _effect.Parameters["PixelHeight"];
 
-            mExposureParameter = mEffect.Parameters["Exposure"];
-            mVibranceParameter = mEffect.Parameters["Vibrance"];
+            _exposureParameter = _effect.Parameters["Exposure"];
+            _vibranceParameter = _effect.Parameters["Vibrance"];
 
-            mSmoothingWeightBParameter = mEffect.Parameters["SmoothingWeightB"];
-            mSmoothingWeightSParameter = mEffect.Parameters["SmoothingWeightS"];
+            _smoothingWeightBParameter = _effect.Parameters["SmoothingWeightB"];
+            _smoothingWeightSParameter = _effect.Parameters["SmoothingWeightS"];
 
-            mCrtSmoothingWeightP1BParameter = mEffect.Parameters["CrtSmoothingWeightP1B"];
-            mCrtSmoothingWeightP1HParameter = mEffect.Parameters["CrtSmoothingWeightP1H"];
-            mCrtSmoothingWeightP1VParameter = mEffect.Parameters["CrtSmoothingWeightP1V"];
-            mCrtSmoothingWeightP2BParameter = mEffect.Parameters["CrtSmoothingWeightP2B"];
-            mCrtSmoothingWeightP2HParameter = mEffect.Parameters["CrtSmoothingWeightP2H"];
-            mCrtSmoothingWeightP2VParameter = mEffect.Parameters["CrtSmoothingWeightP2V"];
+            _crtSmoothingWeightP1BParameter = _effect.Parameters["CrtSmoothingWeightP1B"];
+            _crtSmoothingWeightP1HParameter = _effect.Parameters["CrtSmoothingWeightP1H"];
+            _crtSmoothingWeightP1VParameter = _effect.Parameters["CrtSmoothingWeightP1V"];
+            _crtSmoothingWeightP2BParameter = _effect.Parameters["CrtSmoothingWeightP2B"];
+            _crtSmoothingWeightP2HParameter = _effect.Parameters["CrtSmoothingWeightP2H"];
+            _crtSmoothingWeightP2VParameter = _effect.Parameters["CrtSmoothingWeightP2V"];
 
-            mScanMaskStrenghtParameter = mEffect.Parameters["ScanMaskStrenght"];
-            mScanScaleParameter = mEffect.Parameters["ScanScale"];
-            mScanKernelShapeParameter = mEffect.Parameters["ScanKernelShape"];
-            mScanBrightnessBoostParameter = mEffect.Parameters["ScanBrightnessBoost"];
+            _scanMaskStrenghtParameter = _effect.Parameters["ScanMaskStrenght"];
+            _scanScaleParameter = _effect.Parameters["ScanScale"];
+            _scanKernelShapeParameter = _effect.Parameters["ScanKernelShape"];
+            _scanBrightnessBoostParameter = _effect.Parameters["ScanBrightnessBoost"];
 
-            mWarpXParameter = mEffect.Parameters["WarpX"];
-            mWarpYParameter = mEffect.Parameters["WarpY"];
+            _warpXParameter = _effect.Parameters["WarpX"];
+            _warpYParameter = _effect.Parameters["WarpY"];
 
-            mCaRedOffsetParameter = mEffect.Parameters["CaRedOffset"];
-            mCaBlueOffsetParameter = mEffect.Parameters["CaBlueOffset"];
+            _caRedOffsetParameter = _effect.Parameters["CaRedOffset"];
+            _caBlueOffsetParameter = _effect.Parameters["CaBlueOffset"];
         }
 
         CreateRenderTargets();
@@ -412,7 +412,7 @@ internal class ReplaceClassName : IPostProcess
     private void CreateRenderTargets()
     {
         PostProcessingHelper.CreateRenderTarget(
-            ref mIntermediatePass,
+            ref _intermediatePass,
             FlatRedBallServices.Game.Window.ClientBounds.Width,
             FlatRedBallServices.Game.Window.ClientBounds.Height,
             SurfaceFormat.HalfVector4);
@@ -420,26 +420,26 @@ internal class ReplaceClassName : IPostProcess
 
     void ApplySettings()
     {
-        mOriginalSizeParameter.SetValue(new Vector2(PostProcessingHelper.BaseWidth, PostProcessingHelper.BaseHeight));
-        mOutputSizeParameter.SetValue(new Vector2(FlatRedBallServices.Game.Window.ClientBounds.Width, FlatRedBallServices.Game.Window.ClientBounds.Height));
-        mPixelWidthParameter.SetValue(1f / FlatRedBallServices.Game.Window.ClientBounds.Width);
-        mPixelHeightParameter.SetValue(1f / FlatRedBallServices.Game.Window.ClientBounds.Height);
+        _originalSizeParameter.SetValue(new Vector2(PostProcessingHelper.BaseWidth, PostProcessingHelper.BaseHeight));
+        _outputSizeParameter.SetValue(new Vector2(FlatRedBallServices.Game.Window.ClientBounds.Width, FlatRedBallServices.Game.Window.ClientBounds.Height));
+        _pixelWidthParameter.SetValue(1f / FlatRedBallServices.Game.Window.ClientBounds.Width);
+        _pixelHeightParameter.SetValue(1f / FlatRedBallServices.Game.Window.ClientBounds.Height);
 
-        mExposureParameter.SetValue(mExposure);
-        mVibranceParameter.SetValue(mVibrance);
+        _exposureParameter.SetValue(_exposure);
+        _vibranceParameter.SetValue(_vibrance);
 
-        mSmoothingWeightBParameter.SetValue(mSmoothingWeightB);
-        mSmoothingWeightSParameter.SetValue(mSmoothingWeightS);
+        _smoothingWeightBParameter.SetValue(_smoothingWeightB);
+        _smoothingWeightSParameter.SetValue(_smoothingWeightS);
 
-        mCrtSmoothingWeightP1BParameter.SetValue(mSmoothingWeightP1B);
-        mCrtSmoothingWeightP1HParameter.SetValue(mSmoothingWeightP1H);
-        mCrtSmoothingWeightP1VParameter.SetValue(mSmoothingWeightP1V);
-        mCrtSmoothingWeightP2BParameter.SetValue(mSmoothingWeightP2B);
-        mCrtSmoothingWeightP2HParameter.SetValue(mSmoothingWeightP2H);
-        mCrtSmoothingWeightP2VParameter.SetValue(mSmoothingWeightP2V);
+        _crtSmoothingWeightP1BParameter.SetValue(_smoothingWeightP1B);
+        _crtSmoothingWeightP1HParameter.SetValue(_smoothingWeightP1H);
+        _crtSmoothingWeightP1VParameter.SetValue(_smoothingWeightP1V);
+        _crtSmoothingWeightP2BParameter.SetValue(_smoothingWeightP2B);
+        _crtSmoothingWeightP2HParameter.SetValue(_smoothingWeightP2H);
+        _crtSmoothingWeightP2VParameter.SetValue(_smoothingWeightP2V);
 
-        float scanMaskStrenght = mScanMaskStrenght;
-        float scanBrightnessBoost = mScanBrightnessBoost;
+        float scanMaskStrenght = _scanMaskStrenght;
+        float scanBrightnessBoost = _scanBrightnessBoost;
 
         if (CrtMode == CrtModeOption.SoftScans)
         {
@@ -452,29 +452,29 @@ internal class ReplaceClassName : IPostProcess
             scanBrightnessBoost = 1f;
         }
 
-        mScanMaskStrenghtParameter.SetValue(scanMaskStrenght);
-        mScanScaleParameter.SetValue(mScanScale);
-        mScanKernelShapeParameter.SetValue(mScanKernelShape);
-        mScanBrightnessBoostParameter.SetValue(scanBrightnessBoost);
+        _scanMaskStrenghtParameter.SetValue(scanMaskStrenght);
+        _scanScaleParameter.SetValue(_scanScale);
+        _scanKernelShapeParameter.SetValue(_scanKernelShape);
+        _scanBrightnessBoostParameter.SetValue(scanBrightnessBoost);
 
         if (CrtMode == CrtModeOption.NoScansNoCurvature)
         {
-            mWarpXParameter.SetValue(0f);
-            mWarpYParameter.SetValue(0f);
+            _warpXParameter.SetValue(0f);
+            _warpYParameter.SetValue(0f);
         }
         else
         {
-            mWarpXParameter.SetValue(mWarpX);
-            mWarpYParameter.SetValue(mWarpY);
+            _warpXParameter.SetValue(_warpX);
+            _warpYParameter.SetValue(_warpY);
         }
 
-        mCaRedOffsetParameter.SetValue(mCaRedOffset);
-        mCaBlueOffsetParameter.SetValue(mCaBlueOffset);
+        _caRedOffsetParameter.SetValue(_caRedOffset);
+        _caBlueOffsetParameter.SetValue(_caBlueOffset);
 
-        mBaseTechniqueToUse = IsSmoothingFilterEnabled ? mEffectTechniqueBaseAndSmoothing : mEffectTechniqueBase;
-        mScanTechniqueToUse = IsChromaticAberrationEnabled ? mEffectTechniqueCrtScanCa : mEffectTechniqueCrtScan;
+        _baseTechniqueToUse = IsSmoothingFilterEnabled ? _effectTechniqueBaseAndSmoothing : _effectTechniqueBase;
+        _scanTechniqueToUse = IsChromaticAberrationEnabled ? _effectTechniqueCrtScanCa : _effectTechniqueCrtScan;
 
-        mNeedsApplySettings = false;
+        _needsApplySettings = false;
     }
 
     public void Apply(Texture2D source, RenderTarget2D target)
@@ -489,12 +489,12 @@ internal class ReplaceClassName : IPostProcess
 
     public void Apply(Texture2D source)
     {
-        if (mNeedsApplySettings)
+        if (_needsApplySettings)
             ApplySettings();
 
         var device = FlatRedBallServices.GraphicsDevice;
         var output = device.GetRenderTargets()[0].RenderTarget as RenderTarget2D;
-        var spriteBatch = mSpriteBatch;
+        var spriteBatch = _spriteBatch;
 
         if (CrtMode == CrtModeOption.Disabled)
         {
@@ -502,8 +502,8 @@ internal class ReplaceClassName : IPostProcess
             ////////////////////////////////////////////////////////////////////////////////////////////////
             device.Clear(Color.Transparent);
 
-            mEffect.CurrentTechnique = mBaseTechniqueToUse;
-            spriteBatch.Begin(0, BlendState.AlphaBlend, null, null, null, mEffect);
+            _effect.CurrentTechnique = _baseTechniqueToUse;
+            spriteBatch.Begin(0, BlendState.AlphaBlend, null, null, null, _effect);
             spriteBatch.Draw(source, new Rectangle(0, 0, output.Width, output.Height), Color.White);
             spriteBatch.End();
 
@@ -515,8 +515,8 @@ internal class ReplaceClassName : IPostProcess
             ////////////////////////////////////////////////////////////////////////////////////////////////
             device.Clear(Color.Transparent);
 
-            mEffect.CurrentTechnique = mEffectTechniqueCrtBaseAndSmoothingPass1;
-            spriteBatch.Begin(0, BlendState.AlphaBlend, null, null, null, mEffect);
+            _effect.CurrentTechnique = _effectTechniqueCrtBaseAndSmoothingPass1;
+            spriteBatch.Begin(0, BlendState.AlphaBlend, null, null, null, _effect);
             spriteBatch.Draw(source, new Rectangle(0, 0, output.Width, output.Height), Color.White);
             spriteBatch.End();
 
@@ -524,11 +524,11 @@ internal class ReplaceClassName : IPostProcess
 
             // Scan ////////////////////////////////////////////////////////////////////////////////////////
             ////////////////////////////////////////////////////////////////////////////////////////////////
-            device.SetRenderTarget(mIntermediatePass);
+            device.SetRenderTarget(_intermediatePass);
             device.Clear(Color.Transparent);
 
-            mEffect.CurrentTechnique = mScanTechniqueToUse;
-            spriteBatch.Begin(0, BlendState.AlphaBlend, null, null, null, mEffect);
+            _effect.CurrentTechnique = _scanTechniqueToUse;
+            spriteBatch.Begin(0, BlendState.AlphaBlend, null, null, null, _effect);
             spriteBatch.Draw(output, new Rectangle(0, 0, output.Width, output.Height), Color.White);
             spriteBatch.End();
 
@@ -539,9 +539,9 @@ internal class ReplaceClassName : IPostProcess
             device.SetRenderTarget(output);
             device.Clear(Color.Transparent);
 
-            mEffect.CurrentTechnique = mEffectTechniqueCrtSmoothingPass2;
-            spriteBatch.Begin(0, BlendState.AlphaBlend, null, null, null, mEffect);
-            spriteBatch.Draw(mIntermediatePass, new Rectangle(0, 0, output.Width, output.Height), Color.White);
+            _effect.CurrentTechnique = _effectTechniqueCrtSmoothingPass2;
+            spriteBatch.Begin(0, BlendState.AlphaBlend, null, null, null, _effect);
+            spriteBatch.Draw(_intermediatePass, new Rectangle(0, 0, output.Width, output.Height), Color.White);
             spriteBatch.End();
 
             ////////////////////////////////////////////////////////////////////////////////////////////////

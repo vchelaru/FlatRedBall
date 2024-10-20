@@ -29,54 +29,54 @@ internal class ReplaceClassName : IPostProcess
     #region Fields/Properties
 
     public bool IsEnabled { get; set; } = true;
-    SpriteBatch mSpriteBatch;
+    SpriteBatch _spriteBatch;
 
-    RenderTarget2D mBloomRenderTarget2DMip0;
-    RenderTarget2D mBloomRenderTarget2DMip1;
-    RenderTarget2D mBloomRenderTarget2DMip2;
-    RenderTarget2D mBloomRenderTarget2DMip3;
-    RenderTarget2D mBloomRenderTarget2DMip4;
-    RenderTarget2D mBloomRenderTarget2DMip5;
+    RenderTarget2D _bloomRenderTarget2DMip0;
+    RenderTarget2D _bloomRenderTarget2DMip1;
+    RenderTarget2D _bloomRenderTarget2DMip2;
+    RenderTarget2D _bloomRenderTarget2DMip3;
+    RenderTarget2D _bloomRenderTarget2DMip4;
+    RenderTarget2D _bloomRenderTarget2DMip5;
 
-    Effect mBloomEffect;
+    Effect _bloomEffect;
 
-    EffectPass mBloomPassExtract;
-    EffectPass mBloomPassExtractLuminance;
-    EffectPass mBloomPassDownsample;
-    EffectPass mBloomPassUpsample;
-    EffectPass mBloomPassUpsampleLuminance;
+    EffectPass _bloomPassExtract;
+    EffectPass _bloomPassExtractLuminance;
+    EffectPass _bloomPassDownsample;
+    EffectPass _bloomPassUpsample;
+    EffectPass _bloomPassUpsampleLuminance;
 
-    EffectParameter mBloomParameterScreenTexture;
-    EffectParameter mBloomHalfPixelParameter;
-    EffectParameter mBloomDownsampleOffsetParameter;
-    EffectParameter mBloomUpsampleOffsetParameter;
-    EffectParameter mBloomStrengthParameter;
-    EffectParameter mBloomThresholdParameter;
+    EffectParameter _bloomParameterScreenTexture;
+    EffectParameter _bloomHalfPixelParameter;
+    EffectParameter _bloomDownsampleOffsetParameter;
+    EffectParameter _bloomUpsampleOffsetParameter;
+    EffectParameter _bloomStrengthParameter;
+    EffectParameter _bloomThresholdParameter;
 
-    Effect mBloomCombineEffect;
+    Effect _bloomCombineEffect;
 
-    EffectTechnique mBloomTechniqueCombine;
-    EffectTechnique mBloomTechniqueSaturate;
+    EffectTechnique _bloomTechniqueCombine;
+    EffectTechnique _bloomTechniqueSaturate;
 
-    EffectParameter mBloomCombineBLTextureParameter;
-    EffectParameter mBloomCombineBLBaseTextureParameter;
-    EffectParameter mBloomCombineBLIntensityParameter;
-    EffectParameter mBloomCombineBLSaturationParameter;
+    EffectParameter _bloomCombineBLTextureParameter;
+    EffectParameter _bloomCombineBLBaseTextureParameter;
+    EffectParameter _bloomCombineBLIntensityParameter;
+    EffectParameter _bloomCombineBLSaturationParameter;
 
-    float mBloomRadius1 = 1.0f;
-    float mBloomRadius2 = 1.0f;
-    float mBloomRadius3 = 1.0f;
-    float mBloomRadius4 = 1.0f;
-    float mBloomRadius5 = 1.0f;
+    float _bloomRadius1 = 1.0f;
+    float _bloomRadius2 = 1.0f;
+    float _bloomRadius3 = 1.0f;
+    float _bloomRadius4 = 1.0f;
+    float _bloomRadius5 = 1.0f;
 
-    float mBloomStrength1 = 1.0f;
-    float mBloomStrength2 = 1.0f;
-    float mBloomStrength3 = 1.0f;
-    float mBloomStrength4 = 1.0f;
-    float mBloomStrength5 = 1.0f;
+    float _bloomStrength1 = 1.0f;
+    float _bloomStrength2 = 1.0f;
+    float _bloomStrength3 = 1.0f;
+    float _bloomStrength4 = 1.0f;
+    float _bloomStrength5 = 1.0f;
 
-    bool mNeedsCreateRenderTargets;
-    bool mNeedsApplySettings;
+    bool _needsCreateRenderTargets;
+    bool _needsApplySettings;
 
     #endregion
 
@@ -84,120 +84,120 @@ internal class ReplaceClassName : IPostProcess
 
     public BloomPresets BloomPreset
     {
-        get { return mBloomPreset; }
+        get { return _bloomPreset; }
         set
         {
-            if (mBloomPreset == value) return;
+            if (_bloomPreset == value) return;
 
-            mBloomPreset = value;
-            mNeedsApplySettings = true;
+            _bloomPreset = value;
+            _needsApplySettings = true;
         }
     }
-    BloomPresets mBloomPreset;
+    BloomPresets _bloomPreset;
 
     public float Threshold
     {
-        get { return mThreshold; }
+        get { return _threshold; }
         set
         {
-            if (mThreshold == value) return;
+            if (_threshold == value) return;
 
-            mThreshold = value;
-            mNeedsApplySettings = true;
+            _threshold = value;
+            _needsApplySettings = true;
         }
     }
-    float mThreshold = .6f;
+    float _threshold = .6f;
 
     public float StrengthMultiplier
     {
-        get { return mStrengthMultiplier; }
+        get { return _strengthMultiplier; }
         set
         {
-            if (mStrengthMultiplier == value) return;
+            if (_strengthMultiplier == value) return;
 
-            mStrengthMultiplier = value;
-            mNeedsApplySettings = true;
+            _strengthMultiplier = value;
+            _needsApplySettings = true;
         }
     }
-    float mStrengthMultiplier = 1f;
+    float _strengthMultiplier = 1f;
 
     public float RadiusMultiplier
     {
-        get { return mRadiusMultiplier; }
+        get { return _radiusMultiplier; }
         set
         {
-            if (mRadiusMultiplier == value) return;
+            if (_radiusMultiplier == value) return;
 
-            mRadiusMultiplier = value;
-            mNeedsApplySettings = true;
+            _radiusMultiplier = value;
+            _needsApplySettings = true;
         }
     }
-    float mRadiusMultiplier = 1f;
+    float _radiusMultiplier = 1f;
 
     public bool UseLuminance
     {
-        get { return mUseLuminance; }
+        get { return _useLuminance; }
         set
         {
-            if (mUseLuminance == value) return;
+            if (_useLuminance == value) return;
 
-            mUseLuminance = value;
-            mNeedsApplySettings = true;
+            _useLuminance = value;
+            _needsApplySettings = true;
         }
     }
-    bool mUseLuminance = false;
+    bool _useLuminance = false;
 
     public float Intensity
     {
-        get { return mIntensity; }
+        get { return _intensity; }
         set
         {
-            if (mIntensity == value) return;
+            if (_intensity == value) return;
 
-            mIntensity = value;
-            mNeedsApplySettings = true;
+            _intensity = value;
+            _needsApplySettings = true;
         }
     }
-    float mIntensity = 0.25f;
+    float _intensity = 0.25f;
 
     public float Saturation
     {
-        get { return mSaturation; }
+        get { return _saturation; }
         set
         {
-            if (mSaturation == value) return;
+            if (_saturation == value) return;
 
-            mSaturation = value;
-            mNeedsApplySettings = true;
+            _saturation = value;
+            _needsApplySettings = true;
         }
     }
-    float mSaturation = 1.3f;
+    float _saturation = 1.3f;
 
     public float Quality
     {
-        get { return mQuality; }
+        get { return _quality; }
         set
         {
-            if (mQuality == value) return;
+            if (_quality == value) return;
 
-            mQuality = value;
-            mNeedsCreateRenderTargets = true;
+            _quality = value;
+            _needsCreateRenderTargets = true;
         }
     }
-    float mQuality = .5f;
+    float _quality = .5f;
 
     public bool PreserveContents
     {
-        get { return mPreserveContents; }
+        get { return _preserveContents; }
         set
         {
-            if (mPreserveContents == value) return;
+            if (_preserveContents == value) return;
 
-            mPreserveContents = value;
-            mNeedsCreateRenderTargets = true;
+            _preserveContents = value;
+            _needsCreateRenderTargets = true;
         }
     }
-    bool mPreserveContents = true;
+    bool _preserveContents = true;
 
     #endregion
 
@@ -205,93 +205,93 @@ internal class ReplaceClassName : IPostProcess
 
     float BloomStrength
     {
-        get { return mBloomStrength; }
+        get { return _bloomStrength; }
         set
         {
-            if (Math.Abs(mBloomStrength - value) > 0.001f)
+            if (Math.Abs(_bloomStrength - value) > 0.001f)
             {
-                mBloomStrength = value;
-                mBloomStrengthParameter.SetValue(mBloomStrength * mStrengthMultiplier);
+                _bloomStrength = value;
+                _bloomStrengthParameter.SetValue(_bloomStrength * _strengthMultiplier);
             }
 
         }
     }
-    float mBloomStrength;
+    float _bloomStrength;
 
     float BloomRadius
     {
-        get { return mBloomRadius; }
+        get { return _bloomRadius; }
         set
         {
-            if (Math.Abs(mBloomRadius - value) > 0.001f)
-                mBloomRadius = value;
+            if (Math.Abs(_bloomRadius - value) > 0.001f)
+                _bloomRadius = value;
         }
     }
-    float mBloomRadius;
+    float _bloomRadius;
 
     float BloomStreakLength
     {
-        get { return mBloomStreakLength; }
+        get { return _bloomStreakLength; }
         set
         {
-            if (Math.Abs(mBloomStreakLength - value) > 0.001f)
-                mBloomStreakLength = value;
+            if (Math.Abs(_bloomStreakLength - value) > 0.001f)
+                _bloomStreakLength = value;
         }
     }
-    float mBloomStreakLength;
+    float _bloomStreakLength;
 
-    int mBloomDownsamplePasses = 5;
+    int _bloomDownsamplePasses = 5;
 
     #endregion
 
     #region Utility fields/properties (not public)
 
-    Texture2D BloomScreenTexture { set { mBloomParameterScreenTexture.SetValue(value); } }
+    Texture2D BloomScreenTexture { set { _bloomParameterScreenTexture.SetValue(value); } }
 
     Vector2 HalfPixel
     {
-        get { return mHalfPixel; }
+        get { return _halfPixel; }
         set
         {
-            if (value != mHalfPixel)
+            if (value != _halfPixel)
             {
-                mHalfPixel = value;
-                mBloomHalfPixelParameter.SetValue(mHalfPixel);
+                _halfPixel = value;
+                _bloomHalfPixelParameter.SetValue(_halfPixel);
             }
         }
     }
-    Vector2 mHalfPixel;
+    Vector2 _halfPixel;
 
     float BloomThreshold
     {
-        get { return mBloomThreshold; }
+        get { return _bloomThreshold; }
         set
         {
-            if (Math.Abs(mBloomThreshold - value) > 0.001f)
+            if (Math.Abs(_bloomThreshold - value) > 0.001f)
             {
-                mBloomThreshold = value;
-                mBloomThresholdParameter.SetValue(mBloomThreshold);
+                _bloomThreshold = value;
+                _bloomThresholdParameter.SetValue(_bloomThreshold);
             }
         }
     }
-    float mBloomThreshold;
+    float _bloomThreshold;
 
     Vector2 BloomInverseResolution
     {
-        get { return mBloomInverseResolution; }
+        get { return _bloomInverseResolution; }
         set
         {
-            if (value != mBloomInverseResolution)
-                mBloomInverseResolution = value;
+            if (value != _bloomInverseResolution)
+                _bloomInverseResolution = value;
         }
     }
-    Vector2 mBloomInverseResolution;
+    Vector2 _bloomInverseResolution;
 
     #endregion
 
     public ReplaceClassName(Effect effect)
     {
-        mSpriteBatch = new SpriteBatch(FlatRedBallServices.GraphicsDevice);
+        _spriteBatch = new SpriteBatch(FlatRedBallServices.GraphicsDevice);
 
         InitializeEffects(effect, effect);
 
@@ -309,76 +309,76 @@ internal class ReplaceClassName : IPostProcess
 
     void UpdateDownsampleOffsetParameter()
     {
-        var offset = mBloomInverseResolution;
-        offset.X *= mBloomStreakLength;
-        mBloomDownsampleOffsetParameter.SetValue(offset);
+        var offset = _bloomInverseResolution;
+        offset.X *= _bloomStreakLength;
+        _bloomDownsampleOffsetParameter.SetValue(offset);
     }
 
     void UpdateUpsampleOffsetParameter()
     {
-        var offset = mBloomInverseResolution;
-        offset.X *= mBloomStreakLength;
-        offset *= mBloomRadius * mRadiusMultiplier;
-        mBloomUpsampleOffsetParameter.SetValue(offset);
+        var offset = _bloomInverseResolution;
+        offset.X *= _bloomStreakLength;
+        offset *= _bloomRadius * _radiusMultiplier;
+        _bloomUpsampleOffsetParameter.SetValue(offset);
     }
 
     void InitializeEffects(Effect bloomEffect, Effect bloomCombine)
     {
-        if (mBloomEffect == null || mBloomEffect.IsDisposed)
+        if (_bloomEffect == null || _bloomEffect.IsDisposed)
         {
-            mBloomEffect = bloomEffect;
-            mBloomHalfPixelParameter = mBloomEffect.Parameters["HalfPixel"];
-            mBloomDownsampleOffsetParameter = mBloomEffect.Parameters["DownsampleOffset"];
-            mBloomUpsampleOffsetParameter = mBloomEffect.Parameters["UpsampleOffset"];
-            mBloomStrengthParameter = mBloomEffect.Parameters["Strength"];
-            mBloomThresholdParameter = mBloomEffect.Parameters["Threshold"];
+            _bloomEffect = bloomEffect;
+            _bloomHalfPixelParameter = _bloomEffect.Parameters["HalfPixel"];
+            _bloomDownsampleOffsetParameter = _bloomEffect.Parameters["DownsampleOffset"];
+            _bloomUpsampleOffsetParameter = _bloomEffect.Parameters["UpsampleOffset"];
+            _bloomStrengthParameter = _bloomEffect.Parameters["Strength"];
+            _bloomThresholdParameter = _bloomEffect.Parameters["Threshold"];
 
-            mBloomParameterScreenTexture = mBloomEffect.Parameters["LinearSampler+ScreenTexture"];
+            _bloomParameterScreenTexture = _bloomEffect.Parameters["LinearSampler+ScreenTexture"];
 
-            mBloomPassExtract = mBloomEffect.Techniques["Extract"].Passes[0];
-            mBloomPassExtractLuminance = mBloomEffect.Techniques["ExtractLuminance"].Passes[0];
-            mBloomPassDownsample = mBloomEffect.Techniques["Downsample"].Passes[0];
-            mBloomPassUpsample = mBloomEffect.Techniques["Upsample"].Passes[0];
-            mBloomPassUpsampleLuminance = mBloomEffect.Techniques["UpsampleLuminance"].Passes[0];
+            _bloomPassExtract = _bloomEffect.Techniques["Extract"].Passes[0];
+            _bloomPassExtractLuminance = _bloomEffect.Techniques["ExtractLuminance"].Passes[0];
+            _bloomPassDownsample = _bloomEffect.Techniques["Downsample"].Passes[0];
+            _bloomPassUpsample = _bloomEffect.Techniques["Upsample"].Passes[0];
+            _bloomPassUpsampleLuminance = _bloomEffect.Techniques["UpsampleLuminance"].Passes[0];
         }
 
-        if (mBloomCombineEffect == null || mBloomCombineEffect.IsDisposed)
+        if (_bloomCombineEffect == null || _bloomCombineEffect.IsDisposed)
         {
-            mBloomCombineEffect = bloomCombine;
+            _bloomCombineEffect = bloomCombine;
 
-            mBloomTechniqueCombine = mBloomCombineEffect.Techniques["BloomCombine"];
-            mBloomTechniqueSaturate = mBloomCombineEffect.Techniques["BloomSaturate"];
+            _bloomTechniqueCombine = _bloomCombineEffect.Techniques["BloomCombine"];
+            _bloomTechniqueSaturate = _bloomCombineEffect.Techniques["BloomSaturate"];
 
-            mBloomCombineBLTextureParameter = mBloomCombineEffect.Parameters["BloomTexture"];
-            mBloomCombineBLBaseTextureParameter = mBloomCombineEffect.Parameters["BaseTexture"];
-            mBloomCombineBLIntensityParameter = mBloomCombineEffect.Parameters["BloomIntensity"];
-            mBloomCombineBLSaturationParameter = mBloomCombineEffect.Parameters["BloomSaturation"];
+            _bloomCombineBLTextureParameter = _bloomCombineEffect.Parameters["BloomTexture"];
+            _bloomCombineBLBaseTextureParameter = _bloomCombineEffect.Parameters["BaseTexture"];
+            _bloomCombineBLIntensityParameter = _bloomCombineEffect.Parameters["BloomIntensity"];
+            _bloomCombineBLSaturationParameter = _bloomCombineEffect.Parameters["BloomSaturation"];
         }
     }
 
     void ApplySettings()
     {
-        SetBloomPreset(mBloomPreset);
-        BloomThreshold = mThreshold;
-        mBloomCombineBLIntensityParameter.SetValue(mIntensity);
-        mBloomCombineBLSaturationParameter.SetValue(mSaturation);
+        SetBloomPreset(_bloomPreset);
+        BloomThreshold = _threshold;
+        _bloomCombineBLIntensityParameter.SetValue(_intensity);
+        _bloomCombineBLSaturationParameter.SetValue(_saturation);
 
-        mNeedsApplySettings = false;
+        _needsApplySettings = false;
     }
 
     private void CreateRenderTargets()
     {
-        var usage = mPreserveContents ? RenderTargetUsage.PreserveContents : RenderTargetUsage.DiscardContents;
+        var usage = _preserveContents ? RenderTargetUsage.PreserveContents : RenderTargetUsage.DiscardContents;
         int width = (int)(FlatRedBallServices.ClientWidth * Quality);
         int height = (int)(FlatRedBallServices.ClientHeight * Quality);
-        PostProcessingHelper.CreateRenderTarget(ref mBloomRenderTarget2DMip0, width, height, SurfaceFormat.HalfVector4);
-        PostProcessingHelper.CreateRenderTarget(ref mBloomRenderTarget2DMip1, width / 2, height / 2, SurfaceFormat.HalfVector4, usage);
-        PostProcessingHelper.CreateRenderTarget(ref mBloomRenderTarget2DMip2, width / 4, height / 4, SurfaceFormat.HalfVector4, usage);
-        PostProcessingHelper.CreateRenderTarget(ref mBloomRenderTarget2DMip3, width / 8, height / 8, SurfaceFormat.HalfVector4, usage);
-        PostProcessingHelper.CreateRenderTarget(ref mBloomRenderTarget2DMip4, width / 16, height / 16, SurfaceFormat.HalfVector4, usage);
-        PostProcessingHelper.CreateRenderTarget(ref mBloomRenderTarget2DMip5, width / 32, height / 32, SurfaceFormat.HalfVector4, usage);
+        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip0, width, height, SurfaceFormat.HalfVector4);
+        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip1, width / 2, height / 2, SurfaceFormat.HalfVector4, usage);
+        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip2, width / 4, height / 4, SurfaceFormat.HalfVector4, usage);
+        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip3, width / 8, height / 8, SurfaceFormat.HalfVector4, usage);
+        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip4, width / 16, height / 16, SurfaceFormat.HalfVector4, usage);
+        PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip5, width / 32, height / 32, SurfaceFormat.HalfVector4, usage);
 
-        mNeedsCreateRenderTargets = false;
+        _needsCreateRenderTargets = false;
     }
 
     void SetBloomPreset(BloomPresets preset)
@@ -387,92 +387,92 @@ internal class ReplaceClassName : IPostProcess
         {
             case BloomPresets.Wide:
                 {
-                    mBloomStrength1 = 0.5f;
-                    mBloomStrength2 = 1;
-                    mBloomStrength3 = 2;
-                    mBloomStrength4 = 1;
-                    mBloomStrength5 = 2;
-                    mBloomRadius5 = 4.0f;
-                    mBloomRadius4 = 4.0f;
-                    mBloomRadius3 = 2.0f;
-                    mBloomRadius2 = 2.0f;
-                    mBloomRadius1 = 1.0f;
+                    _bloomStrength1 = 0.5f;
+                    _bloomStrength2 = 1;
+                    _bloomStrength3 = 2;
+                    _bloomStrength4 = 1;
+                    _bloomStrength5 = 2;
+                    _bloomRadius5 = 4.0f;
+                    _bloomRadius4 = 4.0f;
+                    _bloomRadius3 = 2.0f;
+                    _bloomRadius2 = 2.0f;
+                    _bloomRadius1 = 1.0f;
                     BloomStreakLength = 1;
-                    mBloomDownsamplePasses = 5;
+                    _bloomDownsamplePasses = 5;
                     break;
                 }
             case BloomPresets.SuperWide:
                 {
-                    mBloomStrength1 = 0.9f;
-                    mBloomStrength2 = 1;
-                    mBloomStrength3 = 1;
-                    mBloomStrength4 = 2;
-                    mBloomStrength5 = 6;
-                    mBloomRadius5 = 4.0f;
-                    mBloomRadius4 = 2.0f;
-                    mBloomRadius3 = 2.0f;
-                    mBloomRadius2 = 2.0f;
-                    mBloomRadius1 = 2.0f;
+                    _bloomStrength1 = 0.9f;
+                    _bloomStrength2 = 1;
+                    _bloomStrength3 = 1;
+                    _bloomStrength4 = 2;
+                    _bloomStrength5 = 6;
+                    _bloomRadius5 = 4.0f;
+                    _bloomRadius4 = 2.0f;
+                    _bloomRadius3 = 2.0f;
+                    _bloomRadius2 = 2.0f;
+                    _bloomRadius1 = 2.0f;
                     BloomStreakLength = 1;
-                    mBloomDownsamplePasses = 5;
+                    _bloomDownsamplePasses = 5;
                     break;
                 }
             case BloomPresets.Focussed:
                 {
-                    mBloomStrength1 = 0.8f;
-                    mBloomStrength2 = 1;
-                    mBloomStrength3 = 1;
-                    mBloomStrength4 = 1;
-                    mBloomStrength5 = 2;
-                    mBloomRadius5 = 4.0f;
-                    mBloomRadius4 = 2.0f;
-                    mBloomRadius3 = 2.0f;
-                    mBloomRadius2 = 2.0f;
-                    mBloomRadius1 = 2.0f;
+                    _bloomStrength1 = 0.8f;
+                    _bloomStrength2 = 1;
+                    _bloomStrength3 = 1;
+                    _bloomStrength4 = 1;
+                    _bloomStrength5 = 2;
+                    _bloomRadius5 = 4.0f;
+                    _bloomRadius4 = 2.0f;
+                    _bloomRadius3 = 2.0f;
+                    _bloomRadius2 = 2.0f;
+                    _bloomRadius1 = 2.0f;
                     BloomStreakLength = 1;
-                    mBloomDownsamplePasses = 5;
+                    _bloomDownsamplePasses = 5;
                     break;
                 }
             case BloomPresets.Small:
                 {
-                    mBloomStrength1 = 0.8f;
-                    mBloomStrength2 = 1;
-                    mBloomStrength3 = 1;
-                    mBloomStrength4 = 1;
-                    mBloomStrength5 = 1;
-                    mBloomRadius5 = 1;
-                    mBloomRadius4 = 1;
-                    mBloomRadius3 = 1;
-                    mBloomRadius2 = 1;
-                    mBloomRadius1 = 1;
+                    _bloomStrength1 = 0.8f;
+                    _bloomStrength2 = 1;
+                    _bloomStrength3 = 1;
+                    _bloomStrength4 = 1;
+                    _bloomStrength5 = 1;
+                    _bloomRadius5 = 1;
+                    _bloomRadius4 = 1;
+                    _bloomRadius3 = 1;
+                    _bloomRadius2 = 1;
+                    _bloomRadius1 = 1;
                     BloomStreakLength = 1;
-                    mBloomDownsamplePasses = 5;
+                    _bloomDownsamplePasses = 5;
                     break;
                 }
             case BloomPresets.Cheap:
                 {
-                    mBloomStrength1 = 0.8f;
-                    mBloomStrength2 = 2;
-                    mBloomRadius2 = 2;
-                    mBloomRadius1 = 2;
+                    _bloomStrength1 = 0.8f;
+                    _bloomStrength2 = 2;
+                    _bloomRadius2 = 2;
+                    _bloomRadius1 = 2;
                     BloomStreakLength = 1;
-                    mBloomDownsamplePasses = 2;
+                    _bloomDownsamplePasses = 2;
                     break;
                 }
             case BloomPresets.One:
                 {
-                    mBloomStrength1 = 4f;
-                    mBloomStrength2 = 1;
-                    mBloomStrength3 = 1;
-                    mBloomStrength4 = 1;
-                    mBloomStrength5 = 2;
-                    mBloomRadius5 = 1.0f;
-                    mBloomRadius4 = 1.0f;
-                    mBloomRadius3 = 1.0f;
-                    mBloomRadius2 = 1.0f;
-                    mBloomRadius1 = 1.0f;
+                    _bloomStrength1 = 4f;
+                    _bloomStrength2 = 1;
+                    _bloomStrength3 = 1;
+                    _bloomStrength4 = 1;
+                    _bloomStrength5 = 2;
+                    _bloomRadius5 = 1.0f;
+                    _bloomRadius4 = 1.0f;
+                    _bloomRadius3 = 1.0f;
+                    _bloomRadius2 = 1.0f;
+                    _bloomRadius1 = 1.0f;
                     BloomStreakLength = 1;
-                    mBloomDownsamplePasses = 5;
+                    _bloomDownsamplePasses = 5;
                     break;
                 }
         }
@@ -490,10 +490,10 @@ internal class ReplaceClassName : IPostProcess
 
     public void Apply(Texture2D source)
     {
-        if (mNeedsCreateRenderTargets)
+        if (_needsCreateRenderTargets)
             CreateRenderTargets();
 
-        if (mNeedsApplySettings)
+        if (_needsApplySettings)
             ApplySettings();
 
         var device = FlatRedBallServices.GraphicsDevice;
@@ -505,7 +505,7 @@ internal class ReplaceClassName : IPostProcess
 
         // EXTRACT
         // We extract the bright values which are above the Threshold and save them to Mip0
-        device.SetRenderTarget(mBloomRenderTarget2DMip0);
+        device.SetRenderTarget(_bloomRenderTarget2DMip0);
 
         BloomScreenTexture = source;
 
@@ -526,96 +526,96 @@ internal class ReplaceClassName : IPostProcess
         device.SamplerStates[1] = SamplerState.LinearClamp;
         device.SamplerStates[2] = SamplerState.LinearClamp;
 
-        if (mUseLuminance) mBloomPassExtractLuminance.Apply();
-        else mBloomPassExtract.Apply();
+        if (_useLuminance) _bloomPassExtractLuminance.Apply();
+        else _bloomPassExtract.Apply();
         QuadRenderer.RenderFitViewport();
 
         // Now downsample to the next lower mip texture
-        if (mBloomDownsamplePasses > 0)
+        if (_bloomDownsamplePasses > 0)
         {
             //DOWNSAMPLE TO MIP1
-            device.SetRenderTarget(mBloomRenderTarget2DMip1);
+            device.SetRenderTarget(_bloomRenderTarget2DMip1);
 
-            BloomScreenTexture = mBloomRenderTarget2DMip0;
+            BloomScreenTexture = _bloomRenderTarget2DMip0;
             UpdateDownsampleOffsetParameter();
 
             //Pass
-            mBloomPassDownsample.Apply();
+            _bloomPassDownsample.Apply();
             QuadRenderer.RenderFitViewport();
 
-            if (mBloomDownsamplePasses > 1)
+            if (_bloomDownsamplePasses > 1)
             {
                 //Our input resolution is halved, so our inverse 1/res. must be doubled
                 HalfPixel *= 2;
                 BloomInverseResolution *= 2;
 
                 //DOWNSAMPLE TO MIP2
-                device.SetRenderTarget(mBloomRenderTarget2DMip2);
+                device.SetRenderTarget(_bloomRenderTarget2DMip2);
 
-                BloomScreenTexture = mBloomRenderTarget2DMip1;
+                BloomScreenTexture = _bloomRenderTarget2DMip1;
                 UpdateDownsampleOffsetParameter();
 
                 //Pass
-                mBloomPassDownsample.Apply();
+                _bloomPassDownsample.Apply();
                 QuadRenderer.RenderFitViewport();
 
-                if (mBloomDownsamplePasses > 2)
+                if (_bloomDownsamplePasses > 2)
                 {
                     HalfPixel *= 2;
                     BloomInverseResolution *= 2;
 
                     //DOWNSAMPLE TO MIP3
-                    device.SetRenderTarget(mBloomRenderTarget2DMip3);
+                    device.SetRenderTarget(_bloomRenderTarget2DMip3);
 
-                    BloomScreenTexture = mBloomRenderTarget2DMip2;
+                    BloomScreenTexture = _bloomRenderTarget2DMip2;
                     UpdateDownsampleOffsetParameter();
 
                     //Pass
-                    mBloomPassDownsample.Apply();
+                    _bloomPassDownsample.Apply();
                     QuadRenderer.RenderFitViewport();
 
-                    if (mBloomDownsamplePasses > 3)
+                    if (_bloomDownsamplePasses > 3)
                     {
                         HalfPixel *= 2;
                         BloomInverseResolution *= 2;
 
                         //DOWNSAMPLE TO MIP4
-                        device.SetRenderTarget(mBloomRenderTarget2DMip4);
+                        device.SetRenderTarget(_bloomRenderTarget2DMip4);
 
-                        BloomScreenTexture = mBloomRenderTarget2DMip3;
+                        BloomScreenTexture = _bloomRenderTarget2DMip3;
                         UpdateDownsampleOffsetParameter();
 
                         //Pass
-                        mBloomPassDownsample.Apply();
+                        _bloomPassDownsample.Apply();
                         QuadRenderer.RenderFitViewport();
 
-                        if (mBloomDownsamplePasses > 4)
+                        if (_bloomDownsamplePasses > 4)
                         {
                             HalfPixel *= 2;
                             BloomInverseResolution *= 2;
 
                             //DOWNSAMPLE TO MIP5
-                            device.SetRenderTarget(mBloomRenderTarget2DMip5);
+                            device.SetRenderTarget(_bloomRenderTarget2DMip5);
 
-                            BloomScreenTexture = mBloomRenderTarget2DMip4;
+                            BloomScreenTexture = _bloomRenderTarget2DMip4;
                             UpdateDownsampleOffsetParameter();
 
                             //Pass
-                            mBloomPassDownsample.Apply();
+                            _bloomPassDownsample.Apply();
                             QuadRenderer.RenderFitViewport();
 
                             ChangeBlendState();
 
                             //UPSAMPLE TO MIP4
-                            device.SetRenderTarget(mBloomRenderTarget2DMip4);
+                            device.SetRenderTarget(_bloomRenderTarget2DMip4);
 
-                            BloomScreenTexture = mBloomRenderTarget2DMip5;
-                            BloomStrength = mBloomStrength5;
-                            BloomRadius = mBloomRadius5;
+                            BloomScreenTexture = _bloomRenderTarget2DMip5;
+                            BloomStrength = _bloomStrength5;
+                            BloomRadius = _bloomRadius5;
                             UpdateUpsampleOffsetParameter();
 
-                            if (mUseLuminance) mBloomPassUpsampleLuminance.Apply();
-                            else mBloomPassUpsample.Apply();
+                            if (_useLuminance) _bloomPassUpsampleLuminance.Apply();
+                            else _bloomPassUpsample.Apply();
                             QuadRenderer.RenderFitViewport();
 
                             HalfPixel /= 2;
@@ -625,15 +625,15 @@ internal class ReplaceClassName : IPostProcess
                         ChangeBlendState();
 
                         //UPSAMPLE TO MIP3
-                        device.SetRenderTarget(mBloomRenderTarget2DMip3);
+                        device.SetRenderTarget(_bloomRenderTarget2DMip3);
 
-                        BloomScreenTexture = mBloomRenderTarget2DMip4;
-                        BloomStrength = mBloomStrength4;
-                        BloomRadius = mBloomRadius4;
+                        BloomScreenTexture = _bloomRenderTarget2DMip4;
+                        BloomStrength = _bloomStrength4;
+                        BloomRadius = _bloomRadius4;
                         UpdateUpsampleOffsetParameter();
 
-                        if (mUseLuminance) mBloomPassUpsampleLuminance.Apply();
-                        else mBloomPassUpsample.Apply();
+                        if (_useLuminance) _bloomPassUpsampleLuminance.Apply();
+                        else _bloomPassUpsample.Apply();
                         QuadRenderer.RenderFitViewport();
 
                         HalfPixel /= 2;
@@ -643,15 +643,15 @@ internal class ReplaceClassName : IPostProcess
                     ChangeBlendState();
 
                     //UPSAMPLE TO MIP2
-                    device.SetRenderTarget(mBloomRenderTarget2DMip2);
+                    device.SetRenderTarget(_bloomRenderTarget2DMip2);
 
-                    BloomScreenTexture = mBloomRenderTarget2DMip3;
-                    BloomStrength = mBloomStrength3;
-                    BloomRadius = mBloomRadius3;
+                    BloomScreenTexture = _bloomRenderTarget2DMip3;
+                    BloomStrength = _bloomStrength3;
+                    BloomRadius = _bloomRadius3;
                     UpdateUpsampleOffsetParameter();
 
-                    if (mUseLuminance) mBloomPassUpsampleLuminance.Apply();
-                    else mBloomPassUpsample.Apply();
+                    if (_useLuminance) _bloomPassUpsampleLuminance.Apply();
+                    else _bloomPassUpsample.Apply();
                     QuadRenderer.RenderFitViewport();
 
                     HalfPixel /= 2;
@@ -661,15 +661,15 @@ internal class ReplaceClassName : IPostProcess
                 ChangeBlendState();
 
                 //UPSAMPLE TO MIP1
-                device.SetRenderTarget(mBloomRenderTarget2DMip1);
+                device.SetRenderTarget(_bloomRenderTarget2DMip1);
 
-                BloomScreenTexture = mBloomRenderTarget2DMip2;
-                BloomStrength = mBloomStrength2;
-                BloomRadius = mBloomRadius2;
+                BloomScreenTexture = _bloomRenderTarget2DMip2;
+                BloomStrength = _bloomStrength2;
+                BloomRadius = _bloomRadius2;
                 UpdateUpsampleOffsetParameter();
 
-                if (mUseLuminance) mBloomPassUpsampleLuminance.Apply();
-                else mBloomPassUpsample.Apply();
+                if (_useLuminance) _bloomPassUpsampleLuminance.Apply();
+                else _bloomPassUpsample.Apply();
                 QuadRenderer.RenderFitViewport();
 
                 HalfPixel /= 2;
@@ -679,24 +679,24 @@ internal class ReplaceClassName : IPostProcess
             ChangeBlendState();
 
             //UPSAMPLE TO MIP0
-            device.SetRenderTarget(mBloomRenderTarget2DMip0);
+            device.SetRenderTarget(_bloomRenderTarget2DMip0);
 
-            BloomScreenTexture = mBloomRenderTarget2DMip1;
-            BloomStrength = mBloomStrength1;
-            BloomRadius = mBloomRadius1;
+            BloomScreenTexture = _bloomRenderTarget2DMip1;
+            BloomStrength = _bloomStrength1;
+            BloomRadius = _bloomRadius1;
             UpdateUpsampleOffsetParameter();
 
-            if (mUseLuminance) mBloomPassUpsampleLuminance.Apply();
-            else mBloomPassUpsample.Apply();
+            if (_useLuminance) _bloomPassUpsampleLuminance.Apply();
+            else _bloomPassUpsample.Apply();
             QuadRenderer.RenderFitViewport();
         }
 
         // Combine base image and bloom image.
-        mBloomCombineEffect.CurrentTechnique = mBloomTechniqueCombine;
-        mBloomCombineBLBaseTextureParameter.SetValue(source);
+        _bloomCombineEffect.CurrentTechnique = _bloomTechniqueCombine;
+        _bloomCombineBLBaseTextureParameter.SetValue(source);
 
         FlatRedBallServices.GraphicsDevice.SetRenderTarget(output);
-        DrawFullscreenQuadRT(mBloomRenderTarget2DMip0, output, mBloomCombineEffect);
+        DrawFullscreenQuadRT(_bloomRenderTarget2DMip0, output, _bloomCombineEffect);
 
     }
 
@@ -712,7 +712,7 @@ internal class ReplaceClassName : IPostProcess
     void DrawFullscreenQuadRT(Texture2D texture, RenderTarget2D renderTarget, Effect effect)
     {
         var device = FlatRedBallServices.GraphicsDevice;
-        var spriteBatch = mSpriteBatch;
+        var spriteBatch = _spriteBatch;
         //device.SetRenderTarget(renderTarget);
         //device.Clear(Color.Transparent);
         spriteBatch.Begin(0, BlendState.AlphaBlend, null, null, null, effect);
@@ -748,9 +748,9 @@ internal class ReplaceClassName : IPostProcess
         //    3--------------2
         ///////////////////////////////
 
-        static GraphicsDevice mDevice;
+        static GraphicsDevice _device;
 
-        static VertexPositionTexture[] mFitViewportVertices = new VertexPositionTexture[]
+        static VertexPositionTexture[] _fitViewportVertices = new VertexPositionTexture[]
         {
             new VertexPositionTexture(new Vector3(-1, 1, 0), new Vector2(0, 0)),
             new VertexPositionTexture(new Vector3(1, 1, 0), new Vector2(1, 0)),
@@ -758,7 +758,7 @@ internal class ReplaceClassName : IPostProcess
             new VertexPositionTexture(new Vector3(-1, -1, 0), new Vector2(0, 1))
         };
 
-        static VertexPositionTexture[] mCustomVertices = new VertexPositionTexture[]
+        static VertexPositionTexture[] _customVertices = new VertexPositionTexture[]
         {
             new VertexPositionTexture(new Vector3(0, 0, 0), new Vector2(0, 0)),
             new VertexPositionTexture(new Vector3(0, 0, 0), new Vector2(1, 0)),
@@ -766,7 +766,7 @@ internal class ReplaceClassName : IPostProcess
             new VertexPositionTexture(new Vector3(0, 0, 0), new Vector2(0, 1))
         };
 
-        static VertexPositionColorTexture[] mFitViewportColorVertices = new VertexPositionColorTexture[]
+        static VertexPositionColorTexture[] _fitViewportColorVertices = new VertexPositionColorTexture[]
         {
             new VertexPositionColorTexture(new Vector3(-1, 1, 0), Color.White, new Vector2(0, 0)),
             new VertexPositionColorTexture(new Vector3(1, 1, 0), Color.White, new Vector2(1, 0)),
@@ -774,7 +774,7 @@ internal class ReplaceClassName : IPostProcess
             new VertexPositionColorTexture(new Vector3(-1, -1, 0), Color.White, new Vector2(0, 1))
         };
 
-        static VertexPositionColorTexture[] mCustomColorVertices = new VertexPositionColorTexture[]
+        static VertexPositionColorTexture[] _customColorVertices = new VertexPositionColorTexture[]
         {
             new VertexPositionColorTexture(new Vector3(0, 0, 0), Color.White, new Vector2(0, 0)),
             new VertexPositionColorTexture(new Vector3(0, 0, 0), Color.White, new Vector2(1, 0)),
@@ -782,92 +782,92 @@ internal class ReplaceClassName : IPostProcess
             new VertexPositionColorTexture(new Vector3(0, 0, 0), Color.White, new Vector2(0, 1))
         };
 
-        static short[] mIndices = { 0, 1, 2, 2, 3, 0 };
-        static ushort[] mBufferedIndices = { 0, 1, 2, 2, 3, 0 };
+        static short[] _indices = { 0, 1, 2, 2, 3, 0 };
+        static ushort[] _bufferedIndices = { 0, 1, 2, 2, 3, 0 };
 
-        static VertexBuffer mVertexBuffer;
-        static VertexBuffer mVertexColorBuffer;
-        static IndexBuffer mIndexBuffer;
+        static VertexBuffer _vertexBuffer;
+        static VertexBuffer _vertexColorBuffer;
+        static IndexBuffer _indexBuffer;
 
         public static bool UseVertexColor { get; set; }
 
         static QuadRenderer()
         {
-            mDevice = FlatRedBallServices.GraphicsDevice;
+            _device = FlatRedBallServices.GraphicsDevice;
 
-            mVertexBuffer = new VertexBuffer(mDevice, typeof(VertexPositionTexture), mFitViewportVertices.Length, BufferUsage.None);
+            _vertexBuffer = new VertexBuffer(_device, typeof(VertexPositionTexture), _fitViewportVertices.Length, BufferUsage.None);
 
-            mVertexColorBuffer = new VertexBuffer(mDevice, typeof(VertexPositionColorTexture), mFitViewportColorVertices.Length, BufferUsage.None);
+            _vertexColorBuffer = new VertexBuffer(_device, typeof(VertexPositionColorTexture), _fitViewportColorVertices.Length, BufferUsage.None);
 
-            mIndexBuffer = new IndexBuffer(mDevice, typeof(ushort), mBufferedIndices.Length, BufferUsage.None);
-            mIndexBuffer.SetData(mBufferedIndices);
+            _indexBuffer = new IndexBuffer(_device, typeof(ushort), _bufferedIndices.Length, BufferUsage.None);
+            _indexBuffer.SetData(_bufferedIndices);
         }
 
         public static void SetBuffers(bool useCustomVertices)
         {
-            mDevice.Indices = mIndexBuffer;
+            _device.Indices = _indexBuffer;
 
             if (UseVertexColor)
             {
                 if (useCustomVertices)
-                    mVertexColorBuffer.SetData(mCustomColorVertices);
+                    _vertexColorBuffer.SetData(_customColorVertices);
                 else
-                    mVertexColorBuffer.SetData(mFitViewportColorVertices);
+                    _vertexColorBuffer.SetData(_fitViewportColorVertices);
 
-                mDevice.SetVertexBuffer(mVertexColorBuffer);
+                _device.SetVertexBuffer(_vertexColorBuffer);
 
             }
             else
             {
                 if (useCustomVertices)
-                    mVertexBuffer.SetData(mCustomVertices);
+                    _vertexBuffer.SetData(_customVertices);
                 else
-                    mVertexBuffer.SetData(mFitViewportVertices);
+                    _vertexBuffer.SetData(_fitViewportVertices);
 
-                mDevice.SetVertexBuffer(mVertexBuffer);
+                _device.SetVertexBuffer(_vertexBuffer);
             }
         }
 
         public static void UnsetBuffers()
         {
-            mDevice.Indices = null;
-            mDevice.SetVertexBuffer(null);
+            _device.Indices = null;
+            _device.SetVertexBuffer(null);
         }
 
         public static void UpdateCustomVerticesPosition(int destinationWidth, int destinationHeight)
         {
-            float viewportWidth = mDevice.Viewport.Width;
-            float viewportHeight = mDevice.Viewport.Height;
+            float viewportWidth = _device.Viewport.Width;
+            float viewportHeight = _device.Viewport.Height;
             float horizontalPosition = 1f + ((destinationWidth - viewportWidth) / viewportWidth);
             float verticalPosition = -1f - ((destinationHeight - viewportHeight) / viewportHeight);
 
             if (UseVertexColor)
             {
-                mCustomColorVertices[0].Position.X = -1f;
-                mCustomColorVertices[0].Position.Y = 1f;
+                _customColorVertices[0].Position.X = -1f;
+                _customColorVertices[0].Position.Y = 1f;
 
-                mCustomColorVertices[1].Position.X = horizontalPosition;
-                mCustomColorVertices[1].Position.Y = 1f;
+                _customColorVertices[1].Position.X = horizontalPosition;
+                _customColorVertices[1].Position.Y = 1f;
 
-                mCustomColorVertices[2].Position.X = horizontalPosition;
-                mCustomColorVertices[2].Position.Y = verticalPosition;
+                _customColorVertices[2].Position.X = horizontalPosition;
+                _customColorVertices[2].Position.Y = verticalPosition;
 
-                mCustomColorVertices[3].Position.X = -1f;
-                mCustomColorVertices[3].Position.Y = verticalPosition;
+                _customColorVertices[3].Position.X = -1f;
+                _customColorVertices[3].Position.Y = verticalPosition;
             }
             else
             {
-                mCustomVertices[0].Position.X = -1f;
-                mCustomVertices[0].Position.Y = 1f;
+                _customVertices[0].Position.X = -1f;
+                _customVertices[0].Position.Y = 1f;
 
-                mCustomVertices[1].Position.X = horizontalPosition;
-                mCustomVertices[1].Position.Y = 1f;
+                _customVertices[1].Position.X = horizontalPosition;
+                _customVertices[1].Position.Y = 1f;
 
-                mCustomVertices[2].Position.X = horizontalPosition;
-                mCustomVertices[2].Position.Y = verticalPosition;
+                _customVertices[2].Position.X = horizontalPosition;
+                _customVertices[2].Position.Y = verticalPosition;
 
-                mCustomVertices[3].Position.X = -1f;
-                mCustomVertices[3].Position.Y = verticalPosition;
+                _customVertices[3].Position.X = -1f;
+                _customVertices[3].Position.Y = verticalPosition;
             }
         }
 
@@ -875,31 +875,31 @@ internal class ReplaceClassName : IPostProcess
         {
             if (UseVertexColor)
             {
-                mCustomColorVertices[0].Position.X = topLeft.X;
-                mCustomColorVertices[0].Position.Y = topLeft.Y;
+                _customColorVertices[0].Position.X = topLeft.X;
+                _customColorVertices[0].Position.Y = topLeft.Y;
 
-                mCustomColorVertices[1].Position.X = bottomRight.X;
-                mCustomColorVertices[1].Position.Y = topLeft.Y;
+                _customColorVertices[1].Position.X = bottomRight.X;
+                _customColorVertices[1].Position.Y = topLeft.Y;
 
-                mCustomColorVertices[2].Position.X = bottomRight.X;
-                mCustomColorVertices[2].Position.Y = bottomRight.Y;
+                _customColorVertices[2].Position.X = bottomRight.X;
+                _customColorVertices[2].Position.Y = bottomRight.Y;
 
-                mCustomColorVertices[3].Position.X = topLeft.X;
-                mCustomColorVertices[3].Position.Y = bottomRight.Y;
+                _customColorVertices[3].Position.X = topLeft.X;
+                _customColorVertices[3].Position.Y = bottomRight.Y;
             }
             else
             {
-                mCustomVertices[0].Position.X = topLeft.X;
-                mCustomVertices[0].Position.Y = topLeft.Y;
+                _customVertices[0].Position.X = topLeft.X;
+                _customVertices[0].Position.Y = topLeft.Y;
 
-                mCustomVertices[1].Position.X = bottomRight.X;
-                mCustomVertices[1].Position.Y = topLeft.Y;
+                _customVertices[1].Position.X = bottomRight.X;
+                _customVertices[1].Position.Y = topLeft.Y;
 
-                mCustomVertices[2].Position.X = bottomRight.X;
-                mCustomVertices[2].Position.Y = bottomRight.Y;
+                _customVertices[2].Position.X = bottomRight.X;
+                _customVertices[2].Position.Y = bottomRight.Y;
 
-                mCustomVertices[3].Position.X = topLeft.X;
-                mCustomVertices[3].Position.Y = bottomRight.Y;
+                _customVertices[3].Position.X = topLeft.X;
+                _customVertices[3].Position.Y = bottomRight.Y;
             }
         }
 
@@ -907,53 +907,53 @@ internal class ReplaceClassName : IPostProcess
         {
             if (UseVertexColor)
             {
-                mCustomColorVertices[0].TextureCoordinate.X = topLeft.X;
-                mCustomColorVertices[0].TextureCoordinate.Y = topLeft.Y;
+                _customColorVertices[0].TextureCoordinate.X = topLeft.X;
+                _customColorVertices[0].TextureCoordinate.Y = topLeft.Y;
 
-                mCustomColorVertices[1].TextureCoordinate.X = bottomRight.X;
-                mCustomColorVertices[1].TextureCoordinate.Y = topLeft.Y;
+                _customColorVertices[1].TextureCoordinate.X = bottomRight.X;
+                _customColorVertices[1].TextureCoordinate.Y = topLeft.Y;
 
-                mCustomColorVertices[2].TextureCoordinate.X = bottomRight.X;
-                mCustomColorVertices[2].TextureCoordinate.Y = bottomRight.Y;
+                _customColorVertices[2].TextureCoordinate.X = bottomRight.X;
+                _customColorVertices[2].TextureCoordinate.Y = bottomRight.Y;
 
-                mCustomColorVertices[3].TextureCoordinate.X = topLeft.X;
-                mCustomColorVertices[3].TextureCoordinate.Y = bottomRight.Y;
+                _customColorVertices[3].TextureCoordinate.X = topLeft.X;
+                _customColorVertices[3].TextureCoordinate.Y = bottomRight.Y;
             }
             else
             {
-                mCustomVertices[0].TextureCoordinate.X = topLeft.X;
-                mCustomVertices[0].TextureCoordinate.Y = topLeft.Y;
+                _customVertices[0].TextureCoordinate.X = topLeft.X;
+                _customVertices[0].TextureCoordinate.Y = topLeft.Y;
 
-                mCustomVertices[1].TextureCoordinate.X = bottomRight.X;
-                mCustomVertices[1].TextureCoordinate.Y = topLeft.Y;
+                _customVertices[1].TextureCoordinate.X = bottomRight.X;
+                _customVertices[1].TextureCoordinate.Y = topLeft.Y;
 
-                mCustomVertices[2].TextureCoordinate.X = bottomRight.X;
-                mCustomVertices[2].TextureCoordinate.Y = bottomRight.Y;
+                _customVertices[2].TextureCoordinate.X = bottomRight.X;
+                _customVertices[2].TextureCoordinate.Y = bottomRight.Y;
 
-                mCustomVertices[3].TextureCoordinate.X = topLeft.X;
-                mCustomVertices[3].TextureCoordinate.Y = bottomRight.Y;
+                _customVertices[3].TextureCoordinate.X = topLeft.X;
+                _customVertices[3].TextureCoordinate.Y = bottomRight.Y;
             }
         }
 
         public static void RenderBuffered()
         {
-            mDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 4, 0, 2);
+            _device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 4, 0, 2);
         }
 
         public static void RenderFitViewport()
         {
             if (UseVertexColor)
-                mDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, mFitViewportColorVertices, 0, 4, mIndices, 0, 2);
+                _device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, _fitViewportColorVertices, 0, 4, _indices, 0, 2);
             else
-                mDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, mFitViewportVertices, 0, 4, mIndices, 0, 2);
+                _device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, _fitViewportVertices, 0, 4, _indices, 0, 2);
         }
 
         public static void RenderCustom()
         {
             if (UseVertexColor)
-                mDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, mCustomColorVertices, 0, 4, mIndices, 0, 2);
+                _device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, _customColorVertices, 0, 4, _indices, 0, 2);
             else
-                mDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, mCustomVertices, 0, 4, mIndices, 0, 2);
+                _device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, _customVertices, 0, 4, _indices, 0, 2);
         }
     }
 
