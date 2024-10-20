@@ -918,6 +918,22 @@ public class MainGumPlugin : PluginBase
                 var process = System.Diagnostics.Process.Start(startInfo);
 
                 process.WaitForExit();
+
+                var exitCode = process.ExitCode;
+
+                if(exitCode != 0)
+                {
+                    if(exitCode == 2)
+                    {
+                        GlueCommands.Self.PrintError("Gum has exited unexpected. Do you have the XNA runtime installed?");
+                    }
+                    else 
+                    {
+                        // Unknown error:
+                        GlueCommands.Self.PrintError("Gum has exited with an unknown error so fonts were not generated.");
+                    }
+                }
+
             },
             Localization.Texts.RefreshingFontCache);
 
