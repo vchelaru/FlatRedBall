@@ -12,7 +12,6 @@ namespace ReplaceNamespace;
 
 #region Enums
 
-
 public enum BloomPresets
 {
     Wide,
@@ -32,15 +31,6 @@ internal class ReplaceClassName : IPostProcess
     public bool IsEnabled { get; set; } = true;
     SpriteBatch _spriteBatch;
 
-    public float Threshold = .6f;
-    public float StrengthMultiplier = 1f;
-    public float RadiusMultiplier = 1f;
-    public bool UseLuminance = false;
-    public float Intensity = 0.25f;
-    public float Saturation = 1.3f;
-    public float Quality = .5f;
-
-    public bool PreserveContents = true;
     RenderTarget2D _bloomRenderTarget2DMip0;
     RenderTarget2D _bloomRenderTarget2DMip1;
     RenderTarget2D _bloomRenderTarget2DMip2;
@@ -85,12 +75,12 @@ internal class ReplaceClassName : IPostProcess
     float _bloomStrength4 = 1.0f;
     float _bloomStrength5 = 1.0f;
 
-    public float BloomStrengthMultiplier = 1.0f;
+    bool _needsCreateRenderTargets;
+    bool _needsApplySettings;
 
-    float _radiusMultiplier = 1.0f;
+    #endregion
 
-    public bool BloomUseLuminance = true;
-    public int BloomDownsamplePasses = 5;
+    #region Exposed settings
 
     public BloomPresets BloomPreset
     {
@@ -100,11 +90,161 @@ internal class ReplaceClassName : IPostProcess
             if (_bloomPreset == value) return;
 
             _bloomPreset = value;
-            SetBloomPreset(_bloomPreset);
+            _needsApplySettings = true;
         }
     }
     BloomPresets _bloomPreset;
 
+    public float Threshold
+    {
+        get { return _threshold; }
+        set
+        {
+            if (_threshold == value) return;
+
+            _threshold = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _threshold = .6f;
+
+    public float StrengthMultiplier
+    {
+        get { return _strengthMultiplier; }
+        set
+        {
+            if (_strengthMultiplier == value) return;
+
+            _strengthMultiplier = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _strengthMultiplier = 1f;
+
+    public float RadiusMultiplier
+    {
+        get { return _radiusMultiplier; }
+        set
+        {
+            if (_radiusMultiplier == value) return;
+
+            _radiusMultiplier = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _radiusMultiplier = 1f;
+
+    public bool UseLuminance
+    {
+        get { return _useLuminance; }
+        set
+        {
+            if (_useLuminance == value) return;
+
+            _useLuminance = value;
+            _needsApplySettings = true;
+        }
+    }
+    bool _useLuminance = false;
+
+    public float Intensity
+    {
+        get { return _intensity; }
+        set
+        {
+            if (_intensity == value) return;
+
+            _intensity = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _intensity = 0.25f;
+
+    public float Saturation
+    {
+        get { return _saturation; }
+        set
+        {
+            if (_saturation == value) return;
+
+            _saturation = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _saturation = 1.3f;
+
+    public float Quality
+    {
+        get { return _quality; }
+        set
+        {
+            if (_quality == value) return;
+
+            _quality = value;
+            _needsCreateRenderTargets = true;
+        }
+    }
+    float _quality = .5f;
+
+    public bool PreserveContents
+    {
+        get { return _preserveContents; }
+        set
+        {
+            if (_preserveContents == value) return;
+
+            _preserveContents = value;
+            _needsCreateRenderTargets = true;
+        }
+    }
+    bool _preserveContents = true;
+
+    #endregion
+
+    #region Preset dependent fields/properties (not public)
+
+    float BloomStrength
+    {
+        get { return _bloomStrength; }
+        set
+        {
+            if (Math.Abs(_bloomStrength - value) > 0.001f)
+            {
+                _bloomStrength = value;
+                _bloomStrengthParameter.SetValue(_bloomStrength * _strengthMultiplier);
+            }
+
+        }
+    }
+    float _bloomStrength;
+
+    float BloomRadius
+    {
+        get { return _bloomRadius; }
+        set
+        {
+            if (Math.Abs(_bloomRadius - value) > 0.001f)
+                _bloomRadius = value;
+        }
+    }
+    float _bloomRadius;
+
+    float BloomStreakLength
+    {
+        get { return _bloomStreakLength; }
+        set
+        {
+            if (Math.Abs(_bloomStreakLength - value) > 0.001f)
+                _bloomStreakLength = value;
+        }
+    }
+    float _bloomStreakLength;
+
+    int _bloomDownsamplePasses = 5;
+
+    #endregion
+
+    #region Utility fields/properties (not public)
 
     Texture2D BloomScreenTexture { set { _bloomParameterScreenTexture.SetValue(value); } }
 
@@ -122,22 +262,7 @@ internal class ReplaceClassName : IPostProcess
     }
     Vector2 _halfPixel;
 
-    float BloomStrength
-    {
-        get { return _bloomStrength; }
-        set
-        {
-            if (Math.Abs(_bloomStrength - value) > 0.001f)
-            {
-                _bloomStrength = value;
-                _bloomStrengthParameter.SetValue(_bloomStrength * BloomStrengthMultiplier);
-            }
-
-        }
-    }
-    float _bloomStrength;
-
-    public float BloomThreshold
+    float BloomThreshold
     {
         get { return _bloomThreshold; }
         set
@@ -161,28 +286,6 @@ internal class ReplaceClassName : IPostProcess
         }
     }
     Vector2 _bloomInverseResolution;
-
-    public float BloomStreakLength
-    {
-        get { return _bloomStreakLength; }
-        set
-        {
-            if (Math.Abs(_bloomStreakLength - value) > 0.001f)
-                _bloomStreakLength = value;
-        }
-    }
-    float _bloomStreakLength;
-
-    float BloomRadius
-    {
-        get { return _bloomRadius; }
-        set
-        {
-            if (Math.Abs(_bloomRadius - value) > 0.001f)
-                _bloomRadius = value;
-        }
-    }
-    float _bloomRadius;
 
     #endregion
 
@@ -255,18 +358,17 @@ internal class ReplaceClassName : IPostProcess
 
     void ApplySettings()
     {
-        SetBloomPreset(this.BloomPreset);
-        _radiusMultiplier = RadiusMultiplier;
-        BloomThreshold = Threshold;
-        BloomStrengthMultiplier = StrengthMultiplier;
-        BloomUseLuminance = UseLuminance;
-        _bloomCombineBLIntensityParameter.SetValue(Intensity);
-        _bloomCombineBLSaturationParameter.SetValue(Saturation);
+        SetBloomPreset(_bloomPreset);
+        BloomThreshold = _threshold;
+        _bloomCombineBLIntensityParameter.SetValue(_intensity);
+        _bloomCombineBLSaturationParameter.SetValue(_saturation);
+
+        _needsApplySettings = false;
     }
 
     private void CreateRenderTargets()
     {
-        var usage = PreserveContents ? RenderTargetUsage.PreserveContents : RenderTargetUsage.DiscardContents;
+        var usage = _preserveContents ? RenderTargetUsage.PreserveContents : RenderTargetUsage.DiscardContents;
         int width = (int)(FlatRedBallServices.ClientWidth * Quality);
         int height = (int)(FlatRedBallServices.ClientHeight * Quality);
         PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip0, width, height, SurfaceFormat.HalfVector4);
@@ -275,6 +377,8 @@ internal class ReplaceClassName : IPostProcess
         PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip3, width / 8, height / 8, SurfaceFormat.HalfVector4, usage);
         PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip4, width / 16, height / 16, SurfaceFormat.HalfVector4, usage);
         PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip5, width / 32, height / 32, SurfaceFormat.HalfVector4, usage);
+
+        _needsCreateRenderTargets = false;
     }
 
     void SetBloomPreset(BloomPresets preset)
@@ -294,7 +398,7 @@ internal class ReplaceClassName : IPostProcess
                     _bloomRadius2 = 2.0f;
                     _bloomRadius1 = 1.0f;
                     BloomStreakLength = 1;
-                    BloomDownsamplePasses = 5;
+                    _bloomDownsamplePasses = 5;
                     break;
                 }
             case BloomPresets.SuperWide:
@@ -310,7 +414,7 @@ internal class ReplaceClassName : IPostProcess
                     _bloomRadius2 = 2.0f;
                     _bloomRadius1 = 2.0f;
                     BloomStreakLength = 1;
-                    BloomDownsamplePasses = 5;
+                    _bloomDownsamplePasses = 5;
                     break;
                 }
             case BloomPresets.Focussed:
@@ -326,7 +430,7 @@ internal class ReplaceClassName : IPostProcess
                     _bloomRadius2 = 2.0f;
                     _bloomRadius1 = 2.0f;
                     BloomStreakLength = 1;
-                    BloomDownsamplePasses = 5;
+                    _bloomDownsamplePasses = 5;
                     break;
                 }
             case BloomPresets.Small:
@@ -342,7 +446,7 @@ internal class ReplaceClassName : IPostProcess
                     _bloomRadius2 = 1;
                     _bloomRadius1 = 1;
                     BloomStreakLength = 1;
-                    BloomDownsamplePasses = 5;
+                    _bloomDownsamplePasses = 5;
                     break;
                 }
             case BloomPresets.Cheap:
@@ -352,7 +456,7 @@ internal class ReplaceClassName : IPostProcess
                     _bloomRadius2 = 2;
                     _bloomRadius1 = 2;
                     BloomStreakLength = 1;
-                    BloomDownsamplePasses = 2;
+                    _bloomDownsamplePasses = 2;
                     break;
                 }
             case BloomPresets.One:
@@ -368,7 +472,7 @@ internal class ReplaceClassName : IPostProcess
                     _bloomRadius2 = 1.0f;
                     _bloomRadius1 = 1.0f;
                     BloomStreakLength = 1;
-                    BloomDownsamplePasses = 5;
+                    _bloomDownsamplePasses = 5;
                     break;
                 }
         }
@@ -384,9 +488,14 @@ internal class ReplaceClassName : IPostProcess
         device.SetRenderTarget(oldRt);
     }
 
-
     public void Apply(Texture2D source)
     {
+        if (_needsCreateRenderTargets)
+            CreateRenderTargets();
+
+        if (_needsApplySettings)
+            ApplySettings();
+
         var device = FlatRedBallServices.GraphicsDevice;
 
         device.RasterizerState = RasterizerState.CullNone;
@@ -417,12 +526,12 @@ internal class ReplaceClassName : IPostProcess
         device.SamplerStates[1] = SamplerState.LinearClamp;
         device.SamplerStates[2] = SamplerState.LinearClamp;
 
-        if (BloomUseLuminance) _bloomPassExtractLuminance.Apply();
+        if (_useLuminance) _bloomPassExtractLuminance.Apply();
         else _bloomPassExtract.Apply();
         QuadRenderer.RenderFitViewport();
 
         // Now downsample to the next lower mip texture
-        if (BloomDownsamplePasses > 0)
+        if (_bloomDownsamplePasses > 0)
         {
             //DOWNSAMPLE TO MIP1
             device.SetRenderTarget(_bloomRenderTarget2DMip1);
@@ -434,7 +543,7 @@ internal class ReplaceClassName : IPostProcess
             _bloomPassDownsample.Apply();
             QuadRenderer.RenderFitViewport();
 
-            if (BloomDownsamplePasses > 1)
+            if (_bloomDownsamplePasses > 1)
             {
                 //Our input resolution is halved, so our inverse 1/res. must be doubled
                 HalfPixel *= 2;
@@ -450,7 +559,7 @@ internal class ReplaceClassName : IPostProcess
                 _bloomPassDownsample.Apply();
                 QuadRenderer.RenderFitViewport();
 
-                if (BloomDownsamplePasses > 2)
+                if (_bloomDownsamplePasses > 2)
                 {
                     HalfPixel *= 2;
                     BloomInverseResolution *= 2;
@@ -465,7 +574,7 @@ internal class ReplaceClassName : IPostProcess
                     _bloomPassDownsample.Apply();
                     QuadRenderer.RenderFitViewport();
 
-                    if (BloomDownsamplePasses > 3)
+                    if (_bloomDownsamplePasses > 3)
                     {
                         HalfPixel *= 2;
                         BloomInverseResolution *= 2;
@@ -480,7 +589,7 @@ internal class ReplaceClassName : IPostProcess
                         _bloomPassDownsample.Apply();
                         QuadRenderer.RenderFitViewport();
 
-                        if (BloomDownsamplePasses > 4)
+                        if (_bloomDownsamplePasses > 4)
                         {
                             HalfPixel *= 2;
                             BloomInverseResolution *= 2;
@@ -505,7 +614,7 @@ internal class ReplaceClassName : IPostProcess
                             BloomRadius = _bloomRadius5;
                             UpdateUpsampleOffsetParameter();
 
-                            if (BloomUseLuminance) _bloomPassUpsampleLuminance.Apply();
+                            if (_useLuminance) _bloomPassUpsampleLuminance.Apply();
                             else _bloomPassUpsample.Apply();
                             QuadRenderer.RenderFitViewport();
 
@@ -523,7 +632,7 @@ internal class ReplaceClassName : IPostProcess
                         BloomRadius = _bloomRadius4;
                         UpdateUpsampleOffsetParameter();
 
-                        if (BloomUseLuminance) _bloomPassUpsampleLuminance.Apply();
+                        if (_useLuminance) _bloomPassUpsampleLuminance.Apply();
                         else _bloomPassUpsample.Apply();
                         QuadRenderer.RenderFitViewport();
 
@@ -541,7 +650,7 @@ internal class ReplaceClassName : IPostProcess
                     BloomRadius = _bloomRadius3;
                     UpdateUpsampleOffsetParameter();
 
-                    if (BloomUseLuminance) _bloomPassUpsampleLuminance.Apply();
+                    if (_useLuminance) _bloomPassUpsampleLuminance.Apply();
                     else _bloomPassUpsample.Apply();
                     QuadRenderer.RenderFitViewport();
 
@@ -559,7 +668,7 @@ internal class ReplaceClassName : IPostProcess
                 BloomRadius = _bloomRadius2;
                 UpdateUpsampleOffsetParameter();
 
-                if (BloomUseLuminance) _bloomPassUpsampleLuminance.Apply();
+                if (_useLuminance) _bloomPassUpsampleLuminance.Apply();
                 else _bloomPassUpsample.Apply();
                 QuadRenderer.RenderFitViewport();
 
@@ -577,7 +686,7 @@ internal class ReplaceClassName : IPostProcess
             BloomRadius = _bloomRadius1;
             UpdateUpsampleOffsetParameter();
 
-            if (BloomUseLuminance) _bloomPassUpsampleLuminance.Apply();
+            if (_useLuminance) _bloomPassUpsampleLuminance.Apply();
             else _bloomPassUpsample.Apply();
             QuadRenderer.RenderFitViewport();
         }
@@ -856,7 +965,6 @@ internal class ReplaceClassName : IPostProcess
     {
         internal static int BaseWidth { get; set; }
         internal static int BaseHeight { get; set; }
-
 
         static GraphicsDevice GraphicsDevice => FlatRedBallServices.GraphicsDevice;
 
