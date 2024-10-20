@@ -1226,39 +1226,44 @@ public class DragDropManager : Singleton<DragDropManager>
                                                                         out creationReport,
                                                                         out errorMessage);
 
-                        // maybe we should copy more properties here?
-                        newlyCreatedFile.DestroyOnUnload = originalReferencedFileSave.DestroyOnUnload;
-                        newlyCreatedFile.LoadedOnlyWhenReferenced = originalReferencedFileSave.LoadedOnlyWhenReferenced;
-                        newlyCreatedFile.IncludeDirectoryRelativeToContainer = originalReferencedFileSave.IncludeDirectoryRelativeToContainer;
-
-                        // copy over the properties from the source file to the new file:
-                        foreach (var originalProperty in originalReferencedFileSave.Properties)
+                        if(newlyCreatedFile != null)
                         {
-                            var existing = newlyCreatedFile.Properties.FirstOrDefault(item => item.Name == originalProperty.Name);
 
-                            if(existing != null)
+                            // maybe we should copy more properties here?
+                            newlyCreatedFile.DestroyOnUnload = originalReferencedFileSave.DestroyOnUnload;
+                            newlyCreatedFile.LoadedOnlyWhenReferenced = originalReferencedFileSave.LoadedOnlyWhenReferenced;
+                            newlyCreatedFile.IncludeDirectoryRelativeToContainer = originalReferencedFileSave.IncludeDirectoryRelativeToContainer;
+
+                            // copy over the properties from the source file to the new file:
+                            foreach (var originalProperty in originalReferencedFileSave.Properties)
                             {
-                                existing.Value = originalProperty.Value;
+                                var existing = newlyCreatedFile.Properties.FirstOrDefault(item => item.Name == originalProperty.Name);
+
+                                if(existing != null)
+                                {
+                                    existing.Value = originalProperty.Value;
+                                }
+                                else
+                                {
+                                    var clone = FileManager.CloneObject(originalProperty);
+                                    newlyCreatedFile.Properties.Add(clone);
+
+                                }
+
+                            }
+
+                            if(elementDroppingIn != null)
+                            {
+                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementDroppingIn);
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementDroppingIn);
                             }
                             else
                             {
-                                var clone = FileManager.CloneObject(originalProperty);
-                                newlyCreatedFile.Properties.Add(clone);
-
+                                GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+                                GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
                             }
-
                         }
 
-                        if(elementDroppingIn != null)
-                        {
-                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementDroppingIn);
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementDroppingIn);
-                        }
-                        else
-                        {
-                            GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
-                            GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
-                        }
 
                         if (!String.IsNullOrEmpty(errorMessage))
                         {
