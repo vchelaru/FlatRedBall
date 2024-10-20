@@ -173,6 +173,12 @@ namespace OfficialPlugins.VariableDisplay
                                     baseVariableDefinition.MaxValue = variableInElement.VariableDefinition.MaxValue;
                                 }
 
+                                var subtext = variableInElement?.Summary ?? baseVariable?.Summary;
+                                if(!string.IsNullOrWhiteSpace(subtext))
+                                {
+                                    baseVariableDefinition.SubtextFunc = (_,_) => subtext;
+                                }
+
                                 if (variableInElement.CustomGetForcedOptionsFunc != null)
                                 {
                                     baseVariableDefinition.CustomGetForcedOptionFunc = (element, namedObject, referencedFileSave) => variableInElement.CustomGetForcedOptionsFunc(instanceElement);
