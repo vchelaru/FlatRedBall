@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using System.IO;
 using OfficialPlugins.EffectPlugin.CodeGenerators;
 using OfficialPlugins.EffectPlugin.Data;
+using FlatRedBall.Glue.IO;
 
 namespace OfficialPlugins.EffectPlugin
 {
@@ -60,7 +61,7 @@ namespace OfficialPlugins.EffectPlugin
                     {
                         GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                         GlueCommands.Self.ProjectCommands.RemoveFromProjects(destinationFile);
-                        GlueCommands.Self.TryMultipleTimes(() => System.IO.File.Delete(destinationFile.FullPath));
+                        GlueCommands.Self.TryMultipleTimes(() => FileHelper.MoveToRecycleBin(destinationFile.FullPath));
                     }
                 }
             }
