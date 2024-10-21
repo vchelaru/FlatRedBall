@@ -313,7 +313,44 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
-        
+        void GetClosestTileIndex(float x, float y, out int xIndex, out int yIndex)
+        {
+            xIndex = MathFunctions.RoundToInt((x - mXSeed) / mGridSpacing);
+            yIndex = MathFunctions.RoundToInt((y - mYSeed) / mGridSpacing);
+
+            xIndex = System.Math.Max(0, xIndex);
+            xIndex = System.Math.Min(xIndex, mNumberOfXTiles - 1);
+
+            yIndex = System.Math.Max(0, yIndex);
+            yIndex = System.Math.Min(yIndex, mNumberOfYTiles - 1);
+        }
+
+        /// <summary>
+        /// Fills an user provided list with <see cref="PositionedNode"/> found inside a rectangle.
+        /// </summary>
+        /// <param name="nodeList">List of nodes. The user has the responsibility of clearing the list before calling this method.</param>
+        /// <param name="rectangle">Rectangle used to check which nodes will populate the list.</param>
+        public void FillListOfPositionedNodesInsideRectangle(List<PositionedNode> nodeList, FloatRectangle rectangle)
+        {
+            // Get the indexes of the closest nodes to the top-left and bottom-right corners of the rectangle
+            GetClosestTileIndex(rectangle.Left, rectangle.Top, out int leftIndex, out int topIndex);
+            GetClosestTileIndex(rectangle.Right, rectangle.Bottom, out int rightIndex, out int bottomIndex);
+
+            // Loop through the indexes, find the nodes and check more accurately if they are inside the rectangle
+            for (int x = leftIndex; x <= rightIndex; x++)
+            {
+                for (int y = bottomIndex; y <= topIndex; y++)
+                {
+                    var node = TiledNodeAt(x, y);
+
+                    if (node != null && rectangle.IsPointInside(node.X, node.Y))
+                    {
+                        nodeList.Add(node);
+                    }
+                }
+            }
+        }
+
         public PositionedNode GetClosestNodeTo(float x, float y)
         {
 #if DEBUG
