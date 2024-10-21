@@ -38,8 +38,18 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
     {
         #region Search-related
 
-        public static string SearchText = String.Empty;
-        public static string PrefixText = String.Empty;
+        // October 21, 2024
+        // By assigning this to
+        // to a string, it breaks
+        // the treeview population.
+        // Not sure why yet, so suppressing
+        // this assignment
+        //public static string SearchText = string.Empty;
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+        public static string SearchText;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
+        public static string PrefixText = string.Empty;
 
         public string SearchBoxText
         {
@@ -107,9 +117,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         public ObservableCollection<NodeViewModel> FlattenedItems { get; private set; } = new ObservableCollection<NodeViewModel>();
 
-        public NodeViewModel FlattenedSelectedItem
+        public NodeViewModel? FlattenedSelectedItem
         {
-            get => Get<NodeViewModel>();
+            get => Get<NodeViewModel?>();
             set => Set(value);
         }
 
@@ -796,6 +806,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         List<NodeViewModel> tempListForSortingFilteredResults = new List<NodeViewModel>();
         private void RefreshFlattenedList()
         {
+            ///////////////////Early Out///////////////////
+            if (GlueState.Self.CurrentGlueProject == null)
+            {
+                return;
+            }
+            /////////////////End Early Out////////////////
+            
             var searchToLower = SearchText?.ToLowerInvariant();
             var searchTermCaseSensitive = SearchText;
 
@@ -1067,14 +1084,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 var itemNameToLower = itemName.ToLowerInvariant();
 
                 var weight = 0.0;
-
                 if (itemName == searchTermCaseSensitive)
                 {
                     // Search: Sprite 
                     // Actual: Sprite
                     weight = 1;
                 }
-                else if (itemName.StartsWith(searchTermCaseSensitive))
+                else if (searchTermCaseSensitive != null && itemName.StartsWith(searchTermCaseSensitive))
                 {
                     // Search: Spri
                     // Actual: Sprite
@@ -1086,25 +1102,25 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     // Actual: Sprite
                     weight = 0.7;
                 }
-                else if (CamelCaseMatchUpper(itemName, searchTermCaseSensitive))
+                else if (searchTermCaseSensitive != null && CamelCaseMatchUpper(itemName, searchTermCaseSensitive))
                 {
                     // Search MGE
                     // Actual: MachineGunEnemy
                     weight = 0.65;
                 }
-                else if (itemNameToLower.StartsWith(searchToLower))
+                else if (searchToLower != null && itemNameToLower.StartsWith(searchToLower))
                 {
                     // Search: spri
                     // Actual: Sprite
                     weight = 0.6;
                 }
-                else if (itemName.Contains(searchTermCaseSensitive))
+                else if (searchTermCaseSensitive != null && itemName.Contains(searchTermCaseSensitive))
                 {
                     // Search: rit
                     // Actual: Sprite
                     weight = 0.5;
                 }
-                else if (itemNameToLower.Contains(searchToLower))
+                else if (searchToLower != null && itemNameToLower.Contains(searchToLower))
                 {
                     // Search: magetod
                     // Actual: DamageToDeal
@@ -1170,7 +1186,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             }
 
-        public NodeViewModel TreeNodeByDirectory(string containingDirection, NodeViewModel containingNode)
+        public NodeViewModel? TreeNodeByDirectory(string containingDirection, NodeViewModel containingNode)
         {
             if (string.IsNullOrEmpty(containingDirection))
             {
@@ -1209,7 +1225,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
-        public NodeViewModel GetTreeNodeForGlobalContent(ReferencedFileSave rfs, NodeViewModel nodeToStartAt)
+        public NodeViewModel? GetTreeNodeForGlobalContent(ReferencedFileSave rfs, NodeViewModel nodeToStartAt)
         {
             NodeViewModel containerTreeNode = nodeToStartAt;
 
@@ -1345,7 +1361,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             var first = separated[0];
             separated.RemoveAt(0);
 
-            NodeViewModel nodeViewModel = null;
+            NodeViewModel? nodeViewModel = null;
 
             if (first == EntityRootNode.Text)
             {
