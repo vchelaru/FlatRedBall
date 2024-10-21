@@ -29,7 +29,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CleanupPlugin
             eventRemovalLogic.HandleEventRemoved(element, eventResponse);
         }
 
-        private void HandleFileRemoved(IElement element, ReferencedFileSave file)
+        private void HandleFileRemoved(GlueElement element, ReferencedFileSave file)
         {
             fileRemovalLogic.HandleFileRemoved(element, file);
         }

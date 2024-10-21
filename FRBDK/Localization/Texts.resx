@@ -1234,9 +1234,6 @@ for {1}?</value>
   <data name="ExposedInDerivedCannotDelete" xml:space="preserve">
     <value>The following cannot be deleted because a base object has it marked as ExposedInDerived or SetByDerived:</value>
   </data>
-  <data name="WhatToDoWithFiles" xml:space="preserve">
-    <value>What would you like to do with the following files:</value>
-  </data>
   <data name="FilesLeaveAsPartOfProject" xml:space="preserve">
     <value>Nothing - leave them as part of the game project</value>
   </data>

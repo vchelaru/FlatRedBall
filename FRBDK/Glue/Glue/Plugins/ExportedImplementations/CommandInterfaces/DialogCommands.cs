@@ -387,7 +387,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     var lbw = new ListBoxWindowWpf();
 
-                    string messageString = L.Texts.WhatToDoWithFiles + "\n";
+                    string messageString = "What would you like to do with the following files:\n";
                     lbw.Message = messageString;
 
                     foreach (var s in filesToRemove)

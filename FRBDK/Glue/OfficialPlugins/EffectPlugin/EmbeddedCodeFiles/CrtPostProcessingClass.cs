@@ -68,14 +68,358 @@ internal class ReplaceClassName : IPostProcess
     EffectParameter _caRedOffsetParameter;
     EffectParameter _caBlueOffsetParameter;
 
-    public float Exposure { get; set; } = 1.00f;
-    public float Vibrance { get; set; } = 0.18f;
-    public float ScanBrightnessBoost { get; set; } = 1.11f;
-    public CrtModeOption CrtMode { get; set; } = CrtModeOption.Full;
-    public bool IsSmoothingFilterEnabled { get; set; } = true;
-    public bool IsChromaticAberrationEnabled { get; set; } = true;
-
     SpriteBatch _spriteBatch;
+
+    bool _needsApplySettings;
+
+    #endregion
+
+    #region Exposed settings
+
+    /// <summary>
+    /// Sets the <see cref="CrtMode"/> to display. If disabled this
+    /// effect will still apply a mild smoothing filter if enabled.
+    /// </summary>
+    public CrtModeOption CrtMode
+    {
+        get { return _crtMode; }
+        set
+        {
+            if (_crtMode == value) return;
+
+            _crtMode = value;
+            _needsApplySettings = true;
+        }
+    }
+    CrtModeOption _crtMode = CrtModeOption.Full;
+
+    /// <summary>
+    /// Whether to apply smoothing filter when <see cref="CrtMode"/> is <see cref="CrtModeOption.Disabled"/>.
+    /// </summary>
+    public bool IsSmoothingFilterEnabled
+    {
+        get { return _isSmoothingFilterEnabled; }
+        set
+        {
+            if (_isSmoothingFilterEnabled == value) return;
+
+            _isSmoothingFilterEnabled = value;
+            _needsApplySettings = true;
+        }
+    }
+    bool _isSmoothingFilterEnabled = true;
+
+    /// <summary>
+    /// Whether to apply chromatic aberration effect.
+    /// </summary>
+    public bool IsChromaticAberrationEnabled
+    {
+        get { return _isChromaticAberrationEnabled; }
+        set
+        {
+            if (_isChromaticAberrationEnabled == value) return;
+
+            _isChromaticAberrationEnabled = value;
+            _needsApplySettings = true;
+        }
+    }
+    bool _isChromaticAberrationEnabled = true;
+
+    /// <summary>
+    /// Level of exposure for the output image.
+    /// </summary>
+    public float Exposure
+    {
+        get { return _exposure; }
+        set
+        {
+            if (_exposure == value) return;
+
+            _exposure = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _exposure = 1.00f;
+
+    /// <summary>
+    /// Level of vibrance for the output image.
+    /// </summary>
+    public float Vibrance
+    {
+        get { return _vibrance; }
+        set
+        {
+            if (_vibrance == value) return;
+
+            _vibrance = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _vibrance = 0.18f;
+
+    /// <summary>
+    /// Amount of weight for the center pixel when
+    /// blurring with the smoothing filter.
+    /// </summary>
+    public float SmoothingWeightB
+    {
+        get { return _smoothingWeightB; }
+        set
+        {
+            if (_smoothingWeightB == value) return;
+
+            _smoothingWeightB = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _smoothingWeightB = 0.68f;
+
+    /// <summary>
+    /// Amount of weight for the adjacent pixels when
+    /// blurring with the smoothing filter.
+    /// </summary>
+    public float SmoothingWeightS
+    {
+        get { return _smoothingWeightS; }
+        set
+        {
+            if (_smoothingWeightS == value) return;
+
+            _smoothingWeightS = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _smoothingWeightS = 0.32f;
+
+    /// <summary>
+    /// Amount of weight for the center pixel when
+    /// blurring with the CRT mode at pass 1.
+    /// </summary>
+    public float SmoothingWeightP1B
+    {
+        get { return _smoothingWeightP1B; }
+        set
+        {
+            if (_smoothingWeightP1B == value) return;
+
+            _smoothingWeightP1B = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _smoothingWeightP1B = 0.7f;
+
+    /// <summary>
+    /// Amount of weight for the adjacent horizontal
+    /// pixels when blurring with the CRT mode at pass 1.
+    /// </summary>
+    public float SmoothingWeightP1H
+    {
+        get { return _smoothingWeightP1H; }
+        set
+        {
+            if (_smoothingWeightP1H == value) return;
+
+            _smoothingWeightP1H = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _smoothingWeightP1H = 0.15f;
+
+    /// <summary>
+    /// Amount of weight for the adjacent vertical
+    /// pixels when blurring with the CRT mode at pass 1.
+    /// </summary>
+    public float SmoothingWeightP1V
+    {
+        get { return _smoothingWeightP1V; }
+        set
+        {
+            if (_smoothingWeightP1V == value) return;
+
+            _smoothingWeightP1V = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _smoothingWeightP1V = 0.15f;
+
+    /// <summary>
+    /// Amount of weight for the center pixel
+    /// when blurring with the CRT mode at pass 2.
+    /// </summary>
+    public float SmoothingWeightP2B
+    {
+        get { return _smoothingWeightP2B; }
+        set
+        {
+            if (_smoothingWeightP2B == value) return;
+
+            _smoothingWeightP2B = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _smoothingWeightP2B = 0.3f;
+
+    /// <summary>
+    /// Amount of weight for the adjacent horizontal
+    /// pixels when blurring with the CRT mode at pass 2.
+    /// </summary>
+    public float SmoothingWeightP2H
+    {
+        get { return _smoothingWeightP2H; }
+        set
+        {
+            if (_smoothingWeightP2H == value) return;
+
+            _smoothingWeightP2H = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _smoothingWeightP2H = 0.5f;
+
+    /// <summary>
+    /// Amount of weight for the adjacent vertical
+    /// pixels when blurring with the CRT mode at pass 2.
+    /// </summary>
+    public float SmoothingWeightP2V
+    {
+        get { return _smoothingWeightP2V; }
+        set
+        {
+            if (_smoothingWeightP2V == value) return;
+
+            _smoothingWeightP2V = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _smoothingWeightP2V = 0.2f;
+
+    /// <summary>
+    /// Strenght for the scan mask.
+    /// </summary>
+    public float ScanMaskStrenght
+    {
+        get { return _scanMaskStrenght; }
+        set
+        {
+            if (_scanMaskStrenght == value) return;
+
+            _scanMaskStrenght = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _scanMaskStrenght = 0.525f;
+
+    /// <summary>
+    /// Scale of the scan gaussian effect.
+    /// </summary>
+    public float ScanScale
+    {
+        get { return _scanScale; }
+        set
+        {
+            if (_scanScale == value) return;
+
+            _scanScale = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _scanScale = -8.0f;
+
+    /// <summary>
+    /// Shape of the blur filter kernel.
+    /// </summary>
+    public float ScanKernelShape
+    {
+        get { return _scanKernelShape; }
+        set
+        {
+            if (_scanKernelShape == value) return;
+
+            _scanKernelShape = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _scanKernelShape = 2.0f;
+
+    /// <summary>
+    /// Brightness boost to compensate for scan darkness.
+    /// </summary>
+    public float ScanBrightnessBoost
+    {
+        get { return _scanBrightnessBoost; }
+        set
+        {
+            if (_scanBrightnessBoost == value) return;
+
+            _scanBrightnessBoost = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _scanBrightnessBoost = 1.11f;
+
+    /// <summary>
+    /// Amount of horizontal curvature.
+    /// </summary>
+    public float WarpX
+    {
+        get { return _warpX; }
+        set
+        {
+            if (_warpX == value) return;
+
+            _warpX = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _warpX = 0.01f;
+
+    /// <summary>
+    /// Amount of vertical curvature.
+    /// </summary>
+    public float WarpY
+    {
+        get { return _warpY; }
+        set
+        {
+            if (_warpY == value) return;
+
+            _warpY = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _warpY = 0.02f;
+
+    /// <summary>
+    /// Amount of red channel distortion for chromatic aberration.
+    /// </summary>
+    public float ChromaticAberrationRedOffset
+    {
+        get { return _caRedOffset; }
+        set
+        {
+            if (_caRedOffset == value) return;
+
+            _caRedOffset = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _caRedOffset = 0.0006f;
+
+    /// <summary>
+    /// Amount of blue channel distortion for chromatic aberration.
+    /// </summary>
+    public float ChromaticAberrationBlueOffset
+    {
+        get { return _caBlueOffset; }
+        set
+        {
+            if (_caBlueOffset == value) return;
+
+            _caBlueOffset = value;
+            _needsApplySettings = true;
+        }
+    }
+    float _caBlueOffset = 0.0006f;
 
     #endregion
 
@@ -128,13 +472,13 @@ internal class ReplaceClassName : IPostProcess
         }
 
         CreateRenderTargets();
+        ApplySettings();
 
         FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) =>
         {
             CreateRenderTargets();
+            ApplySettings();
         };
-
-        ApplySettings();
     }
 
     private void CreateRenderTargets()
@@ -148,27 +492,26 @@ internal class ReplaceClassName : IPostProcess
 
     void ApplySettings()
     {
-
         _originalSizeParameter.SetValue(new Vector2(PostProcessingHelper.BaseWidth, PostProcessingHelper.BaseHeight));
         _outputSizeParameter.SetValue(new Vector2(FlatRedBallServices.Game.Window.ClientBounds.Width, FlatRedBallServices.Game.Window.ClientBounds.Height));
         _pixelWidthParameter.SetValue(1f / FlatRedBallServices.Game.Window.ClientBounds.Width);
         _pixelHeightParameter.SetValue(1f / FlatRedBallServices.Game.Window.ClientBounds.Height);
 
-        _exposureParameter.SetValue(Exposure);
-        _vibranceParameter.SetValue(Vibrance);
+        _exposureParameter.SetValue(_exposure);
+        _vibranceParameter.SetValue(_vibrance);
 
-        _smoothingWeightBParameter.SetValue(0.68f);
-        _smoothingWeightSParameter.SetValue(0.32f);
+        _smoothingWeightBParameter.SetValue(_smoothingWeightB);
+        _smoothingWeightSParameter.SetValue(_smoothingWeightS);
 
-        _crtSmoothingWeightP1BParameter.SetValue(0.7f);
-        _crtSmoothingWeightP1HParameter.SetValue(0.15f);
-        _crtSmoothingWeightP1VParameter.SetValue(0.15f);
-        _crtSmoothingWeightP2BParameter.SetValue(0.3f);
-        _crtSmoothingWeightP2HParameter.SetValue(0.5f);
-        _crtSmoothingWeightP2VParameter.SetValue(0.2f);
+        _crtSmoothingWeightP1BParameter.SetValue(_smoothingWeightP1B);
+        _crtSmoothingWeightP1HParameter.SetValue(_smoothingWeightP1H);
+        _crtSmoothingWeightP1VParameter.SetValue(_smoothingWeightP1V);
+        _crtSmoothingWeightP2BParameter.SetValue(_smoothingWeightP2B);
+        _crtSmoothingWeightP2HParameter.SetValue(_smoothingWeightP2H);
+        _crtSmoothingWeightP2VParameter.SetValue(_smoothingWeightP2V);
 
-        float scanMaskStrenght = 0.525f;
-        float scanBrightnessBoost = ScanBrightnessBoost;
+        float scanMaskStrenght = _scanMaskStrenght;
+        float scanBrightnessBoost = _scanBrightnessBoost;
 
         if (CrtMode == CrtModeOption.SoftScans)
         {
@@ -182,8 +525,8 @@ internal class ReplaceClassName : IPostProcess
         }
 
         _scanMaskStrenghtParameter.SetValue(scanMaskStrenght);
-        _scanScaleParameter.SetValue(-8.0f);
-        _scanKernelShapeParameter.SetValue(2.0f);
+        _scanScaleParameter.SetValue(_scanScale);
+        _scanKernelShapeParameter.SetValue(_scanKernelShape);
         _scanBrightnessBoostParameter.SetValue(scanBrightnessBoost);
 
         if (CrtMode == CrtModeOption.NoScansNoCurvature)
@@ -193,17 +536,18 @@ internal class ReplaceClassName : IPostProcess
         }
         else
         {
-            _warpXParameter.SetValue(0.01f);
-            _warpYParameter.SetValue(0.02f);
+            _warpXParameter.SetValue(_warpX);
+            _warpYParameter.SetValue(_warpY);
         }
 
-        _caRedOffsetParameter.SetValue(0.0006f);
-        _caBlueOffsetParameter.SetValue(0.0006f);
+        _caRedOffsetParameter.SetValue(_caRedOffset);
+        _caBlueOffsetParameter.SetValue(_caBlueOffset);
 
         _baseTechniqueToUse = IsSmoothingFilterEnabled ? _effectTechniqueBaseAndSmoothing : _effectTechniqueBase;
         _scanTechniqueToUse = IsChromaticAberrationEnabled ? _effectTechniqueCrtScanCa : _effectTechniqueCrtScan;
-    }
 
+        _needsApplySettings = false;
+    }
 
     public void Apply(Texture2D source, RenderTarget2D target)
     {
@@ -215,15 +559,10 @@ internal class ReplaceClassName : IPostProcess
         device.SetRenderTarget(oldRt);
     }
 
-
-
-
-
-
     public void Apply(Texture2D source)
     {
-        // This could be smarter to only apply when it changes, but for now this will do:
-        ApplySettings();
+        if (_needsApplySettings)
+            ApplySettings();
 
         var device = FlatRedBallServices.GraphicsDevice;
         var output = device.GetRenderTargets()[0].RenderTarget as RenderTarget2D;
@@ -279,8 +618,6 @@ internal class ReplaceClassName : IPostProcess
 
             ////////////////////////////////////////////////////////////////////////////////////////////////
         }
-
-
     }
 
     #region PostProcessingHelper
@@ -289,7 +626,6 @@ internal class ReplaceClassName : IPostProcess
     {
         internal static int BaseWidth { get; set; }
         internal static int BaseHeight { get; set; }
-
 
         static GraphicsDevice GraphicsDevice => FlatRedBallServices.GraphicsDevice;
 

@@ -563,22 +563,29 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     if (string.IsNullOrEmpty(executable) && !WindowsFileAssociation.NativelyHandledExtensions.Contains(effectiveExtension))
                     {
                         //Attempt to get relative projects
-                        var absoluteExe = "";
+                        FilePath? absoluteExe = null;
                         if (GumFileExtensions.Contains(textExtension.ToLower()))
+                        {
                             absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+
+                            if(absoluteExe?.Exists() == false)
+                            {
+                                absoluteExe = GlueState.Self.GlueExeDirectory + "Gum/Data/Gum.exe";
+                            }
+                        }
                         if (String.Equals(textExtension, "achx", StringComparison.OrdinalIgnoreCase))
                         {
                             absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
-                            var foundAnimationEditor = (System.IO.File.Exists(absoluteExe));
+                            var foundAnimationEditor = absoluteExe?.Exists() == true;
                             if(!foundAnimationEditor)
                             {
                                 // check if it's in the default built location if the user is running from prebuilt:
                                 absoluteExe = GlueState.Self.GlueExeDirectory + "AnimationEditor/AnimationEditor.exe";
                             }
                         }
-                        if ((absoluteExe != "") && (System.IO.File.Exists(absoluteExe)))
+                        if ((absoluteExe != "") && absoluteExe?.Exists() == true)
                         {
-                            Process.Start(new ProcessStartInfo(absoluteExe, fileName));
+                            Process.Start(new ProcessStartInfo(absoluteExe.FullPath, fileName));
                             return;
                         }
 

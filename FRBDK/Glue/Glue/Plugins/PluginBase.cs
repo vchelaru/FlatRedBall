@@ -405,7 +405,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action<StateSaveCategory, string, StateCategoryVariableAction> ReactToStateCategoryExcludedVariablesChanged;
 
-        public Action<IElement, ReferencedFileSave> ReactToFileRemoved { get; protected set; }
+        public Action<GlueElement, ReferencedFileSave> ReactToFileRemoved { get; protected set; }
 
         /// <summary>
         /// Delegate raised whenever an entity is going to be removed. The first argument

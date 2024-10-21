@@ -1233,9 +1233,6 @@
   <data name="ExposedInDerivedCannotDelete" xml:space="preserve">
     <value>Het volgende kan niet worden verwijderd omdat het bij een basisobject is gemarkeerd als ExposedInDerived of SetByDerived:</value>
   </data>
-  <data name="WhatToDoWithFiles" xml:space="preserve">
-    <value>Wat wilt u doen met de volgende bestanden:</value>
-  </data>
   <data name="FilesLeaveAsPartOfProject" xml:space="preserve">
     <value>Niets - laat ze achter als onderdeel van het spelproject</value>
   </data>

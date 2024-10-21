@@ -1458,7 +1458,7 @@ public static class RightClickHelper
 
                         var lbw = new ListBoxWindowWpf();
 
-                        string messageString = L.Texts.WhatToDoWithFiles + "\n";
+                        string messageString = "What would you like to do with the following files:\n";
                         lbw.Message = messageString;
 
                         foreach (string s in filesToRemove)

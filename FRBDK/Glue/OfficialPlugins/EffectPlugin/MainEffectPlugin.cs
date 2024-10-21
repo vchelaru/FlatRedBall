@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using System.IO;
 using OfficialPlugins.EffectPlugin.CodeGenerators;
 using OfficialPlugins.EffectPlugin.Data;
+using FlatRedBall.Glue.IO;
 
 namespace OfficialPlugins.EffectPlugin
 {
@@ -36,14 +37,42 @@ namespace OfficialPlugins.EffectPlugin
             this.ReactToUnloadedGlux += HandleUnloadGlux;
             this.AddNewFileOptionsHandler += ShowFxFileOptions;
             this.ReactToNewFileHandler = ReactToNewFile;
+            this.ReactToFileRemoved += HandleFileRemoved;
 
+            AddEffectContentsToDictionary();
+
+            AssetTypeInfoManager.Initialize();
+        }
+
+        private void HandleFileRemoved(GlueElement element, ReferencedFileSave save)
+        {
+            var extension = FileManager.GetExtension(save.Name);
+
+            if (extension == "fx")
+            {
+                var destinationFile = PostProcessCodeGenerator.CodeDestinationFileFor(save.Name);
+
+                if(destinationFile.Exists())
+                {
+                    var response = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
+                        $"Would you like to delete the post processing file:\n{destinationFile}");
+
+                    if(response == System.Windows.MessageBoxResult.Yes)
+                    {
+                        GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                        GlueCommands.Self.ProjectCommands.RemoveFromProjects(destinationFile);
+                        GlueCommands.Self.TryMultipleTimes(() => FileHelper.MoveToRecycleBin(destinationFile.FullPath));
+                    }
+                }
+            }
+        }
+
+        private void AddEffectContentsToDictionary()
+        {
             AddToDictionary(new GradientColorContents());
             AddToDictionary(new SaturationContents());
             AddToDictionary(new BloomContents());
             AddToDictionary(new CrtContents());
-
-            AssetTypeInfoManager.Initialize();
-
             void AddToDictionary(ShaderContents contents) => ShaderContentsDictionary[contents.ShaderContentsType] = contents;
         }
 

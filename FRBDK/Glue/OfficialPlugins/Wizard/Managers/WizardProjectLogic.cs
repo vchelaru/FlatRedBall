@@ -816,7 +816,7 @@ namespace OfficialPlugins.Wizard.Managers
         private static async Task<EntitySave> CreatePlayerEntityFromOptions(WizardViewModel vm)
         {
 
-            EntitySave playerEntity = null;
+            EntitySave? playerEntity = null;
             var addEntityVm = new AddEntityViewModel();
             addEntityVm.Name = "Player";
 
@@ -905,7 +905,7 @@ namespace OfficialPlugins.Wizard.Managers
         private static async Task HandleAddPlayerInstance(WizardViewModel vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos,
             NamedObjectSave cloudCollisionNos, EntitySave playerEntity)
         {
-            NamedObjectSave playerList = null;
+            NamedObjectSave? playerList = null;
             if (vm.AddGameScreen && vm.AddPlayerListToGameScreen)
             {
                 playerList = gameScreen.NamedObjects.FirstOrDefault(item => item.IsList && item.SourceClassGenericType == playerEntity.Name);

@@ -1233,9 +1233,6 @@
   <data name="ExposedInDerivedCannotDelete" xml:space="preserve">
     <value>Les éléments suivants ne peuvent pas être supprimés car un objet de base est marqué comme ExposedInDerived ou SetByDerived :</value>
   </data>
-  <data name="WhatToDoWithFiles" xml:space="preserve">
-    <value>Que souhaiteriez-vous faire avec les fichiers suivants :</value>
-  </data>
   <data name="FilesLeaveAsPartOfProject" xml:space="preserve">
     <value>Rien - laissez-les dans le cadre du projet de jeu</value>
   </data>
