@@ -326,7 +326,7 @@ namespace FlatRedBall.AI.Pathfinding
         }
 
         /// <summary>
-        /// Fills an user provided list with <see cref="PositionedNode"/> found inside a rectangle.
+        /// Fills an user provided list with positioned nodes found inside a rectangle.
         /// </summary>
         /// <param name="nodeList">List of nodes. The user has the responsibility of clearing the list before calling this method.</param>
         /// <param name="rectangle">Rectangle used to check which nodes will populate the list.</param>
