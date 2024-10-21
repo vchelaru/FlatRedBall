@@ -38,8 +38,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
     {
         #region Search-related
 
-        public static string SearchText;
-        public static string PrefixText;
+        public static string SearchText = String.Empty;
+        public static string PrefixText = String.Empty;
 
         public string SearchBoxText
         {
@@ -1331,7 +1331,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             return found;
         }
 
-        public NodeViewModel GetTreeNodeByQualifiedPath(string qualifiedPath)
+        public NodeViewModel? GetTreeNodeByQualifiedPath(string qualifiedPath)
         {
             var separated = qualifiedPath.Split('/').ToList();
 
@@ -1340,7 +1340,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             return node;
         }
 
-        private NodeViewModel GetTreeNode(List<string> separated)
+        private NodeViewModel? GetTreeNode(List<string> separated)
         {
             var first = separated[0];
             separated.RemoveAt(0);
@@ -1364,7 +1364,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         }
 
 
-        private NodeViewModel GetTreeNode(List<string> separated, NodeViewModel nodeViewModel)
+        private NodeViewModel? GetTreeNode(List<string> separated, NodeViewModel nodeViewModel)
         {
             if (separated.Count == 0)
             {
