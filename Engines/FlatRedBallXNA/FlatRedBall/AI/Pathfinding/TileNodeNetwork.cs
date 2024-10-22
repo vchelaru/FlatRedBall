@@ -326,11 +326,12 @@ namespace FlatRedBall.AI.Pathfinding
         }
 
         /// <summary>
-        /// Fills an user provided list with positioned nodes found inside a rectangle.
+        /// Fills an user provided list with positioned nodes found inside a <see cref="FloatRectangle"/>.
         /// </summary>
-        /// <param name="nodeList">List of nodes. The user has the responsibility of clearing the list before calling this method.</param>
-        /// <param name="rectangle">Rectangle used to check which nodes will populate the list.</param>
-        public void FillListOfPositionedNodesInsideRectangle(List<PositionedNode> nodeList, FloatRectangle rectangle)
+        /// <param name="nodeList">A <see cref="List{PositionedNode}"/> to hold the intersecting nodes.
+        /// The user has the responsibility of clearing the list before calling this method.</param>
+        /// <param name="rectangle"><see cref="FloatRectangle"/> used to check which nodes will populate the list.</param>
+        public void FillListOfNodesInsideRectangle(List<PositionedNode> nodeList, FloatRectangle rectangle)
         {
             // Get the indexes of the closest nodes to the top-left and bottom-right corners of the rectangle
             GetClosestTileIndex(rectangle.Left, rectangle.Top, out int leftIndex, out int topIndex);
@@ -349,6 +350,17 @@ namespace FlatRedBall.AI.Pathfinding
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Fills an user provided list with positioned nodes found inside an <see cref="AxisAlignedRectangle"/>.
+        /// </summary>
+        /// <param name="nodeList">A <see cref="List{PositionedNode}"/> to hold the intersecting nodes.
+        /// The user has the responsibility of clearing the list before calling this method.</param>
+        /// <param name="rectangle"><see cref="AxisAlignedRectangle"/> used to check which nodes will populate the list.</param>
+        public void FillListOfNodesInsideAARectangle(List<PositionedNode> nodeList, AxisAlignedRectangle rectangle)
+        {
+            FillListOfNodesInsideRectangle(nodeList, rectangle.AsFloatRectangle());
         }
 
         public PositionedNode GetClosestNodeTo(float x, float y)
