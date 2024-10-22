@@ -326,11 +326,15 @@ namespace FlatRedBall.AI.Pathfinding
         }
 
         /// <summary>
-        /// Fills an user provided list with positioned nodes found inside a rectangle.
+        /// Fills an user provided list with positioned nodes found inside a <see cref="FloatRectangle"/>.
         /// </summary>
-        /// <param name="nodeList">List of nodes. The user has the responsibility of clearing the list before calling this method.</param>
-        /// <param name="rectangle">Rectangle used to check which nodes will populate the list.</param>
-        public void FillListOfPositionedNodesInsideRectangle(List<PositionedNode> nodeList, FloatRectangle rectangle)
+        /// <param name="nodeList">A <see cref="List{PositionedNode}"/> to hold the intersecting nodes.
+        /// The user has the responsibility of clearing the list before calling this method.</param>
+        /// <param name="rectangle"><see cref="FloatRectangle"/> used to check which nodes will populate the list.</param>
+        /// <remarks>Using this method is much faster than looping through every node contained in the
+        /// <see cref="TileNodeNetwork"/>, however keep in mind it can still be slow if the size
+        /// of the passed <see cref="FloatRectangle"/> is very big and overlaps lots of nodes.</remarks>
+        public void FillListOfNodesInsideRectangle(List<PositionedNode> nodeList, FloatRectangle rectangle)
         {
             // Get the indexes of the closest nodes to the top-left and bottom-right corners of the rectangle
             GetClosestTileIndex(rectangle.Left, rectangle.Top, out int leftIndex, out int topIndex);
@@ -344,6 +348,52 @@ namespace FlatRedBall.AI.Pathfinding
                     var node = TiledNodeAt(x, y);
 
                     if (node != null && rectangle.IsPointInside(node.X, node.Y))
+                    {
+                        nodeList.Add(node);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Fills an user provided list with positioned nodes found inside an <see cref="AxisAlignedRectangle"/>.
+        /// </summary>
+        /// <param name="nodeList">A <see cref="List{PositionedNode}"/> to hold the intersecting nodes.
+        /// The user has the responsibility of clearing the list before calling this method.</param>
+        /// <param name="rectangle"><see cref="AxisAlignedRectangle"/> used to check which nodes will populate the list.</param>
+        /// <remarks>Using this method is much faster than looping through every node contained in the
+        /// <see cref="TileNodeNetwork"/>, however keep in mind it can still be slow if the size
+        /// of the passed <see cref="AxisAlignedRectangle"/> is very big and overlaps lots of nodes.</remarks>
+        public void FillListOfNodesInsideAARectangle(List<PositionedNode> nodeList, AxisAlignedRectangle rectangle)
+        {
+            FillListOfNodesInsideRectangle(nodeList, rectangle.AsFloatRectangle());
+        }
+
+        /// <summary>
+        /// Fills an user provided list with positioned nodes found inside a <see cref="Polygon"/>.
+        /// </summary>
+        /// <param name="nodeList">A <see cref="List{PositionedNode}"/> to hold the intersecting nodes.
+        /// The user has the responsibility of clearing the list before calling this method.</param>
+        /// <param name="polygon"><see cref="Polygon"/> used to check which nodes will populate the list.</param>
+        /// <remarks>Using this method is much faster than looping through every node contained in the
+        /// <see cref="TileNodeNetwork"/>, however keep in mind it can still be slow if the size
+        /// of the passed <see cref="Polygon"/> is very big and overlaps lots of nodes.</remarks>
+        public void FillListOfNodesInsidePolygon(List<PositionedNode> nodeList, Polygon polygon)
+        {
+            var rectangle = polygon.BoundingRectangle;
+
+            // Get the indexes of the closest nodes to the top-left and bottom-right corners of the bounding rectangle
+            GetClosestTileIndex(rectangle.Left, rectangle.Top, out int leftIndex, out int topIndex);
+            GetClosestTileIndex(rectangle.Right, rectangle.Bottom, out int rightIndex, out int bottomIndex);
+
+            // Loop through the indexes, find the nodes and check more accurately if they are inside the polygon
+            for (int x = leftIndex; x <= rightIndex; x++)
+            {
+                for (int y = bottomIndex; y <= topIndex; y++)
+                {
+                    var node = TiledNodeAt(x, y);
+
+                    if (node != null && polygon.IsPointInside(node.X, node.Y))
                     {
                         nodeList.Add(node);
                     }
