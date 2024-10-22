@@ -363,6 +363,35 @@ namespace FlatRedBall.AI.Pathfinding
             FillListOfNodesInsideRectangle(nodeList, rectangle.AsFloatRectangle());
         }
 
+        /// <summary>
+        /// Fills an user provided list with positioned nodes found inside a <see cref="Polygon"/>.
+        /// </summary>
+        /// <param name="nodeList">A <see cref="List{PositionedNode}"/> to hold the intersecting nodes.
+        /// The user has the responsibility of clearing the list before calling this method.</param>
+        /// <param name="polygon"><see cref="Polygon"/> used to check which nodes will populate the list.</param>
+        public void FillListOfNodesInsidePolygon(List<PositionedNode> nodeList, Polygon polygon)
+        {
+            var rectangle = polygon.BoundingRectangle;
+
+            // Get the indexes of the closest nodes to the top-left and bottom-right corners of the bounding rectangle
+            GetClosestTileIndex(rectangle.Left, rectangle.Top, out int leftIndex, out int topIndex);
+            GetClosestTileIndex(rectangle.Right, rectangle.Bottom, out int rightIndex, out int bottomIndex);
+
+            // Loop through the indexes, find the nodes and check more accurately if they are inside the polygon
+            for (int x = leftIndex; x <= rightIndex; x++)
+            {
+                for (int y = bottomIndex; y <= topIndex; y++)
+                {
+                    var node = TiledNodeAt(x, y);
+
+                    if (node != null && polygon.IsPointInside(node.X, node.Y))
+                    {
+                        nodeList.Add(node);
+                    }
+                }
+            }
+        }
+
         public PositionedNode GetClosestNodeTo(float x, float y)
         {
 #if DEBUG
