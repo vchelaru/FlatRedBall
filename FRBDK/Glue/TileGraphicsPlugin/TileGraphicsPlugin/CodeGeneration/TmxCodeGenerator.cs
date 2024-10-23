@@ -38,7 +38,7 @@ namespace TileGraphicsPlugin.CodeGeneration
                 nos.GetAssetTypeInfo()?.Extension == "tmx" &&
                 nos.SourceType == SourceType.File &&
                 !string.IsNullOrEmpty(nos.SourceFile) &&
-                nos.GetCustomVariable("ShiftMapToMoveGameplayLayerToZ0")?.Value as bool? == true;
+                nos.GetCustomVariable("CreateFieldsForNamedObjects")?.Value as bool? == true;
         }
 
         private void GenerateCreateFieldsForNamedObjects(NamedObjectSave nos, GlueElement glueElement, ICodeBlock codeBlock)
@@ -66,17 +66,24 @@ namespace TileGraphicsPlugin.CodeGeneration
 
                     foreach (var layer in tiledMapSave.MapLayers)
                     {
-                        if (layer is mapObjectgroup objectLayer)
+                        if (layer is mapObjectgroup objectLayer && objectLayer.@object != null)
                         {
 
                             foreach(var item in objectLayer.@object)
                             {
                                 if(!string.IsNullOrEmpty( item.Name))
                                 {
-                                    var tileset = tiledMapSave.Tilesets.First(possibleTileset => possibleTileset.Firstgid <= item.gid);
-                                    var foundTile = tileset.Tiles.First(tile => tile.id + tileset.Firstgid == item.gid);
-
-                                    var className = foundTile.Class;
+                                    string className = string.Empty;
+                                    if(!string.IsNullOrEmpty(item.Type))
+                                    {
+                                        className = item.Type;
+                                    }
+                                    else
+                                    {
+                                        var tileset = tiledMapSave.Tilesets.FirstOrDefault(possibleTileset => possibleTileset.Firstgid <= item.gid);
+                                        var foundTile = tileset.Tiles.First(tile => tile.id + tileset.Firstgid == item.gid);
+                                        className = foundTile.Class;
+                                    }
                                     var entity = ObjectFinder.Self.GetEntitySaveUnqualified(className);
 
                                     if(entity != null)
@@ -134,64 +141,6 @@ namespace TileGraphicsPlugin.CodeGeneration
             return codeBlock;
         }
 
-        private void GenerateAssignmentsForObjectLayerFields(NamedObjectSave nos, GlueElement glueElement, ICodeBlock codeBlock)
-        {
-
-
-            var file = glueElement.GetReferencedFileSave(nos.SourceFile);
-            if (file == null)
-            {
-                return;
-            }
-
-            // open the TMX, look for object layers, generate fields for them all:
-            var absoluteFile = GlueCommands.Self.GetAbsoluteFilePath(file);
-            if (absoluteFile.Exists())
-            {
-                var oldShouldLoadFromSource = Tileset.ShouldLoadValuesFromSource;
-                //Tileset.ShouldLoadValuesFromSource = false;
-                // we need this to be true so we get the tileset info:
-                Tileset.ShouldLoadValuesFromSource = true;
-
-                try
-                {
-                    var tiledMapSave = TiledMapSave.FromFile(absoluteFile.FullPath);
-
-                    var orderedTilesets = tiledMapSave.Tilesets.OrderBy(item => item.Firstgid).ToArray();
-
-                    foreach (var layer in tiledMapSave.MapLayers)
-                    {
-                        if (layer is mapObjectgroup objectLayer)
-                        {
-                            foreach (var item in objectLayer.@object)
-                            {
-                                if (!string.IsNullOrEmpty(item.Name))
-                                {
-                                    var tileset = tiledMapSave.Tilesets.First(possibleTileset => possibleTileset.Firstgid <= item.gid);
-                                    var foundTile = tileset.Tiles.First(tile => tile.id + tileset.Firstgid == item.gid);
-
-                                    var className = foundTile.Class;
-                                    var entity = ObjectFinder.Self.GetEntitySaveUnqualified(className);
-
-                                    if (entity != null)
-                                    {
-                                        var defaultList = ObjectFinder.Self.GetDefaultListToContain(entity, glueElement);
-
-                                        codeBlock.Line($"{item.Name} = {defaultList.FieldName}.FindByName(\"{item.Name}\");");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                catch
-                {
-                    // do nothing - this will be handled elsewhere by the file tracking error system
-                }
-                Tileset.ShouldLoadValuesFromSource = oldShouldLoadFromSource;
-
-            }
-        }
 
         private void GenerateAddToManagers(ICodeBlock codeBlock, ReferencedFileSave file)
         {
@@ -289,6 +238,74 @@ namespace TileGraphicsPlugin.CodeGeneration
                         GenerateAssignmentsForObjectLayerFields(nos, element as GlueElement, codeBlock);
                     }
                 }
+            }
+        }
+
+
+        private void GenerateAssignmentsForObjectLayerFields(NamedObjectSave nos, GlueElement glueElement, ICodeBlock codeBlock)
+        {
+
+
+            var file = glueElement.GetReferencedFileSave(nos.SourceFile);
+            if (file == null)
+            {
+                return;
+            }
+
+            // open the TMX, look for object layers, generate fields for them all:
+            var absoluteFile = GlueCommands.Self.GetAbsoluteFilePath(file);
+            if (absoluteFile.Exists())
+            {
+                var oldShouldLoadFromSource = Tileset.ShouldLoadValuesFromSource;
+                //Tileset.ShouldLoadValuesFromSource = false;
+                // we need this to be true so we get the tileset info:
+                Tileset.ShouldLoadValuesFromSource = true;
+
+                try
+                {
+                    var tiledMapSave = TiledMapSave.FromFile(absoluteFile.FullPath);
+
+                    var orderedTilesets = tiledMapSave.Tilesets.OrderBy(item => item.Firstgid).ToArray();
+
+                    foreach (var layer in tiledMapSave.MapLayers)
+                    {
+                        if (layer is mapObjectgroup objectLayer && objectLayer.@object != null)
+                        {
+                            foreach (var item in objectLayer.@object)
+                            {
+                                if (!string.IsNullOrEmpty(item.Name))
+                                {
+                                    string className = string.Empty;
+                                    if (!string.IsNullOrEmpty(item.Type))
+                                    {
+                                        className = item.Type;
+                                    }
+                                    else
+                                    {
+                                        var tileset = tiledMapSave.Tilesets.First(possibleTileset => possibleTileset.Firstgid <= item.gid);
+                                        var foundTile = tileset.Tiles.First(tile => tile.id + tileset.Firstgid == item.gid);
+
+                                        className = foundTile.Class;
+                                    }
+                                    var entity = ObjectFinder.Self.GetEntitySaveUnqualified(className);
+
+                                    if (entity != null)
+                                    {
+                                        var defaultList = ObjectFinder.Self.GetDefaultListToContain(entity, glueElement);
+                                        var classNamespace = CodeWriter.GetGlueElementNamespace(entity);
+                                        codeBlock.Line($"{item.Name} = ({classNamespace}.{className}){defaultList.FieldName}.FindByName(\"{item.Name}\");");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    // do nothing - this will be handled elsewhere by the file tracking error system
+                }
+                Tileset.ShouldLoadValuesFromSource = oldShouldLoadFromSource;
+
             }
         }
 
