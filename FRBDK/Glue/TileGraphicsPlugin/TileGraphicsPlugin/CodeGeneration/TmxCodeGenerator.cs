@@ -1,6 +1,8 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -8,12 +10,97 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TileGraphicsPlugin.Managers;
+using TMXGlueLib;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace TileGraphicsPlugin.CodeGeneration
 {
     class TmxCodeGenerator : ElementComponentCodeGenerator
     {
+        #region Fields
+
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
+        {
+            foreach (var nos in element.NamedObjects)
+            {
+                if (ShouldGenerateFieldsForNamedObjects(nos))
+                {
+                    GenerateCreateFieldsForNamedObjects(nos, element as GlueElement, codeBlock);
+                }
+            }
+
+            return codeBlock;
+        }
+
+        bool ShouldGenerateFieldsForNamedObjects(NamedObjectSave nos)
+        {
+            return
+                nos.GetAssetTypeInfo()?.Extension == "tmx" &&
+                nos.SourceType == SourceType.File &&
+                !string.IsNullOrEmpty(nos.SourceFile) &&
+                nos.GetCustomVariable("ShiftMapToMoveGameplayLayerToZ0")?.Value as bool? == true;
+        }
+
+        private void GenerateCreateFieldsForNamedObjects(NamedObjectSave nos, GlueElement glueElement, ICodeBlock codeBlock)
+        {
+            var file = glueElement.GetReferencedFileSave(nos.SourceFile);
+            if(file == null)
+            {
+                return;
+            }
+
+            // open the TMX, look for object layers, generate fields for them all:
+            var absoluteFile = GlueCommands.Self.GetAbsoluteFilePath(file);
+            if(absoluteFile.Exists())
+            {
+                var oldShouldLoadFromSource = Tileset.ShouldLoadValuesFromSource;
+                //Tileset.ShouldLoadValuesFromSource = false;
+                // we need this to be true so we get the tileset info:
+                Tileset.ShouldLoadValuesFromSource = true;
+
+                try
+                {
+                    var tiledMapSave = TiledMapSave.FromFile(absoluteFile.FullPath);
+
+                    var orderedTilesets = tiledMapSave.Tilesets.OrderBy(item => item.Firstgid).ToArray();
+
+                    foreach (var layer in tiledMapSave.MapLayers)
+                    {
+                        if (layer is mapObjectgroup objectLayer)
+                        {
+
+                            foreach(var item in objectLayer.@object)
+                            {
+                                if(!string.IsNullOrEmpty( item.Name))
+                                {
+                                    var tileset = tiledMapSave.Tilesets.First(possibleTileset => possibleTileset.Firstgid <= item.gid);
+                                    var foundTile = tileset.Tiles.First(tile => tile.id + tileset.Firstgid == item.gid);
+
+                                    var className = foundTile.Class;
+                                    var entity = ObjectFinder.Self.GetEntitySaveUnqualified(className);
+
+                                    if(entity != null)
+                                    {
+
+                                        codeBlock.Line($"{CodeWriter.GetGlueElementNamespace(entity)}.{entity.ClassName} {item.Name};");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    // do nothing - this will be handled elsewhere by the file tracking error system
+                }
+                Tileset.ShouldLoadValuesFromSource = oldShouldLoadFromSource;
+            }
+        }
+
+        #endregion
+
+        #region AddToManagers
+
         public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
         {
 
@@ -33,7 +120,7 @@ namespace TileGraphicsPlugin.CodeGeneration
             {
                 if(nos.GetAssetTypeInfo()?.Extension == "tmx")
                 {
-                    GenerateShiftZ0Code(nos, codeBlock);
+                    TryGenerateShiftZ0Code(nos, codeBlock);
 
                     // not sure if we need this for files, but for now
                     // going to implement just on NOS's since that's the 
@@ -47,7 +134,76 @@ namespace TileGraphicsPlugin.CodeGeneration
             return codeBlock;
         }
 
-        static bool IsAbstract(IElement element) => element.AllNamedObjects.Any(item => item.SetByDerived);
+        private void GenerateAssignmentsForObjectLayerFields(NamedObjectSave nos, GlueElement glueElement, ICodeBlock codeBlock)
+        {
+
+
+            var file = glueElement.GetReferencedFileSave(nos.SourceFile);
+            if (file == null)
+            {
+                return;
+            }
+
+            // open the TMX, look for object layers, generate fields for them all:
+            var absoluteFile = GlueCommands.Self.GetAbsoluteFilePath(file);
+            if (absoluteFile.Exists())
+            {
+                var oldShouldLoadFromSource = Tileset.ShouldLoadValuesFromSource;
+                //Tileset.ShouldLoadValuesFromSource = false;
+                // we need this to be true so we get the tileset info:
+                Tileset.ShouldLoadValuesFromSource = true;
+
+                try
+                {
+                    var tiledMapSave = TiledMapSave.FromFile(absoluteFile.FullPath);
+
+                    var orderedTilesets = tiledMapSave.Tilesets.OrderBy(item => item.Firstgid).ToArray();
+
+                    foreach (var layer in tiledMapSave.MapLayers)
+                    {
+                        if (layer is mapObjectgroup objectLayer)
+                        {
+                            foreach (var item in objectLayer.@object)
+                            {
+                                if (!string.IsNullOrEmpty(item.Name))
+                                {
+                                    var tileset = tiledMapSave.Tilesets.First(possibleTileset => possibleTileset.Firstgid <= item.gid);
+                                    var foundTile = tileset.Tiles.First(tile => tile.id + tileset.Firstgid == item.gid);
+
+                                    var className = foundTile.Class;
+                                    var entity = ObjectFinder.Self.GetEntitySaveUnqualified(className);
+
+                                    if (entity != null)
+                                    {
+                                        var defaultList = ObjectFinder.Self.GetDefaultListToContain(entity, glueElement);
+
+                                        codeBlock.Line($"{item.Name} = {defaultList.FieldName}.FindByName(\"{item.Name}\");");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    // do nothing - this will be handled elsewhere by the file tracking error system
+                }
+                Tileset.ShouldLoadValuesFromSource = oldShouldLoadFromSource;
+
+            }
+        }
+
+        private void GenerateAddToManagers(ICodeBlock codeBlock, ReferencedFileSave file)
+        {
+            if(file.GetProperty<bool>(EntityCreationManager.CreateEntitiesInGeneratedCodePropertyName))
+            {
+                var instanceName = file.GetInstanceName();
+                codeBlock.Line(
+                    $"FlatRedBall.TileEntities.TileEntityInstantiator.CreateEntitiesFrom({instanceName});");
+
+
+            }
+        }
 
         private void GenerateCreateEntitiesCode(NamedObjectSave nos, GlueElement nosOwner, ICodeBlock codeBlock)
         {
@@ -118,7 +274,29 @@ namespace TileGraphicsPlugin.CodeGeneration
             }
         }
 
-        private void GenerateShiftZ0Code(NamedObjectSave nos, ICodeBlock codeBlock)
+        #endregion
+
+        #region AddToManagersBottomUp
+
+        public override void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element)
+        {
+            foreach (var nos in element.NamedObjects)
+            {
+                if (nos.GetAssetTypeInfo()?.Extension == "tmx")
+                {
+                    if (ShouldGenerateFieldsForNamedObjects(nos))
+                    {
+                        GenerateAssignmentsForObjectLayerFields(nos, element as GlueElement, codeBlock);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        static bool IsAbstract(IElement element) => element.AllNamedObjects.Any(item => item.SetByDerived);
+
+        private void TryGenerateShiftZ0Code(NamedObjectSave nos, ICodeBlock codeBlock)
         {
             var shouldGenerate = nos.DefinedByBase == false &&
                 nos.GetCustomVariable("ShiftMapToMoveGameplayLayerToZ0")?.Value as bool? == true;
@@ -135,15 +313,5 @@ namespace TileGraphicsPlugin.CodeGeneration
             }                   
         }
 
-        private void GenerateAddToManagers(ICodeBlock codeBlock, ReferencedFileSave file)
-        {
-            if(file.GetProperty<bool>(EntityCreationManager.CreateEntitiesInGeneratedCodePropertyName))
-            {
-                var instanceName = file.GetInstanceName();
-                codeBlock.Line(
-                    $"FlatRedBall.TileEntities.TileEntityInstantiator.CreateEntitiesFrom({instanceName});");
-
-            }
-        }
     }
 }

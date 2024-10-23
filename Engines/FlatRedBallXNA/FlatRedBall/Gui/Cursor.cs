@@ -360,7 +360,7 @@ namespace FlatRedBall.Gui
         }
 
         /// <summary>
-        /// The lsat InputDevice that controlled the cursor. Typically this would be a touch screen or mouse.
+        /// The last InputDevice that controlled the cursor. Typically this would be a touch screen or mouse.
         /// </summary>
         public InputDevice LastInputDevice
         {

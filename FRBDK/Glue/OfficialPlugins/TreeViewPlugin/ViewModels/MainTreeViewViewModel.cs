@@ -1162,7 +1162,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             return GetTreeNodeByTag(element);
         }
 
-        public NodeViewModel TreeNodeForDirectoryOrEntityNode(string containingDirection, NodeViewModel containingNode)
+        public NodeViewModel? TreeNodeForDirectoryOrEntityNode(string containingDirection, NodeViewModel containingNode)
         {
             if (string.IsNullOrEmpty(containingDirection))
             {
@@ -1174,7 +1174,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
-        public NodeViewModel TreeNodeForDirectoryOrScreenNode(string containingDirection, NodeViewModel containingNode) 
+        public NodeViewModel? TreeNodeForDirectoryOrScreenNode(string containingDirection, NodeViewModel containingNode) 
         {
             if (string.IsNullOrEmpty(containingDirection))
             {
@@ -1374,6 +1374,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             else if (first == GlobalContentRootNode.Text)
             {
                 nodeViewModel = GlobalContentRootNode;
+            }
+            else
+            {
+                throw new InvalidOperationException();
             }
 
             return GetTreeNode(separated, nodeViewModel);
