@@ -412,13 +412,10 @@ namespace FlatRedBall.Screens
 
 
 
-#if UWP
-                System.Threading.Tasks.Task.Run(action);
-#else
                 ThreadStart threadStart = new ThreadStart(action);
                 Thread thread = new Thread(threadStart);
                 thread.Start();
-#endif
+
 				#endif
             }
         }

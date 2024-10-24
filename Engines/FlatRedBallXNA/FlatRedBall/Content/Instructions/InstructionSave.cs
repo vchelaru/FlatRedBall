@@ -158,16 +158,11 @@ namespace FlatRedBall.Content.Instructions
                 target.GetType(),
                 typeOfMember);
 
-#if UWP
-            ConstructorInfo ctor = t.GetConstructor(
-                new Type[] { target.GetType(), typeof(string), typeOfMember, typeof(double) });
-#else
             ConstructorInfo ctor = t.GetConstructor(
                 BindingFlags.Instance | BindingFlags.Public, 
                 null,
                 new Type[] { target.GetType(), typeof(string), typeOfMember, typeof(double) }, 
                 null);
-#endif
 
             GenericInstruction instruction = (GenericInstruction)ctor.Invoke(
                     new Object[]                 {

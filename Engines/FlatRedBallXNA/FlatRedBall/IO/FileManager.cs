@@ -33,9 +33,7 @@ using System.Collections;
 
 using System.Reflection;
 
-#if !UWP
 using System.Runtime.Serialization.Formatters.Binary;
-#endif
 
 
 #if !FRB_RAW
@@ -118,11 +116,8 @@ namespace FlatRedBall.IO
         {
             get
             {
-#if UWP
-                int threadID = Environment.CurrentManagedThreadId;
-#else
                 int threadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
-#endif
+
                 if (mRelativeDirectoryDictionary.ContainsKey(threadID))
                 {
                     // VERY rare, but possible:
@@ -921,26 +916,6 @@ namespace FlatRedBall.IO
         }
         #endregion
 
-
-
-
-        public static bool IsCurrentStorageDeviceConnected()
-        {
-#if XBOX360
-            if (mStorageDevice == null)
-            {
-                return false;
-            }
-            else if (!mStorageDevice.IsConnected)
-            {
-                return false;
-            }
-#endif
-
-
-            return true;
-        }
-
         /// <summary>
         /// Gets a folder for the user name. This user is a unique key specific to this game.
         /// </summary>
@@ -985,7 +960,7 @@ namespace FlatRedBall.IO
         {
 #if USE_ISOLATED_STORAGE
 
-#if IOS || UWP
+#if IOS
             // I don't know if we need to get anything here
 #else
             mIsolatedStorageFile = IsolatedStorageFile.GetUserStoreForApplication();
@@ -1982,7 +1957,7 @@ namespace FlatRedBall.IO
 
             try
             {
-#if UWP || FNA || IOS || ANDROID
+#if FNA || IOS || ANDROID
                 throw new NotImplementedException();
 #else
 
@@ -2081,16 +2056,11 @@ namespace FlatRedBall.IO
             using (var memoryStream = new MemoryStream())
             {
                 XmlSerializer serializer = GetXmlSerializer(type);
-#if UWP
-                serializer.Serialize(memoryStream, objectToSerialize);
-#else
                 Encoding utf8EncodingWithNoByteOrderMark = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
                 XmlTextWriter xtw = new XmlTextWriter(memoryStream, utf8EncodingWithNoByteOrderMark);
                 xtw.Indentation = 2;
                 xtw.Formatting = Formatting.Indented;
                 serializer.Serialize(xtw, objectToSerialize);
-
-#endif
 
 
 #if MONOGAME

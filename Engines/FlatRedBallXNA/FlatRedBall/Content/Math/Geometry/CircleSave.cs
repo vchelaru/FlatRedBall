@@ -7,10 +7,7 @@ using FlatRedBall.Math.Geometry;
 
 namespace FlatRedBall.Content.Math.Geometry
 {
-#if !UWP
-
     [Serializable]
-#endif
     public class CircleSave
     {
         public float X;

@@ -213,12 +213,8 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-#if UWP
-                if (mType.GetField(name) != null)
-#else
                 GetFieldRecursive(mType, name, out FieldInfo fieldInfo, out Type throwaway);
                 if (fieldInfo != null)
-#endif
                 {
                     mFieldsSet.Add(name);
                     return GetField(target, name);
@@ -233,28 +229,17 @@ namespace FlatRedBall.Instructions.Reflection
 
         private void GetFieldRecursive(Type type, string fieldName, out FieldInfo field, out Type ownerType)
         {
-#if UWP
-            field = type.GetField(fieldName);
-#else
             field = type.GetField(fieldName, mGetFieldBindingFlags);
-#endif
             ownerType = null;
 
             if(field != null)
             {
                 ownerType = type;
             }
-#if UWP
-            else if (field == null && type.GetTypeInfo().BaseType != null)
-            {
-                GetFieldRecursive(type.GetTypeInfo().BaseType, fieldName, out field, out ownerType);
-            }
-#else
             else if(field == null && type.BaseType != null)
             {
                 GetFieldRecursive(type.BaseType, fieldName, out field, out ownerType);
             }
-#endif
         }
 
         public override bool IsReadOnly(string name)
@@ -534,10 +519,6 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-#if UWP
-                return mType.GetField(fieldName).GetValue(target);
-#else
-
                 Binder binder = null;
                 object[] args = null;
 
@@ -551,7 +532,6 @@ namespace FlatRedBall.Instructions.Reflection
                    target,
                    args
                    );
-#endif
             }
         }
 
@@ -612,20 +592,12 @@ namespace FlatRedBall.Instructions.Reflection
 
         private static object GetPropertyThroughReflection(object target, string propertyName)
         {
-#if UWP
-            PropertyInfo pi = typeof(T).GetProperty(propertyName);
-#else
             PropertyInfo pi = typeof(T).GetProperty(propertyName, mGetterBindingFlags);
-#endif
 
             if (pi == null)
             {
                 string message = "Could not find the property " + propertyName + "\n\nAvailableProperties:\n\n";
-#if UWP
-                IEnumerable<PropertyInfo> properties = typeof(T).GetProperties();
-#else
                 PropertyInfo[] properties = typeof(T).GetProperties(mGetterBindingFlags);
-#endif
 
                 foreach (PropertyInfo containedProperty in properties)
                 {
@@ -639,9 +611,9 @@ namespace FlatRedBall.Instructions.Reflection
             return pi.GetValue(target, null);
         }
 
-#endregion
+        #endregion
 
-#region Private Helpers
+        #region Private Helpers
         private void ValidateInstance()
         {
             if (mTarget == null)

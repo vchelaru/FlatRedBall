@@ -1096,11 +1096,8 @@ namespace Gum.Wireframe
 
                 var bindingContextObjectType = bindingContextObjectToUse?.GetType();
 
-#if UWP
-                var vmProperty = bindingContextObjectType?.GetTypeInfo().GetDeclaredProperty(vmPropertyName);
-#else
                 var vmProperty = bindingContextObjectType?.GetProperty(vmPropertyName);
-#endif
+
                 FieldInfo vmField = null;
                 
                 if (vmProperty == null)

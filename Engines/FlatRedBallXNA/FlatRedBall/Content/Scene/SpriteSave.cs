@@ -25,10 +25,7 @@ using System.Xml.Linq;
 
 namespace FlatRedBall.Content.Scene
 {
-#if !UWP
-
     [Serializable]
-#endif
     public class SpriteSave : SpriteSaveBase
     {
         private static bool AsBool(System.Xml.Linq.XElement subElement)

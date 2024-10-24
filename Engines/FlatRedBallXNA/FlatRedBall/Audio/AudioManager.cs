@@ -529,16 +529,9 @@ namespace FlatRedBall.Audio
             {
                 PlaySong(toPlay, false, songUsesGlobalContent);
 
-#if UWP
-                MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", new Type[1] { typeof(Song) });
-                InstructionManager.Add(new StaticMethodInstruction(playMethod,
-                                                                    new object[1] { mPreviousSong },
-                                                                    TimeManager.CurrentTime + toPlay.Duration.TotalSeconds));
-#else
                 var instruction = new DelegateInstruction(() => PlaySong(mPreviousISong, forceRestart: false, mPreviousSongUsesGlobalContent));
                 instruction.TimeToExecute = TimeManager.CurrentTime + toPlay.Duration.TotalSeconds;
                 InstructionManager.Add(instruction);
-#endif
             }
             catch
             {

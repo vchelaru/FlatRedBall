@@ -239,9 +239,7 @@ namespace TMXGlueLib
     #endregion
 
     #region LayerGroup
-#if !UWP
     [Serializable]
-#endif
     [XmlType(AnonymousType = true)]
     public class LayerGroup
     {
@@ -348,9 +346,7 @@ namespace TMXGlueLib
 
     #region MapImageLayer
 
-#if !UWP
     [Serializable]
-#endif
     public partial class MapImageLayer : AbstractMapLayer
     {
         private MapImageLayerImage imageField;
@@ -762,9 +758,7 @@ namespace TMXGlueLib
 
     }
 
-#if !UWP
     [Serializable]
-#endif
     public partial class mapObjectgroup : AbstractMapLayer
     {
         private mapObjectgroupObject[] objectField;

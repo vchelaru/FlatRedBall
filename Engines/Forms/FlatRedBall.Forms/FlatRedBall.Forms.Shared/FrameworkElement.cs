@@ -319,11 +319,7 @@ namespace FlatRedBall.Forms.Controls
             }
             else
             {
-#if UWP
-                var baseType = type.GetTypeInfo().BaseType;
-#else
                 var baseType = type.BaseType;
-#endif
                 if (baseType == typeof(object) || baseType == typeof(FrameworkElement))
                 {
                     var message =

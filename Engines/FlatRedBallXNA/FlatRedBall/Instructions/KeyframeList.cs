@@ -475,21 +475,7 @@ namespace FlatRedBall.Instructions
                 };
             }
 
-#if XBOX360
-            ConstructorInfo ctor = type.GetConstructor(
-                    BindingFlags.Instance | BindingFlags.Public, 
-                    null, 
-                    new Type[] { typeOfTarget, typeof(string), typeOfValue, typeof(double)}, 
-                    null);
-
-            return (Instruction)ctor.Invoke(arguments);
-#else
-
-
-
-
             return (Instruction) Activator.CreateInstance(type, arguments);
-#endif
         }
 
         #endregion

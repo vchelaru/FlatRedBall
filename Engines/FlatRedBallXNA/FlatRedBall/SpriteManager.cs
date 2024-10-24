@@ -62,11 +62,7 @@ namespace FlatRedBall
         internal void TimedActivity()
         {
             Reset();
-#if UWP
-            mAction = Windows.System.Threading.ThreadPool.RunAsync(TimedActivityInternal);
-#else
             ThreadPool.QueueUserWorkItem(TimedActivityInternal);
-#endif
         }
         void TimedActivityInternal(object unusedState)
         {
@@ -85,19 +81,13 @@ namespace FlatRedBall
                     secondDifferenceSquaredDividedByTwo,
                     lastSecondDifference);
             }
-#if !UWP
             mManualResetEvent.Set();
-#endif
         }
 
         internal void AnimateSelf()
         {
             Reset();
-#if UWP
-            mAction = Windows.System.Threading.ThreadPool.RunAsync(AnimateSelfInternal);
-#else
             ThreadPool.QueueUserWorkItem(AnimateSelfInternal);
-#endif
         }
         void AnimateSelfInternal(object unusedState)
         {
@@ -113,9 +103,7 @@ namespace FlatRedBall
                 Sprite s = AutomaticallyUpdatedSprites[i];
                 s.AnimateSelf(currentTime);
             }
-#if !UWP
             mManualResetEvent.Set();
-#endif
         }
 
         internal void ExecuteInstructions()
@@ -137,9 +125,7 @@ namespace FlatRedBall
                     AutomaticallyUpdatedSprites[i].ExecuteInstructions(currentTime);
                 }
             }
-#if !UWP
             mManualResetEvent.Set();
-#endif
         }
 
         internal void UpdateDependencies()

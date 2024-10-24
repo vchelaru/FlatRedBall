@@ -177,7 +177,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
                 if (!IsFullscreen && windowedRectanglePosition != null)
                 {
-#if !UWP && !__IOS__ && !ANDROID && !XNA4_OLD && !FNA
+#if !__IOS__ && !ANDROID && !XNA4_OLD && !FNA
                     FlatRedBallServices.Game.Window.Position = new Point(windowedRectanglePosition.Value.X, windowedRectanglePosition.Value.Y);
 #endif
                 }

@@ -12,9 +12,7 @@ using FlatRedBall.Content.Math.Geometry;
 
 namespace FlatRedBall.Content.AnimationChain
 {
-#if !UWP
     [Serializable]
-#endif
     public class AnimationFrameSave
     {
         /// <summary>
@@ -108,9 +106,6 @@ namespace FlatRedBall.Content.AnimationChain
 
         [XmlIgnore]
         [ExternalInstance]
-#if !UWP
-        [NonSerialized]
-#endif
         internal Texture2D mTextureInstance;
 
 

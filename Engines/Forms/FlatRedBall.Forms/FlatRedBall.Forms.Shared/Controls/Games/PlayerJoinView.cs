@@ -219,7 +219,7 @@ namespace FlatRedBall.Forms.Controls.Games
                     if(item.InputDevice is Xbox360GamePad gamepad)
                     {
                         isConnected = gamepad.IsConnected;
-#if !UWP && !XNA4_OLD && !FNA
+#if !XNA4_OLD && !FNA
 
                         item.ControllerDisplayName = gamepad.Capabilities.DisplayName;
 #endif
@@ -243,7 +243,7 @@ namespace FlatRedBall.Forms.Controls.Games
                     {
                         var gamepad = InputManager.Xbox360GamePads[index];
                         item.InputDevice = gamepad;
-    #if !UWP && !XNA4_OLD && !FNA
+    #if !XNA4_OLD && !FNA
                         item.ControllerDisplayName = gamepad.Capabilities.DisplayName;
     #endif
                         item.ConnectedJoinedState = ConnectedJoinedState.Connected;

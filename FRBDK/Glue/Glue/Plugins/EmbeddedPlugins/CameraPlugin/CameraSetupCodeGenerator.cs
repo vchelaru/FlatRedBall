@@ -846,18 +846,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                     .Line(
                     //"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(width, height);"
                     "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight, isFullscreen:Data.IsFullScreen);");
-                methodContents.Line("#elif UWP");
-
-                methodContents
-                    .If("Data.IsFullScreen")
-                    .Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(Data.ResolutionWidth, Data.ResolutionHeight);")
-                    .End()
-                    .Else()
-                    .Line($"FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution({widthVariable}, {heightVariable});")
-                    .Line($"var newWindowSize = new Windows.Foundation.Size({widthVariable}, {heightVariable});")
-                    .Line($"Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TryResizeView(newWindowSize); ")
-                    ;
-
                 // closes the #if platform section
                 methodContents.Line("#endif");
             }

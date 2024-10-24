@@ -379,11 +379,7 @@ namespace FlatRedBall
 #endif
 
 
-#if UWP
-                mPrimaryThreadId = Environment.CurrentManagedThreadId;
-#else
                 mPrimaryThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-#endif
 
                 mContentManagers = new Dictionary<string, FlatRedBall.Content.ContentManager>();
 
@@ -416,12 +412,10 @@ namespace FlatRedBall
             InitializeCommandLine(null);
         }
 
-        #region XML Docs
         /// <summary>
         /// Used to initialize FlatRedBall without rendering anything to the screen
         /// </summary>
         /// <param name="game">The game</param>
-        #endregion
         public static void InitializeCommandLine(Game game)
         {
 
@@ -657,9 +651,7 @@ namespace FlatRedBall
             Texture2D fontTexture = null;
 
             #region Set up the resources manager and load fonts
-
-#if XNA4
-            
+           
             fontTexture = FlatRedBall.Content.ContentManager.GetDefaultFontTexture(graphics.GraphicsDevice);
             
             fontTexture.Name = "Default Font Texture";
@@ -667,15 +659,6 @@ namespace FlatRedBall
             var fontPattern = DefaultFontDataColors.GetFontPattern();
             TextManager.DefaultFont = new BitmapFont(fontTexture, fontPattern);
 
-#elif !MONOGAME
-            mResourceContentManager = new Microsoft.Xna.Framework.Content.ResourceContentManager(
-                mServices, FlatRedBall.Resources.x86.Resources.ResourceManager);
-
-            fontTexture = mResourceContentManager.Load<Texture2D>("defaultText");
-            fontTexture.Name = "Default Font Texture";
-            TextManager.DefaultFont = new BitmapFont(fontTexture,
-                FlatRedBall.Resources.x86.Resources.defaultFont);
-#endif
 
             #endregion
 
@@ -973,13 +956,8 @@ namespace FlatRedBall
             {
                 throw new InvalidOperationException("Cannot determine if the thread is primary because the PrimaryThreadID is null - did you forget to initialize FlatRedBall?");
             }
-#if UWP
-            int threadId = Environment.CurrentManagedThreadId;
-#else
             int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-#endif
             return threadId == mPrimaryThreadId;
-
         }
 
         #region Load/IsLoaded/Unload asset methods
@@ -1568,57 +1546,8 @@ namespace FlatRedBall
         {
             Texture2D newTexture = null;
 
-#if FRB_XNA
-
-#if !XNA4
-            using (MemoryStream s = new MemoryStream())
-            {
-                bitmapToConvert.Save(s, System.Drawing.Imaging.ImageFormat.Png);
-                s.Seek(0, SeekOrigin.Begin); //must do this, or error is thrown in next line
-                newTexture = Texture2D.FromFile(mGraphics.GraphicsDevice, s);
-            }
-#endif
-
-
-            return newTexture;
-#else
-            newTexture = new Texture2D();
-            newTexture.texture = Microsoft.DirectX.Direct3D.Texture.FromBitmap(
-                GraphicsDevice, bitmapToConvert, Usage.AutoGenerateMipMap, Microsoft.DirectX.Direct3D.Pool.Managed);
-
-            newTexture.Name = newTextureName;
-
-            newTexture.Width = bitmapToConvert.Width;
-            newTexture.Height = bitmapToConvert.Height;
-
             return newTexture;
 
-                
-#endif
-
-            //Color[] pixels = new Color[bitmapToConvert.Width * bitmapToConvert.Height];
-            //for (int y = 0; y < bitmapToConvert.Height; y++)
-            //{
-            //    for (int x = 0; x < bitmapToConvert.Width; x++)
-            //    {
-            //        System.Drawing.Color c = bitmapToConvert.GetPixel(x, y);
-            //        pixels[(y * bitmapToConvert.Width) + x] = new Color(c.R, c.G, c.B, c.A);
-            //    }
-            //}
-
-            //Texture2D newTexture = new Texture2D(
-            //  mGraphics.GraphicsDevice,
-            //  bitmapToConvert.Width,
-            //  bitmapToConvert.Height,
-            //  1,
-            //  TextureUsage.None,
-            //  SurfaceFormat.Color);
-
-            //newTexture.SetData<Color>(pixels);
-
-            //AddDisposable(newTextureName, newTexture, contentManagerName);
-
-            //return newTexture;
         }
 #endif
 

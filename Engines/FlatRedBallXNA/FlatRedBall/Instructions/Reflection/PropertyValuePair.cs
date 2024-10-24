@@ -22,20 +22,6 @@ namespace FlatRedBall.Instructions.Reflection
 
         static Dictionary<string, Type> mUnqualifiedTypeDictionary = new Dictionary<string, Type>();
 
-#if UWP
-
-        /// <summary>
-        /// Stores a reference to the current assembly. This is the
-        /// assembly of your game.  This must be explicitly set.
-        /// </summary>
-        public static Assembly TopLevelAssembly
-        {
-            get;
-            set;
-        }
-
-#endif
-
         public static List<Assembly> AdditionalAssemblies
         {
             get;
@@ -165,16 +151,12 @@ namespace FlatRedBall.Instructions.Reflection
                     ConvertTypeToString(v.W);
             }
 #endif
-#if UWP
-            if (typeToConvertTo.IsEnum())
-#else
             if (typeToConvertTo.IsEnum)
-#endif
             {
                 return value.ToString();
             }
 
-#endregion
+            #endregion
 
             
 

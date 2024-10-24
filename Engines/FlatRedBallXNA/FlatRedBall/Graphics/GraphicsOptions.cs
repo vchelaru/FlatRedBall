@@ -322,8 +322,6 @@ namespace FlatRedBall.Graphics
             {
 
 #if IOS || DESKTOP_GL
-                // For UWP and WindowsGL projects the game.Window.ClientBounds is not accurate until after initialize, as explained here:
-                // http://community.monogame.net/t/graphicsdevice-viewport-doesnt-return-the-real-size-of-uwp-game-window/7314/5
                 ResolutionWidth = graphics.PreferredBackBufferWidth;
 				ResolutionHeight = graphics.PreferredBackBufferHeight;
 
@@ -720,7 +718,7 @@ namespace FlatRedBall.Graphics
             // multiple resolutions, so 
             // we won't do any checks here.
             // Should this also be !IOS?
-#if DEBUG && !ANDROID && !UWP
+#if DEBUG && !ANDROID
             bool foundResolution = false;
 
             var supportedDisplay = GraphicsAdapter.DefaultAdapter.SupportedDisplayModes;

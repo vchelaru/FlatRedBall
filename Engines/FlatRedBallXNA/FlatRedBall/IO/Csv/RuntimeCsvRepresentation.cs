@@ -678,11 +678,7 @@ namespace FlatRedBall.IO.Csv
 
 
 #if DEBUG
-    #if UWP
-            bool isPrimitive = typeOfElement.IsPrimitive();
-    #else
             bool isPrimitive = typeOfElement.IsPrimitive;
-    #endif
 
             if (isPrimitive || typeOfElement == typeof(string))
             {

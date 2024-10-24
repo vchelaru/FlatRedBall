@@ -140,7 +140,7 @@ namespace FlatRedBall.Forms.Controls.Games
                 }
                 else if(InputDevice is Xbox360GamePad gamepad)
                 {
-#if !UWP && !XNA4_OLD && !FNA
+#if !XNA4_OLD && !FNA
 
                     ControllerDisplayName = gamepad.Capabilities.DisplayName;
 #endif

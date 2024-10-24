@@ -59,11 +59,7 @@ namespace FlatRedBall.Graphics
         public void FillVertexList()
         {
             Reset();
-#if UWP
-            Windows.System.Threading.ThreadPool.RunAsync(FillVertexListSync);
-#else
             ThreadPool.QueueUserWorkItem(FillVertexListSync);
-#endif
         }
 
         internal void FillVertexListSync(object notUsed)
@@ -136,7 +132,7 @@ namespace FlatRedBall.Graphics
 
 
 
-#elif XNA4
+#else
 
                     arrayAtIndex[vertNum + 0].Color.PackedValue =
                         ((uint)(255 * spriteAtIndex.mVertices[3].Color.X)) +
@@ -2125,18 +2121,6 @@ namespace FlatRedBall.Graphics
                     #endregion
 
 
-                    //            vertexBufferList[vertexBufferNum].SetData<VertexPositionColor>(
-                    //              mShapeDrawingVertexArray, 0, verticesToDraw, SetDataOptions.None);
-
-                    //                if (verticesLeftToDraw != 0)
-                    //                {
-                    //#if XBOX360
-                    //                    mShapesVertexBufferList[vertexBufferNum].SetData<VertexPositionColor>(mShapeDrawingVertexArray);
-                    //#else
-                    //                    mShapesVertexBufferList[vertexBufferNum].SetData<VertexPositionColor>(mShapeDrawingVertexArray, 0, verticesLeftToDraw, SetDataOptions.Discard);
-                    //#endif
-                    //                }
-
                     int vertexBufferIndex = 0;
                     int renderBreakIndexForRendering = 0;
                     for (; vertexBufferIndex < vertsPerVertexBuffer.Count; vertexBufferIndex++)
@@ -2479,7 +2463,7 @@ namespace FlatRedBall.Graphics
 
                         }
                     }
-#elif XNA4
+#else
                     EffectTechnique currentTechnique = effectToUse.CurrentTechnique;
                     foreach (EffectPass pass in currentTechnique.Passes)
                     {
@@ -2525,7 +2509,7 @@ namespace FlatRedBall.Graphics
                                 primitiveCount: count);
                         }
                     }
-#elif XNA4
+#else
                     EffectTechnique currentTechnique = effectToUse.CurrentTechnique;
                     foreach (EffectPass pass in currentTechnique.Passes)
                     {
@@ -3235,14 +3219,6 @@ namespace FlatRedBall.Graphics
                 }
                 #endregion
             }
-
-            // This is slow on the 360.  I have no idea why, and I'm actually suspicious of the time reports. --Vic
-            //            GraphicsDevice.Vertices[0].SetSource(null, 0, 0);
-            //#if XBOX360
-            //            vertexBufferList[vertexBufferNum].SetData<VertexPositionColorTexture>(mVertexArray);
-            //#else
-            //            vertexBufferList[vertexBufferNum].SetData<VertexPositionColorTexture>(mVertexArray, 0, vertNum, SetDataOptions.Discard);
-            //#endif
 
             return vertNum / 3 + vertexBufferNum * 2000;
         }
