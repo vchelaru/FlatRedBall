@@ -129,8 +129,7 @@ namespace FlatRedBall.Graphics
 #endif
 
 
-#if FRB_MDX
-#elif (SILVERLIGHT || XNA4) && !UNIT_TESTS
+#if !UNIT_TESTS
             SpriteBatch = new SpriteBatch(graphicsDevice);
 #endif
         }
@@ -410,20 +409,6 @@ namespace FlatRedBall.Graphics
             int i;
             for (i = firstLetterShowing; i < text.Length; i++)
             {
-#if SILVERLIGHT
-                // TODO:  May need to handle this if we're using sprite fonts in XNA
-				float currentWidth = scale * mDefaultSpriteFont.MeasureString(
-					text.Substring(firstLetterShowing, i - firstLetterShowing)).X / (float)mDefaultSpriteFont.FontSize;
-
-				float widthAfterNextLetter = scale * mDefaultSpriteFont.MeasureString(
-					text.Substring(firstLetterShowing, i + 1 - firstLetterShowing)).X / (float)mDefaultSpriteFont.FontSize;
-
-				if (relX < widthAfterNextLetter)
-				{
-                    return i - firstLetterShowing;
-				}
-				// else do nothing because we don't have to accumulate here
-#else
                 currentLetterWidth = mDefaultFont.GetCharacterSpacing((int)text[i]) * scale;
 
                 if (relX < accumulatedOffset + currentLetterWidth / 2.0f)
@@ -434,7 +419,6 @@ namespace FlatRedBall.Graphics
                 {
                     accumulatedOffset += currentLetterWidth;
                 }
-#endif
             }
             return i - firstLetterShowing;
 
@@ -1003,11 +987,7 @@ namespace FlatRedBall.Graphics
             else if (mAlignmentForVertexBuffer == HorizontalAlignment.Center)
             { sx = halfFirstCharaterWidth + tempXToUse - stringWidth / 2.0f; }
 
-#if SILVERLIGHT
-            float sy = mYForVertexBuffer;
-#else
             float sy = bottomEdge + unitsFromEdge;
-#endif
 
             float tx1 = 0; float tx2 = 0; float ty1 = 0; float ty2 = 0;
 

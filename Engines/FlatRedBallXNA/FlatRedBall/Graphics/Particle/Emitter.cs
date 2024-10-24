@@ -6,14 +6,8 @@ using System.Text;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Instructions;
-#if FRB_MDX
-using Texture2D = FlatRedBall.Texture2D;
-using Microsoft.DirectX;
-
-#else//if FRB_XNA || SILVERLIGHT
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-#endif
 
 namespace FlatRedBall.Graphics.Particle
 {
@@ -459,11 +453,7 @@ namespace FlatRedBall.Graphics.Particle
             if (mBoundedEmission && mEmissionBoundary != null)
             {
                 float cameraDistance;
-#if FRB_MDX
-                cameraDistance = -SpriteManager.Camera.Z;
-#else
                 cameraDistance = SpriteManager.Camera.Z;
-#endif
                 if (cameraDistance < 0) return; // skip check bounding if camera is behind z = 0 plain
                 cameraRectangle.Position = new Vector3(SpriteManager.Camera.X, SpriteManager.Camera.Y, 0);
                 cameraRectangle.ScaleY = SpriteManager.Camera.YEdge * cameraDistance / 100;
@@ -728,15 +718,11 @@ namespace FlatRedBall.Graphics.Particle
                         Matrix rotationMatrix;
 
 
-#if FRB_MDX
-                            rotationMatrix = Matrix.RotationAxis(
-                                vectorToRotateAbout, angleToRotate);
-#else
                         Matrix.CreateFromAxisAngle(
                             ref vectorToRotateAbout,
                             angleToRotate,
                             out rotationMatrix);
-#endif
+
                         FlatRedBall.Math.MathFunctions.TransformVector(
                             ref positionedObject.Velocity, ref rotationMatrix);
                         break;

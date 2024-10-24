@@ -491,7 +491,6 @@ namespace FlatRedBall.Instructions.Reflection
                                     {
                                         return null;
                                     }
-                #if !SILVERLIGHT && !ZUNE
                                     if (FileManager.IsRelative(value))
                                     {
                                         // Vic says:  This used to throw an exception on relative values.  I'm not quite
@@ -527,9 +526,6 @@ namespace FlatRedBall.Instructions.Reflection
                                         // texture.Name = value;
                                         return texture;
                                     }
-                #else
-                                return null;
-                #endif
                                 }
 
                 #endregion

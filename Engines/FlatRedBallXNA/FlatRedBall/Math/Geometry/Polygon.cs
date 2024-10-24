@@ -1647,9 +1647,8 @@ namespace FlatRedBall.Math.Geometry
             T newPolygon = base.Clone<T>();
             newPolygon.mVisible = false;
 
-#if !SILVERLIGHT
             newPolygon.mLayerBelongingTo = null;
-#endif
+
             Point[] newPoints = null;
 
             if (mPoints != null)
@@ -2295,11 +2294,7 @@ namespace FlatRedBall.Math.Geometry
 
         public void ProjectParentVelocityOnLastMoveCollisionTangent(float minimumVectorLengthSquared)
         {
-#if FRB_MDX
-            if (mLastMoveCollisionReposition.LengthSq() > minimumVectorLengthSquared &&
-#else
             if (mLastMoveCollisionReposition.LengthSquared() > minimumVectorLengthSquared &&
-#endif
                 Vector3.Dot(TopParent.Velocity, mLastMoveCollisionReposition) < 0)
             {
                 Vector3 collisionAdjustmentNormalized = mLastMoveCollisionReposition;

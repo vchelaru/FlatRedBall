@@ -120,13 +120,11 @@ namespace FlatRedBall.Content
         public static SceneSave FromFile(string fileName)
         {
             SceneSave tempScene = null;
-#if !FRB_MDX
             if (ManualDeserialization)
             {
                 tempScene = DeserializeManually(fileName);
             }
             else
-#endif
             {
                 tempScene = FileManager.XmlDeserialize<SceneSave>(fileName);
             }
@@ -144,7 +142,7 @@ namespace FlatRedBall.Content
 
             return tempScene;
         }
-#if !FRB_MDX
+
         private static SceneSave DeserializeManually(string fileName)
         {
 
@@ -438,7 +436,6 @@ namespace FlatRedBall.Content
         {
             return element.Value[0];
         }
-#endif
         public SpriteSave FindSpriteByName(string nameOfSprite)
         {
             for (int i = 0; i < SpriteList.Count; i++)
@@ -559,14 +556,8 @@ namespace FlatRedBall.Content
             #endregion
 
             #region Invert Z if necessary
-#if FRB_MDX
-
-            if (CoordinateSystem == FlatRedBall.Math.CoordinateSystem.RightHanded)
-                scene.InvertHandedness();
-#else
             if (CoordinateSystem == FlatRedBall.Math.CoordinateSystem.LeftHanded)
                 scene.InvertHandedness();
-#endif
             #endregion
 
             FileManager.RelativeDirectory = oldRelativeDirectory;
@@ -846,27 +837,15 @@ namespace FlatRedBall.Content
         public void SetCamera(Camera camera)
         {
             this.Camera.SetCamera(camera);
-#if FRB_MDX
-            if (CoordinateSystem == FlatRedBall.Math.CoordinateSystem.RightHanded)
-            {
-                camera.Z *= -1;
-            }
-#else
             if (CoordinateSystem == FlatRedBall.Math.CoordinateSystem.LeftHanded)
             {
                 camera.Z *= -1;
             }
-#endif
         }
 
         public void Save(string fileName)
         {
-#if FRB_MDX
-            CoordinateSystem = FlatRedBall.Math.CoordinateSystem.LeftHanded;
-#else
             CoordinateSystem = FlatRedBall.Math.CoordinateSystem.RightHanded;
-
-#endif
 
             if (AssetsRelativeToSceneFile)
             {

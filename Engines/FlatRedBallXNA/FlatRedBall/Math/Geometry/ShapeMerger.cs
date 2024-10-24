@@ -562,7 +562,7 @@ namespace FlatRedBall.Math.Geometry
 
             bool debug = false;
 
-#if !SILVERLIGHT && !MONOGAME && !XBOX360 && !WINDOWS_PHONE
+#if !MONOGAME
             if (debug)
             {
                 FlatRedBall.Content.Polygon.PolygonSaveList psl = new FlatRedBall.Content.Polygon.PolygonSaveList();

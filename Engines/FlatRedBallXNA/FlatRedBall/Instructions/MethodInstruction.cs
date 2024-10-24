@@ -96,14 +96,6 @@ namespace FlatRedBall.Instructions
 
         public override void Execute()
         {
-            
-#if SILVERLIGHT
-            if(mMethodInfo.IsPrivate)
-            {
-                throw new Exception("Can't call private methods in Silverlight for security reasons.");
-            }
-#endif
-
             mMethodInfo.Invoke(
                 mTarget, mArguments);
         }

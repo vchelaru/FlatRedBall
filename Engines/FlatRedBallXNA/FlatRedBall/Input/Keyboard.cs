@@ -156,24 +156,12 @@ namespace FlatRedBall.Input
             else
                 positionedObject.Velocity.X = 0;
 
-#if FRB_MDX
-            // Remember, FRB MDX is left handed, FRB XNA is right handed.
-            if (KeyDown(Keys.Minus))
-                positionedObject.ZVelocity = -velocity;
-            else if (KeyDown(Keys.Equals))
-                positionedObject.ZVelocity = velocity;
-            else
-                positionedObject.ZVelocity = 0;
-
-#else
             if (KeyDown(Keys.OemMinus))
                 positionedObject.ZVelocity = velocity;
             else if (KeyDown(Keys.OemPlus))
                 positionedObject.ZVelocity = -velocity;
             else
                 positionedObject.ZVelocity = 0;
-#endif
-
         }
 
 
@@ -193,25 +181,12 @@ namespace FlatRedBall.Input
             else
                 positionedObject.XAcceleration = 0;
 
-#if FRB_MDX
-            // Remember, FRB MDX is left handed, FRB XNA is right handed.
-            if (KeyDown(Keys.Minus))
-                positionedObject.ZVelocity = -acceleration;
-            else if (KeyDown(Keys.Equals))
-                positionedObject.ZVelocity = acceleration;
-            else
-                positionedObject.ZVelocity = 0;
-
-#else
-
-
             if (KeyDown(Keys.OemMinus))
                 positionedObject.ZAcceleration = acceleration;
             else if (KeyDown(Keys.OemPlus))
                 positionedObject.ZAcceleration = -acceleration;
             else
                 positionedObject.ZAcceleration = 0;
-#endif
         }
 
 

@@ -114,10 +114,6 @@ namespace FlatRedBall.Math.Geometry
         static bool mUseZTestingWhenDrawing = true;
         static ShapeDrawingOrder mShapeDrawingOrder = ShapeDrawingOrder.OverEverything;
 
-#if SILVERLIGHT
-        static Microsoft.Xna.Framework.Graphics.SpriteBatch sSpriteBatch;
-        static Canvas mCanvas;
-#endif
 
         #endregion
 
@@ -268,12 +264,6 @@ namespace FlatRedBall.Math.Geometry
             mCubesReadOnlyCollection = new ReadOnlyCollection<AxisAlignedCube>(mCubes);
             mCapsule2DsReadOnlyCollection = new ReadOnlyCollection<Capsule2D>(mCapsule2Ds);
 
-#if SILVERLIGHT
-            sSpriteBatch = Renderer.GraphicsBatch;// new SpriteBatch(FlatRedBallServices.Game.GraphicsDevice);
-#endif
-
-
-
             #region Create the UnscaledCubePoints
 
             UnscaledCubePoints = new Vector3[16];
@@ -305,8 +295,6 @@ namespace FlatRedBall.Math.Geometry
             UnscaledCubePoints[15] = new Vector3(-1, -1, -1);
 
             #endregion
-
-
         }
 
 
@@ -1430,7 +1418,6 @@ namespace FlatRedBall.Math.Geometry
         static public void BringToFront(Polygon shape)
         {
             PositionedObjectList<Polygon> list;
-#if !SILVERLIGHT
             if (shape.mLayerBelongingTo != null)
             {
                 list = shape.mLayerBelongingTo.mPolygons;
@@ -1439,9 +1426,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 list = mPolygons;
             }
-#else
-            list = mPolygons;
-#endif
+
             int shapeIndex = list.IndexOf(shape);
             if (shapeIndex != -1)
             {
@@ -1872,7 +1857,6 @@ namespace FlatRedBall.Math.Geometry
         static internal void NotifyOfVisibilityChange(Polygon polygon)
         {
 
-#if !SILVERLIGHT
             if (polygon.mLayerBelongingTo != null)
             {
                 if (!SuppressAddingOnVisibilityTrue && polygon.Visible && polygon.ListsBelongingTo.Contains(polygon.mLayerBelongingTo.mPolygons) == false)
@@ -1891,7 +1875,6 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
             else
-#endif
             {
                 if (!SuppressAddingOnVisibilityTrue && polygon.Visible && polygon.ListsBelongingTo.Contains(mPolygons) == false)
                 {

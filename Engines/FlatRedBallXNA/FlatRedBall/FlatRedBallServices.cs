@@ -1493,7 +1493,6 @@ namespace FlatRedBall
 
         private static void DestroyLoadingScreenSpriteBatches()
         {
-#if !FRB_MDX
             if (_textureToDraw != null)
             {
                 _textureToDraw.Dispose();
@@ -1505,7 +1504,6 @@ namespace FlatRedBall
                 _loadingScreenSpriteBatch.Dispose();
                 _loadingScreenSpriteBatch = null;
             }
-#endif
         }
         #endregion
 

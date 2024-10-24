@@ -120,7 +120,6 @@ namespace FlatRedBall.Content.SpriteFrame
         }
         #endregion
 
-#if !FRB_MDX
         internal static SpriteFrameSave FromXElement(System.Xml.Linq.XElement element)
         {
             SpriteFrameSave sfs = new SpriteFrameSave();
@@ -150,6 +149,5 @@ namespace FlatRedBall.Content.SpriteFrame
 
             return sfs;
         }
-#endif
     }
 }

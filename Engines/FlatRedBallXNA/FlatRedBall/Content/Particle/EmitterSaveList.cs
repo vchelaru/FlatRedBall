@@ -67,17 +67,12 @@ namespace FlatRedBall.Content.Particle
         { 
             emitters = new List<EmitterSave>();
 
-#if FRB_MDX
-            this.CoordinateSystem = FlatRedBall.Math.CoordinateSystem.RightHanded;
-
-#else
             // This is so that the default is LeftHanded when loading from .emix.
             // If this property is present in the XML this will get overwritten.
             // If the user is instantiating a EmitterSave to save an .emix from
             // FlatRedBall XNA, the Save method will overwrite this so that the coordinate
             // system is RightHanded.
             this.CoordinateSystem = FlatRedBall.Math.CoordinateSystem.LeftHanded;
-#endif
         }
 
         #endregion
@@ -117,18 +112,11 @@ namespace FlatRedBall.Content.Particle
                 es.FileName = fileName;
             }
             
-#if FRB_MDX
-            if (emitterSaveListToReturn.CoordinateSystem == CoordinateSystem.RightHanded)
-            {
-                emitterSaveListToReturn.InvertZ();
-                emitterSaveListToReturn.CoordinateSystem = CoordinateSystem.LeftHanded;
-            }
-#else
             if (emitterSaveListToReturn.CoordinateSystem == CoordinateSystem.LeftHanded)
             {
                 emitterSaveListToReturn.InvertZ();
-                emitterSaveListToReturn.CoordinateSystem = CoordinateSystem.RightHanded;            }
-#endif
+                emitterSaveListToReturn.CoordinateSystem = CoordinateSystem.RightHanded;
+            }
 
             return emitterSaveListToReturn;
         }
@@ -149,12 +137,8 @@ namespace FlatRedBall.Content.Particle
 
         public void Save(string fileName)
         {
-#if FRB_MDX
-            CoordinateSystem = FlatRedBall.Math.CoordinateSystem.LeftHanded;
-#else
             CoordinateSystem = FlatRedBall.Math.CoordinateSystem.RightHanded;
 
-#endif
             MakeAssetsRelative(fileName);
 
             FileManager.XmlSerialize(this, fileName);

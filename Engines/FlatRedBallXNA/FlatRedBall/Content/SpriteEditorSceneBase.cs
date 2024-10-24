@@ -109,11 +109,6 @@ namespace FlatRedBall.Content
 
             AssetsRelativeToSceneFile = true;
 
-#if FRB_MDX
-            // Vic says - this used to be right-handed, but not sure why.  It should
-            // be left handed.
-            this.CoordinateSystem = FlatRedBall.Math.CoordinateSystem.LeftHanded;
-#else
             // This is so that the default is LeftHanded when loading from .scnx.
             // If this property is present in the XML this will get overwritten.
             // If the user is instantiating a SpriteEditorScene to save a .scnx from
@@ -130,7 +125,6 @@ namespace FlatRedBall.Content
             // have the CoordinateSystem property on them.
             //this.CoordinateSystem = FlatRedBall.Math.CoordinateSystem.LeftHanded;
             this.CoordinateSystem = FlatRedBall.Math.CoordinateSystem.RightHanded;
-#endif
 
         }
         #endregion

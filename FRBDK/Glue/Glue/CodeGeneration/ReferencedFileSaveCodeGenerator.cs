@@ -170,7 +170,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                 codeBlock.Line("static string " + lastContentManagerVariableName + ";");
             }
 
-            // Silverlight and Windows Phone only allow reflection on public methods
             // Since it's common practice to use reflection to reference LoadedOnlyWhenReferenced
             // properties, we need to make them public.
             var propBlock = codeBlock.Property(variableName, Public: true, Static: referencedFile.IsSharedStatic, Type: typeName);

@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Graphics;
 
-#if FRB_MDX
-using Microsoft.DirectX;
-#else
 using Microsoft.Xna.Framework;
-#endif
 
 namespace FlatRedBall.Math
 {
@@ -580,10 +576,7 @@ namespace FlatRedBall.Math
                     for (whereCameraBelongs = i - 2; whereCameraBelongs > -1; whereCameraBelongs--)
                     {
                         // Optimize here by not calling LengthSq/LengthSquared
-#if FRB_MDX
-#else
                         if (cameraDistanceSquared <= ((this[whereCameraBelongs]).Position - camera.Position).LengthSquared())
-#endif
                         {
                             mInternalList.Insert(whereCameraBelongs + 1, this[i]);
                             mInternalList.RemoveAt(i + 1);

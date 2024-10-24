@@ -316,7 +316,7 @@ namespace FlatRedBall.Screens
         }
 
         #region Activation Methods
-#if !FRB_MDX
+
         protected virtual void OnActivate()
         {
         }
@@ -332,7 +332,7 @@ namespace FlatRedBall.Screens
         protected virtual void PreDeactivate()
         {
         }
-#endif		
+
         #endregion
 
         public virtual void Activity(bool firstTimeCalled)

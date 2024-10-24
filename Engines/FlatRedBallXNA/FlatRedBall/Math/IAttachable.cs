@@ -1,11 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-#if FRB_MDX
-using Microsoft.DirectX;
-#elif FRB_XNA  || ZUNE
 using Microsoft.Xna.Framework;
-#endif
 
 using FlatRedBall.Utilities;
 using System.Collections;

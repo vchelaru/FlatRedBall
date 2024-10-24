@@ -5,13 +5,8 @@ using FlatRedBall.Gui;
 using FlatRedBall.Input;
 using Side = FlatRedBall.Math.Collision.CollisionEnumerations.Side3D;
 using FlatRedBall.Graphics;
-#if FRB_MDX
-using Microsoft.DirectX;
-using System.Drawing;
-#else //if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-#endif
 
 namespace FlatRedBall.Math.Geometry
 {
@@ -297,36 +292,20 @@ namespace FlatRedBall.Math.Geometry
                 {
                     reposition = -other.mLastMoveCollisionReposition;
                 }
-#if FRB_MDX
-                float velocityNormalDotResult = Vector3.Dot( relativeVelocity, reposition);
-#else
                 float velocityNormalDotResult;
                 Vector3.Dot(ref relativeVelocity, ref reposition, out velocityNormalDotResult);
-#endif
 
                 if (velocityNormalDotResult >= 0)
                 {
                     return true;
                 }
 
-#if FRB_MDX
-                //Vector2 tangentVector = new Vector2((float)mLastCollisionTangent.X, (float)mLastCollisionTangent.Y);
-                // Perform the bounce if the relative velocity and the tangent are the opposite direction.
-
-                Vector3 reverseNormal = -Vector3.Normalize(LastMoveCollisionReposition);
-
-                float length = Vector3.Dot(relativeVelocity, reverseNormal);
-                Vector3 velocityOnNormal = Vector3.Multiply(reverseNormal, length);
-#else
                 Vector3 reverseNormal = -reposition;
                 reverseNormal.Normalize();
 
                 float length = Vector3.Dot(relativeVelocity, reverseNormal);
                 Vector3 velocityOnNormal;
                 Vector3.Multiply(ref reverseNormal, length, out velocityOnNormal);
-
-#endif
-
 
                 other.TopParent.Velocity.X += (1 + elasticity) * thisMass / (thisMass + otherMass) * velocityOnNormal.X;
                 other.TopParent.Velocity.Y += (1 + elasticity) * thisMass / (thisMass + otherMass) * velocityOnNormal.Y;

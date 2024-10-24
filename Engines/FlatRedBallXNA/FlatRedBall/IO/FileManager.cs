@@ -1303,9 +1303,6 @@ namespace FlatRedBall.IO
 
         public static void ThrowExceptionIfFileDoesntExist(string fileName)
         {
-            // In Silverlight there is no access to System.IO.File.Exists
-
-            
             string fileToCheck = fileName;
 
             // on iOS, we can do:
@@ -1316,12 +1313,6 @@ namespace FlatRedBall.IO
 
             if (FileManager.FileExists(fileToCheck) == false)
             {
-
-
-#if WINDOWS_8
-                throw new FileNotFoundException("Could not find the file " + fileName);
-#else
-
                 // Help diagnose the problem
                 string directory = GetDirectory(fileName);
 
@@ -1368,7 +1359,6 @@ namespace FlatRedBall.IO
                         "file " + fileName + " or the directory " + directory, fileName);
                 }
 
-#endif
             }
         }
 
@@ -1597,20 +1587,11 @@ namespace FlatRedBall.IO
 
             if (makeAbsolute && !isNetwork)
             {
-                // Not sure what this is all about, but everything should be standardized:
-                //#if SILVERLIGHT
-                //                if (IsRelative(fileNameToFix) && mRelativeDirectory.Length > 1)
-                //                    fileNameToFix = mRelativeDirectory + fileNameToFix;
-
-                //#else
-
                 if (IsRelative(fileNameToFix))
                 {
                     fileNameToFix = (relativePath + fileNameToFix);
                     ReplaceSlashes(ref fileNameToFix);
                 }
-
-                //#endif
             }
 
             fileNameToFix = RemoveDotDotSlash(fileNameToFix);

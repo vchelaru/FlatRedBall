@@ -5,10 +5,6 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-#if SILVERLIGHT
-using System.Windows.Media.Effects;
-#endif
-
 namespace FlatRedBall.Graphics
 {
     public class GenericEffect
@@ -241,7 +237,6 @@ namespace FlatRedBall.Graphics
             }
         }
 
-#if !SILVERLIGHT
         public TextureAddressMode TextureAddressMode
         {
             get { return mTextureAddressMode; }
@@ -252,8 +247,6 @@ namespace FlatRedBall.Graphics
         {
             mTextureAddressMode = textureAddressMode;
         }
-
-#endif
         #endregion
 
         /// <summary>
@@ -745,7 +738,6 @@ namespace FlatRedBall.Graphics
         /// </summary>
         private void SetCommonParameters()
         {
-#if !SILVERLIGHT
             if(mTextureAddressMode != FlatRedBall.Graphics.Renderer.TextureAddressMode)
                 FlatRedBall.Graphics.Renderer.TextureAddressMode = mTextureAddressMode;
 
@@ -754,7 +746,6 @@ namespace FlatRedBall.Graphics
             FlatRedBallServices.GraphicsDevice.Textures[1] = null;
 
             FlatRedBall.Graphics.Renderer.Texture = this.Texture;
-#endif
         }
 
         /// <summary>

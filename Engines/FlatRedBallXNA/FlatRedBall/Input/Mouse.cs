@@ -208,11 +208,7 @@ namespace FlatRedBall.Input
         {
             get 
             { 
-#if FRB_MDX
-                return mMouseState.X;
-#else
                 return mMouseState.X - mLastFrameMouseState.X + mLastFrameRepositionX; 
-#endif
             }
         }
 
@@ -224,11 +220,7 @@ namespace FlatRedBall.Input
         {
             get 
             { 
-#if FRB_MDX
-                return mMouseState.Y;
-#else
                 return mMouseState.Y - mLastFrameMouseState.Y + mLastFrameRepositionY; 
-#endif
             }
         }
 
@@ -276,9 +268,6 @@ namespace FlatRedBall.Input
         #region Methods
 
         #region Constructor/Initialize
-#if FRB_MDX
-
-#else
         internal Mouse(IntPtr windowHandle)
         {
 #if !MONOGAME
@@ -289,7 +278,6 @@ namespace FlatRedBall.Input
             mDoubleClick = new bool[NumberOfButtons];
             mDoublePush = new bool[NumberOfButtons];
         }
-#endif
 
         internal void Initialize()
         {
@@ -330,59 +318,33 @@ namespace FlatRedBall.Input
         /// <returns>Boolean indicating whether the provided button was just pressed in this frame.</returns>
         public bool ButtonPushed(MouseButtons button)
         {
-#if !XBOX360
-
 			//Removed checking for focus to keep consistent with the other mouse events.  
 			//Checking should now be done manually
 
 //            bool isOwnerFocused = true;
 
-//#if !WINDOWS_PHONE && !SILVERLIGHT && !MONODROID
-//            isOwnerFocused = IsOwnerFocused;
-//#endif
 
 
 
             if (mActive == false || InputManager.mIgnorePushesThisFrame) // || !isOwnerFocused)
                 return false;
-#if FRB_MDX
-            if (mMouseBufferedData != null)
-            {
-                foreach (Microsoft.DirectX.DirectInput.BufferedData d in mMouseBufferedData)
-                {
-                    if (d.Offset == (int)mMouseOffset[(int)button])
-                    {
-                        if ((d.Data & 0x80) != 0)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-#else
+
             switch (button)
             {
                 case MouseButtons.LeftButton:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.LeftButton == ButtonState.Pressed && mLastFrameMouseState.LeftButton == ButtonState.Released;
                 case MouseButtons.RightButton:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.RightButton == ButtonState.Pressed && mLastFrameMouseState.RightButton == ButtonState.Released;
-#if !SILVERLIGHT
                 case MouseButtons.MiddleButton:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.MiddleButton == ButtonState.Pressed && mLastFrameMouseState.MiddleButton == ButtonState.Released;
                 case MouseButtons.XButton1:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.XButton1 == ButtonState.Pressed && mLastFrameMouseState.XButton1 == ButtonState.Released;
                 case MouseButtons.XButton2:
                     return !InputManager.CurrentFrameInputSuspended && mMouseState.XButton2 == ButtonState.Pressed && mLastFrameMouseState.XButton2 == ButtonState.Released;
-#endif                
                 default:
                     return false;
             }
-#endif
 
-#else
-            return false;
-#endif
         }
 
         /// <summary>
@@ -771,14 +733,13 @@ namespace FlatRedBall.Input
                 {
                     float xAt100Units = 0;
                     float yAt100Units = 0;
-#if !SILVERLIGHT
                     FlatRedBall.Math.MathFunctions.WindowToAbsolute(
                         X - camera.DestinationRectangle.Left,
                         Y - camera.DestinationRectangle.Top,
                         ref xAt100Units, ref yAt100Units,
                         FlatRedBall.Math.MathFunctions.ForwardVector3.Z * 100, camera,
                          Camera.CoordinateRelativity.RelativeToCamera);
-#endif
+
                     return camera.X +
                         FlatRedBall.Math.MathFunctions.ForwardVector3.Z * (zValue - camera.Z) * xAt100Units / 100.0f;
                 }
@@ -810,14 +771,12 @@ namespace FlatRedBall.Input
                 {
                     float xAt100Units = 0;
                     float yAt100Units = 0;
-#if !SILVERLIGHT
                     FlatRedBall.Math.MathFunctions.WindowToAbsolute(
                         X - camera.DestinationRectangle.Left,
                         Y - camera.DestinationRectangle.Top,
                         ref xAt100Units, ref yAt100Units,
                         FlatRedBall.Math.MathFunctions.ForwardVector3.Z * 100, camera,
                          Camera.CoordinateRelativity.RelativeToCamera);
-#endif
                     return camera.Y +
                         FlatRedBall.Math.MathFunctions.ForwardVector3.Z * (zValue - camera.Z) * yAt100Units / 100;
                 }
@@ -875,7 +834,7 @@ namespace FlatRedBall.Input
             mThisFrameRepositionX = 0;
             mThisFrameRepositionY = 0;
 
-            XnaAndSilverlightSpecificUpdateLogic(secondDifference, currentTime);
+            XnaSpecificUpdateLogic(secondDifference, currentTime);
             //if (mClearUntilNextClick)
             //{
             //    if (ButtonReleased(MouseButtons.LeftButton))
@@ -905,7 +864,7 @@ namespace FlatRedBall.Input
             }
         }
 
-        private void XnaAndSilverlightSpecificUpdateLogic(float secondDifference, double currentTime)
+        private void XnaSpecificUpdateLogic(float secondDifference, double currentTime)
         {
             mLastWheel = mMouseState.ScrollWheelValue;
 

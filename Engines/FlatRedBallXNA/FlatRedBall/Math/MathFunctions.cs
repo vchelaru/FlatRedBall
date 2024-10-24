@@ -677,15 +677,8 @@ namespace FlatRedBall.Math
                 // first get the intersection point relative to the camera
                 Vector3 intersectionRelativeToCamera = intersectionPoint - camera.Position;
 
-#if FRB_MDX
-                // now project it onto the vector which shows which way the camera is viewing
-                Vector3 lookingDirection = new Vector3(0, 0, 1);
-                lookingDirection.TransformCoordinate(camera.RotationMatrix);
-
-#else
                 // now project it onto the vector which shows which way the camera is viewing
                 Vector3 lookingDirection = Vector3.Transform(new Vector3(0, 0, 1), camera.RotationMatrix);
-#endif
 
                 float length = System.Math.Abs(Vector3.Dot(intersectionRelativeToCamera, lookingDirection));
 
@@ -693,17 +686,11 @@ namespace FlatRedBall.Math
                     length > camera.FarClipPlane)
                     return false;
 
-#if FRB_MDX
-                Matrix intersectMatrix = Matrix.Translation(
-                    (float)(xIntersect - objectToTest.X),
-                    (float)(yIntersect - objectToTest.Y),
-                    (float)(zIntersect - objectToTest.Z));
-#else
                 Matrix intersectMatrix = Matrix.CreateTranslation(
                     (float)(xIntersect - objectToTest.X),
                     (float)(yIntersect - objectToTest.Y),
                     (float)(zIntersect - objectToTest.Z));
-#endif
+
                 intersectMatrix *= Matrix.Invert(objectToTest.RotationMatrix);
 
                 if (System.Math.Abs(intersectMatrix.M41) < System.Math.Abs(objectToTest.ScaleX) &&

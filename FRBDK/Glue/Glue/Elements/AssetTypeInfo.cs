@@ -80,18 +80,6 @@ namespace FlatRedBall.Glue.Elements
                 {
                     string name = Assembly.CreateQualifiedName("FlatRedBall", mSaveTypeName);
                     mSaveType = Type.GetType(name);
-
-                    if (mSaveType == null)
-                    {
-                        name = Assembly.CreateQualifiedName("FlatRedBallMdx", mSaveTypeName);
-                        mSaveType = Type.GetType(name);
-
-                        if (mSaveType == null)
-                        {
-                            // We used to throw an exception here, but now it's okay - we allow custom types
-                            //throw new Exception();
-                        }
-                    }
                 }
             }
         }

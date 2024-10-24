@@ -378,19 +378,6 @@ namespace FlatRedBall.ManagedSpriteGroups
             set 
             { 
                 mOrderingMode = value;
-
-#if FRB_MDX
-                switch (value)
-                {
-                    case OrderingMode.DistanceFromCamera:
-
-                        mBlueprint.mOrdered = true;
-                        break;
-                    case OrderingMode.ZBuffered:
-                        mBlueprint.mOrdered = false;
-                        break;
-                }
-#endif
             }
         }
 
@@ -559,7 +546,7 @@ namespace FlatRedBall.ManagedSpriteGroups
             bool wasCameraOrthogonal = mCamera.Orthogonal;
 
             mCamera.Orthogonal = false;
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
+#if FRB_XNA
             mCamera.Z = float.PositiveInfinity;
 #else
             mCamera.Z = float.NegativeInfinity;
@@ -756,12 +743,7 @@ namespace FlatRedBall.ManagedSpriteGroups
 
             bool isTooClose;
 
-#if FRB_MDX
-            isTooClose = this.mCamera.Z - this.mBlueprint.Z > -2;
-#else
             isTooClose = this.mCamera.Z - this.mBlueprint.Z < 2;
-#endif
-
 
             if (this.GridPlane == Plane.XY &&
                 isTooClose)
@@ -1120,14 +1102,8 @@ namespace FlatRedBall.ManagedSpriteGroups
             }
             else
             {
-#if FRB_MDX
-                if (z - mBlueprint.ScaleY < mZFarBound) z = mZFarBound + mBlueprint.ScaleY * 1.1f;
-                else if (z + mBlueprint.ScaleY > mZCloseBound) z = mZCloseBound - mBlueprint.ScaleY * 1.1f;
-#else
                 if (z + mBlueprint.ScaleY > mZFarBound) z = mZFarBound - mBlueprint.ScaleY * 1.1f;
                 else if (z - mBlueprint.ScaleY < mZCloseBound) z = mZCloseBound + mBlueprint.ScaleY * 1.1f;
-
-#endif
 
                 z = mBlueprint.Z + (int)(System.Math.Round((z - mBlueprint.Z) / this.mGridSpacingY)) * mGridSpacingY;
             }
@@ -1156,14 +1132,8 @@ namespace FlatRedBall.ManagedSpriteGroups
 
                 // the Z value could be too far in the positive Z, so if so, move it forward
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
                 while (z - mBlueprint.ScaleY < this.mZFarBound)
                     z += mGridSpacingY;
-
-#elif FRB_MDX
-                while (z + mBlueprint.ScaleY > this.mZFarBound)
-                    z -= mGridSpacingY;
-#endif
             }
 
 
@@ -1490,11 +1460,7 @@ namespace FlatRedBall.ManagedSpriteGroups
         {
             float maxScl = System.Math.Max(mBlueprint.ScaleX, mBlueprint.ScaleY);
 
-#if FRB_MDX
-            float boundToUse = mZFarBound;
-#else
             float boundToUse = mZCloseBound;
-#endif
             while (mVisibleSprites.Count != 1 &&
                 (mCamera.IsYInView(mVisibleSprites[mVisibleSprites.Count - 1][0].Y, mVisibleSprites[mVisibleSprites.Count - 1][0].Z + Math.MathFunctions.ForwardVector3.Z * maxScl) == false ||
                 mVisibleSprites[mVisibleSprites.Count - 1][0].Z + mBlueprint.ScaleY > boundToUse))
@@ -1508,11 +1474,8 @@ namespace FlatRedBall.ManagedSpriteGroups
         {
             float maxScl = System.Math.Max(mBlueprint.ScaleX, mBlueprint.ScaleY);
 
-#if FRB_MDX
-            float boundToUse = mZCloseBound;
-#else
             float boundToUse = mZFarBound;
-#endif
+
             while (mVisibleSprites.Count != 1 &&
                 (mCamera.IsYInView(mVisibleSprites[0][0].Y,
                 mVisibleSprites[0][0].Z + Math.MathFunctions.ForwardVector3.Z * maxScl) == false ||

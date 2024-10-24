@@ -2,11 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-#if FRB_MDX
-using Microsoft.DirectX;
-#else//if FRB_XNA || SILVERLIGHT
 using Microsoft.Xna.Framework;
-#endif
 
 namespace FlatRedBall.Graphics
 {

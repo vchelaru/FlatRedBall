@@ -3,13 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Graphics;
 
-#if FRB_MDX
-using System.Drawing;
-using Microsoft.DirectX;
-#else //if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-#endif
 
 namespace FlatRedBall.Math.Geometry
 {
@@ -191,17 +186,10 @@ namespace FlatRedBall.Math.Geometry
             Vector3 difference4 = thisEndpoint2 - otherEndpoint2;
             if (
 
-#if FRB_MDX
-                difference1.LengthSq() < radiiCombinedSquared ||
-                difference2.LengthSq() < radiiCombinedSquared ||
-                difference3.LengthSq() < radiiCombinedSquared ||
-                difference4.LengthSq() < radiiCombinedSquared)
-#else //if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
                 difference1.LengthSquared() < radiiCombinedSquared ||
                 difference2.LengthSquared() < radiiCombinedSquared ||
                 difference3.LengthSquared() < radiiCombinedSquared ||
                 difference4.LengthSquared() < radiiCombinedSquared)
-#endif
             {
                 return true;
             }

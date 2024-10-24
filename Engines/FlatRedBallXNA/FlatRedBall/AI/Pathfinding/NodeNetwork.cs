@@ -858,12 +858,7 @@ namespace FlatRedBall.AI.Pathfinding
         public PositionedNode SplitLink(PositionedNode firstNode, PositionedNode secondNode)
 		{
 			PositionedNode newNode = new PositionedNode();
-#if FRB_MDX
-            newNode.Position = (firstNode.Position + secondNode.Position);
-            newNode.Position.Scale(.5f);
-#else
 			newNode.Position = (firstNode.Position + secondNode.Position) / 2.0f;
-#endif
 			bool addNode = false;
 
 			// If the first node is linked to the second

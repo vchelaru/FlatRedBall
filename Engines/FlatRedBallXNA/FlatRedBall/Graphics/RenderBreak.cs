@@ -7,12 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Utilities;
-#if FRB_MDX
-#else
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using FlatRedBall.IO;
-#endif
 
 namespace FlatRedBall.Graphics
 {

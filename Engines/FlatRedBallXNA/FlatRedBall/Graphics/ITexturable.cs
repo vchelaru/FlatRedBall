@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-#if !FRB_MDX
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
-#endif
 
 namespace FlatRedBall.Graphics
 {

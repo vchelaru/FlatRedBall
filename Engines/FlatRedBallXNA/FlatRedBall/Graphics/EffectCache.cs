@@ -352,7 +352,6 @@ namespace FlatRedBall.Graphics
             mFullParameterCache.Clear();
             mEffectCache.Clear();
             mEffectParameterCache.Clear();
-#if !SILVERLIGHT
             // Recreate the parameter cache if allowed
             if (mCacheShared)
             {
@@ -368,7 +367,6 @@ namespace FlatRedBall.Graphics
                 CacheEffect(mEffect);
             }
 
-#endif
         }
 
         #region XML Docs

@@ -839,10 +839,8 @@ namespace FlatRedBall.Instructions
 
             #endregion
 
-#if !SILVERLIGHT
             VelocityValueRelationships = new ReadOnlyCollection<VelocityValueRelationship>(mVelocityValueRelationships);
             AbsoluteRelativeValueRelationships = new ReadOnlyCollection<AbsoluteRelativeValueRelationship>(mAbsoluteRelativeValueRelationships);
-#endif
         }
 
         //private static void Flush()

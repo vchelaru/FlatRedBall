@@ -13,13 +13,7 @@ using FlatRedBall.Graphics.Animation;
 
 using FlatRedBall.Utilities;
 
-#if FRB_MDX
-using Texture2D = FlatRedBall.Texture2D;
-#else//if FRB_XNA || SILVERLIGHT
 using Microsoft.Xna.Framework.Graphics;
-
-#endif
-
 
 namespace FlatRedBall.ManagedSpriteGroups
 {
@@ -433,17 +427,11 @@ namespace FlatRedBall.ManagedSpriteGroups
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The color operation to perform using the color component values and 
         /// Texture (if available).
         /// </summary>
-        #endregion
-#if FRB_MDX
-        public Microsoft.DirectX.Direct3D.TextureOperation ColorOperation
-#else
         public ColorOperation ColorOperation
-#endif 
         {
             get { return mCenter.ColorOperation; }
             set
@@ -1394,20 +1382,12 @@ namespace FlatRedBall.ManagedSpriteGroups
         #region IMouseOver
         bool IMouseOver.IsMouseOver(FlatRedBall.Gui.Cursor cursor)
         {
-#if SILVERLIGHT
-            throw new NotImplementedException();
-#else
             return cursor.IsOn3D(this);
-#endif
         }
 
         public bool IsMouseOver(FlatRedBall.Gui.Cursor cursor, Layer layer)
         {
-#if SILVERLIGHT
-            throw new NotImplementedException();
-#else
             return cursor.IsOn3D(this, layer);
-#endif
         }
         #endregion
 

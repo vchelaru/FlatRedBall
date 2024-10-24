@@ -2,14 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-#if FRB_MDX
-using Texture2D = FlatRedBall.Texture2D;
-using Rectangle = System.Drawing.Rectangle;
-using Point = System.Drawing.Point;
-#else
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-#endif
 
 using FlatRedBall.Utilities;
 using FlatRedBall.IO;

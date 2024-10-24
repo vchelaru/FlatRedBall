@@ -92,7 +92,6 @@ namespace FlatRedBall.Content.SpriteGrid
 
         }
 
-#if !FRB_MDX
         internal static DisplayRegionGridSave FromXElement(System.Xml.Linq.XElement element)
         {
             DisplayRegionGridSave drgs = new DisplayRegionGridSave();
@@ -182,6 +181,5 @@ namespace FlatRedBall.Content.SpriteGrid
             return toReturn;
 
         }
-#endif
     }
 }

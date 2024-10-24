@@ -3,13 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Math;
 
-#if FRB_MDX
-using Texture2D = FlatRedBall.Texture2D;
-#else//if FRB_XNA || ZUNE || SILVERLIGHT
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
-#endif
 
 namespace FlatRedBall
 {

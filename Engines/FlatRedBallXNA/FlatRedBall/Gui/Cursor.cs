@@ -1174,12 +1174,7 @@ namespace FlatRedBall.Gui
                 distanceFromCamera = spriteToTest.Z;
             else
             {
-#if FRB_MDX
-                distanceFromCamera = spriteToTest.Z - (mCamera.Z);
-#else
                 distanceFromCamera = mCamera.Z - spriteToTest.Z;
-#endif
-
             }
 
             // check the near and far clipping first
@@ -1248,11 +1243,7 @@ namespace FlatRedBall.Gui
         {
             if (textObject == null)
                 return false;
-#if FRB_MDX
-            float distanceFromCamera = textObject.Z - (mCamera.Z);
-#else
             float distanceFromCamera = (mCamera.Z) - textObject.Z;
-#endif
             if (distanceFromCamera < mCamera.NearClipPlane ||
                 distanceFromCamera > mCamera.FarClipPlane)
                 return false;
@@ -1390,12 +1381,8 @@ namespace FlatRedBall.Gui
             float cursorX = 0;
             float cursorY = 0;
 
-#if FRB_MDX
-            float distanceFromCamera = sf.Z - (mCamera.Z);
-#else
             float distanceFromCamera = (mCamera.Z) - sf.Z;
 
-#endif
             if (distanceFromCamera < mCamera.NearClipPlane ||
                 distanceFromCamera > mCamera.FarClipPlane)
                 return false;
@@ -1431,7 +1418,6 @@ namespace FlatRedBall.Gui
                         cursorY > sf.Y - sf.ScaleY;
         }
 
-#if !SILVERLIGHT
 
         public bool IsOn3D(Scene scene, Layer layer)
         {
@@ -1467,7 +1453,6 @@ namespace FlatRedBall.Gui
             return false;
         }
 
-        #region XML Docs
         /// <summary>
         /// Determines whether the Cursor is on a Sprite.
         /// </summary>
@@ -1484,7 +1469,6 @@ namespace FlatRedBall.Gui
         /// </remarks>
         /// <param name="spriteToTest">The Sprite to test if the Cursor is over.</param>
         /// <returns>Whether the Cursor is over the Sprite.</returns>
-        #endregion
         public bool IsOn3D(Sprite spriteToTest)
         {
             return IsOn3D(spriteToTest, ref vector3);
@@ -1605,22 +1589,14 @@ namespace FlatRedBall.Gui
         {
             Ray ray = this.GetRay(layer);
 
-
-#if FRB_XNA
             BoundingSphere boundingSphere = sphere.AsBoundingSphere();
             // This can give improper results if not normalized!
             ray.Direction.Normalize();
 
             return ray.Intersects(boundingSphere).HasValue;
-#else
-            // We don't support this on FRB_MDX
-            // May need to handle additional #if's
-            // for future platforms here.
-            return false;
-#endif
+
         }
 
-#endif
 
         public bool IsOn3D<T>(T objectToTest) where T : IPositionable, IRotatable, IReadOnlyScalable
         {

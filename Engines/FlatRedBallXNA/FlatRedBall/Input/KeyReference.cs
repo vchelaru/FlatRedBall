@@ -1,11 +1,5 @@
 using System;
-#if FRB_MDX
-using Microsoft.DirectX.DirectInput;
-
-using Keys = Microsoft.DirectX.DirectInput.Key;
-#else
 using Microsoft.Xna.Framework.Input;
-#endif
 
 namespace FlatRedBall.Input
 {

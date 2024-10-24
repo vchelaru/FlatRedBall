@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using FlatRedBall.Utilities;
-#if !FRB_MDX
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
-
-#endif
 
 namespace FlatRedBall.Graphics.Animation
 {

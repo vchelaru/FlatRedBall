@@ -574,7 +574,6 @@ namespace FlatRedBall.Graphics.Texture
             }
         }
 
-#if !FRB_MDX
         public void ToTexture2D(Texture2D textureToFill)
         {
             lock (Renderer.Graphics.GraphicsDevice)
@@ -593,12 +592,10 @@ namespace FlatRedBall.Graphics.Texture
                 }
             }
         }
-#endif
 
         #endregion
 
         #region Internal Methods
-#if !FRB_MDX
 
         internal void MakePremultiplied()
         {
@@ -620,7 +617,6 @@ namespace FlatRedBall.Graphics.Texture
                 mData[i] = color;
             }
         }
-#endif
 
         internal static Microsoft.Xna.Framework.Graphics.Texture2D ToTexture2D(Color[] pixelData, int textureWidth, int textureHeight)
         {

@@ -209,7 +209,6 @@ namespace FlatRedBall.ManagedSpriteGroups
             if (mTextures.Count == 0)
                 return mBaseTexture;
 
-//#if FRB_MDX
             if (y - mSpaceHalfY < mLastPaintedY && y + mSpaceHalfY > mFirstPaintedY)
             {
                 int yOn = (int)System.Math.Round((y - mFirstPaintedY) / mGridSpacingY);
@@ -225,18 +224,6 @@ namespace FlatRedBall.ManagedSpriteGroups
                         return mTextures[yOn][xOn];
                 }
             }
-//#elif FRB_XNA
-//            if (y + mSpaceHalfY > mLastPaintedY && y - mSpaceHalfY < mFirstPaintedY)
-//            {
-//                int yOn = -(int)System.Math.Round((y - mFirstPaintedY) / mGridSpacingY);
-
-//                if (mFirstPaintedX.Count > 0 &&
-//                    x > mFirstPaintedX[yOn] - mSpaceHalfX && x <= mLastPaintedX[yOn] + mSpaceHalfX)
-//                {
-//                    return mTextures[yOn][(int)System.Math.Round((x - mFirstPaintedX[yOn]) / mGridSpacingX)];
-//                }
-//            }
-//#endif
             return mBaseTexture;
         }
 

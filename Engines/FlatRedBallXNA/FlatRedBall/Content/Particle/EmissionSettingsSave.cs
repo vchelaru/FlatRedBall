@@ -668,11 +668,7 @@ namespace FlatRedBall.Graphics.Particle
             }
 
 
-#if FRB_MDX
-            float divisionValue = 1;
-#else
-            float divisionValue = 255;
-#endif
+            const float divisionValue = 255;
             emissionSettings.Alpha = (255 - Fade) / divisionValue;
             emissionSettings.Red = TintRed / divisionValue;
             emissionSettings.Green = TintGreen / divisionValue;

@@ -88,14 +88,6 @@ namespace FlatRedBall.Glue.SetVariable
             else if (changedMember == nameof(ReferencedFileSave.LoadedOnlyWhenReferenced))
             {
                 updateTreeView = false;
-                if (rfs.LoadedOnlyWhenReferenced)
-                {
-                    // We need to make this public, or else it won't work on WP7 and Silverlight.
-                    // Update - The preferred method to get access to this stuff by string is either
-                    // GetMember or GetStaticMember, so there's no reason to force this stuff as public
-                    // when LoadedWhenReferenced is set to true.
-                    //rfs.HasPublicProperty = true;
-                }
             }
 
             #endregion

@@ -173,9 +173,6 @@ namespace FlatRedBall.Content.SpriteGrid
         [Obsolete]
         private void SetOrderingMode(FlatRedBall.ManagedSpriteGroups.SpriteGrid spriteGrid)
         {
-#if FRB_MDX
-            spriteGrid.Blueprint.mOrdered = this.Blueprint.Ordered;
-#endif
             if (this.Blueprint.Ordered)
             {
                 spriteGrid.OrderingMode = FlatRedBall.Graphics.OrderingMode.DistanceFromCamera;
@@ -545,7 +542,6 @@ namespace FlatRedBall.Content.SpriteGrid
             }
         }
 
-#if !FRB_MDX
         internal static SpriteGridSave FromXElement(System.Xml.Linq.XElement element)
         {
             SpriteGridSave sgs = new SpriteGridSave();
@@ -626,7 +622,6 @@ namespace FlatRedBall.Content.SpriteGrid
 
             return sgs;
         }
-#endif
 
         #endregion
 

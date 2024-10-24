@@ -1335,7 +1335,7 @@ namespace FlatRedBall.IO.Csv
 
 								if (!ReadBuffer())
                                 {
-#if !SILVERLIGHT && !XBOX360 && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
                                     HandleParseError(new Exception(), ref _nextFieldStart);
 #endif
                                     return null;
@@ -1372,7 +1372,7 @@ namespace FlatRedBall.IO.Csv
 							if (!_eof && !delimiterSkipped && (initializing || index == _fieldCount - 1))
 								eol = ParseNewLine(ref _nextFieldStart);
 
-#if !SILVERLIGHT && !XBOX360 && !WINDOWS_PHONE && !MONOGAME
+#if !MONOGAME
 							// If no delimiter is present after the quoted field and it is not the last field, then it is a parsing error
 							if (!delimiterSkipped && !_eof && !(eol || IsNewLine(_nextFieldStart)))
                                 HandleParseError(new Exception(), ref _nextFieldStart);

@@ -5,20 +5,15 @@ using System.Text;
 using System.Security.Cryptography.X509Certificates;
 
 
-#if FRB_MDX
-#elif SILVERLIGHT
-using SilverArcade.SilverSprite;
-#elif !FRB_RAW
+#if !FRB_RAW
 using Microsoft.Xna.Framework;
 #endif
 
 namespace FlatRedBall.Utilities
 {
-    #region XML Docs
     /// <summary>
     /// A class containing common string maniuplation methods.
     /// </summary>
-    #endregion
     public static class StringFunctions
     {
         #region Fields

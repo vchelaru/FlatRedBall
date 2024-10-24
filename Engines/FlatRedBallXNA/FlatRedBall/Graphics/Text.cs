@@ -48,12 +48,7 @@ namespace FlatRedBall.Graphics
         float mRedRate;
         float mGreenRate;
         float mBlueRate;
-#if FRB_MDX
-        Microsoft.DirectX.Direct3D.TextureOperation mColorOperation = 
-            Microsoft.DirectX.Direct3D.TextureOperation.Modulate;
-#else
         ColorOperation mColorOperation = ColorOperation.Modulate;
-#endif
         BlendOperation mBlendOperation;
         #endregion
 
@@ -379,11 +374,7 @@ namespace FlatRedBall.Graphics
             }
         }
 
-#if FRB_MDX
-        public Microsoft.DirectX.Direct3D.TextureOperation ColorOperation
-#else
         public ColorOperation ColorOperation
-#endif
         {
             get { return mColorOperation; }
             set { mColorOperation = value; }
@@ -1633,12 +1624,8 @@ namespace FlatRedBall.Graphics
 
                 Matrix inverseRotationMatrix = camera.RotationMatrix;
 
-#if FRB_MDX
-                inverseRotationMatrix = Matrix.Invert(inverseRotationMatrix);
-#else
                 Matrix.Invert(ref inverseRotationMatrix, out inverseRotationMatrix);
 
-#endif
                 Vector3 rotatedPosition = Position - camera.Position;
 
                 FlatRedBall.Math.MathFunctions.TransformVector(ref rotatedPosition, ref inverseRotationMatrix);
@@ -1795,20 +1782,6 @@ namespace FlatRedBall.Graphics
                         }
                     }
                     break;
-#if SILVERLIGHT
-                case FontType.SpriteFont:
-                    if (mHorizontalAlignment == HorizontalAlignment.Left || mHorizontalAlignment == HorizontalAlignment.Center)
-                    {
-                        numberOfCharacters = TextManager.GetNumberOfCharsIn(
-                         mMaxWidth, mAdjustedText, mSpacing, 0, SpriteFont, mHorizontalAlignment);
-                    }
-                    else if (mHorizontalAlignment == HorizontalAlignment.Right)
-                    {
-                        numberOfCharacters = TextManager.GetNumberOfCharsIn(
-                         mMaxWidth, mAdjustedText, mSpacing, mAdjustedText.Length - 1, SpriteFont, mHorizontalAlignment);
-                    }
-                    break;
-#endif
             }
             if (mAdjustedText != null && numberOfCharacters < mAdjustedText.Length)
             {

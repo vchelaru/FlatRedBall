@@ -203,7 +203,7 @@ namespace OfficialPlugins.FrbdkUpdater
         {
             T objectToReturn = default(T);
 
-#if SILVERLIGHT || WINDOWS_PHONE || (XBOX360 && XNA4) || MONODROID
+#if  MONODROID
             if (fileName.Contains(FileManager.IsolatedStoragePrefix) && mHasUserFolderBeenInitialized == false)
             {
                 throw new InvalidOperationException("The user folder hasn't been initialized.  Call FileManager.InitializeUserFolder first");
@@ -219,14 +219,14 @@ namespace OfficialPlugins.FrbdkUpdater
 //#endif
 
 
-#if XBOX360 || SILVERLIGHT || WINDOWS_PHONE || MONODROID
-            // Silverlight and 360 don't like ./ at the start of the file name, but that's what we use to identify an absolute path
+#if MONODROID
+            // Android doesn't like ./ at the start of the file name, but that's what we use to identify an absolute path
             if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
                 fileName = fileName.Substring(2);
 
 #endif
 
-#if SILVERLIGHT || WINDOWS_PHONE || XBOX360 || MONODROID
+#if  MONODROID
             using (Stream stream = GetStreamForFile(fileName))
 #else
             using (FileStream stream = System.IO.File.OpenRead(fileName))
@@ -234,13 +234,6 @@ namespace OfficialPlugins.FrbdkUpdater
             {
                 objectToReturn = XmlDeserialize<T>(stream);
             }
-
-#if XBOX360 //&& !XNA4
-            if (IsFileNameInUserFolder(fileName))
-            {
-                FileManager.DisposeLastStorageContainer();
-            }
-#endif
 
             return objectToReturn;
         }
@@ -315,13 +308,11 @@ namespace OfficialPlugins.FrbdkUpdater
             {
                 if (fs != null) fs.Close();
 
-#if SILVERLIGHT || WINDOWS_PHONE || MONODROID
+#if MONODROID
                 if (isfs != null)
                 {
                     isfs.Close();
                 }
-#elif XBOX360
-                FileManager.DisposeLastStorageContainer();
 #endif
             }
         }

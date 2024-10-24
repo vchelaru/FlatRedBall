@@ -178,11 +178,7 @@ namespace FlatRedBall.Content.Particle
         {
             float spriteLastingTime = 0;
 
-            #if FRB_MDX
-            float divisionValue = 1;
-#else
-            float divisionValue = 255;
-#endif
+            const float divisionValue = 255;
 
             if (this.RemovalEvent == RemovalEventType.Alpha0.ToString() || RemovalEvent == "Fadeout")
             {

@@ -4,18 +4,14 @@ using System.Linq;
 using System.Text;
 
 
-#if FRB_MDX
-using Microsoft.DirectX.Direct3D;
-#else
 using Microsoft.Xna.Framework.Graphics;
-#endif
 
 namespace FlatRedBall.Graphics
 {
     // This file contains code for pre-rendering the Sprite to a Texture.
     // This is useful in one of two situations:
     // 1.  If the performance of the particular engine suffers if there are
-    //      a lot of verts/objects (like Silverlight and possibly future web-based engines)
+    //      a lot of verts/objects
     // 2.  If the engine doesn't support vertex buffers.  This method allows bitmap font Texts
     //      to be rendered using SpriteBatch (or similar techniques)
 
@@ -66,9 +62,7 @@ namespace FlatRedBall.Graphics
             _texturesText = mText;
 
             //Set filtering
-#if !SILVERLIGHT
             mPreRenderedSprite.TextureFilter = TextureFilter.Point;
-#endif
             //Set Scale
             var textScaleIn2D = .5f * Font.LineHeightInPixels;
             var currentTextScale = Scale;

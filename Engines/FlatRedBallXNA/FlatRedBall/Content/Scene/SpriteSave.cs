@@ -74,7 +74,6 @@ namespace FlatRedBall.Content.Scene
             // Don't put any defaults here!
         }
 
-#if !FRB_MDX
         public static SpriteSave FromXElement(XElement element)
         {
             SpriteSave spriteSave = new SpriteSave();
@@ -267,7 +266,6 @@ namespace FlatRedBall.Content.Scene
 
             return spriteSave;
         }
-#endif
 
         public static SpriteSave FromSprite<T>(T spriteToCreateSaveFrom) where T : PositionedObject, IColorable,
             ICursorSelectable, IReadOnlyScalable, IAnimationChainAnimatable

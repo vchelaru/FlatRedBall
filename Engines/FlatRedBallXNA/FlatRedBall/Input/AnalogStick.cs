@@ -2,13 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-//#if SILVERLIGHT
-//using SilverArcade.SilverSprite;
-//using Vector2 = SilverArcade.SilverSprite.Vector2;
-//#else 
 using Microsoft.Xna.Framework;
 using FlatRedBall.Math;
-//#endif
 
 namespace FlatRedBall.Input
 {

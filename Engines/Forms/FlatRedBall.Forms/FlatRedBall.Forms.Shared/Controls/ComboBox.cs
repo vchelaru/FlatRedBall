@@ -363,6 +363,12 @@ namespace FlatRedBall.Forms.Controls
             }
             else
             {
+                // not sure why we have to re-add this here on a push.
+                // Update - because when we click on something like the scroll
+                // view in the popup listbox, this event gets raised. We don't want
+                // to close this, but we may still want to next click if it's outside
+                // of the list box. If the user keeps clicking on the scrollbar, this event
+                // keeps getting raised, and it re-adds itself.
                 GuiManager.AddNextPushAction(TryHideFromPush);
             }
         }

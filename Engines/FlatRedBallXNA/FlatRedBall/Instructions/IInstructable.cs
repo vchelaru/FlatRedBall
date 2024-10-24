@@ -3,28 +3,19 @@ using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Instructions.Reflection;
 using System.Reflection;
-
-
-#if !FRB_MDX
 using System.Linq;
-
-#endif
 
 namespace FlatRedBall.Instructions
 {
-    #region XML Docs
     /// <summary>
     /// Provides an interface for objects which can store Instructions.
     /// </summary>
-    #endregion
     public interface IInstructable
     {
-        #region XML Docs
         /// <summary>
         /// The list of Instructions that this instance owns.  These instructions usually
         /// will execute on this instance; however, this is not a requirement.
         /// </summary>
-        #endregion
         InstructionList Instructions
         {
             get;
@@ -80,7 +71,7 @@ namespace FlatRedBall.Instructions
             // user know that something is wrong before
             // the instruction fires and throws an error.
             //  that makes the bug easier to fix.
-#if DEBUG && !FRB_MDX && !WINDOWS_8 && !UWP
+#if DEBUG 
             var fields = typeof(T).GetFields();
             var properties = typeof(T).GetProperties();
             string memberToSet = this.MemberToSet;

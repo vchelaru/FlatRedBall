@@ -108,19 +108,7 @@ namespace FlatRedBall.IO
         {
             ImageDataList imageDatas = new ImageDataList();
 
-#if XBOX360 || SILVERLIGHT
-            if (gifFileName.StartsWith(@".\") || gifFileName.StartsWith(@"./"))
-            {
-                gifFileName = gifFileName.Substring(2);
-            }
-#endif
-
-#if SILVERLIGHT || WINDOWS_8
-            using (Stream stream = FileManager.GetStreamForFile(gifFileName))
-#else
             using (FileStream stream = System.IO.File.OpenRead(gifFileName))
-#endif
-
             {
                 mGifInfo = new GifInfo();
                 mGifInfo.DelayTimes = new List<short>();
@@ -246,21 +234,11 @@ namespace FlatRedBall.IO
                                             if (mGifInfo.HasTransparency && index == transparentIndex)
                                                 alpha = 0;
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
                                         color[position] = new Color(
                                             (byte)mGifInfo.PaletteInfo.Entries[index].R,
                                             (byte)mGifInfo.PaletteInfo.Entries[index].G,
                                             (byte)mGifInfo.PaletteInfo.Entries[index].B,
                                             (byte)alpha);
-#elif FRB_MDX
-                                            color[position] = Color.FromArgb(
-                                                alpha,
-                                                (byte)mGifInfo.PaletteInfo.Entries[index].R,
-                                                (byte)mGifInfo.PaletteInfo.Entries[index].G,
-                                                (byte)mGifInfo.PaletteInfo.Entries[index].B);
-
-#endif
-
                                         }
 
                                     }
@@ -296,19 +274,11 @@ namespace FlatRedBall.IO
 
                                     colorIndex = x + y * mGifInfo.Width;
 
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
                                     color[colorIndex] = new Color(
                                         (byte)mGifInfo.PaletteInfo.Entries[index].R,
                                         (byte)mGifInfo.PaletteInfo.Entries[index].G,
                                         (byte)mGifInfo.PaletteInfo.Entries[index].B,
                                         (byte)mGifInfo.PaletteInfo.Entries[index].A);
-#elif FRB_MDX
-                                    color[colorIndex] = Color.FromArgb(
-                                        (byte)mGifInfo.PaletteInfo.Entries[index].A,
-                                        (byte)mGifInfo.PaletteInfo.Entries[index].R,
-                                        (byte)mGifInfo.PaletteInfo.Entries[index].G,
-                                        (byte)mGifInfo.PaletteInfo.Entries[index].B);
-#endif
                                 }
                                 #endregion
                             }

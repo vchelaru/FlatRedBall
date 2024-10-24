@@ -249,9 +249,7 @@ namespace FlatRedBall
                 mYEdge = (float)(100 * System.Math.Tan(mFieldOfView / 2.0));
                 mXEdge = mYEdge * mAspectRatio;
 
-#if !SILVERLIGHT
                 UpdateViewProjectionMatrix();
-#endif
 
             }
         }
@@ -1449,12 +1447,10 @@ namespace FlatRedBall
 
         public void SetDeviceViewAndProjection(BasicEffect effect, bool relativeToCamera)
         {
-            #if !SILVERLIGHT
             // Set up our view matrix. A view matrix can be defined given an eye point,
             // a point to lookat, and a direction for which way is up. 
             effect.View = GetLookAtMatrix(relativeToCamera);
             effect.Projection = GetProjectionMatrix();
-            #endif
         }
 
 
@@ -2151,11 +2147,8 @@ namespace FlatRedBall
             }
             else
             {
-#if FRB_MDX
-                double cameraDistance = (absoluteZ - Position.Z) / 100.0;
-#else
                 double cameraDistance = (Position.Z - absoluteZ) / 100.0;
-#endif
+
                 if (x > Position.X - mXEdge * cameraDistance && x < Position.X + mXEdge * cameraDistance &&
                     y > Position.Y - mYEdge * cameraDistance && y < Position.Y + mYEdge * cameraDistance)
                     return true;
@@ -2181,11 +2174,7 @@ namespace FlatRedBall
             }
             else
             {
-#if FRB_MDX
-                double cameraDistance = (absoluteZ - Position.Z) / 100.0;
-#else
                 double cameraDistance = (Position.Z - absoluteZ) / 100.0;
-#endif
                 if (x > Position.X - mXEdge * cameraDistance && x < Position.X + mXEdge * cameraDistance)
                     return true;
                 else
@@ -2210,11 +2199,7 @@ namespace FlatRedBall
             }
             else
             {
-#if FRB_MDX
-                double cameraDistance = (absoluteZ - Position.Z) / 100.0;
-#else
                 double cameraDistance = (Position.Z - absoluteZ) / 100.0;
-#endif
                 if (y > Position.Y - mYEdge * cameraDistance && y < Position.Y + mYEdge * cameraDistance)
                     return true;
                 else

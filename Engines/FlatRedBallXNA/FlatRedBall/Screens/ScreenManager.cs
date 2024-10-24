@@ -13,13 +13,6 @@ using FlatRedBall.IO;
 using System.Linq;
 using Microsoft.Xna.Framework.Content;
 using FlatRedBall.Input;
-#if !SILVERLIGHT
-#endif
-
-#if WINDOWS_PHONE
-using System.IO.IsolatedStorage;
-using Microsoft.Phone.Shell;
-#endif
 
 #endregion
 

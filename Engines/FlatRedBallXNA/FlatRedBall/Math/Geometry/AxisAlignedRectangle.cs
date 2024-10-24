@@ -217,12 +217,8 @@ namespace FlatRedBall.Math.Geometry
             }
             set
             {
-#if FRB_MDX
-                Color newColor = Color.FromArgb(mColor.A, (byte)(value * 255.0f), mColor.G, mColor.B);
-#else
                 Color newColor = mColor;
                 newColor.R = (byte)(value * 255.0f);
-#endif
                 mColor = newColor;
             }
         }
@@ -235,12 +231,8 @@ namespace FlatRedBall.Math.Geometry
             }
             set
             {
-#if FRB_MDX
-                Color newColor = Color.FromArgb(mColor.A, mColor.R, (byte)(value * 255.0f), mColor.B);
-#else
                 Color newColor = mColor;
                 newColor.G = (byte)(value * 255.0f);
-#endif
                 mColor = newColor;
             }
         }
@@ -253,12 +245,8 @@ namespace FlatRedBall.Math.Geometry
             }
             set
             {
-#if FRB_MDX
-                Color newColor = Color.FromArgb(mColor.A, mColor.R, mColor.G, (byte)(value * 255.0f));
-#else
                 Color newColor = mColor;
                 newColor.B = (byte)(value * 255.0f);
-#endif
                 mColor = newColor;
             }
         }
@@ -537,11 +525,7 @@ namespace FlatRedBall.Math.Geometry
                     // top
                     Segment edge = new Segment();
                     float smallestDistance = float.PositiveInfinity;
-#if FRB_MDX
-                    Vector2 amountToMove = Vector2.Empty;
-#else
                     Vector2 amountToMove = Vector2.Zero;
-#endif
                     bool isAmountToMoveSet = false;
 
                     if ((this.RepositionDirections & Geometry.RepositionDirections.Up) == Geometry.RepositionDirections.Up)

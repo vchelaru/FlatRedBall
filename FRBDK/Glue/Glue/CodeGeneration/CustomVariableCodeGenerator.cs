@@ -1021,11 +1021,8 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             ICodeBlock prop;
 
-            bool needsToCloseIf = false;
-
             if (customVariableType == "Microsoft.Xna.Framework.Color")
             {
-                codeBlock.Line("#if XNA3 || SILVERLIGHT");
                 prop = codeBlock.Property(customVariable.Name, Public: true,
                                          Override: customVariable.DefinedByBase,
                                          Virtual: (customVariable.SetByDerived && !customVariable.IsShared),
@@ -1033,8 +1030,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                 prop.PreCodeLines.RemoveAt(1); // get rid of its opening bracket
                 prop.PostCodeLines.Clear();
                 prop.End();
-                codeBlock.Line("#else");
-                needsToCloseIf = true;
             }
 
 
@@ -1042,10 +1037,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                                      Override: customVariable.DefinedByBase,
                                      Virtual: (customVariable.SetByDerived && !customVariable.IsShared),
                                      Type: customVariableType);
-            if (needsToCloseIf)
-            {
-                prop.PreCodeLines.Insert(1, new CodeLine("#endif"));
-            }
+
             return prop;
         }
 

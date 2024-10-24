@@ -91,11 +91,8 @@ namespace FlatRedBall.Graphics.Particle
         InstructionBlueprintList mInstructions;
         BlendOperation mBlendOperation;
 
-#if FRB_MDX
-        Microsoft.DirectX.Direct3D.TextureOperation mColorOperation;
-#else
         ColorOperation mColorOperation;
-#endif
+
         bool mAnimate;
         AnimationChain mAnimationChain;
         string mCurrentChainName;
@@ -414,11 +411,7 @@ namespace FlatRedBall.Graphics.Particle
             set { mBlendOperation = value; }
         }
 
-#if FRB_MDX
-        public Microsoft.DirectX.Direct3D.TextureOperation ColorOperation
-#else
         public ColorOperation ColorOperation
-#endif        
         {
             get { return mColorOperation; }
             set { mColorOperation = value; }
@@ -513,12 +506,7 @@ namespace FlatRedBall.Graphics.Particle
             PixelSize = -1;
             mAlpha = GraphicalEnumerations.MaxColorComponentValue;
 
-#if FRB_MDX
-            mColorOperation = Microsoft.DirectX.Direct3D.TextureOperation.SelectArg1;
-
-#else
             mColorOperation = ColorOperation.Texture;
-#endif
             mBlendOperation = BlendOperation.Regular;
         }
 

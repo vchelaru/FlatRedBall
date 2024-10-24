@@ -133,7 +133,6 @@ namespace FlatRedBall.Content.SpriteGrid
 
         }
 
-#if !FRB_MDX
         public static AnimationChainGridSave FromXElement(System.Xml.Linq.XElement element)
         {
                         
@@ -147,7 +146,8 @@ namespace FlatRedBall.Content.SpriteGrid
                         acs.FirstPaintedY = SceneSave.AsFloat(subElement);
                         break;
                     case "ReferenceGrid":
-                        acs.ReferenceGrid = ToAnimationChainReferenceArrayArray(subElement);
+                        throw new NotImplementedException();
+                        //acs.ReferenceGrid = ToAnimationChainReferenceArrayArray(subElement);
                         break;
                     default:
                         throw new NotImplementedException("Node not understood: " + subElement.Name.LocalName);
@@ -156,40 +156,6 @@ namespace FlatRedBall.Content.SpriteGrid
 
             return acs;
         }
-
-        private static ReferencedAnimationChain[][] ToAnimationChainReferenceArrayArray(System.Xml.Linq.XElement element)
-        {
-            throw new NotImplementedException();
-
-            //List<List<ReferencedAnimationChain>> achReferenceListList = new List<List<ReferencedAnimationChain>>();
-
-            //foreach (var subElement in element.Elements())
-            //{
-            //    List<ReferencedAnimationChain> newList = new List<ReferencedAnimationChain>();
-
-            //    achReferenceListList.Add(newList);
-            //    foreach (var subSubElement in subElement.Elements())
-            //    {
-            //        ReferencedAnimationChain newRac = new ReferencedAnimationChain();
-            //        newList.Add(newRac);
-            //    }
-
-
-            //}
-
-            //ReferencedAnimationChain[][] toReturn = new ReferencedAnimationChain[achReferenceListList.Count][];
-
-            //for (int i = 0; i < achReferenceListList.Count; i++)
-            //{
-            //    toReturn[i] = achReferenceListList[i].ToArray();
-
-            //}
-
-            //return toReturn;
-        
-        }
-
-#endif
 
         #endregion
     }

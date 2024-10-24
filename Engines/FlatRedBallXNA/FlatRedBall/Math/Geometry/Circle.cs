@@ -801,11 +801,7 @@ namespace FlatRedBall.Math.Geometry
 
         public void ProjectParentVelocityOnLastMoveCollisionTangent(float minimumVectorLengthSquared)
         {
-#if FRB_MDX
-            if (LastMoveCollisionReposition.LengthSq() > minimumVectorLengthSquared &&
-#else
             if (LastMoveCollisionReposition.LengthSquared() > minimumVectorLengthSquared &&
-#endif
                 Vector2.Dot(
                     new Vector2(TopParent.Velocity.X, TopParent.Velocity.Y), LastMoveCollisionReposition) < 0)
             {

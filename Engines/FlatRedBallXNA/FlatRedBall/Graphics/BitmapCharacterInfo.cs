@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Math;
 
-#if !FRB_MDX
 using Microsoft.Xna.Framework.Graphics;
-
-#endif
 
 namespace FlatRedBall.Graphics
 {

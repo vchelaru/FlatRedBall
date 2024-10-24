@@ -2,11 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-//#if SILVERLIGHT
-//using SilverArcade.SilverSprite.Input;
-//#else
 using Microsoft.Xna.Framework.Input;
-//#endif
 
 namespace FlatRedBall.Input
 {

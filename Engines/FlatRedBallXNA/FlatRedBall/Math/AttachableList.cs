@@ -191,7 +191,6 @@ namespace FlatRedBall.Math
 
             if (this.CollectionChanged != null)
             {
-                // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, attachable, countBefore));
             }
             ListChanged?.Invoke(attachable, NotifyCollectionChangedAction.Add);
@@ -229,7 +228,6 @@ namespace FlatRedBall.Math
             mInternalList.Add(attachable);
             if (this.CollectionChanged != null)
             {
-                // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, attachable, 0));
             }
 
@@ -337,7 +335,6 @@ namespace FlatRedBall.Math
 
             if (this.CollectionChanged != null)
             {
-                // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removed, 0));
             }
 
@@ -476,7 +473,6 @@ namespace FlatRedBall.Math
 
             if (this.CollectionChanged != null)
             {
-                // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, attachable, 0));
             }
             ListChanged?.Invoke(attachable, NotifyCollectionChangedAction.Add);
@@ -568,7 +564,6 @@ namespace FlatRedBall.Math
 
             if (this.CollectionChanged != null)
             {
-                // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, attachable, 0));
             }
             ListChanged?.Invoke(attachable, NotifyCollectionChangedAction.Remove);
@@ -601,7 +596,6 @@ namespace FlatRedBall.Math
 
             if (this.CollectionChanged != null)
             {
-                // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removed, 0));
             }
             ListChanged?.Invoke(removed, NotifyCollectionChangedAction.Remove);
@@ -620,7 +614,6 @@ namespace FlatRedBall.Math
 
             if (this.CollectionChanged != null)
             {
-                // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
                 this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removed, 0));
             }
             ListChanged?.Invoke(removed, NotifyCollectionChangedAction.Remove);

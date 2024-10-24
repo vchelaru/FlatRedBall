@@ -2,15 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-#if FRB_MDX
-using Microsoft.DirectX;
-using FlatRedBall.Graphics;
-#else// FRB_XNA || SILVERLIGHT
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using VertexPositionColor = Microsoft.Xna.Framework.Graphics.VertexPositionColor;
 using Microsoft.Xna.Framework;
-#endif
 
 namespace FlatRedBall.Math.Geometry
 {
@@ -591,13 +586,11 @@ namespace FlatRedBall.Math.Geometry
 
         static Vector2 sUnitSegmentForIsClosestPointOnEndpoint;
         static Vector2 sPointVectorForIsClosestPointOnEndpoint;
-        #region XML Docs
         /// <summary>
         /// Determines whether the closest point on the segment lies on one of the endpoints.
         /// </summary>
         /// <param name="point">The point to test to.</param>
         /// <returns>Whether the closest point on this segment to the argument point lies on the endpoints.</returns>
-        #endregion
         public bool IsClosestPointOnEndpoint(ref Point point)
         {
             sUnitSegmentForIsClosestPointOnEndpoint.X = (float)(this.Point2.X - this.Point1.X);
@@ -607,12 +600,8 @@ namespace FlatRedBall.Math.Geometry
             sPointVectorForIsClosestPointOnEndpoint.X = (float)(point.X - this.Point1.X);
             sPointVectorForIsClosestPointOnEndpoint.Y = (float)(point.Y - Point1.Y);
 
-#if FRB_MDX
-            float l = Vector2.Dot(sPointVectorForIsClosestPointOnEndpoint, sUnitSegmentForIsClosestPointOnEndpoint);
-#else
             float l;
             Vector2.Dot(ref sPointVectorForIsClosestPointOnEndpoint, ref sUnitSegmentForIsClosestPointOnEndpoint, out l);
-#endif
             return l < 0 || l*l > this.GetLengthSquared();
         }
 

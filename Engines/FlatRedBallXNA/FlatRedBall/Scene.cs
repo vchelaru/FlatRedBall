@@ -5,18 +5,10 @@ using FlatRedBall.Graphics;
 
 
 //using FlatRedBall.Content;
-#if FRB_MDX
-using Texture2D = FlatRedBall.Texture2D;
-using Microsoft.DirectX;
-using FlatRedBall.Graphics.Model;
-#else
-#if !SILVERLIGHT
 using FlatRedBall.Input;
-#endif
 using FlatRedBall.Gui;
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 using Microsoft.Xna.Framework;
-#endif
 using FlatRedBall.ManagedSpriteGroups;
 using FlatRedBall.Math;
 using FlatRedBall.Utilities;
@@ -231,11 +223,7 @@ namespace FlatRedBall
                 }
                 else
                 {
-#if SILVERLIGHT
-                    throw new NotImplementedException();
-#else
                     TextManager.AddText(Texts[i], layer);
-#endif
                 }
             }
 
