@@ -101,7 +101,6 @@ namespace FlatRedBall.Instructions
             Time = time;
         }
 
-        #region XML Comments
         /// <summary>
         /// Builds an Instruction using the information stored in the InstructionBlueprint.
         /// </summary>
@@ -110,17 +109,12 @@ namespace FlatRedBall.Instructions
         /// <throws exception="ArgumentException">If target's type is not this InstructionBlueprint's TargetType</throws>
         /// <throws exception="NullReferenceException">If this InstructionBlueprint was fully initialized before this call to BuildInstruction.</throws>
         /// <returns>An Instruction created from this InstructionBlueprint's information</returns>
-        #endregion
         public GenericInstruction BuildInstruction(object target, double currentTime){
             GenericInstruction toReturn;
 
             
             //Make sure the target is a compatible type
-#if WINDOWS_8
-            if (!TargetType.GetTypeInfo().IsAssignableFrom(target.GetType().GetTypeInfo()))
-#else
             if (!TargetType.IsInstanceOfType(target))
-#endif
             {
                 throw new ArgumentException("This InstructionBlueprint's TargetType is " + TargetType + " and doesn't match the argument's type, " +
                                                 target.GetType());

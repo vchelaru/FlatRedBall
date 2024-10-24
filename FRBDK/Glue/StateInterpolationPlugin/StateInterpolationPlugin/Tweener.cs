@@ -397,13 +397,6 @@ namespace FlatRedBall.Glue.StateInterpolation
 
         public override string ToString()
         {
-#if WINDOWS_8 || UWP
-            return String.Format("Tween {0} -> {1} in {2}s. Elapsed {3:##0.##}s",
-                from, 
-                from + change, 
-                Duration, 
-                elapsed);
-#else
             return String.Format("{0}.{1}. Tween {2} -> {3} in {4}s. Elapsed {5:##0.##}s",
                 tweeningFunction.Method.DeclaringType.Name,
                 tweeningFunction.Method.Name,
@@ -411,7 +404,6 @@ namespace FlatRedBall.Glue.StateInterpolation
                 from + change, 
                 Duration, 
                 elapsed);
-#endif
         }
         #endregion
     }

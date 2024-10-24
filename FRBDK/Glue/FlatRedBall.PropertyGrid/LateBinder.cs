@@ -180,11 +180,7 @@ namespace FlatRedBall.PropertyGrid
             }
             else
             {
-#if WINDOWS_8 || UWP
-                if (mType.GetField(name) != null)
-#else
                 if (mType.GetField(name, mGetFieldBindingFlags) != null)
-#endif
                 {
                     mFieldsSet.Add(name);
                     return GetField(target, name);
@@ -258,11 +254,7 @@ namespace FlatRedBall.PropertyGrid
             }
             else
             {
-#if WINDOWS_8 || UWP
-                if (mType.GetField(name) != null)
-#else
                 if (mType.GetField(name, mGetFieldBindingFlags) != null)
-#endif
                 {
                     mFieldsSet.Add(name);
                     result = GetField(target, name);
@@ -296,11 +288,7 @@ namespace FlatRedBall.PropertyGrid
             }
             else
             {
-#if WINDOWS_8 || UWP
-                if (mType.GetField(name) != null)
-#else
                 if (mType.GetField(name, mGetFieldBindingFlags) != null)
-#endif
                 {
                     mFieldsSet.Add(name);
 
@@ -334,7 +322,7 @@ namespace FlatRedBall.PropertyGrid
             FieldInfo fieldInfo = target.GetType().GetField(
                 name);
 
-#if DEBUG && !IOS && !ANDROID && !WINDOWS_8 && !UWP
+#if DEBUG && !IOS && !ANDROID
             if (value.GetType().IsValueType && 
                 value.GetType().IsPrimitive == false)
             {
@@ -437,9 +425,6 @@ namespace FlatRedBall.PropertyGrid
                 else
                 {
 
-#if WINDOWS_8
-                    fieldInfo.SetValue(target, value);
-#else
                     // I don't know why we branch here....Can we not call SetValue on public values?
                     if (!fieldInfo.IsPublic)
                     {
@@ -450,16 +435,13 @@ namespace FlatRedBall.PropertyGrid
                         object[] args = { value };
                         mType.InvokeMember(propertyName, BindingFlags.SetField, null, target, args);
                     }
-#endif
 
                 }
             }
 #endif
         }
 
-#if !WINDOWS_8 && !UWP
         static BindingFlags mGetFieldBindingFlags = BindingFlags.GetField | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-#endif
 
         public object GetField(object target, string fieldName)
         {
@@ -467,19 +449,12 @@ namespace FlatRedBall.PropertyGrid
 
             if (target == null)
             {
-#if WINDOWS_8 || UWP
-                FieldInfo fieldInfo = mType.GetField(fieldName);
-#else
                 FieldInfo fieldInfo = mType.GetField(fieldName, mGetFieldBindingFlags);
-#endif
                 return fieldInfo.GetValue(null);
 
             }
             else
             {
-#if WINDOWS_8 || UWP
-                return mType.GetField(fieldName).GetValue(target);
-#else
 
                 Binder binder = null;
                 object[] args = null;
@@ -491,7 +466,6 @@ namespace FlatRedBall.PropertyGrid
                    target,
                    args
                    );
-#endif
             }
         }
 
@@ -552,21 +526,12 @@ namespace FlatRedBall.PropertyGrid
 
         private static object GetPropertyThroughReflection(object target, string propertyName)
         {
-#if WINDOWS_8 || UWP
-            PropertyInfo pi = typeof(T).GetProperty(propertyName);
-#else
             PropertyInfo pi = typeof(T).GetProperty(propertyName, mGetterBindingFlags);
-#endif
 
             if (pi == null)
             {
                 string message = "Could not find the property " + propertyName + "\n\nAvailableProperties:\n\n";
-#if WINDOWS_8 || UWP
-                IEnumerable<PropertyInfo> properties = typeof(T).GetProperties();
-#else
                 PropertyInfo[] properties = typeof(T).GetProperties(mGetterBindingFlags);
-#endif
-
                 foreach (PropertyInfo containedProperty in properties)
                 {
                     message += containedProperty.Name + "\n";
@@ -593,13 +558,9 @@ namespace FlatRedBall.PropertyGrid
         {
             if (!mPropertySet.ContainsKey(propertyName))
             {
-#if WINDOWS_8 || UWP
-                PropertyInfo propertyInfo = mType.GetProperty(propertyName);
-#else
                 BindingFlags bindingFlags =
                     BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.Static;
                 PropertyInfo propertyInfo = mType.GetProperty(propertyName, bindingFlags);
-#endif
                 if (propertyInfo != null && propertyInfo.CanWrite)
                 {
                     mPropertySet.Add(propertyName, DynamicMethodCompiler.CreateSetHandler(mType, propertyInfo));
@@ -608,21 +569,15 @@ namespace FlatRedBall.PropertyGrid
             }
         }
 
-#if !WINDOWS_8 && !UWP
         static BindingFlags mGetterBindingFlags =
             BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Static;
-#endif
 
         private void ValidateGetter(ref string propertyName)
         {
             if (!mPropertyGet.ContainsKey(propertyName))
             {
 
-#if WINDOWS_8 || UWP
-                PropertyInfo propertyInfo = mType.GetProperty(propertyName);
-#else
                 PropertyInfo propertyInfo = mType.GetProperty(propertyName, mGetterBindingFlags);
-#endif
                 if (propertyInfo != null)
                 {
 

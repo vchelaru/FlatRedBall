@@ -179,12 +179,7 @@ namespace FlatRedBall.IO
 
 
 
-#if WINDOWS_8 || UWP
-                int threadID = Environment.CurrentManagedThreadId;
-#else
-
                 int threadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
-#endif
 
                 lock (mRelativeDirectoryDictionary)
                 {
@@ -1365,9 +1360,6 @@ namespace FlatRedBall.IO
 
         public static void SaveEmbeddedResource(Assembly assemblyContainingResource, string resourceName, string targetFileName)
         {
-#if WINDOWS_8
-            throw new NotImplementedException();
-#else
             System.IO.Directory.CreateDirectory(FileManager.GetDirectory(targetFileName));
 
             byte[] buffer = GetByteArrayFromEmbeddedResource(assemblyContainingResource, resourceName);
@@ -1379,16 +1371,12 @@ namespace FlatRedBall.IO
                 File.Delete(targetFileName);
             }
             WriteStreamToFile(targetFileName, buffer, succeeded);
-#endif
         }
 
         private static void WriteStreamToFile(string targetFileName, byte[] buffer, bool succeeded)
         {
             if (succeeded)
             {
-#if WINDOWS_8 || UWP
-                throw new NotImplementedException();
-#else
                 using (FileStream fs = new FileStream(targetFileName, FileMode.Create))
                 {
                     using (BinaryWriter bw = new BinaryWriter(fs))
@@ -1398,7 +1386,6 @@ namespace FlatRedBall.IO
                         fs.Close();
                     }
                 }
-#endif
             }
         }
 
@@ -1493,7 +1480,7 @@ namespace FlatRedBall.IO
 
             fileName = FileManager.GetIsolatedStorageFileName(fileName);
 
-#if WINDOWS_8 || IOS || UWP || ANDROID
+#if IOS || ANDROID
             throw new NotImplementedException();
 #else
             IsolatedStorageFileStream isfs = null;
@@ -1731,9 +1718,6 @@ namespace FlatRedBall.IO
 
             bool handled = false;
 
-#if WINDOWS_8
-            handled = XmlDeserializeWindows8IfIsolatedStorage<T>(fileName, out objectToReturn);
-#endif
 
 
             if (!handled)
@@ -1932,7 +1916,7 @@ namespace FlatRedBall.IO
 
             ThrowExceptionIfFileDoesntExist(fileName);
 
-#if WINDOWS_8 || UWP || FNA || IOS || ANDROID
+#if FNA || IOS || ANDROID
             throw new NotImplementedException();
 #else
             using (FileStream stream = System.IO.File.OpenRead(fileName))
@@ -2232,47 +2216,27 @@ namespace FlatRedBall.IO
 
 		public static void Close(Stream stream)
 		{
-#if UWP
-            // Close was removed - no need to do anything
-#else
 			stream.Close();
-#endif
 		}
 
 		public static void Close(StreamReader streamReader)
 		{
-#if UWP
-            // Close was removed - no need to do anything
-#else
 			streamReader.Close();
-#endif
 		}
 
 		private static void Close(BinaryWriter writer)
 		{
-#if UWP
-            // Close was removed - no need to do anything
-#else
 			writer.Close();
-#endif
 		}
 
 		private static void Close(StreamWriter writer)
 		{
-#if UWP
-            // Close was removed - no need to do anything
-#else
 			writer.Close();
-#endif
 		}
 
 		public static void Close(TextReader writer)
 		{
-#if WINDOWS_8 || UWP
-            // Close was removed - no need to do anything
-#else
 			writer.Close();
-#endif
         }
 
 #endregion

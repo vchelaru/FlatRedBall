@@ -718,11 +718,7 @@ namespace FlatRedBall.Instructions.Reflection
 
                 else if (desiredType == typeof(Color).FullName)
                 {
-#if WINDOWS_8 || UWP
-                    PropertyInfo info = typeof(Color).GetProperty(value);
-#else
                     PropertyInfo info = typeof(Color).GetProperty(value, BindingFlags.GetField | BindingFlags.Public | BindingFlags.Static);
-#endif
 
                     if (info == null)
                     {
@@ -797,11 +793,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
 
             return foundType != null &&
-#if WINDOWS_8 || UWP
-                foundType.IsEnum();
-#else
                 foundType.IsEnum;
-#endif
         }
 
         private static void TryHandleComplexType(string value, string typeName, Type alreadyKnownType, out bool handled, out object toReturn)
@@ -960,28 +952,6 @@ namespace FlatRedBall.Instructions.Reflection
             Type foundType = null;
 
 
-#if WINDOWS_8 || UWP
-            foundType = TryToGetTypeFromAssembly(typeAfterNewString, FlatRedBallServices.Game.GetType().GetTypeInfo().Assembly);
-
-            if (foundType == null)
-            {
-#if DEBUG
-                if (TopLevelAssembly == null)
-                {
-                    throw new Exception("The TopLevelAssembly member must be set before it is used.  It is currently null");
-                }
-#endif
-                foundType = TryToGetTypeFromAssembly(typeAfterNewString, TopLevelAssembly);
-            }
-            if (foundType == null)
-            {
-                foundType = TryToGetTypeFromAssembly(typeAfterNewString, typeof(Vector3).GetTypeInfo().Assembly);
-            }
-            if(foundType == null)
-            {
-                foundType = TryToGetTypeFromAssembly(typeAfterNewString, typeof(FlatRedBall.Sprite).GetTypeInfo().Assembly);
-            }
-#else
 
             // This may be run from a tool.  If so
             // then there is no Game class, so we shouldn't
@@ -1022,7 +992,6 @@ namespace FlatRedBall.Instructions.Reflection
                 foundType = TryToGetTypeFromAssembly(typeAfterNewString, typeof(Vector3).Assembly);
             }
 #endif
-#endif
 
             if (foundType == null)
             {
@@ -1050,11 +1019,8 @@ namespace FlatRedBall.Instructions.Reflection
 
             // Is this slow?  Do we want to cache off the Type[]?
 
-#if WINDOWS_8
-            IEnumerable<Type> types = assembly.ExportedTypes;
-#else
             IEnumerable<Type> types = assembly.GetTypes();
-#endif
+
             foreach (Type type in types)
             {
                 if (type.Name == typeAfterNewString || type.FullName == typeAfterNewString)
@@ -1144,14 +1110,7 @@ namespace FlatRedBall.Instructions.Reflection
         public static bool IsGenericList(Type type)
         {
             bool isGenericList = false;
-#if WINDOWS_8 || UWP
-            // Not sure why we check the declaring type.  I think declaring
-            // type is for when a class is inside of another class
-            //if (type.DeclaringType.IsGenericParameter && (type.GetGenericTypeDefinition() == typeof(List<>)))
-            if (type.GetGenericTypeDefinition() == typeof(List<>))
-#else
             if (type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(List<>)))
-#endif
             {
                 isGenericList = true;
             }

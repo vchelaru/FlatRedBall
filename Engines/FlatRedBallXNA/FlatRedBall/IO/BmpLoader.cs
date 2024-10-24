@@ -71,28 +71,10 @@ namespace FlatRedBall.IO
 
         private static byte[] LoadFile(string fileName)
         {
-            // September 14, 2010:
-            // I think we can just standardize the reading of the file by simply by using
-            // the GetStreamForFile method instead of branching.
-
-//#if !WINDOWS_PHONE
-//            System.Diagnostics.Trace.Write(Path.Combine(Microsoft.Xna.Framework.Storage.StorageContainer.TitleLocation, fileName.Replace("/", "\\")));
-
-
-//            FileStream file = File.OpenRead(Path.Combine(Microsoft.Xna.Framework.Storage.StorageContainer.TitleLocation, fileName.Replace("/", "\\")));
-//            byte[] source = ReadFile(file);
-
-//            return source;
-//#else
-
-
             Stream stream = FileManager.GetStreamForFile(fileName);
             byte[] source = ReadFile(stream);
             FileManager.Close(stream);
-
             return source;
-//#endif        
-        
         }
 
         private static bool CheckSignature(ref Stream file)

@@ -361,7 +361,7 @@ namespace FlatRedBall.IO.Csv
 		/// </exception>
 		public CsvReader(TextReader reader, bool hasHeaders, char delimiter, char quote, char escape, char comment, bool trimSpaces, int bufferSize)
 		{
-#if DEBUG && !WINDOWS_8 && !UWP
+#if DEBUG
 			_allocStack = new System.Diagnostics.StackTrace();
 #endif
 
@@ -1933,7 +1933,7 @@ namespace FlatRedBall.IO.Csv
 
 		#region IDisposable members
 
-#if DEBUG && !XBOX360 && !WINDOWS_8
+#if DEBUG
 		/// <summary>
 		/// Contains the stack when the object was allocated.
 		/// </summary>
@@ -2071,7 +2071,7 @@ namespace FlatRedBall.IO.Csv
 		/// </summary>
 		~CsvReader()
 		{
-#if DEBUG && !XBOX360 && !WINDOWS_8
+#if DEBUG
 			Debug.WriteLine("FinalizableObject was not disposed" + _allocStack.ToString());
 #endif
 

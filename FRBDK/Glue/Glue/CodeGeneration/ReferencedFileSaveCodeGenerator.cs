@@ -833,7 +833,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 if(shouldAddExtensionOnNonXnaPlatforms)
                 {
-                    codeBlock.Line("#if IOS || WINDOWS_8 || FNA");
+                    codeBlock.Line("#if IOS || FNA");
 
                     codeBlock.Line(
                         string.Format(formattableLine,

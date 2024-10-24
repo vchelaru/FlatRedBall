@@ -28,13 +28,8 @@ namespace FlatRedBall.Instructions
         #region Methods
         public StaticMethodInstruction(Type type, string methodToCall, object[] arguments, double timeToExecute)
         {
-#if WINDOWS_8
-            mMethodInfo =
-                type.GetTypeInfo().GetDeclaredMethod(methodToCall);
-#else
             mMethodInfo =
                 type.GetMethod(methodToCall);
-#endif
 
             mArguments = arguments;
 

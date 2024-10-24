@@ -221,16 +221,12 @@ namespace FlatRedBall.Performance.Measurement
 
         public void Save(string fileName)
         {
-#if XBOX360 || WINDOWS_8
-            FileManager.XmlSerialize(this, fileName); 
-#else
 			// This doesn't use FileManager.XmlSerialize because FileManager.XmlSerialize
 			// requires files to be saved to the user's folder on platforms like Android. Sections
 			// are saved for diagnostic reasons so their save location should not be restricted.
 			string outputText;
 			FlatRedBall.IO.FileManager.XmlSerialize(typeof(FlatRedBall.Performance.Measurement.Section), this, out outputText);
 			System.IO.File.WriteAllText(fileName, outputText);
-#endif
         }
 
         public override string ToString()
@@ -294,20 +290,8 @@ namespace FlatRedBall.Performance.Measurement
 
             string compressed = Compress(body);
 
-#if WINDOWS_PHONE
-            
-            Microsoft.Phone.Tasks.EmailComposeTask task = new Microsoft.Phone.Tasks.EmailComposeTask
-                                            {
-                                                Body = compressed,
-                                                Cc = "",
-                                                Subject = "Performance measurements",
-                                                To = address
-                                            };
-                task.Show();
-#else
 
             FileManager.SaveText(compressed, "Compressed.txt");
-#endif
 
         }
 

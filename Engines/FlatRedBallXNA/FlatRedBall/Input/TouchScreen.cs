@@ -91,7 +91,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-#if WINDOWS_PHONE || ANDROID || WINDOWS_8 || IOS
+#if ANDROID || IOS
                 return mCurrentFrameAverageTouchPoints;
 
 #else
@@ -104,7 +104,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-#if WINDOWS_PHONE || ANDROID || WINDOWS_8 || IOS
+#if ANDROID || IOS
                 if (CurrentNumberOfTouches != mLastFrameNumberOfTouches)
                 {
                     return new Point();

@@ -142,11 +142,7 @@ namespace FlatRedBall.Instructions.Reflection
         public override bool IsMemberValueEqual<U>(U object1, U object2)
         {
             Type type = typeof(U);
-#if WINDOWS_8
-            PropertyInfo propertyInfo = type.GetRuntimeProperty(MemberName);
-#else
             PropertyInfo propertyInfo = type.GetProperty(MemberName);
-#endif
 
             if (propertyInfo != null)
             {

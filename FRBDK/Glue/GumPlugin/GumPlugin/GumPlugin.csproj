@@ -55,7 +55,6 @@
     <Compile Remove="Embedded\GumCollidableExtensions.cs" />
     <Compile Remove="Embedded\GumIdb.cs" />
     <Compile Remove="Embedded\GumToFrbShapeRelationship.cs" />
-    <Compile Remove="Embedded\PlatformCompatability.cs" />
     <Compile Remove="Embedded\PositionedObjectGueWrapper.cs" />
     <Compile Remove="Embedded\SystemManagers.FlatRedBall.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
@@ -362,7 +361,6 @@
     <EmbeddedResource Include="Embedded\GumDefaults2\UISpriteSheet.png" />
     <EmbeddedResource Include="Embedded\GumIdb.cs" />
     <EmbeddedResource Include="Embedded\GumToFrbShapeRelationship.cs" />
-    <EmbeddedResource Include="Embedded\PlatformCompatability.cs" />
     <EmbeddedResource Include="Embedded\PositionedObjectGueWrapper.cs" />
     <EmbeddedResource Include="Embedded\SystemManagers.FlatRedBall.cs" />
   </ItemGroup>

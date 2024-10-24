@@ -90,13 +90,8 @@ namespace FlatRedBall.Instructions.Reflection
                 Type type = typeof(ObjectType);
                 
 
-#if WINDOWS_8
-                mPropertyInfo = type.GetRuntimeProperty(mMember);
-                mFieldInfo = type.GetRuntimeField(mMember);
-#else
                 mPropertyInfo = type.GetProperty(mMember);
                 mFieldInfo = type.GetField(mMember);
-#endif
             }
         }
 

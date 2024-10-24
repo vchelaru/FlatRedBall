@@ -365,7 +365,6 @@ namespace FlatRedBall.IO.Csv
 
         private static void GetSerializableFieldsAndTypes(Type itemType, out List<FieldInfo> fieldList, out List<PropertyInfo> propertyList)
         {
-#if !WINDOWS_8 && !UWP
             FieldInfo[] fields = itemType.GetFields();
             PropertyInfo[] properties = itemType.GetProperties();
 
@@ -397,9 +396,6 @@ namespace FlatRedBall.IO.Csv
                     }
                 }
             }
-#else
-            throw new NotImplementedException();       
-#endif
         }
 
         private static string ValueAsCsvFriendlyString(object value, Type type)
@@ -615,11 +611,8 @@ namespace FlatRedBall.IO.Csv
         {
             #region If primitive or string
 
-#if WINDOWS_8 || UWP
-            bool isPrimitive = typeOfElement.IsPrimitive();
-#else
             bool isPrimitive = typeOfElement.IsPrimitive ;
-#endif
+
             if (isPrimitive || typeOfElement == typeof(string))
             {
                 if (typeOfElement == typeof(string))

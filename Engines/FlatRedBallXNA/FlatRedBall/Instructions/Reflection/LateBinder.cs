@@ -1,4 +1,4 @@
-#if WINDOWS_8 || IOS || ANDROID
+#if IOS || ANDROID
 #define NO_CODE_EMIT
 #endif
 
@@ -318,11 +318,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-#if WINDOWS_8 || UWP
-                if (mType.GetField(name) != null)
-#else
                 if (mType.GetField(name, mGetFieldBindingFlags) != null)
-#endif
                 {
                     mFieldsSet.Add(name);
                     result = GetField(target, name);
@@ -361,11 +357,7 @@ namespace FlatRedBall.Instructions.Reflection
             {
                 try
                 {
-    #if WINDOWS_8 || UWP
-                    if (mType.GetField(name) != null)
-    #else
                     if (mType.GetField(name, mGetFieldBindingFlags) != null)
-    #endif
                     {
                         mFieldsSet.Add(name);
 
@@ -512,9 +504,6 @@ namespace FlatRedBall.Instructions.Reflection
                 else
                 {
 
-#if WINDOWS_8
-                    fieldInfo.SetValue(target, value);
-#else
                     // I don't know why we branch here....Can we not call SetValue on public values?
                     if (!fieldInfo.IsPublic)
                     {
@@ -525,17 +514,13 @@ namespace FlatRedBall.Instructions.Reflection
                         object[] args = { value };
                         mType.InvokeMember(propertyName, BindingFlags.SetField, null, target, args);
                     }
-#endif
-
                 }
             }
 #endif
         }
 
-#if !UWP
         static BindingFlags mGetFieldBindingFlags = BindingFlags.GetField | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | 
             BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
-#endif
 
         public object GetField(object target, string fieldName)
         {
@@ -543,11 +528,7 @@ namespace FlatRedBall.Instructions.Reflection
 
             if (target == null)
             {
-#if UWP
-                FieldInfo fieldInfo = mType.GetField(fieldName);
-#else
                 FieldInfo fieldInfo = mType.GetField(fieldName, mGetFieldBindingFlags);
-#endif
                 return fieldInfo.GetValue(null);
 
             }
@@ -672,13 +653,10 @@ namespace FlatRedBall.Instructions.Reflection
         {
             if (!mPropertySet.ContainsKey(propertyName))
             {
-#if WINDOWS_8 || UWP
-                PropertyInfo propertyInfo = mType.GetProperty(propertyName);
-#else
                 BindingFlags bindingFlags =
                     BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.Static;
                 PropertyInfo propertyInfo = mType.GetProperty(propertyName, bindingFlags);
-#endif
+
                 if (propertyInfo != null && propertyInfo.CanWrite)
                 {
                     var setInfo = new SetPropertyInfo();
@@ -690,20 +668,15 @@ namespace FlatRedBall.Instructions.Reflection
             }
         }
 
-#if !WINDOWS_8 && !UWP
         static BindingFlags mGetterBindingFlags = 
             BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.FlattenHierarchy;                
-#endif
 
         private void ValidateGetter(ref string propertyName)
         {
             if (!mPropertyGet.ContainsKey(propertyName))
             {
                 Type type = mType;
-#if WINDOWS_8 || UWP
-                PropertyInfo propertyInfo = mType.GetProperty(propertyName);
-#else
                 PropertyInfo propertyInfo = mType.GetProperty(propertyName, mGetterBindingFlags);
 
                 var baseType = mType.BaseType;
@@ -719,7 +692,6 @@ namespace FlatRedBall.Instructions.Reflection
                         baseType = baseType.BaseType;
                     }
                 }
-#endif
                 if (propertyInfo != null)
                 {
 

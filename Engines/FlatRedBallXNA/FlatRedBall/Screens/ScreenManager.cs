@@ -380,13 +380,9 @@ namespace FlatRedBall.Screens
         public static void Start(Type screenToStartWithType)
         {
             startScreen = screenToStartWithType;
-#if WINDOWS_8 || UWP
-            MainAssembly =
-                screenToStartWithType.GetTypeInfo().Assembly;
-#else
             MainAssembly =
                 screenToStartWithType.Assembly;
-#endif
+
             string screenToStartWith = screenToStartWithType.FullName;
 
             if (mCurrentScreen != null)

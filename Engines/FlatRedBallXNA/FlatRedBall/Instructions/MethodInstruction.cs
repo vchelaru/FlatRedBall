@@ -55,13 +55,9 @@ namespace FlatRedBall.Instructions
 
             try
             {
-#if WINDOWS_8
-                mMethodInfo = typeof(T).GetTypeInfo().GetDeclaredMethod(methodToCall);
-#else
                 mMethodInfo = typeof(T).GetMethod(methodToCall,
                     System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic |
                     System.Reflection.BindingFlags.Public);
-#endif
             }
             catch (AmbiguousMatchException e)
             {

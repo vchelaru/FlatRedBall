@@ -442,15 +442,10 @@ namespace FlatRedBall.Glue.Parsing
 
             currentBlock._();
 
-            currentBlock.Line("#if WINDOWS_8");
-            currentBlock.Line("System.Threading.Tasks.Task.Run((System.Action)AsyncInitialize);");
-            currentBlock.Line("#else");
-
             currentBlock.Line("ThreadStart threadStart = new ThreadStart(AsyncInitialize);");
             currentBlock.Line("Thread thread = new Thread(threadStart);");
             currentBlock.Line("thread.Name = \"GlobalContent Async load\";");
             currentBlock.Line("thread.Start();");
-            currentBlock.Line("#endif");
             currentBlock.Line("#endif");
         }
 

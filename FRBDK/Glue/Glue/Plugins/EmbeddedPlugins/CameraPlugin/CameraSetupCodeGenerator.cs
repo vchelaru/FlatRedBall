@@ -1039,7 +1039,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // closes the #if platform section
                 methodContents.Line("#endif");
 
-                methodContents.Line("#if WINDOWS_PHONE || WINDOWS_8 || IOS || ANDROID");
+                methodContents.Line("#if IOS || ANDROID");
 
 
                 var ifBlock = methodContents.If("height > width");
