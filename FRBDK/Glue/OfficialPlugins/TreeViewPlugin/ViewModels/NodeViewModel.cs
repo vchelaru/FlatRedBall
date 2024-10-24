@@ -107,7 +107,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         
         // Not sure if we should have the setter be private or if it's okay to assign this. I think 
         // the amount that interacts with the NodeViewModel is very limited so for now we can leave it as public
-        public NodeViewModel Parent { get; set; }
+        public NodeViewModel? Parent { get; set; }
 
         ITreeNode ITreeNode.Parent => this.Parent;
 
@@ -272,7 +272,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         }
 
 
-        public NodeViewModel(TreeNodeType treeNodeType, NodeViewModel parent = null)
+        public NodeViewModel(TreeNodeType treeNodeType, NodeViewModel? parent = null)
         {
             this.TreeNodeType = treeNodeType;
             Visibility = Visibility.Visible;
