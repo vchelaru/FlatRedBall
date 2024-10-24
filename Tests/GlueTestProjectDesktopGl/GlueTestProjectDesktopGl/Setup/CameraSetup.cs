@@ -174,17 +174,6 @@ namespace GlueTestProject
             }
             #elif IOS || ANDROID
             FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight, isFullscreen:Data.IsFullScreen);
-            #elif UWP
-            if (Data.IsFullScreen)
-            {
-                FlatRedBall.FlatRedBallServices.GraphicsOptions.SetFullScreen(Data.ResolutionWidth, Data.ResolutionHeight);
-            }
-            else
-            {
-                FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(Data.ResolutionWidth, Data.ResolutionHeight);
-                var newWindowSize = new Windows.Foundation.Size(Data.ResolutionWidth, Data.ResolutionHeight);
-                Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TryResizeView(newWindowSize); 
-            }
             #endif
         }
         private static void HandleResolutionChange (object sender, System.EventArgs args) 

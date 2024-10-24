@@ -41,13 +41,8 @@ namespace FlatRedBall.TileEntities
             {
                 if (typesInThisAssembly == null)
                 {
-#if WINDOWS_8 || UWP
-                var assembly = typeof(TileEntityInstantiator).GetTypeInfo().Assembly;
-                typesInThisAssembly = assembly.DefinedTypes.Select(item=>item.AsType()).ToArray();
-#else
                     var assembly = Assembly.GetExecutingAssembly();
                     typesInThisAssembly = assembly.GetTypes();
-#endif
                 }
 
                 return typesInThisAssembly;
