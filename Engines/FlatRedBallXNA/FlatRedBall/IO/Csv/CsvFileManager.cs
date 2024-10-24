@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using System.Reflection;
-#if FRB_XNA
 
 using FlatRedBall.Instructions.Reflection;
-#endif
 using System.IO;
 
-#if FRB_XNA
 using Microsoft.Xna.Framework;
-#endif
 
 namespace FlatRedBall.IO.Csv
 {
@@ -108,7 +104,6 @@ namespace FlatRedBall.IO.Csv
                 FileManager.Close(stream);
                 stream.Dispose();
             }
-#if FRB_XNA
             else
             {
                 if (extension != String.Empty)
@@ -121,7 +116,6 @@ namespace FlatRedBall.IO.Csv
                 }
                 runtimeCsvRepresentation = FlatRedBallServices.Load<T>(fileName);
             }
-#endif
             return runtimeCsvRepresentation;
         }
 

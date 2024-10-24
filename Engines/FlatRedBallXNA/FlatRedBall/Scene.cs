@@ -33,10 +33,7 @@ namespace FlatRedBall
     }
 
 
-    public class Scene : IEquatable<Scene>
-#if FRB_XNA
-        , IMouseOver
-#endif
+    public class Scene : IEquatable<Scene>, IMouseOver
     {
         #region Fields
 
@@ -702,7 +699,6 @@ namespace FlatRedBall
 
         #endregion
 
-#if FRB_XNA
         #region IMouseOver
         bool IMouseOver.IsMouseOver(Cursor cursor)
         {
@@ -714,6 +710,5 @@ namespace FlatRedBall
             return cursor.IsOn3D(this, layer);
         }
         #endregion
-#endif
     }
 }

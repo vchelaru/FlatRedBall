@@ -17,13 +17,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FlatRedBall.ManagedSpriteGroups
 {
-    #region XML Docs
     /// <summary>
     /// Delegate for methods which can be assigned to the SpriteFrame
     /// for every-frame custom logic.
     /// </summary>
     /// <param name="spriteFrame">The SpriteFrame on which the logic should execute.</param>
-    #endregion
     public delegate void SpriteFrameCustomBehavior(SpriteFrame spriteFrame);
 
     #region XML Docs

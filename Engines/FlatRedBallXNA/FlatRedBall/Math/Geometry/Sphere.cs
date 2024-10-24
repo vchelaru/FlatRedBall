@@ -15,10 +15,7 @@ using FlatRedBall.Graphics;
 
 namespace FlatRedBall.Math.Geometry
 {
-    public class Sphere : PositionedObject, IEquatable<Sphere>  //, IScalable3D
-#if FRB_XNA
-, IMouseOver
-#endif
+    public class Sphere : PositionedObject, IEquatable<Sphere>, IMouseOver
     {
         #region Fields
 
@@ -127,7 +124,6 @@ namespace FlatRedBall.Math.Geometry
             Radius += (float)(mRadiusVelocity * secondDifference);
         }
 
-#if FRB_XNA
         /// <summary>
         /// Constructs a BoundingSphere instance form this.
         /// </summary>
@@ -140,8 +136,6 @@ namespace FlatRedBall.Math.Geometry
 
             return boundingSphere;
         }
-
-#endif
 
         #region CollideAgainst
 
@@ -519,7 +513,6 @@ namespace FlatRedBall.Math.Geometry
         #endregion
 
         #region IMouseOver Implementation
-#if FRB_XNA
         /// <summary>
         /// Returns whether the argument cursor is over this instance.
         /// </summary>
@@ -540,7 +533,6 @@ namespace FlatRedBall.Math.Geometry
         {
             return cursor.IsOn3D(this, layer);
         }
-#endif
         #endregion
     }
 }

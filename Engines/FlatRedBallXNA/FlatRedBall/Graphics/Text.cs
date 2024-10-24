@@ -1357,11 +1357,11 @@ namespace FlatRedBall.Graphics
 
                 
 
-#if (XNA4 && !MONOGAME)
+#if !MONOGAME
                 // Colors in XNA4 are premult
                 //Color color = new Color(new Vector4(mRed * mAlpha, mGreen * mAlpha, mBlue * mAlpha, mAlpha));
                 Color color = Color.FromNonPremultiplied((int)(mRed * 255), (int)(mGreen * 255), (int)(mBlue * 255), (int)(mAlpha * 255));
-#elif MONOGAME
+#else
             // Seems like the color values are used no matter what in monogame, 
             // so we need to simply use the Alpha values if we're using ColorOperation.Texture or ColorOperation.None
             Color color;

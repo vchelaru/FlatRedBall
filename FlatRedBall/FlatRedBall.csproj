@@ -4,7 +4,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;netstandard2.0;net6.0;net6.0-windows</TargetFrameworks>
     <MonoGameVersion>3.8.1.303</MonoGameVersion>
-    <DefineConstants>FRB_XNA;XNA4;</DefineConstants>
+    <DefineConstants>XNA4;</DefineConstants>
   </PropertyGroup>
 
   

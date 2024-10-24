@@ -546,11 +546,7 @@ namespace FlatRedBall.ManagedSpriteGroups
             bool wasCameraOrthogonal = mCamera.Orthogonal;
 
             mCamera.Orthogonal = false;
-#if FRB_XNA
             mCamera.Z = float.PositiveInfinity;
-#else
-            mCamera.Z = float.NegativeInfinity;
-#endif
 
             if (mVisibleSprites.Count == 0)
                 PopulateGrid();

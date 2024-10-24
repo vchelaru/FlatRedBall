@@ -2973,14 +2973,14 @@ namespace FlatRedBall
             //Monitor.Enter(mAutomaticallyUpdatedSprites);
             // We are phasing this out:
 		#if !ANDROID
-            for (int i = mAutomaticallyUpdatedSprites.Count - 1; i > -1; i--)
-            {
-                if (i < mAutomaticallyUpdatedSprites.Count)
-                {
-                    Sprite s = mAutomaticallyUpdatedSprites[i];
-                    s.OnCustomBehavior();
-                }
-            }
+            //for (int i = mAutomaticallyUpdatedSprites.Count - 1; i > -1; i--)
+            //{
+            //    if (i < mAutomaticallyUpdatedSprites.Count)
+            //    {
+            //        Sprite s = mAutomaticallyUpdatedSprites[i];
+            //        s.OnCustomBehavior();
+            //    }
+            //}
 
 
 #endif

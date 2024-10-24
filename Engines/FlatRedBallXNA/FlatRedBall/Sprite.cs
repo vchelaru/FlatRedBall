@@ -37,7 +37,6 @@ namespace FlatRedBall
     /// custom logic or when a Sprite is removed.
     /// </summary>
     /// <remarks>
-    /// <seealso cref="FlatRedBall.Sprite.CustomBehavior"/>
     /// <seealso cref="FlatRedBall.Sprite.Remove"/>
     /// </remarks>
     /// <param name="sprite">The Sprite on which the logic should execute.</param>
@@ -53,7 +52,7 @@ namespace FlatRedBall
     /// </remarks>
     public partial class Sprite : PositionedObject, IAnimationChainAnimatable, IScalable, IVisible, IAnimatable, IColorable, ICursorSelectable,
         ITexturable
-#if FRB_XNA && !MONOGAME
+#if !MONOGAME
         , IMouseOver
 #endif
     {
@@ -1306,7 +1305,7 @@ namespace FlatRedBall
         #region Events
 
         // Vic says - I tried removing this but it is used by particles so we'd need a new list for particles to be removed when out of screen.
-        [Obsolete("Do not use this!  This will go away.  Use the Entity pattern instead")]
+        [Obsolete("Do not use this!  This will go away.  Use the Entity pattern instead", error:true)]
         public SpriteCustomBehavior CustomBehavior;
 
         public event SpriteCustomBehavior Remove;
@@ -1389,10 +1388,11 @@ namespace FlatRedBall
 
         #region Internal Methods
 
+        [Obsolete("This is no longer supported")]
         internal void OnCustomBehavior()
         {
-            if (CustomBehavior != null)
-                CustomBehavior(this);
+            //if (CustomBehavior != null)
+            //    CustomBehavior(this);
         }
 
         internal void OnRemove()
@@ -1682,27 +1682,18 @@ namespace FlatRedBall
                 sprite.mAnimationChains.Add(ac);
             }
 
-            if (CustomBehavior != null)
-            {
-#if XNA4
-                throw new NotSupportedException("Sprite custom behavior is not supported in XNA 4");
-#else
-                sprite.CustomBehavior = CustomBehavior.Clone() as SpriteCustomBehavior;
-#endif
-            }
-
             return sprite;
         }
 
-        [Obsolete("Do not use this!  This will go away.  Use the Entity pattern instead", error:true)]
-        public void CopyCustomBehaviorFrom(Sprite spriteToCopyFrom)
-        {
-            if (spriteToCopyFrom.CustomBehavior != null)
-            {
-                this.CustomBehavior = null;
-                CustomBehavior += spriteToCopyFrom.CustomBehavior;
-            }
-        }
+        //[Obsolete("Do not use this!  This will go away.  Use the Entity pattern instead", error:true)]
+        //public void CopyCustomBehaviorFrom(Sprite spriteToCopyFrom)
+        //{
+        //    if (spriteToCopyFrom.CustomBehavior != null)
+        //    {
+        //        this.CustomBehavior = null;
+        //        CustomBehavior += spriteToCopyFrom.CustomBehavior;
+        //    }
+        //}
 
 
 
@@ -1733,12 +1724,12 @@ namespace FlatRedBall
             mVertices[3].TextureCoordinate.Y = 1;
             mVertices[3].Scale = new Vector2(-1, -1);
 
-            CustomBehavior = null;
+            //CustomBehavior = null;
         }
 
 
 
-#if FRB_XNA && !MONOGAME
+#if !MONOGAME
         #region IMouseOver
         bool IMouseOver.IsMouseOver(Cursor cursor)
         {

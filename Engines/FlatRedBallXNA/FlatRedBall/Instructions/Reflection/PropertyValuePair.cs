@@ -296,7 +296,7 @@ namespace FlatRedBall.Instructions.Reflection
                     }
 
                     #region uint
-#if FRB_XNA
+
                     if (desiredType == typeof(uint).FullName)
                     {
                         if (indexOfDecimal == -1)
@@ -309,11 +309,8 @@ namespace FlatRedBall.Instructions.Reflection
                             return (uint)(Math.MathFunctions.RoundToInt(float.Parse(value, CultureInfo.InvariantCulture)));
                         }
                     }
-#endif
-#endregion
-
+                    #endregion
                     #region byte
-#if FRB_XNA
 
                     if (desiredType == typeof(byte).FullName)
                     {
@@ -327,8 +324,8 @@ namespace FlatRedBall.Instructions.Reflection
                             return (byte)(Math.MathFunctions.RoundToInt(float.Parse(value, CultureInfo.InvariantCulture)));
                         }
                     }
-#endif
-#endregion
+
+                    #endregion
 
                     #region long
                     if (desiredType == typeof(long).FullName)
@@ -338,13 +335,11 @@ namespace FlatRedBall.Instructions.Reflection
                             return long.Parse(value);
 
                         }
-#if FRB_XNA
 
                         else
                         {
                             return (long)(Math.MathFunctions.RoundToInt(float.Parse(value, CultureInfo.InvariantCulture)));
                         }
-#endif
                     }
 
 #endregion
@@ -358,13 +353,11 @@ namespace FlatRedBall.Instructions.Reflection
                             return int.Parse(value);
 
                         }
-#if FRB_XNA
 
                         else
                         {
                             return (int)(Math.MathFunctions.RoundToInt(float.Parse(value, CultureInfo.InvariantCulture)));
                         }
-#endif
                     }
 #endregion
                 }
@@ -696,7 +689,6 @@ namespace FlatRedBall.Instructions.Reflection
 #endregion
 
                 #region Color
-#if FRB_XNA
 
                 else if (desiredType == typeof(Color).FullName)
                 {
@@ -719,7 +711,6 @@ namespace FlatRedBall.Instructions.Reflection
                     handled = true;
                 }
 
-#endif
                 #endregion
 
                 #region Check Unqualified types which are not enums
@@ -938,13 +929,11 @@ namespace FlatRedBall.Instructions.Reflection
             // This may be run from a tool.  If so
             // then there is no Game class, so we shouldn't
             // try to use it.
-#if FRB_XNA
 
             if (FlatRedBallServices.Game != null)
             {
                 foundType = TryToGetTypeFromAssembly(typeAfterNewString, FlatRedBallServices.Game.GetType().Assembly);
             }
-#endif
             if (foundType == null)
             {
                 foreach (var assembly in AdditionalAssemblies)
@@ -967,13 +956,11 @@ namespace FlatRedBall.Instructions.Reflection
                 foundType = TryToGetTypeFromAssembly(typeAfterNewString, Assembly.GetEntryAssembly());
 #endif
             }
-#if FRB_XNA
 
             if(foundType == null)
             {
                 foundType = TryToGetTypeFromAssembly(typeAfterNewString, typeof(Vector3).Assembly);
             }
-#endif
 
             if (foundType == null)
             {

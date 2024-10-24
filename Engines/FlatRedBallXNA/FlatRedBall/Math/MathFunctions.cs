@@ -483,7 +483,6 @@ namespace FlatRedBall.Math
 
                 if (layerCameraSettings.ExtraRotationZ != 0)
                 {
-#if FRB_XNA
                     Matrix rotationMatrix = Matrix.CreateFromAxisAngle(camera.RotationMatrix.Backward, layerCameraSettings.ExtraRotationZ);
 
                     ray.Position -= camera.Position;
@@ -491,7 +490,6 @@ namespace FlatRedBall.Math
                     ray.Position = Vector3.Transform(ray.Position, rotationMatrix);
                     ray.Direction = Vector3.Transform(ray.Direction, rotationMatrix);
                     ray.Position += camera.Position;
-#endif
                 }
 
 

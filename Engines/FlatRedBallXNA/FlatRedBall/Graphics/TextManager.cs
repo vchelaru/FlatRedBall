@@ -119,7 +119,7 @@ namespace FlatRedBall.Graphics
         public static void Initialize(GraphicsDevice graphicsDevice)
         {
 
-#if XNA4 && !UNIT_TESTS
+#if !UNIT_TESTS
             //UseNativeTextRendering = true;
             mBasicEffect = new BasicEffect(graphicsDevice);
 

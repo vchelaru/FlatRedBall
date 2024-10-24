@@ -666,7 +666,6 @@ namespace FlatRedBall
                     mRelativeRotationZ += MathHelper.TwoPi;
 
 #if DEBUG
-#if FRB_XNA
                 if (FlatRedBall.Math.MathFunctions.IsOrthonormal(ref mRotationMatrix) == false)
                 {
                     string message = "Matrix is not orthonormal.  ";
@@ -701,7 +700,6 @@ namespace FlatRedBall
 
                     throw new ArgumentException(message);
                 }
-#endif
 #endif
 
 

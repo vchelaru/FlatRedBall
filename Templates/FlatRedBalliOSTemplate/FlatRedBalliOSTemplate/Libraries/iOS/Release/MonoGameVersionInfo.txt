@@ -1,1 +1,0 @@
-This is a version of MonoGame custom built in October 2015 to address some iOS audio issues.

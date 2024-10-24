@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <DefineConstants>FNA;XNA4;WEB;BLAZORGL</DefineConstants>
+    <DefineConstants>FNA;WEB;BLAZORGL</DefineConstants>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591</NoWarn>
 

@@ -217,8 +217,6 @@ namespace FlatRedBall
                 return mGame;
             }
         }
-#if FRB_XNA
-
 
         public static IntPtr WindowHandle
         {
@@ -229,8 +227,6 @@ namespace FlatRedBall
             }
         }
 
-
-#endif
         public static GraphicsOptions GraphicsOptions
         {
             get { return mGraphicsOptions; }
@@ -1553,7 +1549,6 @@ namespace FlatRedBall
 
 
 
-#if FRB_XNA
 
         #region Debugging and Profiling
 
@@ -1630,7 +1625,6 @@ namespace FlatRedBall
         }
 
         #endregion
-#endif
 
 #if PROFILE
 

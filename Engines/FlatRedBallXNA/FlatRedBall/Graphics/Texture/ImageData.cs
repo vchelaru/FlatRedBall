@@ -18,12 +18,6 @@ namespace FlatRedBall.Graphics.Texture
         private int width;
         private int height;
 
-#if FRB_XNA
-        // default to color, but could be something else when calling
-        // This isn't use dI don't think...
-        //SurfaceFormat surfaceFormat = SurfaceFormat.Color; 
-#endif
-
         // if SurfaceFormat.Color, use these
         private Color[] mData;
         static Color[] mStaticData = new Color[128 * 128];
@@ -107,27 +101,9 @@ namespace FlatRedBall.Graphics.Texture
 
             ImageData imageData = null;
             // Might need to make this FRB MDX as well.
-#if FRB_XNA 
 
             switch (texture2D.Format)
             {
-#if !XNA4 && !MONOGAME
-                case SurfaceFormat.Bgr32:
-                    {
-                        Color[] data = new Color[texture2D.Width * texture2D.Height];
-                        texture2D.GetData<Color>(data);
-
-                        // BRG doesn't have alpha, so we'll assume an alpha of 1:
-                        for (int i = 0; i < data.Length; i++)
-                        {
-                            data[i].A = 255;
-                        }
-
-                        imageData = new ImageData(
-                            texture2D.Width, texture2D.Height, data);
-                    }
-                    break;
-#endif
                 case SurfaceFormat.Color:
                     {
                         Color[] data = new Color[texture2D.Width * texture2D.Height];
@@ -152,7 +128,6 @@ namespace FlatRedBall.Graphics.Texture
                 //break;
             }
 
-#endif
             return imageData;
         }
 
@@ -184,15 +159,10 @@ namespace FlatRedBall.Graphics.Texture
                         for (int y = 0; y < height; y++)
                         {
                             baseColor = GetPixelColor(x, y);
-#if XNA4
                             baseColor.R = (byte)(System.Math.Min((baseColor.R + appliedColor.R), 255) * baseColor.A / 255);
                             baseColor.G = (byte)(System.Math.Min((baseColor.G + appliedColor.G), 255) * baseColor.A / 255);
                             baseColor.B = (byte)(System.Math.Min((baseColor.B + appliedColor.B), 255) * baseColor.A / 255);
-#else
-                            baseColor.R = (byte)System.Math.Min((baseColor.R + appliedColor.R), 255);
-                            baseColor.G = (byte)System.Math.Min((baseColor.G + appliedColor.G), 255);
-                            baseColor.B = (byte)System.Math.Min((baseColor.B + appliedColor.B), 255);
-#endif
+
                             SetPixel(x, y, baseColor);
                         }
                     }
@@ -583,7 +553,7 @@ namespace FlatRedBall.Graphics.Texture
 
                 if (!Renderer.Graphics.GraphicsDevice.IsDisposed)
                 {
-#if XNA4 && !MONOGAME
+#if !MONOGAME
                     textureToFill.SetData<Color>(this.mData, 0, textureToFill.Width * textureToFill.Height);
 #else
                 textureToFill.SetData<Color>(this.mData);

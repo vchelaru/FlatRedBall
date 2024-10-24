@@ -307,7 +307,6 @@ namespace FlatRedBall.Math.Geometry
 
         }
 
-#if FRB_XNA
         public bool CollideAgainst(AxisAlignedCube axisAlignedCube)
         {
             BoundingBox boundingBox = axisAlignedCube.AsBoundingBox();
@@ -317,16 +316,13 @@ namespace FlatRedBall.Math.Geometry
 
             return result.HasValue && result.Value < this.GetLength();
         }
-#endif
 
 
-        #region XML Docs
         /// <summary>
         /// Returns whether this instance collides with the argument AxisAlignedRectangle.
         /// </summary>
         /// <param name="rectangle">The AxisAlignedRectangle to test collision against.</param>
         /// <returns>Whether a collision has occurred.</returns>
-        #endregion
         public bool CollideAgainst(AxisAlignedRectangle rectangle)
         {
             UpdateDependencies(TimeManager.CurrentTime);

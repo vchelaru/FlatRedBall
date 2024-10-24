@@ -10,10 +10,7 @@ using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.Math.Geometry
 {
-    public class AxisAlignedCube : PositionedObject, IScalable3D, IScalable, IEquatable<AxisAlignedCube>
-#if FRB_XNA
-, IMouseOver
-#endif
+    public class AxisAlignedCube : PositionedObject, IScalable3D, IScalable, IEquatable<AxisAlignedCube>, IMouseOver
     {
         #region Fields
 
@@ -175,7 +172,6 @@ namespace FlatRedBall.Math.Geometry
             ScaleZ += (float)(mScaleZVelocity * secondDifference); // to force recalculation of radius
         }
 
-#if FRB_XNA
         public BoundingBox AsBoundingBox()
         {
             BoundingBox boundingBox = new BoundingBox(
@@ -184,7 +180,6 @@ namespace FlatRedBall.Math.Geometry
 
             return boundingBox;
         }
-#endif
 
         #region CollideAgainst
         public bool CollideAgainst(AxisAlignedCube cube)
@@ -355,7 +350,6 @@ namespace FlatRedBall.Math.Geometry
         #endregion
 
         #region IMouseOver Implementation
-#if FRB_XNA
         public bool IsMouseOver(Cursor cursor)
         {
             return cursor.IsOn3D(this);
@@ -365,7 +359,6 @@ namespace FlatRedBall.Math.Geometry
         {
             return cursor.IsOn3D(this, layer);
         }
-#endif
         #endregion
     }
 }

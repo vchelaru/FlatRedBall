@@ -123,7 +123,6 @@ namespace FlatRedBall.Glue.Parsing
             if (mAddedDefines == null)
             {
                 mAddedDefines = new List<string>();
-                mAddedDefines.Add("FRB_XNA");
             }
 
             ParseHeader(classContents);
@@ -1436,7 +1435,6 @@ namespace FlatRedBall.Glue.Parsing
             if (mAddedDefines == null)
             {
                 mAddedDefines = new List<string>();
-                mAddedDefines.Add("FRB_XNA");
             }
 
             StringBuilder returnStringBuilder = new StringBuilder();

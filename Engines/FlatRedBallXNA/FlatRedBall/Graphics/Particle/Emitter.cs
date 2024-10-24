@@ -74,6 +74,7 @@ namespace FlatRedBall.Graphics.Particle
             /// <remarks>
             /// This uses the camera's IsSpriteInView method.
             /// </remarks>
+            [Obsolete]
             OutOfScreen,
             /// <summary>
             /// Particles will be removed when Alpha is 0
@@ -490,7 +491,7 @@ namespace FlatRedBall.Graphics.Particle
                         SpriteManager.mRemoveWhenAlphaIs0.Add(tempParticle);
                         break;
                     case (int)RemovalEventType.OutOfScreen:
-                        tempParticle.CustomBehavior += FlatRedBall.Utilities.CustomBehaviorFunctions.RemoveWhenOutsideOfScreen;
+                        //tempParticle.CustomBehavior += FlatRedBall.Utilities.CustomBehaviorFunctions.RemoveWhenOutsideOfScreen;
 
                         break;
                     case (int)RemovalEventType.Timed:
@@ -586,14 +587,6 @@ namespace FlatRedBall.Graphics.Particle
 
 
                 SetColorableProperties(tempParticle);
-
-
-                // this sets the CustomBehavior to null so be sure not to call this after
-                // setting any CustomBehavior.
-                // Update on March 7, 2011:  CustomBehaviors are falling
-                // out of style.  Particles no longer support them.
-                // tempParticle.CopyCustomBehaviorFrom(mParticleBlueprint);
-
             }
 
             #endregion

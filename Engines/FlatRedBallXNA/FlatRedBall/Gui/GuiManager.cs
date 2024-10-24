@@ -334,10 +334,6 @@ namespace FlatRedBall.Gui
 
             mDominantWindows = new List<IWindow>();
 
-#if !MONOGAME && !UNIT_TESTS && !XNA4
-            RenderingBasedInitializize();
-#endif
-
             BringsClickedWindowsToFront = true;
 
 

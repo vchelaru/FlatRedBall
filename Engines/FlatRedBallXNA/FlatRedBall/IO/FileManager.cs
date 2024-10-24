@@ -20,9 +20,7 @@ using System.Xml.Linq;
 using System.Linq;
 
 // FileManager is used by FRBDK Updater, so the #if is needed
-#if FRB_XNA
 using Microsoft.Xna.Framework;
-#endif
 
 #if USE_ISOLATED_STORAGE
 using System.IO.IsolatedStorage;

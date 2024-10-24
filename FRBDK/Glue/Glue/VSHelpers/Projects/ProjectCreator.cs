@@ -294,11 +294,6 @@ Additional Info:
 
             }
 
-            //string sasfd = ProjectManager.LibrariesPath;
-
-            // Check for other platforms before checking for FRB_XNA because those projects
-            // include FRB_XNA in them
-
             ProjectBase toReturn = null;
             message = null;
 

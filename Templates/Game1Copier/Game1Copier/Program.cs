@@ -31,10 +31,6 @@ namespace Game1Copier
                 Namespace = "FlatRedBallDesktopFnaTemplate"
             },
             new TemplateInformation {
-                DestinationGameFile = "FlatRedBallXna4Template/FlatRedBallXna4Template/FlatRedBallXna4Template/Game1.cs",
-                Namespace = "FlatRedBallXna4Template"
-            },
-            new TemplateInformation {
                 DestinationGameFile = "FlatRedBallAndroidMonoGameTemplate/FlatRedBallAndroidMonoGameTemplate/Game1.cs",
                 Namespace = "FlatRedBallAndroidMonoGameTemplate"
             },

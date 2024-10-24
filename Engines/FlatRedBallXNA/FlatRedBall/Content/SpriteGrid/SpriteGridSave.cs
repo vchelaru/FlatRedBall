@@ -43,7 +43,7 @@ namespace FlatRedBall.Content.SpriteGrid
     {
         #region Fields
 
-#if FRB_XNA && !MONODROID
+#if !MONODROID
         [ExternalInstance]
         [XmlIgnore]
         public Texture2D mTextureInstance;
@@ -253,7 +253,7 @@ namespace FlatRedBall.Content.SpriteGrid
 
             int yOn = 0;
 
-#if FRB_XNA && !MONODROID
+#if !MONODROID
             #region Set the base texture instance
 
             if (this.mTextureInstance != null)
@@ -503,11 +503,7 @@ namespace FlatRedBall.Content.SpriteGrid
             spriteGridSave.DisplayRegionGridSave = DisplayRegionGridSave.FromDisplayRegionGrid(
                 spriteGrid.DisplayRegionGrid);
 
-#if FRB_XNA
             spriteGridSave.Blueprint.Ordered = spriteGrid.OrderingMode == FlatRedBall.Graphics.OrderingMode.DistanceFromCamera;
-#else
-            spriteGridSave.Blueprint.Ordered = spriteGrid.Blueprint.mOrdered;
-#endif
             spriteGridSave.CreatesAutomaticallyUpdatedSprites = spriteGrid.CreatesAutomaticallyUpdatedSprites;
             spriteGridSave.CreatesParticleSprites = spriteGrid.CreatesParticleSprites;
             //spriteGridSave.DrawDefaultTile = spriteGrid.DrawDefaultTile;
