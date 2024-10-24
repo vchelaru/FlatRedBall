@@ -1021,18 +1021,6 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             ICodeBlock prop;
 
-            if (customVariableType == "Microsoft.Xna.Framework.Color")
-            {
-                prop = codeBlock.Property(customVariable.Name, Public: true,
-                                         Override: customVariable.DefinedByBase,
-                                         Virtual: (customVariable.SetByDerived && !customVariable.IsShared),
-                                         Type: "Microsoft.Xna.Framework.Graphics.Color");
-                prop.PreCodeLines.RemoveAt(1); // get rid of its opening bracket
-                prop.PostCodeLines.Clear();
-                prop.End();
-            }
-
-
             prop = codeBlock.Property(customVariable.Name, Public: true,
                                      Override: customVariable.DefinedByBase,
                                      Virtual: (customVariable.SetByDerived && !customVariable.IsShared),
