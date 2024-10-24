@@ -1695,6 +1695,11 @@
               <Name>SourceType</Name>
               <ValueAsInt>2</ValueAsInt>
             </PropertySave>
+            <PropertySave>
+              <Name>AssociateWithFactory</Name>
+              <ValueAsBool>true</ValueAsBool>
+              <Type>bool</Type>
+            </PropertySave>
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceFile />
@@ -1712,6 +1717,11 @@
               <Name>SourceType</Name>
               <ValueAsInt>2</ValueAsInt>
             </PropertySave>
+            <PropertySave>
+              <Name>AssociateWithFactory</Name>
+              <ValueAsBool>true</ValueAsBool>
+              <Type>bool</Type>
+            </PropertySave>
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
           <SourceClassGenericType>Entities\ChildFactoryEntity</SourceClassGenericType>
@@ -1726,6 +1736,11 @@
             <PropertySave>
               <Name>SourceType</Name>
               <ValueAsInt>2</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>AssociateWithFactory</Name>
+              <ValueAsBool>true</ValueAsBool>
+              <Type>bool</Type>
             </PropertySave>
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
@@ -5155,6 +5170,22 @@
           <Name>SecondsLasting</Name>
           <DefaultValue xsi:type="xsd:double">1.5</DefaultValue>
         </CustomVariable>
+        <CustomVariable>
+          <Properties>
+            <PropertySave>
+              <Name>Type</Name>
+              <ValueAsString>string</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+            <PropertySave>
+              <Name>Category</Name>
+              <ValueAsString>Layer</ValueAsString>
+              <Type>String</Type>
+            </PropertySave>
+          </Properties>
+          <Name>DefaultLayer</Name>
+          <Category>Layer</Category>
+        </CustomVariable>
       </CustomVariables>
       <NamedObjects>
         <NamedObjectSave>
@@ -5208,6 +5239,11 @@
             <PropertySave>
               <Name>SourceType</Name>
               <ValueAsInt>2</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>AssociateWithFactory</Name>
+              <ValueAsBool>true</ValueAsBool>
+              <Type>bool</Type>
             </PropertySave>
           </Properties>
           <SourceType>FlatRedBallType</SourceType>
@@ -22577,7 +22613,7 @@
   </CustomClasses>
   <ApplyToFixedResolutionPlatforms>false</ApplyToFixedResolutionPlatforms>
   <ExternallyBuiltFileDirectory>../../</ExternallyBuiltFileDirectory>
-  <FileVersion>2</FileVersion>
+  <FileVersion>3</FileVersion>
   <ScreenReferences />
   <EntityReferences />
   <Bookmarks />

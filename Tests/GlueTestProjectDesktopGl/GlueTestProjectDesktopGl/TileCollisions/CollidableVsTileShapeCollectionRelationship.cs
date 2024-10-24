@@ -2,6 +2,7 @@
 #define PreVersion
 #define HasFormsObject
 #define AddedGeneratedGame1
+#define ListsHaveAssociateWithFactoryBool
 #define REFERENCES_FRB_SOURCE
 
 

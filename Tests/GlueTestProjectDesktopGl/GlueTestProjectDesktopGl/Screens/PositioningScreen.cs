@@ -121,7 +121,7 @@ namespace GlueTestProject.Screens
 
             if (EntityList.Count != 1)
             {
-                throw new Exception("There are an incorrect number of Entities: " + EntityList.Count);
+                throw new Exception("There are an incorrect number of Entities: {EntityList.Count}, but expected to have 1. Did factory adding break on EntityList?");
             }
 
             // We move it to the right to see if velocity causes problems when recycling

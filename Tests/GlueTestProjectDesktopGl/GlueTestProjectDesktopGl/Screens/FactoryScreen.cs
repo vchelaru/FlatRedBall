@@ -141,8 +141,10 @@ namespace GlueTestProject.Screens
         private void TestBaseChildGrandchildListAdditions()
         {
             var newInstance = Factories.GrandchildFactoryEntityFactory.CreateNew();
-
-            BaseFactoryEntityList.Contains(newInstance).ShouldBe(true);
+            if (!BaseFactoryEntityList.Contains(newInstance))
+            {
+                throw new Exception("The BaseFactoryEntityList should contain a new instance. It doesn't - is factory association set up correctly?");
+            }
             ChildFactoryEntityList.Contains(newInstance).ShouldBe(true);
             GrandchildFactoryEntityList.Contains(newInstance).ShouldBe(true);
         }
