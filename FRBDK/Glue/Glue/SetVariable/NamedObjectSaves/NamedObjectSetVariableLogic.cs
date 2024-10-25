@@ -248,11 +248,6 @@ namespace FlatRedBall.Glue.SetVariable
                             "\n\nGlue will now set this value back to false.");
                         namedObjectSave.AddToManagers = false;
                     }
-
-
-
-
-
                 }
             }
 

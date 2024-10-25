@@ -180,6 +180,18 @@ namespace TileGraphicsPlugin
 
             toReturn.VariableDefinitions.Add(new VariableDefinition
             {
+                Name = "CreateFieldsForNamedObjects",
+                Type = "bool",
+                DefaultValue = "false",
+                Category = "Entities and Collision",
+                UsesCustomCodeGeneration = true,
+                IsVariableVisibleInEditor = (glueElement, namedObjectSave) =>
+                    namedObjectSave.GetCustomVariable("CreateEntitiesFromTiles")?.Value as bool? == true
+
+            });
+
+            toReturn.VariableDefinitions.Add(new VariableDefinition
+            {
                 Name = "ShiftMapToMoveGameplayLayerToZ0",
                 Type = "bool",
                 DefaultValue = "false",

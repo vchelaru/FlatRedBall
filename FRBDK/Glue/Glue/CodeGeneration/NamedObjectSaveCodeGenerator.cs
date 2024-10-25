@@ -381,6 +381,345 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
+        public static void WriteAddToManagersBottomUpForNamedObjectList(List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock,
+            IElement element, Dictionary<string, string> reusableEntireFileRfses)
+        {
+            foreach (var nos in namedObjectList.Where(nos =>
+                    nos.SourceType != SourceType.FlatRedBallType ||
+                    nos.GetAssetTypeInfo()?.FriendlyName != "Layer"))
+            {
+                ReferencedFileSave filePullingFrom = null;
+
+                string foundSourceFileValue = null;
+                NamedObjectSave entireFileNos = null;
+
+                if (nos.SourceType == SourceType.File && nos.SourceName != null)
+                {
+                    if (nos.IsEntireFile)
+                    {
+                        filePullingFrom = element.GetReferencedFileSave(nos.SourceFile);
+                    }
+                    else if (reusableEntireFileRfses.ContainsKey(nos.SourceFile))
+                    {
+                        entireFileNos = element.GetNamedObjectRecursively(reusableEntireFileRfses[nos.SourceFile]);
+                    }
+                }
+
+
+
+                //mReusableEntireFileRfses
+
+                // We need to add this object if it is not part
+                // of an EntireFile object, or if it has a custom
+                // Layer.
+                // Update September 30, 2012
+                // This could also be an object 
+                // from a file that is part of a 
+                // Screen, therefore it is already
+                // added to managers.  If so, we don't
+                // want to add it again.
+                // Update March 31, 2013
+                // If the object is part of a file, but
+                // its layer differs from the object that
+                // it is a part of, then we need to add it.
+                // But we want to remove it from the engine before
+                // re-adding so that it isn't part of 2 different if
+                // the container is itself on a Layer.
+                bool isAlreadyAdded = entireFileNos != null ||
+                    (filePullingFrom != null && ReferencedFileSaveCodeGenerator.GetIfShouldAddToManagers(element, filePullingFrom));
+
+
+                if (!isAlreadyAdded ||
+                    (entireFileNos != null && entireFileNos.LayerOn != nos.LayerOn) ||
+                    (filePullingFrom != null && !string.IsNullOrEmpty(nos.LayerOn))
+                    )
+                {
+                    if (isAlreadyAdded)
+                    {
+
+                        var ati = nos.GetAssetTypeInfo();
+                        if (ati != null && !string.IsNullOrEmpty(ati.RecycledDestroyMethod))
+                        {
+                            string recycleMethod = ati.RecycledDestroyMethod.Replace("this", nos.InstanceName) + ";";
+                            codeBlock.Line(recycleMethod);
+                        }
+                    }
+                    NamedObjectSaveCodeGenerator.WriteAddToManagersForNamedObject(element, nos, codeBlock);
+                }
+
+                #region Loop through all contained NamedObjects in Lists - and call WriteAddToManagersForNamedObject recursively
+                // Loop through all contained NamedObjects
+                foreach (NamedObjectSave containedNos in nos.ContainedObjects)
+                {
+                    WriteAddToManagersForNamedObject(element, containedNos, codeBlock);
+
+                    // 12/14/2010
+                    // We used to add
+                    // objects which are
+                    // part of a list to their
+                    // list here, but if that happened,
+                    // then variables like Visible wouldn't
+                    // work properly.  So this code was moved
+                    // into initialize 
+                    // stringBuilder.AppendLine("\t\t\t" + namedObject.InstanceName + ".Add(" + containedNos.InstanceName + ");");
+                }
+                #endregion
+
+
+            }
+
+
+
+
+
+        }
+
+
+        public static void WriteAddToManagersForNamedObject(IElement element, NamedObjectSave namedObject,
+            ICodeBlock codeBlock, bool isInVariableSetterProperty = false, bool considerRemoveIfInvisible = true)
+        {
+
+            bool shouldEarlyOut =
+                namedObject.IsFullyDefined == false
+                ||
+                (namedObject.SetByDerived || namedObject.IsDisabled || !namedObject.Instantiate || namedObject.IsContainer)
+                ||
+                (namedObject.SetByContainer && element is EntitySave) // Screens can't be contained, so we don't want to early out on Screens
+                ||
+                (namedObject.SourceType == SourceType.File &&
+                (string.IsNullOrEmpty(namedObject.SourceName) || namedObject.SourceName == "<NONE>"))
+                ;
+
+            if (!shouldEarlyOut)
+            {
+                AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
+
+                bool isInsideVisibleProperty = considerRemoveIfInvisible == false;
+                AssetTypeInfo ati = namedObject.GetAssetTypeInfo();
+
+                if ((considerRemoveIfInvisible && namedObject.RemoveFromManagersWhenInvisible && IsInvisible(namedObject, element)))
+                {
+                    if (namedObject.SourceType == SourceType.Entity)
+                    {
+                        // since we want to have all contained elements in namedObject also call AssignCustomVariables, we'll pass 'true'
+                        codeBlock.Line(namedObject.FieldName + ".AssignCustomVariables(true);");
+                    }
+                    // else, we don't do anything here, but we do want the outer if statement to evaluate to true to prevent the addition from occurring below.
+                }
+                else
+                {
+
+
+                    // If we're setting this
+                    // in a variable setter, that
+                    // means that this code is going
+                    // to be used to dynamically set the
+                    // source of an object.  In that case, 
+                    // the object will not have yet been added
+                    // to the managers.  Also, files that are assigned
+                    // here are assumed to also not have been added to managers
+                    // because they should have their LoadedOnlyWhenReferenced property
+                    // set to true.
+                    bool isAddedToManagerByFile = !isInVariableSetterProperty && IsAddedToManagerByFile(element, namedObject);
+                    bool isAddedToManagerByContainer = IsAddedToManagerByContainer(element, namedObject);
+
+                    bool addedRegularly = namedObject.AddToManagers &&
+                        !namedObject.InstantiatedByBase && !isAddedToManagerByFile && !isAddedToManagerByContainer;
+                    if (addedRegularly)
+                    {
+                        string layerName = "null";
+
+                        if (!string.IsNullOrEmpty(namedObject.LayerOn))
+                        {
+                            layerName = GetNamedObjectLayerName(namedObject);
+                        }
+                        else if (element is EntitySave)
+                        {
+                            layerName = "LayerProvidedByContainer";
+                        }
+                        else if (element is ScreenSave)
+                        {
+                            layerName = "mLayer";
+                        }
+
+                        void WriteEntityAddToManagers()
+                        {
+                            if (isInsideVisibleProperty)
+                            {
+                                // October 2, 2024
+                                // There is no ReAddToManagers
+                                // available anymore so this generates
+                                // invalid code. I think that this code
+                                // path is used anymore otherwise others
+                                // would have reported it,but we'll modify
+                                // the code so it compiles at least for the
+                                // auto test:
+                                //codeBlock.Line(namedObject.FieldName + ".ReAddToManagers(" + layerName + ");");
+                                codeBlock.Line(namedObject.FieldName + ".AddToManagers(" + layerName + ");");
+                            }
+                            else
+                            {
+                                codeBlock.Line(namedObject.FieldName + ".AddToManagers(" + layerName + ");");
+                            }
+                        }
+
+                        #region There is an ATI - it's a type defined in the ContentTypes.csv file in Glue
+                        if (ati != null)
+                        {
+                            bool isLayered = CodeWriter.IsOnOwnLayer(element)
+                                || !string.IsNullOrEmpty(namedObject.LayerOn);
+
+                            if (namedObject.IsManuallyUpdated && !string.IsNullOrEmpty(ati.AddManuallyUpdatedMethod))
+                            {
+                                var line = ati.AddManuallyUpdatedMethod
+                                    .Replace("{THIS}", namedObject.FieldName)
+                                    .Replace("{LAYER}", layerName) + ';';
+
+                                codeBlock.Line(line);
+                            }
+                            else if (ati.AddToManagersFunc != null)
+                            {
+                                string line = null;
+                                if (isLayered)
+                                {
+                                    line = ati.AddToManagersFunc(element, namedObject, null, layerName);
+                                }
+                                else
+                                {
+                                    line = ati.AddToManagersFunc(element, namedObject, null, null);
+
+                                }
+
+                                codeBlock.Line(line);
+
+                            }
+
+                            else if (isLayered && ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0]))
+                            {
+                                string layerAddToManagersMethod = DecideOnLineToAdd(namedObject, ati, true);
+
+                                // This used to be inside the if(element is EntitySave) but
+                                // I think we want it even if the ElementSave is a Screen.
+
+                                var pattern = @"\bmLayer\b";
+                                Regex rgx = new Regex(pattern);
+                                layerAddToManagersMethod = rgx.Replace(layerAddToManagersMethod, layerName);
+
+                                codeBlock.Line(layerAddToManagersMethod.Replace("this", namedObject.FieldName) + ";");
+
+
+                            }
+                            else if (ati.AddToManagersMethod?.Count > 0 && !string.IsNullOrEmpty(ati.AddToManagersMethod[0]))
+                            {
+
+                                string addLine = DecideOnLineToAdd(namedObject, ati, false);
+
+                                codeBlock.Line(addLine.Replace("this", namedObject.FieldName) + ";");
+
+                                if (namedObject.IsLayer && element is EntitySave)
+                                {
+                                    string layerToAddAbove = layerName;
+
+                                    int indexOfThis = element.NamedObjects.IndexOf(namedObject);
+
+                                    for (int i = 0; i < indexOfThis; i++)
+                                    {
+                                        if (element.NamedObjects[i].IsLayer && !element.NamedObjects[i].IsDisabled)
+                                        {
+                                            layerToAddAbove = element.NamedObjects[i].InstanceName;
+                                        }
+                                    }
+
+                                    //If the EntitySave contains a Layer, the Layer should be inserted after whatever Layer the Entity is on.
+                                    codeBlock.Line("FlatRedBall.SpriteManager.MoveLayerAboveLayer(" + namedObject.FieldName + ", " + layerToAddAbove + ");");
+                                }
+                            }
+                            else if (namedObject.SourceType == SourceType.Entity)
+                            {
+                                // it has an ATI but it's still an entity, so do the regular add:
+                                WriteEntityAddToManagers();
+                            }
+                            AddLayerSpecificAddToManagersCode(namedObject, codeBlock);
+
+                            AddTextSpecificAddToManagersCode(namedObject, codeBlock, layerName);
+                        }
+                        #endregion
+                        #region No ATI - is it an Entity?
+                        else if (namedObject.SourceType == SourceType.Entity)
+                        {
+                            WriteEntityAddToManagers();
+
+                        }
+                        #endregion
+
+
+                        #region If this object is ignored in pausing, add it to the InstructionManager's ignored list
+
+                        PauseCodeGenerator.AddToPauseIgnoreIfNecessary(codeBlock, element, namedObject);
+
+                        #endregion
+                    }
+
+                    #region Special Case:  Add any aliased ReferencedFileSaves that are on layers to the layer
+                    // Special Case:  If a NamedObject is an EntireFile, 
+                    // and the source ReferencedFileSave is not shared static,
+                    // then that means that the NamedObject is essentially just
+                    // used to access the ReferencedFileSave in Glue.  The user may
+                    // be using the NamedObject to place the ReferencedfileSave on a
+                    // layer, so we should check for that
+
+                    // This bool construction
+                    // used to also say:
+                    // namedObject.SourceName.Contains("Entire ")
+                    // but I think we want this
+                    // added to a Layer even if it
+                    // an entire file.
+
+                    bool hasAddToManagersCode =
+                        ati != null &&
+                        ((ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0])) ||
+                        ati.AddToManagersFunc != null);
+
+                    bool shouldAddToLayer = (!namedObject.AddToManagers || isAddedToManagerByFile) && !string.IsNullOrEmpty(namedObject.LayerOn) &&
+                        namedObject.SourceType == SourceType.File &&
+                        namedObject.SourceName != null &&
+                        //namedObject.SourceName.Contains("Entire ") && 
+                        hasAddToManagersCode;
+
+                    if (shouldAddToLayer)
+                    {
+                        string layerName = GetNamedObjectLayerName(namedObject);
+
+                        if (ati.AddToManagersFunc != null)
+                        {
+                            codeBlock.Line(ati.AddToManagersFunc(element, namedObject, null, layerName));
+                        }
+                        else
+                        {
+                            string layerAddToManagersMethod = ati.LayeredAddToManagersMethod[0];
+
+                            // regex this with "\bmLayer\b"
+                            var pattern = @"\bmLayer\b";
+                            Regex rgx = new Regex(pattern);
+                            layerAddToManagersMethod = rgx.Replace(layerAddToManagersMethod, layerName);
+                            //layerAddToManagersMethod = layerAddToManagersMethod.Replace("mLayer", layerName);
+
+
+                            codeBlock.Line(layerAddToManagersMethod.Replace("this", namedObject.FieldName) + ";");
+                        }
+                    }
+                    #endregion
+
+
+
+
+                }
+
+
+                AddEndIfIfNecessary(codeBlock, namedObject);
+            }
+        }
+
         #endregion
 
         #region Remove from Managers
@@ -1776,99 +2115,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             //}
         }
 
-        public static void WriteAddToManagersBottomUpForNamedObjectList(List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, 
-            IElement element, Dictionary<string, string> reusableEntireFileRfses)
-        {
-            foreach(var nos in namedObjectList.Where(nos=>
-                    nos.SourceType != SourceType.FlatRedBallType || 
-                    nos.GetAssetTypeInfo()?.FriendlyName != "Layer"))
-            {
-                ReferencedFileSave filePullingFrom = null;
-
-                string foundSourceFileValue = null;
-                NamedObjectSave entireFileNos = null;
-
-                if (nos.SourceType == SourceType.File && nos.SourceName != null)
-                {
-                    if (nos.IsEntireFile)
-                    {
-                        filePullingFrom = element.GetReferencedFileSave(nos.SourceFile);
-                    }
-                    else if(reusableEntireFileRfses.ContainsKey(nos.SourceFile))
-                    {
-                        entireFileNos = element.GetNamedObjectRecursively(reusableEntireFileRfses[nos.SourceFile]);
-                    }
-                }
-
-                
-
-                //mReusableEntireFileRfses
-
-                // We need to add this object if it is not part
-                // of an EntireFile object, or if it has a custom
-                // Layer.
-                // Update September 30, 2012
-                // This could also be an object 
-                // from a file that is part of a 
-                // Screen, therefore it is already
-                // added to managers.  If so, we don't
-                // want to add it again.
-                // Update March 31, 2013
-                // If the object is part of a file, but
-                // its layer differs from the object that
-                // it is a part of, then we need to add it.
-                // But we want to remove it from the engine before
-                // re-adding so that it isn't part of 2 different if
-                // the container is itself on a Layer.
-                bool isAlreadyAdded = entireFileNos != null ||
-                    (filePullingFrom != null && ReferencedFileSaveCodeGenerator.GetIfShouldAddToManagers(element, filePullingFrom));
-
-
-                if (!isAlreadyAdded || 
-                    (entireFileNos != null && entireFileNos.LayerOn != nos.LayerOn) ||
-                    (filePullingFrom != null && !string.IsNullOrEmpty(nos.LayerOn))
-                    )
-                {
-                    if (isAlreadyAdded)
-                    {
-
-                        var ati = nos.GetAssetTypeInfo();
-                        if (ati != null && !string.IsNullOrEmpty(ati.RecycledDestroyMethod))
-                        {
-                            string recycleMethod = ati.RecycledDestroyMethod.Replace("this", nos.InstanceName) + ";";
-                            codeBlock.Line(recycleMethod);
-                        }
-                    }
-                    NamedObjectSaveCodeGenerator.WriteAddToManagersForNamedObject(element, nos, codeBlock);
-                }
-
-                #region Loop through all contained NamedObjects in Lists - and call WriteAddToManagersForNamedObject recursively
-                // Loop through all contained NamedObjects
-                foreach (NamedObjectSave containedNos in nos.ContainedObjects)
-                {
-                    WriteAddToManagersForNamedObject(element, containedNos, codeBlock);
-
-                    // 12/14/2010
-                    // We used to add
-                    // objects which are
-                    // part of a list to their
-                    // list here, but if that happened,
-                    // then variables like Visible wouldn't
-                    // work properly.  So this code was moved
-                    // into initialize 
-                    // stringBuilder.AppendLine("\t\t\t" + namedObject.InstanceName + ".Add(" + containedNos.InstanceName + ");");
-                }
-                #endregion
-
-
-            }
-
-
-
-
-
-        }
-
         static void GetPostInitializeForNamedObjectList(NamedObjectSave namedObject, ICodeBlock codeBlock, GlueElement container)
         {
             if (!namedObject.IsDisabled && namedObject.Instantiate)
@@ -2066,251 +2312,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
             }
             return toReturn;
-        }
-
-        public static void WriteAddToManagersForNamedObject(IElement element, NamedObjectSave namedObject, 
-            ICodeBlock codeBlock, bool isInVariableSetterProperty = false, bool considerRemoveIfInvisible = true)
-        {
-
-            bool shouldEarlyOut = 
-                namedObject.IsFullyDefined == false
-                ||
-                (namedObject.SetByDerived || namedObject.IsDisabled || !namedObject.Instantiate || namedObject.IsContainer)
-                ||
-                (namedObject.SetByContainer && element is EntitySave) // Screens can't be contained, so we don't want to early out on Screens
-                ||
-                (namedObject.SourceType == SourceType.File &&
-                (string.IsNullOrEmpty(namedObject.SourceName) || namedObject.SourceName == "<NONE>"))             
-                ;
-
-            if (!shouldEarlyOut)
-            {
-                AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
-
-                bool isInsideVisibleProperty = considerRemoveIfInvisible == false;
-                AssetTypeInfo ati = namedObject.GetAssetTypeInfo();
-
-                if ((considerRemoveIfInvisible && namedObject.RemoveFromManagersWhenInvisible && IsInvisible(namedObject, element)))
-                {
-                    if (namedObject.SourceType == SourceType.Entity)
-                    {
-                        // since we want to have all contained elements in namedObject also call AssignCustomVariables, we'll pass 'true'
-                        codeBlock.Line(namedObject.FieldName + ".AssignCustomVariables(true);");
-                    }
-                    // else, we don't do anything here, but we do want the outer if statement to evaluate to true to prevent the addition from occurring below.
-                }
-                else
-                {
-
-
-                    // If we're setting this
-                    // in a variable setter, that
-                    // means that this code is going
-                    // to be used to dynamically set the
-                    // source of an object.  In that case, 
-                    // the object will not have yet been added
-                    // to the managers.  Also, files that are assigned
-                    // here are assumed to also not have been added to managers
-                    // because they should have their LoadedOnlyWhenReferenced property
-                    // set to true.
-                    bool isAddedToManagerByFile = !isInVariableSetterProperty && IsAddedToManagerByFile(element, namedObject);
-                    bool isAddedToManagerByContainer = IsAddedToManagerByContainer(element, namedObject);
-
-                    bool addedRegularly = namedObject.AddToManagers && 
-                        !namedObject.InstantiatedByBase && !isAddedToManagerByFile && !isAddedToManagerByContainer;
-                    if (addedRegularly)
-                    {
-                        string layerName = "null";
-
-                        if (!string.IsNullOrEmpty(namedObject.LayerOn))
-                        {
-                            layerName = GetNamedObjectLayerName(namedObject);
-                        }
-                        else if (element is EntitySave)
-                        {
-                            layerName = "LayerProvidedByContainer";
-                        }
-                        else if (element is ScreenSave)
-                        {
-                            layerName = "mLayer";
-                        }
-
-                        void WriteEntityAddToManagers()
-                        {
-                            if (isInsideVisibleProperty)
-                            {
-                                // October 2, 2024
-                                // There is no ReAddToManagers
-                                // available anymore so this generates
-                                // invalid code. I think that this code
-                                // path is used anymore otherwise others
-                                // would have reported it,but we'll modify
-                                // the code so it compiles at least for the
-                                // auto test:
-                                //codeBlock.Line(namedObject.FieldName + ".ReAddToManagers(" + layerName + ");");
-                                codeBlock.Line(namedObject.FieldName + ".AddToManagers(" + layerName + ");");
-                            }
-                            else
-                            {
-                                codeBlock.Line(namedObject.FieldName + ".AddToManagers(" + layerName + ");");
-                            }
-                        }
-
-                        #region There is an ATI - it's a type defined in the ContentTypes.csv file in Glue
-                        if (ati != null)
-                        {
-                            bool isLayered = CodeWriter.IsOnOwnLayer(element)
-                                || !string.IsNullOrEmpty(namedObject.LayerOn);
-
-                            if(namedObject.IsManuallyUpdated && !string.IsNullOrEmpty(ati.AddManuallyUpdatedMethod))
-                            {
-                                var line = ati.AddManuallyUpdatedMethod
-                                    .Replace("{THIS}", namedObject.FieldName)
-                                    .Replace("{LAYER}", layerName) + ';';
-
-                                codeBlock.Line(line);
-                            }
-                            else if(ati.AddToManagersFunc != null)
-                            {
-                                string line = null;
-                                if(isLayered)
-                                {
-                                    line = ati.AddToManagersFunc(element, namedObject, null, layerName);
-                                }
-                                else
-                                {
-                                    line = ati.AddToManagersFunc(element, namedObject, null, null);
-
-                                }
-
-                                codeBlock.Line(line);
-
-                            }
-
-                            else if (isLayered && ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0]))
-                            {
-                                string layerAddToManagersMethod = DecideOnLineToAdd(namedObject, ati, true);
-
-                                // This used to be inside the if(element is EntitySave) but
-                                // I think we want it even if the ElementSave is a Screen.
-
-                                var pattern = @"\bmLayer\b";
-                                Regex rgx = new Regex(pattern);
-                                layerAddToManagersMethod = rgx.Replace(layerAddToManagersMethod, layerName);
-
-                                codeBlock.Line(layerAddToManagersMethod.Replace("this", namedObject.FieldName) + ";");
-
-
-                            }
-                            else if(ati.AddToManagersMethod?.Count > 0 && !string.IsNullOrEmpty(ati.AddToManagersMethod[0]))
-                            {
-
-                                string addLine = DecideOnLineToAdd(namedObject, ati, false);
-
-                                codeBlock.Line(addLine.Replace("this", namedObject.FieldName) + ";");
-
-                                if (namedObject.IsLayer && element is EntitySave)
-                                {
-                                    string layerToAddAbove = layerName;
-
-                                    int indexOfThis = element.NamedObjects.IndexOf(namedObject);
-
-                                    for (int i = 0; i < indexOfThis; i++)
-                                    {
-                                        if (element.NamedObjects[i].IsLayer && !element.NamedObjects[i].IsDisabled)
-                                        {
-                                            layerToAddAbove = element.NamedObjects[i].InstanceName;
-                                        }
-                                    }
-
-                                    //If the EntitySave contains a Layer, the Layer should be inserted after whatever Layer the Entity is on.
-                                    codeBlock.Line("FlatRedBall.SpriteManager.MoveLayerAboveLayer(" + namedObject.FieldName + ", " + layerToAddAbove + ");");
-                                }
-                            }
-                            else if(namedObject.SourceType == SourceType.Entity)
-                            {
-                                // it has an ATI but it's still an entity, so do the regular add:
-                                WriteEntityAddToManagers();
-                            }
-                            AddLayerSpecificAddToManagersCode(namedObject, codeBlock);
-
-                            AddTextSpecificAddToManagersCode(namedObject, codeBlock, layerName);
-                        }
-                        #endregion
-                        #region No ATI - is it an Entity?
-                        else if (namedObject.SourceType == SourceType.Entity)
-                        {
-                            WriteEntityAddToManagers();
-
-                        }
-                        #endregion
-
-
-                        #region If this object is ignored in pausing, add it to the InstructionManager's ignored list
-
-                        PauseCodeGenerator.AddToPauseIgnoreIfNecessary(codeBlock, element, namedObject);
-
-                        #endregion
-                    }
-
-                    #region Special Case:  Add any aliased ReferencedFileSaves that are on layers to the layer
-                    // Special Case:  If a NamedObject is an EntireFile, 
-                    // and the source ReferencedFileSave is not shared static,
-                    // then that means that the NamedObject is essentially just
-                    // used to access the ReferencedFileSave in Glue.  The user may
-                    // be using the NamedObject to place the ReferencedfileSave on a
-                    // layer, so we should check for that
-
-                    // This bool construction
-                    // used to also say:
-                    // namedObject.SourceName.Contains("Entire ")
-                    // but I think we want this
-                    // added to a Layer even if it
-                    // an entire file.
-
-                    bool hasAddToManagersCode =
-                        ati != null &&
-                        ((ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0])) ||
-                        ati.AddToManagersFunc != null);
-
-                    bool shouldAddToLayer = (!namedObject.AddToManagers || isAddedToManagerByFile) && !string.IsNullOrEmpty(namedObject.LayerOn) &&
-                        namedObject.SourceType == SourceType.File &&
-                        namedObject.SourceName != null &&
-                        //namedObject.SourceName.Contains("Entire ") && 
-                        hasAddToManagersCode;
-
-                    if (shouldAddToLayer)
-                    {
-                        string layerName = GetNamedObjectLayerName(namedObject);
-
-                        if (ati.AddToManagersFunc != null)
-                        {
-                            codeBlock.Line(ati.AddToManagersFunc(element, namedObject, null, layerName));
-                        }
-                        else
-                        {
-                            string layerAddToManagersMethod = ati.LayeredAddToManagersMethod[0];
-
-                            // regex this with "\bmLayer\b"
-                            var pattern = @"\bmLayer\b";
-                            Regex rgx = new Regex(pattern);
-                            layerAddToManagersMethod = rgx.Replace(layerAddToManagersMethod, layerName);
-                            //layerAddToManagersMethod = layerAddToManagersMethod.Replace("mLayer", layerName);
-
-
-                            codeBlock.Line(layerAddToManagersMethod.Replace("this", namedObject.FieldName) + ";");
-                        }
-                    }
-                    #endregion
-
-
-
-
-                }
-                
-
-                AddEndIfIfNecessary(codeBlock, namedObject);
-            }
         }
 
         private static string GetNamedObjectLayerName(NamedObjectSave namedObject)

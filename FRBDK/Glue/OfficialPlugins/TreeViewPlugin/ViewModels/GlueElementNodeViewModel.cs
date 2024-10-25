@@ -22,7 +22,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
 
 
-        public GlueElementNodeViewModel(NodeViewModel parent, GlueElement glueElement, bool createChildrenNodes) : 
+        public GlueElementNodeViewModel(NodeViewModel? parent, GlueElement glueElement, bool createChildrenNodes) : 
             base(glueElement is ScreenSave ? FlatRedBall.Glue.FormHelpers.TreeNodeType.ScreenNode : FlatRedBall.Glue.FormHelpers.TreeNodeType.EntityNode, parent)
         {
             Tag = glueElement;
