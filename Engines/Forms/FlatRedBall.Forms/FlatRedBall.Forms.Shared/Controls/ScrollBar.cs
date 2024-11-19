@@ -7,8 +7,12 @@ using RenderingLibrary;
 using FlatRedBall.Forms.GumExtensions;
 using FlatRedBall.Forms.Controls.Primitives;
 
+#if FRB
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
+#else
+
+#endif
 
 public class ScrollBar : RangeBase
 {

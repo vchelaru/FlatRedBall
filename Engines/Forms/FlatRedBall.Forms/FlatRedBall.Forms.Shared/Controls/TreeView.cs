@@ -7,8 +7,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
+#if FRB
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
+#else
+
+#endif
 
 public class TreeView : ScrollViewer
 {

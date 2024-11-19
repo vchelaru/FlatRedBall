@@ -6,8 +6,12 @@ using System.Collections.Specialized;
 using System.Reflection;
 using System.Text;
 
+#if FRB
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
+#else
+
+#endif
 
 class TreeViewLogic
 {

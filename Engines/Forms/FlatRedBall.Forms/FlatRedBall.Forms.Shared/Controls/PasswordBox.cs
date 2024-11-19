@@ -6,8 +6,12 @@ using System.Collections.Generic;
 using System.Security;
 using System.Text;
 
+#if FRB
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
+#else
+
+#endif
 
 public class PasswordBox : TextBoxBase
 {

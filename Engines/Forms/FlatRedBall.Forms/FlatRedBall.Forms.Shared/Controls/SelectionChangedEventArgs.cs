@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
+#if FRB
 namespace FlatRedBall.Forms.Controls;
+#else
+
+#endif
 
 public class SelectionChangedEventArgs
 {
