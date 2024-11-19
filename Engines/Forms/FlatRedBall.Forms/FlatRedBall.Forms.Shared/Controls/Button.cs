@@ -1,14 +1,22 @@
-﻿using FlatRedBall.Forms.Controls.Primitives;
-using FlatRedBall.Gui;
-using Gum.Wireframe;
+﻿using Gum.Wireframe;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
+#if FRB
+using FlatRedBall.Forms.Controls.Primitives;
+using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
+#else
+using MonoGameGum.Forms.Controls.Primitives;
+namespace MonoGameGum.Forms.Controls;
+#endif
 
 public class Button : ButtonBase
 {
+    /// <summary>
+    /// The name of the Category containing visual states for the Button object.
+    /// </summary>
+    public const string ButtonCategoryState = "ButtonCategoryState";
+
     #region Fields/Properties
 
     GraphicalUiElement textComponent;
@@ -62,7 +70,7 @@ public class Button : ButtonBase
 
     public Button() : base() { }
 
-    public Button(GraphicalUiElement visual) : base(visual) { }
+    public Button(InteractiveGue visual) : base(visual) { }
 
     protected override void ReactToVisualChanged()
     {
@@ -79,11 +87,9 @@ public class Button : ButtonBase
 
     protected override void UpdateState()
     {
-        const string category = "ButtonCategoryState";
-
         var state = base.GetDesiredState();
 
-        Visual.SetProperty(category, state);
+        Visual.SetProperty(ButtonCategoryState, state);
     }
 
     #endregion
