@@ -233,7 +233,10 @@ public class ButtonBase : FrameworkElement, IInputReceiver
     {
     }
 
-    public void LoseFocus()
+    [Obsolete("Use OnLoseFocus instead")]
+    public void LoseFocus() => OnLoseFocus();
+
+    public void OnLoseFocus()
     {
         IsFocused = false;
     }
