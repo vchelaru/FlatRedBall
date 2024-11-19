@@ -189,8 +189,13 @@ public class ItemsControl : ScrollViewer
 
             if (listBoxFormsConstructor == null)
             {
+#if FRB
+                const string TypeName = "GraphicalUiElement";
+#else
+                const string TypeName = "InteractiveGue";
+#endif
                 string message =
-                    $"Could not find a constructor for {ItemFormsType} which takes a single GraphicalUiElement argument. " +
+                    $"Could not find a constructor for {ItemFormsType} which takes a single {TypeName} argument. " +
                     $"If you defined {ItemFormsType} without specifying a constructor, you need to add a constructor which takes a GraphicalUiElement and calls the base constructor.";
                 throw new Exception(message);
             }
@@ -209,7 +214,7 @@ public class ItemsControl : ScrollViewer
         }
     }
 
-    private GraphicalUiElement CreateNewVisual(object vm)
+    private InteractiveGue CreateNewVisual(object vm)
     {
         if(VisualTemplate != null)
         {
