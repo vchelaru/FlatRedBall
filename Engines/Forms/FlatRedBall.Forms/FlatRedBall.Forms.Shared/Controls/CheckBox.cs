@@ -2,6 +2,7 @@
 using System;
 
 #if FRB
+using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
 namespace MonoGameGum.Forms.Controls;
@@ -58,7 +59,7 @@ public class CheckBox : ToggleButton
 
     public CheckBox() : base() { }
 
-    public CheckBox(GraphicalUiElement visual) : base(visual) { }
+    public CheckBox(InteractiveGue visual) : base(visual) { }
 
     protected override void ReactToVisualChanged()
     {
