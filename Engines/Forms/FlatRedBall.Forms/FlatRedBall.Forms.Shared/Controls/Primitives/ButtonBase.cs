@@ -68,11 +68,11 @@ public class ButtonBase : FrameworkElement, IInputReceiver
     protected override void ReactToVisualChanged()
     {
 #if FRB
-        Visual.Click += _=>this.HandleClick(this, null);
-        Visual.Push += _ => this.HandlePush (this, null);
-        Visual.LosePush += _ => this.HandleLosePush (this, null);
-        Visual.RollOn += _ => this.HandleRollOn (this, null);
-        Visual.RollOff += _ => this.HandleRollOff(this, null);
+        Visual.Click += _=>this.HandleClick(this, EventArgs.Empty);
+        Visual.Push += _ => this.HandlePush (this, EventArgs.Empty);
+        Visual.LosePush += _ => this.HandleLosePush (this, EventArgs.Empty);
+        Visual.RollOn += _ => this.HandleRollOn (this, EventArgs.Empty);
+        Visual.RollOff += _ => this.HandleRollOff(this, EventArgs.Empty);
 #else
         Visual.Click += this.HandleClick;
         Visual.Push += this.HandlePush;
@@ -130,7 +130,7 @@ public class ButtonBase : FrameworkElement, IInputReceiver
 
     public void PerformClick()
     {
-        HandleClick(this, null);
+        HandleClick(this, EventArgs.Empty);
     }
 
     #region IInputReceiver Methods
@@ -152,7 +152,7 @@ public class ButtonBase : FrameworkElement, IInputReceiver
                 IsEnabled)
             {
                 //this.HandlePush(null);
-                this.HandleClick(this, null);
+                this.HandleClick(this, EventArgs.Empty);
 
                 ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.A);
             }
@@ -198,7 +198,7 @@ public class ButtonBase : FrameworkElement, IInputReceiver
             if((gamepad as IInputDevice).DefaultConfirmInput.WasJustPressed && IsEnabled)
             {
                 //this.HandlePush(null);
-                this.HandleClick(this, null);
+                this.HandleClick(this, EventArgs.Empty);
             }
 
             if(IsEnabled)
@@ -222,7 +222,7 @@ public class ButtonBase : FrameworkElement, IInputReceiver
             if (inputDevice.DefaultConfirmInput.WasJustPressed && IsEnabled)
             {
                 //this.HandlePush(null);
-                this.HandleClick(this, null);
+                this.HandleClick(this, EventArgs.Empty);
             }
         }
 #endif
