@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Gum.Wireframe;
+﻿using Gum.Wireframe;
 
 #if FRB
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;

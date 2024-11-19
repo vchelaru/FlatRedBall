@@ -1,11 +1,9 @@
 ﻿using Gum.Wireframe;
 using RenderingLibrary;
-using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 
 #if FRB
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;

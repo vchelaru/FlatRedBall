@@ -1,10 +1,6 @@
-﻿using FlatRedBall.Gui;
-using Gum.Wireframe;
-using Microsoft.Xna.Framework.Input;
+﻿using Gum.Wireframe;
 using System;
-using System.Collections.Generic;
 using System.Security;
-using System.Text;
 
 #if FRB
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
