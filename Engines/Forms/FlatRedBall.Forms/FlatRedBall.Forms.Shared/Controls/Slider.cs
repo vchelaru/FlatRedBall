@@ -8,6 +8,7 @@ using RenderingLibrary;
 using Microsoft.Xna.Framework.Input;
 using FlatRedBall.Input;
 
+using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 
 public class Slider : RangeBase, IInputReceiver

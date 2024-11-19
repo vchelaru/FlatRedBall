@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using FlatRedBall.Instructions.Pause;
 
 #if FRB
+using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
 namespace MonoGameGum.Forms.Controls;

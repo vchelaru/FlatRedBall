@@ -14,6 +14,7 @@ using FlatRedBall.Input;
 using FlatRedBall.Math.Geometry;
 using System.Data;
 
+using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 
 public enum ScrollIntoViewStyle

@@ -11,6 +11,7 @@ using System.Collections;
 using Microsoft.Xna.Framework.Input;
 using FlatRedBall.Input;
 
+using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 
 public class ComboBox : FrameworkElement, IInputReceiver

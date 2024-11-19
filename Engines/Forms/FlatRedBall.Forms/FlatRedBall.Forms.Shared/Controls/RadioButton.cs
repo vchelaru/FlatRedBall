@@ -6,6 +6,7 @@ using Gum.Wireframe;
 using RenderingLibrary.Graphics;
 using Text = FlatRedBall.Graphics.Text;
 
+using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 
 public class RadioButton : ToggleButton

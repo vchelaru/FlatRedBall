@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Gui;
 
+using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 
 #region Enums
