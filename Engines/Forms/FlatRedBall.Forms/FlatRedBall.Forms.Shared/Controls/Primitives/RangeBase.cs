@@ -21,7 +21,7 @@ public abstract class RangeBase : FrameworkElement
     // parent is re-assigned after the Slider is created. Instead we should look for an explicit
     // track:
     InteractiveGue explicitTrack;
-    protected InteractiveGue Track => explicitTrack ?? thumb.Visual.EffectiveParentGue;
+    protected InteractiveGue Track => explicitTrack ?? thumb.Visual.EffectiveParentGue as InteractiveGue;
 
     /// <summary>
     /// Represents the X or Y offset of the cursor relative to the thumb when the thumb was grabbed.
@@ -43,7 +43,7 @@ public abstract class RangeBase : FrameworkElement
 
     double minimum = 0;
     /// <summary>
-    /// The minimum value which can be set through the UI.
+    /// The minimum inclusive value which can be set through the UI.
     /// </summary>
     public double Minimum
     {
@@ -59,7 +59,7 @@ public abstract class RangeBase : FrameworkElement
 
     double maximum = 1;
     /// <summary>
-    /// The maximum value which can be set through the UI.
+    /// The maximum inclusive value which can be set through the UI.
     /// </summary>
     public double Maximum
     {
@@ -134,7 +134,7 @@ public abstract class RangeBase : FrameworkElement
     {
         base.ReactToVisualChanged();
 
-        var thumbVisual = this.Visual.GetGraphicalUiElementByName("ThumbInstance");
+        var thumbVisual = this.Visual.GetGraphicalUiElementByName("ThumbInstance") as InteractiveGue;
 #if DEBUG
         if(thumbVisual == null)
         {
@@ -243,7 +243,7 @@ public abstract class RangeBase : FrameworkElement
 
     private void HandleThumbRollOver(object sender, EventArgs args)
     {
-        var cursor = GuiManager.Cursor;
+        var cursor = MainCursor;
 
         if (cursor.WindowPushed == thumb.Visual)
         {
@@ -253,7 +253,7 @@ public abstract class RangeBase : FrameworkElement
 
     private void HandleTrackRollOver(object sender, EventArgs args)
     {
-        var cursor = GuiManager.Cursor;
+        var cursor = MainCursor;
 
         if (cursor.WindowPushed == thumb.Visual)
         {
@@ -282,6 +282,9 @@ public abstract class RangeBase : FrameworkElement
 
     protected void RaiseValueChangedByUi() => ValueChangedByUi?.Invoke(this, EventArgs.Empty);
 
+#if FRB
     protected abstract void UpdateThumbPositionToCursorDrag(Cursor cursor);
-
+#else
+    protected abstract void UpdateThumbPositionToCursorDrag(ICursor cursor);
+#endif
 }
