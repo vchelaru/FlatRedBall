@@ -340,6 +340,7 @@ public class ComboBox : FrameworkElement, IInputReceiver
             }
         }
 
+#if FRB
         listBox.Visual.AddToManagers(Visual.Managers,
             layerToAddListBoxTo);
 
@@ -365,15 +366,29 @@ public class ComboBox : FrameworkElement, IInputReceiver
 
         GuiManager.AddNextPushAction(TryHideFromPush);
         GuiManager.SortZAndLayerBased();
-
         listBox.RepositionToKeepInScreen();
+#else
+        listBox.RepositionToKeepInScreen();
+
+        if(this.Visual.GetTopParent() == FrameworkElement.ModalRoot)
+        {
+            FrameworkElement.ModalRoot.Children.Add(listBox.Visual);
+        }
+        else
+        {
+            FrameworkElement.PopupRoot.Children.Add(listBox.Visual);
+        }
+
+        InteractiveGue.AddNextPushAction(TryHideFromPush);
+#endif
+
 
         UpdateState();
     }
 
     private void TryHideFromPush()
     {
-        var cursor = GuiManager.Cursor;
+        var cursor = MainCursor;
 
 
         var clickedOnThisOrChild =
@@ -392,7 +407,11 @@ public class ComboBox : FrameworkElement, IInputReceiver
             // to close this, but we may still want to next click if it's outside
             // of the list box. If the user keeps clicking on the scrollbar, this event
             // keeps getting raised, and it re-adds itself.
+#if FRB
             GuiManager.AddNextPushAction(TryHideFromPush);
+#else
+            InteractiveGue.AddNextPushAction(TryHideFromPush);
+#endif
         }
     }
 
@@ -413,8 +432,13 @@ public class ComboBox : FrameworkElement, IInputReceiver
             listBox.Visual.Width = listBoxWidth;
             listBox.Visual.Height = listBoxHeight;
 
+#if FRB
             Visual.Managers.Renderer.MainLayer.Remove(listBox.Visual);
+#else
+            Visual.EffectiveManagers.Renderer.MainLayer.Remove(listBox.Visual);
 
+            listBox.Visual.GetTopParent()?.Children.Remove(listBox.Visual);
+#endif
 
             UpdateState();
         }
@@ -451,14 +475,12 @@ public class ComboBox : FrameworkElement, IInputReceiver
         HideListBox();
     }
 
-    #endregion
+#endregion
 
     #region UpdateTo Methods
 
     public override void UpdateState()
     {
-        var cursor = GuiManager.Cursor;
-
         const string category = "ComboBoxCategoryState";
 
         var state = base.GetDesiredState();
@@ -485,6 +507,7 @@ public class ComboBox : FrameworkElement, IInputReceiver
 
     private void DoOpenDropDownFocusUpdate()
     {
+#if FRB
         var xboxGamepads = GuiManager.GamePadsForUiControl;
 
         for (int i = 0; i < xboxGamepads.Count; i++)
@@ -518,6 +541,7 @@ public class ComboBox : FrameworkElement, IInputReceiver
 
             DoDropDownOpenFocusUpdate(movedDown, movedUp, pressedButton);
         }
+#endif
     }
 
     private void DoDropDownOpenFocusUpdate(bool movedDown, bool movedUp, bool pressedButton)
@@ -563,6 +587,7 @@ public class ComboBox : FrameworkElement, IInputReceiver
 
     private void DoClosedDropDownFocusUpdate()
     {
+#if FRB
         var gamepads = GuiManager.GamePadsForUiControl;
 
         for (int i = 0; i < gamepads.Count; i++)
@@ -624,6 +649,7 @@ public class ComboBox : FrameworkElement, IInputReceiver
                 }
             }
         }
+#endif
     }
 
     public void OnGainFocus()
