@@ -9,7 +9,7 @@ using System.Collections.Specialized;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
-
+namespace MonoGameGum.Forms.Controls;
 #endif
 
 public class ItemsControl : ScrollViewer
@@ -132,7 +132,7 @@ public class ItemsControl : ScrollViewer
         Items = new ObservableCollection<object>();
     }
 
-    public ItemsControl(GraphicalUiElement visual) : base(visual)
+    public ItemsControl(InteractiveGue visual) : base(visual)
     {
         Items = new ObservableCollection<object>();
     }
@@ -165,7 +165,7 @@ public class ItemsControl : ScrollViewer
         return item;
     }
 
-    private ListBoxItem CreateNewListBoxItem(GraphicalUiElement visual)
+    private ListBoxItem CreateNewListBoxItem(InteractiveGue visual)
     {
         if(FrameworkElementTemplate != null)
         {
@@ -185,7 +185,7 @@ public class ItemsControl : ScrollViewer
                     "This property must be set before adding any items");
             }
 #endif
-            var listBoxFormsConstructor = ItemFormsType.GetConstructor(new Type[] { typeof(GraphicalUiElement) });
+            var listBoxFormsConstructor = ItemFormsType.GetConstructor(new Type[] { typeof(InteractiveGue) });
 
             if (listBoxFormsConstructor == null)
             {
@@ -213,7 +213,7 @@ public class ItemsControl : ScrollViewer
     {
         if(VisualTemplate != null)
         {
-            return VisualTemplate.CreateContent(vm);
+            return VisualTemplate.CreateContent(vm) as InteractiveGue;
         }
         else
         {
@@ -233,7 +233,7 @@ public class ItemsControl : ScrollViewer
             // vic says - this uses reflection, could be made faster, somehow...
 
             var gumConstructor = listBoxItemGumType.GetConstructor(new[] { typeof(bool), typeof(bool) });
-            var visual = gumConstructor.Invoke(new object[] { true, true }) as GraphicalUiElement;
+            var visual = gumConstructor.Invoke(new object[] { true, true }) as InteractiveGue;
             return visual;
         }
     }
@@ -310,7 +310,7 @@ public class ItemsControl : ScrollViewer
 
     private void HandleListBoxItemClicked(object sender, EventArgs e)
     {
-        OnItemClicked(sender, null);
+        OnItemClicked(sender, EventArgs.Empty);
     }
 
     protected virtual void OnItemSelected(object sender, SelectionChangedEventArgs args)
@@ -348,6 +348,7 @@ public class ItemsControl : ScrollViewer
 
     #region Update To
 
+#if FRB
     protected override void HandleVisualBindingContextChanged(object sender, BindingContextChangedEventArgs args)
     {
         if(args.OldBindingContext != null && BindingContext == null)
@@ -361,6 +362,6 @@ public class ItemsControl : ScrollViewer
         }
         base.HandleVisualBindingContextChanged(sender, args);
     }
-
+#endif
     #endregion
 }
