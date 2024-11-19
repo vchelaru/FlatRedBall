@@ -7,6 +7,10 @@ using System.Collections.Generic;
 using System.Text;
 
 #if FRB
+using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
+#endif
+
+#if FRB
 namespace FlatRedBall.Forms.Controls.Primitives;
 #else
 namespace MonoGameGum.Forms.Controls.Primitives;
@@ -60,24 +64,34 @@ public class ButtonBase : FrameworkElement, IInputReceiver
 
     public ButtonBase() : base() { }
 
-    public ButtonBase(GraphicalUiElement visual) : base(visual) { }
+    public ButtonBase(InteractiveGue visual) : base(visual) { }
 
     protected override void ReactToVisualChanged()
     {
+#if FRB
+        Visual.Click += _=>this.HandleClick(this, null);
+        Visual.Push += _ => this.HandlePush (this, null);
+        Visual.LosePush += _ => this.HandleLosePush (this, null);
+        Visual.RollOn += _ => this.HandleRollOn (this, null);
+        Visual.RollOff += _ => this.HandleRollOff(this, null);
+#else
         Visual.Click += this.HandleClick;
         Visual.Push += this.HandlePush;
         Visual.LosePush += this.HandleLosePush;
         Visual.RollOn += this.HandleRollOn;
         Visual.RollOff += this.HandleRollOff;
+#endif
 
         base.ReactToVisualChanged();
+
+        UpdateState();
     }
 
     #endregion
 
     #region Event Handler Methods
 
-    private void HandleClick(IWindow window)
+    private void HandleClick(object sender, EventArgs args)
     {
         UpdateState();
 
@@ -89,24 +103,24 @@ public class ButtonBase : FrameworkElement, IInputReceiver
 #endif
     }
 
-    private void HandlePush(IWindow window)
+    private void HandlePush(object sender, EventArgs args)
     {
         UpdateState();
 
         Push?.Invoke(this, null);
     }
 
-    private void HandleLosePush(IWindow window)
+    private void HandleLosePush(object sender, EventArgs args)
     {
         UpdateState();
     }
 
-    private void HandleRollOn(IWindow window)
+    private void HandleRollOn(object sender, EventArgs args)
     {
         UpdateState();
     }
 
-    private void HandleRollOff(IWindow window)
+    private void HandleRollOff(object sender, EventArgs args)
     {
         UpdateState();
     }
@@ -117,7 +131,7 @@ public class ButtonBase : FrameworkElement, IInputReceiver
 
     public void PerformClick()
     {
-        HandleClick(this.Visual);
+        HandleClick(this, null);
     }
 
     #region IInputReceiver Methods
@@ -139,7 +153,7 @@ public class ButtonBase : FrameworkElement, IInputReceiver
                 IsEnabled)
             {
                 //this.HandlePush(null);
-                this.HandleClick(null);
+                this.HandleClick(this, null);
 
                 ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.A);
             }
@@ -185,7 +199,7 @@ public class ButtonBase : FrameworkElement, IInputReceiver
             if((gamepad as IInputDevice).DefaultConfirmInput.WasJustPressed && IsEnabled)
             {
                 //this.HandlePush(null);
-                this.HandleClick(null);
+                this.HandleClick(this, null);
             }
 
             if(IsEnabled)
@@ -209,7 +223,7 @@ public class ButtonBase : FrameworkElement, IInputReceiver
             if (inputDevice.DefaultConfirmInput.WasJustPressed && IsEnabled)
             {
                 //this.HandlePush(null);
-                this.HandleClick(null);
+                this.HandleClick(this, null);
             }
         }
 #endif
@@ -231,9 +245,11 @@ public class ButtonBase : FrameworkElement, IInputReceiver
 
     public void HandleKeyDown(Keys key, bool isShiftDown, bool isAltDown, bool isCtrlDown)
     {
+#if FRB
         var args = new Input.KeyEventArgs();
         args.Key = key;
         base.RaiseKeyDown(args);
+#endif
     }
 
     public void HandleCharEntered(char character)
