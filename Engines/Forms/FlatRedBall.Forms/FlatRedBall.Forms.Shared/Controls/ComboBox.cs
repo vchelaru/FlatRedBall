@@ -15,6 +15,7 @@ using FlatRedBall.Input;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
+using MonoGameGum.Input;
 using RenderingLibrary;
 namespace MonoGameGum.Forms.Controls;
 #endif
@@ -176,7 +177,7 @@ public class ComboBox : FrameworkElement, IInputReceiver
 
     protected override void ReactToVisualChanged()
     {
-        var listBoxInstance = Visual.GetGraphicalUiElementByName("ListBoxInstance");
+        var listBoxInstance = Visual.GetGraphicalUiElementByName("ListBoxInstance") as InteractiveGue;
         textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");
 
 #if DEBUG
@@ -393,7 +394,9 @@ public class ComboBox : FrameworkElement, IInputReceiver
 
         var clickedOnThisOrChild =
             cursor.WindowOver == this.Visual ||
-            (cursor.WindowOver != null && cursor.WindowOver.IsInParentChain(this.Visual));
+            (cursor.WindowOver != null && cursor.WindowOver.IsInParentChain(this.Visual)) ||
+            (cursor.WindowOver != null && cursor.WindowOver.IsInParentChain(this.listBox.Visual))
+            ;
 
         if (clickedOnThisOrChild == false)
         {
@@ -417,7 +420,7 @@ public class ComboBox : FrameworkElement, IInputReceiver
 
     private void HideListBox()
     {
-        if(Visual.Managers != null && listBox.IsVisible)
+        if(Visual.EffectiveManagers != null && listBox.IsVisible)
         {
             listBox.IsVisible = false;
             listBox.Visual.RemoveFromManagers();
@@ -432,11 +435,9 @@ public class ComboBox : FrameworkElement, IInputReceiver
             listBox.Visual.Width = listBoxWidth;
             listBox.Visual.Height = listBoxHeight;
 
-#if FRB
-            Visual.Managers.Renderer.MainLayer.Remove(listBox.Visual);
-#else
             Visual.EffectiveManagers.Renderer.MainLayer.Remove(listBox.Visual);
-
+#if FRB
+#else
             listBox.Visual.GetTopParent()?.Children.Remove(listBox.Visual);
 #endif
 
@@ -656,7 +657,9 @@ public class ComboBox : FrameworkElement, IInputReceiver
     {
     }
 
-    public void LoseFocus()
+    [Obsolete("Use OnLoseFocus")]
+    public void LoseFocus() => OnLoseFocus();
+    public void OnLoseFocus()
     {
         IsFocused = false;
     }
@@ -672,6 +675,13 @@ public class ComboBox : FrameworkElement, IInputReceiver
     public void HandleCharEntered(char character)
     {
     }
+
+#if !FRB
+    public void DoKeyboardAction(IInputReceiverKeyboard keyboard)
+    {
+
+    }
+#endif
 
     #endregion
 }
