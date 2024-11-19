@@ -207,7 +207,9 @@ public class ListBox : ItemsControl , IInputReceiver
     /// Until July 2024 this was only firing at the top level. July 2024 version also raises
     /// this event when a button is pushed on an item.
     /// </remarks>
+    #if FRB
     public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
+    #endif
     public event Action<int> GenericGamepadButtonPushed;
 
     #endregion
