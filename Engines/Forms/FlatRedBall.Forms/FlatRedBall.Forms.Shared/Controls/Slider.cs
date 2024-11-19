@@ -225,7 +225,7 @@ public class Slider : RangeBase, IInputReceiver
 
     #region UpdateTo Methods
 
-    protected override void UpdateState()
+    public override void UpdateState()
     {
         if (Visual == null) //don't try to update the UI when the UI is not set yet, mmmmkay?
             return;

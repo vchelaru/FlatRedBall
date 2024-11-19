@@ -321,7 +321,7 @@ public class ListBox : ItemsControl , IInputReceiver
         }
     }
 
-    protected override void UpdateState()
+    public override void UpdateState()
     {
         var category = "ListBoxCategoryState";
         if (IsEnabled == false)

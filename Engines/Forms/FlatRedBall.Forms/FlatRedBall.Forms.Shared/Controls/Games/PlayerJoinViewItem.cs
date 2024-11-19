@@ -130,7 +130,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
         internal void ForceUpdateState() => UpdateState();
 
-        protected override void UpdateState()
+        public override void UpdateState()
         {
             if(InputDevice != null)
             {

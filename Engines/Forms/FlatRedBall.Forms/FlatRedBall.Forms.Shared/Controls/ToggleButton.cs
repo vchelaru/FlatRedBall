@@ -96,7 +96,7 @@ public class ToggleButton : ButtonBase
 
     #region Update To Methods
 
-    protected override void UpdateState()
+    public override void UpdateState()
     {
         var cursor = GuiManager.Cursor;
 

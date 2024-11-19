@@ -956,7 +956,7 @@ namespace FlatRedBall.Forms.Controls
             return didChildHandle;
         }
 
-        protected virtual void UpdateState()
+        public virtual void UpdateState()
         { }
 
         protected void RaiseKeyDown(KeyEventArgs e)

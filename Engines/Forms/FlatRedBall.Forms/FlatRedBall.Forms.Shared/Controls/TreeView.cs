@@ -143,7 +143,7 @@ public class TreeView : ScrollViewer
         }
     }
 
-    protected override void UpdateState()
+    public override void UpdateState()
     {
         var category = "TreeViewCategory";
         if (IsEnabled == false)

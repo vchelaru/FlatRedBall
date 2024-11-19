@@ -849,7 +849,7 @@ public abstract class TextBoxBase : FrameworkElement, IInputReceiver
 
     #region UpdateTo Methods
 
-    protected override void UpdateState()
+    public override void UpdateState()
     {
         var cursor = MainCursor;
 

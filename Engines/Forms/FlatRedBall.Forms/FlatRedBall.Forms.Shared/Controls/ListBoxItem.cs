@@ -158,7 +158,7 @@ public class ListBoxItem : FrameworkElement
         }
     }
 
-    protected override void UpdateState()
+    public override void UpdateState()
     {
         var cursor = GuiManager.Cursor;
 

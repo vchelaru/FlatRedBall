@@ -432,7 +432,7 @@ public class ComboBox : FrameworkElement, IInputReceiver
 
     #region UpdateTo Methods
 
-    protected override void UpdateState()
+    public override void UpdateState()
     {
         var cursor = GuiManager.Cursor;
 

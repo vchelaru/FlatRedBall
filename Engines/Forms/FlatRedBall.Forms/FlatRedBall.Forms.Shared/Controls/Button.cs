@@ -85,7 +85,7 @@ public class Button : ButtonBase
 
     #region UpdateTo Methods
 
-    protected override void UpdateState()
+    public override void UpdateState()
     {
         var state = base.GetDesiredState();
 
