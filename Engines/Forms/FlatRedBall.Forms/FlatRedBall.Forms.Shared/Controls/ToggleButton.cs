@@ -7,7 +7,7 @@ using FlatRedBall.Gui;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
-
+namespace MonoGameGum.Forms.Controls;
 #endif
 
 public class ToggleButton : ButtonBase
@@ -82,7 +82,7 @@ public class ToggleButton : ButtonBase
         IsChecked = false;
     }
 
-    public ToggleButton(GraphicalUiElement visual) : base(visual)
+    public ToggleButton(InteractiveGue visual) : base(visual)
     {
         IsChecked = false;
     }

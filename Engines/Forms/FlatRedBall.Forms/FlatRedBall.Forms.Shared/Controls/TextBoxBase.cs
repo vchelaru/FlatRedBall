@@ -12,7 +12,7 @@ using FlatRedBall.Input;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
-
+namespace MonoGameGum.Forms.Controls;
 #endif
 
 public class TextCompositionEventArgs : RoutedEventArgs
@@ -224,7 +224,7 @@ public abstract class TextBoxBase : FrameworkElement, IInputReceiver
 
     public TextBoxBase() : base() { }
 
-    public TextBoxBase(GraphicalUiElement visual) : base(visual) { }
+    public TextBoxBase(InteractiveGue visual) : base(visual) { }
 
     protected override void ReactToVisualChanged()
     {

@@ -59,7 +59,7 @@ public class TextBox : TextBoxBase
 
     public TextBox() : base() { }
 
-    public TextBox(GraphicalUiElement visual) : base(visual) { }
+    public TextBox(InteractiveGue visual) : base(visual) { }
 
     protected override void ReactToVisualChanged()
     {

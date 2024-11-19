@@ -6,7 +6,7 @@ using System.Security;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
-
+namespace MonoGameGum.Forms.Controls;
 #endif
 
 public class PasswordBox : TextBoxBase
@@ -77,7 +77,7 @@ public class PasswordBox : TextBoxBase
 
     public PasswordBox() : base() { }
 
-    public PasswordBox(GraphicalUiElement visual) : base(visual) { }
+    public PasswordBox(InteractiveGue visual) : base(visual) { }
 
     protected override void ReactToVisualChanged()
     {

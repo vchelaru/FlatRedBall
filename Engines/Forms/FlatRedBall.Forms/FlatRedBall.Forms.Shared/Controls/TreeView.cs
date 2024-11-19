@@ -9,7 +9,7 @@ using System.Linq;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
-
+namespace MonoGameGum.Forms.Controls;
 #endif
 
 public class TreeView : ScrollViewer
@@ -70,7 +70,7 @@ public class TreeView : ScrollViewer
 
     }
 
-    public TreeView(GraphicalUiElement visual) : base(visual)
+    public TreeView(InteractiveGue visual) : base(visual)
     {
         InitializeTreeViewLogic();
     }

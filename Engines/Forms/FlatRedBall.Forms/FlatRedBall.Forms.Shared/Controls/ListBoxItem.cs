@@ -6,7 +6,7 @@ using FlatRedBall.Gui;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
-
+namespace MonoGameGum.Forms.Controls;
 #endif
 
 public class ListBoxItem : FrameworkElement
@@ -50,7 +50,7 @@ public class ListBoxItem : FrameworkElement
 
     public ListBoxItem() : base() { }
 
-    public ListBoxItem(GraphicalUiElement visual) : base(visual) { }
+    public ListBoxItem(InteractiveGue visual) : base(visual) { }
 
     protected override void ReactToVisualChanged()
     {

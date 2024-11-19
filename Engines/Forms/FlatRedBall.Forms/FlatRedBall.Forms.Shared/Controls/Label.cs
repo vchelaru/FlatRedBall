@@ -42,7 +42,7 @@ public class Label : FrameworkElement
 
     public Label() : base() { }
 
-    public Label(GraphicalUiElement visual) : base(visual) { }
+    public Label(InteractiveGue visual) : base(visual) { }
 
     protected override void ReactToVisualChanged()
     {

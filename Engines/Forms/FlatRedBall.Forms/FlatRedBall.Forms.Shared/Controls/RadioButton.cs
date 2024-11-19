@@ -6,7 +6,7 @@ using Gum.Wireframe;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
-
+namespace MonoGameGum.Forms.Controls;
 #endif
 
 public class RadioButton : ToggleButton
@@ -152,7 +152,7 @@ public class RadioButton : ToggleButton
         IsChecked = false;
     }
 
-    public RadioButton(GraphicalUiElement visual, string groupName = "") : base(visual) 
+    public RadioButton(InteractiveGue visual, string groupName = "") : base(visual) 
     {
         GroupName = groupName;
         IsChecked = false;

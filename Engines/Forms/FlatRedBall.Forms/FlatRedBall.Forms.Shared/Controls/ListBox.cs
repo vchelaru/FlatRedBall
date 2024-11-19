@@ -9,9 +9,10 @@ using Microsoft.Xna.Framework.Input;
 using FlatRedBall.Input;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Gui;
+using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
-
+namespace MonoGameGum.Forms.Controls;
 #endif
 
 public enum ScrollIntoViewStyle
@@ -217,7 +218,7 @@ public class ListBox : ItemsControl , IInputReceiver
     {
     }
 
-    public ListBox(GraphicalUiElement visual) : base(visual) 
+    public ListBox(InteractiveGue visual) : base(visual) 
     {
     }
 

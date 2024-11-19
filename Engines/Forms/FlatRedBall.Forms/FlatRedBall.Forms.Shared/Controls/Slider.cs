@@ -11,7 +11,7 @@ using FlatRedBall.Forms.Controls.Primitives;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
-
+namespace MonoGameGum.Forms.Controls;
 #endif
 
 public class Slider : RangeBase, IInputReceiver
@@ -52,7 +52,7 @@ public class Slider : RangeBase, IInputReceiver
         Initialize();
     }
 
-    public Slider(GraphicalUiElement visual) : base(visual)
+    public Slider(InteractiveGue visual) : base(visual)
     {
         Initialize();
     }

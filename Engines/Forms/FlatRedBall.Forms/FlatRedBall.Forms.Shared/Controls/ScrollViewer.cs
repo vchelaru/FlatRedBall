@@ -6,7 +6,7 @@ using FlatRedBall.Gui;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
-
+namespace MonoGameGum.Forms.Controls;
 #endif
 
 #region Enums
@@ -79,7 +79,7 @@ public class ScrollViewer : FrameworkElement
 
     public ScrollViewer() : base() { }
 
-    public ScrollViewer(GraphicalUiElement visual) : base(visual) { }
+    public ScrollViewer(InteractiveGue visual) : base(visual) { }
 
     protected override void ReactToVisualChanged()
     {

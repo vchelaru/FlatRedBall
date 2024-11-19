@@ -8,7 +8,7 @@ using FlatRedBall.Forms.Controls.Primitives;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
-
+namespace MonoGameGum.Forms.Controls;
 #endif
 
 public class ScrollBar : RangeBase
@@ -51,7 +51,7 @@ public class ScrollBar : RangeBase
 
     public ScrollBar() : base() { }
 
-    public ScrollBar(GraphicalUiElement visual) : base(visual) { }
+    public ScrollBar(InteractiveGue visual) : base(visual) { }
 
     protected override void ReactToVisualChanged()
     {
