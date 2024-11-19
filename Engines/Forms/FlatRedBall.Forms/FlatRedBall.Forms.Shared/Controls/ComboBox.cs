@@ -1,21 +1,22 @@
 ﻿using Gum.Wireframe;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using FlatRedBall.Gui;
 using Gum.DataTypes;
 using Gum.Converters;
 using System.Collections;
 using Microsoft.Xna.Framework.Input;
-using FlatRedBall.Input;
+using RenderingLibrary;
+
 
 #if FRB
+using FlatRedBall.Gui;
+using FlatRedBall.Input;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
-
+using RenderingLibrary;
+namespace MonoGameGum.Forms.Controls;
 #endif
 
 public class ComboBox : FrameworkElement, IInputReceiver
@@ -160,9 +161,10 @@ public class ComboBox : FrameworkElement, IInputReceiver
 
     public event Action<object, SelectionChangedEventArgs> SelectionChanged;
     public event Action<IInputReceiver> FocusUpdate;
+#if FRB
     public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
+#endif
     public event Action<int> GenericGamepadButtonPushed;
-
 
     #endregion
 
@@ -170,7 +172,7 @@ public class ComboBox : FrameworkElement, IInputReceiver
 
     public ComboBox() : base() { }
 
-    public ComboBox(GraphicalUiElement visual) : base(visual) { }
+    public ComboBox(InteractiveGue visual) : base(visual) { }
 
     protected override void ReactToVisualChanged()
     {
@@ -212,14 +214,29 @@ public class ComboBox : FrameworkElement, IInputReceiver
 #endif
         }
 
-
+#if FRB
+        Visual.Click += _=> this.HandleClick(this, EventArgs.Empty);
+        Visual.Push += _ => this.HandlePush(this, EventArgs.Empty);
+        Visual.LosePush += _ => this.HandleLosePush(this, EventArgs.Empty);
+        Visual.RollOn += _ => this.HandleRollOn(this, EventArgs.Empty);
+        Visual.RollOff += _ => this.HandleRollOff(this, EventArgs.Empty);
+#else
         Visual.Click += this.HandleClick;
         Visual.Push += this.HandlePush;
         Visual.LosePush += this.HandleLosePush;
         Visual.RollOn += this.HandleRollOn;
         Visual.RollOff += this.HandleRollOff;
+#endif
 
-        listBox.Visual.EffectiveParentGue.RaiseChildrenEventsOutsideOfBounds = true;
+        var effectiveParent = listBox.Visual.EffectiveParentGue as InteractiveGue;
+        if (effectiveParent != null)
+        {
+            effectiveParent.RaiseChildrenEventsOutsideOfBounds = true;
+        }
+        else
+        {
+            Visual.RaiseChildrenEventsOutsideOfBounds = true;
+        }
         listBox.SelectionChanged += HandleSelectionChanged;
         listBox.ItemClicked += HandleListBoxItemClicked;
 
@@ -235,22 +252,22 @@ public class ComboBox : FrameworkElement, IInputReceiver
 
     #region Event Handler Methods
 
-    private void HandleClick(IWindow window)
+    private void HandleClick(object sender, EventArgs args)
     {
         UpdateState();
     }
 
-    private void HandleRollOn(IWindow window)
+    private void HandleRollOn(object sender, EventArgs args)
     {
         UpdateState();
     }
 
-    private void HandleRollOff(IWindow window)
+    private void HandleRollOff(object sender, EventArgs args)
     {
         UpdateState();
     }
 
-    private void HandlePush(IWindow window)
+    private void HandlePush(object sender, EventArgs args)
     {
         if(IsDropDownOpen)
         {
@@ -304,15 +321,16 @@ public class ComboBox : FrameworkElement, IInputReceiver
         // let's just make sure it's removed
         listBox.Visual.RemoveFromManagers();
 
-        var layerToAddListBoxTo =
-            Visual.Managers.Renderer.MainLayer;
+        var managers = Visual.Managers ?? SystemManagers.Default;
+
+        var layerToAddListBoxTo = managers.Renderer.MainLayer;
 
         var mainRoot = Visual.ElementGueContainingThis ?? Visual;
 
         // do a search in the layers to see where this is held - expensive but we can at least look in non-main layers
-        foreach(var layer in Visual.Managers.Renderer.Layers)
+        foreach(var layer in managers.Renderer.Layers)
         {
-            if(layer != Visual.Managers.Renderer.MainLayer)
+            if(layer != managers.Renderer.MainLayer)
             {
                 if(layer.Renderables.Contains(mainRoot) || layer.Renderables.Contains(mainRoot?.RenderableComponent))
                 {
@@ -402,7 +420,7 @@ public class ComboBox : FrameworkElement, IInputReceiver
         }
     }
 
-    private void HandleLosePush(IWindow window)
+    private void HandleLosePush(object sender, EventArgs args)
     {
         UpdateState();
     }
