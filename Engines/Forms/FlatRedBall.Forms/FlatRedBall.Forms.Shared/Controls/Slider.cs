@@ -100,7 +100,7 @@ public class Slider : RangeBase, IInputReceiver
         {
             leftOfThumb += this.thumb.ActualWidth;
         }
-        var cursorScreen = GuiManager.Cursor.GumX();
+        var cursorScreen = MainCursor.XRespectingGumZoomAndBounds();
 
         cursorGrabOffsetRelativeToThumb = cursorScreen - leftOfThumb;
 
@@ -142,7 +142,7 @@ public class Slider : RangeBase, IInputReceiver
             var left = Track.GetAbsoluteX();
             var right = Track.GetAbsoluteX() + Track.GetAbsoluteWidth();
 
-            var screenX = GuiManager.Cursor.GumX();
+            var screenX = GuiManager.Cursor.XRespectingGumZoomAndBounds();
 
             var ratio = (screenX - left) / (right - left);
 
@@ -157,7 +157,7 @@ public class Slider : RangeBase, IInputReceiver
         {
             double newValue;
 
-            var gumX = GuiManager.Cursor.GumX();
+            var gumX = GuiManager.Cursor.XRespectingGumZoomAndBounds();
             if (gumX < thumb.ActualX)
             {
                 newValue = Value - LargeChange;
@@ -280,7 +280,7 @@ public class Slider : RangeBase, IInputReceiver
     {
         var valueBefore = Value;
 
-        var cursorScreenX = cursor.GumX();
+        var cursorScreenX = cursor.XRespectingGumZoomAndBounds();
 
         var cursorXRelativeToTrack = cursorScreenX - Track.GetAbsoluteX();
 

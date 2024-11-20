@@ -417,8 +417,8 @@ public abstract class TextBoxBase : FrameworkElement, IInputReceiver
 
     private int GetCaretIndexAtCursor()
     {
-        var cursorScreenX = MainCursor.GumX();
-        var cursorScreenY = MainCursor.GumY();
+        var cursorScreenX = MainCursor.XRespectingGumZoomAndBounds();
+        var cursorScreenY = MainCursor.YRespectingGumZoomAndBounds();
         return GetCaretIndexAtPosition(cursorScreenX, cursorScreenY);
     }
 

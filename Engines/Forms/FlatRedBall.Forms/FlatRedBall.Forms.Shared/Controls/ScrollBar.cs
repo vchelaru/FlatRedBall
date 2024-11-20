@@ -8,6 +8,7 @@ using FlatRedBall.Forms.Controls.Primitives;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
+using MonoGameGum.Forms.Controls.Primitives;
 namespace MonoGameGum.Forms.Controls;
 #endif
 
@@ -55,7 +56,7 @@ public class ScrollBar : RangeBase
 
     protected override void ReactToVisualChanged()
     {
-        var upButtonVisual = this.Visual.GetGraphicalUiElementByName("UpButtonInstance");
+        var upButtonVisual = this.Visual.GetGraphicalUiElementByName("UpButtonInstance") as InteractiveGue;
 #if DEBUG
         if (upButtonVisual == null)
         {
@@ -71,7 +72,7 @@ public class ScrollBar : RangeBase
             upButton = upButtonVisual.FormsControlAsObject as Button;
         }
 
-        var downButtonVisual = this.Visual.GetGraphicalUiElementByName("DownButtonInstance");
+        var downButtonVisual = this.Visual.GetGraphicalUiElementByName("DownButtonInstance") as InteractiveGue;
 #if DEBUG
         if(downButtonVisual == null)
         {
@@ -95,7 +96,11 @@ public class ScrollBar : RangeBase
 
         upButton.Push += (not, used) => this.Value -= this.SmallChange;
         downButton.Push += (not, used) => this.Value += this.SmallChange;
+#if FRB
         Track.Push += _ => HandleTrackPush(this, EventArgs.Empty);
+#else
+        Track.Push += HandleTrackPush;
+#endif
         Visual.SizeChanged += HandleVisualSizeChange;
 
 
@@ -125,18 +130,18 @@ public class ScrollBar : RangeBase
     protected override void HandleThumbPush(object sender, EventArgs e)
     {
         var topOfThumb = this.thumb.ActualY;
-        var cursorScreen = GuiManager.Cursor.GumY();
+        var cursorScreen = GuiManager.Cursor.YRespectingGumZoomAndBounds();
 
         cursorGrabOffsetRelativeToThumb = cursorScreen - topOfThumb;
     }
 
     private void HandleTrackPush(object sender, EventArgs args)
     {
-        if (GuiManager.Cursor.GumY() < thumb.ActualY)
+        if (GuiManager.Cursor.YRespectingGumZoomAndBounds() < thumb.ActualY)
         {
             Value -= LargeChange;
         }
-        else if (GuiManager.Cursor.GumY() > thumb.ActualY + thumb.ActualHeight)
+        else if (GuiManager.Cursor.YRespectingGumZoomAndBounds() > thumb.ActualY + thumb.ActualHeight)
         {
             Value += LargeChange;
         }
@@ -196,7 +201,7 @@ public class ScrollBar : RangeBase
 
     protected override void UpdateThumbPositionToCursorDrag(Cursor cursor)
     {
-        var cursorScreenY = cursor.GumY();
+        var cursorScreenY = cursor.YRespectingGumZoomAndBounds();
         var cursorYRelativeToTrack = cursorScreenY - Track.GetTop();
 
 
