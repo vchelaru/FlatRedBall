@@ -11,6 +11,7 @@ using FlatRedBall.Forms.Controls.Primitives;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
+using MonoGameGum.Forms.Controls.Primitives;
 namespace MonoGameGum.Forms.Controls;
 #endif
 
