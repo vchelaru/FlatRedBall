@@ -14,6 +14,7 @@ using FlatRedBall.Input;
 
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using System.ComponentModel;
 
 
 namespace FlatRedBall.Gui
@@ -581,6 +582,14 @@ namespace FlatRedBall.Gui
             }
         }
 
+        // Exists to match the MonoGame cursor so we can unify the code
+        // You can use this or ScreenXChange and they mean the same thing.
+        // Note - This property does not show up if you link FRB .dlls (or nuget)
+        // but it does show up if you link source. Sorry for the confusion, but I
+        // blame the stupid behavior of EditorBrowsableState
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public int XChange => ScreenXChange;
+
         /// <summary>
         /// Returns the number of pixels on the Y axis
         /// that the cursor has moved since the last
@@ -593,6 +602,15 @@ namespace FlatRedBall.Gui
                 return ScreenY - LastScreenY;
             }
         }
+
+
+        // Exists to match the MonoGame cursor so we can unify the code
+        // You can use this or ScreenYChange and they mean the same thing.
+        // Note - This property does not show up if you link FRB .dlls (or nuget)
+        // but it does show up if you link source. Sorry for the confusion, but I
+        // blame the stupid behavior of EditorBrowsableState
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public int YChange => ScreenYChange;
 
         [Obsolete("Use ScreenX instead")]
         public int WindowRelativeX

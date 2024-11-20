@@ -256,12 +256,12 @@ public abstract class TextBoxBase : FrameworkElement, IInputReceiver
         if (caretComponent == null) throw new Exception("Gum object must have an object called \"Caret\"");
 #endif
 
-        Visual.Click += this.HandleClick;
-        Visual.Push += this.HandlePush;
-        Visual.RollOn += this.HandleRollOn;
-        Visual.RollOver += this.HandleRollOver;
-        Visual.DragOver += this.HandleDrag;
-        Visual.RollOff += this.HandleRollOff;
+        Visual.Click += _ => this.HandleClick(this, EventArgs.Empty);
+        Visual.Push += _ => this.HandlePush(this, EventArgs.Empty);
+        Visual.RollOn += _ => this.HandleRollOn(this, EventArgs.Empty);
+        Visual.RollOver += _ => this.HandleRollOver(this, EventArgs.Empty);
+        Visual.DragOver += _ => this.HandleDrag(this, EventArgs.Empty);
+        Visual.RollOff += _ => this.HandleRollOff(this, EventArgs.Empty);
         Visual.SizeChanged += HandleVisualSizeChanged;
 
         this.textComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
@@ -300,7 +300,7 @@ public abstract class TextBoxBase : FrameworkElement, IInputReceiver
         OffsetTextToKeepCaretInView();
     }
 
-    private void HandlePush(IWindow window)
+    private void HandlePush(object sender, EventArgs args)
     {
         if (MainCursor.PrimaryDoublePush)
         {
@@ -316,7 +316,7 @@ public abstract class TextBoxBase : FrameworkElement, IInputReceiver
         }
     }
 
-    private void HandleClick(IWindow window)
+    private void HandleClick(object sender, EventArgs args)
     {
         FlatRedBall.Input.InputManager.InputReceiver = this;
 
@@ -350,12 +350,12 @@ public abstract class TextBoxBase : FrameworkElement, IInputReceiver
         }
     }
 
-    private void HandleRollOn(IWindow window)
+    private void HandleRollOn(object sender, EventArgs args)
     {
         UpdateState();
     }
 
-    private void HandleRollOver(IWindow window)
+    private void HandleRollOver(object sender, EventArgs args)
     {
         if (MainCursor.LastInputDevice == InputDevice.Mouse)
         {
@@ -373,7 +373,7 @@ public abstract class TextBoxBase : FrameworkElement, IInputReceiver
         }
     }
 
-    private void HandleDrag(IWindow window)
+    private void HandleDrag(object sender, EventArgs args)
     {
         if (MainCursor.LastInputDevice == InputDevice.TouchScreen)
         {
@@ -403,7 +403,7 @@ public abstract class TextBoxBase : FrameworkElement, IInputReceiver
         }
     }
 
-    private void HandleRollOff(IWindow window)
+    private void HandleRollOff(object sender, EventArgs args)
     {
         UpdateState();
     }

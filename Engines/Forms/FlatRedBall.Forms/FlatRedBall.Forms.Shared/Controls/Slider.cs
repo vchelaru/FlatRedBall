@@ -73,7 +73,7 @@ public class Slider : RangeBase, IInputReceiver
         base.ReactToVisualChanged();
 
         Track.Push += HandleTrackPush;
-        base.thumb.Visual.RemovedAsPushedWindow += HandleRemovedAsPushedWindow;
+        base.thumb.Visual.RemovedAsPushedWindow += _ => HandleRemovedAsPushedWindow(this, EventArgs.Empty);
         UpdateState();
     }
 
@@ -107,7 +107,7 @@ public class Slider : RangeBase, IInputReceiver
         ValueOnThumbPush = Value;
     }
 
-    private void HandleRemovedAsPushedWindow(IWindow window)
+    private void HandleRemovedAsPushedWindow(object sender, EventArgs args)
     {
         if(ValueOnThumbPush != Value)
         {
@@ -125,7 +125,16 @@ public class Slider : RangeBase, IInputReceiver
         }
     }
 
+    // Normally we'd just make this use the standard EventHandler signature
+    // and handle it with a lambda wherever this is used. But for this case we
+    // need to -= the event, so we can't wrap the call in a lambda to fix for the
+    // different signatures in FRB vs MonoGame Gum. therefore, we have to #if the signature
+    // here on the method:
+#if FRB
     private void HandleTrackPush(IWindow window)
+#else
+    private void HandleTrackPush(object sender, EventArgs args)
+#endif
     {
         var valueBefore = Value;
         if(IsMoveToPointEnabled)
@@ -188,7 +197,7 @@ public class Slider : RangeBase, IInputReceiver
         }
     }
 
-    #endregion
+#endregion
 
     private double ApplyValueConsideringSnapToTicks(double newValue)
     {

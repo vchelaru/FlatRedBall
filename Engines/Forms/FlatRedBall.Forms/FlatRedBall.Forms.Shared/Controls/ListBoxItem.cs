@@ -37,6 +37,20 @@ public class ListBoxItem : FrameworkElement
 
     internal bool IsHighlightSuppressed { get; set; } = false;
 
+    bool isHighlighted;
+    public bool IsHighlighted
+    {
+        get => isHighlighted;
+        set
+        {
+            if (isHighlighted != value)
+            {
+                isHighlighted = value;
+                UpdateState();
+            }
+        }
+    }
+
     #endregion
 
     #region Events
@@ -54,12 +68,19 @@ public class ListBoxItem : FrameworkElement
 
     protected override void ReactToVisualChanged()
     {
+#if FRB
+        Visual.Push += _=> this.HandlePush(this, EventArgs.Empty);
+        Visual.Click += _ => this.HandleClick(this, EventArgs.Empty);
+        Visual.RollOn += _ => this.HandleRollOn(this, EventArgs.Empty);
+        Visual.RollOff += _ => this.HandleRollOff(this, EventArgs.Empty);
+        Visual.RollOver += _ => this.HandleRollOver(this, EventArgs.Empty);
+#else
         Visual.Push += this.HandlePush;
         Visual.Click += this.HandleClick;
         Visual.RollOn += this.HandleRollOn;
         Visual.RollOff += this.HandleRollOff;
         Visual.RollOver += this.HandleRollOver;
-
+#endif
         // optional
         text = Visual.GetGraphicalUiElementByName("TextInstance");
         coreText = text?.RenderableComponent as RenderingLibrary.Graphics.Text;
@@ -76,25 +97,11 @@ public class ListBoxItem : FrameworkElement
 
     #region Event Handlers
 
-    bool isHighlighted;
-    public bool IsHighlighted
+    private void HandleRollOn(object sender, EventArgs args)
     {
-        get => isHighlighted;
-        set
-        {
-            if(isHighlighted != value)
-            {
-                isHighlighted = value;
-                UpdateState();
-            }
-        }
-    }
+        var cursor = MainCursor;
 
-    private void HandleRollOn(IWindow window)
-    {
-        var cursor = GuiManager.Cursor;
-
-        if (cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0)
+        if (cursor.XChange != 0 || cursor.YChange != 0)
         {
             UpdateIsHighlightedFromCursor(cursor);
         }
@@ -103,11 +110,11 @@ public class ListBoxItem : FrameworkElement
     }
 
 
-    private void HandleRollOver(IWindow window)
+    private void HandleRollOver(object sender, EventArgs args)
     {
-        var cursor = GuiManager.Cursor;
+        var cursor = MainCursor;
 
-        if (cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0)
+        if (cursor.XChange != 0 || cursor.YChange != 0)
         {
             UpdateIsHighlightedFromCursor(cursor);
         }
@@ -115,22 +122,26 @@ public class ListBoxItem : FrameworkElement
         UpdateState();
     }
 
+#if FRB
     private void UpdateIsHighlightedFromCursor(Cursor cursor)
+#else
+    private void UpdateIsHighlightedFromCursor(ICursor cursor)
+#endif
     {
         IsHighlighted = cursor.LastInputDevice != InputDevice.TouchScreen &&
             GetIfIsOnThisOrChildVisual(cursor) && IsEnabled;
     }
 
-    private void HandleRollOff(IWindow window)
+    private void HandleRollOff(object sender, EventArgs args)
     {
         IsHighlighted = false;
 
         UpdateState();
     }
 
-    private void HandlePush(IWindow window)
+    private void HandlePush(object sender, EventArgs args)
     {
-        if(GuiManager.Cursor.LastInputDevice == InputDevice.Mouse)
+        if(MainCursor.LastInputDevice == InputDevice.Mouse)
         {
             IsSelected = true;
 
@@ -138,10 +149,10 @@ public class ListBoxItem : FrameworkElement
         }
     }
 
-    private void HandleClick(IWindow window)
+    private void HandleClick(object sender, EventArgs args)
     {
-        if(GuiManager.Cursor.LastInputDevice == InputDevice.TouchScreen &&
-            GuiManager.Cursor.PrimaryClickNoSlide)
+        if(MainCursor.LastInputDevice == InputDevice.TouchScreen &&
+            MainCursor.PrimaryClickNoSlide)
         {
             IsSelected = true;
 
@@ -163,7 +174,7 @@ public class ListBoxItem : FrameworkElement
 
     public override void UpdateState()
     {
-        var cursor = GuiManager.Cursor;
+        var cursor = MainCursor;
 
         const string category = "ListBoxItemCategoryState";
 
@@ -186,7 +197,7 @@ public class ListBoxItem : FrameworkElement
             // happening when the cursor is not moving, and the user is moving the focus
             // with the gamepad. 
             // Vic says - I'm not sure if this is the solution that I like, but let's start with it...
-            if(cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0)
+            if(cursor.XChange != 0 || cursor.YChange != 0)
             {
                 Visual.SetProperty(category, "Highlighted");
             }

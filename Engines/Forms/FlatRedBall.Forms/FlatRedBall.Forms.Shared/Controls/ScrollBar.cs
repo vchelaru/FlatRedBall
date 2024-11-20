@@ -95,7 +95,7 @@ public class ScrollBar : RangeBase
 
         upButton.Push += (not, used) => this.Value -= this.SmallChange;
         downButton.Push += (not, used) => this.Value += this.SmallChange;
-        Track.Push += HandleTrackPush;
+        Track.Push += _ => HandleTrackPush(this, EventArgs.Empty);
         Visual.SizeChanged += HandleVisualSizeChange;
 
 
@@ -130,7 +130,7 @@ public class ScrollBar : RangeBase
         cursorGrabOffsetRelativeToThumb = cursorScreen - topOfThumb;
     }
 
-    private void HandleTrackPush(IWindow window)
+    private void HandleTrackPush(object sender, EventArgs args)
     {
         if (GuiManager.Cursor.GumY() < thumb.ActualY)
         {
