@@ -136,7 +136,7 @@ public class PasswordBox : TextBoxBase
         OffsetTextToKeepCaretInView();
         UpdateDisplayedCharacters();
         UpdatePlaceholderVisibility();
-        PasswordChanged?.Invoke(this, null);
+        PasswordChanged?.Invoke(this, EventArgs.Empty);
         PushValueToViewModel();
     }
 
@@ -235,7 +235,7 @@ public class PasswordBox : TextBoxBase
         }
     }
 
-#endregion
+    #endregion
 
     public override void SelectAll()
     {
