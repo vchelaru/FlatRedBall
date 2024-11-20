@@ -25,7 +25,6 @@ namespace FlatRedBall.Math.Geometry
         Left = 4,
         Right = 8,
         All = 15,
-
     }
 
     #endregion

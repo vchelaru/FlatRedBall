@@ -30,6 +30,21 @@ public enum ScrollIntoViewStyle
     Bottom
 }
 
+
+#if !FRB
+
+public enum RepositionDirections
+{
+    None = 0,
+    Up = 1,
+    Down = 2,
+    Left = 4,
+    Right = 8,
+    All = 15,
+}
+
+#endif
+
 public class ListBox : ItemsControl , IInputReceiver
 {
     #region Fields/Properties
@@ -207,9 +222,9 @@ public class ListBox : ItemsControl , IInputReceiver
     /// Until July 2024 this was only firing at the top level. July 2024 version also raises
     /// this event when a button is pushed on an item.
     /// </remarks>
-    #if FRB
+#if FRB
     public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
-    #endif
+#endif
     public event Action<int> GenericGamepadButtonPushed;
 
     #endregion
@@ -368,6 +383,7 @@ public class ListBox : ItemsControl , IInputReceiver
 
     private void DoListItemFocusUpdate()
     {
+#if FRB
         var xboxGamepads = GuiManager.GamePadsForUiControl;
 
 
@@ -469,7 +485,7 @@ public class ListBox : ItemsControl , IInputReceiver
             DoListItemFocusUpdate(direction, pressedButton);
 
         }
-
+#endif
     }
 
     private int? GetListBoxIndexAt(float x, float y)
@@ -623,6 +639,7 @@ public class ListBox : ItemsControl , IInputReceiver
 
     private void DoTopLevelFocusUpdate()
     {
+#if FRB
         var gamepads = GuiManager.GamePadsForUiControl;
 
         for (int i = 0; i < gamepads.Count; i++)
@@ -680,21 +697,24 @@ public class ListBox : ItemsControl , IInputReceiver
                 }
             }
         }
-
+#endif
     }
 
     public void OnGainFocus()
     {
     }
 
+    [Obsolete("use OnLoseFocus instead")]
+    public void LoseFocus() => OnLoseFocus();
+
     /// <summary>
     /// Removes focus from the ListBox, both at the top level and at the individual item level, even if CanListItemsLoseFocus is set to false.
     /// </summary>
-    public void LoseFocus()
+    public void OnLoseFocus()
     {
         IsFocused = false;
 
-        if(DoListItemsHaveFocus)
+        if (DoListItemsHaveFocus)
         {
             DoListItemsHaveFocus = false;
         }
@@ -711,6 +731,11 @@ public class ListBox : ItemsControl , IInputReceiver
     public void HandleCharEntered(char character)
     {
     }
+
+    public void DoKeyboardAction(IInputReceiverKeyboard keyboard)
+    {
+    }
+
 
     #endregion
 }
