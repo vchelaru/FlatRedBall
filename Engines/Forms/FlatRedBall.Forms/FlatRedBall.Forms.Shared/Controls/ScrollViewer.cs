@@ -14,15 +14,15 @@ namespace MonoGameGum.Forms.Controls;
 public enum ScrollBarVisibility
 {
     /// <summary>
-    /// The ScrollBar will display only if needed based on the size of the inner panel
+    /// The ScrollBar displays only if needed based on the size of the inner panel
     /// </summary>
     Auto = 1,
     /// <summary>
-    /// The ScrollBar will remain invisible even if the contents of the inner panel exceed the size of its container
+    /// The ScrollBar remains invisible even if the contents of the inner panel exceed the size of its container
     /// </summary>
     Hidden = 2,
     /// <summary>
-    /// The ScrollBar will always display
+    /// The ScrollBar always displays
     /// </summary>
     Visible = 3
 }
@@ -176,7 +176,7 @@ public class ScrollViewer : FrameworkElement
 
     #region Scroll Methods
 
-    private void HandleMouseWheelScroll(object sender, FlatRedBall.Gui.RoutedEventArgs args)
+    private void HandleMouseWheelScroll(object sender, RoutedEventArgs args)
     {
         var valueBefore = verticalScrollBar.Value;
 
