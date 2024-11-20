@@ -8,6 +8,7 @@
              xmlns:plugins="clr-namespace:FlatRedBall.Glue.Plugins"
              xmlns:controls1="clr-namespace:GlueFormsCore.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:FlatRedBall.Glue.Themes.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              PreviewKeyDown="UserControl_PreviewKeyDown"
@@ -28,16 +29,24 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
+      <Grid.Resources>
+        <converters:MinPanelConverter x:Key="MinPanelConverter"/>
+      </Grid.Resources>
         <controls:ToolbarControl VerticalContentAlignment="Center" x:Name="ToolbarControl" Grid.Row="0"/>
 
         <Grid Grid.Row="1" Margin="3">
             <Grid.RowDefinitions>
 
-                <RowDefinition Height="{Binding TopPanelHeight, Mode=TwoWay}" />
+                <RowDefinition
+                  Height="{Binding TopPanelHeight, Mode=TwoWay}"
+                  MinHeight="{Binding TopTabItems.Count, Converter={StaticResource MinPanelConverter}}"/>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="{Binding BottomPanelHeight, Mode=TwoWay}" />
+                <RowDefinition
+                  Height="{Binding BottomPanelHeight, Mode=TwoWay}"
+                  MinHeight="{Binding BottomTabItems.Count, Converter={StaticResource MinPanelConverter}}"/>
             </Grid.RowDefinitions>
 
             <TabControl x:Name="TopTabControl" 
@@ -58,11 +67,15 @@
 
             <Grid Grid.Row="2" x:Name="CenterGrid">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{Binding LeftPanelWidth, Mode=TwoWay}" />
+                    <ColumnDefinition
+                      Width="{Binding LeftPanelWidth, Mode=TwoWay}"
+                      MinWidth="{Binding LeftTabItems.Count, Converter={StaticResource MinPanelConverter}}" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="{Binding RightPanelWidth, Mode=TwoWay}" />
+                    <ColumnDefinition
+                      Width="{Binding RightPanelWidth, Mode=TwoWay}"
+                      MinWidth="{Binding RightTabItems.Count, Converter={StaticResource MinPanelConverter}}"/>
                 </Grid.ColumnDefinitions>
 
                 <TabControl x:Name="LeftTabControl" 
