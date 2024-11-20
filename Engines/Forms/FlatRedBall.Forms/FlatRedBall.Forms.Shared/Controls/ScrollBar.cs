@@ -206,7 +206,11 @@ public class ScrollBar : RangeBase
 
     }
 
+#if FRB
     protected override void UpdateThumbPositionToCursorDrag(Cursor cursor)
+#else
+    protected override void UpdateThumbPositionToCursorDrag(ICursor cursor)
+#endif
     {
         var cursorScreenY = cursor.YRespectingGumZoomAndBounds();
         var cursorYRelativeToTrack = cursorScreenY - Track.AbsoluteTop;
