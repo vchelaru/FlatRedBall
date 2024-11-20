@@ -83,8 +83,25 @@ public class ScrollViewer : FrameworkElement
 
     protected override void ReactToVisualChanged()
     {
-        var scrollBarVisual = Visual.GetGraphicalUiElementByName(VerticalScrollBarInstanceName); 
-        if(scrollBarVisual.FormsControlAsObject == null)
+        var scrollBarVisualAsGue = Visual.GetGraphicalUiElementByName(VerticalScrollBarInstanceName);
+#if DEBUG
+        if (scrollBarVisualAsGue == null)
+        {
+            throw new InvalidOperationException($"Could not find a child with the name {VerticalScrollBarInstanceName}");
+        }
+#endif
+
+        var scrollBarVisual = scrollBarVisualAsGue as InteractiveGue;
+
+#if DEBUG
+        if (scrollBarVisual == null)
+        {
+            throw new InvalidOperationException($"The child with the name {VerticalScrollBarInstanceName} was found, but is not an InteractiveGue." +
+                $" Did you forget to set forms associations for this type?");
+        }
+#endif
+
+        if (scrollBarVisual.FormsControlAsObject == null)
         {
             verticalScrollBar = new ScrollBar(scrollBarVisual);
         }
@@ -144,11 +161,11 @@ public class ScrollViewer : FrameworkElement
         base.ReactToVisualRemoved();
     }
 
-    private void HandleRollOver(IWindow window, RoutedEventArgs args)
+    private void HandleRollOver(object sender, RoutedEventArgs args)
     {
-        if(GuiManager.Cursor.PrimaryDown && GuiManager.Cursor.LastInputDevice == InputDevice.TouchScreen)
+        if(MainCursor.PrimaryDown && MainCursor.LastInputDevice == InputDevice.TouchScreen)
         {
-            verticalScrollBar.Value -= GuiManager.Cursor.ScreenYChange /
+            verticalScrollBar.Value -= MainCursor.YChange /
                 global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom;
             args.Handled = true;
         }
@@ -159,12 +176,12 @@ public class ScrollViewer : FrameworkElement
 
     #region Scroll Methods
 
-    private void HandleMouseWheelScroll(IWindow window, FlatRedBall.Gui.RoutedEventArgs args)
+    private void HandleMouseWheelScroll(object sender, FlatRedBall.Gui.RoutedEventArgs args)
     {
         var valueBefore = verticalScrollBar.Value;
 
         // Do we want to use the small change? Or have some separate value that the user can set?
-        verticalScrollBar.Value -= GuiManager.Cursor.ZVelocity * verticalScrollBar.SmallChange;
+        verticalScrollBar.Value -= MainCursor.ZVelocity * verticalScrollBar.SmallChange;
 
         args.Handled = verticalScrollBar.Value != valueBefore;
     }
