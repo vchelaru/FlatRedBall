@@ -90,7 +90,7 @@ public class Slider : RangeBase, IInputReceiver
     #region Event Handlers
     protected override void HandleThumbPush(object sender, EventArgs e)
     {
-        var leftOfThumb = this.thumb.ActualX;
+        var leftOfThumb = this.thumb.AbsoluteLeft;
 
         if(this.thumb.Visual.XOrigin == RenderingLibrary.Graphics.HorizontalAlignment.Center)
         {
@@ -158,12 +158,12 @@ public class Slider : RangeBase, IInputReceiver
             double newValue;
 
             var gumX = GuiManager.Cursor.XRespectingGumZoomAndBounds();
-            if (gumX < thumb.ActualX)
+            if (gumX < thumb.AbsoluteLeft)
             {
                 newValue = Value - LargeChange;
                 ApplyValueConsideringSnapToTicks(newValue);
             }
-            else if (gumX > thumb.ActualX + thumb.ActualWidth)
+            else if (gumX > thumb.AbsoluteLeft + thumb.ActualWidth)
             {
                 newValue = Value + LargeChange;
 

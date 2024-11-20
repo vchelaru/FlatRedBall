@@ -129,19 +129,19 @@ public class ScrollBar : RangeBase
     #region Event Handlers
     protected override void HandleThumbPush(object sender, EventArgs e)
     {
-        var topOfThumb = this.thumb.ActualY;
-        var cursorScreen = GuiManager.Cursor.YRespectingGumZoomAndBounds();
+        var topOfThumb = this.thumb.AbsoluteTop;
+        var cursorScreen = MainCursor.YRespectingGumZoomAndBounds();
 
         cursorGrabOffsetRelativeToThumb = cursorScreen - topOfThumb;
     }
 
     private void HandleTrackPush(object sender, EventArgs args)
     {
-        if (GuiManager.Cursor.YRespectingGumZoomAndBounds() < thumb.ActualY)
+        if (MainCursor.YRespectingGumZoomAndBounds() < thumb.AbsoluteTop)
         {
             Value -= LargeChange;
         }
-        else if (GuiManager.Cursor.YRespectingGumZoomAndBounds() > thumb.ActualY + thumb.ActualHeight)
+        else if (MainCursor.YRespectingGumZoomAndBounds() > thumb.AbsoluteTop + thumb.ActualHeight)
         {
             Value += LargeChange;
         }
@@ -202,7 +202,7 @@ public class ScrollBar : RangeBase
     protected override void UpdateThumbPositionToCursorDrag(Cursor cursor)
     {
         var cursorScreenY = cursor.YRespectingGumZoomAndBounds();
-        var cursorYRelativeToTrack = cursorScreenY - Track.GetTop();
+        var cursorYRelativeToTrack = cursorScreenY - Track.AbsoluteTop;
 
 
         thumb.Visual.YUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;

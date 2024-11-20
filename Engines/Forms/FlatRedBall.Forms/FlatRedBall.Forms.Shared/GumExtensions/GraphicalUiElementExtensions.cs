@@ -15,16 +15,18 @@ namespace FlatRedBall.Forms.GumExtensions
         /// </summary>
         /// <param name="graphicalUiElement"></param>
         /// <returns></returns>
+        [Obsolete("Use GraphicalUiElement.AbsoluteLeft")]
         public static float GetLeft(this GraphicalUiElement graphicalUiElement)
         {
             return ((IRenderableIpso)graphicalUiElement).GetAbsoluteX();
         }
 
         /// <summary>
-        /// REturns the absolute Y position of the argument GraphicalUiElement.
+        /// Returns the absolute Y position of the argument GraphicalUiElement.
         /// </summary>
         /// <param name="graphicalUiElement"></param>
         /// <returns></returns>
+        [Obsolete("Use GraphicalUiElement.AbsoluteTop")]
         public static float GetTop(this GraphicalUiElement graphicalUiElement)
         {
             return ((IRenderableIpso)graphicalUiElement).GetAbsoluteY();
