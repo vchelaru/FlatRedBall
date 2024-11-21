@@ -54,7 +54,7 @@
     <Variable>
       <Type>float</Type>
       <Name>AddItemButton.Y</Name>
-      <Value xsi:type="xsd:float">0</Value>
+      <Value xsi:type="xsd:float">6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
