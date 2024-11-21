@@ -59,13 +59,13 @@ namespace FormsSampleProject.Screens
             lineWrappedTextBox.TextChanged += (sender, used) =>
             {
                 var textBox = sender as TextBox;
-                Debug.WriteLine($"Text:{textBox.Text} with length {textBox.Text.Length} with caret index {textBox.CaretIndex}");
+                //Debug.WriteLine($"Text:{textBox.Text} with length {textBox.Text.Length} with caret index {textBox.CaretIndex}");
             };
 
             lineWrappedTextBox.KeyDown += (sender, args) =>
             {
                 var textBox = sender as TextBox;
-                Debug.WriteLine($"Text:{textBox.Text} with length {textBox.Text.Length} with caret index {textBox.CaretIndex}");
+                //Debug.WriteLine($"Text:{textBox.Text} with length {textBox.Text.Length} with caret index {textBox.CaretIndex}");
             };
         }
 

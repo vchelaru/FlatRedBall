@@ -9,40 +9,64 @@
     <Import_RootNamespace>FlatRedBall.Forms</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Button.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\CheckBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ComboBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ContextMenu.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\DialogBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\InputDeviceSelectionItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)controls\games\InputDeviceSelector.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\OnScreenKeyboard.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\PlayerJoinView.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\PlayerJoinViewItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\SettingsView.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ItemsControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Label.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ListBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ListBoxItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Orientation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\PasswordBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Popups\Toast.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Popups\ToastManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Primitives\ButtonBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Primitives\RangeBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\RadioButton.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ScrollBar.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ScrollViewer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\SelectionChangedEventArgs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Slider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\StackPanel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\TextBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\TextBoxBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ToggleButton.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\TreeView.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\TreeViewItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\TreeViewLogic.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\UserControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Popups\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\Primitives\*.cs">
+      <Link>Controls\Primitives\%(Filename)%(Extension)</Link>
+    </Compile>
+
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\Button.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\CheckBox.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\ComboBox.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\ItemsControl.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\ListBox.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
+
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\ListBoxItem.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
+
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\PasswordBox.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
+
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\RadioButton.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
+
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\ScrollBar.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\ScrollViewer.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>    
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\Slider.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>   
+
+
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\TextBox.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\TextBoxBase.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>    
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\ToggleButton.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>  
+
+
+
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\IListExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FrameworkElementTemplate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CursorExtensions.cs" />
@@ -50,8 +74,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)GumExtensions\GraphicalUiElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\FrameworkElementManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\ObservableConcurrentDictionary.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextWrapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VisualTemplate.cs" />
   </ItemGroup>

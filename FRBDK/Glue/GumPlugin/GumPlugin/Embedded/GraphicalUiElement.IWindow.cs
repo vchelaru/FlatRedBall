@@ -106,6 +106,12 @@ namespace Gum.Wireframe
         {
             GuiManager.AddNextPushAction(action);
         }
+        public static void AddNextClickAction(Action action)
+        {
+            GuiManager.AddNextClickAction(action);
+        }
+
+        public static double CurrentGameTime => FlatRedBall.TimeManager.CurrentTime;
 
         // Maybe we'll eventually move this out of IWindow implementation into its own file:
         public virtual void AssignReferences()
