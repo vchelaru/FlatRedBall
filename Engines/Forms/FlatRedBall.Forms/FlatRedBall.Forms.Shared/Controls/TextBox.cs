@@ -31,7 +31,7 @@ public class TextBox : TextBoxBase
 
                 CaretIndex = System.Math.Min(CaretIndex, value?.Length ?? 0);
 
-                TextChanged?.Invoke(this, null);
+                TextChanged?.Invoke(this, EventArgs.Empty);
 
                 UpdatePlaceholderVisibility();
 
