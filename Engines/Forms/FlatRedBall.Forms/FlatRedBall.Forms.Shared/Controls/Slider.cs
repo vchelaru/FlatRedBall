@@ -11,6 +11,8 @@ using FlatRedBall.Forms.Controls.Primitives;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
+using MonoGameGum.Input;
+using RenderingLibrary.Math;
 using MonoGameGum.Forms.Controls.Primitives;
 namespace MonoGameGum.Forms.Controls;
 #endif
@@ -25,7 +27,7 @@ public class Slider : RangeBase, IInputReceiver
 
     public bool IsMoveToPointEnabled { get; set; }
 
-    public bool IsThumbGrabbed => GuiManager.Cursor.WindowPushed == this.thumb?.Visual;
+    public bool IsThumbGrabbed => MainCursor.WindowPushed == this.thumb?.Visual;
 
     public List<Keys> IgnoredKeys => throw new NotImplementedException();
 
@@ -41,7 +43,9 @@ public class Slider : RangeBase, IInputReceiver
 
     public event Action<IInputReceiver> FocusUpdate;
 
+#if FRB
     public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
+#endif
     public event Action<int> GenericGamepadButtonPushed;
 
     #endregion
@@ -74,7 +78,12 @@ public class Slider : RangeBase, IInputReceiver
         base.ReactToVisualChanged();
 
         Track.Push += HandleTrackPush;
+
+#if FRB
         base.thumb.Visual.RemovedAsPushedWindow += _ => HandleRemovedAsPushedWindow(this, EventArgs.Empty);
+#else
+        base.thumb.Visual.RemovedAsPushed += HandleRemovedAsPushedWindow;
+#endif
         UpdateState();
     }
 
@@ -143,7 +152,7 @@ public class Slider : RangeBase, IInputReceiver
             var left = Track.GetAbsoluteX();
             var right = Track.GetAbsoluteX() + Track.GetAbsoluteWidth();
 
-            var screenX = GuiManager.Cursor.XRespectingGumZoomAndBounds();
+            var screenX = MainCursor.XRespectingGumZoomAndBounds();
 
             var ratio = (screenX - left) / (right - left);
 
@@ -158,7 +167,7 @@ public class Slider : RangeBase, IInputReceiver
         {
             double newValue;
 
-            var gumX = GuiManager.Cursor.XRespectingGumZoomAndBounds();
+            var gumX = MainCursor.XRespectingGumZoomAndBounds();
             if (gumX < thumb.AbsoluteLeft)
             {
                 newValue = Value - LargeChange;
@@ -198,7 +207,7 @@ public class Slider : RangeBase, IInputReceiver
         }
     }
 
-#endregion
+    #endregion
 
     private double ApplyValueConsideringSnapToTicks(double newValue)
     {
@@ -331,6 +340,7 @@ public class Slider : RangeBase, IInputReceiver
 
     public void OnFocusUpdate()
     {
+#if FRB
         var gamepads = GuiManager.GamePadsForUiControl;
 
         for (int i = 0; i < gamepads.Count; i++)
@@ -400,13 +410,17 @@ public class Slider : RangeBase, IInputReceiver
                 }
             }
         }
+#endif
     }
 
     public void OnGainFocus()
     {
     }
 
-    public void LoseFocus()
+    [Obsolete("Use OnLoseFocus instead")]
+    public void LoseFocus() => OnLoseFocus();
+
+    public void OnLoseFocus()
     {
         IsFocused = false;
     }
@@ -414,6 +428,44 @@ public class Slider : RangeBase, IInputReceiver
     public void ReceiveInput()
     {
     }
+
+#if !FRB
+    public void DoKeyboardAction(IInputReceiverKeyboard keyboard)
+    {
+        OnFocusUpdate();
+
+        ReceiveInput();
+
+        var shift = keyboard.IsShiftDown;
+        var ctrl = keyboard.IsCtrlDown;
+        var alt = keyboard.IsAltDown;
+
+
+
+
+        // This allocates. We could potentially make this return 
+        // an IList or List. That's a breaking change for a tiny amount
+        // of allocation....what to do....
+
+        var asMonoGameKeyboard = (IInputReceiverKeyboardMonoGame)keyboard;
+
+        foreach (var key in asMonoGameKeyboard.KeysTyped)
+        {
+            HandleKeyDown(key, shift, alt, ctrl);
+        }
+
+        var stringTyped = keyboard.GetStringTyped();
+
+        if (stringTyped != null)
+        {
+            for (int i = 0; i < stringTyped.Length; i++)
+            {
+                // receiver could get nulled out by itself when something like enter is pressed
+                HandleCharEntered(stringTyped[i]);
+            }
+        }
+    }
+#endif
 
     public void HandleKeyDown(Keys key, bool isShiftDown, bool isAltDown, bool isCtrlDown)
     {
