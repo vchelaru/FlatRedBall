@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Gum.Wireframe;
 using RenderingLibrary;
 using Microsoft.Xna.Framework.Input;
+using RenderingLibrary.Math;
 
 #if FRB
 using FlatRedBall.Gui;
@@ -215,7 +216,7 @@ public class Slider : RangeBase, IInputReceiver
 
         if (IsSnapToTickEnabled)
         {
-            newValue = Math.MathFunctions.RoundDouble(newValue, TicksFrequency, Minimum);
+            newValue = MathFunctions.RoundDouble(newValue, TicksFrequency, Minimum);
 
             var range = Maximum - Minimum;
             var lastTick = ((int)((Maximum - Minimum) / TicksFrequency)) * TicksFrequency;
@@ -296,7 +297,7 @@ public class Slider : RangeBase, IInputReceiver
 
         var cursorScreenX = cursor.XRespectingGumZoomAndBounds();
 
-        var cursorXRelativeToTrack = cursorScreenX - Track.GetAbsoluteX();
+        var cursorXRelativeToTrack = cursorScreenX - Track.AbsoluteLeft;
 
         // See UpdateThumbPositionAccordingToValue for an explanation of why we use
         // Percentage rather than PixelsFromSmall:
