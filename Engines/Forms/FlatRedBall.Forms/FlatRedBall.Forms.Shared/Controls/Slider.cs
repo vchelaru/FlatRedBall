@@ -286,7 +286,11 @@ public class Slider : RangeBase, IInputReceiver
         thumb.X = 100 * (float)ratioOver;
     }
 
+#if FRB
     protected override void UpdateThumbPositionToCursorDrag(Cursor cursor)
+#else
+    protected override void UpdateThumbPositionToCursorDrag(ICursor cursor)
+#endif
     {
         var valueBefore = Value;
 
