@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Gui;
+using FlatRedBall.Input;
 using FlatRedBall.Managers;
 using Gum.DataTypes;
 using Gum.Wireframe;
@@ -95,6 +96,16 @@ namespace Gum.Wireframe
 
         public bool HasEvents { get; set; } = true;
         public bool ExposeChildrenEvents { get; set; } = true;
+
+        public static IInputReceiver CurrentInputReceiver
+        {
+            get => FlatRedBall.Input.InputManager.InputReceiver;
+            set => FlatRedBall.Input.InputManager.InputReceiver = value;
+        }
+        public static void AddNextPushAction(Action action)
+        {
+            GuiManager.AddNextPushAction(action);
+        }
 
         // Maybe we'll eventually move this out of IWindow implementation into its own file:
         public virtual void AssignReferences()
