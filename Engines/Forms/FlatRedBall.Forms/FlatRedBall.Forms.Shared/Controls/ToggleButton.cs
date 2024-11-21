@@ -7,13 +7,13 @@ using FlatRedBall.Gui;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
 namespace FlatRedBall.Forms.Controls;
 #else
+using MonoGameGum.Forms.Controls.Primitives;
 namespace MonoGameGum.Forms.Controls;
 #endif
 
 public class ToggleButton : ButtonBase
 {
     #region Fields/Properties
-
 
     public bool IsThreeState { get; set; }
 
@@ -101,7 +101,7 @@ public class ToggleButton : ButtonBase
 
     public override void UpdateState()
     {
-        var cursor = GuiManager.Cursor;
+        var cursor = MainCursor;
 
         if (IsEnabled == false)
         {
