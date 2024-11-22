@@ -83,6 +83,8 @@ public partial class GumScreen
         TestBbCode();
 
         TextGue_ShouldMatchInternalText_WhenMismatchOccursOnAssignment();
+
+        TextGue_ShouldMatchInternalText_WhenAssigignedOnTextRuntime();
     }
 
     private void TextGue_ShouldMatchInternalText_WhenMismatchOccursOnAssignment()
@@ -96,6 +98,19 @@ public partial class GumScreen
         gue.SetContainedObject(textRenderable);
 
         gue.TextOverflowVerticalMode.ShouldBe(textRenderable.TextOverflowVerticalMode);
+    }
+
+    private void TextGue_ShouldMatchInternalText_WhenAssigignedOnTextRuntime()
+    {
+        var textRuntime = new TextRuntime();
+        var asGue = textRuntime as GraphicalUiElement;
+
+
+        textRuntime.TextOverflowVerticalMode = TextOverflowVerticalMode.TruncateLine;
+        asGue.TextOverflowVerticalMode.ShouldBe(textRuntime.TextOverflowVerticalMode);
+
+        textRuntime.TextOverflowVerticalMode = TextOverflowVerticalMode.SpillOver;
+        asGue.TextOverflowVerticalMode.ShouldBe(textRuntime.TextOverflowVerticalMode);
     }
 
     private void TestBbCode()

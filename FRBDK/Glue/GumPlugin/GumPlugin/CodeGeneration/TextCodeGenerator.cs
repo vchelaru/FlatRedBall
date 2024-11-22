@@ -78,20 +78,21 @@ namespace GumPlugin.CodeGeneration
             });
 
 
-            standardGetterReplacements.Add("TextOverflowHorizontalMode", (codeBlock) =>
+            standardGetterReplacements.Add("TextOverflowHorizontalMode", codeBlock =>
             {
                 codeBlock.Line("return ContainedText.IsTruncatingWithEllipsisOnLastLine " +
                     "? global::RenderingLibrary.Graphics.TextOverflowHorizontalMode.EllipsisLetter " +
                     ": RenderingLibrary.Graphics.TextOverflowHorizontalMode.TruncateWord;");
             });
 
-            standardSetterReplacements.Add("TextOverflowHorizontalMode", (codeBlock) =>
+            standardSetterReplacements.Add("TextOverflowHorizontalMode", codeBlock =>
             {
                 codeBlock.If("value == global::RenderingLibrary.Graphics.TextOverflowHorizontalMode.EllipsisLetter")
                     .Line("ContainedText.IsTruncatingWithEllipsisOnLastLine = true;");
                 codeBlock.Else()
                     .Line("ContainedText.IsTruncatingWithEllipsisOnLastLine = false;");
             });
+              
         }
 
         public void AddVariableNamesToSkipForProperties(List<string> mVariableNamesToSkipForProperties)
@@ -158,7 +159,7 @@ namespace GumPlugin.CodeGeneration
                     classBodyBlock.Property("public new global::RenderingLibrary.Graphics.TextOverflowVerticalMode", "TextOverflowVerticalMode")
                         .Get().Line("return ContainedText.TextOverflowVerticalMode;").End()
                         .Set()
-                            .Line("ContainedText.TextOverflowVerticalMode = value;")
+                            .Line("base.TextOverflowVerticalMode = value;")
                             .Line("NotifyPropertyChanged();");
                 }
 

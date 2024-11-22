@@ -87,7 +87,7 @@ namespace FormsSampleProject.Screens
 
             await dialog.ShowAsync("This is a DialogBox in [Color=Red]FlatRedBall.Forms[/Color]. It supports " +
                 "lots of features including typing out the text [Color=Yellow]letter-by-letter[/Color], multiple pages, " +
-                "and even [Color=Green]styling[/Color] using BBCode. Wow, how handy! You can create mulitple " +
+                "and even [Color=Green]styling[/Color] using BBCode. Wow, how handy! You can create multiple " +
                 "pages by explicitly giving it a string array, or you can give it a long string and let the " +
                 "dialog box [Color=Pink]automatically[/Color] handle the multiple pages.");
 
