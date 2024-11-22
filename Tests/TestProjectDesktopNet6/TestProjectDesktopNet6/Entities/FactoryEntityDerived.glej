@@ -19,23 +19,6 @@
   ],
   "NamedObjects": [
     {
-      "InstanceName": "EntireScene",
-      "Properties": [
-        {
-          "Name": "SourceType",
-          "Value": 0
-        }
-      ],
-      "InstructionSaves": [],
-      "SourceFile": "Entities/FactoryEntity/SceneFile.scnx",
-      "SourceName": "Entire File (Scene)",
-      "ExposedInDerived": true,
-      "AttachToContainer": true,
-      "GenerateTimedEmit": true,
-      "DefinedByBase": true,
-      "IndependentOfCamera": true
-    },
-    {
       "InstanceName": "AxisAlignedRectangleInstance",
       "SourceClassType": "AxisAlignedRectangle",
       "Properties": [

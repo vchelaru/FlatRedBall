@@ -25,20 +25,6 @@
       "ProjectsToExcludeFrom": []
     }
   ],
-  "CustomVariables": [
-    {
-      "Properties": [
-        {
-          "Name": "Type",
-          "Value": "GameScreenCategory",
-          "Type": "String"
-        }
-      ],
-      "Name": "CurrentGameScreenCategoryState",
-      "SetByDerived": true,
-      "DefinedByBase": true
-    }
-  ],
   "NamedObjects": [
     {
       "InstanceName": "Map",

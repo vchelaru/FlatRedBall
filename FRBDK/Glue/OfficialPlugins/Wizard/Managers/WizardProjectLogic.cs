@@ -615,7 +615,7 @@ namespace OfficialPlugins.Wizard.Managers
             {
                 var importTask = ImportPlayerEntity(vm);
                 importTask.Wait();
-                playerEntity = importTask.Result;
+                playerEntity = importTask.Result!;
             }
             else // create from options
             {

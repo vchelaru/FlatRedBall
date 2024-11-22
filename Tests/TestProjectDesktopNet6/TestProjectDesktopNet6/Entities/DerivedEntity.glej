@@ -99,22 +99,6 @@
   ],
   "NamedObjects": [
     {
-      "InstanceName": "Collision",
-      "SourceClassType": "ShapeCollection",
-      "Properties": [
-        {
-          "Name": "SourceType",
-          "Value": 2
-        }
-      ],
-      "InstructionSaves": [],
-      "SourceType": 2,
-      "AttachToContainer": true,
-      "GenerateTimedEmit": true,
-      "DefinedByBase": true,
-      "IndependentOfCamera": true
-    },
-    {
       "InstanceName": "CircleObject",
       "SourceClassType": "Circle",
       "Properties": [
@@ -135,61 +119,6 @@
       "AttachToContainer": true,
       "GenerateTimedEmit": true,
       "DefinedByBase": true,
-      "IndependentOfCamera": true
-    },
-    {
-      "InstanceName": "BaseUndefined",
-      "SourceClassType": "Circle",
-      "Properties": [
-        {
-          "Name": "SourceType",
-          "Value": 2
-        }
-      ],
-      "InstructionSaves": [],
-      "SourceType": 2,
-      "ExposedInDerived": true,
-      "AttachToContainer": true,
-      "GenerateTimedEmit": true,
-      "DefinedByBase": true,
-      "InstantiatedByBase": true,
-      "IndependentOfCamera": true
-    },
-    {
-      "InstanceName": "ExposedListOfEntities",
-      "SourceClassType": "PositionedObjectList<T>",
-      "Properties": [
-        {
-          "Name": "SourceType",
-          "Value": 2
-        }
-      ],
-      "InstructionSaves": [],
-      "SourceType": 2,
-      "SourceClassGenericType": "Entities\\InListEntity",
-      "ExposedInDerived": true,
-      "AttachToContainer": true,
-      "GenerateTimedEmit": true,
-      "DefinedByBase": true,
-      "InstantiatedByBase": true,
-      "IndependentOfCamera": true
-    },
-    {
-      "InstanceName": "IWindowEntityInstance",
-      "SourceClassType": "Entities\\IWindowEntity",
-      "Properties": [
-        {
-          "Name": "SourceType",
-          "Value": 1
-        }
-      ],
-      "InstructionSaves": [],
-      "SourceType": 1,
-      "ExposedInDerived": true,
-      "AttachToContainer": true,
-      "GenerateTimedEmit": true,
-      "DefinedByBase": true,
-      "InstantiatedByBase": true,
       "IndependentOfCamera": true
     },
     {

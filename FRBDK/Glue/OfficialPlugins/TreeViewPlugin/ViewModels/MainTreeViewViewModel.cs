@@ -192,9 +192,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             set => Set(value);
         }
 
-        public string SelectedItemInfoDisplay
+        public string? SelectedItemInfoDisplay
         {
-            get => Get<string>();
+            get => Get<string?>();
             set => Set(value);
         }
 

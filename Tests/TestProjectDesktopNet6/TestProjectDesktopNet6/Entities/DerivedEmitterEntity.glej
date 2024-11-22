@@ -40,26 +40,6 @@
       "Value": 0
     }
   ],
-  "NamedObjects": [
-    {
-      "InstanceName": "EmitterInstance",
-      "SourceClassType": "Emitter",
-      "Properties": [
-        {
-          "Name": "SourceType",
-          "Value": 2
-        }
-      ],
-      "InstructionSaves": [],
-      "SourceType": 2,
-      "SourceFile": "",
-      "SourceName": "",
-      "AttachToContainer": true,
-      "GenerateTimedEmit": true,
-      "DefinedByBase": true,
-      "IndependentOfCamera": true
-    }
-  ],
   "Name": "Entities\\DerivedEmitterEntity",
   "CustomClassesForExport": []
 }

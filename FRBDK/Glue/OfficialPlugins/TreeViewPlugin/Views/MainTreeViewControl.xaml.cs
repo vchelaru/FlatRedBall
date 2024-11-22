@@ -575,7 +575,7 @@ public partial class MainTreeViewControl : UserControl
         SelectSearchNode(searchNodePushed);
     }
 
-    private void SelectSearchNode(NodeViewModel searchNodePushed)
+    private void SelectSearchNode(NodeViewModel? searchNodePushed)
     {
         var foundSomething = true;
         switch (searchNodePushed?.Tag)
@@ -684,7 +684,7 @@ public partial class MainTreeViewControl : UserControl
                 var bookmark = new GlueBookmark();
                 bookmark.Name = path;
 
-                var imageSource = (node as NodeViewModel).ImageSource;
+                var imageSource = ((NodeViewModel)node).ImageSource;
 
                 if (imageSource == NodeViewModel.ScreenStartupIcon)
                 {

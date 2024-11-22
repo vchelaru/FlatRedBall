@@ -22,27 +22,6 @@
   ],
   "NamedObjects": [
     {
-      "InstanceName": "LayerInstance",
-      "SourceClassType": "Layer",
-      "Properties": [
-        {
-          "Name": "SourceType",
-          "Value": 2
-        }
-      ],
-      "InstructionSaves": [],
-      "SourceType": 2,
-      "SourceFile": "",
-      "SourceName": "",
-      "ExposedInDerived": true,
-      "AttachToContainer": true,
-      "GenerateTimedEmit": true,
-      "DefinedByBase": true,
-      "InstantiatedByBase": true,
-      "IndependentOfCamera": true,
-      "Is2D": true
-    },
-    {
       "InstanceName": "ToBeLayered",
       "Properties": [
         {
