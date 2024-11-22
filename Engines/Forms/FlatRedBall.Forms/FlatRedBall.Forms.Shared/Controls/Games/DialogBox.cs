@@ -405,10 +405,11 @@ namespace FlatRedBall.Forms.Controls.Games
                 var unlimitedLines = new List<string>();
                 var oldVerticalMode = this.textComponent.TextOverflowVerticalMode;
                 this.textComponent.TextOverflowVerticalMode = RenderingLibrary.Graphics.TextOverflowVerticalMode.SpillOver;
+
                 coreTextObject.RawText = withRemovedTags;
                 coreTextObject.UpdateLines(unlimitedLines);
 
-                this.textComponent.TextOverflowVerticalMode = RenderingLibrary.Graphics.TextOverflowVerticalMode.TruncateLine;
+                this.textComponent.TextOverflowVerticalMode = oldVerticalMode;
 
                 this.textComponent.SetProperty("Text", withRemovedTags);
                 this.textComponent.TextOverflowVerticalMode = oldVerticalMode;

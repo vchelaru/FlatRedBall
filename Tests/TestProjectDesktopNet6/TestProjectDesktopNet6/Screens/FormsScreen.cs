@@ -20,6 +20,7 @@ using System.Net.NetworkInformation;
 
 namespace GlueTestProject.Screens;
 
+#region View Models
 
 class TestViewModel : ViewModel
 {
@@ -63,15 +64,19 @@ class GumPageViewModel : ViewModel
     }
 }
 
+#endregion
+
 public partial class FormsScreen
 {
     CustomUserControl control;
+
     void CustomInitialize()
     {
         Forms_ShouldRemoveInternalBinding_WhenBindingContextChanges();
 
         DerivedControls_ShouldHaveVisualCreated_WhenInstantiated();
 
+        DialogBox_ShouldHaveMultiplePages_WhenEnteringLongText();
         DialogBox_ShouldWrapTextProperly_WhenShowingMultiplePages();
 
         ListBox_ShouldRaiseSelectectionChanged_WhenSelectedObjectIsSet();
@@ -109,6 +114,23 @@ public partial class FormsScreen
         // Test if derived controls automatically get visuals from their base if the derived doesn't exist...
         control = new CustomUserControl();
         control.Visual.AddToManagers();
+    }
+
+    private void DialogBox_ShouldHaveMultiplePages_WhenEnteringLongText()
+    {
+        var dialogBox = Forms.DialogBoxInstance;
+
+        var dialogBoxString = string.Empty;
+        for(int i = 0; i < 30; i++)
+        {
+            dialogBoxString += "This is a long string.\n";
+        }
+
+        dialogBox.Show(dialogBoxString);
+        dialogBox.PagesRemaining.ShouldNotBe(0, "because this text should be long enough to require multiple pages");
+
+        dialogBox.Dismiss();
+
     }
 
     private void DialogBox_ShouldWrapTextProperly_WhenShowingMultiplePages()
