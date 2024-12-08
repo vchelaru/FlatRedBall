@@ -1340,9 +1340,5 @@ namespace Gum.Wireframe
 
         #endregion
 
-        // This is added for compatability for projects created before GumCommon:
-        public void AddToManagers() => this.AddToManagers(SystemManagers.Default, layer: null);
-
-
     }
 }
