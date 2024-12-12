@@ -560,6 +560,16 @@ namespace FlatRedBall.TileCollisions
             // Make sure there isn't already collision here
             if (GetRectangleAtPosition(x, y) == null)
             {
+                var gridSizeX = GridSize;
+                var gridSizeY = GridSize;
+
+#if ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX
+
+                gridSizeX = GridSizeX;
+                gridSizeY = GridSizeY;
+
+
+#endif
                 // x and y
                 // represent
                 // the center
@@ -570,12 +580,14 @@ namespace FlatRedBall.TileCollisions
                 // subtract half width/
                 // height so we can use the
                 // bottom/left
-                float roundedX = MathFunctions.RoundFloat(x - GridSize / 2.0f, GridSize, LeftSeedX);
-                float roundedY = MathFunctions.RoundFloat(y - GridSize / 2.0f, GridSize, BottomSeedY);
+                float roundedX = MathFunctions.RoundFloat(x - gridSizeX / 2.0f, gridSizeX, LeftSeedX);
+                float roundedY = MathFunctions.RoundFloat(y - gridSizeY / 2.0f, gridSizeY, BottomSeedY);
 
                 AxisAlignedRectangle newAar = new AxisAlignedRectangle();
-                newAar.Width = GridSize;
-                newAar.Height = GridSize;
+
+
+                newAar.Width = gridSizeX;
+                newAar.Height = gridSizeY;
                 newAar.Left = roundedX;
                 newAar.Bottom = roundedY;
 
@@ -1460,6 +1472,19 @@ namespace FlatRedBall.TileCollisions
             var wasAdjusting = tileShapeCollection.AdjustRepositionDirectionsOnAddAndRemove;
             tileShapeCollection.AdjustRepositionDirectionsOnAddAndRemove = false;
 
+#if ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX
+
+            float dimensionX = layeredTileMap.WidthPerTile.Value;
+            float dimensionXHalf = dimensionX / 2.0f;
+
+            float dimensionY = layeredTileMap.HeightPerTile.Value;
+            float dimensionYHalf = dimensionY / 2.0f;
+#else
+
+            float dimension = layeredTileMap.WidthPerTile.Value;
+            float dimensionHalf = dimension / 2.0f;
+#endif
+
             foreach (var kvp in properties)
             {
                 string name = kvp.Key;
@@ -1467,12 +1492,16 @@ namespace FlatRedBall.TileCollisions
 
                 if (predicate(namedValues))
                 {
-                    float dimension = layeredTileMap.WidthPerTile.Value;
-                    float dimensionHalf = dimension / 2.0f;
+#if ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX
+                    tileShapeCollection.GridSizeX = dimensionX;
+                    tileShapeCollection.GridSizeY = dimensionY;
+
+#else
                     tileShapeCollection.GridSize = dimension;
+#endif
 
                     //foreach (var layer in layeredTileMap.MapLayers)
-                    for(int i = 0; i < layeredTileMap.MapLayers.Count; i++)
+                    for (int i = 0; i < layeredTileMap.MapLayers.Count; i++)
                     {
                         var layer = layeredTileMap.MapLayers[i];
                         List<int> indexesToRemove = null;
@@ -1497,8 +1526,13 @@ namespace FlatRedBall.TileCollisions
                                 float bottom;
                                 layer.GetBottomLeftWorldCoordinateForOrderedTile(index, out left, out bottom);
 
+#if ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX
+                                var centerX = left + dimensionXHalf;
+                                var centerY = bottom + dimensionYHalf;
+#else
                                 var centerX = left + dimensionHalf;
                                 var centerY = bottom + dimensionHalf;
+#endif
 
                                 // this performs a slower add because of all the checks internal. We can speed things
                                 // up by inlining and removing. Specifically, we won't do contains checks, and we'll
