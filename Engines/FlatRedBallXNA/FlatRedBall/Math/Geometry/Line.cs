@@ -7,12 +7,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FlatRedBall.Math.Geometry
 {
-    #region XML Docs
     /// <summary>
     /// Represents a segment with defined endpoints which can be used to
     /// graphically display lines or to perform segment collision.
     /// </summary>
-    #endregion
     public class Line : PositionedObject, IEquatable<Line>
     {
         #region Fields
