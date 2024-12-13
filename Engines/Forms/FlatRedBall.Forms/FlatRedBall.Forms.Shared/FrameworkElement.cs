@@ -660,7 +660,7 @@ namespace FlatRedBall.Forms.Controls
                     if(uiProperty == null)
                     {
                         throw new Exception($"The {this.GetType()} with name {this.Name} is binding a missing UI property ({vmPropsToUiProps[vmPropertyName]}) " +
-                            $"to a ViewModel Property ({vmPropertyName})}");
+                            $"to a ViewModel Property ({vmPropertyName})");
                     }
 
                     if (uiProperty.PropertyType == typeof(string))
