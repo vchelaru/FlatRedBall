@@ -224,13 +224,15 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             //gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / (Data.Scale / 100.0f);");
             //gumIfBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.DestinationRectangle.Width / (Data.Scale / 100.0f);");
-            gumIfIncreaseAreaBlock.Line("global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = Data.Scale/100.0f;");
+            gumIfIncreaseAreaBlock.Line("global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = Data.ScaleGum/100.0f * Data.Scale/100.0f;");
 
             // Don't use DefaultCanvasWidth and DefaultCanvasHeight, that wouldn't be responding to size:
             //gumIfIncreaseAreaBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = Gum.Managers.ObjectFinder.Self.GumProjectSave.DefaultCanvasWidth;");
             //gumIfIncreaseAreaBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = Gum.Managers.ObjectFinder.Self.GumProjectSave.DefaultCanvasHeight; ");
-            gumIfIncreaseAreaBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = FlatRedBall.Camera.Main.DestinationRectangle.Width;");
-            gumIfIncreaseAreaBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height; ");
+            gumIfIncreaseAreaBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasWidth = " +
+                "FlatRedBall.Camera.Main.DestinationRectangle.Width / (Data.ScaleGum/100.0f * Data.Scale / 100.0f);");
+            gumIfIncreaseAreaBlock.Line("Gum.Wireframe.GraphicalUiElement.CanvasHeight = " +
+                "FlatRedBall.Camera.Main.DestinationRectangle.Height / (Data.ScaleGum/100.0f * Data.Scale / 100.0f); ");
 
 
             var gumElseBlock = gumIfIncreaseAreaBlock.End().Else();
