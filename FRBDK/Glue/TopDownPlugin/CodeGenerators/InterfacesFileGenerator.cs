@@ -43,9 +43,14 @@ namespace {GlueState.Self.ProjectNamespace}.TopDown
         Entities.TopDownDirection DirectionFacing {{ get; }}
         FlatRedBall.Input.I2DInput MovementInput {{ get; set; }}
         float MaxSpeed {{ get; }}
-        
+      
         float XVelocity {{ get; set; }}
         float YVelocity {{ get; set; }}
+
+        float GroundXVelocity {{ get; }}
+        float GroundYVelocity {{ get; }}
+
+
     }}
 }}
 ";

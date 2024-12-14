@@ -75,6 +75,9 @@ namespace TopDownPlugin.CodeGenerators
             // Made a field so the user can assign individual values
             // Made a Vector3 to make assignment and usage easier.
             codeBlock.Line("public Microsoft.Xna.Framework.Vector3 GroundVelocity;");
+            codeBlock.Line("float TopDown.ITopDownEntity.GroundXVelocity => GroundVelocity.X;");
+            codeBlock.Line("float TopDown.ITopDownEntity.GroundYVelocity => GroundVelocity.Y;");
+
 
             codeBlock.Line("DataTypes.TopDownValues mCurrentMovement;");
             codeBlock.Line("public float TopDownSpeedMultiplier { get; set; } = 1;");

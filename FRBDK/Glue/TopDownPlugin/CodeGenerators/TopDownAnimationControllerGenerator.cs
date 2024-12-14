@@ -140,7 +140,13 @@ namespace " + GlueState.Self.ProjectNamespace + @".TopDown
 
                 bool shouldSet = true;
 
-                var absoluteVelocity = (float)System.Math.Sqrt(TopDownEntity.XVelocity * TopDownEntity.XVelocity + TopDownEntity.YVelocity * TopDownEntity.YVelocity);
+                Microsoft.Xna.Framework.Vector3 velocityRelativeToGround;
+                velocityRelativeToGround.X = TopDownEntity.XVelocity - TopDownEntity.GroundXVelocity;
+                velocityRelativeToGround.Y = TopDownEntity.YVelocity - TopDownEntity.GroundYVelocity;
+                velocityRelativeToGround.Z = 0;
+
+                var absoluteVelocity = (float)System.Math.Sqrt(velocityRelativeToGround.X * velocityRelativeToGround.X + velocityRelativeToGround.Y * velocityRelativeToGround.Y);
+
                 var absoluteInput = TopDownEntity.MovementInput?.Magnitude ?? 0;
 
                 if(shouldSet && !string.IsNullOrEmpty(configuration.MovementName))
