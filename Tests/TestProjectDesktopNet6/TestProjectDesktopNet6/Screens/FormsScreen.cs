@@ -230,8 +230,11 @@ public partial class FormsScreen
         };
 
         listBox.SelectedObject = listBoxItem;
-
+        listBox.SelectedObject.ShouldNotBe(null);
         selectedItem.ShouldBe(listBoxItem, "because the SelectionChanged should be raised");
+
+        listBox.SelectedObject = null;
+        selectedItem.ShouldBe(null, "because the SelectionChanged should be raised");
     }
 
     private void RadioButton_SettingIsChecked_ShouldUncheckOtherRadioButtons()

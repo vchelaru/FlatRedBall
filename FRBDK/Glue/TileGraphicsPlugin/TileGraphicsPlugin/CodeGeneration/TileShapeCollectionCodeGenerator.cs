@@ -18,8 +18,11 @@ namespace TileGraphicsPlugin.CodeGeneration
 {
     class TileShapeCollectionCodeGenerator : ElementComponentCodeGenerator
     {
-        public TileShapeCollectionCodeGenerator()
+        private readonly AssetTypeInfoAdder _assetTypeInfoAdder;
+
+        public TileShapeCollectionCodeGenerator(AssetTypeInfoAdder assetTypeInfoAdder)
         {
+            _assetTypeInfoAdder = assetTypeInfoAdder;
             InitializeCategory = "Collision Objects";
         }
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
@@ -66,11 +69,11 @@ namespace TileGraphicsPlugin.CodeGeneration
         //    return codeBlock;
         //}
 
-        static NamedObjectSave[] GetAllTileShapeCollectionNamedObjectsInElement(IElement element)
+        NamedObjectSave[] GetAllTileShapeCollectionNamedObjectsInElement(IElement element)
         {
             return element
                 .AllNamedObjects
-                .Where(item => item.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TileShapeCollectionAssetTypeInfo)
+                .Where(item => item.GetAssetTypeInfo() == _assetTypeInfoAdder.TileShapeCollectionAssetTypeInfo)
                 .ToArray();
         }
 

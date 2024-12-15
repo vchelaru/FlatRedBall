@@ -589,6 +589,9 @@
       "Name": "Entities\\CollidableShapesFromTmx"
     },
     {
+      "Name": "Entities\\CollidableTileShapeCollectionEntity"
+    },
+    {
       "Name": "Entities\\CollisionEntity"
     },
     {

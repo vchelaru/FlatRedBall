@@ -17,6 +17,13 @@ namespace TileGraphicsPlugin.CodeGeneration
 {
     class TmxCodeGenerator : ElementComponentCodeGenerator
     {
+        private readonly AssetTypeInfoAdder _assetTypeInfoAdder;
+
+        public TmxCodeGenerator(AssetTypeInfoAdder assetTypeInfoAdder)
+        {
+            _assetTypeInfoAdder = assetTypeInfoAdder;
+        }
+
         #region Fields
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
@@ -115,7 +122,7 @@ namespace TileGraphicsPlugin.CodeGeneration
             {
                 var ati = file.GetAssetTypeInfo();
 
-                if(ati == AssetTypeInfoAdder.Self.TmxAssetTypeInfo)
+                if(ati == _assetTypeInfoAdder.TmxAssetTypeInfo)
                 {
                     GenerateAddToManagers(codeBlock, file);
 

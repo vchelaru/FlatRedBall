@@ -6,36 +6,42 @@ using System.Collections.Generic;
 using System.Text;
 using TileGraphicsPlugin;
 
-namespace TiledPlugin.Managers
+namespace TiledPlugin.Managers;
+
+class NewObjectLogic
 {
-    static class NewObjectLogic
+    private readonly AssetTypeInfoAdder _assetTypeInfoAdder;
+
+    public NewObjectLogic(AssetTypeInfoAdder assetTypeInfoAdder)
     {
-        internal static void HandleNewObject(NamedObjectSave newNamedObject)
+        _assetTypeInfoAdder = assetTypeInfoAdder;
+    }
+
+    internal void HandleNewObject(NamedObjectSave newNamedObject)
+    {
+        var ati = newNamedObject.GetAssetTypeInfo();
+
+        var isTileShapeCollection = ati == _assetTypeInfoAdder
+            .TileShapeCollectionAssetTypeInfo;
+
+        if(isTileShapeCollection)
         {
-            var ati = newNamedObject.GetAssetTypeInfo();
+            var owner = newNamedObject.GetContainer();
 
-            var isTileShapeCollection = ati == AssetTypeInfoAdder.Self
-                .TileShapeCollectionAssetTypeInfo;
-
-            if(isTileShapeCollection)
+            var isGameScreen =
+                owner is ScreenSave && owner.GetStrippedName() == "GameScreen";
+            if (isGameScreen)
             {
-                var owner = newNamedObject.GetContainer();
+                newNamedObject.SetByDerived = true;
+                // Added Nov 28, 2022 since these are often
+                // referenced outside of game screen
+                newNamedObject.HasPublicProperty = true;
 
-                var isGameScreen =
-                    owner is ScreenSave && owner.GetStrippedName() == "GameScreen";
-                if (isGameScreen)
+                var allDerived = ObjectFinder.Self.GetAllDerivedElementsRecursive(owner);
+                foreach(var derived in allDerived)
                 {
-                    newNamedObject.SetByDerived = true;
-                    // Added Nov 28, 2022 since these are often
-                    // referenced outside of game screen
-                    newNamedObject.HasPublicProperty = true;
-
-                    var allDerived = ObjectFinder.Self.GetAllDerivedElementsRecursive(owner);
-                    foreach(var derived in allDerived)
-                    {
-                        GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(derived);
-                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(derived);
-                    }
+                    GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(derived);
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(derived);
                 }
             }
         }

@@ -847,6 +847,10 @@ namespace FlatRedBall.Screens
 
                     var first = ShapeManager.AutomaticallyUpdatedShapes[0];
                     message += $"\nFirst shape: {first}";
+                    if(!string.IsNullOrEmpty(first.Name))
+                    {
+                        message += $" with name {first.Name}";
+                    }
                     
                     messages.Add(message);
                 }

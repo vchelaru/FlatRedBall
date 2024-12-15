@@ -1258,6 +1258,10 @@
     <Compile Include="Entities\CollidableShapesFromTmx.Generated.cs">
       <DependentUpon>CollidableShapesFromTmx.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\CollidableTileShapeCollectionEntity.cs" />
+    <Compile Include="Entities\CollidableTileShapeCollectionEntity.Generated.cs">
+      <DependentUpon>CollidableTileShapeCollectionEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\CollisionEntity.cs" />
     <Compile Include="Entities\CollisionEntity.Generated.cs">
       <DependentUpon>CollisionEntity.cs</DependentUpon>

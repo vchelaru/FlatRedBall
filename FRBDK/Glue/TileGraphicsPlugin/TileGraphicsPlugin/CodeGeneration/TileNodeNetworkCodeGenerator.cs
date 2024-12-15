@@ -14,6 +14,13 @@ namespace TiledPlugin.CodeGeneration
 {
     class TileNodeNetworkCodeGenerator : ElementComponentCodeGenerator
     {
+        private readonly AssetTypeInfoAdder _assetTypeInfoAdder;
+
+        public TileNodeNetworkCodeGenerator(AssetTypeInfoAdder assetTypeInfoAdder)
+        {
+            _assetTypeInfoAdder = new AssetTypeInfoAdder();
+        }
+
         public override ICodeBlock GenerateInitializeLate(ICodeBlock codeBlock, IElement element)
         {
             NamedObjectSave[] tileNodeNetworksCollections = GetAllTileNodeNetworkNamedObjectsInElement(element);
@@ -26,11 +33,11 @@ namespace TiledPlugin.CodeGeneration
             return codeBlock;
         }
 
-        static NamedObjectSave[] GetAllTileNodeNetworkNamedObjectsInElement(IElement element)
+        NamedObjectSave[] GetAllTileNodeNetworkNamedObjectsInElement(IElement element)
         {
             return element
                 .AllNamedObjects
-                .Where(item => item.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TileNodeNetworkAssetTypeInfo)
+                .Where(item => item.GetAssetTypeInfo() == _assetTypeInfoAdder.TileNodeNetworkAssetTypeInfo)
                 .ToArray();
         }
 

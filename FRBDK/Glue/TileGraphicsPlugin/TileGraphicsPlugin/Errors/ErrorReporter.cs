@@ -15,108 +15,116 @@ using TileGraphicsPlugin.Controllers;
 using TileGraphicsPlugin.ViewModels;
 using TMXGlueLib;
 
-namespace TiledPlugin.Managers
-{
+namespace TiledPlugin.Managers;
 
-    class ErrorReporter : ErrorReporterBase
+
+class ErrorReporter : ErrorReporterBase
+{
+    private readonly AssetTypeInfoAdder _assetTypeInfoAdder;
+    private readonly TileShapeCollectionsPropertiesController _tileShapeCollectionsPropertiesController;
+
+    public ErrorReporter(AssetTypeInfoAdder assetTypeInfoAdder,
+        TileShapeCollectionsPropertiesController tileShapeCollectionsPropertiesController)
+    {
+        _assetTypeInfoAdder = assetTypeInfoAdder;
+        _tileShapeCollectionsPropertiesController = tileShapeCollectionsPropertiesController;
+    }
+
+    public override ErrorViewModel[] GetAllErrors()
+    {
+        List<ErrorViewModel> errors = new List<ErrorViewModel>();
+
+        List<FilePath> tmxFiles = new List<FilePath>();
+        foreach (var rfs in ObjectFinder.Self.GetAllReferencedFiles())
+        {
+            if (rfs.GetAssetTypeInfo() == _assetTypeInfoAdder.TmxAssetTypeInfo)
+            {
+                var fileName = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                tmxFiles.Add(fileName);
+            }
+        }
+
+        var allNamedObjects = ObjectFinder.Self.GetAllNamedObjects();
+        List<NamedObjectSave> tileShapeCollections = new List<NamedObjectSave>();
+        foreach(var namedObject in allNamedObjects)
+        {
+            if(_tileShapeCollectionsPropertiesController.IsTileShapeCollection(namedObject))
+            {
+                tileShapeCollections.Add(namedObject);
+            }
+        }
+
+        FillWithTmxFileErrors(tmxFiles, errors);
+
+        FillWithTileShapeCollectionErrors(tileShapeCollections, errors);
+
+        return errors.ToArray();
+    }
+
+
+    private void FillWithTmxFileErrors(List<FilePath> tmxFiles, List<ErrorViewModel> errors)
     {
 
-        public override ErrorViewModel[] GetAllErrors()
+        foreach(var filePath in tmxFiles)
         {
-            List<ErrorViewModel> errors = new List<ErrorViewModel>();
-
-            List<FilePath> tmxFiles = new List<FilePath>();
-            foreach (var rfs in ObjectFinder.Self.GetAllReferencedFiles())
+            TiledMapSave tms = null;
+            try
             {
-                if (rfs.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo)
-                {
-                    var fileName = GlueCommands.Self.GetAbsoluteFilePath(rfs);
-                    tmxFiles.Add(fileName);
-                }
+                tms = GlueState.Self.TiledCache.GetTiledMap(filePath);
+            }
+            catch(Exception e)
+            {
+                GlueCommands.Self.PrintError($"Error loading TMX {filePath}:\n{e.ToString()}");
             }
 
-            var allNamedObjects = ObjectFinder.Self.GetAllNamedObjects();
-            List<NamedObjectSave> tileShapeCollections = new List<NamedObjectSave>();
-            foreach(var namedObject in allNamedObjects)
+
+            if (tms != null)
             {
-                if(TileShapeCollectionsPropertiesController.IsTileShapeCollection(namedObject))
+                if(tms.Infinite == 1)
                 {
-                    tileShapeCollections.Add(namedObject);
-                }
-            }
-
-            FillWithTmxFileErrors(tmxFiles, errors);
-
-            FillWithTileShapeCollectionErrors(tileShapeCollections, errors);
-
-            return errors.ToArray();
-        }
-
-
-        private void FillWithTmxFileErrors(List<FilePath> tmxFiles, List<ErrorViewModel> errors)
-        {
-
-            foreach(var filePath in tmxFiles)
-            {
-                TiledMapSave tms = null;
-                try
-                {
-                    tms = GlueState.Self.TiledCache.GetTiledMap(filePath);
-                }
-                catch(Exception e)
-                {
-                    GlueCommands.Self.PrintError($"Error loading TMX {filePath}:\n{e.ToString()}");
-                }
-
-
-                if (tms != null)
-                {
-                    if(tms.Infinite == 1)
+                    errors.Add(new InfiniteMapNotSupportedViewModel()
                     {
-                        errors.Add(new InfiniteMapNotSupportedViewModel()
-                        {
-                            FilePath = filePath
-                        });
-                    }
-                    else
+                        FilePath = filePath
+                    });
+                }
+                else
+                {
+                    foreach (var layer in tms.Layers)
                     {
-                        foreach (var layer in tms.Layers)
+                        if (MultipleTilesetPerLayerErrorViewModel.HasMultipleTilesets(tms, layer))
                         {
-                            if (MultipleTilesetPerLayerErrorViewModel.HasMultipleTilesets(tms, layer))
+                            errors.Add(new MultipleTilesetPerLayerErrorViewModel()
                             {
-                                errors.Add(new MultipleTilesetPerLayerErrorViewModel()
-                                {
-                                    Details = $"The layer {layer.Name} in {filePath.FullPath} references multiple tilesets. This can cause rendering errors",
-                                    FilePath = filePath,
-                                    LayerName = layer.Name
+                                Details = $"The layer {layer.Name} in {filePath.FullPath} references multiple tilesets. This can cause rendering errors",
+                                FilePath = filePath,
+                                LayerName = layer.Name
 
-                                });
+                            });
 
-                            }
                         }
                     }
                 }
-
             }
+
         }
+    }
 
-        private void FillWithTileShapeCollectionErrors(List<NamedObjectSave> namedObjects, List<ErrorViewModel> errors)
+    private void FillWithTileShapeCollectionErrors(List<NamedObjectSave> namedObjects, List<ErrorViewModel> errors)
+    {
+        foreach(var nos in namedObjects)
         {
-            foreach(var nos in namedObjects)
+            if(nos.DefinedByBase == false)
             {
-                if(nos.DefinedByBase == false)
+                var collisionCreationOptions = nos.Properties.GetValue< CollisionCreationOptions>(nameof(CollisionCreationOptions));
+
+                if(collisionCreationOptions == CollisionCreationOptions.FromMapCollision)
                 {
-                    var collisionCreationOptions = nos.Properties.GetValue< CollisionCreationOptions>(nameof(CollisionCreationOptions));
+                    var tmxCollisionName = nos.Properties.GetValue<string>(nameof(TileShapeCollectionPropertiesViewModel.TmxCollisionName));
 
-                    if(collisionCreationOptions == CollisionCreationOptions.FromMapCollision)
+                    if(tmxCollisionName != null && tmxCollisionName != nos.InstanceName)
                     {
-                        var tmxCollisionName = nos.Properties.GetValue<string>(nameof(TileShapeCollectionPropertiesViewModel.TmxCollisionName));
-
-                        if(tmxCollisionName != null && tmxCollisionName != nos.InstanceName)
-                        {
-                            var vm = new TileShapeCollectionMapShapeCollectionNameMismatchViewModel(nos);
-                            errors.Add(vm);
-                        }
+                        var vm = new TileShapeCollectionMapShapeCollectionNameMismatchViewModel(nos);
+                        errors.Add(vm);
                     }
                 }
             }

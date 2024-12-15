@@ -145,6 +145,7 @@ namespace FlatRedBall.Gum
             mManagers.Renderer.Camera.Y = 0;
 
             SystemManagers.Default = mManagers;
+            ISystemManagers.Default = mManagers;
             FlatRedBallServices.AddManager(RenderingLibrary.SystemManagers.Default);
 
             RenderingLibrary.Graphics.Text.RenderBoundaryDefault = false;

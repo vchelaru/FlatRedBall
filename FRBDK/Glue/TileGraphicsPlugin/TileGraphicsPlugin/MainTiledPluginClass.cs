@@ -53,6 +53,10 @@ public class MainTiledPluginClass : PluginBase
     TiledObjectTypeCreator tiledObjectTypeCreator;
     TiledToolbar tiledToolbar;
 
+    AssetTypeInfoAdder _assetTypeInfoAdder;
+    TileShapeCollectionsPropertiesController _tileShapeCollectionsPropertiesController;
+    TileNodeNetworkPropertiesController _tileNodeNetworkPropertiesController;
+    NewObjectLogic _newObjectLogic;
     #endregion
 
     #region Properties
@@ -246,6 +250,11 @@ public class MainTiledPluginClass : PluginBase
     public MainTiledPluginClass()
     {
         mSelf = this;
+
+        _assetTypeInfoAdder = new AssetTypeInfoAdder();
+        _tileShapeCollectionsPropertiesController = new TileShapeCollectionsPropertiesController(_assetTypeInfoAdder);
+        _tileNodeNetworkPropertiesController = new TileNodeNetworkPropertiesController(_assetTypeInfoAdder, _tileShapeCollectionsPropertiesController);
+        _newObjectLogic = new NewObjectLogic(_assetTypeInfoAdder);
     }
 
     public override void StartUp()
@@ -254,7 +263,7 @@ public class MainTiledPluginClass : PluginBase
 
         AddEvents();
 
-        this.AddErrorReporter(new ErrorReporter());
+        this.AddErrorReporter(new ErrorReporter(_assetTypeInfoAdder, _tileShapeCollectionsPropertiesController));
 
         CreateToolbar();
 
@@ -263,7 +272,7 @@ public class MainTiledPluginClass : PluginBase
         AddCodeGenerators();
 
         // This used to be on project load, but now we do it on startup
-        AssetTypeInfoAdder.Self.UpdateAtiPresence();
+        _assetTypeInfoAdder.UpdateAtiPresence();
     }
 
     private void AddEvents()
@@ -350,7 +359,7 @@ public class MainTiledPluginClass : PluginBase
 
         //this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
 
-        this.ReactToNewObjectHandler += NewObjectLogic.HandleNewObject;
+        this.ReactToNewObjectHandler += _newObjectLogic.HandleNewObject;
 
         this.NewEntityCreatedWithUi += NewEntityCreatedReactionLogic.ReactToNewEntityCreated;
 
@@ -428,11 +437,11 @@ public class MainTiledPluginClass : PluginBase
         // November 5, 2020 - I don't think we do this anymore, it's all handled with the inheritance model
         //this.RegisterCodeGenerator(new LevelCodeGenerator());
 
-        this.RegisterCodeGenerator(new TmxCodeGenerator());
+        this.RegisterCodeGenerator(new TmxCodeGenerator(_assetTypeInfoAdder));
 
-        this.RegisterCodeGenerator(new TileShapeCollectionCodeGenerator());
+        this.RegisterCodeGenerator(new TileShapeCollectionCodeGenerator(_assetTypeInfoAdder));
 
-        this.RegisterCodeGenerator(new TileNodeNetworkCodeGenerator());
+        this.RegisterCodeGenerator(new TileNodeNetworkCodeGenerator(_assetTypeInfoAdder));
 
         this.RegisterCodeGenerator(new TiledGame1CodeGenerator());
     }
@@ -543,11 +552,11 @@ public class MainTiledPluginClass : PluginBase
             nodeNetworkTab?.Hide();
         }
 
-        if(TileShapeCollectionsPropertiesController.IsTileShapeCollection(treeNode?.Tag as NamedObjectSave))
+        if(_tileShapeCollectionsPropertiesController.IsTileShapeCollection(treeNode?.Tag as NamedObjectSave))
         {
             if(collisionTab == null)
             {
-                var view = TileShapeCollectionsPropertiesController.Self.GetView();
+                var view = _tileShapeCollectionsPropertiesController.GetView();
 
                 collisionTab = base.CreateTab(view, "TileShapeCollection Properties");
             }
@@ -559,7 +568,7 @@ public class MainTiledPluginClass : PluginBase
                 element = ObjectFinder.Self.GetElementContaining(nos);
             }
 
-            TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(nos,element);
+            _tileShapeCollectionsPropertiesController.RefreshViewModelTo(nos,element);
 
             collisionTab.Show();
             GlueCommands.Self.DialogCommands.FocusTab("TileShapeCollection Properties");
@@ -569,11 +578,11 @@ public class MainTiledPluginClass : PluginBase
             collisionTab?.Hide();
         }
 
-        if(TileNodeNetworkPropertiesController.Self.IsTileNodeNetwork(treeNode?.Tag as NamedObjectSave))
+        if(_tileNodeNetworkPropertiesController.IsTileNodeNetwork(treeNode?.Tag as NamedObjectSave))
         {
             if(nodeNetworkTab == null)
             {
-                var view = TileNodeNetworkPropertiesController.Self.GetView();
+                var view = _tileNodeNetworkPropertiesController.GetView();
 
                 nodeNetworkTab = base.CreateTab(view, "TileNodeNetwork Properties");
             }
@@ -584,7 +593,7 @@ public class MainTiledPluginClass : PluginBase
             {
                 element = ObjectFinder.Self.GetElementContaining(nos);
             }
-            TileNodeNetworkPropertiesController.Self.RefreshViewModelTo(nos, element);
+            _tileNodeNetworkPropertiesController.RefreshViewModelTo(nos, element);
 
             nodeNetworkTab.Show();
             GlueCommands.Self.DialogCommands.FocusTab("TileNodeNetwork Properties");
@@ -672,11 +681,11 @@ public class MainTiledPluginClass : PluginBase
                     var element = GlueState.Self.CurrentElement;
                     if (collisionTab?.IsShown == true && nos != null)
                     {
-                        TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(nos, element);
+                        _tileShapeCollectionsPropertiesController.RefreshViewModelTo(nos, element);
                     }
                     if(nodeNetworkTab?.IsShown == true && nos != null)
                     {
-                        TileNodeNetworkPropertiesController.Self.RefreshViewModelTo(nos, element);
+                        _tileNodeNetworkPropertiesController.RefreshViewModelTo(nos, element);
                     }
                 });
 
@@ -875,6 +884,9 @@ public class MainTiledPluginClass : PluginBase
 
         // Make sure the TileMapInfo CustomClassSave is there, and make sure it has all the right properties
         TileMapInfoManager.Self.AddAndModifyTileMapInfoClass();
+
+        _assetTypeInfoAdder.UpdateAtisToLoadedGlueProject();
+        
     }
 
     internal void UpdateTilesetDisplay()

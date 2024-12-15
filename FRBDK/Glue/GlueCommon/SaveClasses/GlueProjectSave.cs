@@ -124,6 +124,12 @@ namespace FlatRedBall.Glue.SaveClasses
             GraphicalUiElementProtectedAnimationProperties = 39,
             GraphicalUiElementINotifyPropertyChanged = 40,
             GumTextObjectsHaveTextOverflowProperties = 41,
+
+            // introduced June 17, 2023
+            // TileShapeCollectionIsICollidable
+            // is being added retroactively to support
+            // TileShapeCollections included in ICollidable
+            TileShapeCollectionIsICollidable = 42,
             TileShapeCollectionAddToLayerSupportsAutomaticallyUpdated = 42,
             ISongInFrb = 43,
             RendererHasExternalEffectManager = 44,

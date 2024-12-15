@@ -15,11 +15,12 @@ namespace TileGraphicsPlugin.Views
     public partial class TileShapeCollectionProperties : UserControl
     {
         TileShapeCollectionPropertiesViewModel ViewModel => DataContext as TileShapeCollectionPropertiesViewModel;
+        TileShapeCollectionsPropertiesController _tileShapeCollectionsPropertiesController;
 
-
-        public TileShapeCollectionProperties()
+        public TileShapeCollectionProperties(TileShapeCollectionsPropertiesController tileShapeCollectionsPropertiesController)
         {
             InitializeComponent();
+            _tileShapeCollectionsPropertiesController = tileShapeCollectionsPropertiesController;
         }
 
         private void TextBox_KeyEnterUpdate(object sender, KeyEventArgs e)
@@ -58,7 +59,7 @@ namespace TileGraphicsPlugin.Views
             //this.ViewModel.CollisionTileTypeName = newName;
             this.ViewModel.ForceSetCollisionTileTypeName(newName);
 
-            TileShapeCollectionsPropertiesController.Self.RefreshAvailableTypes(GlueState.Self.CurrentElement);
+            _tileShapeCollectionsPropertiesController.RefreshAvailableTypes(GlueState.Self.CurrentElement);
         }
     }
 }

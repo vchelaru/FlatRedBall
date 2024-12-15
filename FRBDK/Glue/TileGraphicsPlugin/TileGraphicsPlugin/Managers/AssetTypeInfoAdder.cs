@@ -15,7 +15,7 @@ using TileGraphicsPlugin.ViewModels;
 
 namespace TileGraphicsPlugin
 {
-    public class AssetTypeInfoAdder : Singleton<AssetTypeInfoAdder>
+    public class AssetTypeInfoAdder 
     {
         #region Fields/Properties
 
@@ -238,7 +238,10 @@ namespace TileGraphicsPlugin
                     return null;
                 };
             toReturn.CustomLoadMethod = null;
-            toReturn.DestroyMethod = "this.Visible = false";
+            // This is not good enough if it's added to an entity:
+            //toReturn.DestroyMethod = "this.Visible = false";
+            toReturn.DestroyMethod = "this.RemoveFromManagersOneWay()";
+            
             toReturn.ShouldBeDisposed = false;
             toReturn.ShouldAttach = true; // new as of November 28, 2020
             toReturn.MustBeAddedToContentPipeline = false;
@@ -434,6 +437,13 @@ namespace TileGraphicsPlugin
             //    return $"{namedObjectSave.FieldName} = {referencedFileSave.GetInstanceName()}.Collisions.First(item => item.Name == \"{sourceName}\");";
             //}
             return "";
+        }
+
+        internal void UpdateAtisToLoadedGlueProject()
+        {
+            var tileShapeCollectionAti = TileShapeCollectionAssetTypeInfo;
+
+            tileShapeCollectionAti.ImplementsICollidable = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.TileShapeCollectionIsICollidable;
         }
     }
 }
