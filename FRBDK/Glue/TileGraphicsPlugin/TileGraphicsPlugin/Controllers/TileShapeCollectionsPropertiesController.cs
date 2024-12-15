@@ -186,6 +186,10 @@ public class TileShapeCollectionsPropertiesController
                         AddTypesFromNos(nos);
                     }
                 }
+                else
+                {
+                    AddTypesFromNos(baseNos);
+                }
             }
 
             var foundRfs = element.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith(tmxName + ".tmx"));

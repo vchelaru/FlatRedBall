@@ -819,15 +819,6 @@
   <data name="Text" xml:space="preserve">
     <value>Texte</value>
   </data>
-  <data name="Circle" xml:space="preserve">
-    <value>Cercle</value>
-  </data>
-  <data name="PolygonRectangle" xml:space="preserve">
-    <value>Polygone (Rectangle)</value>
-  </data>
-  <data name="AxisAlignedRectangle" xml:space="preserve">
-    <value>Rectangle aligné sur l'axe</value>
-  </data>
   <data name="IDamagableCanTakeDamage" xml:space="preserve">
     <value>IDamageable (peut subir des dégâts)</value>
   </data>
@@ -1449,9 +1440,6 @@
   <data name="SelectionStackNext" xml:space="preserve">
     <value>Sélectionne l'élément suivant dans la pile de sélection</value>
   </data>
-  <data name="Back" xml:space="preserve">
-    <value>Dos</value>
-  </data>
   <data name="Forward" xml:space="preserve">
     <value>Avant</value>
   </data>
@@ -1581,9 +1569,6 @@
   <data name="Eight" xml:space="preserve">
     <value>Huit</value>
   </data>
-  <data name="CreationOptions" xml:space="preserve">
-    <value>Options de création</value>
-  </data>
   <data name="EliminateCutCorners" xml:space="preserve">
     <value>Éliminez les coins coupés</value>
   </data>
@@ -1593,17 +1578,8 @@
   <data name="Top" xml:space="preserve">
     <value>Haut:</value>
   </data>
-  <data name="TilesWide" xml:space="preserve">
-    <value>Carreaux larges :</value>
-  </data>
-  <data name="TilesHigh" xml:space="preserve">
-    <value>Hauteur des tuiles :</value>
-  </data>
   <data name="TypeFrom" xml:space="preserve">
     <value>Du type :</value>
-  </data>
-  <data name="SourceTmxFileObject" xml:space="preserve">
-    <value>Fichier/Objet TMX source :</value>
   </data>
   <data name="PropertyFrom" xml:space="preserve">
     <value>À partir de la propriété :</value>
@@ -1617,23 +1593,8 @@
   <data name="EmptyAll" xml:space="preserve">
     <value>Tout vide</value>
   </data>
-  <data name="BorderOutline" xml:space="preserve">
-    <value>Contour de la frontière</value>
-  </data>
-  <data name="LeftOuterEdge" xml:space="preserve">
-    <value>Bord extérieur gauche :</value>
-  </data>
-  <data name="TopOuterEdge" xml:space="preserve">
-    <value>Bord extérieur supérieur :</value>
-  </data>
-  <data name="BorderDimensions" xml:space="preserve">
-    <value>Dimensions de la bordure</value>
-  </data>
   <data name="InnerSize" xml:space="preserve">
     <value>Taille intérieure</value>
-  </data>
-  <data name="TilesX" xml:space="preserve">
-    <value># Carrelage</value>
   </data>
   <data name="FromTmxCollision" xml:space="preserve">
     <value>De TMX Collision (utiliser des formes de jeu de tuiles)</value>
@@ -1709,15 +1670,6 @@
   </data>
   <data name="SetBackgroundColor" xml:space="preserve">
     <value>Définir la couleur d'arrière-plan</value>
-  </data>
-  <data name="BackgroundRed" xml:space="preserve">
-    <value>Fond rouge</value>
-  </data>
-  <data name="BackgroundGreen" xml:space="preserve">
-    <value>Fond vert</value>
-  </data>
-  <data name="BackgroundBlue" xml:space="preserve">
-    <value>Fond bleu</value>
   </data>
   <data name="ShowGrid" xml:space="preserve">
     <value>Afficher la grille</value>

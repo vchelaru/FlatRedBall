@@ -38,7 +38,7 @@
             <Button IsEnabled="{Binding IsBackButtonEnabled}" Click="BackButtonClicked" Style="{StaticResource ExplorerButton}" Content="{materialDesign:PackIcon ArrowLeft}">
                 <Button.ToolTip>
                     <StackPanel>
-                        <TextBlock FontWeight="Bold"><Label Content="{x:Static localization:Texts.Back}" /> (ALT + &lt;-)</TextBlock>
+                        <TextBlock FontWeight="Bold"><Label Content="Back" /> (ALT + &lt;-)</TextBlock>
                         <TextBlock Text="{x:Static localization:Texts.SelectPreviousItem}" />
                     </StackPanel>
                 </Button.ToolTip>

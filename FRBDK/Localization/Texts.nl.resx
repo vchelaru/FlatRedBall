@@ -819,15 +819,6 @@
   <data name="Text" xml:space="preserve">
     <value>Tekst</value>
   </data>
-  <data name="Circle" xml:space="preserve">
-    <value>Cirkel</value>
-  </data>
-  <data name="PolygonRectangle" xml:space="preserve">
-    <value>Veelhoek (rechthoek)</value>
-  </data>
-  <data name="AxisAlignedRectangle" xml:space="preserve">
-    <value>As uitgelijnde rechthoek</value>
-  </data>
   <data name="IDamagableCanTakeDamage" xml:space="preserve">
     <value>IDamageable (kan schade oplopen)</value>
   </data>
@@ -1449,9 +1440,6 @@
   <data name="SelectionStackNext" xml:space="preserve">
     <value>Selecteert het volgende item in de selectiestapel</value>
   </data>
-  <data name="Back" xml:space="preserve">
-    <value>Terug</value>
-  </data>
   <data name="Forward" xml:space="preserve">
     <value>Vooruit</value>
   </data>
@@ -1581,9 +1569,6 @@
   <data name="Eight" xml:space="preserve">
     <value>Acht</value>
   </data>
-  <data name="CreationOptions" xml:space="preserve">
-    <value>Creatie opties</value>
-  </data>
   <data name="EliminateCutCorners" xml:space="preserve">
     <value>Elimineer snijhoeken</value>
   </data>
@@ -1593,17 +1578,8 @@
   <data name="Top" xml:space="preserve">
     <value>Boven:</value>
   </data>
-  <data name="TilesWide" xml:space="preserve">
-    <value>Tegels breed:</value>
-  </data>
-  <data name="TilesHigh" xml:space="preserve">
-    <value>Tegels hoog:</value>
-  </data>
   <data name="TypeFrom" xml:space="preserve">
     <value>Van type:</value>
-  </data>
-  <data name="SourceTmxFileObject" xml:space="preserve">
-    <value>Bron TMX-bestand/object:</value>
   </data>
   <data name="PropertyFrom" xml:space="preserve">
     <value>Van eigenschap:</value>
@@ -1617,23 +1593,8 @@
   <data name="EmptyAll" xml:space="preserve">
     <value>Allemaal leeg</value>
   </data>
-  <data name="BorderOutline" xml:space="preserve">
-    <value>Randlijn</value>
-  </data>
-  <data name="LeftOuterEdge" xml:space="preserve">
-    <value>Linker buitenrand:</value>
-  </data>
-  <data name="TopOuterEdge" xml:space="preserve">
-    <value>Bovenste buitenrand:</value>
-  </data>
-  <data name="BorderDimensions" xml:space="preserve">
-    <value>Randafmetingen</value>
-  </data>
   <data name="InnerSize" xml:space="preserve">
     <value>Binnenmaat</value>
-  </data>
-  <data name="TilesX" xml:space="preserve">
-    <value># Tegels</value>
   </data>
   <data name="FromTmxCollision" xml:space="preserve">
     <value>Van TMX-botsing (gebruik tegelsetvormen)</value>
@@ -1709,15 +1670,6 @@
   </data>
   <data name="SetBackgroundColor" xml:space="preserve">
     <value>Achtergrondkleur</value>
-  </data>
-  <data name="BackgroundRed" xml:space="preserve">
-    <value>Rode achtergrond</value>
-  </data>
-  <data name="BackgroundGreen" xml:space="preserve">
-    <value>Groene achtergrond</value>
-  </data>
-  <data name="BackgroundBlue" xml:space="preserve">
-    <value>Blauwe achtergrond</value>
   </data>
   <data name="ShowGrid" xml:space="preserve">
     <value>Raster tonen</value>

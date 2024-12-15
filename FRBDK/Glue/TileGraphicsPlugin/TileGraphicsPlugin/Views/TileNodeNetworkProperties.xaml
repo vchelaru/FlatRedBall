@@ -78,7 +78,7 @@
                              IsChecked="{Binding IsFromPropertiesChecked}" Content="{x:Static localization:Texts.PropertyFrom}" />
                     <StackPanel x:Name="Properties" Margin="10, 0, 0, 0" 
                             Visibility="{Binding FromPropertiesVisibility}">
-                        <TextBlock  Text="{x:Static localization:Texts.SourceTmxFileObject}" />
+                        <TextBlock  Text="Source TMX File/Object:" />
                         <ComboBox Width="200" HorizontalAlignment="Left"
                               ItemsSource="{Binding TmxObjectNames}"
                               SelectedItem="{Binding SourceTmxName}"></ComboBox>
@@ -92,7 +92,7 @@
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                              IsChecked="{Binding IsFromLayerChecked}" Content="From Layer:" />
                     <StackPanel Margin="10,0,0,0" Visibility="{Binding FromLayerVisibility}">
-                        <TextBlock  Text="{x:Static localization:Texts.SourceTmxFileObject}" />
+                        <TextBlock  Text="Source TMX File/Object:" />
                         <ComboBox Width="200" HorizontalAlignment="Left"
                               ItemsSource="{Binding TmxObjectNames}"
                               SelectedItem="{Binding SourceTmxName}"></ComboBox>

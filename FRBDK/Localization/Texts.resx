@@ -820,15 +820,6 @@ for {1}?</value>
   <data name="Text" xml:space="preserve">
     <value>Text</value>
   </data>
-  <data name="Circle" xml:space="preserve">
-    <value>Circle</value>
-  </data>
-  <data name="PolygonRectangle" xml:space="preserve">
-    <value>Polygon (Rectangle)</value>
-  </data>
-  <data name="AxisAlignedRectangle" xml:space="preserve">
-    <value>Axis Aligned Rectangle</value>
-  </data>
   <data name="IDamagableCanTakeDamage" xml:space="preserve">
     <value>IDamageable (can take damage)</value>
   </data>
@@ -1450,9 +1441,6 @@ for {1}?</value>
   <data name="SelectionStackNext" xml:space="preserve">
     <value>Selects the next item in the selection stack</value>
   </data>
-  <data name="Back" xml:space="preserve">
-    <value>Back</value>
-  </data>
   <data name="Forward" xml:space="preserve">
     <value>Forward</value>
   </data>
@@ -1582,9 +1570,6 @@ for {1}?</value>
   <data name="Eight" xml:space="preserve">
     <value>Eight</value>
   </data>
-  <data name="CreationOptions" xml:space="preserve">
-    <value>Creation Options</value>
-  </data>
   <data name="EliminateCutCorners" xml:space="preserve">
     <value>Eliminate Cut Corners</value>
   </data>
@@ -1594,17 +1579,8 @@ for {1}?</value>
   <data name="Top" xml:space="preserve">
     <value>Top:</value>
   </data>
-  <data name="TilesWide" xml:space="preserve">
-    <value>Tiles wide:</value>
-  </data>
-  <data name="TilesHigh" xml:space="preserve">
-    <value>Tiles high:</value>
-  </data>
   <data name="TypeFrom" xml:space="preserve">
     <value>From Type:</value>
-  </data>
-  <data name="SourceTmxFileObject" xml:space="preserve">
-    <value>Source TMX File/Object:</value>
   </data>
   <data name="PropertyFrom" xml:space="preserve">
     <value>From Property:</value>
@@ -1618,23 +1594,8 @@ for {1}?</value>
   <data name="EmptyAll" xml:space="preserve">
     <value>All empty</value>
   </data>
-  <data name="BorderOutline" xml:space="preserve">
-    <value>Border Outline</value>
-  </data>
-  <data name="LeftOuterEdge" xml:space="preserve">
-    <value>Left Outer Edge:</value>
-  </data>
-  <data name="TopOuterEdge" xml:space="preserve">
-    <value>Top Outer Edge:</value>
-  </data>
-  <data name="BorderDimensions" xml:space="preserve">
-    <value>Border Dimensions</value>
-  </data>
   <data name="InnerSize" xml:space="preserve">
     <value>Inner Size</value>
-  </data>
-  <data name="TilesX" xml:space="preserve">
-    <value># Tiles</value>
   </data>
   <data name="FromTmxCollision" xml:space="preserve">
     <value>From TMX Collision - requires shapes defined in the tileset (TSX)</value>
@@ -1710,15 +1671,6 @@ for {1}?</value>
   </data>
   <data name="SetBackgroundColor" xml:space="preserve">
     <value>Set background color</value>
-  </data>
-  <data name="BackgroundRed" xml:space="preserve">
-    <value>Red background</value>
-  </data>
-  <data name="BackgroundGreen" xml:space="preserve">
-    <value>Green background</value>
-  </data>
-  <data name="BackgroundBlue" xml:space="preserve">
-    <value>Blue background</value>
   </data>
   <data name="ShowGrid" xml:space="preserve">
     <value>Show grid</value>
@@ -2316,12 +2268,6 @@ for {1}?</value>
   </data>
   <data name="CliExtraArguments" xml:space="preserve">
     <value>Enter extra command line arguments:</value>
-  </data>
-  <data name="FromTileClass" xml:space="preserve">
-    <value>From Tile Class:</value>
-  </data>
-  <data name="TileClass" xml:space="preserve">
-    <value>Tile Class:</value>
   </data>
   <data name="WhichTemplateUse" xml:space="preserve">
     <value>Which template would you like to use?</value>

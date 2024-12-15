@@ -40,9 +40,9 @@
         </GroupBox>
         <GroupBox Header="{x:Static localization:Texts.Collision}" Visibility="{Binding CollisionsVisibility}">
             <StackPanel>
-                <CheckBox x:Name="CircleCheckBox" IsChecked="{Binding IsCircleChecked}" Content="{x:Static localization:Texts.Circle}"></CheckBox>
-                <CheckBox x:Name="AxisAlignedRectangleCheckBox" IsChecked="{Binding IsAxisAlignedRectangleChecked}" Content="{x:Static localization:Texts.AxisAlignedRectangle}"></CheckBox>
-                <CheckBox x:Name="PolygonCheckBox" IsChecked="{Binding IsPolygonChecked}" Content="{x:Static localization:Texts.PolygonRectangle}"></CheckBox>
+                <CheckBox x:Name="CircleCheckBox" IsChecked="{Binding IsCircleChecked}" Content="Circle"></CheckBox>
+                <CheckBox x:Name="AxisAlignedRectangleCheckBox" IsChecked="{Binding IsAxisAlignedRectangleChecked}" Content="AxisAlignedRectangle"></CheckBox>
+                <CheckBox x:Name="PolygonCheckBox" IsChecked="{Binding IsPolygonChecked}" Content="Polygon (Rectangle)"></CheckBox>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="{x:Static localization:Texts.Interfaces}" Visibility="{Binding InterfaceVisibility}">

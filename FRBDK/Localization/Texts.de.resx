@@ -819,15 +819,6 @@
   <data name="Text" xml:space="preserve">
     <value>Text</value>
   </data>
-  <data name="Circle" xml:space="preserve">
-    <value>Kreis</value>
-  </data>
-  <data name="PolygonRectangle" xml:space="preserve">
-    <value>Polygon (Rechteck)</value>
-  </data>
-  <data name="AxisAlignedRectangle" xml:space="preserve">
-    <value>Achsenausgerichtetes Rechteck</value>
-  </data>
   <data name="IDamagableCanTakeDamage" xml:space="preserve">
     <value>IDamageable (kann Schaden nehmen)</value>
   </data>
@@ -1449,9 +1440,6 @@
   <data name="SelectionStackNext" xml:space="preserve">
     <value>Wählt das nächste Element im Auswahlstapel aus</value>
   </data>
-  <data name="Back" xml:space="preserve">
-    <value>Zurück</value>
-  </data>
   <data name="Forward" xml:space="preserve">
     <value>Nach vorne</value>
   </data>
@@ -1581,9 +1569,6 @@
   <data name="Eight" xml:space="preserve">
     <value>Acht</value>
   </data>
-  <data name="CreationOptions" xml:space="preserve">
-    <value>Erstellungsoptionen</value>
-  </data>
   <data name="EliminateCutCorners" xml:space="preserve">
     <value>Eliminieren Sie abgeschnittene Ecken</value>
   </data>
@@ -1593,17 +1578,8 @@
   <data name="Top" xml:space="preserve">
     <value>Spitze:</value>
   </data>
-  <data name="TilesWide" xml:space="preserve">
-    <value>Fliesen breit:</value>
-  </data>
-  <data name="TilesHigh" xml:space="preserve">
-    <value>Fliesen höhe:</value>
-  </data>
   <data name="TypeFrom" xml:space="preserve">
     <value>Von Typ:</value>
-  </data>
-  <data name="SourceTmxFileObject" xml:space="preserve">
-    <value>Quell-TMX-Datei/-Objekt:</value>
   </data>
   <data name="PropertyFrom" xml:space="preserve">
     <value>Von eigenschaft:</value>
@@ -1617,23 +1593,8 @@
   <data name="EmptyAll" xml:space="preserve">
     <value>Alles leer</value>
   </data>
-  <data name="BorderOutline" xml:space="preserve">
-    <value>Grenzumriss</value>
-  </data>
-  <data name="LeftOuterEdge" xml:space="preserve">
-    <value>Linke Außenkante:</value>
-  </data>
-  <data name="TopOuterEdge" xml:space="preserve">
-    <value>Obere Außenkante:</value>
-  </data>
-  <data name="BorderDimensions" xml:space="preserve">
-    <value>Grenzabmessungen</value>
-  </data>
   <data name="InnerSize" xml:space="preserve">
     <value>Innere Größe</value>
-  </data>
-  <data name="TilesX" xml:space="preserve">
-    <value># Fliesen</value>
   </data>
   <data name="FromTmxCollision" xml:space="preserve">
     <value>Von TMX Collision (Kachelsatzformen verwenden)</value>
@@ -1709,15 +1670,6 @@
   </data>
   <data name="SetBackgroundColor" xml:space="preserve">
     <value>Hintergrundfarbe festlegen</value>
-  </data>
-  <data name="BackgroundRed" xml:space="preserve">
-    <value>Roter Hintergrund</value>
-  </data>
-  <data name="BackgroundGreen" xml:space="preserve">
-    <value>Grüner Hintergrund</value>
-  </data>
-  <data name="BackgroundBlue" xml:space="preserve">
-    <value>Blauer Hintergrund</value>
   </data>
   <data name="ShowGrid" xml:space="preserve">
     <value>Raster anzeigen</value>

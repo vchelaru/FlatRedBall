@@ -61,74 +61,11 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Axis Aligned Rectangle.
-        /// </summary>
-        public static string AxisAlignedRectangle {
-            get {
-                return ResourceManager.GetString("AxisAlignedRectangle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Back.
-        /// </summary>
-        public static string Back {
-            get {
-                return ResourceManager.GetString("Back", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Blue background.
-        /// </summary>
-        public static string BackgroundBlue {
-            get {
-                return ResourceManager.GetString("BackgroundBlue", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Green background.
-        /// </summary>
-        public static string BackgroundGreen {
-            get {
-                return ResourceManager.GetString("BackgroundGreen", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Red background.
-        /// </summary>
-        public static string BackgroundRed {
-            get {
-                return ResourceManager.GetString("BackgroundRed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Bookmark.
         /// </summary>
         public static string Bookmark {
             get {
                 return ResourceManager.GetString("Bookmark", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Border Dimensions.
-        /// </summary>
-        public static string BorderDimensions {
-            get {
-                return ResourceManager.GetString("BorderDimensions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Border Outline.
-        /// </summary>
-        public static string BorderOutline {
-            get {
-                return ResourceManager.GetString("BorderOutline", resourceCulture);
             }
         }
         
@@ -300,15 +237,6 @@ namespace Localization {
         public static string CharacterStopMovingUphillSlope {
             get {
                 return ResourceManager.GetString("CharacterStopMovingUphillSlope", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Circle.
-        /// </summary>
-        public static string Circle {
-            get {
-                return ResourceManager.GetString("Circle", resourceCulture);
             }
         }
         
@@ -723,15 +651,6 @@ namespace Localization {
         public static string Creation {
             get {
                 return ResourceManager.GetString("Creation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Creation Options.
-        /// </summary>
-        public static string CreationOptions {
-            get {
-                return ResourceManager.GetString("CreationOptions", resourceCulture);
             }
         }
         
@@ -2329,15 +2248,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to From Tile Class:.
-        /// </summary>
-        public static string FromTileClass {
-            get {
-                return ResourceManager.GetString("FromTileClass", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to From TMX Collision - requires shapes defined in the tileset (TSX).
         /// </summary>
         public static string FromTmxCollision {
@@ -3752,15 +3662,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Left Outer Edge:.
-        /// </summary>
-        public static string LeftOuterEdge {
-            get {
-                return ResourceManager.GetString("LeftOuterEdge", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Level Screen.
         /// </summary>
         public static string LevelScreen {
@@ -4891,15 +4792,6 @@ namespace Localization {
         public static string PolygonPointSnapSize {
             get {
                 return ResourceManager.GetString("PolygonPointSnapSize", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Polygon (Rectangle).
-        /// </summary>
-        public static string PolygonRectangle {
-            get {
-                return ResourceManager.GetString("PolygonRectangle", resourceCulture);
             }
         }
         
@@ -6074,15 +5966,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Source TMX File/Object:.
-        /// </summary>
-        public static string SourceTmxFileObject {
-            get {
-                return ResourceManager.GetString("SourceTmxFileObject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Speed Up.
         /// </summary>
         public static string SpeedUp {
@@ -6308,15 +6191,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tile Class:.
-        /// </summary>
-        public static string TileClass {
-            get {
-                return ResourceManager.GetString("TileClass", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Tiled.
         /// </summary>
         public static string Tiled {
@@ -6326,38 +6200,11 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tiles high:.
-        /// </summary>
-        public static string TilesHigh {
-            get {
-                return ResourceManager.GetString("TilesHigh", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Remove Tiles.
         /// </summary>
         public static string TilesRemove {
             get {
                 return ResourceManager.GetString("TilesRemove", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Tiles wide:.
-        /// </summary>
-        public static string TilesWide {
-            get {
-                return ResourceManager.GetString("TilesWide", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to # Tiles.
-        /// </summary>
-        public static string TilesX {
-            get {
-                return ResourceManager.GetString("TilesX", resourceCulture);
             }
         }
         
@@ -6439,15 +6286,6 @@ namespace Localization {
         public static string TopdownStandardDescription {
             get {
                 return ResourceManager.GetString("TopdownStandardDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Top Outer Edge:.
-        /// </summary>
-        public static string TopOuterEdge {
-            get {
-                return ResourceManager.GetString("TopOuterEdge", resourceCulture);
             }
         }
         
