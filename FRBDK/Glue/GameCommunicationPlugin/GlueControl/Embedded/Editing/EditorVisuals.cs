@@ -374,10 +374,10 @@ namespace GlueControl.Editing
             return polygon;
         }
 
-        public static Polygon DrawPath(Path path, bool includeOffsetArrow = false)
+        public static Polygon DrawPath(Path path, Vector3 startingPosition, bool includeOffsetArrow = false)
         {
 
-            var pathPolygon = Polygon(Vector3.Zero);
+            var pathPolygon = Polygon(startingPosition);
 
 
             if (path != null && path.TotalLength > 0)
