@@ -19,9 +19,6 @@ using FlatRedBall.Forms.Controls.Games;
 using FlatRedBall.Forms.Controls;
 using System.Diagnostics;
 
-
-
-
 namespace FormsSampleProject.Screens
 {
     public partial class MainMenu
@@ -43,6 +40,10 @@ namespace FormsSampleProject.Screens
             Forms.ListBoxInstance.SetBinding(
                 nameof(Forms.ListBoxInstance.Items),
                 nameof(ViewModel.ListBoxItems));
+
+            Forms.ListBoxInstance.SetBinding(
+                nameof(Forms.ListBoxInstance.SelectedObject),
+                nameof(ViewModel.SelectedItem));
 
             Forms.BindingContext = ViewModel;
             Forms.ButtonStandardInstance.Click += HandleButtonClicked;
@@ -66,6 +67,39 @@ namespace FormsSampleProject.Screens
             {
                 var textBox = sender as TextBox;
                 //Debug.WriteLine($"Text:{textBox.Text} with length {textBox.Text.Length} with caret index {textBox.CaretIndex}");
+            };
+
+            Forms.MoveSelectionUpButton.Click += (_, _) =>
+            {
+                if(ViewModel.SelectedItem == null)
+                {
+                    ToastManager.Show("Select an item before moving it");
+                }
+                else
+                {
+                    var selectedIndex = Forms.ListBoxInstance.SelectedIndex;
+
+                    if(selectedIndex > 0)
+                    {
+                        ViewModel.ListBoxItems.Move(selectedIndex, selectedIndex - 1);
+                    }
+                }
+            };
+
+            Forms.MoveSelectionDownButton.Click += (_, _) =>
+            {
+                if (ViewModel.SelectedItem == null)
+                {
+                    ToastManager.Show("Select an item before moving it");
+                }
+                else
+                {
+                    var selectedIndex = Forms.ListBoxInstance.SelectedIndex;
+                    if(selectedIndex != -1 && selectedIndex < ViewModel.ListBoxItems.Count - 1)
+                    {
+                        ViewModel.ListBoxItems.Move(selectedIndex, selectedIndex + 1);
+                    }
+                }
             };
 
             // uncomment these 2 lines of code to enable gamepad support for the UI

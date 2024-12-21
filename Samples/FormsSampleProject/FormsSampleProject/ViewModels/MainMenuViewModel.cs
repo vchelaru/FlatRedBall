@@ -12,6 +12,10 @@ namespace FormsSampleProject.ViewModels
     {
         public ObservableCollection<string> ComboBoxItems { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> ListBoxItems { get; set; } = new ObservableCollection<string>();
-        
+        public string SelectedItem
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
     }
 }

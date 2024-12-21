@@ -3,46 +3,46 @@
     "vchel": [],
     "Owner": [
       {
-        "NewName": "MainMenuGum.TextBoxInstance1",
+        "NewName": "MainMenuGum.ContainerInstance1",
         "OldName": null,
         "ElementType": "Screens",
         "EventType": 5,
-        "TimestampUtc": "2024-11-14T15:33:39.8251698Z"
+        "TimestampUtc": "2024-12-21T20:41:28.7477669Z"
       },
       {
-        "NewName": "MainMenuGum.LineWrappedTextBox",
-        "OldName": "MainMenuGum.TextBoxInstance1",
+        "NewName": "MainMenuGum.ShowDialogButton1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-12-21T20:42:26.2659379Z"
+      },
+      {
+        "NewName": "MainMenuGum.ShowDialogButton2",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-12-21T20:42:31.863421Z"
+      },
+      {
+        "NewName": "MainMenuGum.MoveUpButton",
+        "OldName": "MainMenuGum.ShowDialogButton1",
         "ElementType": "Screens",
         "EventType": 7,
-        "TimestampUtc": "2024-11-14T15:34:01.6807279Z"
+        "TimestampUtc": "2024-12-21T20:42:40.8908338Z"
       },
       {
-        "NewName": "MainMenuGum.TextInstance",
-        "OldName": null,
+        "NewName": "MainMenuGum.MoveSelectionUpButton",
+        "OldName": "MainMenuGum.MoveUpButton",
         "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2024-11-14T15:36:02.5915713Z"
+        "EventType": 7,
+        "TimestampUtc": "2024-12-21T20:42:45.5199827Z"
       },
       {
-        "NewName": null,
-        "OldName": "MainMenuGum.Text TextInstance in MainMenuGum",
+        "NewName": "MainMenuGum.MoveSelectionDownButton",
+        "OldName": "MainMenuGum.ShowDialogButton2",
         "ElementType": "Screens",
-        "EventType": 6,
-        "TimestampUtc": "2024-11-14T15:36:30.8105178Z"
-      },
-      {
-        "NewName": "MainMenuGum.TextInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2024-11-15T22:00:05.7303224Z"
-      },
-      {
-        "NewName": null,
-        "OldName": "MainMenuGum.Text TextInstance in MainMenuGum",
-        "ElementType": "Screens",
-        "EventType": 6,
-        "TimestampUtc": "2024-11-16T16:43:23.5760964Z"
+        "EventType": 7,
+        "TimestampUtc": "2024-12-21T20:42:53.6892415Z"
       }
     ]
   }
