@@ -732,11 +732,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                     rightSide = "Microsoft.Xna.Framework.Color." + rightSide.Replace("\"", "");
 
                 }
-                else if(IsQualifiedGumState(customVariable?.Type))
+                else if(IsQualifiedGumState(customVariable?.Type ?? forcedType))
                 {
                     if(!string.IsNullOrEmpty(rightSide))
                     {
-                        var type = customVariable.Type;
+                        var type = customVariable?.Type ?? forcedType;
                         if(type.EndsWith("?"))
                         {
                             type = type.Substring(0, type.Length - 1);

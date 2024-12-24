@@ -166,6 +166,8 @@ namespace GlueTestProject.Screens
 
         #region Activity Methods
 
+        bool hasTestedAttachment = false;
+
         void CustomActivity(bool firstTimeCalled)
         {
             if (this.ActivityCallCount == 1)
@@ -195,8 +197,9 @@ namespace GlueTestProject.Screens
             }
 
             // Give us some time to do instructions and time-based checks
-            if (this.ActivityCallCount == 11)
+            if (this.ActivityCallCount >= 11 && !hasTestedAttachment)
             {
+                hasTestedAttachment = true;
                 TestDetachedManualUpdateVelocityVariables();
 
                 TestDetachedManualUpdateAccelerationVariables();
@@ -216,7 +219,7 @@ namespace GlueTestProject.Screens
 
             }
 
-            if (this.PauseAdjustedCurrentTime > .4f)
+            if (this.PauseAdjustedCurrentTime > .4f && hasTestedAttachment)
             {
                 // UpdateDependencies is only called when there is a draw, 
                 // and multiple draws may be skipped if fps is low enough

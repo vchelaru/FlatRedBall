@@ -17,6 +17,20 @@
       "Properties": [
         {
           "Name": "Type",
+          "Value": "GlueTestProject.GumRuntimes.StateComponentRuntime.Category1?",
+          "Type": "String"
+        }
+      ],
+      "Name": "StateComponentRuntimeInstanceCurrentCategory1State",
+      "DefaultValue": "Categorized2",
+      "SetByDerived": true,
+      "SourceObject": "StateComponentRuntimeInstance",
+      "SourceObjectProperty": "CurrentCategory1State"
+    },
+    {
+      "Properties": [
+        {
+          "Name": "Type",
           "Value": "float"
         }
       ],
@@ -359,6 +373,29 @@
       "SourceFile": "ColoredRectangleRuntime",
       "AttachToContainer": true,
       "GenerateTimedEmit": true
+    },
+    {
+      "InstanceName": "StateComponentRuntimeInstance",
+      "SourceClassType": "GlueTestProject.GumRuntimes.StateComponentRuntime",
+      "Properties": [
+        {
+          "Name": "AssociateWithFactory",
+          "Value": true,
+          "Type": "bool"
+        }
+      ],
+      "InstructionSaves": [
+        {
+          "Type": "GlueTestProject.GumRuntimes.StateComponentRuntime.Category1?",
+          "Member": "CurrentCategory1State",
+          "Value": "Categorized2",
+          "Time": 0.0
+        }
+      ],
+      "SourceType": 3,
+      "SourceFile": "StateComponentRuntime",
+      "AttachToContainer": true,
+      "GenerateTimedEmit": true
     }
   ],
   "StateCategoryList": [
@@ -386,7 +423,8 @@
       "ExcludedVariables": [
         "X",
         "Y",
-        "Z"
+        "Z",
+        "StateComponentRuntimeInstanceCurrentCategory1State"
       ]
     }
   ],

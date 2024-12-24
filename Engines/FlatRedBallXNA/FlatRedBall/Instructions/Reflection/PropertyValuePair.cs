@@ -740,8 +740,16 @@ namespace FlatRedBall.Instructions.Reflection
 
                 if (!handled)
                 {
-                    throw new NotImplementedException("Cannot convert the value " + value + $" ({value?.GetType()}) to the type " +
-                        desiredType.ToString());
+                    toReturn = value;
+
+                    // December 23, 2024
+                    // If this is a Gum state
+                    // we don't want to blow up.
+                    // Just return string. This would
+                    // cause Gum to crash to desktop which
+                    // is no good.
+                    //throw new NotImplementedException("Cannot convert the value " + value + $" ({value?.GetType()}) to the type " +
+                    //    desiredType.ToString());
                 }
             }
 
@@ -762,7 +770,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-                foundType = TryToGetTypeFromAssemblies(typeAsString);
+                foundType = TryToGetTypeFromAssemblies(typeAsString, throwExceptionOnMissingType:false);
             }
 
             return foundType != null &&
@@ -920,7 +928,7 @@ namespace FlatRedBall.Instructions.Reflection
             return newObject;
         }
 
-        private static Type TryToGetTypeFromAssemblies(string typeAfterNewString)
+        private static Type TryToGetTypeFromAssemblies(string typeAfterNewString, bool throwExceptionOnMissingType = true)
         {
             Type foundType = null;
 
@@ -964,9 +972,12 @@ namespace FlatRedBall.Instructions.Reflection
 
             if (foundType == null)
             {
-                throw new ArgumentException
-                    ("Could not find the type for " + typeAfterNewString + 
-                    "\nIf this is a type in your project, you may need to add the assembly to the PropertyValuePair.AdditionalAssemblies");
+                if(throwExceptionOnMissingType)
+                {
+                    throw new ArgumentException
+                        ("Could not find the type for " + typeAfterNewString + 
+                        "\nIf this is a type in your project, you may need to add the assembly to the PropertyValuePair.AdditionalAssemblies");
+                }
             }
             else
             {
