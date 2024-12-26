@@ -88,8 +88,8 @@ namespace FlatRedBall.Glue.MVVM
 
         public IPropertyListContainer GlueObject
         {
-            get => Get<IPropertyListContainer>(); 
-            set => Set(value); 
+            get => Get<IPropertyListContainer>();
+            set => Set(value);
         }
 
         public bool IsUpdatingFromGlueObject { get; set; }
@@ -119,7 +119,7 @@ namespace FlatRedBall.Glue.MVVM
 
                 foreach (var uncastedAttribute in attributes)
                 {
-                    if(uncastedAttribute is DefaultValueAttribute)
+                    if (uncastedAttribute is DefaultValueAttribute)
                     {
                         var defaultValueAttribute = uncastedAttribute as DefaultValueAttribute;
 
@@ -154,7 +154,7 @@ namespace FlatRedBall.Glue.MVVM
                         information.SyncingConditionProperty =
                             syncedPropertyAttribute.SyncingConditionProperty;
                     }
-                    else if(uncastedAttribute is RemoveIfDefaultAttribute)
+                    else if (uncastedAttribute is RemoveIfDefaultAttribute)
                     {
                         information.RemoveIfDefault = true;
                     }
@@ -168,9 +168,9 @@ namespace FlatRedBall.Glue.MVVM
         }
 
         // made public for reflection
-        public bool SetAndPersist<T>(T propertyValue, [CallerMemberName]string propertyName = null, bool forcePersist = false)
+        public bool SetAndPersist<T>(T propertyValue, [CallerMemberName] string propertyName = null, bool forcePersist = false)
         {
-            if(viewModelProperties.ContainsKey(propertyName) == false)
+            if (viewModelProperties.ContainsKey(propertyName) == false)
             {
                 throw new InvalidOperationException($"Did you forget to set the SyncedProperty attribute on {propertyName} in {this.GetType()}?");
             }
@@ -183,7 +183,7 @@ namespace FlatRedBall.Glue.MVVM
             // property already being set.
             if ((base.SetWithoutNotifying(propertyValue, propertyName) && PersistChanges) || forcePersist)
             {
-                if(propertyInfo.Converter != null)
+                if (propertyInfo.Converter != null)
                 {
                     propertyValue = (T)propertyInfo.Converter.Convert(propertyValue);
                 }
@@ -224,24 +224,24 @@ namespace FlatRedBall.Glue.MVVM
                 // I could use reflection (which could
                 // be slow) or just special case it:
 
-                if(!IsUpdatingFromGlueObject)
+                if (!IsUpdatingFromGlueObject)
                 {
                     // August 7, 2024
                     // If we're updating from Glue object, we don't want to set values back on the Glue object.
-                    if(GlueObject == null)
+                    if (GlueObject == null)
                     {
                         throw new InvalidOperationException("Need to set GlueObject before calling SetAndPersist");
                     }
 
-                    if(GlueObject is ReferencedFileSave && modelName == nameof(ReferencedFileSave.DestroyOnUnload))
+                    if (GlueObject is ReferencedFileSave && modelName == nameof(ReferencedFileSave.DestroyOnUnload))
                     {
                         ((ReferencedFileSave)GlueObject).DestroyOnUnload = (bool)(object)propertyValue;
                     }
                     else
                     {
-                        if(propertyInfo.RemoveIfDefault)
+                        if (propertyInfo.RemoveIfDefault)
                         {
-                            GlueObject.Properties.SetValue(modelName, propertyValue, persistIfDefault:false);
+                            GlueObject.Properties.SetValue(modelName, propertyValue, persistIfDefault: false);
                         }
                         else
                         {
@@ -257,7 +257,7 @@ namespace FlatRedBall.Glue.MVVM
 
 
 
-                if(!IsUpdatingFromGlueObject)
+                if (!IsUpdatingFromGlueObject)
                 {
                     // February 20, 2023
                     // Generating code and
@@ -289,12 +289,27 @@ namespace FlatRedBall.Glue.MVVM
                         {
                             TaskManager.Self.OnUiThread(() =>
                                 EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                                    propertyName, oldValue, namedObjectSave:namedObject));
+                                    propertyName, oldValue, namedObjectSave: namedObject));
                         },
                         "Restarting due to change " + namedObject.InstanceName + "." + propertyName, TaskExecutionPreference.AddOrMoveToEnd);
                     }
 
-                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                    if(element != null)
+                    {
+                        // add or move to end makes things a little faster, especially when dealing with sliders
+                        GlueCommands.Self.GluxCommands.SaveElementAsync(element, TaskExecutionPreference.AddOrMoveToEnd);
+                    }
+                    else if(GlueObject is ReferencedFileSave rfs)
+                    {
+                        // add or move to end makes things a little faster, especially when dealing with sliders
+                        GlueCommands.Self.GluxCommands.SaveGlujFile(TaskExecutionPreference.AddOrMoveToEnd);
+                    }
+                    else
+                    {
+                        // December 26, 2024 - Not sure if this case can get hit anymore, but keeping it here just in case:
+                        GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                    }
+
                 }
                 return true;
             }
@@ -303,7 +318,7 @@ namespace FlatRedBall.Glue.MVVM
 
         public bool IsPropertySynced(string propertyName)
         {
-            if(viewModelProperties.ContainsKey(propertyName))
+            if (viewModelProperties.ContainsKey(propertyName))
             {
                 return viewModelProperties[propertyName].IsSynced;
             }
@@ -338,23 +353,23 @@ namespace FlatRedBall.Glue.MVVM
                 {
                     var defaultVmValue = kvp.Value.DefaultValue;
 
-                    if(defaultVmValue != null)
+                    if (defaultVmValue != null)
                     {
                         var method = this.GetType().GetMethod(nameof(SetAndPersist)).MakeGenericMethod(defaultVmValue.GetType());
 
                         var shouldSync = !kvp.Value.RemoveIfDefault;
-                        if(shouldSync && !string.IsNullOrEmpty(kvp.Value.SyncingConditionProperty))
+                        if (shouldSync && !string.IsNullOrEmpty(kvp.Value.SyncingConditionProperty))
                         {
                             shouldSync = base.Get<bool>(kvp.Value.SyncingConditionProperty);
                         }
 
-                        if(shouldSync)
+                        if (shouldSync)
                         {
                             // 3rd parameter forces the persist, because if we're in here, the Glue object does not have this
                             // property
                             method.Invoke(this, new object[] { defaultVmValue, viewModelPropertyName, true });
                         }
-                        else if(!shouldSync && kvp.Value.RemoveIfDefault && propertyDictionary.ContainsKey(viewModelPropertyName))
+                        else if (!shouldSync && kvp.Value.RemoveIfDefault && propertyDictionary.ContainsKey(viewModelPropertyName))
                         {
                             propertyDictionary.Remove(viewModelPropertyName);
                         }
@@ -362,9 +377,9 @@ namespace FlatRedBall.Glue.MVVM
                     }
                 }
 
-                if(handledByVmDefault == false)
+                if (handledByVmDefault == false)
                 {
-                    if(modelPropertyName == nameof(ReferencedFileSave.DestroyOnUnload) && GlueObject is ReferencedFileSave)
+                    if (modelPropertyName == nameof(ReferencedFileSave.DestroyOnUnload) && GlueObject is ReferencedFileSave)
                     {
                         // see above to see why we have this special case
                         modelValue = ((ReferencedFileSave)GlueObject).DestroyOnUnload;
@@ -376,9 +391,9 @@ namespace FlatRedBall.Glue.MVVM
 
                     if (type == typeof(float))
                     {
-                        if(modelValue is double)
+                        if (modelValue is double)
                         {
-                            SetInternal<float>( (float)((double)modelValue), viewModelPropertyName, converter);
+                            SetInternal<float>((float)((double)modelValue), viewModelPropertyName, converter);
                         }
                         else
                         {
@@ -407,7 +422,7 @@ namespace FlatRedBall.Glue.MVVM
                     }
                     else if (type == typeof(int))
                     {
-                        if(modelValue is long asLong)
+                        if (modelValue is long asLong)
                         {
                             // This can happen due to the JSON conversion
                             SetInternal<int>((int)asLong, viewModelPropertyName, converter);
@@ -436,7 +451,7 @@ namespace FlatRedBall.Glue.MVVM
 
                         var genericMethod = method.MakeGenericMethod(type);
 
-                        if(type.IsEnum && modelValue is int valueAsInt)
+                        if (type.IsEnum && modelValue is int valueAsInt)
                         {
                             var castedType = Enum.ToObject(type, valueAsInt);
                             genericMethod.Invoke(this, new object[] { castedType, viewModelPropertyName, converter });
@@ -461,12 +476,12 @@ namespace FlatRedBall.Glue.MVVM
         // made public for reflection
         public void SetInternal<T>(object toSet, string propertyName, IConverter converter)
         {
-            if(toSet == null)
+            if (toSet == null)
             {
                 toSet = default(T);
             }
 
-            if(converter != null)
+            if (converter != null)
             {
                 toSet = converter.ConvertBack(toSet);
             }

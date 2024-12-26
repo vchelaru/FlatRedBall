@@ -573,7 +573,14 @@ namespace FlatRedBall.Glue.SaveClasses
                     PluginManager.ReactToScreenJsonLoadAsync(screenReference.Name, fileContents);
                     var deserialized = JsonConvert.DeserializeObject<ScreenSave>(fileContents);
 
-                    main.Screens.Add(deserialized);
+                    // This can happen due to a file corruption
+                    // by having a null check we at least protect
+                    // against the entire Glue project not loading
+                    // due to a single corrupt file
+                    if(deserialized != null)
+                    {
+                        main.Screens.Add(deserialized);
+                    }
                 }
             }
 
@@ -587,7 +594,12 @@ namespace FlatRedBall.Glue.SaveClasses
                     PluginManager.ReactToEntityJsonLoadAsync(entityReference.Name, fileContents);
                     var deserialized = JsonConvert.DeserializeObject<EntitySave>(fileContents);
 
-                    main.Entities.Add(deserialized);
+                    // see above for why we have a null check here:
+                    if(deserialized != null)
+                    {
+                        main.Entities.Add(deserialized);
+                    }
+
                 }
             }
 

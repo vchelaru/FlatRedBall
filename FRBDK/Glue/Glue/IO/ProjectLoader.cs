@@ -229,7 +229,9 @@ namespace FlatRedBall.Glue.IO
             {
                 try
                 {
-                    var tempGlux = GlueProjectSaveExtensions.Load(fileToLoad);
+                    GlueProjectSave tempGlux = null;
+
+                    tempGlux = GlueProjectSaveExtensions.Load(fileToLoad);
 
                     var requiredPlugins = tempGlux.PluginData.RequiredPlugins;
 

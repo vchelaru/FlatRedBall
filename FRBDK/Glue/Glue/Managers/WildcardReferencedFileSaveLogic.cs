@@ -38,8 +38,9 @@ namespace FlatRedBall.Glue.Managers
                     rfsDictionary[filePath] = file;
                 }
             }
-            foreach (var entity in mainGlueProjectSave.Entities)
+            for (int i = 0; i < mainGlueProjectSave.Entities.Count; i++)
             {
+                var entity = mainGlueProjectSave.Entities[i];
                 foreach (var file in entity.ReferencedFiles)
                 {
 
