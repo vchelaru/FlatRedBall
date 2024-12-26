@@ -1,6 +1,14 @@
 {
   "UserEvents": {
     "vchel": [],
-    "Owner": []
+    "Owner": [
+      {
+        "NewName": null,
+        "OldName": "Screen1",
+        "ElementType": "Screens",
+        "EventType": 1,
+        "TimestampUtc": "2024-12-24T12:41:34.714399Z"
+      }
+    ]
   }
 }

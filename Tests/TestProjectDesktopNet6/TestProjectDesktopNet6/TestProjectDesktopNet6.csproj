@@ -89,6 +89,16 @@
       <Name>BaseScreenSongOnlyWhenReferenced</Name>
       <Link>Content\Screens\BaseScreen\BaseScreenSongOnlyWhenReferenced.xnb</Link>
     </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Screens\FileScreen\FromContentPipelineWav.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>FromContentPipelineWav</Name>
+      <Link>Content\Screens\FileScreen\FromContentPipelineWav.xnb</Link>
+    </None>
+    <None Include="..\BuiltXnbs\DesktopGL\Content\Screens\FileScreen\FromFileWav.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>FromFileWav</Name>
+      <Link>Content\Screens\FileScreen\FromFileWav.xnb</Link>
+    </None>
     <None Include="..\BuiltXnbs\DesktopGL\Content\Screens\GlobalContentScreen\MenuSong.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>MenuSong</Name>
