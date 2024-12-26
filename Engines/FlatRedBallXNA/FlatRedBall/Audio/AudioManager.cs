@@ -308,6 +308,10 @@ namespace FlatRedBall.Audio
             PlaySongInternal(toPlay, forceRestart, isSongGlobalContent);
         }
 
+        /// <summary>
+        /// Plays the songs in the argument playlist in sequence. The playlist will loop back to the beginning when it reaches the end.
+        /// </summary>
+        /// <param name="songPlaylist">The playlist.qa</param>
         public static void PlaySongs(SongPlaylist songPlaylist)
         {
             Playlist = songPlaylist;
@@ -784,12 +788,20 @@ namespace FlatRedBall.Audio
 
     }
 
+    /// <summary>
+    /// An ordered list of songs which can be played automatically in sequence by the AudioManager.
+    /// </summary>
     public class SongPlaylist
     {
         internal Song[] Songs;
 
         public bool AreSongsGlobalContent { get; private set; }
 
+        /// <summary>
+        /// Constructs a new SongPlayList with the argument songs.
+        /// </summary>
+        /// <param name="songs">The ordered songs in the playlist</param>
+        /// <param name="areSongsGlobalContent">Whether the songs are in global content</param>
         public SongPlaylist(IEnumerable<Song> songs, bool areSongsGlobalContent)
         {
             Songs = songs.ToArray();

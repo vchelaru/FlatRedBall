@@ -324,7 +324,7 @@ namespace FlatRedBall.Glue.Plugins
         public OpenSolutionDelegate OpenSolutionHandler { get; protected set; }
 
         /// <summary>
-        /// Delegate raised whenever a property on either a variable or an element has changed.
+        /// Delegate raised whenever a property on a variable, file, or an element has changed.
         /// </summary>
         /// <remarks>
         /// New plugins should use ReactToChangedNamedObjectVariableList instead since it allows handling of individual variables and it allows

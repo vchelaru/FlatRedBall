@@ -32,10 +32,19 @@ namespace NAudioPlugin.Managers
         //    }
         //}
 
-        static AssetTypeInfo GetNAudioMp3SongAti()
+        static AssetTypeInfo nAudioMp3SongAti;
+        public static AssetTypeInfo NAudioMp3SongAti
         {
-            return CreateSongAti("mp3");
+            get
+            {
+                if(nAudioMp3SongAti == null)
+                {
+                    nAudioMp3SongAti = CreateSongAti("mp3");
+                }
+                return nAudioMp3SongAti;
+            }
         }
+
 
         public static string NAudioQualifiedType = "FlatRedBall.NAudio.NAudio_Song";
 
@@ -119,7 +128,7 @@ namespace NAudioPlugin.Managers
         {
             RemoveAllNAudioAtis();
 
-            AvailableAssetTypes.Self.AddAssetType(GetNAudioMp3SongAti());
+            AvailableAssetTypes.Self.AddAssetType(NAudioMp3SongAti);
         }
 
         private static void RemoveAllNAudioAtis()

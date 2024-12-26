@@ -1567,7 +1567,7 @@ namespace FlatRedBall.Glue.Plugins
         }
 
         /// <summary>
-        /// Notifies all contained plugins that an property on an element or variable has changed. 
+        /// Notifies all contained plugins that an property on an element, file, or variable has changed. 
         /// Properties are values which control how Glue generates the code of
         /// an element or variable. 
         /// </summary>
