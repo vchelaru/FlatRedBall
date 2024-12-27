@@ -1228,7 +1228,29 @@ namespace FlatRedBall.Input
 
         public Xbox360ButtonReference GetButton(ButtonPosition buttonPosition) =>
             GetButton(GetButtonFromPosition(buttonPosition));
-        
+
+        public ButtonPosition GetPositionFromButton(Button button)
+        {
+            // Calling GetButtonFromPosition multiple times is slower,
+            // but safer if we add new gamepads in the futuer:
+            if (GetButtonFromPosition(ButtonPosition.FaceRight) == button)
+            {
+                return ButtonPosition.FaceRight;
+            }
+            if (GetButtonFromPosition(ButtonPosition.FaceDown) == button)
+            {
+                return ButtonPosition.FaceDown;
+            }
+            if (GetButtonFromPosition(ButtonPosition.FaceLeft) == button)
+            {
+                return ButtonPosition.FaceLeft;
+            }
+            if (GetButtonFromPosition(ButtonPosition.FaceUp) == button)
+            {
+                return ButtonPosition.FaceUp;
+            }
+            return ButtonPosition.FaceDown;
+        }
 
         public Button GetButtonFromPosition(ButtonPosition buttonPosition)
         {
