@@ -46,6 +46,8 @@ namespace GumPlugin.DataGeneration
 
             Add("OnScreenKeyboardBehavior", "FlatRedBall.Forms.Controls.Games.OnScreenKeyboard");
 
+            Add("MenuBehavior", "Menu");
+            Add("MenuItemBehavior", "MenuItem");
             Add("PasswordBoxBehavior", "PasswordBox");
 
             Add("PlayerJoinViewBehavior", "FlatRedBall.Forms.Controls.Games.PlayerJoinView");

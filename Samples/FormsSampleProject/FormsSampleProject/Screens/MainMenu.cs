@@ -18,6 +18,7 @@ using FormsSampleProject.ViewModels;
 using FlatRedBall.Forms.Controls.Games;
 using FlatRedBall.Forms.Controls;
 using System.Diagnostics;
+using FormsSampleProject.GumRuntimes.Elements;
 
 namespace FormsSampleProject.Screens
 {
@@ -101,6 +102,46 @@ namespace FormsSampleProject.Screens
                     }
                 }
             };
+
+            var menu = Forms.MenuInstance;
+
+            var fileMenuItem =
+                new MenuItem { Header = "File" };
+
+            for (int i = 0; i < 20; i++)
+            {
+                var subItem = new MenuItem { Header = $"SubItem {i}" };
+                subItem.Clicked += (_,_) => ToastManager.Show($"Clicked on File -> {subItem.Header}");
+                fileMenuItem.Items.Add(subItem);
+
+                if((i % 5) == 0)
+                {
+                    var separator = new DividerHorizontalRuntime();
+                    separator.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+                    separator.Width = 0;
+                    var separatorForms = new FrameworkElement(separator);
+                    fileMenuItem.Items.Add(separatorForms);
+                }
+            }
+
+
+
+            
+
+
+
+            menu.Items.Add(fileMenuItem);
+
+            var edit = new MenuItem { Header = "Edit" };
+            edit.Clicked += (_, _) => ToastManager.Show("Clicked on Edit");
+
+            menu.Items.Add(edit);
+
+
+
+            var about = new MenuItem { Header = "About" };
+            about.Clicked += (_, _) => ToastManager.Show("Clicked on About");
+            menu.Items.Add(about);
 
             // uncomment these 2 lines of code to enable gamepad support for the UI
             //GuiManager.GamePadsForUiControl.Add(InputManager.Xbox360GamePads[0]);

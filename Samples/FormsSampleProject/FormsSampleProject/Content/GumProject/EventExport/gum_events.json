@@ -43,6 +43,69 @@
         "ElementType": "Screens",
         "EventType": 7,
         "TimestampUtc": "2024-12-21T20:42:53.6892415Z"
+      },
+      {
+        "NewName": "Controls/Menu",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 0,
+        "TimestampUtc": "2024-12-28T18:08:30.9190966Z"
+      },
+      {
+        "NewName": "Controls/Menu (Container).NineSliceInstance",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-12-28T18:09:03.7929636Z"
+      },
+      {
+        "NewName": "Controls/Menu (Container).Background",
+        "OldName": "Controls/Menu (Container).NineSliceInstance",
+        "ElementType": "Components",
+        "EventType": 7,
+        "TimestampUtc": "2024-12-28T18:10:48.9149237Z"
+      },
+      {
+        "NewName": "Controls/MenuItem",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 0,
+        "TimestampUtc": "2024-12-28T18:11:12.1616709Z"
+      },
+      {
+        "NewName": "Controls/MenuItem (Container).Background",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-12-28T18:12:25.9951075Z"
+      },
+      {
+        "NewName": "Controls/MenuItem (Container).TextInstance",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-12-28T18:13:12.1607677Z"
+      },
+      {
+        "NewName": "MainMenuGum.MenuInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2024-12-28T18:14:32.8957611Z"
+      },
+      {
+        "NewName": "Controls/Menu (Container).ContainerInstance",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2024-12-28T18:30:12.1391509Z"
+      },
+      {
+        "NewName": "Controls/Menu (Container).InnerPanelInstance",
+        "OldName": "Controls/Menu (Container).ContainerInstance",
+        "ElementType": "Components",
+        "EventType": 7,
+        "TimestampUtc": "2024-12-28T18:30:23.6493181Z"
       }
     ]
   }

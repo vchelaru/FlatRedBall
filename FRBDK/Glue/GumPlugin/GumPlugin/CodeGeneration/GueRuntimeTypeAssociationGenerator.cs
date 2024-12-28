@@ -225,6 +225,7 @@ namespace GumPlugin.CodeGeneration
                 // some controls are automatically completely fulfilled:
                 case "ComboBox":
                 case "ListBox":
+                case "Menu":
                 case "PasswordBox":
                 case "ScrollBar":
                 case "ScrollViewer":
@@ -245,6 +246,7 @@ namespace GumPlugin.CodeGeneration
                 case "CheckBox":
                 case "Label":
                 case "ListBoxItem":
+                case "MenuItem":
                 case "RadioButton":
                 case "ToggleButton":
                 case "Toast":

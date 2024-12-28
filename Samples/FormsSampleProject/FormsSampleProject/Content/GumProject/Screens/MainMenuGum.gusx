@@ -270,7 +270,7 @@
     <Variable>
       <Type>float</Type>
       <Name>FirstStack.Height</Name>
-      <Value xsi:type="xsd:float">0</Value>
+      <Value xsi:type="xsd:float">-34</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -318,7 +318,7 @@
     <Variable>
       <Type>float</Type>
       <Name>FirstStack.Y</Name>
-      <Value xsi:type="xsd:float">0</Value>
+      <Value xsi:type="xsd:float">17</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -720,7 +720,7 @@
     <Variable>
       <Type>float</Type>
       <Name>SecondStack.Height</Name>
-      <Value xsi:type="xsd:float">0</Value>
+      <Value xsi:type="xsd:float">-28</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -756,7 +756,7 @@
     <Variable>
       <Type>float</Type>
       <Name>SecondStack.Y</Name>
-      <Value xsi:type="xsd:float">0</Value>
+      <Value xsi:type="xsd:float">28</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -960,6 +960,11 @@
     <BaseType>Container</BaseType>
     <DefinedByBase>false</DefinedByBase>
     <Locked>true</Locked>
+  </Instance>
+  <Instance>
+    <Name>MenuInstance</Name>
+    <BaseType>Controls/Menu</BaseType>
+    <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />
 </ScreenSave>

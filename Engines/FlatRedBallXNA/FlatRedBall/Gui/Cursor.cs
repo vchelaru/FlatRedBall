@@ -493,6 +493,7 @@ namespace FlatRedBall.Gui
             }
         }
 
+        [Obsolete("This is confusingly named, and will be removed in the future")]
         public double PrimaryPushTime
         {
             get
@@ -507,6 +508,8 @@ namespace FlatRedBall.Gui
                 }
             }
         }
+
+        public double LastPrimaryPushTime => mLastTimePrimaryPush;
 
 
         public bool HasMovedLessThanXPixelsSincePush(int x)

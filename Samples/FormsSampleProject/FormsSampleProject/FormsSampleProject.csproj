@@ -83,6 +83,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ListBoxItem</Name>
     </None>
+    <None Include="Content\GumProject\Components\Controls\Menu.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Menu</Name>
+    </None>
+    <None Include="Content\GumProject\Components\Controls\MenuItem.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>MenuItem</Name>
+    </None>
     <None Include="Content\GumProject\Components\Controls\PasswordBox.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>PasswordBox</Name>
@@ -325,6 +333,8 @@
     <Compile Include="GumRuntimes\Behaviors\ILabelBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IListBoxBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IListBoxItemBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IMenuBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\Behaviors\IMenuItemBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IOnScreenKeyboardBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IPasswordBoxBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IPlayerJoinViewBehavior.Generated.cs" />
@@ -406,6 +416,14 @@
     <Compile Include="GumRuntimes\Controls\ListBoxRuntime.cs" />
     <Compile Include="GumRuntimes\Controls\ListBoxRuntime.Generated.cs">
       <DependentUpon>ListBoxRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\Controls\MenuItemRuntime.cs" />
+    <Compile Include="GumRuntimes\Controls\MenuItemRuntime.Generated.cs">
+      <DependentUpon>MenuItemRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\Controls\MenuRuntime.cs" />
+    <Compile Include="GumRuntimes\Controls\MenuRuntime.Generated.cs">
+      <DependentUpon>MenuRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\Controls\PasswordBoxRuntime.cs" />
     <Compile Include="GumRuntimes\Controls\PasswordBoxRuntime.Generated.cs">
