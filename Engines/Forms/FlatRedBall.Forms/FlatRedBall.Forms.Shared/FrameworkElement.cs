@@ -50,6 +50,10 @@ namespace FlatRedBall.Forms.Controls
         public static Cursor MainCursor => GuiManager.Cursor;
 
         public List<Xbox360GamePad> GamePadsForUiControl => GuiManager.GamePadsForUiControl;
+#else
+        public static ICursor MainCursor { get; set; }
+
+        public List<Input.GamePad> GamePadsForUiControl { get; private set; } = new List<Input.GamePad>();
 
 #endif
 
@@ -573,6 +577,7 @@ namespace FlatRedBall.Forms.Controls
         {
             var vmPropertyName = e.PropertyName;
             var updated = UpdateUiToVmProperty(vmPropertyName);
+            // If we ever support skia do this:
             //if (updated)
             //{
             //    this.EffectiveManagers?.InvalidateSurface();

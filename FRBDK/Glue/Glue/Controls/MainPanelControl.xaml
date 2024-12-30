@@ -135,7 +135,7 @@
                 </StackPanel>
             </Grid>
 
-            <Border Grid.Row="1" Grid.RowSpan="4"  Visibility="Collapsed" IsHitTestVisible="False" x:Name="Toast"  HorizontalAlignment="Center" VerticalAlignment="Top" MinHeight="50" MinWidth="120" BorderBrush="Black" BorderThickness="2" Background="White" CornerRadius="8" Margin="10">
+            <Border Grid.Row="1" Grid.RowSpan="4" Style="{DynamicResource Toast}" Visibility="Collapsed" IsHitTestVisible="False" x:Name="Toast">
                 <Label x:Name="ToastLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Toast..."></Label>
             </Border>
 

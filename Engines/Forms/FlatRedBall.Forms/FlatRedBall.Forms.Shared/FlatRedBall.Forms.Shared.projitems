@@ -36,16 +36,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\ListBoxItem.cs">
       <Link>Controls\%(Filename)%(Extension)</Link>
     </Compile>
-
     <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\Menu.cs">
       <Link>Controls\%(Filename)%(Extension)</Link>
     </Compile>
-
     <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\MenuItem.cs">
       <Link>Controls\%(Filename)%(Extension)</Link>
     </Compile>
-
-
     <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\PasswordBox.cs">
       <Link>Controls\%(Filename)%(Extension)</Link>
     </Compile>

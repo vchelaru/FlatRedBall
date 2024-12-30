@@ -101,6 +101,11 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>MenuItemCategory</Type>
+      <Name>MenuItemCategoryState</Name>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>State</Type>
       <Name>State</Name>
       <Value xsi:type="xsd:string">Default</Value>
