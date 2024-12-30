@@ -194,6 +194,31 @@ namespace FlatRedBall
             set;
         }
 
+        /// <summary>
+        /// If camera is orthogonal, provides the current zoom as
+        /// the relationship between orthogonal height and camera's
+        /// view rectangle. If the camera is a 3D perspective camera,
+        /// returns the current zoom in terms of distance from a pixel
+        /// perfect Z position.
+        /// </summary>
+        public float CurrentZoom
+        {
+            get
+            {
+                if(Orthogonal)
+                {
+                    return DestinationRectangle.Height/ OrthogonalHeight;
+                }
+                else
+                {
+                    // 2024-12 Justin: I borrowed this calculation from Masteroid
+                    // but haven't tested it - it could be incorrect or inverted.
+                    var pixelPerfectZ = GetZDistanceForPixelPerfect();
+                    return Position.Z / pixelPerfectZ;
+                }
+            }
+        }
+
         public Matrix View
         {
             get { return mView; }// GetLookAtMatrix(false); }
