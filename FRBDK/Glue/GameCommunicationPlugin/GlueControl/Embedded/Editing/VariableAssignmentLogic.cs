@@ -1562,6 +1562,12 @@ namespace GlueControl.Editing
 
         private static object TryGetStateValue(string type, string variableValue)
         {
+            // treat "<NONE>" as a special value for null:
+            if (variableValue == "<NONE>")
+            {
+                return null;
+            }
+
             Type stateType = TryGetStateType(type);
 
             var dictionary = stateType?.GetField("AllStates").GetValue(null) as IDictionary;
