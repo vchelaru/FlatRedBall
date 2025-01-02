@@ -166,6 +166,22 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        public static Vector3 RotatedByDegrees(this Vector3 vector3, float degreesToRotateBy)
+        {
+            if (vector3.X == 0 && vector3.Y == 0)
+            {
+                return vector3;
+            }
+            else
+            {
+                var existingAngle = vector3.AngleDegrees().Value;
+                var newAngle = existingAngle + degreesToRotateBy;
+                return FromAngleDegrees(newAngle) * vector3.Length();
+            }
+        }
+
+
+
         /// <summary>
         /// Returns a unit vector with a Z value of 0 pointing in the direction
         /// specified by the radians argument.
