@@ -49,8 +49,13 @@ namespace OfficialPlugins.FrbSourcePlugin.Views
                 RemoveFromGrid(nameof(ViewModel.IncludeGumSkia));
             }
 
-            MakeMemberFileSelectionDisplay(category.Members.First(item => item.Name == nameof(ViewModel.FrbRootFolder)));
-            MakeMemberFileSelectionDisplay(category.Members.First(item => item.Name == nameof(ViewModel.GumRootFolder)));
+            var frbRootFolderMember = category.Members.First(item => item.Name == nameof(ViewModel.FrbRootFolder));
+            frbRootFolderMember.DetailText = "The root folder of the location where FlatRedBall is cloned";
+            MakeMemberFileSelectionDisplay(frbRootFolderMember);
+
+            var gumRootFolderMember = category.Members.First(item => item.Name == nameof(ViewModel.GumRootFolder));
+            gumRootFolderMember.DetailText = "The root folder of the location where Gum is cloned";
+            MakeMemberFileSelectionDisplay(gumRootFolderMember);
 
             this.DataUiGrid.InsertSpacesInCamelCaseMemberNames();
 
