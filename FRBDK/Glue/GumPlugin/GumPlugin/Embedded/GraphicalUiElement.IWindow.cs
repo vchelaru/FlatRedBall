@@ -143,7 +143,11 @@ namespace Gum.Wireframe
                     instance.BaseType == "Sprite" ||
                     instance.BaseType == "Text")
                 {
-                    return false;
+                    // update January 8, 2025
+                    // But if the user has put an explicit event on it, it should work okay:
+                    //return false;
+                    return this.HasEvents;
+
                 }
                 else
                 {
