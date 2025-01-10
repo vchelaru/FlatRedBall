@@ -47,32 +47,26 @@ namespace Gum.Wireframe
             public bool HandledRollOver;
         }
 
-
+        /// <inheritdoc />
         public event WindowEvent Click;
+        /// <inheritdoc />
         public event WindowEvent ClickNoSlide;
+        /// <inheritdoc />
         public event WindowEvent SlideOnClick;
+        /// <inheritdoc />
         public event WindowEvent Push;
+        /// <inheritdoc />
         public event WindowEvent RemovedAsPushedWindow;
 
 
-        /// <summary>
-        /// Event raised when the user has grabbed the window and is dragging it.
-        /// Consider using RollOn, RollOff, and RollOver for most cases. This is similar
-        /// to RollOver, but is raised even if the cursor is not over the window.
-        /// </summary>
+        /// <inheritdoc />
         public event WindowEvent DragOver;
 
-        /// <summary>
-        /// Event raised when the cursor first moves over this object.
-        /// </summary>
+        /// <inheritdoc />
         public event WindowEvent RollOn;
-        /// <summary>
-        /// Event when the cursor first leaves this object.
-        /// </summary>
+        /// <inheritdoc />
         public event WindowEvent RollOff;
-        /// <summary>
-        /// Event raised every frame the cursor is over this object.
-        /// </summary>
+        /// <inheritdoc />
         public event WindowEvent RollOver;
         public event WindowEvent EnabledChange;
 

@@ -34,9 +34,13 @@ namespace FlatRedBall.Gui
         /// </summary>
         event WindowEvent Push;
         /// <summary>
-        /// Event raied when the cursor moves and this window is the pressed window. This is called whether
-        /// the cursor is over the current window or not.
+        /// Event raised when the cursor is over this window, and when this window is the pressed window.
+        /// This is called whether the cursor is over the current window or not, an whether the cursor has moved or not.
+        /// RollOver is similar except it is only called if the cursor is overlapping
+        /// the instance
         /// </summary>
+        /// <remarks>
+        /// Unlike Gum Forms this is called whether the cursor is moving or not.</remarks>
         event WindowEvent DragOver;
 
         /// <summary>
@@ -48,9 +52,10 @@ namespace FlatRedBall.Gui
         /// An event raised when the cursor moves off of the window 
         /// </summary>
         event WindowEvent RollOff;
+
         /// <summary>
-        /// An event raised when the cursor moves while it is over the window. This is raised every frame that
-        /// the cursor moves and is over the window. This event is not raised unless the cursor is over the window.
+        /// An event raised when the cursor is over the window whether it has moved or not. This is raise every frame
+        /// that the cursor overlaps this. This event is not raised unless the cursor is over the window.
         /// </summary>
         /// <seealso cref="DragOver"/>
         event WindowEvent RollOver;
