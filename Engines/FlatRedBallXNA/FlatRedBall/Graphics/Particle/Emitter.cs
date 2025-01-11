@@ -568,7 +568,7 @@ namespace FlatRedBall.Graphics.Particle
 
                 if (EmissionSettings.Billboarded)
                 {
-                    SpriteManager.Camera.AddSpriteToBillboard(tempParticle);
+                    tempParticle.IsBillboarded = true;
                 }
 
 

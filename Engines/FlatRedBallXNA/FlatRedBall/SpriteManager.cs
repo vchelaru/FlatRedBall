@@ -300,14 +300,8 @@ namespace FlatRedBall
 
         public static ReadOnlyCollection<Sprite> ManuallyUpdatedSprites => mManuallyUpdatedSpritesReadOnly;
 
-        /// <summary>
-        /// Gets the default Camera.
-        /// </summary>
-        /// <remarks>
-        /// If your application is only using one Camera, then this Camera can be
-        /// used for all logic.  This Camera is automatically created by the engine,
-        /// so single-camera applications do not need to instantiate their own Camera.
-        /// </remarks>
+
+        [Obsolete("Use Camera.Main")]
         static public Camera Camera
         {
             get

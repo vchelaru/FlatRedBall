@@ -15,6 +15,7 @@ using FlatRedBall.Math;
 using FlatRedBall.Graphics;
 using System.Diagnostics;
 using FlatRedBall.Math.Geometry;
+using FlatRedBall.Graphics.PostProcessing;
 
 
 namespace FlatRedBall;
@@ -47,7 +48,99 @@ public partial class Camera : PositionedObject
 
     #endregion
 
-    #region Fields
+    #region Fields / properties
+
+    #region Main
+
+    /// <summary>
+    /// The default Camera.
+    /// </summary>
+    /// <remarks>
+    /// If your application is only using one Camera, then this Camera can be
+    /// used for all logic.  This Camera is automatically created by the engine,
+    /// so single-camera applications do not need to instantiate their own Camera.
+    /// </remarks>
+    public static Camera Main => SpriteManager.Camera;
+
+    #endregion
+
+    #region Rendering Settings
+
+    public Color BackgroundColor = new Color(0,0,0,0);
+
+    bool mDrawsWorld = true;
+    bool mDrawsCameraLayer = true;
+    bool mDrawsShapes = true;
+
+
+    /// <summary>
+    /// Whether this camera clears the depth buffer when rendering. If true (the default) 
+    /// this camera clears the depth buffer, z-buffered sprites write to the depth buffer,
+    /// and ordered objects render considering the depth buffer.
+    /// </summary>
+    public bool ClearsDepthBuffer
+    {
+        get;
+        set;
+    }
+
+
+
+    public bool ShiftsHalfUnitForRendering
+    {
+        get
+        {
+            // This causes all kinds of jitteryness when attached to an object, so we should make sure
+            // the camera is not attached to anything:
+
+            return Parent == null &&
+                mOrthogonal && (this.mOrthogonalWidth / (float)this.DestinationRectangle.Width == 1);
+        }
+
+
+
+    }
+
+    /// <summary>
+    /// Whether the camera draws its layers.
+    /// </summary>
+    public bool DrawsCameraLayer
+    {
+        get => mDrawsCameraLayer;
+        set => mDrawsCameraLayer = value;
+    }
+
+    /// <summary>
+    /// Whether the Camera draws world objects (objects not on the Camera's Layer). This is true by default.
+    /// This is usually set to false for cameras used in render targets which only draw layers.
+    /// </summary>
+    public bool DrawsWorld
+    {
+        get => mDrawsWorld;
+        set => mDrawsWorld = value;
+    }
+
+    /// <summary>
+    /// Whether the Camera draws shapes
+    /// </summary>
+    public bool DrawsShapes
+    {
+        get => mDrawsShapes;
+        set => mDrawsShapes = value;
+    }
+
+    /// <summary>
+    /// Whether this camera draws its contents to the screen. By default this is true.
+    /// </summary>
+    public bool DrawsToScreen
+    {
+        get;
+        set;
+    }
+
+    #endregion
+
+    #region Position / Orientation
 
     /// <summary>
     /// A Vector3 representing the "Up" orientation. The camera will adjust its rotation so that this vector
@@ -56,246 +149,20 @@ public partial class Camera : PositionedObject
     /// </summary>
     public Vector3 UpVector = new Vector3(0, 1, 0);
 
-    static int sCreatedCount = 0;
-
-    float mFarClipPlane;
-    float mNearClipPlane;
-
-    Matrix mView;
-    Matrix mViewRelative;
-    Matrix mProjection;
-    Matrix mViewProjection;
-
+    // Minimum values are the effective values which can get adjusted if using base values
     float mMinimumX;
     float mMinimumY;
     float mMaximumX;
     float mMaximumY;
 
-    float mBaseZ;
+    // Base values are used to calculate effective values if the camera is 3D and if the
+    // baseZ value is not null
+    float? mBaseZ;
     float mBaseMinimumX;
     float mBaseMinimumY;
     float mBaseMaximumX;
     float mBaseMaximumY;
 
-    bool mOrthogonal;
-    float mOrthogonalWidth;
-    float mOrthogonalHeight;
-
-#if SUPPORTS_POST_PROCESSING
-    ShadowMap mShadow = null;
-    
-    internal PostProcessingEffectCollection mPostProcessing;
-
-    #region XML Docs
-    /// <summary>
-    /// Defines the rendering order for this camera
-    /// </summary>
-    #endregion
-    public List<RenderMode> RenderOrder;
-
-
-
-    #region XML Docs
-    /// <summary>
-    /// List of rendered textures (during render pass)
-    /// </summary>
-    #endregion
-    internal Dictionary<int, RenderTargetTexture> mRenderTargetTextures;
-
-    #region XML Docs
-    /// <summary>
-    /// The final render for this camera (after post-processing)
-    /// </summary>
-    #endregion
-    internal RenderTargetTexture mRenderTargetTexture;
-
-    #region XML Docs
-    /// <summary>
-    /// Whether or not this camera should be drawn to the screen
-    /// </summary>
-    #endregion
-    public bool DrawToScreen = true;
-    bool mClearsTargetDefaultRenderMode = true;
-#endif
-
-    BoundingFrustum mBoundingFrustum;
-
-    CameraCullMode mCameraCullMode;
-    CameraModelCullMode mCameraModelCullMode;
-
-    #region Viewport settings
-
-
-
-    //internal int mTargetWidth;
-    //internal int mTargetHeight;
-
-    public Color BackgroundColor =
-        new Color(0,0,0,0);
-
-    SplitScreenViewport splitScreenViewport;
-    public SplitScreenViewport CurrentSplitScreenViewport => splitScreenViewport;
-
-    bool mUsesSplitScreenViewport = false;
-
-    #endregion
-
-    List<Layer> mLayers = new List<Layer>();
-    ReadOnlyCollection<Layer> mLayersReadOnly;
-
-    //internal SpriteList mSpritesToBillBoard = new SpriteList();
-
-    string mContentManager;
-
-    /// <summary>
-    /// Whether or not lighting is enabled for this camera
-    /// </summary>
-    internal bool mLightingEnabled = false;
-
-    float mYEdge;
-    float mXEdge;
-
-    float mTopDestination;
-    float mBottomDestination;
-    float mLeftDestination;
-    float mRightDestination;
-
-    internal Rectangle mDestinationRectangle;
-
-    float mTopDestinationVelocity;
-    float mBottomDestinationVelocity;
-    float mLeftDestinationVelocity;
-    float mRightDestinationVelocity;
-
-
-    float mFieldOfView;
-    float mAspectRatio;
-
-    bool mDrawsWorld = true;
-    bool mDrawsCameraLayer = true;
-    bool mDrawsShapes = true;
-
-    #endregion
-
-    #region Properties
-
-    /// <summary>
-    /// Sets whether the Camera will prevent viewports from being larger than the resolution. This value defaults to true.
-    /// </summary>
-    /// <remarks>
-    /// The purpose of this value is to prevent cameras from attempting to draw outside of the window's client bounds. A camera
-    /// which has a viewport larger than the window client bounds will throw an exception. However, cameras (and layers) which render
-    /// to a render target which is larger than the current window should be able to render to the full render target even if it is larger
-    /// than the current window. Therefore, this value should be set to false if rendering to large render targets.
-    /// </remarks>
-    public bool ShouldRestrictViewportToResolution
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// If camera is orthogonal, provides the current zoom as
-    /// the relationship between orthogonal height and camera's
-    /// view rectangle. If the camera is a 3D perspective camera,
-    /// returns the current zoom in terms of distance from a pixel
-    /// perfect Z position.
-    /// </summary>
-    public float CurrentZoom
-    {
-        get
-        {
-            if(Orthogonal)
-            {
-                return DestinationRectangle.Height/ OrthogonalHeight;
-            }
-            else
-            {
-                // 2024-12 Justin: I borrowed this calculation from Masteroid
-                // but haven't tested it - it could be incorrect or inverted.
-                var pixelPerfectZ = GetZDistanceForPixelPerfect();
-                return Position.Z / pixelPerfectZ;
-            }
-        }
-    }
-
-    public Matrix View
-    {
-        get { return mView; }// GetLookAtMatrix(false); }
-    }
-
-    public Matrix Projection
-    {
-        get { return mProjection; }// GetProjectionMatrix(); }
-    }
-
-    public BoundingFrustum BoundingFrustum
-    {
-        get { return mBoundingFrustum; }
-    }
-
-    public CameraCullMode CameraCullMode
-    {
-        get { return mCameraCullMode; }
-        set { mCameraCullMode = value; }
-    }
-
-    public CameraModelCullMode CameraModelCullMode
-    {
-        get { return mCameraModelCullMode; }
-        set { mCameraModelCullMode = value; }
-    }
-
-    /// <summary>
-    /// The Y field of view of the camera in radians.  Field of view represents the 
-    /// Y angle from the bottom of the screen to the top.
-    /// </summary>
-    /// <remarks>
-    /// This modifies the xEdge and yEdge properties.  Default value is (float)Math.PI / 4.0f;
-    /// </remarks>
-    public virtual float FieldOfView
-    {
-        get { return mFieldOfView; }
-        set
-        {
-#if DEBUG
-            if (value >= (float)System.Math.PI)
-            {
-                throw new ArgumentException("FieldOfView must be smaller than PI.");
-            }
-            if (value <= 0)
-            {
-                throw new ArgumentException("FieldOfView must be greater than 0.");
-
-            }
-#endif
-
-            mFieldOfView = value;
-            mYEdge = (float)(100 * System.Math.Tan(mFieldOfView / 2.0));
-            mXEdge = mYEdge * mAspectRatio;
-
-            UpdateViewProjectionMatrix();
-
-        }
-    }
-
-    /// <summary>
-    /// A Camera-specific layer.  Objects on this layer will not appear
-    /// in any other cameras.
-    /// </summary>
-    /// <remarks>
-    /// This instance is automatically created when the Camera is instantiated.
-    /// </remarks>
-    public Layer Layer
-    {
-        get { return mLayers[0]; }
-    }
-
-
-    public ReadOnlyCollection<Layer> Layers
-    {
-        get { return mLayersReadOnly; }
-    }
 
     /// <summary>
     /// The Minimum camera X (center). This is applied prior to rendering and will override attachment.
@@ -305,7 +172,7 @@ public partial class Camera : PositionedObject
         get { return mMinimumX; }
         set { mMinimumX = value; }
     }
-    
+
     /// <summary>
     /// The Minimum camera Y (center). This is applied prior to rendering and will override attachment.
     /// </summary>
@@ -333,21 +200,190 @@ public partial class Camera : PositionedObject
         set { mMaximumY = value; }
     }
 
+    #endregion
 
-    public float NearClipPlane
+    #region View / projection / camera edges
+
+    Matrix mView;
+    Matrix mViewRelative;
+    Matrix mProjection;
+    Matrix mViewProjection;
+
+    bool mOrthogonal;
+    float mOrthogonalWidth;
+    float mOrthogonalHeight;
+
+
+
+    /// <summary>
+    /// The width/height of the view of the camera
+    /// </summary>
+    /// <remarks>
+    /// This determines the ratio of the width to height of the camera.  By default, the aspect ratio is 4/3,
+    /// but this should be changed for widescreen monitors or in situations using multiple cameras.  For example, if
+    /// a game is in split screen with a vertical split, then each camera will show the same height, but half the width.
+    /// The aspect ratio should be 2/3.
+    /// </remarks>
+    public float AspectRatio
     {
-        get { return mNearClipPlane; }
-        set { mNearClipPlane = value; }
+        get => mAspectRatio;
+        set
+        {
+            mAspectRatio = value;
+            mXEdge = mYEdge * AspectRatio;
+            // The user may expect AspectRatio to work when in 2D mode
+            if (mOrthogonal)
+            {
+                mOrthogonalWidth = mOrthogonalHeight * mAspectRatio;
+            }
+        }
     }
 
 
-    public float FarClipPlane
+    /// <summary>
+    /// Returns whether the camera is using an orthogonal perspective. If true, the camera is a "2D" camera.
+    /// </summary>
+    public bool Orthogonal
     {
-        get { return mFarClipPlane; }
-        set { mFarClipPlane = value; }
+        get => mOrthogonal;
+        set => mOrthogonal = value;
     }
 
 
+    /// <summary>
+    /// The number of horizontal units shown by the camera when the camera has Orthogonal = true
+    /// </summary>
+    /// <remarks>
+    /// Orthogonal values will not have any impact on rendering if Orthogonal is false.
+    /// </remarks>
+    public float OrthogonalWidth
+    {
+        get { return mOrthogonalWidth; }
+        set
+        {
+#if DEBUG
+            if (value < 0)
+            {
+                throw new Exception("OrthogonalWidth must be positive");
+            }
+#endif
+            mOrthogonalWidth = value;
+        }
+    }
+
+    /// <summary>
+    /// The number of vertical units shown by the camera when the camera has Orthogonal = true 
+    /// </summary>
+    /// <remarks>
+    /// Orthogonal values will not have any impact on rendering if Orthogonal is false.
+    /// </remarks>
+    public float OrthogonalHeight
+    {
+        get { return mOrthogonalHeight; }
+        set
+        {
+#if DEBUG
+            if (value < 0)
+            {
+                throw new Exception("OrthogonalHeight must be positive");
+            }
+#endif
+            mOrthogonalHeight = value;
+        }
+    }
+
+    BoundingFrustum mBoundingFrustum;
+
+    float mYEdge;
+    float mXEdge;
+
+    float mFieldOfView;
+    float mAspectRatio;
+
+    /// <summary>
+    /// If camera is orthogonal, provides the current zoom as
+    /// the relationship between orthogonal height and camera's
+    /// view rectangle. If the camera is a 3D perspective camera,
+    /// returns the current zoom in terms of distance from a pixel
+    /// perfect Z position.
+    /// </summary>
+    public float CurrentZoom
+    {
+        get
+        {
+            if (Orthogonal)
+            {
+                return DestinationRectangle.Height / OrthogonalHeight;
+            }
+            else
+            {
+                // 2024-12 Justin: I borrowed this calculation from Masteroid
+                // but haven't tested it - it could be incorrect or inverted.
+                var pixelPerfectZ = GetZDistanceForPixelPerfect();
+                return Position.Z / pixelPerfectZ;
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// Sets whether the Camera will prevent viewports from being larger than the resolution. This value defaults to true.
+    /// </summary>
+    /// <remarks>
+    /// The purpose of this value is to prevent cameras from attempting to draw outside of the window's client bounds. A camera
+    /// which has a viewport larger than the window client bounds will throw an exception. However, cameras (and layers) which render
+    /// to a render target which is larger than the current window should be able to render to the full render target even if it is larger
+    /// than the current window. Therefore, this value should be set to false if rendering to large render targets.
+    /// </remarks>
+    public bool ShouldRestrictViewportToResolution
+    {
+        get;
+        set;
+    }
+
+    public Matrix View => mView; 
+
+    public Matrix Projection => mProjection;
+
+    public BoundingFrustum BoundingFrustum => mBoundingFrustum;
+
+
+
+    /// <summary>
+    /// The Y field of view of the camera in radians.  Field of view represents the 
+    /// Y angle from the bottom of the screen to the top.
+    /// </summary>
+    /// <remarks>
+    /// This modifies the xEdge and yEdge properties.  Default value is (float)Math.PI / 4.0f;
+    /// </remarks>
+    public virtual float FieldOfView
+    {
+        get => mFieldOfView; 
+        set
+        {
+#if DEBUG
+            if (value >= (float)System.Math.PI)
+            {
+                throw new ArgumentException("FieldOfView must be smaller than PI.");
+            }
+            if (value <= 0)
+            {
+                throw new ArgumentException("FieldOfView must be greater than 0.");
+
+            }
+#endif
+
+            mFieldOfView = value;
+            mYEdge = (float)(100 * System.Math.Tan(mFieldOfView / 2.0));
+            mXEdge = mYEdge * mAspectRatio;
+
+            UpdateViewProjectionMatrix();
+
+        }
+    }
+
+
+    [Obsolete("Do not use this property - it is confusingly named, only functions with non-ortho cameras, and will go away in future versions of FRB")]
 
     public float XEdge
     {
@@ -355,31 +391,13 @@ public partial class Camera : PositionedObject
     }
 
 
+    [Obsolete("Do not use this property - it is confusingly named, only functions with non-ortho cameras, and will go away in future versions of FRB")]
     public float YEdge
     {
         get { return mYEdge; }
     }
 
-    public float TopDestinationVelocity
-    {
-        get { return mTopDestinationVelocity; }
-        set { mTopDestinationVelocity = value;  }
-    }
-    public float BottomDestinationVelocity
-    {
-        get { return mBottomDestinationVelocity; }
-        set { mBottomDestinationVelocity = value;  }
-    }
-    public float LeftDestinationVelocity
-    {
-        get { return mLeftDestinationVelocity; }
-        set { mLeftDestinationVelocity = value;  }
-    }
-    public float RightDestinationVelocity
-    {
-        get { return mRightDestinationVelocity; }
-        set { mRightDestinationVelocity = value;  }
-    }
+
 
     /// <summary>
     /// The absolute X value of the right edge of the visible area for this camera at Z = 0.
@@ -502,55 +520,52 @@ public partial class Camera : PositionedObject
         return Position.Y - RelativeYEdgeAt(absoluteZ);
     }
 
-    /// <summary>
-    /// The number of horizontal units shown by the camera when the camera has Orthogonal = true
-    /// </summary>
-    /// <remarks>
-    /// Orthogonal values will not have any impact on rendering if Orthogonal is false.
-    /// </remarks>
-    public float OrthogonalWidth
+
+    #endregion
+
+    #region Culling / clipping
+
+
+    float mFarClipPlane;
+    float mNearClipPlane;
+
+    CameraCullMode mCameraCullMode;
+
+    public float NearClipPlane
     {
-        get { return mOrthogonalWidth; }
-        set
-        {
-#if DEBUG
-            if (value < 0)
-            {
-                throw new Exception("OrthogonalWidth must be positive");
-            }
-#endif
-            mOrthogonalWidth = value;
-        }
+        get { return mNearClipPlane; }
+        set { mNearClipPlane = value; }
     }
 
-    /// <summary>
-    /// The number of vertical units shown by the camera when the camera has Orthogonal = true 
-    /// </summary>
-    /// <remarks>
-    /// Orthogonal values will not have any impact on rendering if Orthogonal is false.
-    /// </remarks>
-    public float OrthogonalHeight
+
+    public float FarClipPlane
     {
-        get { return mOrthogonalHeight; }
-        set
-        {
-#if DEBUG
-            if (value < 0)
-            {
-                throw new Exception("OrthogonalHeight must be positive");
-            }
-#endif
-            mOrthogonalHeight = value;
-        }
+        get { return mFarClipPlane; }
+        set { mFarClipPlane = value; }
     }
 
-    public static Camera Main
+    public CameraCullMode CameraCullMode
     {
-        get
-        {
-            return SpriteManager.Camera;
-        }
+        get { return mCameraCullMode; }
+        set { mCameraCullMode = value; }
     }
+
+
+    #endregion
+
+    #region Destination rectangle / split screen settings
+
+    SplitScreenViewport splitScreenViewport;
+    public SplitScreenViewport CurrentSplitScreenViewport => splitScreenViewport;
+
+    bool mUsesSplitScreenViewport = false;
+
+    float mTopDestination;
+    float mBottomDestination;
+    float mLeftDestination;
+    float mRightDestination;
+
+
 
     /// <summary>
     /// Gets and sets the top side of the destination rectangle (where on the window
@@ -603,7 +618,7 @@ public partial class Camera : PositionedObject
     /// </summary>
     public virtual float RightDestination
     {
-        get => mRightDestination; 
+        get => mRightDestination;
         set
         {
             mRightDestination = value;
@@ -646,107 +661,79 @@ public partial class Camera : PositionedObject
         }
     }
 
-    /// <summary>
-    /// Whether this camera clears the depth buffer when rendering. If true (the default) 
-    /// this camera clears the depth buffer, z-buffered sprites write to the depth buffer,
-    /// and ordered objects render considering the depth buffer.
-    /// </summary>
-    public bool ClearsDepthBuffer
+    internal Rectangle mDestinationRectangle;
+
+    float mTopDestinationVelocity;
+    float mBottomDestinationVelocity;
+    float mLeftDestinationVelocity;
+    float mRightDestinationVelocity;
+
+
+    public float TopDestinationVelocity
     {
-        get;
-        set;
+        get { return mTopDestinationVelocity; }
+        set { mTopDestinationVelocity = value; }
     }
-
-    /// <summary>
-    /// The width/height of the view of the camera
-    /// </summary>
-    /// <remarks>
-    /// This determines the ratio of the width to height of the camera.  By default, the aspect ratio is 4/3,
-    /// but this should be changed for widescreen monitors or in situations using multiple cameras.  For example, if
-    /// a game is in split screen with a vertical split, then each camera will show the same height, but half the width.
-    /// The aspect ratio should be 2/3.
-    /// </remarks>
-    public float AspectRatio
+    public float BottomDestinationVelocity
     {
-        get => mAspectRatio; 
-        set
-        {
-            mAspectRatio = value;
-            mXEdge = mYEdge * AspectRatio;
-            // The user may expect AspectRatio to work when in 2D mode
-            if (mOrthogonal)
-            {
-                mOrthogonalWidth = mOrthogonalHeight * mAspectRatio;
-            }
-        }
+        get { return mBottomDestinationVelocity; }
+        set { mBottomDestinationVelocity = value; }
     }
-
-
-    /// <summary>
-    /// Returns whether the camera is using an orthogonal perspective. If true, the camera is a "2D" camera.
-    /// </summary>
-    public bool Orthogonal
+    public float LeftDestinationVelocity
     {
-        get => mOrthogonal;
-        set => mOrthogonal = value;
+        get { return mLeftDestinationVelocity; }
+        set { mLeftDestinationVelocity = value; }
     }
-
-
-    /// <summary>
-    /// Whether the camera draws its layers.
-    /// </summary>
-    public bool DrawsCameraLayer
+    public float RightDestinationVelocity
     {
-        get => mDrawsCameraLayer; 
-        set => mDrawsCameraLayer = value; 
-    }
-
-    /// <summary>
-    /// Whether the Camera draws world objects (objects not on the Camera's Layer). This is true by default.
-    /// This is usually set to false for cameras used in render targets which only draw layers.
-    /// </summary>
-    public bool DrawsWorld
-    {
-        get => mDrawsWorld; 
-        set => mDrawsWorld = value; 
-    }
-
-    /// <summary>
-    /// Whether the Camera draws shapes
-    /// </summary>
-    public bool DrawsShapes
-    {
-        get => mDrawsShapes; 
-        set => mDrawsShapes = value; 
-    }
-
-    /// <summary>
-    /// Whether this camera draws its contents to the screen. By default this is true.
-    /// </summary>
-    public bool DrawsToScreen
-    {
-        get;
-        set;
+        get { return mRightDestinationVelocity; }
+        set { mRightDestinationVelocity = value; }
     }
 
     #endregion
 
-    public bool ShiftsHalfUnitForRendering
+    #region Layers
+
+    List<Layer> mLayers = new List<Layer>();
+    ReadOnlyCollection<Layer> mLayersReadOnly;
+
+
+    /// <summary>
+    /// A Camera-specific layer.  Objects on this layer will not appear
+    /// in any other cameras.
+    /// </summary>
+    /// <remarks>
+    /// This instance is automatically created when the Camera is instantiated.
+    /// </remarks>
+    public Layer Layer
     {
-        get
-        {
-            // This causes all kinds of jitteryness when attached to an object, so we should make sure
-            // the camera is not attached to anything:
-
-            return Parent == null &&
-                mOrthogonal && (this.mOrthogonalWidth / (float)this.DestinationRectangle.Width == 1);
-        }
-
-
-
+        get { return mLayers[0]; }
     }
 
-    #region Constructor
+    public ReadOnlyCollection<Layer> Layers
+    {
+        get { return mLayersReadOnly; }
+    }
+
+    #endregion
+
+    #region Post processing / render targets
+
+    public SwapChain SwapChain { get; set; }
+    public List<IPostProcess> PostProcesses { get; private set; } = new List<IPostProcess>();
+
+    /// <summary>
+    /// Whether to automatically update the SwapChain according to the DestinationRectangle
+    /// </summary>
+    public bool IsSwapChainAutoUpdated { get; set; }
+
+    string mContentManager;
+
+    #endregion
+
+    #endregion
+
+    #region Constructor and initialization
 
     /// <summary>
     /// Creates a new camera instance. This camera will not be drawn by the engine until it is added
@@ -816,91 +803,76 @@ public partial class Camera : PositionedObject
         mLayersReadOnly = new ReadOnlyCollection<Layer>(mLayers);
 
         Position.Z = -MathFunctions.ForwardVector3.Z * 40;
-
-#if SUPPORTS_POST_PROCESSING
-        mPostProcessing = new PostProcessingEffectCollection();
-
-        if (Renderer.UseRenderTargets)
-        {
-            mPostProcessing.InitializeEffects();
-        }
-        // Create the render order collection
-        RenderOrder = new List<RenderMode>();
-        RenderOrder.Add(RenderMode.Default);
-
-        RefreshTexture();
-#endif
-
-
-
-
     }
 
     #endregion
 
-    #region Methods
+    #region Position / Orientation
 
-    /// <summary>
-    /// Creates a new Layer and adds it to this camera.
-    /// </summary>
-    /// <returns>The newly-created layer.</returns>
-    public Layer AddLayer()
-    {
-        Layer layer = new Layer();
-        AddLayer(layer);
-        return layer;
-    }
 
-    /// <summary>
-    /// Adds a layer to the Camera.  This method does not remove layers that already 
-    /// exist in the SpriteManager, so layers which are being moved to a camera must be
-    /// explicitly removed from the SpriteManager's Layer list.
-    /// </summary>
-    /// <param name="layerToAdd">The layer to add.</param>
-    public void AddLayer(Layer layerToAdd)
+    public override void TimedActivity(float secondDifference, double secondDifferenceSquaredDividedByTwo, float secondsPassedLastFrame)
     {
-        if (layerToAdd.mCameraBelongingTo != null)
+        base.TimedActivity(secondDifference, secondDifferenceSquaredDividedByTwo, secondsPassedLastFrame);
+
+        // This will be done both in UpdateDependencies as well as here
+        X = System.Math.Min(X, mMaximumX);
+        X = System.Math.Max(X, mMinimumX);
+        Y = System.Math.Min(Y, mMaximumY);
+        Y = System.Math.Max(Y, mMinimumY);
+
+        if (!double.IsNaN(this.mBaseMaximumX))
         {
-            throw new System.InvalidOperationException("The argument layer already belongs to a Camera.");
-        }
-        else
-        {
-            // The layer doesn't belong to a camera so it can be added here.
-            mLayers.Add(layerToAdd);
-            layerToAdd.mCameraBelongingTo = this;
-        }
-    }
-
-    public void MoveToBack(Layer layer)
-    {
-        mLayers.Remove(layer);
-        mLayers.Insert(0, layer);
-    }
-
-    public void MoveToFront(Layer layer)
-    {
-        // Last layers appear on top (front)
-        mLayers.Remove(layer);
-        mLayers.Add(layer);
-    }
-
-    /// <summary>
-    /// Supplied sprites are billboarded using the camera's RotationMatrix.
-    /// Only the main Camera can billboard sprites.
-    /// </summary>
-    public void AddSpriteToBillboard(Sprite sprite)
-    {
-        // This only works on the main camera. Multi-camera games must implement their
-        // own solutions:
-#if DEBUG
-        if(this != Camera.Main)
-        {
-            throw new InvalidOperationException("Sprites can only be billboarded on the main camera");
+            CalculateMaxAndMins();
         }
 
-#endif
-        //this.mSpritesToBillBoard.Add(sprite);
-        sprite.IsBillboarded = true;
+        #region update the destination rectangle (for viewport)
+        if (mTopDestinationVelocity != 0f || mBottomDestinationVelocity != 0f ||
+            mLeftDestinationVelocity != 0f || mRightDestinationVelocity != 0f)
+        {
+            mTopDestination += mTopDestinationVelocity * TimeManager.SecondDifference;
+            mBottomDestination += mBottomDestinationVelocity * TimeManager.SecondDifference;
+            mLeftDestination += mLeftDestinationVelocity * TimeManager.SecondDifference;
+            mRightDestination += mRightDestinationVelocity * TimeManager.SecondDifference;
+
+            UpdateDestinationRectangle();
+            FixAspectRatioYConstant();
+        }
+        #endregion
+
+    }
+
+    public override void UpdateDependencies(double currentTime)
+    {
+        base.UpdateDependencies(currentTime);
+
+        // This will be done both in TimedUpdate as well as here
+        X = System.Math.Min(X, mMaximumX);
+        X = System.Math.Max(X, mMinimumX);
+        Y = System.Math.Min(Y, mMaximumY);
+        Y = System.Math.Max(Y, mMinimumY);
+
+        if (!double.IsNaN(this.mBaseMaximumX))
+        {
+            CalculateMaxAndMins();
+        }
+
+        // I'm not sure if this is the proper fix but on WP7 it prevents
+        // tile maps from rendering improperly when scrolling.
+        if (ShiftsHalfUnitForRendering && this.Parent != null)
+        {
+            Position.X = (int)Position.X + .25f;
+            Position.Y = (int)Position.Y - .25f;
+        }
+
+        // This should happen AFTER mins and maxes are set
+        UpdateViewProjectionMatrix(true);
+
+        if (IsSwapChainAutoUpdated)
+        {
+            SwapChain?.UpdateRenderTargetSize(
+                this.DestinationRectangle.Width,
+                this.DestinationRectangle.Height);
+        }
     }
 
 
@@ -910,7 +882,7 @@ public partial class Camera : PositionedObject
     /// </summary>
     public void ClearBorders()
     {
-        mBaseZ = float.NaN;
+        mBaseZ = null;
         mBaseMinimumX = float.NaN;
         mBaseMinimumY = float.NaN;
         mBaseMaximumX = float.NaN;
@@ -924,20 +896,6 @@ public partial class Camera : PositionedObject
         mMinimumY = float.NegativeInfinity;
         mMaximumX = float.PositiveInfinity;
         mMaximumY = float.PositiveInfinity;
-    }
-
-
-
-
-    public void FixDestinationRectangleHeightConstant()
-    {
-        mDestinationRectangle.Width = (int)(mAspectRatio * mDestinationRectangle.Height);
-    }
-
-
-    public void FixDestinationRectangleWidthConstant()
-    {
-        mDestinationRectangle.Height = (int)(mDestinationRectangle.Width / mAspectRatio);
     }
 
     public override void ForceUpdateDependencies()
@@ -958,6 +916,367 @@ public partial class Camera : PositionedObject
         // This should happen AFTER mins and maxes are set
         UpdateViewProjectionMatrix(true);
     }
+
+    /// <summary>
+    /// Moves a Sprite so that it remains fully in the camera's view.
+    /// </summary>
+    /// <remarks>
+    /// This method does not consider Sprite rotation, negative scale, or situations 
+    /// when the camera is not looking down the Z axis.
+    /// </remarks>
+    /// <param name="sprite">The Sprite to keep in view.</param>
+    public void KeepSpriteInScreen(Sprite sprite)
+    {
+        // If the Sprite has a parent, then we need to force update so that its
+        // position is what it will be when it's drawn.  Be sure to do this before
+        // storing off the oldPosition
+        if (sprite.Parent != null)
+        {
+            sprite.ForceUpdateDependencies();
+        }
+
+        Vector3 oldPosition = sprite.Position;
+        float edgeCoef = (Z - sprite.Z) / 100.0f;
+
+        if (sprite.X - sprite.ScaleX < X - edgeCoef * XEdge)
+            sprite.X = X - edgeCoef * XEdge + sprite.ScaleX;
+        if (sprite.X + sprite.ScaleX > X + edgeCoef * XEdge)
+            sprite.X = X + edgeCoef * XEdge - sprite.ScaleX;
+
+
+        if (sprite.Y - sprite.ScaleY < Y - edgeCoef * YEdge)
+            sprite.Y = Y - edgeCoef * YEdge + sprite.ScaleY;
+        if (sprite.Y + sprite.ScaleY > Y + edgeCoef * YEdge)
+            sprite.Y = Y + edgeCoef * YEdge - sprite.ScaleY;
+
+        if (sprite.Parent != null)
+        {
+            Vector3 shiftAmount = sprite.Position - oldPosition;
+
+            sprite.TopParent.Position += shiftAmount;
+        }
+    }
+
+    public void PositionRandomlyInView(IPositionable positionable)
+    {
+        PositionRandomlyInView(positionable, Z, Z);
+    }
+
+    /// <summary>
+    /// Positiones the argument positionable randomly in camera between the argument bounds.
+    /// </summary>
+    /// <remarks>
+    /// Assumes the camera is viewing down the Z plane - it is unrotated.
+    /// </remarks>
+    /// <param name="positionable">The object to reposition.</param>
+    /// <param name="minimumDistanceFromCamera">The closest possible distance from the camera.</param>
+    /// <param name="maximumDistanceFromCamera">The furthest possible distance from the camera.</param>
+    public void PositionRandomlyInView(IPositionable positionable, float minimumDistanceFromCamera, float maximumDistanceFromCamera)
+    {
+        // First get the distance from the camera.
+        float distanceFromCamera = minimumDistanceFromCamera +
+            (float)(FlatRedBallServices.Random.NextDouble() * (maximumDistanceFromCamera - minimumDistanceFromCamera));
+
+        positionable.Z = Z + (distanceFromCamera * FlatRedBall.Math.MathFunctions.ForwardVector3.Z);
+
+        positionable.X = X - RelativeXEdgeAt(positionable.Z) +
+            (float)(FlatRedBallServices.Random.NextDouble() * 2.0f * RelativeXEdgeAt(positionable.Z));
+
+        positionable.Y = Y - RelativeYEdgeAt(positionable.Z) +
+            (float)(FlatRedBallServices.Random.NextDouble() * 2.0f * RelativeYEdgeAt(positionable.Z));
+
+    }
+
+
+
+    /// <summary>
+    /// Sets the visible borders when the camera is looking down the Z axis.
+    /// </summary>
+    /// <remarks>
+    /// This sets visibility ranges for the camera.  That is, if the camera's maximumX is set to 100 at a zToSetAt of 
+    /// 0, the camera will never be able to see the point x = 101, z = 0.  The camera imposes these limitations 
+    /// by calculating the actual minimum and maximum values according to the variables passed.  Also, 
+    /// the camera keeps track of these visible limits and readjusts the mimimum and maximum values 
+    /// when the camera moves in the z direction. Therefore, it is only necessary to set these 
+    /// values once, and the camera will remeber that these are the visibility borders, regardless of 
+    /// its position.  It is important to note that the visiblity borders can be violated if they are too 
+    /// close together - if a camera moves so far back that its viewable area at the set Z is greater than 
+    /// the set minimumX and maximumX range, the camera will show an area outside of this range.
+    /// <seealso cref="FlatRedBall.Camera.ClearBorders"/>
+    /// </remarks>
+    /// <param name="minimumX">The minimum x value of the visiblity border.</param>
+    /// <param name="minimumY">The minimum y value of the visiblity border.</param>
+    /// <param name="maximumX">The maximum x value of the visiblity border.</param>
+    /// <param name="maximumY">The maximum y value of the visiblity border.</param>
+    /// <param name="zToSetAt">The z value of the plane to use for the visibility border.</param>
+    public void SetBordersAtZ(float minimumX, float minimumY, float maximumX, float maximumY, float zToSetAt)
+    {
+        mBaseZ = zToSetAt;
+        mBaseMinimumX = minimumX;
+        mBaseMinimumY = minimumY;
+        mBaseMaximumX = maximumX;
+        mBaseMaximumY = maximumY;
+        CalculateMaxAndMins();
+
+        X = System.Math.Min(X, mMaximumX);
+        X = System.Math.Max(X, mMinimumX);
+        Y = System.Math.Min(Y, mMaximumY);
+        Y = System.Math.Max(Y, mMinimumY);
+    }
+
+
+    public void SetBordersAt(AxisAlignedRectangle visibleBounds)
+    {
+        SetBordersAtZ(visibleBounds.Left, visibleBounds.Bottom, visibleBounds.Right, visibleBounds.Top, visibleBounds.Z);
+    }
+
+
+    public void SetLookAtRotationMatrix(Vector3 LookAtPoint)
+    {
+        SetLookAtRotationMatrix(LookAtPoint, new Vector3(0, 1, 0));
+    }
+
+    public void SetLookAtRotationMatrix(Vector3 LookAtPoint, Vector3 upDirection)
+    {
+        Matrix newMatrix = Matrix.Invert(
+                Matrix.CreateLookAt(
+                    Position,
+                    LookAtPoint,
+                    upDirection));
+
+        // Kill the translation
+        newMatrix.M41 = 0;
+        newMatrix.M42 = 0;
+        newMatrix.M43 = 0;
+        // leave M44 to 1
+
+        RotationMatrix = newMatrix;
+
+
+    }
+
+
+    public float GetZDistanceForPixelPerfect()
+    {
+        double sin = System.Math.Sin(FieldOfView / 2.0);
+        double cos = System.Math.Cos(FieldOfView / 2.0f);
+
+
+        double edgeToEdge = 2 * sin;
+        float desiredHeight = this.DestinationRectangle.Height;
+
+        double distance = cos * desiredHeight / edgeToEdge;
+        return (float)distance;
+    }
+
+
+    public float WorldXAt(float screenX, float zPosition)
+    {
+        return WorldXAt(screenX, zPosition, this.Orthogonal, this.OrthogonalWidth);
+    }
+
+    public float WorldXAt(float screenX, float zPosition, Layer layer)
+    {
+        if (layer == null || layer.LayerCameraSettings == null)
+        {
+            return WorldXAt(screenX, zPosition, this.Orthogonal, this.OrthogonalWidth);
+        }
+        else
+        {
+            LayerCameraSettings lcs = layer.LayerCameraSettings;
+
+            Camera cameraToUse = layer.CameraBelongingTo;
+
+            if (cameraToUse == null)
+            {
+                cameraToUse = this;
+            }
+
+            // If the orthogonal resolution per destination width/height
+            // of the layer matches the Camera's orthogonal per destination, then
+            // we can just use the camera.  This is the most common case so we'll just
+            // use that.
+            float destinationLeft = cameraToUse.DestinationRectangle.Left;
+            float destinationRight = cameraToUse.DestinationRectangle.Right;
+
+
+            float destinationWidth = destinationRight - destinationLeft;
+
+            float horizontalPercentage = (screenX - destinationLeft) / (float)destinationWidth;
+
+            float orthogonalWidthToUse = cameraToUse.OrthogonalWidth;
+
+            var useLayerOrtho = lcs.Orthogonal && !cameraToUse.Orthogonal;
+
+            if (useLayerOrtho)
+            {
+                orthogonalWidthToUse = lcs.OrthogonalWidth;
+            }
+
+            // used for adjusting the ortho width/height if the Layer is zoomed
+            float layerMultiplier = 1;
+            float bottomDestination = lcs.BottomDestination;
+            float topDestination = lcs.TopDestination;
+            if (bottomDestination == -1 || topDestination == -1)
+            {
+                bottomDestination = cameraToUse.BottomDestination;
+                topDestination = cameraToUse.TopDestination;
+            }
+
+            // Make sure the destinations aren't equal or else we'd divide by 0
+            if (lcs.Orthogonal && bottomDestination != topDestination)
+            {
+                layerMultiplier = lcs.OrthogonalHeight / (float)(bottomDestination - topDestination);
+            }
+
+            float cameraMultiplier = 1;
+            // Make sure the destinations aren't equal or else we'd divide by 0
+            if (cameraToUse.Orthogonal && cameraToUse.BottomDestination != cameraToUse.TopDestination)
+            {
+                cameraMultiplier = cameraToUse.OrthogonalHeight / (float)(cameraToUse.BottomDestination - cameraToUse.TopDestination);
+            }
+            layerMultiplier /= cameraMultiplier;
+
+            if (!useLayerOrtho)
+            {
+                orthogonalWidthToUse *= layerMultiplier;
+            }
+
+            // I think we want to use the Camera's orthogonalWidth if it's orthogonal
+            //return GetWorldXGivenHorizontalPercentage(zPosition, cameraToUse, lcs.Orthogonal, lcs.OrthogonalWidth, horizontalPercentage);
+            return GetWorldXGivenHorizontalPercentage(zPosition, lcs.Orthogonal, orthogonalWidthToUse, horizontalPercentage);
+        }
+    }
+
+    public float WorldXAt(float screenX, float zPosition, bool overridingOrthogonal, float overridingOrthogonalWidth)
+    {
+        float screenRelativeX = screenX;
+        return WorldXAt(zPosition, overridingOrthogonal, overridingOrthogonalWidth, screenRelativeX);
+    }
+
+    public float WorldXAt(float zPosition, bool overridingOrthogonal, float overridingOrthogonalWidth, float screenX)
+    {
+
+        float horizontalPercentage = (screenX - this.DestinationRectangle.Left) / (float)this.DestinationRectangle.Width;
+
+        return GetWorldXGivenHorizontalPercentage(zPosition, overridingOrthogonal, overridingOrthogonalWidth, horizontalPercentage);
+    }
+
+    private float GetWorldXGivenHorizontalPercentage(float zPosition, bool overridingOrthogonal, float overridingOrthogonalWidth, float horizontalPercentage)
+    {
+        if (!overridingOrthogonal)
+        {
+            float absoluteLeft = this.AbsoluteLeftXEdgeAt(zPosition);
+            float width = this.RelativeXEdgeAt(zPosition) * 2;
+            return absoluteLeft + width * horizontalPercentage;
+        }
+        else
+        {
+            float xDistanceFromEdge = horizontalPercentage * overridingOrthogonalWidth;
+            return (this.X + -overridingOrthogonalWidth / 2.0f + xDistanceFromEdge);
+        }
+    }
+
+
+    public float WorldYAt(float screenY, float zPosition)
+    {
+        return WorldYAt(screenY, zPosition, this.Orthogonal, this.OrthogonalHeight);
+    }
+
+    public float WorldYAt(float screenY, float zPosition, Layer layer)
+    {
+        if (layer == null || layer.LayerCameraSettings == null)
+        {
+            return WorldYAt(screenY, zPosition, this.Orthogonal, this.OrthogonalHeight);
+        }
+        else
+        {
+            LayerCameraSettings lcs = layer.LayerCameraSettings;
+
+            Camera cameraToUse = layer.CameraBelongingTo;
+
+            if (cameraToUse == null)
+            {
+                cameraToUse = this;
+            }
+
+
+            // If the orthogonal resolution per destination width/height
+            // of the layer matches the Camera's orthogonal per destination, then
+            // we can just use the camera.  This is the most common case so we'll just
+            // use that.
+            //return WorldYAt(zPosition, cameraToUse, lcs.Orthogonal, lcs.OrthogonalHeight);
+            // If we have a 2D layer ona 3D camera, then we shouldn't use the Camera's orthogonal values
+            float orthogonalHeightToUse = cameraToUse.OrthogonalHeight;
+
+            // multiplier is used if the orghogonal height of the layer doesn't match the orthogonal height of the 
+            // camera. But if we're going to pass the ortho height of the layer, then the multiplier should be 1
+
+            var usedLayerOrtho = lcs.Orthogonal && !cameraToUse.Orthogonal;
+
+            if (usedLayerOrtho)
+            {
+                orthogonalHeightToUse = lcs.OrthogonalHeight;
+            }
+
+            float layerMultiplier = 1;
+            float bottomDestination = lcs.BottomDestination;
+            float topDestination = lcs.TopDestination;
+            if (bottomDestination == -1 || topDestination == -1)
+            {
+                bottomDestination = cameraToUse.BottomDestination;
+                topDestination = cameraToUse.TopDestination;
+            }
+
+            if (lcs.Orthogonal && bottomDestination != topDestination)
+            {
+                layerMultiplier = lcs.OrthogonalHeight / (float)(bottomDestination - topDestination);
+            }
+
+            float cameraMultiplier = 1;
+            if (cameraToUse.Orthogonal && cameraToUse.BottomDestination != cameraToUse.TopDestination)
+            {
+                cameraMultiplier = cameraToUse.OrthogonalHeight / (float)(cameraToUse.BottomDestination - cameraToUse.TopDestination);
+            }
+            layerMultiplier /= cameraMultiplier;
+
+            if (!usedLayerOrtho)
+            {
+                orthogonalHeightToUse *= layerMultiplier;
+            }
+
+            return WorldYAt(screenY, zPosition, lcs.Orthogonal, orthogonalHeightToUse);
+        }
+    }
+
+    public float WorldYAt(float screenY, float zPosition, bool overridingOrthogonal, float overridingOrthogonalHeight)
+    {
+        float screenRelativeY = screenY;
+
+        return WorldYAt(zPosition, overridingOrthogonal, overridingOrthogonalHeight, screenRelativeY);
+    }
+
+    public float WorldYAt(float zPosition, bool orthogonal, float orthogonalHeight, float screenY)
+    {
+        float verticalPercentage = (screenY - this.DestinationRectangle.Top) / (float)this.DestinationRectangle.Height;
+
+        if (!orthogonal)
+        {
+            float absoluteTop = this.AbsoluteTopYEdgeAt(zPosition);
+            float height = this.RelativeYEdgeAt(zPosition) * 2;
+            return absoluteTop - height * verticalPercentage;
+        }
+        else
+        {
+            float yDistanceFromEdge = verticalPercentage * orthogonalHeight;
+            return (this.Y + orthogonalHeight / 2.0f - yDistanceFromEdge);
+        }
+    }
+
+    #endregion
+
+    #region View / projection / camera edges
+
 
     public Matrix GetLookAtMatrix()
     {
@@ -1003,7 +1322,7 @@ public partial class Camera : PositionedObject
                 //positionVector.Y = (int)positionVector.Y - .5f;
                 //cameraTarget.X = (int)cameraTarget.X + .5f;
                 //cameraTarget.Y = (int)cameraTarget.Y - .5f;
-            
+
                 // Math this is complicated.  Without this
                 // stuff that is attached to the Camera tends
                 // to not be rendered properly :(  So putting it back in
@@ -1024,7 +1343,6 @@ public partial class Camera : PositionedObject
         }
 
     }
-
 
     public Matrix GetProjectionMatrix()
     {
@@ -1052,11 +1370,199 @@ public partial class Camera : PositionedObject
     }
 
 
-    public float GetRequiredAspectRatio(float desiredYEdge, float zValue)
+    public void SetDeviceViewAndProjection(BasicEffect effect, bool relativeToCamera)
     {
-        float modifiedDesiredYEdge = 100 * desiredYEdge / (Position.Z - zValue);
-        return (float)System.Math.Atan(modifiedDesiredYEdge / 100) * 2;
+        // Set up our view matrix. A view matrix can be defined given an eye point,
+        // a point to lookat, and a direction for which way is up. 
+        effect.View = GetLookAtMatrix(relativeToCamera);
+        effect.Projection = GetProjectionMatrix();
     }
+
+
+
+    public void SetDeviceViewAndProjection(GenericEffect effect, bool relativeToCamera)
+    {
+        // Set up our view matrix. A view matrix can be defined given an eye point,
+        // a point to lookat, and a direction for which way is up. 
+        var lookAtMatrix = GetLookAtMatrix(relativeToCamera);
+#if DEBUG
+        if (float.IsNaN(lookAtMatrix.M11) ||
+            float.IsNaN(lookAtMatrix.M12) ||
+            float.IsNaN(lookAtMatrix.M13) ||
+            float.IsNaN(lookAtMatrix.M14) ||
+            float.IsNaN(lookAtMatrix.M21) ||
+            float.IsNaN(lookAtMatrix.M22) ||
+            float.IsNaN(lookAtMatrix.M23) ||
+            float.IsNaN(lookAtMatrix.M24) ||
+            float.IsNaN(lookAtMatrix.M31) ||
+            float.IsNaN(lookAtMatrix.M32) ||
+            float.IsNaN(lookAtMatrix.M33) ||
+            float.IsNaN(lookAtMatrix.M34) ||
+            float.IsNaN(lookAtMatrix.M41) ||
+            float.IsNaN(lookAtMatrix.M42) ||
+            float.IsNaN(lookAtMatrix.M43) ||
+            float.IsNaN(lookAtMatrix.M44))
+        {
+            var message = "The Camera's LookAtMatrix contains NaN values, so it cannot be used in rendering";
+
+            const string upBehind =
+                " The Camera's Up vector is pointing directly behind it. For a 3D camera, change the UpVector to the desired up direction";
+            const string upInFront =
+                " The Camera's Up vector is pointing directly in front of it. For a 3D camera, change the UpVector to the desired up direction";
+
+            if (this.RotationMatrix.Backward == UpVector)
+            {
+                message += upBehind;
+            }
+            else if (this.RotationMatrix.Forward == UpVector)
+            {
+                message += upInFront;
+            }
+            else
+            {
+                // they could be really close
+                var dot = Vector3.Dot(this.RotationMatrix.Forward, UpVector);
+
+                if (dot > .999f)
+                {
+                    message += upBehind;
+                }
+                else if (dot < .999f)
+                {
+                    message += upInFront;
+                }
+            }
+
+
+
+            throw new Exception(message);
+        }
+#endif
+        effect.View = lookAtMatrix;
+
+
+        var projectionMatrix = GetProjectionMatrix();
+#if DEBUG
+        if (float.IsNaN(projectionMatrix.M11) ||
+            float.IsNaN(projectionMatrix.M12) ||
+            float.IsNaN(projectionMatrix.M13) ||
+            float.IsNaN(projectionMatrix.M14) ||
+            float.IsNaN(projectionMatrix.M21) ||
+            float.IsNaN(projectionMatrix.M22) ||
+            float.IsNaN(projectionMatrix.M23) ||
+            float.IsNaN(projectionMatrix.M24) ||
+            float.IsNaN(projectionMatrix.M31) ||
+            float.IsNaN(projectionMatrix.M32) ||
+            float.IsNaN(projectionMatrix.M33) ||
+            float.IsNaN(projectionMatrix.M34) ||
+            float.IsNaN(projectionMatrix.M41) ||
+            float.IsNaN(projectionMatrix.M42) ||
+            float.IsNaN(projectionMatrix.M43) ||
+            float.IsNaN(projectionMatrix.M44))
+        {
+            throw new Exception("The Camera's projectoin matrix contains NaN values, so it cannot be used in rendering");
+        }
+#endif
+        effect.Projection = projectionMatrix;
+
+
+    }
+
+    public void SetDeviceViewAndProjection(Effect effect, bool relativeToCamera)
+    {
+        //TimeManager.SumTimeSection("Start of SetDeviceViewAndProjection");
+
+        #region Create the matrices
+        // Get view, projection, and viewproj values
+        Matrix view = (relativeToCamera) ? mViewRelative : mView;
+        Matrix viewProj;
+        Matrix.Multiply(ref view, ref mProjection, out viewProj);
+        #endregion
+
+        if (effect is AlphaTestEffect)
+        {
+            AlphaTestEffect asAlphaTestEffect = effect as AlphaTestEffect;
+
+            asAlphaTestEffect.View = view;
+            asAlphaTestEffect.Projection = mProjection;
+
+        }
+        else
+        {
+            //TimeManager.SumTimeSection("Create the matrices");
+
+            //EffectParameterBlock block = new EffectParameterBlock(effect);
+
+            #region Get all valid parameters
+            EffectParameter paramNameViewProj = effect.Parameters["ViewProj"];
+            EffectParameter paramNameView = effect.Parameters["View"];
+            EffectParameter paramNameProjection = effect.Parameters["Projection"];
+
+            //EffectParameter paramSemViewProj = effect.Parameters.GetParameterBySemantic("VIEWPROJ");
+            //EffectParameter paramSemView = effect.Parameters.GetParameterBySemantic("VIEW");
+            //EffectParameter paramSemProjection = effect.Parameters.GetParameterBySemantic("PROJECTION");
+            #endregion
+
+            //TimeManager.SumTimeSection("Get all valid parameters");
+
+            #region Set all available parameters
+
+            //if (paramNameProjection != null || paramNameView != null ||
+            //    paramNameViewProj != null || paramSemProjection != null ||
+            //    paramSemView != null || paramSemViewProj != null)
+            //{
+            //block.Begin();
+
+            if (paramNameView != null) paramNameView.SetValue(view);
+            //if (paramSemView != null) paramSemView.SetValue(view);
+            if (paramNameProjection != null) paramNameProjection.SetValue(mProjection);
+            //if (paramSemProjection != null) paramSemProjection.SetValue(mProjection);
+            if (paramNameViewProj != null) paramNameViewProj.SetValue(viewProj);
+            //if (paramSemViewProj != null) paramSemViewProj.SetValue(viewProj);
+
+            //block.End();
+            //block.Apply();
+            //}
+
+            #endregion
+
+            //TimeManager.SumTimeSection("Set available parameters");
+        }
+    }
+
+
+
+    public void UpdateViewProjectionMatrix()
+    {
+        UpdateViewProjectionMatrix(false);
+    }
+
+    public void UpdateViewProjectionMatrix(bool updateFrustum)
+    {
+        mView = GetLookAtMatrix(false);
+        mViewRelative = GetLookAtMatrix(true);
+        mProjection = GetProjectionMatrix();
+
+        if (updateFrustum)
+        {
+            Matrix.Multiply(ref mView, ref mProjection, out mViewProjection);
+            mBoundingFrustum.Matrix = (mViewProjection);
+        }
+    }
+
+    #endregion
+
+    #region Destination rectangle / split screen settings
+    public void FixDestinationRectangleHeightConstant()
+    {
+        mDestinationRectangle.Width = (int)(mAspectRatio * mDestinationRectangle.Height);
+    }
+
+    public void FixDestinationRectangleWidthConstant()
+    {
+        mDestinationRectangle.Height = (int)(mDestinationRectangle.Width / mAspectRatio);
+    }
+
 
     /// <summary>
     /// Returns the viewport for the Graphics Device, optionally restricted to the resolution.
@@ -1099,7 +1605,7 @@ public partial class Camera : PositionedObject
             lcs.LeftDestination >= 0 &&
             lcs.RightDestination >= 0;
 
-        if(explicitlySetsDestination)
+        if (explicitlySetsDestination)
         {
             viewport.X = (int)lcs.LeftDestination;
             viewport.Y = (int)lcs.TopDestination;
@@ -1109,7 +1615,7 @@ public partial class Camera : PositionedObject
         else
         {
             // borrow the size from whatever it's tied to, which could be a camera or a render target
-            if(renderTarget != null)
+            if (renderTarget != null)
             {
                 viewport.X = 0;
                 viewport.Y = 0;
@@ -1133,7 +1639,7 @@ public partial class Camera : PositionedObject
             int destinationWidth;
             int destinationHeight;
 
-            if(renderTarget == null)
+            if (renderTarget == null)
             {
                 destinationWidth = FlatRedBallServices.GraphicsOptions.ResolutionWidth;
                 destinationHeight = FlatRedBallServices.GraphicsOptions.ResolutionHeight;
@@ -1183,125 +1689,6 @@ public partial class Camera : PositionedObject
         return viewport;
 
     }
-    
-
-    #region Is object in view
-
-    #endregion
-
-
-    /// <summary>
-    /// Moves a Sprite so that it remains fully in the camera's view.
-    /// </summary>
-    /// <remarks>
-    /// This method does not consider Sprite rotation, negative scale, or situations 
-    /// when the camera is not looking down the Z axis.
-    /// </remarks>
-    /// <param name="sprite">The Sprite to keep in view.</param>
-    public void KeepSpriteInScreen(Sprite sprite)
-    {
-        // If the Sprite has a parent, then we need to force update so that its
-        // position is what it will be when it's drawn.  Be sure to do this before
-        // storing off the oldPosition
-        if (sprite.Parent != null)
-        {
-            sprite.ForceUpdateDependencies();
-        }
-
-        Vector3 oldPosition = sprite.Position;
-        float edgeCoef = (Z - sprite.Z) / 100.0f;
-
-        if (sprite.X - sprite.ScaleX < X - edgeCoef * XEdge)
-            sprite.X = X - edgeCoef * XEdge + sprite.ScaleX;
-        if (sprite.X + sprite.ScaleX > X + edgeCoef * XEdge)
-            sprite.X = X + edgeCoef * XEdge - sprite.ScaleX;
-
-
-        if (sprite.Y - sprite.ScaleY < Y - edgeCoef * YEdge)
-            sprite.Y = Y - edgeCoef * YEdge + sprite.ScaleY;
-        if (sprite.Y + sprite.ScaleY > Y + edgeCoef * YEdge)
-            sprite.Y = Y + edgeCoef * YEdge - sprite.ScaleY;
-
-        if (sprite.Parent != null)
-        {
-            Vector3 shiftAmount = sprite.Position - oldPosition;
-
-            sprite.TopParent.Position += shiftAmount;
-        }
-    }
-
-
-    public override void Pause(FlatRedBall.Instructions.InstructionList instructions)
-    {
-        FlatRedBall.Instructions.Pause.CameraUnpauseInstruction instruction =
-            new FlatRedBall.Instructions.Pause.CameraUnpauseInstruction(this);
-
-        instruction.Stop(this);
-
-        instructions.Add(instruction);
-
-        // TODO:  Need to pause the lights, but currently we don't know what type the lights are
-    }
-
-
-    public void PositionRandomlyInView(IPositionable positionable)
-    {
-        PositionRandomlyInView(positionable, Z, Z);
-    }
-
-    /// <summary>
-    /// Positiones the argument positionable randomly in camera between the argument bounds.
-    /// </summary>
-    /// <remarks>
-    /// Assumes the camera is viewing down the Z plane - it is unrotated.
-    /// </remarks>
-    /// <param name="positionable">The object to reposition.</param>
-    /// <param name="minimumDistanceFromCamera">The closest possible distance from the camera.</param>
-    /// <param name="maximumDistanceFromCamera">The furthest possible distance from the camera.</param>
-    public void PositionRandomlyInView(IPositionable positionable, float minimumDistanceFromCamera, float maximumDistanceFromCamera)
-    {
-        // First get the distance from the camera.
-        float distanceFromCamera = minimumDistanceFromCamera + 
-            (float)(FlatRedBallServices.Random.NextDouble() * (maximumDistanceFromCamera - minimumDistanceFromCamera));
-
-        positionable.Z = Z + (distanceFromCamera * FlatRedBall.Math.MathFunctions.ForwardVector3.Z);
-
-        positionable.X = X - RelativeXEdgeAt(positionable.Z) + 
-            (float)( FlatRedBallServices.Random.NextDouble() * 2.0f * RelativeXEdgeAt(positionable.Z) );
-
-        positionable.Y = Y - RelativeYEdgeAt(positionable.Z) +
-            (float)(FlatRedBallServices.Random.NextDouble() * 2.0f * RelativeYEdgeAt(positionable.Z));
-        
-    }
-    
-
-    public void RefreshTexture()
-    {
-
-#if SUPPORTS_POST_PROCESSING
-        if (mRenderTargetTexture != null && mRenderTargetTexture.IsDisposed == false)
-        {
-            throw new InvalidOperationException("The old RenderTargetTexture must first be disposed");
-        }
-
-        // Create the render textures collection
-        mRenderTargetTextures = new Dictionary<int, RenderTargetTexture>();
-        mRenderTargetTexture = new RenderTargetTexture(
-            SurfaceFormat.Color, DestinationRectangle.Width, DestinationRectangle.Height, true);
-
-        FlatRedBallServices.AddDisposable("Render Target Texture" + sCreatedCount,
-            mRenderTargetTexture, mContentManager);
-
-        sCreatedCount++;
-#endif
-    }
-
-
-    public void SetRelativeYEdgeAt(float zDistance, float verticalDistance)
-    {
-        FieldOfView = (float)(2 * System.Math.Atan((double)((.5 * verticalDistance) / zDistance)));
-    }
-
 
     public void ScaleDestinationRectangle(float scaleAmount)
     {
@@ -1321,6 +1708,55 @@ public partial class Camera : PositionedObject
 
     }
 
+    #endregion
+
+    #region Layers
+
+    /// <summary>
+    /// Creates a new Layer and adds it to this camera.
+    /// </summary>
+    /// <returns>The newly-created layer.</returns>
+    public Layer AddLayer()
+    {
+        Layer layer = new Layer();
+        AddLayer(layer);
+        return layer;
+    }
+
+    /// <summary>
+    /// Adds a layer to the Camera.  This method does not remove layers that already 
+    /// exist in the SpriteManager, so layers which are being moved to a camera must be
+    /// explicitly removed from the SpriteManager's Layer list.
+    /// </summary>
+    /// <param name="layerToAdd">The layer to add.</param>
+    public void AddLayer(Layer layerToAdd)
+    {
+        if (layerToAdd.mCameraBelongingTo != null)
+        {
+            throw new System.InvalidOperationException("The argument layer already belongs to a Camera.");
+        }
+        else
+        {
+            // The layer doesn't belong to a camera so it can be added here.
+            mLayers.Add(layerToAdd);
+            layerToAdd.mCameraBelongingTo = this;
+        }
+    }
+
+    public void MoveToBack(Layer layer)
+    {
+        mLayers.Remove(layer);
+        mLayers.Insert(0, layer);
+    }
+
+    public void MoveToFront(Layer layer)
+    {
+        // Last layers appear on top (front)
+        mLayers.Remove(layer);
+        mLayers.Add(layer);
+    }
+
+
     /// <summary>
     /// Removes the argument Layer from this Camera.  Does not empty the layer or
     /// remove contained objects from their respective managers.
@@ -1331,49 +1767,55 @@ public partial class Camera : PositionedObject
         mLayers.Remove(layerToRemove);
         layerToRemove.mCameraBelongingTo = null;
     }
+    #endregion
+
+    #region Post processing / render targets
+
 
     /// <summary>
-    /// Sets the visible borders when the camera is looking down the Z axis.
+    /// Creates a SwapChain instance matching the game's resolution which automatically adjusts when the game window resizes.
     /// </summary>
-    /// <remarks>
-    /// This sets visibility ranges for the camera.  That is, if the camera's maximumX is set to 100 at a zToSetAt of 
-    /// 0, the camera will never be able to see the point x = 101, z = 0.  The camera imposes these limitations 
-    /// by calculating the actual minimum and maximum values according to the variables passed.  Also, 
-    /// the camera keeps track of these visible limits and readjusts the mimimum and maximum values 
-    /// when the camera moves in the z direction. Therefore, it is only necessary to set these 
-    /// values once, and the camera will remeber that these are the visibility borders, regardless of 
-    /// its position.  It is important to note that the visiblity borders can be violated if they are too 
-    /// close together - if a camera moves so far back that its viewable area at the set Z is greater than 
-    /// the set minimumX and maximumX range, the camera will show an area outside of this range.
-    /// <seealso cref="FlatRedBall.Camera.ClearBorders"/>
-    /// </remarks>
-    /// <param name="minimumX">The minimum x value of the visiblity border.</param>
-    /// <param name="minimumY">The minimum y value of the visiblity border.</param>
-    /// <param name="maximumX">The maximum x value of the visiblity border.</param>
-    /// <param name="maximumY">The maximum y value of the visiblity border.</param>
-    /// <param name="zToSetAt">The z value of the plane to use for the visibility border.</param>
-    public void SetBordersAtZ(float minimumX, float minimumY, float maximumX, float maximumY, float zToSetAt)
+    public void CreateDefaultSwapChain()
     {
-        mBaseZ = zToSetAt;
-        mBaseMinimumX = minimumX;
-        mBaseMinimumY = minimumY;
-        mBaseMaximumX = maximumX;
-        mBaseMaximumY = maximumY;
-        CalculateMaxAndMins();
+        SwapChain = new Graphics.PostProcessing.SwapChain(
+            this.DestinationRectangle.Width,
+            this.DestinationRectangle.Height);
+    }
 
-        X = System.Math.Min(X, mMaximumX);
-        X = System.Math.Max(X, mMinimumX);
-        Y = System.Math.Min(Y, mMaximumY);
-        Y = System.Math.Max(Y, mMinimumY);
+    #endregion
+
+    #region Instructions / pausing
+
+    public override void Pause(FlatRedBall.Instructions.InstructionList instructions)
+    {
+        FlatRedBall.Instructions.Pause.CameraUnpauseInstruction instruction =
+            new FlatRedBall.Instructions.Pause.CameraUnpauseInstruction(this);
+
+        instruction.Stop(this);
+
+        instructions.Add(instruction);
+
+        // TODO:  Need to pause the lights, but currently we don't know what type the lights are
     }
 
 
-    public void SetBordersAt(AxisAlignedRectangle visibleBounds)
-    {
-        SetBordersAtZ(visibleBounds.Left, visibleBounds.Bottom, visibleBounds.Right, visibleBounds.Top, visibleBounds.Z);
-    }
+    #endregion
 
-		/// <summary>
+
+
+
+
+
+
+
+
+
+
+
+    // todo - the rest of these methods need to be organized into regions above
+
+
+	/// <summary>
 		/// Copies all fields from the argument to the camera instance.
 		/// </summary>
 		/// <remarks>
@@ -1436,268 +1878,7 @@ public partial class Camera : PositionedObject
         this.mFarClipPlane = cameraToSetTo.mFarClipPlane;
 		}
 
-    public void SetLookAtRotationMatrix(Vector3 LookAtPoint)
-    {
-        SetLookAtRotationMatrix(LookAtPoint, new Vector3(0, 1, 0));
-    }
 
-    public void SetLookAtRotationMatrix(Vector3 LookAtPoint, Vector3 upDirection)
-    {
-        Matrix newMatrix = Matrix.Invert(
-                Matrix.CreateLookAt(
-                    Position,
-                    LookAtPoint,
-                    upDirection));
-
-        // Kill the translation
-        newMatrix.M41 = 0;
-        newMatrix.M42 = 0;
-        newMatrix.M43 = 0;
-        // leave M44 to 1
-
-        RotationMatrix = newMatrix;
-
-
-    }
-
-    public void SetDeviceViewAndProjection(BasicEffect effect, bool relativeToCamera)
-    {
-        // Set up our view matrix. A view matrix can be defined given an eye point,
-        // a point to lookat, and a direction for which way is up. 
-        effect.View = GetLookAtMatrix(relativeToCamera);
-        effect.Projection = GetProjectionMatrix();
-    }
-
-
-
-    public void SetDeviceViewAndProjection(GenericEffect effect, bool relativeToCamera)
-    {
-        // Set up our view matrix. A view matrix can be defined given an eye point,
-        // a point to lookat, and a direction for which way is up. 
-        var lookAtMatrix = GetLookAtMatrix(relativeToCamera);
-#if DEBUG
-        if(float.IsNaN(lookAtMatrix.M11) ||
-            float.IsNaN(lookAtMatrix.M12) ||
-            float.IsNaN(lookAtMatrix.M13) ||
-            float.IsNaN(lookAtMatrix.M14) ||
-            float.IsNaN(lookAtMatrix.M21) ||
-            float.IsNaN(lookAtMatrix.M22) ||
-            float.IsNaN(lookAtMatrix.M23) ||
-            float.IsNaN(lookAtMatrix.M24) ||
-            float.IsNaN(lookAtMatrix.M31) ||
-            float.IsNaN(lookAtMatrix.M32) ||
-            float.IsNaN(lookAtMatrix.M33) ||
-            float.IsNaN(lookAtMatrix.M34) ||
-            float.IsNaN(lookAtMatrix.M41) ||
-            float.IsNaN(lookAtMatrix.M42) ||
-            float.IsNaN(lookAtMatrix.M43) ||
-            float.IsNaN(lookAtMatrix.M44))
-        {
-            var message = "The Camera's LookAtMatrix contains NaN values, so it cannot be used in rendering";
-
-            const string upBehind =
-                " The Camera's Up vector is pointing directly behind it. For a 3D camera, change the UpVector to the desired up direction";
-            const string upInFront =
-                " The Camera's Up vector is pointing directly in front of it. For a 3D camera, change the UpVector to the desired up direction";
-
-            if (this.RotationMatrix.Backward == UpVector)
-            {
-                message += upBehind;
-            }
-            else if (this.RotationMatrix.Forward == UpVector)
-            {
-                message += upInFront ;
-            }
-            else
-            {
-                // they could be really close
-                var dot = Vector3.Dot(this.RotationMatrix.Forward, UpVector);
-
-                if(dot > .999f)
-                {
-                    message += upBehind;
-                }
-                else if(dot <.999f)
-                {
-                    message += upInFront;
-                }
-            }
-
-
-
-            throw new Exception(message);
-        }
-#endif
-        effect.View = lookAtMatrix;
-
-
-        var projectionMatrix = GetProjectionMatrix();
-#if DEBUG
-        if (float.IsNaN(projectionMatrix.M11) ||
-            float.IsNaN(projectionMatrix.M12) ||
-            float.IsNaN(projectionMatrix.M13) ||
-            float.IsNaN(projectionMatrix.M14) ||
-            float.IsNaN(projectionMatrix.M21) ||
-            float.IsNaN(projectionMatrix.M22) ||
-            float.IsNaN(projectionMatrix.M23) ||
-            float.IsNaN(projectionMatrix.M24) ||
-            float.IsNaN(projectionMatrix.M31) ||
-            float.IsNaN(projectionMatrix.M32) ||
-            float.IsNaN(projectionMatrix.M33) ||
-            float.IsNaN(projectionMatrix.M34) ||
-            float.IsNaN(projectionMatrix.M41) ||
-            float.IsNaN(projectionMatrix.M42) ||
-            float.IsNaN(projectionMatrix.M43) ||
-            float.IsNaN(projectionMatrix.M44))
-        {
-            throw new Exception("The Camera's projectoin matrix contains NaN values, so it cannot be used in rendering");
-        }
-#endif
-        effect.Projection = projectionMatrix;
-
-
-    }
-
-    public void SetDeviceViewAndProjection(Effect effect, bool relativeToCamera)
-    {
-        //TimeManager.SumTimeSection("Start of SetDeviceViewAndProjection");
-
-        #region Create the matrices
-        // Get view, projection, and viewproj values
-        Matrix view = (relativeToCamera)? mViewRelative : mView;
-        Matrix viewProj;
-        Matrix.Multiply(ref view, ref mProjection, out viewProj);
-        #endregion
-
-        if (effect is AlphaTestEffect)
-        {
-            AlphaTestEffect asAlphaTestEffect = effect as AlphaTestEffect;
-
-            asAlphaTestEffect.View = view;
-            asAlphaTestEffect.Projection = mProjection;
-
-        }
-        else
-        {
-            //TimeManager.SumTimeSection("Create the matrices");
-
-            //EffectParameterBlock block = new EffectParameterBlock(effect);
-
-            #region Get all valid parameters
-            EffectParameter paramNameViewProj = effect.Parameters["ViewProj"];
-            EffectParameter paramNameView = effect.Parameters["View"];
-            EffectParameter paramNameProjection = effect.Parameters["Projection"];
-
-            //EffectParameter paramSemViewProj = effect.Parameters.GetParameterBySemantic("VIEWPROJ");
-            //EffectParameter paramSemView = effect.Parameters.GetParameterBySemantic("VIEW");
-            //EffectParameter paramSemProjection = effect.Parameters.GetParameterBySemantic("PROJECTION");
-            #endregion
-
-            //TimeManager.SumTimeSection("Get all valid parameters");
-
-            #region Set all available parameters
-
-            //if (paramNameProjection != null || paramNameView != null ||
-            //    paramNameViewProj != null || paramSemProjection != null ||
-            //    paramSemView != null || paramSemViewProj != null)
-            //{
-            //block.Begin();
-
-            if (paramNameView != null) paramNameView.SetValue(view);
-            //if (paramSemView != null) paramSemView.SetValue(view);
-            if (paramNameProjection != null) paramNameProjection.SetValue(mProjection);
-            //if (paramSemProjection != null) paramSemProjection.SetValue(mProjection);
-            if (paramNameViewProj != null) paramNameViewProj.SetValue(viewProj);
-            //if (paramSemViewProj != null) paramSemViewProj.SetValue(viewProj);
-
-            //block.End();
-            //block.Apply();
-            //}
-
-            #endregion
-
-            //TimeManager.SumTimeSection("Set available parameters");
-        }
-    }
-
-    public override void TimedActivity(float secondDifference, double secondDifferenceSquaredDividedByTwo, float secondsPassedLastFrame)
-    {
-        base.TimedActivity(secondDifference, secondDifferenceSquaredDividedByTwo, secondsPassedLastFrame);
-
-        // This will be done both in UpdateDependencies as well as here
-        X = System.Math.Min(X, mMaximumX);
-        X = System.Math.Max(X, mMinimumX);
-        Y = System.Math.Min(Y, mMaximumY);
-        Y = System.Math.Max(Y, mMinimumY);
-
-        if (!double.IsNaN(this.mBaseMaximumX))
-        {
-            CalculateMaxAndMins();
-        }
-
-        #region update the destination rectangle (for viewport)
-        if (mTopDestinationVelocity != 0f || mBottomDestinationVelocity != 0f ||
-            mLeftDestinationVelocity != 0f || mRightDestinationVelocity != 0f)
-        {
-            mTopDestination += mTopDestinationVelocity * TimeManager.SecondDifference;
-            mBottomDestination += mBottomDestinationVelocity * TimeManager.SecondDifference;
-            mLeftDestination += mLeftDestinationVelocity * TimeManager.SecondDifference;
-            mRightDestination += mRightDestinationVelocity * TimeManager.SecondDifference;
-
-            UpdateDestinationRectangle();
-            FixAspectRatioYConstant();
-        }
-        #endregion
-        
-    }
-
-
-    public override void UpdateDependencies(double currentTime)
-    {
-        base.UpdateDependencies(currentTime);
-
-        // This will be done both in TimedUpdate as well as here
-        X = System.Math.Min(X, mMaximumX);
-        X = System.Math.Max(X, mMinimumX);
-        Y = System.Math.Min(Y, mMaximumY);
-        Y = System.Math.Max(Y, mMinimumY);
-
-        if (!double.IsNaN(this.mBaseMaximumX))
-        {
-            CalculateMaxAndMins();
-        }
-
-        // I'm not sure if this is the proper fix but on WP7 it prevents
-        // tile maps from rendering improperly when scrolling.
-        if (ShiftsHalfUnitForRendering && this.Parent != null)
-        {
-            Position.X = (int)Position.X + .25f;
-            Position.Y = (int)Position.Y - .25f;
-        }
-
-        // This should happen AFTER mins and maxes are set
-        UpdateViewProjectionMatrix(true);
-
-    }
-
-
-    public void UpdateViewProjectionMatrix()
-    {
-        UpdateViewProjectionMatrix(false);
-    }
-
-    public void UpdateViewProjectionMatrix(bool updateFrustum)
-    {
-        mView = GetLookAtMatrix(false);
-        mViewRelative = GetLookAtMatrix(true);
-			mProjection = GetProjectionMatrix();
-
-        if (updateFrustum)
-        {
-            Matrix.Multiply(ref mView, ref mProjection, out mViewProjection);
-            mBoundingFrustum.Matrix = (mViewProjection);
-        }
-    }
 
     /// <summary>
     /// Sets the camera to be 2D (far-away things do not get smaller) by
@@ -1817,9 +1998,7 @@ public partial class Camera : PositionedObject
         }
 
     }
-    #endregion
 
-    #region Internal Methods
 
     //internal void FlushLayers()
     //{
@@ -1869,9 +2048,6 @@ public partial class Camera : PositionedObject
         if (mUsesSplitScreenViewport) SetSplitScreenViewport(splitScreenViewport);
     }
 
-    #endregion
-
-    #region Private Methods
 
     #region XML Docs
     /// <summary>
@@ -1892,13 +2068,13 @@ public partial class Camera : PositionedObject
             mMinimumY = mBaseMinimumY + mOrthogonalHeight / 2.0f;
             mMaximumY = mBaseMaximumY - mOrthogonalHeight / 2.0f;
         }
-        else
+        else if (mBaseZ != null)
         {
-            mMinimumX = mBaseMinimumX + mXEdge * (mBaseZ - Z) / (100f * MathFunctions.ForwardVector3.Z);
-            mMaximumX = mBaseMaximumX - mXEdge * (mBaseZ - Z) / (100f * MathFunctions.ForwardVector3.Z);
+            mMinimumX = mBaseMinimumX + mXEdge * (mBaseZ.Value - Z) / (100f * MathFunctions.ForwardVector3.Z);
+            mMaximumX = mBaseMaximumX - mXEdge * (mBaseZ.Value - Z) / (100f * MathFunctions.ForwardVector3.Z);
 
-            mMinimumY = mBaseMinimumY + mYEdge * (mBaseZ - Z) / (100f * MathFunctions.ForwardVector3.Z);
-            mMaximumY = mBaseMaximumY - mYEdge * (mBaseZ - Z) / (100f * MathFunctions.ForwardVector3.Z);
+            mMinimumY = mBaseMinimumY + mYEdge * (mBaseZ.Value - Z) / (100f * MathFunctions.ForwardVector3.Z);
+            mMaximumY = mBaseMaximumY - mYEdge * (mBaseZ.Value - Z) / (100f * MathFunctions.ForwardVector3.Z);
         }
     }
 
@@ -1928,26 +2104,7 @@ public partial class Camera : PositionedObject
             (int)(mBottomDestination - mTopDestination));
 
         FixAspectRatioYConstant();
-
-
-#if SUPPORTS_POST_PROCESSING
-        // Update post-processing buffers
-        if (Renderer.UseRenderTargets && PostProcessingManager.IsInitialized)
-        {
-            foreach (PostProcessingEffectBase effect in PostProcessing.EffectCombineOrder)
-            {
-                effect.UpdateToScreenSize();
-            }
-        }
-#endif
     }
-
-    #endregion
-
-    #region Protected Methods
-
-
-    #endregion
 
 
 
@@ -2362,220 +2519,42 @@ public partial class Camera : PositionedObject
             (float)distance * 2);
     }
 
-    public float GetZDistanceForPixelPerfect()
+
+    #region Obsolete Methods
+
+
+    [Obsolete]
+    public void SetRelativeYEdgeAt(float zDistance, float verticalDistance)
     {
-        double sin = System.Math.Sin(FieldOfView / 2.0);
-        double cos = System.Math.Cos(FieldOfView / 2.0f);
-
-
-        double edgeToEdge = 2 * sin;
-        float desiredHeight = this.DestinationRectangle.Height;
-
-        double distance = cos * desiredHeight / edgeToEdge;
-        return (float)distance;
+        FieldOfView = (float)(2 * System.Math.Atan((double)((.5 * verticalDistance) / zDistance)));
     }
 
-
-    public float WorldXAt(float screenX, float zPosition)
+    [Obsolete]
+    public float GetRequiredAspectRatio(float desiredYEdge, float zValue)
     {
-        return WorldXAt(screenX, zPosition, this.Orthogonal, this.OrthogonalWidth);
+        float modifiedDesiredYEdge = 100 * desiredYEdge / (Position.Z - zValue);
+        return (float)System.Math.Atan(modifiedDesiredYEdge / 100) * 2;
     }
 
-    public float WorldXAt(float screenX, float zPosition, Layer layer)
+    [Obsolete("Use Sprite.IsBillboarded = true")]
+    /// <summary>
+    /// Supplied sprites are billboarded using the camera's RotationMatrix.
+    /// Only the main Camera can billboard sprites.
+    /// </summary>
+    public void AddSpriteToBillboard(Sprite sprite)
     {
-        if (layer == null || layer.LayerCameraSettings == null)
+        // This only works on the main camera. Multi-camera games must implement their
+        // own solutions:
+#if DEBUG
+        if(this != Camera.Main)
         {
-            return WorldXAt(screenX, zPosition, this.Orthogonal, this.OrthogonalWidth);
+            throw new InvalidOperationException("Sprites can only be billboarded on the main camera");
         }
-        else
-        {
-            LayerCameraSettings lcs = layer.LayerCameraSettings;
 
-            Camera cameraToUse = layer.CameraBelongingTo;
-
-            if (cameraToUse == null)
-            {
-                cameraToUse = this;
-            }
-
-            // If the orthogonal resolution per destination width/height
-            // of the layer matches the Camera's orthogonal per destination, then
-            // we can just use the camera.  This is the most common case so we'll just
-            // use that.
-            float destinationLeft = cameraToUse.DestinationRectangle.Left;
-            float destinationRight = cameraToUse.DestinationRectangle.Right;
-
-
-            float destinationWidth = destinationRight - destinationLeft;
-
-            float horizontalPercentage = (screenX - destinationLeft) / (float)destinationWidth;
-
-            float orthogonalWidthToUse = cameraToUse.OrthogonalWidth;
-
-            var useLayerOrtho = lcs.Orthogonal && !cameraToUse.Orthogonal;
-
-            if (useLayerOrtho)
-            {
-                orthogonalWidthToUse = lcs.OrthogonalWidth;
-            }
-
-            // used for adjusting the ortho width/height if the Layer is zoomed
-            float layerMultiplier = 1;
-            float bottomDestination = lcs.BottomDestination;
-            float topDestination = lcs.TopDestination;
-            if (bottomDestination == -1 || topDestination == -1)
-            {
-                bottomDestination = cameraToUse.BottomDestination;
-                topDestination = cameraToUse.TopDestination;
-            }
-
-            // Make sure the destinations aren't equal or else we'd divide by 0
-            if (lcs.Orthogonal && bottomDestination != topDestination)
-            {
-                layerMultiplier = lcs.OrthogonalHeight / (float)(bottomDestination - topDestination);
-            }
-
-            float cameraMultiplier = 1;
-            // Make sure the destinations aren't equal or else we'd divide by 0
-            if (cameraToUse.Orthogonal && cameraToUse.BottomDestination != cameraToUse.TopDestination)
-            {
-                cameraMultiplier = cameraToUse.OrthogonalHeight / (float)(cameraToUse.BottomDestination - cameraToUse.TopDestination);
-            }
-            layerMultiplier /= cameraMultiplier;
-
-            if (!useLayerOrtho)
-            {
-                orthogonalWidthToUse *= layerMultiplier;
-            }
-
-            // I think we want to use the Camera's orthogonalWidth if it's orthogonal
-            //return GetWorldXGivenHorizontalPercentage(zPosition, cameraToUse, lcs.Orthogonal, lcs.OrthogonalWidth, horizontalPercentage);
-            return GetWorldXGivenHorizontalPercentage(zPosition, lcs.Orthogonal, orthogonalWidthToUse, horizontalPercentage);
-        }
+#endif
+        //this.mSpritesToBillBoard.Add(sprite);
+        sprite.IsBillboarded = true;
     }
 
-    public float WorldXAt(float screenX, float zPosition, bool overridingOrthogonal, float overridingOrthogonalWidth)
-    {
-        float screenRelativeX = screenX;
-        return WorldXAt(zPosition, overridingOrthogonal, overridingOrthogonalWidth, screenRelativeX);
-    }
-
-    public float WorldXAt(float zPosition, bool overridingOrthogonal, float overridingOrthogonalWidth, float screenX)
-    {
-
-        float horizontalPercentage = (screenX - this.DestinationRectangle.Left) / (float)this.DestinationRectangle.Width;
-
-        return GetWorldXGivenHorizontalPercentage(zPosition, overridingOrthogonal, overridingOrthogonalWidth, horizontalPercentage);
-    }
-
-    private float GetWorldXGivenHorizontalPercentage(float zPosition, bool overridingOrthogonal, float overridingOrthogonalWidth, float horizontalPercentage)
-    {
-        if (!overridingOrthogonal)
-        {
-            float absoluteLeft = this.AbsoluteLeftXEdgeAt(zPosition);
-            float width = this.RelativeXEdgeAt(zPosition) * 2;
-            return absoluteLeft + width * horizontalPercentage;
-        }
-        else
-        {
-            float xDistanceFromEdge = horizontalPercentage * overridingOrthogonalWidth;
-            return (this.X + -overridingOrthogonalWidth / 2.0f + xDistanceFromEdge);
-        }
-    }
-
-
-    public float WorldYAt(float screenY, float zPosition)
-    {
-        return WorldYAt(screenY, zPosition, this.Orthogonal, this.OrthogonalHeight);
-    }
-
-    public float WorldYAt(float screenY, float zPosition, Layer layer)
-    {
-        if (layer == null || layer.LayerCameraSettings == null)
-        {
-            return WorldYAt(screenY, zPosition, this.Orthogonal, this.OrthogonalHeight);
-        }
-        else
-        {
-            LayerCameraSettings lcs = layer.LayerCameraSettings;
-
-            Camera cameraToUse = layer.CameraBelongingTo;
-
-            if (cameraToUse == null)
-            {
-                cameraToUse = this;
-            }
-
-
-            // If the orthogonal resolution per destination width/height
-            // of the layer matches the Camera's orthogonal per destination, then
-            // we can just use the camera.  This is the most common case so we'll just
-            // use that.
-            //return WorldYAt(zPosition, cameraToUse, lcs.Orthogonal, lcs.OrthogonalHeight);
-            // If we have a 2D layer ona 3D camera, then we shouldn't use the Camera's orthogonal values
-            float orthogonalHeightToUse = cameraToUse.OrthogonalHeight;
-
-            // multiplier is used if the orghogonal height of the layer doesn't match the orthogonal height of the 
-            // camera. But if we're going to pass the ortho height of the layer, then the multiplier should be 1
-
-            var usedLayerOrtho = lcs.Orthogonal && !cameraToUse.Orthogonal;
-
-            if (usedLayerOrtho)
-            {
-                orthogonalHeightToUse = lcs.OrthogonalHeight;
-            }
-
-            float layerMultiplier = 1;
-            float bottomDestination = lcs.BottomDestination;
-            float topDestination = lcs.TopDestination;
-            if (bottomDestination == -1 || topDestination == -1)
-            {
-                bottomDestination = cameraToUse.BottomDestination;
-                topDestination = cameraToUse.TopDestination;
-            }
-
-            if (lcs.Orthogonal && bottomDestination != topDestination)
-            {
-                layerMultiplier = lcs.OrthogonalHeight / (float)(bottomDestination - topDestination);
-            }
-
-            float cameraMultiplier = 1;
-            if (cameraToUse.Orthogonal && cameraToUse.BottomDestination != cameraToUse.TopDestination)
-            {
-                cameraMultiplier = cameraToUse.OrthogonalHeight / (float)(cameraToUse.BottomDestination - cameraToUse.TopDestination);
-            }
-            layerMultiplier /= cameraMultiplier;
-
-            if (!usedLayerOrtho)
-            {
-                orthogonalHeightToUse *= layerMultiplier;
-            }
-
-            return WorldYAt(screenY, zPosition, lcs.Orthogonal, orthogonalHeightToUse);
-        }
-    }
-
-    public float WorldYAt(float screenY, float zPosition, bool overridingOrthogonal, float overridingOrthogonalHeight)
-    {
-        float screenRelativeY = screenY;
-
-        return WorldYAt(zPosition, overridingOrthogonal, overridingOrthogonalHeight, screenRelativeY);
-    }
-
-    public float WorldYAt(float zPosition, bool orthogonal, float orthogonalHeight, float screenY)
-    {
-        float verticalPercentage = (screenY - this.DestinationRectangle.Top) / (float)this.DestinationRectangle.Height;
-
-        if (!orthogonal)
-        {
-            float absoluteTop = this.AbsoluteTopYEdgeAt(zPosition);
-            float height = this.RelativeYEdgeAt(zPosition) * 2;
-            return absoluteTop - height * verticalPercentage;
-        }
-        else
-        {
-            float yDistanceFromEdge = verticalPercentage * orthogonalHeight;
-            return (this.Y + orthogonalHeight / 2.0f - yDistanceFromEdge);
-        }
-    }
+    #endregion
 }
