@@ -222,6 +222,7 @@ namespace FlatRedBall.Input
             set { mReceivingInputJustSet = value; }
         }
 
+        // January 11 2025 - what does this even do? Can we mark it as obsolete?
         public static bool BackPressed { get; internal set; }
         #endregion
 

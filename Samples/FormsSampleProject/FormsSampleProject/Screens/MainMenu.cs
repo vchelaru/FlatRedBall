@@ -125,11 +125,6 @@ namespace FormsSampleProject.Screens
             }
 
 
-
-            
-
-
-
             menu.Items.Add(fileMenuItem);
 
             var edit = new MenuItem { Header = "Edit" };
@@ -144,8 +139,8 @@ namespace FormsSampleProject.Screens
             menu.Items.Add(about);
 
             // uncomment these 2 lines of code to enable gamepad support for the UI
-            //GuiManager.GamePadsForUiControl.Add(InputManager.Xbox360GamePads[0]);
-            //Forms.ButtonStandardInstance.IsFocused = true;
+            GuiManager.GamePadsForUiControl.Add(InputManager.Xbox360GamePads[0]);
+            Forms.ButtonStandardInstance.IsFocused = true;
         }
 
         private async void HandleShowDialogButtonClicked(object sender, EventArgs e)
