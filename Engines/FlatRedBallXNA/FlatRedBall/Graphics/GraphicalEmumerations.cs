@@ -66,12 +66,6 @@ namespace FlatRedBall.Graphics
     }
 
 
-    public enum CameraModelCullMode
-    {
-        Frustum,
-        None
-    }
-
     public enum CameraCullMode
     {
         UnrotatedDownZ,

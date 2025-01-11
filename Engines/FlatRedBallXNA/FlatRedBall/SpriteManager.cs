@@ -300,14 +300,8 @@ namespace FlatRedBall
 
         public static ReadOnlyCollection<Sprite> ManuallyUpdatedSprites => mManuallyUpdatedSpritesReadOnly;
 
-        /// <summary>
-        /// Gets the default Camera.
-        /// </summary>
-        /// <remarks>
-        /// If your application is only using one Camera, then this Camera can be
-        /// used for all logic.  This Camera is automatically created by the engine,
-        /// so single-camera applications do not need to instantiate their own Camera.
-        /// </remarks>
+
+        [Obsolete("Use Camera.Main")]
         static public Camera Camera
         {
             get
@@ -2454,7 +2448,11 @@ namespace FlatRedBall
             }
         }
 
-
+        /// <summary>
+        /// Removes the argument list from the internal Layer list. This method does
+        /// not remove the Layer from any Cameras that may reference it.
+        /// </summary>
+        /// <param name="layerToRemove">The Layer to remove.</param>
         public static void RemoveLayer(Layer layerToRemove)
         {
             // This seems bad - why do we do this?
@@ -2476,12 +2474,10 @@ namespace FlatRedBall
             objectToRemove.RemoveSelfFromListsBelongingTo();
         }
 
-        #region XML Docs
         /// <summary>
         /// Removes the argument DrawableBatch from the internal list and calls its Destroy method.
         /// </summary>
         /// <param name="drawableBatch">The DrawableBatch to remove.</param>
-        #endregion
         public static void RemoveDrawableBatch(IDrawableBatch drawableBatch)
         {
             drawableBatch.Destroy();
