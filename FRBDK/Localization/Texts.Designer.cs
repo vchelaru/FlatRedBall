@@ -61,15 +61,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Bookmark.
-        /// </summary>
-        public static string Bookmark {
-            get {
-                return ResourceManager.GetString("Bookmark", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
         public static string Browse {
@@ -3338,15 +3329,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In Game.
-        /// </summary>
-        public static string InGame {
-            get {
-                return ResourceManager.GetString("InGame", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to In Game Project.
         /// </summary>
         public static string InGameProject {
@@ -3568,15 +3550,6 @@ namespace Localization {
         public static string JumpSpeed {
             get {
                 return ResourceManager.GetString("JumpSpeed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Keep Playing After Leaving Screen.
-        /// </summary>
-        public static string KeepPlayingSoundAfterLeaving {
-            get {
-                return ResourceManager.GetString("KeepPlayingSoundAfterLeaving", resourceCulture);
             }
         }
         
@@ -3820,15 +3793,6 @@ namespace Localization {
         public static string Location {
             get {
                 return ResourceManager.GetString("Location", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loop Song.
-        /// </summary>
-        public static string LoopSong {
-            get {
-                return ResourceManager.GetString("LoopSong", resourceCulture);
             }
         }
         
@@ -4648,15 +4612,6 @@ namespace Localization {
         public static string PlatformsExcluded {
             get {
                 return ResourceManager.GetString("PlatformsExcluded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Play Song.
-        /// </summary>
-        public static string PlaySong {
-            get {
-                return ResourceManager.GetString("PlaySong", resourceCulture);
             }
         }
         
@@ -5800,15 +5755,6 @@ namespace Localization {
         public static string SetVariableByDerived {
             get {
                 return ResourceManager.GetString("SetVariableByDerived", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Set Volume.
-        /// </summary>
-        public static string SetVolume {
-            get {
-                return ResourceManager.GetString("SetVolume", resourceCulture);
             }
         }
         

@@ -641,7 +641,7 @@ public static class RightClickHelper
         if(menuShowingAction == MenuShowingAction.RegularRightClick)
         {
             AddSeparator();
-            Add(L.Texts.Bookmark, () => PluginManager.CallPluginMethod("Tree View Plugin", "AddBookmark", targetNode), image: BookmarkImage);
+            Add("Bookmark", () => PluginManager.CallPluginMethod("Tree View Plugin", "AddBookmark", targetNode), image: BookmarkImage);
         }
 
         #endregion

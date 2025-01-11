@@ -1395,21 +1395,6 @@
   <data name="EntityAddDescription" xml:space="preserve">
     <value>Entitäten repräsentieren Spielobjekte wie den Spieler, Feinde, Kugeln und Pick-ups.</value>
   </data>
-  <data name="InGame" xml:space="preserve">
-    <value>Im Spiel</value>
-  </data>
-  <data name="PlaySong" xml:space="preserve">
-    <value>Lied abspielen</value>
-  </data>
-  <data name="LoopSong" xml:space="preserve">
-    <value>Loop-Song</value>
-  </data>
-  <data name="SetVolume" xml:space="preserve">
-    <value>Lautstärke einstellen</value>
-  </data>
-  <data name="KeepPlayingSoundAfterLeaving" xml:space="preserve">
-    <value>Spielen Sie weiter, nachdem Sie den Bildschirm verlassen haben</value>
-  </data>
   <data name="Preview" xml:space="preserve">
     <value>Vorschau</value>
   </data>
@@ -2147,9 +2132,6 @@
   </data>
   <data name="CreatedClass" xml:space="preserve">
     <value>Erstellte Klasse festlegen</value>
-  </data>
-  <data name="Bookmark" xml:space="preserve">
-    <value>Lesezeichen</value>
   </data>
   <data name="FolderRename" xml:space="preserve">
     <value>Ordner umbenennen</value>

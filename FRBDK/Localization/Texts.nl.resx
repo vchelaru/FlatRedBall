@@ -1395,21 +1395,6 @@
   <data name="EntityAddDescription" xml:space="preserve">
     <value>Entiteiten vertegenwoordigen spelobjecten zoals de speler, vijanden, kogels en pick-ups.</value>
   </data>
-  <data name="InGame" xml:space="preserve">
-    <value>In spel</value>
-  </data>
-  <data name="PlaySong" xml:space="preserve">
-    <value>Speel liedje</value>
-  </data>
-  <data name="LoopSong" xml:space="preserve">
-    <value>Loop muzieknummer</value>
-  </data>
-  <data name="SetVolume" xml:space="preserve">
-    <value>Volume instellen</value>
-  </data>
-  <data name="KeepPlayingSoundAfterLeaving" xml:space="preserve">
-    <value>Blijf spelen nadat je het scherm hebt verlaten</value>
-  </data>
   <data name="Preview" xml:space="preserve">
     <value>Preview</value>
   </data>
@@ -2150,9 +2135,6 @@
   </data>
   <data name="CreatedClass" xml:space="preserve">
     <value>Stel de aangemaakte klasse in</value>
-  </data>
-  <data name="Bookmark" xml:space="preserve">
-    <value>Bladwijzer</value>
   </data>
   <data name="FolderRename" xml:space="preserve">
     <value>Hernoem map</value>

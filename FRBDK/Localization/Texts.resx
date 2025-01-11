@@ -1396,21 +1396,6 @@ for {1}?</value>
   <data name="EntityAddDescription" xml:space="preserve">
     <value>Entities represent game objects like the player, enemies, bullets, and pick-ups.</value>
   </data>
-  <data name="InGame" xml:space="preserve">
-    <value>In Game</value>
-  </data>
-  <data name="PlaySong" xml:space="preserve">
-    <value>Play Song</value>
-  </data>
-  <data name="LoopSong" xml:space="preserve">
-    <value>Loop Song</value>
-  </data>
-  <data name="SetVolume" xml:space="preserve">
-    <value>Set Volume</value>
-  </data>
-  <data name="KeepPlayingSoundAfterLeaving" xml:space="preserve">
-    <value>Keep Playing After Leaving Screen</value>
-  </data>
   <data name="Preview" xml:space="preserve">
     <value>Preview</value>
   </data>
@@ -2151,9 +2136,6 @@ for {1}?</value>
   </data>
   <data name="CreatedClass" xml:space="preserve">
     <value>Set Created Class</value>
-  </data>
-  <data name="Bookmark" xml:space="preserve">
-    <value>Bookmark</value>
   </data>
   <data name="FolderRename" xml:space="preserve">
     <value>Rename Folder</value>
