@@ -140,7 +140,18 @@ namespace Gum.Wireframe
                     // update January 8, 2025
                     // But if the user has put an explicit event on it, it should work okay:
                     //return false;
-                    return this.HasEvents;
+                    //return this.HasEvents;
+                    // Update January 12, 2025
+                    // Thsi change broke some projects
+                    // because the projects included Sprites,
+                    // or Containers which did not have any events
+                    // but now suddenly returned themselves for WindowOver
+                    // it turns out that containers specifically have their
+                    // Hasevents set to true, but they should not retur WindowOver
+                    // unless they have click events assigned to them otherwise they
+                    // steal input. This would break old projects, and it's worked this
+                    // way for a while, so we're going to continue with the old functionality.
+                    return false;
 
                 }
                 else
