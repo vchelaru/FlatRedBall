@@ -1,16 +1,19 @@
 ﻿using Gum.Wireframe;
-using GumCoreShared.FlatRedBall.Embedded;
+using Microsoft.Xna.Framework.Input;
+
+
 using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using ToolsUtilities;
+using System.Threading;
+
 
 #if FRB
 using FlatRedBall.Forms.GumExtensions;
@@ -58,9 +61,6 @@ public delegate void KeyEventHandler(object sender, KeyEventArgs e);
 #endregion
 
 public class FrameworkElement
-#if !FRB
-    : IFrameworkElement
-#endif
 {
     #region Fields/Properties
 
@@ -74,6 +74,22 @@ public class FrameworkElement
     public List<Input.GamePad> GamePadsForUiControl { get; private set; } = new List<Input.GamePad>();
 
 #endif
+
+#if !FRB
+
+    /// <summary>
+    /// Container used to hold popups such as the ListBox which appears when clicking on a combo box.
+    /// </summary>
+    public static InteractiveGue PopupRoot { get; set; }
+
+    /// <summary>
+    /// Container used to hold modal objects. If any object is added to this container, then all other
+    /// UI does not receive events.
+    /// </summary>
+    public static InteractiveGue ModalRoot { get; set; }
+
+#endif
+
 
     protected bool isFocused;
     protected double timeFocused;
@@ -150,6 +166,15 @@ public class FrameworkElement
     /// </summary>
     public float ActualWidth => Visual.GetAbsoluteWidth();
 
+    /// <summary>
+    /// Returns the left of this element in absolute (screen) coordinates
+    /// </summary>
+    public float AbsoluteLeft => Visual.AbsoluteLeft;
+    /// <summary>
+    /// Returns the top of this element in absolute (screen) coordinates
+    /// </summary>
+    public float AbsoluteTop => Visual.AbsoluteTop;
+
     public float Height
     {
         get { return Visual.Height; }
@@ -187,6 +212,7 @@ public class FrameworkElement
         }
     }
 
+#if FRB
     /// <summary>
     /// The X position of the left side of the element in pixels.
     /// </summary>
@@ -198,15 +224,7 @@ public class FrameworkElement
     /// </summary>
     [Obsolete("Use AbsoluteTop")]
     public float ActualY => Visual.GetTop();
-
-    /// <summary>
-    /// Returns the left of this element in absolute (screen) coordinates
-    /// </summary>
-    public float AbsoluteLeft => Visual.AbsoluteLeft;
-    /// <summary>
-    /// Returns the top of this element in absolute (screen) coordinates
-    /// </summary>
-    public float AbsoluteTop => Visual.AbsoluteTop;
+#endif
 
     public float X
     {
@@ -350,14 +368,27 @@ public class FrameworkElement
         return GetGraphicalUiElementForFrameworkElement(type);
     }
 
-    public static GraphicalUiElement GetGraphicalUiElementForFrameworkElement(Type type)
+    public static InteractiveGue GetGraphicalUiElementForFrameworkElement(Type type)
     {
         if (DefaultFormsComponents.ContainsKey(type))
         {
             var gumType = DefaultFormsComponents[type];
-            var gumConstructor = gumType.GetConstructor(new[] { typeof(bool), typeof(bool) });
+            // The bool/bool constructor is required to match the FlatRedBall.Forms functionality
+            // of being able to be Gum-first or forms-first. The 2nd bool in particular tells the runtime
+            // whether to create a forms object. Yes, this is less convenient for the user who is manually
+            // creating runtimes, but it's worth it for the standard behavior of the user creating instances
+            // of Gum objects, and to be able to create Forms objects in Gum tool
+            var boolBoolConstructor = gumType.GetConstructor(new[] { typeof(bool), typeof(bool) });
+            if (boolBoolConstructor != null)
+            {
+                return boolBoolConstructor.Invoke(new object[] { true, false }) as InteractiveGue;
+            }
+            else
+            {
+                throw new Exception($"The Runtime type {gumType} needs to have a two-argument constructor, both bools, where" +
+                    " the second argument controls whether the object should internally create a Forms instance.");
+            }
 
-            return gumConstructor.Invoke(new object[] { true, false }) as GraphicalUiElement;
         }
         else
         {
@@ -438,12 +469,14 @@ public class FrameworkElement
 
     public void Close()
     {
+#if FRB
         if (!FlatRedBallServices.IsThreadPrimary())
         {
 
             InstructionManager.AddSafe(CloseInternal);
         }
         else
+#endif
         {
             CloseInternal();
         }
@@ -451,21 +484,21 @@ public class FrameworkElement
 
     private void CloseInternal()
     {
-        var inputReceiver = InputManager.InputReceiver;
-        if(inputReceiver != null)
+        var inputReceiver = InteractiveGue.CurrentInputReceiver;
+        if (inputReceiver != null)
         {
-            if(inputReceiver is GraphicalUiElement gue)
+            if (inputReceiver is InteractiveGue gue)
             {
-                if(gue.IsInParentChain(this.Visual))
+                if (gue.IsInParentChain(this.Visual))
                 {
-                    InputManager.InputReceiver = null;
+                    InteractiveGue.CurrentInputReceiver = null;
                 }
             }
-            else if(inputReceiver is FrameworkElement frameworkElement)
+            else if (inputReceiver is FrameworkElement frameworkElement)
             {
-                if(frameworkElement.Visual?.IsInParentChain(this.Visual) == true)
+                if (frameworkElement.Visual?.IsInParentChain(this.Visual) == true)
                 {
-                    InputManager.InputReceiver = null;
+                    InteractiveGue.CurrentInputReceiver = null;
                 }
             }
         }
@@ -502,6 +535,7 @@ public class FrameworkElement
 #endif
         }
 
+#if FRB
         if(!FlatRedBallServices.IsThreadPrimary())
         {
             InstructionManager.AddSafe(() =>
@@ -511,6 +545,7 @@ public class FrameworkElement
 
         }
         else
+#endif
         {
             Visual.AddToManagers(RenderingLibrary.SystemManagers.Default, gumLayer);
         }
@@ -571,9 +606,6 @@ public class FrameworkElement
         var cameraBottom = Renderer.Self.Camera.ClientHeight / Renderer.Self.Camera.Zoom;
         //var cameraLeft = 0;
         var cameraRight = Renderer.Self.Camera.ClientWidth / Renderer.Self.Camera.Zoom;
-
-        //var amountXToShift = 0;
-        //var amountYToShift = 0;
 
         var thisBottom = this.Visual.AbsoluteY + this.Visual.GetAbsoluteHeight();
         if (thisBottom > cameraBottom)
@@ -770,6 +802,7 @@ public class FrameworkElement
         }
     }
 
+#if FRB
     protected void HandleGamepadNavigation(GenericGamePad gamepad)
     {
         AnalogStick leftStick = gamepad.AnalogSticks.Length > 0
@@ -791,7 +824,6 @@ public class FrameworkElement
             this.HandleTab(TabDirection.Up, this);
         }
     }
-
     protected void HandleInputDeviceNavigation(IInputDevice inputDevice)
     {
         var wasUpPressed = inputDevice.DefaultUpPressable.WasJustPressedOrRepeated ||
@@ -809,6 +841,7 @@ public class FrameworkElement
             this.HandleTab(TabDirection.Up, this);
         }
     }
+#endif
 
     /// <summary>
     /// Shifts focus to the next or previous element in the tab depending on the tabDirection argument.
@@ -884,7 +917,7 @@ public class FrameworkElement
             {
                 for (int i = 0; i < children.Count; i++)
                 {
-                    var childElement = children[i] as GraphicalUiElement;
+                    var childElement = children[i];
 
                     if (childElement == requestingVisual)
                     {
@@ -922,7 +955,9 @@ public class FrameworkElement
                 var elementAtI = childAtI.FormsControlAsObject as FrameworkElement;
 
                 if(elementAtI is IInputReceiver && elementAtI.IsVisible && 
-                    elementAtI.IsEnabled && elementAtI.GamepadTabbingFocusBehavior == TabbingFocusBehavior.FocusableIfInputReceiver)
+                    elementAtI.IsEnabled &&
+                    elementAtI.Visual.HasEvents &&
+                    elementAtI.GamepadTabbingFocusBehavior == TabbingFocusBehavior.FocusableIfInputReceiver)
                 {
                     elementAtI.IsFocused = true;
 
