@@ -1218,6 +1218,7 @@ namespace Gum.Wireframe
                     else if (value is decimal asDecimal) convertedValue = asDecimal.ToString(format);
                     else if (value is float asFloat) convertedValue = asFloat.ToString(format);
                     else if (value is long asLong) convertedValue = asLong.ToString(format);
+                    else if (value is byte asByte) convertedValue = asByte.ToString(format);
                 }
                 else
                 {
@@ -1286,6 +1287,38 @@ namespace Gum.Wireframe
                 else if(value is string asString)
                 {
                     convertedValue = float.TryParse(asString, out float result) ? result : 0;
+                }
+            }
+            else if (desiredType == typeof(byte))
+            {
+                decimal numeric = 0;
+                bool isNumeric = false;
+                if(value is int asInt)
+                {
+                    numeric = (decimal)asInt;
+                    isNumeric = true;
+                }
+                else if(value is double asDouble)
+                {
+                    numeric = (decimal)asDouble;
+                    isNumeric = true;
+                }
+                else if (value is decimal asDecimal)
+                {
+                    numeric = asDecimal;
+                    isNumeric = true;
+                }
+                else if(value is float asFloat)
+                {
+                    numeric = (decimal)asFloat;
+                    isNumeric = true;
+                }
+
+                if(isNumeric)
+                {
+                    var clamped = Math.Min(numeric, 255);
+                    clamped = Math.Max(clamped, 0);
+                    convertedValue = (byte)Math.Round(clamped);
                 }
             }
             return convertedValue;
