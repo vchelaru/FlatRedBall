@@ -1550,6 +1550,28 @@ public partial class Camera : PositionedObject
         }
     }
 
+
+
+    /// <summary>
+    /// Sets the camera to be 2D (far-away things do not get smaller) by
+    /// setting Orthogonal to true and adjusts the OrthogonalWidth and OrthogonalHeight
+    /// to match the pixel resolution. In other words, this makes 1 unit in game match 1 pixel on screen.
+    /// </summary>
+    public void UsePixelCoordinates()
+    {
+        UsePixelCoordinates(false,
+            mDestinationRectangle.Width,
+            mDestinationRectangle.Height);
+    }
+
+    [Obsolete("Use parameterless method")]
+    public void UsePixelCoordinates(bool moveCornerToOrigin)
+    {
+        UsePixelCoordinates(moveCornerToOrigin,
+            mDestinationRectangle.Width,
+            mDestinationRectangle.Height);
+    }
+
     #endregion
 
     #region Destination rectangle / split screen settings
@@ -1879,26 +1901,6 @@ public partial class Camera : PositionedObject
 		}
 
 
-
-    /// <summary>
-    /// Sets the camera to be 2D (far-away things do not get smaller) by
-    /// setting Orthogonal to true and adjusts the OrthogonalWidth and OrthogonalHeight
-    /// to match the pixel resolution. In other words, this makes 1 unit in game match 1 pixel on screen.
-    /// </summary>
-    public void UsePixelCoordinates()
-    {
-        UsePixelCoordinates(false,
-            mDestinationRectangle.Width,
-            mDestinationRectangle.Height);
-    }
-
-    [Obsolete("Use parameterless method")]
-    public void UsePixelCoordinates(bool moveCornerToOrigin)
-    {
-        UsePixelCoordinates(moveCornerToOrigin,
-            mDestinationRectangle.Width,
-            mDestinationRectangle.Height);
-    }
 
 
     public void WorldToScreen(float x, float y, float z, out int screenX, out int screenY)
