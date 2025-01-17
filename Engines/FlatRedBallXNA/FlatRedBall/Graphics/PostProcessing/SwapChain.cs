@@ -92,7 +92,12 @@ namespace FlatRedBall.Graphics.PostProcessing
 
         public void RenderToScreen()
         {
-            FlatRedBallServices.GraphicsDevice.SetRenderTarget(null);
+            RenderTo(null);
+        }
+
+        public void RenderTo(RenderTarget2D renderTarget)
+        { 
+            FlatRedBallServices.GraphicsDevice.SetRenderTarget(renderTarget);
 
             // ...and draw the RenderTarget to the screen
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);

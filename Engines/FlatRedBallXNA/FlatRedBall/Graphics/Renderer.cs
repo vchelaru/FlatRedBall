@@ -614,9 +614,7 @@ public static class Renderer
                     Section.GetAndStartContextAndTime("Render camera " + cameraName);
                 }
 
-                PostProcessLogic.DrawWithPostProcessing(
-                    camera.PostProcesses, camera.SwapChain,
-                    () => DrawCamera(camera, section, RenderMode.Default));
+                DrawCamera(camera, section, RenderMode.Default);
                 //DrawCamera(camera, section, RenderMode.Default);
 
                 if (section != null)
@@ -648,8 +646,16 @@ public static class Renderer
 
     #region Camera and layers drawing
 
-    public static void DrawCamera(Camera camera, Section section, RenderMode renderMode = RenderMode.Default)
+    public static void DrawCamera(Camera camera, Section section = null, RenderMode renderMode = RenderMode.Default)
     {
+
+        PostProcessLogic.DrawWithPostProcessing(
+            camera.PostProcesses, camera.SwapChain,
+            () => DrawCameraInternal(camera, section, RenderMode.Default));
+    }
+
+    static void DrawCameraInternal(Camera camera, Section section, RenderMode renderMode)
+    { 
         if (section != null)
         {
             Section.GetAndStartContextAndTime("Start of camera draw");

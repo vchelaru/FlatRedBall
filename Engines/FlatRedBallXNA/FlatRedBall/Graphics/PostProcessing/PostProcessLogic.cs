@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FlatRedBall.Graphics.PostProcessing;
 
@@ -25,8 +26,13 @@ internal static class PostProcessLogic
             throw new InvalidOperationException("SwapChain must be set prior to rendering the first frame if using any post processing");
         }
 #endif
+        RenderTarget2D previousRenderTarget = null;
         if (hasGlobalPostProcessing)
         {
+            if (Renderer.GraphicsDevice.RenderTargetCount > 0)
+            {
+                previousRenderTarget = Renderer.GraphicsDevice.GetRenderTargets()[0].RenderTarget as RenderTarget2D;
+            }
             SetStatesAndRenderTargetForPostProcessing(swapChain);
         }
         else
@@ -39,11 +45,11 @@ internal static class PostProcessLogic
 
         if (hasGlobalPostProcessing)
         {
-            ApplyPostProcessing(postProcesses, swapChain);
+            ApplyPostProcessing(postProcesses, swapChain, previousRenderTarget);
         }
     }
 
-    static void ApplyPostProcessing(List<IPostProcess> postProcesses, SwapChain swapChain)
+    static void ApplyPostProcessing(List<IPostProcess> postProcesses, SwapChain swapChain, RenderTarget2D previousRenderTarget)
     {
         foreach (var postProcess in postProcesses)
         {
@@ -60,7 +66,7 @@ internal static class PostProcessLogic
 #if DEBUG
         Renderer.RenderBreaks.Add(new RenderBreak() { ObjectCausingBreak = swapChain });
 #endif
-        swapChain.RenderToScreen();
+        swapChain.RenderTo(previousRenderTarget);
     }
 
     static void SetStatesAndRenderTargetForPostProcessing(SwapChain swapChain)
