@@ -184,14 +184,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public void FixAllTypes()
         {
-            CurrentCulture ??= CultureInfo.InstalledUICulture.TwoLetterISOLanguageName switch
-            {
-                "fr" => new CultureInfo("fr-FR"),
-                "nl" => new CultureInfo("nl-NL"),
-                "de" => new CultureInfo("de-DE"),
-                _ => new CultureInfo("en-US")
-            };
-
             foreach (var property in Properties)
             {
                 FixAllTypes(property);

@@ -335,7 +335,34 @@ namespace FlatRedBall.Glue.SaveClasses
                     variableValue = newList;
                 }
             }
+            else if(type == "FloatRectangle?")
+            {
+                var wasAssigned = false;
+                if(variableValue is string asString)
+                {
+                    if(asString.StartsWith("(") & asString.EndsWith(")"))
+                    {
+                        asString = asString.Substring(1, asString.Length - 2);
+                    }
+                    var values = asString.Split(",");
 
+                    if(values.Length == 4)
+                    {
+                        if (float.TryParse(values[0], out float x) &&
+                            float.TryParse(values[1], out float y) &&
+                            float.TryParse(values[2], out float width) &&
+                            float.TryParse(values[3], out float height))
+                        {
+                            variableValue = new GlueSaveClasses.FloatRectangle(x, y, width, height);
+                            wasAssigned = true;
+                        }
+                    }
+                }
+                if(!wasAssigned)
+                {
+                    variableValue = null;
+                }
+            }
             return variableValue;
         }
 

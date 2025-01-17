@@ -187,7 +187,15 @@ namespace FlatRedBall.Glue.SaveClasses
 
             foreach(var property in instance.Properties)
             {
-                FixAllTypes(property);
+                // special case it:
+                if(property.Name == "DestinationRectangle" && property.Value is string asString)
+                {
+                    property.Value = CustomVariableExtensionMethods.FixValue(asString, "FloatRectangle?");
+
+                }
+                {
+                    FixAllTypes(property);
+                }
             }
 
             foreach (NamedObjectSave contained in instance.ContainedObjects)

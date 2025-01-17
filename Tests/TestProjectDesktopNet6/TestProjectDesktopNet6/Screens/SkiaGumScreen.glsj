@@ -1,0 +1,37 @@
+{
+  "Tags": [
+    "GLUE"
+  ],
+  "Source": "GLUE",
+  "BaseScreen": "",
+  "NextScreen": "Screens\\GumScreenNoGumIdbScreen",
+  "BaseElement": "",
+  "ReferencedFiles": [
+    {
+      "Name": "GumProject/Screens/SkiaGumScreenGum.gusx",
+      "IsSharedStatic": true,
+      "RuntimeType": "GlueTestProject.GumRuntimes.SkiaGumScreenGumRuntime",
+      "ProjectsToExcludeFrom": []
+    }
+  ],
+  "CustomVariables": [
+    {
+      "Properties": [
+        {
+          "Name": "Type",
+          "Value": "string",
+          "Type": "String"
+        },
+        {
+          "Name": "Category",
+          "Value": "Layer",
+          "Type": "String"
+        }
+      ],
+      "Name": "DefaultLayer",
+      "Category": "Layer"
+    }
+  ],
+  "Name": "Screens\\SkiaGumScreen",
+  "CustomClassesForExport": []
+}

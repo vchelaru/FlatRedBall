@@ -72,6 +72,11 @@
     <LinkType>ReferenceOriginal</LinkType>
   </ScreenReference>
   <ScreenReference>
+    <Name>SkiaGumScreenGum</Name>
+    <ElementType>Screen</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ScreenReference>
+  <ScreenReference>
     <Name>TestScreen</Name>
     <ElementType>Screen</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
@@ -338,6 +343,36 @@
   </StandardElementReference>
   <StandardElementReference>
     <Name>Text</Name>
+    <ElementType>Standard</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </StandardElementReference>
+  <StandardElementReference>
+    <Name>Arc</Name>
+    <ElementType>Standard</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </StandardElementReference>
+  <StandardElementReference>
+    <Name>Canvas</Name>
+    <ElementType>Standard</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </StandardElementReference>
+  <StandardElementReference>
+    <Name>ColoredCircle</Name>
+    <ElementType>Standard</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </StandardElementReference>
+  <StandardElementReference>
+    <Name>LottieAnimation</Name>
+    <ElementType>Standard</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </StandardElementReference>
+  <StandardElementReference>
+    <Name>RoundedRectangle</Name>
+    <ElementType>Standard</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </StandardElementReference>
+  <StandardElementReference>
+    <Name>Svg</Name>
     <ElementType>Standard</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
   </StandardElementReference>

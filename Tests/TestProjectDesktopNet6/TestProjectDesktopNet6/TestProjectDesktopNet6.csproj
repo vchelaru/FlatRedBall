@@ -746,6 +746,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ScreenLoadedAsGraphicalUiElement</Name>
     </None>
+    <None Include="Content\GumProject\Screens\SkiaGumScreenGum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>SkiaGumScreenGum</Name>
+    </None>
     <None Include="Content\GumProject\Screens\TestScreen.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TestScreen</Name>
@@ -758,9 +762,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TileShapeCollectionScreenGum</Name>
     </None>
+    <None Include="Content\GumProject\Standards\Arc.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Arc</Name>
+    </None>
+    <None Include="Content\GumProject\Standards\Canvas.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Canvas</Name>
+    </None>
     <None Include="Content\GumProject\Standards\Circle.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Circle</Name>
+    </None>
+    <None Include="Content\GumProject\Standards\ColoredCircle.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ColoredCircle</Name>
     </None>
     <None Include="Content\GumProject\Standards\ColoredRectangle.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -774,6 +790,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Container</Name>
     </None>
+    <None Include="Content\GumProject\Standards\LottieAnimation.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>LottieAnimation</Name>
+    </None>
     <None Include="Content\GumProject\Standards\NineSlice.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>NineSlice</Name>
@@ -785,6 +805,10 @@
     <None Include="Content\GumProject\Standards\Rectangle.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Rectangle</Name>
+    </None>
+    <None Include="Content\GumProject\Standards\RoundedRectangle.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>RoundedRectangle</Name>
     </None>
     <None Include="Content\GumProject\Standards\Sprite.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -825,6 +849,10 @@
     <None Include="Content\GumProject\Standards\StandardGraphics\Red_topRight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Red_topRight</Name>
+    </None>
+    <None Include="Content\GumProject\Standards\Svg.gutx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>Svg</Name>
     </None>
     <None Include="Content\GumProject\Standards\Text.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1895,6 +1923,7 @@
     <Compile Include="Forms\Screens\Level1GumForms.Generated.cs" />
     <Compile Include="Forms\Screens\RenderTargetScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\ScreenLoadedAsGraphicalUiElementForms.Generated.cs" />
+    <Compile Include="Forms\Screens\SkiaGumScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\TestScreenForms.Generated.cs" />
     <Compile Include="Forms\Screens\TestScreenUnusedForms.Generated.cs" />
     <Compile Include="Forms\Screens\TileShapeCollectionScreenGumForms.Generated.cs" />
@@ -1911,6 +1940,7 @@
     <Compile Include="GumRuntimes\AnimatedComponentRuntime.Generated.cs">
       <DependentUpon>AnimatedComponentRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\ArcRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\BaseGlueScreenNotBaseGumRuntime.cs" />
     <Compile Include="GumRuntimes\BaseGlueScreenNotBaseGumRuntime.Generated.cs">
       <DependentUpon>BaseGlueScreenNotBaseGumRuntime.cs</DependentUpon>
@@ -1928,11 +1958,13 @@
     <Compile Include="GumRuntimes\Behaviors\ITextBoxBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IToggleBehavior.Generated.cs" />
     <Compile Include="GumRuntimes\Behaviors\IUserControlBehavior.Generated.cs" />
+    <Compile Include="GumRuntimes\CanvasRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\ChildStateComponentRuntime.cs" />
     <Compile Include="GumRuntimes\ChildStateComponentRuntime.Generated.cs">
       <DependentUpon>ChildStateComponentRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\CircleRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\ColoredCircleRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\ColoredComponentWithColoredStatesRuntime.cs" />
     <Compile Include="GumRuntimes\ColoredComponentWithColoredStatesRuntime.Generated.cs">
       <DependentUpon>ColoredComponentWithColoredStatesRuntime.cs</DependentUpon>
@@ -2072,6 +2104,7 @@
     <Compile Include="GumRuntimes\Level1GumRuntime.Generated.cs">
       <DependentUpon>Level1GumRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\LottieAnimationRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.cs" />
     <Compile Include="GumRuntimes\NineSliceButtonRuntime.Generated.cs">
       <DependentUpon>NineSliceButtonRuntime.cs</DependentUpon>
@@ -2094,6 +2127,7 @@
     <Compile Include="GumRuntimes\RenderTargetScreenGumRuntime.Generated.cs">
       <DependentUpon>RenderTargetScreenGumRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\RoundedRectangleRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\SameNameComponentRuntime.cs" />
     <Compile Include="GumRuntimes\SameNameComponentRuntime.Generated.cs">
       <DependentUpon>SameNameComponentRuntime.cs</DependentUpon>
@@ -2101,6 +2135,10 @@
     <Compile Include="GumRuntimes\ScreenLoadedAsGraphicalUiElementRuntime.cs" />
     <Compile Include="GumRuntimes\ScreenLoadedAsGraphicalUiElementRuntime.Generated.cs">
       <DependentUpon>ScreenLoadedAsGraphicalUiElementRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\SkiaGumScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\SkiaGumScreenGumRuntime.Generated.cs">
+      <DependentUpon>SkiaGumScreenGumRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\SpriteInheritingComponntRuntime.cs" />
     <Compile Include="GumRuntimes\SpriteInheritingComponntRuntime.Generated.cs">
@@ -2119,6 +2157,7 @@
     <Compile Include="GumRuntimes\StateComponentRuntime.Generated.cs">
       <DependentUpon>StateComponentRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\SvgRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\SwitchRuntime.cs" />
     <Compile Include="GumRuntimes\SwitchRuntime.Generated.cs">
       <DependentUpon>SwitchRuntime.cs</DependentUpon>
@@ -2365,6 +2404,10 @@
     <Compile Include="Screens\SizeScreen.cs" />
     <Compile Include="Screens\SizeScreen.Generated.cs">
       <DependentUpon>SizeScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\SkiaGumScreen.cs" />
+    <Compile Include="Screens\SkiaGumScreen.Generated.cs">
+      <DependentUpon>SkiaGumScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\SlowLoadScreen.cs" />
     <Compile Include="Screens\SlowLoadScreen.Generated.cs">

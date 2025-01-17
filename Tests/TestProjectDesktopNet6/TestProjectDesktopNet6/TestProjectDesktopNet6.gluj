@@ -485,6 +485,9 @@
       "Name": "Screens\\SizeScreen"
     },
     {
+      "Name": "Screens\\SkiaGumScreen"
+    },
+    {
       "Name": "Screens\\SlowLoadScreen"
     },
     {

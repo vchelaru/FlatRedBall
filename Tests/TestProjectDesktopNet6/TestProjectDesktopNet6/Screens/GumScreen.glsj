@@ -3,7 +3,7 @@
     "GLUE"
   ],
   "Source": "GLUE",
-  "NextScreen": "Screens\\GumScreenNoGumIdbScreen",
+  "NextScreen": "Screens\\SkiaGumScreen",
   "ReferencedFiles": [
     {
       "Name": "GumProject/Screens/TestScreen.gusx",
