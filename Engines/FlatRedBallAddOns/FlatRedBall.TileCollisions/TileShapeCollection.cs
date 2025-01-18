@@ -1302,28 +1302,61 @@ namespace FlatRedBall.TileCollisions
             leftEdge = 0;
             bottomEdge = 0;
 
-            if (mShapes.AxisAlignedRectangles.Count == 0)
+            if (mShapes.AxisAlignedRectangles.Count == 0 && mShapes.Polygons.Count == 0)
             {
                 numberTilesWide = 0;
                 toReturn = new bool[0];
             }
             else
             {
-                var rectangles = mShapes.AxisAlignedRectangles;
-                var first = rectangles[0];
-                var minCenterX = first.X;
-                var maxCenterX = first.X;
+                float minCenterX = 0;
+                float maxCenterX = 0;
 
-                var minLeft = first.X - first.Width / 2.0f;
-                var maxRight = first.X + first.Width / 2.0f;
+                float minLeft = 0;
+                float maxRight = 0;
 
-                var minCenterY = first.Y;
-                var maxCenterY = first.Y;
+                float minCenterY = 0;
+                float maxCenterY = 0;
 
-                var minBottom = first.Y - first.Height / 2.0f;
-                var maxTop = first.Y + first.Height / 2.0f;
+                float minBottom = 0;
+                float maxTop = 0;
 
-                for (int i = 1; i < mShapes.AxisAlignedRectangles.Count; i++)
+                if (mShapes.AxisAlignedRectangles.Count > 0)
+                {
+                    var rectangles = mShapes.AxisAlignedRectangles;
+                    var first = rectangles[0];
+                    minCenterX = first.X;
+                    maxCenterX = first.X;
+
+                    minLeft = first.X - first.Width / 2.0f;
+                    maxRight = first.X + first.Width / 2.0f;
+
+                    minCenterY = first.Y;
+                    maxCenterY = first.Y;
+
+                    minBottom = first.Y - first.Height / 2.0f;
+                    maxTop = first.Y + first.Height / 2.0f;
+                }
+                else if (mShapes.Polygons.Count > 0)
+                {
+
+                    var first = mShapes.Polygons[0];
+                    minCenterX = first.X;
+                    maxCenterX = first.X;
+
+                    minLeft = first.X - this.GridSizeX / 2;
+                    maxRight = first.X + this.GridSizeX / 2;
+
+                    minCenterY = first.Y;
+                    maxCenterY = first.Y;
+
+                    minBottom = first.Y - this.GridSizeY / 2;
+                    maxTop = first.Y + this.GridSizeY / 2;
+                }
+
+
+
+                for (int i = 0; i < mShapes.AxisAlignedRectangles.Count; i++)
                 {
                     var rect = mShapes.AxisAlignedRectangles[i];
 
@@ -1351,6 +1384,43 @@ namespace FlatRedBall.TileCollisions
 
                     var top = rect.Y + rect.Height / 2.0f;
                     var bottom = rect.Y - rect.Height / 2.0f;
+
+                    if (left < minLeft) minLeft = left;
+                    if (right > maxRight) maxRight = right;
+
+                    if (bottom < minBottom) minBottom = bottom;
+                    if (top > maxTop) maxTop = top;
+                }
+
+                for (int i = 0; i < mShapes.Polygons.Count; i++)
+                {
+
+                    var position = mShapes.Polygons[i].Position;
+
+                    if (position.X < minCenterX)
+                    {
+                        minCenterX = position.X;
+                    }
+                    if (position.X > maxCenterX)
+                    {
+                        maxCenterX = position.X;
+                    }
+
+                    if (position.Y < minCenterY)
+                    {
+                        minCenterY = position.Y;
+                    }
+                    if (position.Y > maxCenterY)
+                    {
+                        maxCenterY = position.Y;
+                    }
+
+
+                    var left = position.X - GridSizeX / 2;
+                    var right = position.X + GridSizeX / 2;
+
+                    var top = position.Y + GridSizeY / 2;
+                    var bottom = position.Y - GridSizeY / 2;
 
                     if (left < minLeft) minLeft = left;
                     if (right > maxRight) maxRight = right;
@@ -1392,6 +1462,21 @@ namespace FlatRedBall.TileCollisions
 
                     toReturn[index] = true;
                 }
+
+                // Why don't we also update according to polygons since they can use spots, and users are expected
+                // to keep edges continuous:
+                for (int i = 0; i < mShapes.Polygons.Count; i++)
+                {
+                    var poly = mShapes.Polygons[i];
+
+                    var xIndex = MathFunctions.RoundToInt(System.Math.Floor((poly.Position.X - leftEdge) / mGridSizeX));
+                    var yIndex = MathFunctions.RoundToInt(System.Math.Floor((poly.Position.Y - bottomEdge) / mGridSizeY));
+
+                    var index = xIndex + yIndex * numberOfXTiles;
+
+                    toReturn[index] = true;
+                }
+
             }
             return toReturn;
         }
