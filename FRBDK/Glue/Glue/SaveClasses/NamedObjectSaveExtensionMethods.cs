@@ -193,6 +193,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     property.Value = CustomVariableExtensionMethods.FixValue(asString, "FloatRectangle?");
 
                 }
+                else
                 {
                     FixAllTypes(property);
                 }

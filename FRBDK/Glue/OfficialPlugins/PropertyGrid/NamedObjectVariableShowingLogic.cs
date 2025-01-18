@@ -70,7 +70,7 @@ namespace OfficialPlugins.VariableDisplay
 
         #endregion
 
-
+        // todo - make this not static:
         private static void CreateCategoriesAndVariables(NamedObjectSave instance, GlueElement container,
             List<MemberCategory> categories, AssetTypeInfo ati)
         {
@@ -270,7 +270,6 @@ namespace OfficialPlugins.VariableDisplay
             if (needsFullRefresh)
             {
                 grid.Categories.Clear();
-                SetAlternatingColors(grid, categories);
 
                 foreach (var category in categories)
                 {
@@ -473,20 +472,6 @@ namespace OfficialPlugins.VariableDisplay
             if (zVariable != null && setZ)
             {
                 zVariable.DetailText = subtext;
-            }
-        }
-
-        private static void SetAlternatingColors(DataUiGrid grid, List<MemberCategory> categories)
-        {
-            // skip the first category in putting the alternating colors:
-            for (int i = 0; i < categories.Count; i++)
-            {
-                var category = categories[i];
-                if (i != 0)
-                {
-                    const byte brightness = 227;
-                    category.SetAlternatingColors(new SolidColorBrush(Color.FromRgb(brightness, brightness, brightness)), Brushes.Transparent);
-                }
             }
         }
 

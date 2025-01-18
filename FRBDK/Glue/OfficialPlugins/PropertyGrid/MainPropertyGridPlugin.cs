@@ -36,7 +36,6 @@ namespace OfficialPlugins.VariableDisplay
         PluginTab settingsTab;
         PluginTab variableTab;
 
-        
         public override string FriendlyName => "Main Property Grid Plugin";
 
         #endregion
@@ -166,19 +165,6 @@ namespace OfficialPlugins.VariableDisplay
             settingsGrid.Instance = referencedFileSave;
 
             settingsGrid.InsertSpacesInCamelCaseMemberNames();
-            var dictionary = MainPanelControl.ResourceDictionary;
-            const byte brightness = 227;
-            var color = Color.FromRgb(brightness, brightness, brightness);
-            if (dictionary.Contains("BlackSelected"))
-            {
-                color = (Color)MainPanelControl.ResourceDictionary["BlackSelected"];
-            }
-            foreach(var category in settingsGrid.Categories)
-            {
-                category.SetAlternatingColors(
-                new SolidColorBrush(color),
-                    Brushes.Transparent);
-            }
         }
 
         private void ShowVariablesForCurrentElement()

@@ -105,7 +105,10 @@ namespace OfficialPlugins.VariableDisplay
                 }
             }
 
-            AddAlternatingColors(grid, categories);
+            foreach (var category in categories)
+            {
+                grid.Categories.Add(category);
+            }
 
             grid.Refresh();
 
@@ -316,25 +319,7 @@ namespace OfficialPlugins.VariableDisplay
         }
 
 
-        private static void AddAlternatingColors(DataUiGrid grid, List<MemberCategory> categories)
-        {
-            var dictionary = MainPanelControl.ResourceDictionary;
-            const byte brightness = 227;
-            var color = Color.FromRgb(brightness, brightness, brightness);
-            if (dictionary.Contains("BlackSelected"))
-            {
-                color = (Color)MainPanelControl.ResourceDictionary["BlackSelected"];
-            }
 
-            foreach (var category in categories)
-            {
-                category.SetAlternatingColors(
-                    new SolidColorBrush(color),
-                    Brushes.Transparent);
-
-                grid.Categories.Add(category);
-            }
-        }
 
         private static MemberCategory CreateAndAddDefaultCategory(List<MemberCategory> categories, string categoryLabel)
         {
