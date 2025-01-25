@@ -264,7 +264,8 @@ namespace FlatRedBall.Gui
         IWindow mWindowOver;
 
         /// <summary>
-        /// Returns the Window that this cursor is over. If the cursor is not over any Window, this value will be null.
+        /// Returns the Window that this cursor is over. If the cursor is not over any Window, or the cursor is over
+        /// a Window that has no events and accepts no input, this value will be null.
         /// </summary>
         /// <remarks>
         /// This value is usually used in two situations:
