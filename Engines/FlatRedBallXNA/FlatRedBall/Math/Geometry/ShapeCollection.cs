@@ -11,6 +11,9 @@ using System.Drawing;
 
 namespace FlatRedBall.Math.Geometry
 {
+    /// <summary>
+    /// An object containing a collection of FlatRedBall shapes.
+    /// </summary>
     public class ShapeCollection : ICollidable, IEquatable<ShapeCollection> 
         ,IMouseOver, INameable
     {

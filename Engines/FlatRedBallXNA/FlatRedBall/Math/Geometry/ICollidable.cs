@@ -36,7 +36,12 @@ namespace FlatRedBall.Math.Geometry
 
     public static class ICollidableExtensionMethods
     {
-
+        /// <summary>
+        /// Returns whether this and the argument other ICollidable are colliding.
+        /// </summary>
+        /// <param name="thisInstance">This ICollidable instance</param>
+        /// <param name="other">The other ICollidable instance</param>
+        /// <returns>Whether collision has occurred</returns>
         public static bool CollideAgainst(this ICollidable thisInstance, ICollidable other)
         {
             return other != null && thisInstance != null && thisInstance.Collision.CollideAgainst(other.Collision);
