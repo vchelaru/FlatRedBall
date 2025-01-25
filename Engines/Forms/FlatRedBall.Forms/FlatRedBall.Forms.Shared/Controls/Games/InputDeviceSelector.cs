@@ -224,7 +224,14 @@ namespace FlatRedBall.Forms.Controls.Games
                 // We use the primary action (such as A or Space) to join,
                 // then the Join input (such as Enter or Start) as the "hard"
                 // proceed input.
-                if(inputDevice.DefaultPrimaryActionInput.WasJustPressed)
+                // We use the DefaultConfirmInput to get the A button for whichever gamepad we want, but
+                // we use the space for keyboard
+                var wasJoined = inputDevice.DefaultConfirmInput.WasJustPressed;
+                if(inputDevice is Keyboard keyboard)
+                {
+                    wasJoined = keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Space);
+                }
+                if (inputDevice.DefaultConfirmInput.WasJustPressed)
                 {
                     HandleJoin(inputDevice);
                 }
