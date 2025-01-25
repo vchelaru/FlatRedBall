@@ -572,8 +572,6 @@ public static partial class AudioManager
 
     #region SoundEffect
 
-
-
     /// <summary>
     /// Returns whether the argument SoundEffect is playing. If true, then the SoundEffect is already
     /// playing. If false, the SoundEffect is not playing. This will only check SoundEffects which were 
