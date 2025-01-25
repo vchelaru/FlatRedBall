@@ -402,7 +402,7 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
             PrintIfVerbose($"Saving custom runtime code: {customGumRuntimeSaveLocation}");
 
             GlueCommands.Self.TryMultipleTimes(() =>
-                System.IO.File.WriteAllText(customGumRuntimeSaveLocation, customCode));
+                FlatRedBall.IO.FileManager.SaveText(customCode, customGumRuntimeSaveLocation));
         }
 
         if (shouldCustomGumBeInProject)
@@ -448,7 +448,7 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
 
                 GlueCommands.Self.TryMultipleTimes(() =>
-                    System.IO.File.WriteAllText(customFormsSaveLocation, customFormsCode));
+                    FlatRedBall.IO.FileManager.SaveText(customFormsCode, customFormsSaveLocation));
 
                 bool wasAnythingAdded =
                     FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
@@ -513,7 +513,7 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
 
             GlueCommands.Self.TryMultipleTimes(() =>
-                System.IO.File.WriteAllText(generatedSaveLocation.FullPath, generatedGumRuntimeCode));
+                FlatRedBall.IO.FileManager.SaveText(generatedGumRuntimeCode, generatedSaveLocation.FullPath));
         }
 
         if (shouldGeneratedGumBeInProject)
@@ -569,7 +569,7 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
             PrintIfVerbose($"Saved generated forms code: {generatedFormsSaveLocation.FullPath}");
 
             GlueCommands.Self.TryMultipleTimes(() =>
-                System.IO.File.WriteAllText(generatedFormsSaveLocation.FullPath, generatedFormsCode));
+                FlatRedBall.IO.FileManager.SaveText(generatedFormsCode, generatedFormsSaveLocation.FullPath));
         }
 
         if (shouldGeneratedFormsBeInProject)
@@ -803,7 +803,7 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
         {
             try
             {
-                System.IO.File.WriteAllText(fileName, fileContents);
+                FlatRedBall.IO.FileManager.SaveText(fileContents, fileName);
                 wasSaved = true;
                 break;
             }
