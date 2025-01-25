@@ -458,6 +458,9 @@
       "Name": "Screens\\OptionallyCreatedObjectScreen"
     },
     {
+      "Name": "Screens\\PauseGumScreen"
+    },
+    {
       "Name": "Screens\\PauseScreen"
     },
     {

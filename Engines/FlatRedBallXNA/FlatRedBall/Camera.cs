@@ -1823,8 +1823,89 @@ public partial class Camera : PositionedObject
 
     #endregion
 
+    #region Coordinte conversions
 
 
+    /// <summary>
+    /// Returns the number of pixels per unit at the given absolute Z value.  Assumes
+    /// that the Camera is unrotated.
+    /// </summary>
+    /// <remarks>
+    /// If using the PixelsPerUnitAt for a rotated camera, use the overload which
+    /// takes a Vector3 argument.
+    /// </remarks>
+    /// <param name="absoluteZ">The absolute Z position.</param>
+    /// <returns>The number of pixels per world unit (perpendicular to the camera's forward vector).</returns>
+    public float PixelsPerUnitAt(float absoluteZ)
+    {
+        // June 7, 2011
+        // This used to use
+        // width values, but
+        // that means aspect ratio
+        // can screw with these values
+        // which we don't want.  Instead
+        // we should use height, as that is
+        // usually what FRB games use as their
+        //// fixed dimension
+        //if (mOrthogonal)
+        //{
+        //    return mDestinationRectangle.Width / mOrthogonalWidth;
+        //}
+        //else
+        //{
+        //    return mDestinationRectangle.Width / (2 * RelativeXEdgeAt(absoluteZ));
+        //}
+
+        if (mOrthogonal)
+        {
+            return mDestinationRectangle.Height / mOrthogonalHeight;
+        }
+        else
+        {
+            return mDestinationRectangle.Height / (2 * RelativeYEdgeAt(absoluteZ));
+        }
+
+    }
+
+    public float PixelsPerUnitAt(ref Vector3 absolutePosition)
+    {
+
+        return PixelsPerUnitAt(ref absolutePosition, mFieldOfView, mOrthogonal, mOrthogonalHeight);
+    }
+
+    public float PixelsPerUnitAt(ref Vector3 absolutePosition, float fieldOfView, bool orthogonal, float orthogonalHeight)
+    {
+        if (orthogonal)
+        {
+            return mDestinationRectangle.Height / orthogonalHeight;
+        }
+        else
+        {
+            float distance = Vector3.Dot(
+                (absolutePosition - Position), RotationMatrix.Forward);
+
+            return mDestinationRectangle.Height /
+                (2 * RelativeYEdgeAt(Position.Z + (Math.MathFunctions.ForwardVector3.Z * distance), fieldOfView, mAspectRatio, orthogonal, orthogonalHeight));
+        }
+    }
+
+
+    public void WorldToScreen(float x, float y, float z, out int screenX, out int screenY)
+    {
+        screenX = 0;
+        screenY = 0;
+
+        MathFunctions.AbsoluteToWindow(x, y, z, ref screenX, ref screenY, this);
+    }
+
+    public void WorldToScreen(Vector3 position, out int screenX, out int screenY)
+    {
+        screenX = 0;
+        screenY = 0;
+
+        MathFunctions.AbsoluteToWindow(position.X, position.Y, position.Z, ref screenX, ref screenY, this);
+    }
+    #endregion
 
 
 
@@ -1837,15 +1918,15 @@ public partial class Camera : PositionedObject
     // todo - the rest of these methods need to be organized into regions above
 
 
-	/// <summary>
-		/// Copies all fields from the argument to the camera instance.
-		/// </summary>
-		/// <remarks>
-		/// This method will not copy the name, InstructionArray, or children PositionedObjects 
+    /// <summary>
+    /// Copies all fields from the argument to the camera instance.
+    /// </summary>
+    /// <remarks>
+    /// This method will not copy the name, InstructionArray, or children PositionedObjects 
     /// (objects attached to the cameraToSetTo).
-		/// </remarks>
-		/// <param name="cameraToSetTo">The camera to clone.</param>
-	public void SetCameraTo(Camera cameraToSetTo)
+    /// </remarks>
+    /// <param name="cameraToSetTo">The camera to clone.</param>
+    public void SetCameraTo(Camera cameraToSetTo)
 	{
 		this.mAspectRatio = cameraToSetTo.mAspectRatio;
         this.mBaseMaximumX = cameraToSetTo.mBaseMaximumX;
@@ -1902,22 +1983,6 @@ public partial class Camera : PositionedObject
 
 
 
-
-    public void WorldToScreen(float x, float y, float z, out int screenX, out int screenY)
-    {
-        screenX = 0;
-        screenY = 0;
-
-        MathFunctions.AbsoluteToWindow(x, y, z, ref screenX, ref screenY, this);
-    }
-
-    public void WorldToScreen(Vector3 position, out int screenX, out int screenY)
-    {
-        screenX = 0;
-        screenY = 0;
-
-        MathFunctions.AbsoluteToWindow(position.X, position.Y, position.Z, ref screenX, ref screenY, this);
-    }
 
     /// <summary>
     /// Sets the viewport for this camera to a standard split-screen viewport
@@ -2381,69 +2446,6 @@ public partial class Camera : PositionedObject
         }
     }
 
-
-    /// <summary>
-    /// Returns the number of pixels per unit at the given absolute Z value.  Assumes
-    /// that the Camera is unrotated.
-    /// </summary>
-    /// <remarks>
-    /// If using the PixelsPerUnitAt for a rotated camera, use the overload which
-    /// takes a Vector3 argument.
-    /// </remarks>
-    /// <param name="absoluteZ">The absolute Z position.</param>
-    /// <returns>The number of pixels per world unit (perpendicular to the camera's forward vector).</returns>
-    public float PixelsPerUnitAt(float absoluteZ)
-    {
-        // June 7, 2011
-        // This used to use
-        // width values, but
-        // that means aspect ratio
-        // can screw with these values
-        // which we don't want.  Instead
-        // we should use height, as that is
-        // usually what FRB games use as their
-        //// fixed dimension
-        //if (mOrthogonal)
-        //{
-        //    return mDestinationRectangle.Width / mOrthogonalWidth;
-        //}
-        //else
-        //{
-        //    return mDestinationRectangle.Width / (2 * RelativeXEdgeAt(absoluteZ));
-        //}
-
-        if (mOrthogonal)
-        {
-            return mDestinationRectangle.Height / mOrthogonalHeight;
-        }
-        else
-        {
-            return mDestinationRectangle.Height / (2 * RelativeYEdgeAt(absoluteZ));
-        }
-
-    }
-
-    public float PixelsPerUnitAt(ref Vector3 absolutePosition)
-    {
-
-        return PixelsPerUnitAt(ref absolutePosition, mFieldOfView, mOrthogonal, mOrthogonalHeight);
-    }
-
-    public float PixelsPerUnitAt(ref Vector3 absolutePosition, float fieldOfView, bool orthogonal, float orthogonalHeight)
-    {
-        if (orthogonal)
-        {
-            return mDestinationRectangle.Height / orthogonalHeight;
-        }
-        else
-        {
-            float distance = Vector3.Dot(
-                (absolutePosition - Position), RotationMatrix.Forward);
-
-            return mDestinationRectangle.Height /
-                (2 * RelativeYEdgeAt(Position.Z + (Math.MathFunctions.ForwardVector3.Z * distance), fieldOfView, mAspectRatio, orthogonal, orthogonalHeight));
-        }
-    }
 
     public float RelativeXEdgeAt(float absoluteZ)
     {

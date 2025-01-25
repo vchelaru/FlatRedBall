@@ -242,7 +242,7 @@ namespace GumPlugin.Managers
                                             ref contents);
                                     }
 
-                                    System.IO.File.WriteAllText(newCodeFileName.FullPath, contents);
+                                    FlatRedBall.IO.FileManager.SaveText(contents, newCodeFileName.FullPath );
                                 });
 
                                 await GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(newCodeFileName, saveOnAdd:true);

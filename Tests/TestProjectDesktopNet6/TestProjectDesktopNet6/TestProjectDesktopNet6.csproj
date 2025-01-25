@@ -738,6 +738,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Level1Gum</Name>
     </None>
+    <None Include="Content\GumProject\Screens\PauseGumScreenGum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>PauseGumScreenGum</Name>
+    </None>
     <None Include="Content\GumProject\Screens\RenderTargetScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>RenderTargetScreenGum</Name>
@@ -1921,6 +1925,7 @@
     <Compile Include="Forms\Screens\GumScreenNoGumIdbScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\InputScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\Level1GumForms.Generated.cs" />
+    <Compile Include="Forms\Screens\PauseGumScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\RenderTargetScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\ScreenLoadedAsGraphicalUiElementForms.Generated.cs" />
     <Compile Include="Forms\Screens\SkiaGumScreenGumForms.Generated.cs" />
@@ -2116,6 +2121,10 @@
     <Compile Include="GumRuntimes\ParentStateComponentRuntime.cs" />
     <Compile Include="GumRuntimes\ParentStateComponentRuntime.Generated.cs">
       <DependentUpon>ParentStateComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\PauseGumScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\PauseGumScreenGumRuntime.Generated.cs">
+      <DependentUpon>PauseGumScreenGumRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\PolygonRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\RectangleRuntime.Generated.cs" />
@@ -2368,6 +2377,10 @@
     <Compile Include="Screens\OptionallyCreatedObjectScreen.cs" />
     <Compile Include="Screens\OptionallyCreatedObjectScreen.Generated.cs">
       <DependentUpon>OptionallyCreatedObjectScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\PauseGumScreen.cs" />
+    <Compile Include="Screens\PauseGumScreen.Generated.cs">
+      <DependentUpon>PauseGumScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\PauseScreen.cs" />
     <Compile Include="Screens\PauseScreen.Generated.cs">

@@ -29,7 +29,14 @@ internal static class PostProcessLogic
         RenderTarget2D previousRenderTarget = null;
         if (hasGlobalPostProcessing)
         {
-            if (Renderer.GraphicsDevice.RenderTargetCount > 0)
+            var renderTargetCount = 0;
+#if WEB
+
+            renderTargetCount = Renderer.GraphicsDevice.GetRenderTargets().Length;
+#else
+            renderTargetCount = Renderer.GraphicsDevice.RenderTargetCount;
+#endif
+            if (renderTargetCount > 0)
             {
                 previousRenderTarget = Renderer.GraphicsDevice.GetRenderTargets()[0].RenderTarget as RenderTarget2D;
             }

@@ -56,13 +56,10 @@ namespace GlueTestProject.Screens
             // Actually, it could be stopped too, so let's allow that:
 
             // I had to increase the sleep time as sometimes the sound effect doesn't get enough time to stop
-            const int timeToSleep = 152;
-#if WINDOWS_8
+            const int timeToSleep = 153;
 
-            new System.Threading.ManualResetEvent(false).WaitOne(timeToSleep);
-#else
             System.Threading.Thread.Sleep(timeToSleep);
-#endif
+
 #if !ANDROID && !IOS
             if (PausingEntityInstance.IsSoundPaused == false || PausingEntityInstance.IsSoundStopped)
             {

@@ -310,10 +310,36 @@ namespace FlatRedBall.Gum.Animation
 
         }
 
-        public Task PlayAsync(object whatStartedPlayingThis = null)
+        public async Task PlayAsync(object whatStartedPlayingThis = null)
         {
+            var isAlreadyPlaying = this.IsPlaying();
+
             Play(whatStartedPlayingThis);
-            return TimeManager.DelaySeconds(this.Length);
+
+            if(FlatRedBall.Screens.ScreenManager.CurrentScreen.IsPaused)
+            {
+                // if it's already playing, this will never complete so let's
+                // just exit right away
+                if(!isAlreadyPlaying)
+                {
+                    this.EndReached += HandleEndedReachedInternal;
+
+                    bool hasEnded = false;
+
+                    await TimeManager.DelayUntil(() => hasEnded);
+
+                    this.EndReached -= HandleEndedReachedInternal;
+
+                    void HandleEndedReachedInternal()
+                    {
+                        hasEnded = true;
+                    }
+                }
+            }
+            else
+            {
+                await TimeManager.DelaySeconds(this.Length);
+            }
         }
 
         public bool IsPlaying()
