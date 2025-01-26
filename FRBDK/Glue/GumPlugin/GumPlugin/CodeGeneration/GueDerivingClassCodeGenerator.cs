@@ -180,7 +180,8 @@ namespace GumPlugin.CodeGeneration
                     // does this have a contained type?
                     var rfv = new RecursiveVariableFinder(elementSave.DefaultState);
 
-                    var containedType = rfv.GetValue<string>("Contained Type");
+                    var containedType = rfv.GetValue<string>("Contained Type") ??
+                        rfv.GetValue<string>("ContainedType");
 
                     if(!string.IsNullOrEmpty(containedType))
                     {

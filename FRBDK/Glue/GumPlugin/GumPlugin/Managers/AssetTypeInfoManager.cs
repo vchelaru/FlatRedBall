@@ -840,7 +840,7 @@ namespace GumPlugin.Managers
         private void ChangePositionUnitTypes(VariableDefinition variableDefinition)
         {
             var isPositionUnitVariable =
-                variableDefinition.Name == "XUnits" || variableDefinition.Name == "YUnits";
+                variableDefinition.Name is "XUnits" or "X Units" or "YUnits" or "Y Units";
 
             var isPositionUnitsType = variableDefinition.Type == "Gum.Managers.PositionUnitType";
             if (isPositionUnitVariable && isPositionUnitsType)

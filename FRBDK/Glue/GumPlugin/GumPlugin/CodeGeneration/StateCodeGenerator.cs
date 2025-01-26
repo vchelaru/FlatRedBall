@@ -72,6 +72,7 @@ namespace GumPlugin.CodeGeneration
             //mVariableNamesToSkipForStates.Add("Height Units");
             //mVariableNamesToSkipForStates.Add("Width Units");
             mVariableNamesToSkipForStates.Add("Custom Texture Coordinates"); // This is now handled by TextureCoordinateType
+            mVariableNamesToSkipForStates.Add("CustomTextureCoordinates"); // This is now handled by TextureCoordinateType
             //mVariableNamesToSkipForStates.Add("Children Layout");
 
             //mVariableNamesToSkipForStates.Add("Font");
@@ -84,6 +85,7 @@ namespace GumPlugin.CodeGeneration
 
             //mVariableNamesToSkipForStates.Add("SourceFile");
             mVariableNamesToSkipForStates.Add("Contained Type");
+            mVariableNamesToSkipForStates.Add("ContainedType");
             mVariableNamesToSkipForStates.Add("IsXamarinFormsControl");
             mVariableNamesToSkipForStates.Add("IsOverrideInCodeGen");
             //mVariableNamesToSkipForStates.Add("IsBold");
@@ -458,7 +460,7 @@ namespace GumPlugin.CodeGeneration
         {
             bool toReturn = true;
 
-            string variableName = variable.GetRootName();
+            string variableRootName = variable.GetRootName();
 
 
 
@@ -475,7 +477,7 @@ namespace GumPlugin.CodeGeneration
                 toReturn = false;
             }
 
-            if (toReturn && mVariableNamesToSkipForStates.Contains(variableName))
+            if (toReturn && mVariableNamesToSkipForStates.Contains(variableRootName))
             {
                 toReturn = false;
             }
@@ -528,7 +530,7 @@ namespace GumPlugin.CodeGeneration
 
                         RecursiveVariableFinder rvf = new RecursiveVariableFinder(defaultState);
 
-                        var foundVariable = rvf.GetVariable(variable.GetRootName());
+                        var foundVariable = rvf.GetVariable(variableRootName);
 
                         if (foundVariable == null)
                         {
@@ -592,8 +594,9 @@ namespace GumPlugin.CodeGeneration
                         variablesToCheck = rootStandardElementVariables.ToList();
                     }
 
+                    var variableRootNameWithNoSpaces = variableRootName.Replace(" ", "");
 
-                    bool wasMatchFound = variablesToCheck.Any(item => item.Name == variable.GetRootName());
+                    bool wasMatchFound = variablesToCheck.Any(item => item.Name == variableRootNameWithNoSpaces || item.Name == variableRootName);
                     toReturn = wasMatchFound;
                 }
             }
