@@ -71,7 +71,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>Height Units</Name>
+      <Name>HeightUnits</Name>
       <Value xsi:type="xsd:int">0</Value>
       <Category>Dimensions</Category>
       <SetsValue>true</SetsValue>
@@ -108,35 +108,35 @@
     </Variable>
     <Variable>
       <Type>TextureAddress</Type>
-      <Name>Texture Address</Name>
+      <Name>TextureAddress</Name>
       <Value xsi:type="xsd:int">1</Value>
       <Category>Source</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>Texture Height</Name>
+      <Name>TextureHeight</Name>
       <Value xsi:type="xsd:int">46</Value>
       <Category>Source</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>Texture Left</Name>
+      <Name>TextureLeft</Name>
       <Value xsi:type="xsd:int">1</Value>
       <Category>Source</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>Texture Top</Name>
+      <Name>TextureTop</Name>
       <Value xsi:type="xsd:int">1</Value>
       <Category>Source</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>Texture Width</Name>
+      <Name>TextureWidth</Name>
       <Value xsi:type="xsd:int">46</Value>
       <Category>Source</Category>
       <SetsValue>true</SetsValue>
@@ -156,7 +156,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>Width Units</Name>
+      <Name>WidthUnits</Name>
       <Value xsi:type="xsd:int">0</Value>
       <Category>Dimensions</Category>
       <SetsValue>true</SetsValue>
@@ -170,14 +170,14 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>X Origin</Name>
+      <Name>XOrigin</Name>
       <Value xsi:type="xsd:int">0</Value>
       <Category>Position</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>X Units</Name>
+      <Name>XUnits</Name>
       <Value xsi:type="xsd:int">0</Value>
       <Category>Position</Category>
       <SetsValue>true</SetsValue>
@@ -191,14 +191,14 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>Y Origin</Name>
+      <Name>YOrigin</Name>
       <Value xsi:type="xsd:int">0</Value>
       <Category>Position</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>Y Units</Name>
+      <Name>YUnits</Name>
       <Value xsi:type="xsd:int">1</Value>
       <Category>Position</Category>
       <SetsValue>true</SetsValue>
@@ -224,7 +224,7 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
+        <Name>TextureTop</Name>
         <Value xsi:type="xsd:int">1</Value>
         <Category>Source</Category>
         <SetsValue>true</SetsValue>
@@ -241,7 +241,7 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
+        <Name>TextureTop</Name>
         <Value xsi:type="xsd:int">49</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -257,7 +257,7 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
+        <Name>TextureTop</Name>
         <Value xsi:type="xsd:int">97</Value>
         <Category>Source</Category>
         <SetsValue>true</SetsValue>
@@ -274,7 +274,7 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
+        <Name>TextureTop</Name>
         <Value xsi:type="xsd:int">145</Value>
         <Category>Source</Category>
         <SetsValue>true</SetsValue>
@@ -291,7 +291,7 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
+        <Name>TextureTop</Name>
         <Value xsi:type="xsd:int">193</Value>
         <Category>Source</Category>
         <SetsValue>true</SetsValue>
@@ -308,7 +308,7 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
+        <Name>TextureTop</Name>
         <Value xsi:type="xsd:int">241</Value>
         <Category>Source</Category>
         <SetsValue>true</SetsValue>
@@ -324,7 +324,7 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>Texture Top</Name>
+        <Name>TextureTop</Name>
         <Value xsi:type="xsd:int">241</Value>
         <Category>Source</Category>
         <SetsValue>true</SetsValue>

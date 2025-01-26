@@ -303,8 +303,8 @@ namespace GumPlugin.CodeGeneration
 
                 if(isContainer)
                 {
-                    var variable = instance.Name + ".Contained Type";
-                    var genericType = (string)container.DefaultState.GetValueRecursive(variable);
+                    var genericType = (string)container.DefaultState.GetValueRecursive(instance.Name + ".ContainedType") ??
+                        (string)container.DefaultState.GetValueRecursive(instance.Name + ".Contained Type");
 
                     if(!string.IsNullOrEmpty(genericType))
                     {
