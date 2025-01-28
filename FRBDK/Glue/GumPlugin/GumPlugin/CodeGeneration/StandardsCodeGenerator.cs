@@ -107,16 +107,23 @@ namespace GumPlugin.CodeGeneration
             }
 
             mVariableNamesToSkipForProperties.Add("Custom Texture Coordinates"); // replaced by texture address mode
+            mVariableNamesToSkipForProperties.Add("CustomTextureCoordinates"); // replaced by texture address mode
             mVariableNamesToSkipForProperties.Add("Height Units");
+            mVariableNamesToSkipForProperties.Add("HeightUnits");
             mVariableNamesToSkipForProperties.Add("Width Units");
+            mVariableNamesToSkipForProperties.Add("WidthUnits");
             mVariableNamesToSkipForProperties.Add("Parent");
             mVariableNamesToSkipForProperties.Add("Guide");
 
 
             mVariableNamesToSkipForProperties.Add("X Origin");
+            mVariableNamesToSkipForProperties.Add("XOrigin");
             mVariableNamesToSkipForProperties.Add("X Units");
+            mVariableNamesToSkipForProperties.Add("XUnits");
             mVariableNamesToSkipForProperties.Add("Y Origin");
+            mVariableNamesToSkipForProperties.Add("YOrigin");
             mVariableNamesToSkipForProperties.Add("Y Units");
+            mVariableNamesToSkipForProperties.Add("YUnits");
 
             mVariableNamesToSkipForProperties.Add("FlipHorizontal");
 
@@ -134,26 +141,37 @@ namespace GumPlugin.CodeGeneration
 
             // What may be supported at some point in the future:
             mVariableNamesToSkipForProperties.Add("Texture Height");
+            mVariableNamesToSkipForProperties.Add("TextureHeight");
             mVariableNamesToSkipForProperties.Add("Texture Width");
+            mVariableNamesToSkipForProperties.Add("TextureWidth");
             mVariableNamesToSkipForProperties.Add("Texture Left");
+            mVariableNamesToSkipForProperties.Add("TextureLeft");
             mVariableNamesToSkipForProperties.Add("Texture Top");
+            mVariableNamesToSkipForProperties.Add("TextureTop");
 
             mVariableNamesToSkipForProperties.Add("Texture Address");
+            mVariableNamesToSkipForProperties.Add("TextureAddress");
             mVariableNamesToSkipForProperties.Add("Texture Width Scale");
+            mVariableNamesToSkipForProperties.Add("TextureWidthScale");
             mVariableNamesToSkipForProperties.Add("Texture Height Scale");
+            mVariableNamesToSkipForProperties.Add("TextureHeightScale");
 
 
             mVariableNamesToSkipForProperties.Add("State");
             mVariableNamesToSkipForProperties.Add("CustomFontFile");
             mVariableNamesToSkipForProperties.Add("UseCustomFont");
             mVariableNamesToSkipForProperties.Add("Children Layout");
+            mVariableNamesToSkipForProperties.Add("ChildrenLayout");
             mVariableNamesToSkipForProperties.Add("StackSpacing");
 
             // This restriction is only enforced Gum-side, not runtime-side (yet? ever?)
             mVariableNamesToSkipForProperties.Add("Contained Type");
+            mVariableNamesToSkipForProperties.Add("ContainedType");
 
             mVariableNamesToSkipForProperties.Add("Clips Children");
+            mVariableNamesToSkipForProperties.Add("ClipsChildren");
             mVariableNamesToSkipForProperties.Add("Wraps Children");
+            mVariableNamesToSkipForProperties.Add("WrapsChildren");
 
             mVariableNamesToSkipForProperties.Add("IsXamarinFormsControl");
             mVariableNamesToSkipForProperties.Add("IsOverrideInCodeGen");
