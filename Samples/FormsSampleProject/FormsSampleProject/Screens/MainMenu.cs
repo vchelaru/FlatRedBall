@@ -19,6 +19,8 @@ using FlatRedBall.Forms.Controls.Games;
 using FlatRedBall.Forms.Controls;
 using System.Diagnostics;
 using FormsSampleProject.GumRuntimes.Elements;
+using Gum.Wireframe;
+using System.Collections.ObjectModel;
 
 namespace FormsSampleProject.Screens
 {
@@ -38,17 +40,9 @@ namespace FormsSampleProject.Screens
                 nameof(Forms.ComboBoxInstance.Items),
                 nameof(ViewModel.ComboBoxItems));
 
-            Forms.ListBoxInstance.SetBinding(
-                nameof(Forms.ListBoxInstance.Items),
-                nameof(ViewModel.ListBoxItems));
-
-            Forms.ListBoxInstance.SetBinding(
-                nameof(Forms.ListBoxInstance.SelectedObject),
-                nameof(ViewModel.SelectedItem));
-
             Forms.BindingContext = ViewModel;
             Forms.ButtonStandardInstance.Click += HandleButtonClicked;
-            Forms.AddItemButton.Click += HandleAddItemClicked;
+
 
             Forms.ShowDialogButton.Click += HandleShowDialogButtonClicked;
 
@@ -70,38 +64,7 @@ namespace FormsSampleProject.Screens
                 //Debug.WriteLine($"Text:{textBox.Text} with length {textBox.Text.Length} with caret index {textBox.CaretIndex}");
             };
 
-            Forms.MoveSelectionUpButton.Click += (_, _) =>
-            {
-                if(ViewModel.SelectedItem == null)
-                {
-                    ToastManager.Show("Select an item before moving it");
-                }
-                else
-                {
-                    var selectedIndex = Forms.ListBoxInstance.SelectedIndex;
-
-                    if(selectedIndex > 0)
-                    {
-                        ViewModel.ListBoxItems.Move(selectedIndex, selectedIndex - 1);
-                    }
-                }
-            };
-
-            Forms.MoveSelectionDownButton.Click += (_, _) =>
-            {
-                if (ViewModel.SelectedItem == null)
-                {
-                    ToastManager.Show("Select an item before moving it");
-                }
-                else
-                {
-                    var selectedIndex = Forms.ListBoxInstance.SelectedIndex;
-                    if(selectedIndex != -1 && selectedIndex < ViewModel.ListBoxItems.Count - 1)
-                    {
-                        ViewModel.ListBoxItems.Move(selectedIndex, selectedIndex + 1);
-                    }
-                }
-            };
+            InitializeListBoxAndListBoxButtons();
 
             var menu = Forms.MenuInstance;
 
@@ -111,10 +74,10 @@ namespace FormsSampleProject.Screens
             for (int i = 0; i < 20; i++)
             {
                 var subItem = new MenuItem { Header = $"SubItem {i}" };
-                subItem.Clicked += (_,_) => ToastManager.Show($"Clicked on File -> {subItem.Header}");
+                subItem.Clicked += (_, _) => ToastManager.Show($"Clicked on File -> {subItem.Header}");
                 fileMenuItem.Items.Add(subItem);
 
-                if((i % 5) == 0)
+                if ((i % 5) == 0)
                 {
                     var separator = new DividerHorizontalRuntime();
                     separator.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
@@ -141,6 +104,54 @@ namespace FormsSampleProject.Screens
             // uncomment these 2 lines of code to enable gamepad support for the UI
             GuiManager.GamePadsForUiControl.Add(InputManager.Xbox360GamePads[0]);
             Forms.ButtonStandardInstance.IsFocused = true;
+        }
+
+        private void InitializeListBoxAndListBoxButtons()
+        {
+            Forms.ListBoxInstance.SetBinding(
+                nameof(Forms.ListBoxInstance.Items),
+                nameof(ViewModel.ListBoxItems));
+
+            Forms.ListBoxInstance.SetBinding(
+                nameof(Forms.ListBoxInstance.SelectedObject),
+                nameof(ViewModel.SelectedItem));
+
+            Forms.AddItemButton.Click += HandleAddItemClicked;
+
+            Forms.MoveSelectionUpButton.Click += (_, _) =>
+            {
+                if (ViewModel.SelectedItem == null)
+                {
+                    ToastManager.Show("Select an item before moving it");
+                }
+                else
+                {
+                    var selectedIndex = Forms.ListBoxInstance.SelectedIndex;
+
+                    if (selectedIndex > 0)
+                    {
+                        ViewModel.ListBoxItems.Move(selectedIndex, selectedIndex - 1);
+                    }
+                }
+            };
+
+            Forms.MoveSelectionDownButton.Click += (_, _) =>
+            {
+                if (ViewModel.SelectedItem == null)
+                {
+                    ToastManager.Show("Select an item before moving it");
+                }
+                else
+                {
+                    var selectedIndex = Forms.ListBoxInstance.SelectedIndex;
+                    if (selectedIndex != -1 && selectedIndex < ViewModel.ListBoxItems.Count - 1)
+                    {
+                        ViewModel.ListBoxItems.Move(selectedIndex, selectedIndex + 1);
+                    }
+                }
+            };
+
+            Forms.ClearItemsButton.Click += (_, _) => ViewModel.ListBoxItems.Clear();
         }
 
         private async void HandleShowDialogButtonClicked(object sender, EventArgs e)

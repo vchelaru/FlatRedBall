@@ -1,112 +1,133 @@
 {
   "UserEvents": {
-    "vchel": [],
-    "Owner": [
+    "vchel": [
       {
-        "NewName": "MainMenuGum.ContainerInstance1",
+        "NewName": "MainMenuGum.ListBoxItemInstance",
         "OldName": null,
         "ElementType": "Screens",
         "EventType": 5,
-        "TimestampUtc": "2024-12-21T20:41:28.7477669Z"
+        "TimestampUtc": "2025-01-31T03:18:15.1140816Z"
       },
       {
-        "NewName": "MainMenuGum.ShowDialogButton1",
+        "NewName": "MainMenuGum.ListBoxItemInstance1",
         "OldName": null,
         "ElementType": "Screens",
         "EventType": 5,
-        "TimestampUtc": "2024-12-21T20:42:26.2659379Z"
+        "TimestampUtc": "2025-01-31T03:18:23.4515683Z"
       },
       {
-        "NewName": "MainMenuGum.ShowDialogButton2",
+        "NewName": "MainMenuGum.ListBoxItemInstance2",
         "OldName": null,
         "ElementType": "Screens",
         "EventType": 5,
-        "TimestampUtc": "2024-12-21T20:42:31.863421Z"
+        "TimestampUtc": "2025-01-31T03:18:25.8379242Z"
       },
       {
-        "NewName": "MainMenuGum.MoveUpButton",
-        "OldName": "MainMenuGum.ShowDialogButton1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2024-12-21T20:42:40.8908338Z"
-      },
-      {
-        "NewName": "MainMenuGum.MoveSelectionUpButton",
-        "OldName": "MainMenuGum.MoveUpButton",
+        "NewName": "MainMenuGum.MoveButtonContainer",
+        "OldName": "MainMenuGum.ContainerInstance1",
         "ElementType": "Screens",
         "EventType": 7,
-        "TimestampUtc": "2024-12-21T20:42:45.5199827Z"
+        "TimestampUtc": "2025-01-31T13:06:52.2023204Z"
       },
       {
-        "NewName": "MainMenuGum.MoveSelectionDownButton",
-        "OldName": "MainMenuGum.ShowDialogButton2",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2024-12-21T20:42:53.6892415Z"
-      },
-      {
-        "NewName": "Controls/Menu",
-        "OldName": null,
-        "ElementType": "Components",
-        "EventType": 0,
-        "TimestampUtc": "2024-12-28T18:08:30.9190966Z"
-      },
-      {
-        "NewName": "Controls/Menu (Container).NineSliceInstance",
-        "OldName": null,
-        "ElementType": "Components",
-        "EventType": 5,
-        "TimestampUtc": "2024-12-28T18:09:03.7929636Z"
-      },
-      {
-        "NewName": "Controls/Menu (Container).Background",
-        "OldName": "Controls/Menu (Container).NineSliceInstance",
-        "ElementType": "Components",
-        "EventType": 7,
-        "TimestampUtc": "2024-12-28T18:10:48.9149237Z"
-      },
-      {
-        "NewName": "Controls/MenuItem",
-        "OldName": null,
-        "ElementType": "Components",
-        "EventType": 0,
-        "TimestampUtc": "2024-12-28T18:11:12.1616709Z"
-      },
-      {
-        "NewName": "Controls/MenuItem (Container).Background",
-        "OldName": null,
-        "ElementType": "Components",
-        "EventType": 5,
-        "TimestampUtc": "2024-12-28T18:12:25.9951075Z"
-      },
-      {
-        "NewName": "Controls/MenuItem (Container).TextInstance",
-        "OldName": null,
-        "ElementType": "Components",
-        "EventType": 5,
-        "TimestampUtc": "2024-12-28T18:13:12.1607677Z"
-      },
-      {
-        "NewName": "MainMenuGum.MenuInstance",
+        "NewName": "MainMenuGum.MoveButtonContainer1",
         "OldName": null,
         "ElementType": "Screens",
         "EventType": 5,
-        "TimestampUtc": "2024-12-28T18:14:32.8957611Z"
+        "TimestampUtc": "2025-01-31T13:07:04.0128455Z"
       },
       {
-        "NewName": "Controls/Menu (Container).ContainerInstance",
+        "NewName": "MainMenuGum.MoveButtonContainer2",
         "OldName": null,
-        "ElementType": "Components",
+        "ElementType": "Screens",
         "EventType": 5,
-        "TimestampUtc": "2024-12-28T18:30:12.1391509Z"
+        "TimestampUtc": "2025-01-31T13:07:22.9109837Z"
       },
       {
-        "NewName": "Controls/Menu (Container).InnerPanelInstance",
-        "OldName": "Controls/Menu (Container).ContainerInstance",
-        "ElementType": "Components",
+        "NewName": "MainMenuGum.AddItemButton1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-01-31T13:07:22.9270115Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "MainMenuGum.Container MoveButtonContainer2 in MainMenuGum",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2025-01-31T13:07:30.7765127Z"
+      },
+      {
+        "NewName": "MainMenuGum.ClearItemsButton",
+        "OldName": "MainMenuGum.AddItemButton1",
+        "ElementType": "Screens",
         "EventType": 7,
-        "TimestampUtc": "2024-12-28T18:30:23.6493181Z"
+        "TimestampUtc": "2025-01-31T13:08:11.7534667Z"
+      },
+      {
+        "NewName": "MainMenuGum.ListBoxInstance1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-01-31T15:34:59.0891976Z"
+      },
+      {
+        "NewName": "MainMenuGum.ListBoxItemInstance3",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-01-31T15:34:59.1051319Z"
+      },
+      {
+        "NewName": "MainMenuGum.ListBoxItemInstance4",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-01-31T15:34:59.1355033Z"
+      },
+      {
+        "NewName": "MainMenuGum.ListBoxItemInstance5",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-01-31T15:34:59.1512176Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "MainMenuGum.Controls/ListBoxItem ListBoxItemInstance in MainMenuGum",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2025-01-31T15:35:05.8168423Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "MainMenuGum.Controls/ListBoxItem ListBoxItemInstance1 in MainMenuGum",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2025-01-31T15:35:05.817841Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "MainMenuGum.Controls/ListBoxItem ListBoxItemInstance2 in MainMenuGum",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2025-01-31T15:35:05.8188423Z"
+      },
+      {
+        "NewName": "MainMenuGum.PrefilledListBox",
+        "OldName": "MainMenuGum.ListBoxInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-01-31T15:35:16.9879751Z"
+      },
+      {
+        "NewName": "MainMenuGum.ListBoxItemInstance6",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-01-31T15:35:48.9100925Z"
       }
-    ]
+    ],
+    "Owner": []
   }
 }

@@ -11,11 +11,20 @@ namespace FormsSampleProject.ViewModels
     public class MainMenuViewModel : ViewModel
     {
         public ObservableCollection<string> ComboBoxItems { get; set; } = new ObservableCollection<string>();
-        public ObservableCollection<string> ListBoxItems { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<string> ListBoxItems
+        {
+            get => Get<ObservableCollection<string>>();
+            set => Set(value);
+        }
         public string SelectedItem
         {
             get => Get<string>();
             set => Set(value);
+        }
+
+        public MainMenuViewModel()
+        {
+            ListBoxItems = new ObservableCollection<string>();
         }
     }
 }

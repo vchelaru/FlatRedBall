@@ -30,7 +30,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>IconSprite.Height Units</Name>
+      <Name>IconSprite.HeightUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -43,31 +43,31 @@
     </Variable>
     <Variable>
       <Type>TextureAddress</Type>
-      <Name>IconSprite.Texture Address</Name>
+      <Name>IconSprite.TextureAddress</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>IconSprite.Texture Height</Name>
+      <Name>IconSprite.TextureHeight</Name>
       <Value xsi:type="xsd:int">32</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>IconSprite.Texture Left</Name>
+      <Name>IconSprite.TextureLeft</Name>
       <Value xsi:type="xsd:int">288</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>IconSprite.Texture Top</Name>
+      <Name>IconSprite.TextureTop</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>IconSprite.Texture Width</Name>
+      <Name>IconSprite.TextureWidth</Name>
       <Value xsi:type="xsd:int">32</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -79,31 +79,31 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>IconSprite.Width Units</Name>
+      <Name>IconSprite.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>IconSprite.X Origin</Name>
+      <Name>IconSprite.XOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>IconSprite.X Units</Name>
+      <Name>IconSprite.XUnits</Name>
       <Value xsi:type="xsd:int">6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>IconSprite.Y Origin</Name>
+      <Name>IconSprite.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>IconSprite.Y Units</Name>
+      <Name>IconSprite.YUnits</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -129,7 +129,6 @@
   </State>
   <Category>
     <Name>IconCategory</Name>
-    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>None</Name>
       <Variable>
@@ -141,25 +140,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">0</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -181,25 +180,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">384</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">256</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -221,25 +220,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">256</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -261,25 +260,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">256</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -301,25 +300,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">256</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -341,25 +340,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">224</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -381,25 +380,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">480</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">224</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -428,25 +427,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">224</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -468,25 +467,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">384</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">128</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -508,25 +507,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">384</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -548,25 +547,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">448</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">128</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -588,25 +587,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">416</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">128</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -628,25 +627,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">416</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">192</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -668,25 +667,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -708,25 +707,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">224</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -748,25 +747,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">384</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -788,25 +787,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">416</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -828,25 +827,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -868,25 +867,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -908,25 +907,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">384</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">192</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -948,25 +947,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -988,25 +987,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">416</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1028,25 +1027,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">448</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1068,25 +1067,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">384</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1108,25 +1107,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">416</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1148,25 +1147,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1188,25 +1187,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">384</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1228,25 +1227,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1268,25 +1267,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">448</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1308,25 +1307,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">96</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1348,25 +1347,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">384</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">160</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1388,25 +1387,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">416</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">160</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1428,25 +1427,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">192</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1468,25 +1467,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">64</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1508,25 +1507,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">64</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1548,25 +1547,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">128</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1588,25 +1587,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">416</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">256</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1628,25 +1627,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1668,25 +1667,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">64</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1708,25 +1707,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">416</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">64</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1748,25 +1747,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">192</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1788,25 +1787,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">448</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">192</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1828,25 +1827,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">448</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1868,25 +1867,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">384</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">224</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1908,25 +1907,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">160</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1948,25 +1947,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">96</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -1988,25 +1987,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">160</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2028,25 +2027,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">448</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">160</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2068,25 +2067,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2108,25 +2107,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">384</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">64</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2148,25 +2147,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">192</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2188,25 +2187,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">416</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2228,25 +2227,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2268,25 +2267,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">448</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2308,25 +2307,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">96</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2348,25 +2347,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">448</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">224</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2388,25 +2387,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">416</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">224</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2428,25 +2427,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">448</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">96</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2468,25 +2467,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">128</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2508,25 +2507,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">160</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2548,25 +2547,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">448</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">64</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2588,25 +2587,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2628,25 +2627,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">416</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">96</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2668,25 +2667,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">128</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2708,25 +2707,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">288</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">0</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2748,25 +2747,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">384</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">0</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2788,25 +2787,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">416</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">0</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2828,25 +2827,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">352</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">0</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2868,25 +2867,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">320</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">0</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2908,25 +2907,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">448</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">0</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2948,25 +2947,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">448</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">256</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
@@ -2988,25 +2987,25 @@
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Height</Name>
+        <Name>IconSprite.TextureHeight</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Left</Name>
+        <Name>IconSprite.TextureLeft</Name>
         <Value xsi:type="xsd:int">384</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Top</Name>
+        <Name>IconSprite.TextureTop</Name>
         <Value xsi:type="xsd:int">96</Value>
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
         <Type>int</Type>
-        <Name>IconSprite.Texture Width</Name>
+        <Name>IconSprite.TextureWidth</Name>
         <Value xsi:type="xsd:int">32</Value>
         <SetsValue>true</SetsValue>
       </Variable>

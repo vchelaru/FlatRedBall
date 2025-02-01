@@ -620,6 +620,10 @@ public class FrameworkElement
 
     }
 
+    /// <summary>
+    /// Method raised when the current visual is changed or set to null. If the visual
+    /// is being replaced, this is called before the new visual is assigned.
+    /// </summary>
     protected virtual void ReactToVisualRemoved()
     {
 
