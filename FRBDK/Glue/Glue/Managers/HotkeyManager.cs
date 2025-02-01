@@ -147,7 +147,7 @@ namespace FlatRedBall.Glue.Managers
                         "Glue Compiler",
                         "BuildAndRun");
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.FocusTab(L.Texts.Build);
+                    FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.FocusTab("Build");
                     return true;
                 case Key.F12:
                     GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();

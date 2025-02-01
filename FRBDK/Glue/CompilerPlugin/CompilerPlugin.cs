@@ -123,7 +123,7 @@ namespace CompilerPlugin
             _compilerViewModel.Configuration = "Debug";
             _compilerViewModel.PropertyChanged += HandleCompilerViewModelPropertyChanged;
 
-            buildTab = CreateTab(MainControl, Localization.Texts.Build, TabLocation.Bottom);
+            buildTab = CreateTab(MainControl, "Build", TabLocation.Bottom);
             buildTab.Show();
 
             AssignControlEvents();
@@ -141,7 +141,7 @@ namespace CompilerPlugin
                     _compilerViewModel.IsPrintMsBuildCommandChecked);
                 if (!compileResponse.Succeeded)
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
+                    GlueCommands.Self.DialogCommands.FocusTab("Build");
                 }
                 else
                 {

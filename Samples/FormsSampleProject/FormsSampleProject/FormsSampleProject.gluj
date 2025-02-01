@@ -88,6 +88,9 @@
     },
     {
       "Name": "Screens\\MainMenu"
+    },
+    {
+      "Name": "Screens\\PreFilledScreen"
     }
   ],
   "EntityReferences": [],

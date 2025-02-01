@@ -18,7 +18,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>BackgroundInstance.Height Units</Name>
+      <Name>BackgroundInstance.HeightUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -30,7 +30,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>BackgroundInstance.Width Units</Name>
+      <Name>BackgroundInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -42,13 +42,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>BackgroundInstance.X Origin</Name>
+      <Name>BackgroundInstance.XOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>BackgroundInstance.X Units</Name>
+      <Name>BackgroundInstance.XUnits</Name>
       <Value xsi:type="xsd:int">6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -60,13 +60,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>BackgroundInstance.Y Origin</Name>
+      <Name>BackgroundInstance.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>BackgroundInstance.Y Units</Name>
+      <Name>BackgroundInstance.YUnits</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -90,7 +90,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>DownButtonInstance.Width Units</Name>
+      <Name>DownButtonInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -102,13 +102,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>DownButtonInstance.X Origin</Name>
+      <Name>DownButtonInstance.XOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>DownButtonInstance.X Units</Name>
+      <Name>DownButtonInstance.XUnits</Name>
       <Value xsi:type="xsd:int">6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -120,13 +120,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>DownButtonInstance.Y Origin</Name>
+      <Name>DownButtonInstance.YOrigin</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>DownButtonInstance.Y Units</Name>
+      <Name>DownButtonInstance.YUnits</Name>
       <Value xsi:type="xsd:int">5</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -163,7 +163,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>SpriteInstance1.Height Units</Name>
+      <Name>SpriteInstance1.HeightUnits</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -182,37 +182,37 @@
     </Variable>
     <Variable>
       <Type>TextureAddress</Type>
-      <Name>SpriteInstance1.Texture Address</Name>
+      <Name>SpriteInstance1.TextureAddress</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>SpriteInstance1.Texture Height</Name>
+      <Name>SpriteInstance1.TextureHeight</Name>
       <Value xsi:type="xsd:int">18</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>SpriteInstance1.Texture Left</Name>
+      <Name>SpriteInstance1.TextureLeft</Name>
       <Value xsi:type="xsd:int">105</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>SpriteInstance1.Texture Top</Name>
+      <Name>SpriteInstance1.TextureTop</Name>
       <Value xsi:type="xsd:int">15</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>SpriteInstance1.Texture Width</Name>
+      <Name>SpriteInstance1.TextureWidth</Name>
       <Value xsi:type="xsd:int">31</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>SpriteInstance1.Width Units</Name>
+      <Name>SpriteInstance1.WidthUnits</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -224,13 +224,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>SpriteInstance1.X Origin</Name>
+      <Name>SpriteInstance1.XOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>SpriteInstance1.X Units</Name>
+      <Name>SpriteInstance1.XUnits</Name>
       <Value xsi:type="xsd:int">6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -242,19 +242,19 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>SpriteInstance1.Y Origin</Name>
+      <Name>SpriteInstance1.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>SpriteInstance1.Y Units</Name>
+      <Name>SpriteInstance1.YUnits</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>SpriteInstance2.Height Units</Name>
+      <Name>SpriteInstance2.HeightUnits</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -273,37 +273,37 @@
     </Variable>
     <Variable>
       <Type>TextureAddress</Type>
-      <Name>SpriteInstance2.Texture Address</Name>
+      <Name>SpriteInstance2.TextureAddress</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>SpriteInstance2.Texture Height</Name>
+      <Name>SpriteInstance2.TextureHeight</Name>
       <Value xsi:type="xsd:int">18</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>SpriteInstance2.Texture Left</Name>
+      <Name>SpriteInstance2.TextureLeft</Name>
       <Value xsi:type="xsd:int">105</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>SpriteInstance2.Texture Top</Name>
+      <Name>SpriteInstance2.TextureTop</Name>
       <Value xsi:type="xsd:int">15</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>SpriteInstance2.Texture Width</Name>
+      <Name>SpriteInstance2.TextureWidth</Name>
       <Value xsi:type="xsd:int">31</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>SpriteInstance2.Width Units</Name>
+      <Name>SpriteInstance2.WidthUnits</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -315,13 +315,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>SpriteInstance2.X Origin</Name>
+      <Name>SpriteInstance2.XOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>SpriteInstance2.X Units</Name>
+      <Name>SpriteInstance2.XUnits</Name>
       <Value xsi:type="xsd:int">6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -333,13 +333,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>SpriteInstance2.Y Origin</Name>
+      <Name>SpriteInstance2.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>SpriteInstance2.Y Units</Name>
+      <Name>SpriteInstance2.YUnits</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -357,7 +357,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ThumbContainer.Height Units</Name>
+      <Name>ThumbContainer.HeightUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -369,7 +369,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ThumbContainer.Width Units</Name>
+      <Name>ThumbContainer.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -381,13 +381,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>ThumbContainer.X Origin</Name>
+      <Name>ThumbContainer.XOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>ThumbContainer.X Units</Name>
+      <Name>ThumbContainer.XUnits</Name>
       <Value xsi:type="xsd:int">6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -399,13 +399,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>ThumbContainer.Y Origin</Name>
+      <Name>ThumbContainer.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>ThumbContainer.Y Units</Name>
+      <Name>ThumbContainer.YUnits</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -417,7 +417,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ThumbInstance.Height Units</Name>
+      <Name>ThumbInstance.HeightUnits</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -435,7 +435,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ThumbInstance.Width Units</Name>
+      <Name>ThumbInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -453,7 +453,7 @@
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>ThumbInstance.Y Units</Name>
+      <Name>ThumbInstance.YUnits</Name>
       <Value xsi:type="xsd:int">3</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -477,7 +477,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>UpButtonInstance.Width Units</Name>
+      <Name>UpButtonInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -489,13 +489,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>UpButtonInstance.X Origin</Name>
+      <Name>UpButtonInstance.XOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>UpButtonInstance.X Units</Name>
+      <Name>UpButtonInstance.XUnits</Name>
       <Value xsi:type="xsd:int">6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -507,13 +507,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>UpButtonInstance.Y Origin</Name>
+      <Name>UpButtonInstance.YOrigin</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>UpButtonInstance.Y Units</Name>
+      <Name>UpButtonInstance.YUnits</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -545,7 +545,6 @@
   </State>
   <Category>
     <Name>ScrollBarCategory</Name>
-    <IsSetRecursively>false</IsSetRecursively>
   </Category>
   <Instance>
     <Name>BackgroundInstance</Name>

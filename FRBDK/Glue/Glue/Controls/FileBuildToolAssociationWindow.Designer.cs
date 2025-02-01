@@ -87,7 +87,7 @@ partial class FileBuildToolAssociationWindow
         this.CreateNewButton.Name = "CreateNewButton";
         this.CreateNewButton.Size = new System.Drawing.Size(240, 37);
         this.CreateNewButton.TabIndex = 5;
-        this.CreateNewButton.Text = L.Texts.BuildToolAdd;
+        this.CreateNewButton.Text = "Add new build tool";
         this.CreateNewButton.UseVisualStyleBackColor = true;
         this.CreateNewButton.Click += new System.EventHandler(this.AddButton_Click);
         // 

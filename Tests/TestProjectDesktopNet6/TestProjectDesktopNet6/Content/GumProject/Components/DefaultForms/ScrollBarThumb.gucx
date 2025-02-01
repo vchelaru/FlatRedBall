@@ -18,7 +18,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>BackgroundInstance.Height Units</Name>
+      <Name>BackgroundInstance.HeightUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -30,7 +30,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>BackgroundInstance.Width Units</Name>
+      <Name>BackgroundInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -42,13 +42,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>BackgroundInstance.X Origin</Name>
+      <Name>BackgroundInstance.XOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>BackgroundInstance.X Units</Name>
+      <Name>BackgroundInstance.XUnits</Name>
       <Value xsi:type="xsd:int">6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -60,13 +60,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>BackgroundInstance.Y Origin</Name>
+      <Name>BackgroundInstance.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>BackgroundInstance.Y Units</Name>
+      <Name>BackgroundInstance.YUnits</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -105,7 +105,6 @@
   </State>
   <Category>
     <Name>ButtonCategory</Name>
-    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Enabled</Name>
     </State>

@@ -84,10 +84,20 @@ public partial class FormsScreen
 
         RadioButton_SettingIsChecked_ShouldUncheckOtherRadioButtons();
 
+        PreFilledListBox_ShouldHaveListBoxItems_WhenAddedInGum();
 
 
 
+    }
 
+    private void PreFilledListBox_ShouldHaveListBoxItems_WhenAddedInGum()
+    {
+        Forms.PreFilledListBox.ListBoxItems.Count.ShouldBeGreaterThan(0, "because items were added in Gum, so we should have those here too");
+
+        Forms.PreFilledListBox.ListBoxItems[0].IsSelected = true;
+        Forms.PreFilledListBox.ListBoxItems[1].IsSelected = true;
+
+        Forms.PreFilledListBox.ListBoxItems[0].IsSelected.ShouldBe(false, "because selecting a different item should deselect this");
     }
 
     private void ListBox_ShouldShowItem_WhenSelectingByIndex()

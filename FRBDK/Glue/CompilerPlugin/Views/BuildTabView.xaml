@@ -29,8 +29,8 @@
             </views:WhileStoppedView>
 
             <StackPanel x:Name="WhileBuildingView" Visibility="{Binding WhileBuildingVisibility}" Orientation="Horizontal">
-                <Label Content="{x:Static localization:Texts.Building}"></Label>
-                <Button Click="HandleCancelBuildButtonClick" Content="{x:Static localization:Texts.CancelBuild}"></Button>
+                <Label Content="Building..."></Label>
+                <Button Click="HandleCancelBuildButtonClick" Content="Cancel Build"></Button>
             </StackPanel>
 
         </WrapPanel>

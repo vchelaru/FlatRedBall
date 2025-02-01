@@ -6,7 +6,7 @@
     <Name>Default</Name>
     <Variable>
       <Type>bool</Type>
-      <Name>ClipContainerInstance.Clips Children</Name>
+      <Name>ClipContainerInstance.ClipsChildren</Name>
       <Value xsi:type="xsd:boolean">true</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -18,7 +18,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ClipContainerInstance.Height Units</Name>
+      <Name>ClipContainerInstance.HeightUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -30,7 +30,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ClipContainerInstance.Width Units</Name>
+      <Name>ClipContainerInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -42,13 +42,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>ClipContainerInstance.X Origin</Name>
+      <Name>ClipContainerInstance.XOrigin</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>ClipContainerInstance.X Units</Name>
+      <Name>ClipContainerInstance.XUnits</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -60,13 +60,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>ClipContainerInstance.Y Origin</Name>
+      <Name>ClipContainerInstance.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>ClipContainerInstance.Y Units</Name>
+      <Name>ClipContainerInstance.YUnits</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -78,7 +78,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ColoredFrameInstance.Height Units</Name>
+      <Name>ColoredFrameInstance.HeightUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -90,7 +90,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ColoredFrameInstance.Width Units</Name>
+      <Name>ColoredFrameInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -102,13 +102,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>ColoredFrameInstance.X Origin</Name>
+      <Name>ColoredFrameInstance.XOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>ColoredFrameInstance.X Units</Name>
+      <Name>ColoredFrameInstance.XUnits</Name>
       <Value xsi:type="xsd:int">6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -120,13 +120,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>ColoredFrameInstance.Y Origin</Name>
+      <Name>ColoredFrameInstance.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>ColoredFrameInstance.Y Units</Name>
+      <Name>ColoredFrameInstance.YUnits</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -138,7 +138,7 @@
     </Variable>
     <Variable>
       <Type>ChildrenLayout</Type>
-      <Name>InnerPanelInstance.Children Layout</Name>
+      <Name>InnerPanelInstance.ChildrenLayout</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -150,7 +150,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>InnerPanelInstance.Height Units</Name>
+      <Name>InnerPanelInstance.HeightUnits</Name>
       <Value xsi:type="xsd:int">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -168,7 +168,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>InnerPanelInstance.Width Units</Name>
+      <Name>InnerPanelInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -186,7 +186,7 @@
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>InnerPanelInstance.Y Units</Name>
+      <Name>InnerPanelInstance.YUnits</Name>
       <Value xsi:type="xsd:int">3</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -218,7 +218,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>VerticalScrollBarInstance.Height Units</Name>
+      <Name>VerticalScrollBarInstance.HeightUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -230,13 +230,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>VerticalScrollBarInstance.X Origin</Name>
+      <Name>VerticalScrollBarInstance.XOrigin</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>VerticalScrollBarInstance.X Units</Name>
+      <Name>VerticalScrollBarInstance.XUnits</Name>
       <Value xsi:type="xsd:int">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -248,13 +248,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>VerticalScrollBarInstance.Y Origin</Name>
+      <Name>VerticalScrollBarInstance.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>VerticalScrollBarInstance.Y Units</Name>
+      <Name>VerticalScrollBarInstance.YUnits</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>

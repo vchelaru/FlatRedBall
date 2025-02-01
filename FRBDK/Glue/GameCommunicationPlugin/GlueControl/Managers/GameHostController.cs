@@ -57,7 +57,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
                 else
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
+                    GlueCommands.Self.DialogCommands.FocusTab("Build");
                 }
             };
 
@@ -93,7 +93,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
                 else
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
+                    GlueCommands.Self.DialogCommands.FocusTab("Build");
                 }
                 if (wasEditChecked && compileSucceeded && runSucceeded)
                 {
@@ -280,7 +280,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
                 else
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
+                    GlueCommands.Self.DialogCommands.FocusTab("Build");
                 }
 
             }, "Starting in edit mode", TaskExecutionPreference.AddOrMoveToEnd);

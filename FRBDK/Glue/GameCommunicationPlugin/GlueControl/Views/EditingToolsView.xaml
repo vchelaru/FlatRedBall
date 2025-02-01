@@ -19,7 +19,7 @@
                         <Image Source="{Binding ImageSource}" IsHitTestVisible="False"></Image>
                         <Button.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="{x:Static localization:Texts.StartGameInEditMode}" Command="{Binding ViewInExplorerCommand}" />
+                                <MenuItem Header="Starts the game in edit mode on the startup screen." Command="{Binding ViewInExplorerCommand}" />
                                 <MenuItem Header="{x:Static localization:Texts.SetPreviewFile}">
                                     <MenuItem Header="{x:Static localization:Texts.FromCustomFile}"  Command="{Binding SelectPreviewFileCommand}"></MenuItem>
                                     <MenuItem Header="{x:Static localization:Texts.FromEntity}" Command="{Binding SelectPreviewFromEntityCommand}"></MenuItem>

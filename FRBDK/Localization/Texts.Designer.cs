@@ -61,24 +61,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        public static string Browse {
-            get {
-                return ResourceManager.GetString("Browse", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Build.
-        /// </summary>
-        public static string Build {
-            get {
-                return ResourceManager.GetString("Build", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Which builder would you like to use for this file?.
         /// </summary>
         public static string BuilderWhichForFile {
@@ -5962,15 +5944,6 @@ namespace Localization {
         public static string Standard {
             get {
                 return ResourceManager.GetString("Standard", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Starts the game in edit mode on the startup screen..
-        /// </summary>
-        public static string StartGameInEditMode {
-            get {
-                return ResourceManager.GetString("StartGameInEditMode", resourceCulture);
             }
         }
         

@@ -408,9 +408,6 @@
   <data name="EnableGameEmbedInSettings" xml:space="preserve">
     <value>Schakel Game insluiten en bewerken in via de instellingen</value>
   </data>
-  <data name="StartGameInEditMode" xml:space="preserve">
-    <value>Start het spel in de bewerkingsmodus op het opstartscherm.</value>
-  </data>
   <data name="SelectStartupScreen" xml:space="preserve">
     <value>Selecteer Opstartscherm</value>
   </data>
@@ -1626,9 +1623,6 @@
   <data name="ProjectsSaveGenerateElements" xml:space="preserve">
     <value>Element genereren en projecten opslaan</value>
   </data>
-  <data name="Build" xml:space="preserve">
-    <value>Bouw</value>
-  </data>
   <data name="Profiling" xml:space="preserve">
     <value>Profilering</value>
   </data>
@@ -2288,9 +2282,6 @@
   </data>
   <data name="HintExistingFileList" xml:space="preserve">
     <value>De bovenstaande lijst toont alle bestanden in de inhoudsmap van het spel. &lt;LineBreak&gt;&lt;/LineBreak&gt;Om bestanden van buiten de inhoudsmap toe te voegen, klikt u op de knop Bladeren. Bestanden van buiten de inhoudsmap worden naar de inhoudsmap gekopieerd.</value>
-  </data>
-  <data name="Browse" xml:space="preserve">
-    <value>Bladeren...</value>
   </data>
   <data name="EnterUrlName" xml:space="preserve">
     <value>Voer URL-naam in:</value>

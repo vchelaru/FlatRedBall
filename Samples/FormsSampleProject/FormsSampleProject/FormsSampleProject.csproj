@@ -269,6 +269,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>MainMenuGum</Name>
     </None>
+    <None Include="Content\GumProject\Screens\PreFilledScreenGum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>PreFilledScreenGum</Name>
+    </None>
     <None Include="Content\GumProject\Screens\TestScreen.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TestScreen</Name>
@@ -321,6 +325,7 @@
     <Compile Include="Forms\Components\Controls\InputDeviceSelectorForms.Generated.cs" />
     <Compile Include="Forms\Screens\InputJoinScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\MainMenuGumForms.Generated.cs" />
+    <Compile Include="Forms\Screens\PreFilledScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\TestScreenForms.Generated.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Game1.Generated.cs">
@@ -529,6 +534,10 @@
     </Compile>
     <Compile Include="GumRuntimes\NineSliceRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\PolygonRuntime.Generated.cs" />
+    <Compile Include="GumRuntimes\PreFilledScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\PreFilledScreenGumRuntime.Generated.cs">
+      <DependentUpon>PreFilledScreenGumRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\RectangleRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\SpriteRuntime.Generated.cs" />
     <Compile Include="GumRuntimes\TestScreenRuntime.cs" />
@@ -546,6 +555,10 @@
     <Compile Include="Screens\MainMenu.cs" />
     <Compile Include="Screens\MainMenu.Generated.cs">
       <DependentUpon>MainMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\PreFilledScreen.cs" />
+    <Compile Include="Screens\PreFilledScreen.Generated.cs">
+      <DependentUpon>PreFilledScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\CameraSetup.Generated.cs" />
     <Compile Include="TileCollisions\CollidableListVsTileShapeCollectionRelationship.Generated.cs" />

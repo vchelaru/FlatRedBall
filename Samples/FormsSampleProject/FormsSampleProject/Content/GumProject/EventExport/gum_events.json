@@ -126,6 +126,118 @@
         "ElementType": "Screens",
         "EventType": 5,
         "TimestampUtc": "2025-01-31T15:35:48.9100925Z"
+      },
+      {
+        "NewName": "PreFilledScreenGum.FirstStack",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T10:52:12.1280831Z"
+      },
+      {
+        "NewName": "PreFilledScreenGum.PrefilledListBox",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T10:52:33.9302238Z"
+      },
+      {
+        "NewName": "PreFilledScreenGum.ListBoxItemInstance3",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T10:52:39.5334229Z"
+      },
+      {
+        "NewName": "PreFilledScreenGum.ListBoxItemInstance4",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T10:52:42.0830712Z"
+      },
+      {
+        "NewName": "PreFilledScreenGum.ListBoxItemInstance5",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T10:52:44.6263221Z"
+      },
+      {
+        "NewName": "PreFilledScreenGum.ListBoxItemInstance6",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T10:52:46.7995951Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "MainMenuGum.Controls/ListBox PrefilledListBox in MainMenuGum",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2025-02-01T10:52:55.5121406Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "MainMenuGum.Controls/ListBoxItem ListBoxItemInstance3 in MainMenuGum",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2025-02-01T10:52:55.7265285Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "MainMenuGum.Controls/ListBoxItem ListBoxItemInstance4 in MainMenuGum",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2025-02-01T10:52:55.7285529Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "MainMenuGum.Controls/ListBoxItem ListBoxItemInstance5 in MainMenuGum",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2025-02-01T10:52:55.7290558Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "MainMenuGum.Controls/ListBoxItem ListBoxItemInstance6 in MainMenuGum",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2025-02-01T10:52:55.7300601Z"
+      },
+      {
+        "NewName": "PreFilledScreenGum.ComboBoxInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T11:35:20.6032959Z"
+      },
+      {
+        "NewName": "PreFilledScreenGum.ListBoxItemInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T11:36:26.0829751Z"
+      },
+      {
+        "NewName": "PreFilledScreenGum.ListBoxItemInstance1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T11:36:55.8029531Z"
+      },
+      {
+        "NewName": "PreFilledScreenGum.ListBoxItemInstance2",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T11:37:03.2489486Z"
+      },
+      {
+        "NewName": "PreFilledScreenGum.ListBoxItemInstance7",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T11:37:10.9129094Z"
       }
     ],
     "Owner": []

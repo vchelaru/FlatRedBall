@@ -462,54 +462,6 @@
     </Variable>
     <Variable>
       <Type>string</Type>
-      <Name>ListBoxItemInstance3.ListItemDisplayText</Name>
-      <Value xsi:type="xsd:string">I'm added through Gum</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>string</Type>
-      <Name>ListBoxItemInstance3.Parent</Name>
-      <Value xsi:type="xsd:string">PrefilledListBox.InnerPanelInstance</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>string</Type>
-      <Name>ListBoxItemInstance4.ListItemDisplayText</Name>
-      <Value xsi:type="xsd:string">Me too!</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>string</Type>
-      <Name>ListBoxItemInstance4.Parent</Name>
-      <Value xsi:type="xsd:string">PrefilledListBox.InnerPanelInstance</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>string</Type>
-      <Name>ListBoxItemInstance5.ListItemDisplayText</Name>
-      <Value xsi:type="xsd:string">Don't forget about me!</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>string</Type>
-      <Name>ListBoxItemInstance5.Parent</Name>
-      <Value xsi:type="xsd:string">PrefilledListBox.InnerPanelInstance</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>string</Type>
-      <Name>ListBoxItemInstance6.ListItemDisplayText</Name>
-      <Value xsi:type="xsd:string">Yes, also through Gum</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>string</Type>
-      <Name>ListBoxItemInstance6.Parent</Name>
-      <Value xsi:type="xsd:string">PrefilledListBox.InnerPanelInstance</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>string</Type>
       <Name>ListBoxLabel.LabelText</Name>
       <Value xsi:type="xsd:string">List Box Example:</Value>
       <SetsValue>true</SetsValue>
@@ -875,54 +827,6 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>float</Type>
-      <Name>PrefilledListBox.Height</Name>
-      <Value xsi:type="xsd:float">145</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>string</Type>
-      <Name>PrefilledListBox.Parent</Name>
-      <Value xsi:type="xsd:string">SecondStack</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>float</Type>
-      <Name>PrefilledListBox.Width</Name>
-      <Value xsi:type="xsd:float">0</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>DimensionUnitType</Type>
-      <Name>PrefilledListBox.WidthUnits</Name>
-      <Value xsi:type="xsd:int">2</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>float</Type>
-      <Name>PrefilledListBox.X</Name>
-      <Value xsi:type="xsd:float">0</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>HorizontalAlignment</Type>
-      <Name>PrefilledListBox.XOrigin</Name>
-      <Value xsi:type="xsd:int">1</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>PositionUnitType</Type>
-      <Name>PrefilledListBox.XUnits</Name>
-      <Value xsi:type="xsd:int">6</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>float</Type>
-      <Name>PrefilledListBox.Y</Name>
-      <Value xsi:type="xsd:float">0</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
       <Type>string</Type>
       <Name>RadioButtonInstance.Parent</Name>
       <Value xsi:type="xsd:string">FirstStack</Value>
@@ -1203,11 +1107,6 @@
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Instance>
-    <Name>PrefilledListBox</Name>
-    <BaseType>Controls/ListBox</BaseType>
-    <DefinedByBase>false</DefinedByBase>
-  </Instance>
-  <Instance>
     <Name>MoveSelectionUpButton</Name>
     <BaseType>Controls/ButtonStandard</BaseType>
     <DefinedByBase>false</DefinedByBase>
@@ -1226,26 +1125,6 @@
   <Instance>
     <Name>MenuInstance</Name>
     <BaseType>Controls/Menu</BaseType>
-    <DefinedByBase>false</DefinedByBase>
-  </Instance>
-  <Instance>
-    <Name>ListBoxItemInstance3</Name>
-    <BaseType>Controls/ListBoxItem</BaseType>
-    <DefinedByBase>false</DefinedByBase>
-  </Instance>
-  <Instance>
-    <Name>ListBoxItemInstance4</Name>
-    <BaseType>Controls/ListBoxItem</BaseType>
-    <DefinedByBase>false</DefinedByBase>
-  </Instance>
-  <Instance>
-    <Name>ListBoxItemInstance5</Name>
-    <BaseType>Controls/ListBoxItem</BaseType>
-    <DefinedByBase>false</DefinedByBase>
-  </Instance>
-  <Instance>
-    <Name>ListBoxItemInstance6</Name>
-    <BaseType>Controls/ListBoxItem</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />

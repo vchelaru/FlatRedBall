@@ -30,7 +30,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>BbcodeTextWithExplicitNewline.Width Units</Name>
+      <Name>BbcodeTextWithExplicitNewline.WidthUnits</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -72,7 +72,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>BbcodeTextWithImplicitLineWrapping.Width Units</Name>
+      <Name>BbcodeTextWithImplicitLineWrapping.WidthUnits</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -119,7 +119,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>BbcodeTextWithImplicitLineWrapping1.Width Units</Name>
+      <Name>BbcodeTextWithImplicitLineWrapping1.WidthUnits</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -197,7 +197,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ColoredRectangleInstance.Width Units</Name>
+      <Name>ColoredRectangleInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -209,13 +209,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>ColoredRectangleInstance.X Origin</Name>
+      <Name>ColoredRectangleInstance.XOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>ColoredRectangleInstance.X Units</Name>
+      <Name>ColoredRectangleInstance.XUnits</Name>
       <Value xsi:type="xsd:int">6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -227,13 +227,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>ColoredRectangleInstance.Y Origin</Name>
+      <Name>ColoredRectangleInstance.YOrigin</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>ColoredRectangleInstance.Y Units</Name>
+      <Name>ColoredRectangleInstance.YUnits</Name>
       <Value xsi:type="xsd:int">5</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -269,7 +269,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ColoredRectSetsEverything.Height Units</Name>
+      <Name>ColoredRectSetsEverything.HeightUnits</Name>
       <Value xsi:type="xsd:int">5</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -305,7 +305,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ColoredRectSetsEverything.Width Units</Name>
+      <Name>ColoredRectSetsEverything.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -317,13 +317,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>ColoredRectSetsEverything.X Origin</Name>
+      <Name>ColoredRectSetsEverything.XOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>ColoredRectSetsEverything.X Units</Name>
+      <Name>ColoredRectSetsEverything.XUnits</Name>
       <Value xsi:type="xsd:int">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -335,13 +335,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>ColoredRectSetsEverything.Y Origin</Name>
+      <Name>ColoredRectSetsEverything.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>ColoredRectSetsEverything.Y Units</Name>
+      <Name>ColoredRectSetsEverything.YUnits</Name>
       <Value xsi:type="xsd:int">5</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -376,7 +376,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ComparisonForNewlineTest.Width Units</Name>
+      <Name>ComparisonForNewlineTest.WidthUnits</Name>
       <Value xsi:type="xsd:int">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -553,7 +553,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>NewlineWidthTest.Width Units</Name>
+      <Name>NewlineWidthTest.WidthUnits</Name>
       <Value xsi:type="xsd:int">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -571,7 +571,7 @@
     </Variable>
     <Variable>
       <Type>Gum.Managers.ChildrenLayout</Type>
-      <Name>NineSliceButtonInstance.Children Layout</Name>
+      <Name>NineSliceButtonInstance.ChildrenLayout</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -685,7 +685,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>NineSliceInstance1.Width Units</Name>
+      <Name>NineSliceInstance1.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -715,7 +715,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>NineSliceInstance2.Width Units</Name>
+      <Name>NineSliceInstance2.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -733,7 +733,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>NineSliceInstance3.Width Units</Name>
+      <Name>NineSliceInstance3.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -751,7 +751,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>NineSliceInstance4.Width Units</Name>
+      <Name>NineSliceInstance4.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -769,7 +769,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>NineSliceInstance5.Width Units</Name>
+      <Name>NineSliceInstance5.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -787,7 +787,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>NineSliceInstance6.Width Units</Name>
+      <Name>NineSliceInstance6.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -853,7 +853,7 @@
     </Variable>
     <Variable>
       <Type>ChildrenLayout</Type>
-      <Name>StackWithChildrenWidthDependsOnParent.Children Layout</Name>
+      <Name>StackWithChildrenWidthDependsOnParent.ChildrenLayout</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -865,7 +865,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>StackWithChildrenWidthDependsOnParent.Height Units</Name>
+      <Name>StackWithChildrenWidthDependsOnParent.HeightUnits</Name>
       <Value xsi:type="xsd:int">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -919,13 +919,13 @@
     </Variable>
     <Variable>
       <Type>Gum.Managers.ChildrenLayout</Type>
-      <Name>StronglyTypedContainerInstance.Children Layout</Name>
+      <Name>StronglyTypedContainerInstance.ChildrenLayout</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>string</Type>
-      <Name>StronglyTypedContainerInstance.Contained Type</Name>
+      <Name>StronglyTypedContainerInstance.ContainedType</Name>
       <Value xsi:type="xsd:string">NineSliceButton</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -967,7 +967,7 @@
     </Variable>
     <Variable>
       <Type>float</Type>
-      <Name>TextInstance.Font Scale</Name>
+      <Name>TextInstance.FontScale</Name>
       <Value xsi:type="xsd:float">3</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -1015,7 +1015,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>TextInstance1.Height Units</Name>
+      <Name>TextInstance1.HeightUnits</Name>
       <Value xsi:type="xsd:int">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -1039,7 +1039,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>TextInstance1.Width Units</Name>
+      <Name>TextInstance1.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -1081,7 +1081,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>TextWith0PercentWidth.Width Units</Name>
+      <Name>TextWith0PercentWidth.WidthUnits</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -1143,7 +1143,7 @@ And also lines that are long enough that they wrap on their own</Value>
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>TextWrappingSetInGum.Width Units</Name>
+      <Name>TextWrappingSetInGum.WidthUnits</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -1193,7 +1193,7 @@ wrap the text.</Value>
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>TextWrappingSetInGumRelativeToChildren.Width Units</Name>
+      <Name>TextWrappingSetInGumRelativeToChildren.WidthUnits</Name>
       <Value xsi:type="xsd:int">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -1253,7 +1253,7 @@ wrap the text.</Value>
     </Variable>
     <Variable>
       <Type>ChildrenLayout</Type>
-      <Name>TopToBottomStackTest.Children Layout</Name>
+      <Name>TopToBottomStackTest.ChildrenLayout</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -1289,7 +1289,7 @@ wrap the text.</Value>
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ToResizeInCode.Height Units</Name>
+      <Name>ToResizeInCode.HeightUnits</Name>
       <Value xsi:type="xsd:int">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -1325,7 +1325,7 @@ wrap the text.</Value>
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>TrailingSpacesTextInstance.Width Units</Name>
+      <Name>TrailingSpacesTextInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -1343,7 +1343,7 @@ wrap the text.</Value>
     </Variable>
     <Variable>
       <Type>string</Type>
-      <Name>TypedContainer.Contained Type</Name>
+      <Name>TypedContainer.ContainedType</Name>
       <Value xsi:type="xsd:string">Circle</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -1380,7 +1380,6 @@ wrap the text.</Value>
   </State>
   <Category>
     <Name>StateCategory1</Name>
-    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>On</Name>
       <Variable>

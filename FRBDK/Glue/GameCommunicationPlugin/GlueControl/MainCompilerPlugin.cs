@@ -347,7 +347,7 @@ namespace GameCommunicationPlugin.GlueControl
         {
             if (CompilerViewModel.IsToolbarPlayButtonEnabled)
             {
-                GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
+                GlueCommands.Self.DialogCommands.FocusTab("Build");
                 var succeeded = await _gameHostController.Compile();
 
                 if (succeeded)
@@ -379,7 +379,7 @@ namespace GameCommunicationPlugin.GlueControl
                 }
                 else
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
+                    GlueCommands.Self.DialogCommands.FocusTab("Build");
                 }
             }
         }

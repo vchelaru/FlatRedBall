@@ -409,9 +409,6 @@ for {1}?</value>
   <data name="EnableGameEmbedInSettings" xml:space="preserve">
     <value>Enable Game Embed and Edit in Settings</value>
   </data>
-  <data name="StartGameInEditMode" xml:space="preserve">
-    <value>Starts the game in edit mode on the startup screen.</value>
-  </data>
   <data name="SelectStartupScreen" xml:space="preserve">
     <value>Select Startup Screen</value>
   </data>
@@ -1627,9 +1624,6 @@ for {1}?</value>
   <data name="ProjectsSaveGenerateElements" xml:space="preserve">
     <value>Generating element and saving projects</value>
   </data>
-  <data name="Build" xml:space="preserve">
-    <value>Build</value>
-  </data>
   <data name="Profiling" xml:space="preserve">
     <value>Profiling</value>
   </data>
@@ -2294,9 +2288,6 @@ for {1}?</value>
     <value />
   </data>
   <data name="HintExistingFileList" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Browse" xml:space="preserve">
     <value />
   </data>
   <data name="EnterUrlName" xml:space="preserve">

@@ -2,90 +2,6 @@
   "UserEvents": {
     "vchel": [
       {
-        "NewName": "SkiaGumScreenGum.ArcInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-01-17T13:17:16.9938138Z"
-      },
-      {
-        "NewName": "SkiaGumScreenGum.ColoredCircleInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-01-17T13:17:22.0015432Z"
-      },
-      {
-        "NewName": "SkiaGumScreenGum.ColoredRectangleInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-01-17T13:17:28.6968545Z"
-      },
-      {
-        "NewName": "SkiaGumScreenGum.RoundedRectangleInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-01-17T13:17:37.7550976Z"
-      },
-      {
-        "NewName": null,
-        "OldName": "SkiaGumScreenGum.ColoredRectangle ColoredRectangleInstance in SkiaGumScreenGum",
-        "ElementType": "Screens",
-        "EventType": 6,
-        "TimestampUtc": "2025-01-17T13:17:43.3273488Z"
-      },
-      {
-        "NewName": "SkiaGumScreenGum.CanvasInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-01-17T13:17:54.2828327Z"
-      },
-      {
-        "NewName": "SkiaGumScreenGum.ArcInstance1",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-01-17T13:17:58.9896012Z"
-      },
-      {
-        "NewName": "SkiaGumScreenGum.ColoredCircleInstance1",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-01-17T13:18:01.8832834Z"
-      },
-      {
-        "NewName": "SkiaGumScreenGum.RoundedRectangleInstance1",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-01-17T13:18:05.1521776Z"
-      },
-      {
-        "NewName": "SkiaGumScreenGum.ArcInstance2",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-01-17T13:25:12.3815588Z"
-      },
-      {
-        "NewName": "SkiaGumScreenGum.ColoredCircleInstance2",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-01-17T13:25:12.3865623Z"
-      },
-      {
-        "NewName": "SkiaGumScreenGum.RoundedRectangleInstance2",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-01-17T13:25:12.3995582Z"
-      },
-      {
         "NewName": "PauseGumScreenGum.ColoredRectangleInstance",
         "OldName": null,
         "ElementType": "Screens",
@@ -98,6 +14,41 @@
         "ElementType": "Screens",
         "EventType": 5,
         "TimestampUtc": "2025-01-25T21:03:32.4162138Z"
+      },
+      {
+        "NewName": "FormsScreenGum.ListBoxInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T11:51:39.9152236Z"
+      },
+      {
+        "NewName": "FormsScreenGum.PreFilledListBox",
+        "OldName": "FormsScreenGum.ListBoxInstance",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-02-01T11:51:46.4248279Z"
+      },
+      {
+        "NewName": "FormsScreenGum.ListBoxItemInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T11:52:11.0317194Z"
+      },
+      {
+        "NewName": "FormsScreenGum.ListBoxItemInstance1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T11:52:15.2735895Z"
+      },
+      {
+        "NewName": "FormsScreenGum.ListBoxItemInstance2",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-01T11:52:16.8730004Z"
       }
     ],
     "Owner": []

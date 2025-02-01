@@ -408,9 +408,6 @@
   <data name="EnableGameEmbedInSettings" xml:space="preserve">
     <value>Activer l'intégration et la modification du jeu dans les paramètres</value>
   </data>
-  <data name="StartGameInEditMode" xml:space="preserve">
-    <value>Démarre le jeu en mode édition sur l'écran de démarrage.</value>
-  </data>
   <data name="SelectStartupScreen" xml:space="preserve">
     <value>Sélectionner l’écran de démarrage</value>
   </data>
@@ -1626,9 +1623,6 @@
   <data name="ProjectsSaveGenerateElements" xml:space="preserve">
     <value>Génération d'éléments et sauvegarde de projets</value>
   </data>
-  <data name="Build" xml:space="preserve">
-    <value>Construire</value>
-  </data>
   <data name="Profiling" xml:space="preserve">
     <value>Profilage</value>
   </data>
@@ -2285,9 +2279,6 @@
   </data>
   <data name="HintExistingFileList" xml:space="preserve">
     <value>La liste ci-dessus affiche tous les fichiers du dossier de contenu du jeu. &lt;LineBreak&gt;&lt;/LineBreak&gt;Pour ajouter des fichiers en dehors du dossier de contenu, cliquez sur le bouton Parcourir. Les fichiers extérieurs au dossier de contenu seront copiés dans le dossier de contenu.</value>
-  </data>
-  <data name="Browse" xml:space="preserve">
-    <value>Parcourir...</value>
   </data>
   <data name="EnterUrlName" xml:space="preserve">
     <value>Entrez le nom de l'URL :</value>

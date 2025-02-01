@@ -43,7 +43,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>ListBoxInstance.Width Units</Name>
+      <Name>ListBoxInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -73,7 +73,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>NineSliceInstance.Height Units</Name>
+      <Name>NineSliceInstance.HeightUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -85,7 +85,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>NineSliceInstance.Width Units</Name>
+      <Name>NineSliceInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -97,13 +97,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>NineSliceInstance.X Origin</Name>
+      <Name>NineSliceInstance.XOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>NineSliceInstance.X Units</Name>
+      <Name>NineSliceInstance.XUnits</Name>
       <Value xsi:type="xsd:int">6</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -115,13 +115,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>NineSliceInstance.Y Origin</Name>
+      <Name>NineSliceInstance.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>NineSliceInstance.Y Units</Name>
+      <Name>NineSliceInstance.YUnits</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -140,31 +140,31 @@
     </Variable>
     <Variable>
       <Type>TextureAddress</Type>
-      <Name>SpriteInstance.Texture Address</Name>
+      <Name>SpriteInstance.TextureAddress</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>SpriteInstance.Texture Height</Name>
+      <Name>SpriteInstance.TextureHeight</Name>
       <Value xsi:type="xsd:int">18</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>SpriteInstance.Texture Left</Name>
+      <Name>SpriteInstance.TextureLeft</Name>
       <Value xsi:type="xsd:int">105</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>SpriteInstance.Texture Top</Name>
+      <Name>SpriteInstance.TextureTop</Name>
       <Value xsi:type="xsd:int">15</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>int</Type>
-      <Name>SpriteInstance.Texture Width</Name>
+      <Name>SpriteInstance.TextureWidth</Name>
       <Value xsi:type="xsd:int">31</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -176,13 +176,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>SpriteInstance.X Origin</Name>
+      <Name>SpriteInstance.XOrigin</Name>
       <Value xsi:type="xsd:int">2</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>SpriteInstance.X Units</Name>
+      <Name>SpriteInstance.XUnits</Name>
       <Value xsi:type="xsd:int">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -194,13 +194,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>SpriteInstance.Y Origin</Name>
+      <Name>SpriteInstance.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>SpriteInstance.Y Units</Name>
+      <Name>SpriteInstance.YUnits</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -236,7 +236,7 @@
     </Variable>
     <Variable>
       <Type>DimensionUnitType</Type>
-      <Name>TextInstance.Width Units</Name>
+      <Name>TextInstance.WidthUnits</Name>
       <Value xsi:type="xsd:int">4</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -248,13 +248,13 @@
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>
-      <Name>TextInstance.X Origin</Name>
+      <Name>TextInstance.XOrigin</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>TextInstance.X Units</Name>
+      <Name>TextInstance.XUnits</Name>
       <Value xsi:type="xsd:int">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -266,13 +266,13 @@
     </Variable>
     <Variable>
       <Type>VerticalAlignment</Type>
-      <Name>TextInstance.Y Origin</Name>
+      <Name>TextInstance.YOrigin</Name>
       <Value xsi:type="xsd:int">1</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>PositionUnitType</Type>
-      <Name>TextInstance.Y Units</Name>
+      <Name>TextInstance.YUnits</Name>
       <Value xsi:type="xsd:int">7</Value>
       <SetsValue>true</SetsValue>
     </Variable>
@@ -292,7 +292,6 @@
   </State>
   <Category>
     <Name>ComboBoxCategory</Name>
-    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Enabled</Name>
       <Variable>

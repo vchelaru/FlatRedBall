@@ -34,7 +34,7 @@
                         <ToolTip>
                             <StackPanel>
                                 <TextBlock FontWeight="Bold" Text="Run In Edit Mode"></TextBlock>
-                                <TextBlock Text="{x:Static localization:Texts.StartGameInEditMode}"></TextBlock>
+                                <TextBlock Text="Starts the game in edit mode on the startup screen."></TextBlock>
                             </StackPanel>
                         </ToolTip>
                     </Button.ToolTip>
@@ -81,7 +81,7 @@
 
                 <materialDesign:PackIcon Kind="alertoctagram" Foreground="Orange" VerticalAlignment="Center" Visibility="{Binding MessageAboutEditModeDisabledVisibility}" ToolTipService.InitialShowDelay="0">
                     <materialDesign:PackIcon.ToolTip>
-                        <TextBlock>Game is not in edit mode. Enable in settings.</TextBlock>
+                        <TextBlock>Edit mode disabled - enable in settings.</TextBlock>
                     </materialDesign:PackIcon.ToolTip>
                 </materialDesign:PackIcon>
                 

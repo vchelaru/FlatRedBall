@@ -19,7 +19,7 @@
     </Variable>
     <Variable>
       <Type>float</Type>
-      <Name>TextInstance.Font Scale</Name>
+      <Name>TextInstance.FontScale</Name>
       <Value xsi:type="xsd:float">5</Value>
       <SetsValue>true</SetsValue>
     </Variable>

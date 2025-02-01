@@ -112,9 +112,9 @@ public class BuildToolAssociationManager
         }
 
         NewFileWindow nfw = new NewFileWindow();
-        nfw.ComboBoxMessage = L.Texts.BuilderWhichForFile;
+        nfw.ComboBoxMessage = "Build";
 
-        int commandLineArgumentsId = nfw.AddTextBox(L.Texts.CliExtraArguments);
+        int commandLineArgumentsId = nfw.AddTextBox("Enter extra command line arguments:");
             
         bool showNoneOption = Elements.AvailableAssetTypes.Self.AllAssetTypes
             .Any(item => item.Extension == sourceExtension && string.IsNullOrEmpty(item.CustomBuildToolName));

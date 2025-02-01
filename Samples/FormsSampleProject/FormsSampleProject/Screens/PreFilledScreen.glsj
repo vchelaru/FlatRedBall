@@ -1,0 +1,34 @@
+{
+  "Tags": [
+    "GLUE"
+  ],
+  "Source": "GLUE",
+  "ReferencedFiles": [
+    {
+      "Name": "GumProject/Screens/PreFilledScreenGum.gusx",
+      "IsSharedStatic": true,
+      "RuntimeType": "FormsSampleProject.GumRuntimes.PreFilledScreenGumRuntime",
+      "ProjectsToExcludeFrom": []
+    }
+  ],
+  "CustomVariables": [
+    {
+      "Properties": [
+        {
+          "Name": "Type",
+          "Value": "string",
+          "Type": "String"
+        },
+        {
+          "Name": "Category",
+          "Value": "Layer",
+          "Type": "String"
+        }
+      ],
+      "Name": "DefaultLayer",
+      "Category": "Layer"
+    }
+  ],
+  "Name": "Screens\\PreFilledScreen",
+  "CustomClassesForExport": []
+}
