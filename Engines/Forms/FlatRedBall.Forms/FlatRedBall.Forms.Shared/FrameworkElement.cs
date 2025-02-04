@@ -28,7 +28,6 @@ using MonoGameGum.Input;
 namespace MonoGameGum.Forms.Controls;
 #endif
 
-
 #region Enums
 
 public enum TabDirection
@@ -42,7 +41,6 @@ public enum TabbingFocusBehavior
     FocusableIfInputReceiver,
     SkipOnTab
 }
-
 #endregion
 
 #region Events
@@ -54,9 +52,7 @@ public class KeyEventArgs : EventArgs
 }
 #endif
 
-
 public delegate void KeyEventHandler(object sender, KeyEventArgs e);
-
 
 #endregion
 
