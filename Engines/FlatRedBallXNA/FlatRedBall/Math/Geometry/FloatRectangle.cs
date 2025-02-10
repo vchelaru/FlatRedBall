@@ -27,7 +27,7 @@ namespace FlatRedBall.Math.Geometry
         public float Height { get => Top - Bottom; }
 
         /// <summary>
-        /// A <see cref="Point"/> located in the center of this <see cref="Rectangle"/>.
+        /// A <see cref="Point"/> located in the center of this.
         /// </summary>
         public Point Center
         {
