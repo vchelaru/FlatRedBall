@@ -57,6 +57,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\Slider.cs">
       <Link>Controls\%(Filename)%(Extension)</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\StackPanel.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\TextBox.cs">
       <Link>Controls\%(Filename)%(Extension)</Link>
     </Compile>
