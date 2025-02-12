@@ -74,6 +74,8 @@ public partial class FormsScreen
     {
         Forms_ShouldRemoveInternalBinding_WhenBindingContextChanges();
 
+        Binding_ShouldCascadeToChildren_WhenChildrenAreAddedToParent();
+
         DerivedControls_ShouldHaveVisualCreated_WhenInstantiated();
 
         DialogBox_ShouldHaveMultiplePages_WhenEnteringLongText();
@@ -88,6 +90,24 @@ public partial class FormsScreen
 
 
 
+    }
+
+    private void Binding_ShouldCascadeToChildren_WhenChildrenAreAddedToParent()
+    {
+        var stackPanel = new StackPanel();
+
+        var viewModel = new ViewModel();
+        var buttonBefore = new Button();
+        stackPanel.AddChild(buttonBefore);
+        stackPanel.BindingContext = viewModel;
+
+        buttonBefore.BindingContext.ShouldBe(viewModel);
+
+        var button = new Button();
+        button.BindingContext.ShouldBe(null);
+
+        stackPanel.AddChild(button);
+        button.BindingContext.ShouldBe(viewModel);
     }
 
     private void PreFilledListBox_ShouldHaveListBoxItems_WhenAddedInGum()

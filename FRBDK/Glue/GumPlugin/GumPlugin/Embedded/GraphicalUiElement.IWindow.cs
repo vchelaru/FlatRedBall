@@ -24,6 +24,7 @@ namespace Gum.Wireframe
     }
     public partial class GraphicalUiElement : FlatRedBall.Gui.Controls.IControl, FlatRedBall.Graphics.Animation.IAnimatable
     {
+        #region VmToUiProperty struct
         struct VmToUiProperty
         {
             public string VmProperty;
@@ -40,6 +41,8 @@ namespace Gum.Wireframe
 
             public static VmToUiProperty Unassigned => new VmToUiProperty();
         }
+
+        #endregion
 
         class HandledActions
         {
@@ -161,6 +164,23 @@ namespace Gum.Wireframe
                 }
             }
             return false;
+        }
+
+        partial void OnConstructor()
+        {
+            this.ParentChanged += HandleParentChanged_IWindow;
+        }
+
+        private void HandleParentChanged_IWindow(object sender, EventArgs args)
+        {
+            var parent = this.EffectiveParentGue;
+
+            var newInherited = parent?.BindingContext;
+
+            if(mBindingContext == null && mInheritedBindingContext != newInherited)
+            {
+                InheritedBindingContext = newInherited;
+            }
         }
 
         private void CallCustomInitialize()
@@ -1054,7 +1074,6 @@ namespace Gum.Wireframe
                         }
                     }
                 }
-
             }
         }
 
