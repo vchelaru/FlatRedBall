@@ -273,8 +273,15 @@ namespace Gum.Wireframe
 
         private bool mEnabled = true;
 
+        [Obsolete("Use IsEnabled")]
         public bool Enabled
         {
+            get => IsEnabled;
+            set => IsEnabled = value;
+        }
+
+        public bool IsEnabled
+        { 
             get => mEnabled;
             set
             {
