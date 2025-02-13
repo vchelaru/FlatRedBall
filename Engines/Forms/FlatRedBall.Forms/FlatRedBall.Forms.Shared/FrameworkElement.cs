@@ -509,10 +509,14 @@ public class FrameworkElement
     /// to a Gum screen in Gum will automatically be displayed when the Screen is created, and calling
     /// this will result in the object being added twice.</remarks>
     /// <param name="layer">The Layer to be used to display this element.</param>
+#if FRB
     public void Show(FlatRedBall.Graphics.Layer layer = null)
+#else
+    public void Show(Layer layer = null)
+#endif
     {
 #if DEBUG
-        if(Visual == null)
+        if (Visual == null)
         {
             throw new InvalidOperationException("Visual must be set before calling Show");
         }
@@ -543,7 +547,12 @@ public class FrameworkElement
         else
 #endif
         {
-            Visual.AddToManagers(RenderingLibrary.SystemManagers.Default, gumLayer);
+            Visual.AddToManagers(RenderingLibrary.SystemManagers.Default,
+#if FRB
+                gumLayer);
+#else
+                layer);
+#endif
         }
     }
 
