@@ -22,6 +22,7 @@ using FlatRedBall.Gui;
 using FlatRedBall.Input;
 using FlatRedBall.Instructions;
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
+using Buttons = FlatRedBall.Input.Xbox360GamePad.Button;
 namespace FlatRedBall.Forms.Controls;
 #else
 using MonoGameGum.Input;
@@ -85,7 +86,6 @@ public class FrameworkElement
     public static InteractiveGue ModalRoot { get; set; }
 
 #endif
-
 
     protected bool isFocused;
     protected double timeFocused;
@@ -508,8 +508,8 @@ public class FrameworkElement
     /// This is typically only called if the element is instantiated in code. Elements added
     /// to a Gum screen in Gum will automatically be displayed when the Screen is created, and calling
     /// this will result in the object being added twice.</remarks>
-    /// <param name="frbLayer">The FlatRedBall Layer to be used to display this element.</param>
-    public void Show(FlatRedBall.Graphics.Layer frbLayer = null)
+    /// <param name="layer">The Layer to be used to display this element.</param>
+    public void Show(FlatRedBall.Graphics.Layer layer = null)
     {
 #if DEBUG
         if(Visual == null)
@@ -518,10 +518,11 @@ public class FrameworkElement
         }
 #endif
 
+#if FRB
         Layer gumLayer = null;
-        if(frbLayer != null)
+        if(layer != null)
         {
-            gumLayer = Gum.GumIdb.Self.GumLayersOnFrbLayer(frbLayer).FirstOrDefault();
+            gumLayer = Gum.GumIdb.Self.GumLayersOnFrbLayer(layer).FirstOrDefault();
 
 #if DEBUG
             if(gumLayer == null)
@@ -531,7 +532,6 @@ public class FrameworkElement
 #endif
         }
 
-#if FRB
         if(!FlatRedBallServices.IsThreadPrimary())
         {
             InstructionManager.AddSafe(() =>
@@ -547,6 +547,7 @@ public class FrameworkElement
         }
     }
 
+#if FRB
     /// <summary>
     /// Displays this visual element (calls Show), and returns a task which completes once
     /// the dialog is removed.
@@ -577,6 +578,7 @@ public class FrameworkElement
 
         return null;
     }
+#endif
 
     /// <summary>
     /// Every-frame logic. This will automatically be called if this element is added to the FrameworkElementManager
@@ -748,7 +750,6 @@ public class FrameworkElement
 
     protected void PushValueToViewModel([CallerMemberName]string uiPropertyName = null)
     {
-
         var kvp = vmPropsToUiProps.FirstOrDefault(item => item.Value == uiPropertyName);
 
         if(kvp.Value == uiPropertyName)
@@ -784,6 +785,7 @@ public class FrameworkElement
     /// Whether to use left and right directions as navigation. If false, left and right directions are ignored for navigation.
     /// </summary>
     public bool IsUsingLeftAndRightGamepadDirectionsForNavigation { get; set; } = true;
+
     protected void HandleGamepadNavigation(Xbox360GamePad gamepad)
     {
         if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
@@ -902,8 +904,6 @@ public class FrameworkElement
         {
             int index = 0;
 
-            bool forceSelect = false;
-
             if(tabDirection == TabDirection.Down)
             {
                 index = 0;
@@ -913,17 +913,12 @@ public class FrameworkElement
                 index = children.Count - 1;
             }
 
-            if(!forceSelect)
+            for (int i = 0; i < children.Count; i++)
             {
-                for (int i = 0; i < children.Count; i++)
+                if (children[i] == requestingVisual)
                 {
-                    var childElement = children[i];
-
-                    if (childElement == requestingVisual)
-                    {
-                        index = i;
-                        break;
-                    }
+                    index = i;
+                    break;
                 }
             }
 
@@ -970,7 +965,6 @@ public class FrameworkElement
                 {
                     if(childAtI?.Visible == true && childAtI.Enabled && (elementAtI == null || elementAtI.IsEnabled))
                     {
-
                         // let this try to handle it:
                         didChildHandle = HandleTab(tabDirection, null, childAtI, shouldAskParent:false);
 
@@ -1006,10 +1000,12 @@ public class FrameworkElement
                 bool didFocusNewItem = false;
                 if ( shouldAskParent)
                 {
+#if FRB
                     // if this is a dominant window, don't allow tabbing out
                     var isDominant = GuiManager.DominantWindows.Contains(parentVisual);
 
                     if(!isDominant)
+#endif
                     {
                         if ( parentVisual?.Parent != null)
                         {
@@ -1031,18 +1027,44 @@ public class FrameworkElement
         return didChildHandle;
     }
 
-    public virtual void UpdateState()
-    { }
+    /// <summary>
+    /// Gets the state according to the element's current properties (such as whether it is enabled) and applies it
+    /// to refresh the Visual's appearance.
+    /// </summary>
+    public virtual void UpdateState() { }
 
     protected void RaiseKeyDown(KeyEventArgs e)
     {
         KeyDown?.Invoke(this, e);
     }
 
+
+    public const string DisabledState = "Disabled";
+    public const string DisabledFocusedState = "DisabledFocused";
+    public const string EnabledState = "Enabled";
+    public const string FocusedState = "Focused";
+    public const string HighlightedState = "Highlighted";
+    public const string HighlightedFocusedState = "HighlightedFocused";
+    public const string PushedState = "Pushed";
+
     protected string GetDesiredState()
     {
-        var cursor = GuiManager.Cursor;
+        var cursor = MainCursor;
+
+#if DEBUG
+        if (cursor == null)
+        {
+            throw new InvalidOperationException("MainCursor must be assigned before performing any UI logic");
+        }
+#endif
+
         var primaryDown = cursor.PrimaryDown;
+
+        bool pushedByGamepads = false;
+        for (int i = 0; i < GamePadsForUiControl.Count; i++)
+        {
+            pushedByGamepads = pushedByGamepads || (GamePadsForUiControl[i].ButtonDown(Buttons.A));
+        }
 
         var isTouchScreen = cursor.LastInputDevice == InputDevice.TouchScreen;
 
@@ -1050,18 +1072,22 @@ public class FrameworkElement
         {
             if (isFocused)
             {
-                return "DisabledFocused";
+                return DisabledFocusedState;
             }
             else
             {
-                return "Disabled";
+                return DisabledState;
             }
         }
         else if (IsFocused)
         {
             if (cursor.WindowPushed == visual && primaryDown)
             {
-                return "Pushed";
+                return PushedState;
+            }
+            else if (pushedByGamepads)
+            {
+                return PushedState;
             }
             // Even if the cursor is reported as being over the button, if the
             // cursor got its input from a touch screen then the cursor really isn't
@@ -1070,18 +1096,18 @@ public class FrameworkElement
             else if (GetIfIsOnThisOrChildVisual(cursor) &&
                 !isTouchScreen)
             {
-                return "HighlightedFocused";
+                return HighlightedFocusedState;
             }
             else
             {
-                return "Focused";
+                return FocusedState;
             }
         }
         else if (GetIfIsOnThisOrChildVisual(cursor))
         {
             if (cursor.WindowPushed == visual && primaryDown)
             {
-                return "Pushed";
+                return PushedState;
             }
             // Even if the cursor is reported as being over the button, if the
             // cursor got its input from a touch screen then the cursor really isn't
@@ -1089,16 +1115,16 @@ public class FrameworkElement
             // is a physical on-screen cursor
             else if (!isTouchScreen)
             {
-                return "Highlighted";
+                return HighlightedState;
             }
             else
             {
-                return "Enabled";
+                return EnabledState;
             }
         }
         else
         {
-            return "Enabled";
+            return EnabledState;
         }
     }
 
