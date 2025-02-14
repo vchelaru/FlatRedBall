@@ -106,6 +106,12 @@ namespace GumPlugin.CodeGeneration
                 }
             }
 
+            // These are properties we never generate. In some cases
+            // we don't generate them because they are already handled
+            // by base GraphicalUiElement. In other cases we just don't
+            // want to support them.
+            // If a variable is to be excluded only for certain types, see
+            // GetIfShouldGenerateProperty
             mVariableNamesToSkipForProperties.Add("Custom Texture Coordinates"); // replaced by texture address mode
             mVariableNamesToSkipForProperties.Add("CustomTextureCoordinates"); // replaced by texture address mode
             mVariableNamesToSkipForProperties.Add("Height Units");
@@ -415,9 +421,17 @@ namespace GumPlugin.CodeGeneration
                 return false;
             }
 
-            if(standardElementSave.Name == "Container" && variable.Name == "Color")
+            if(standardElementSave.Name == "Container" )
             {
-                return false;
+                if(variable.Name is "Color"
+                    // These may get supported in the future, but
+                    // we need to have an updated Glux version, and
+                    // the container needs to explicitly contain an InvisibleRenderable.
+                    or "Alpha" or "IsRenderTarget" or "Blend")
+                {
+                    return false;
+                }
+
             }
             if(standardElementSave.Name == "Svg")
             {

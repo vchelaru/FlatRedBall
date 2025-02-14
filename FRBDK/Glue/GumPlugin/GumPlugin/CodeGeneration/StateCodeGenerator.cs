@@ -22,6 +22,8 @@ namespace GumPlugin.CodeGeneration
 
         List<string> mVariableNamesToSkipForStates = new List<string>();
 
+        Dictionary<string, List<string>> typeSpecificVariableNamesToSkipForStates = new ();
+
         public static Dictionary<string, string> VariableNamesToReplaceForStates = new Dictionary<string, string>();
 
         #endregion
@@ -95,6 +97,13 @@ namespace GumPlugin.CodeGeneration
             // September 17 2014
             // no longer needed:
             //mVariableNamesToSkipForStates.Add("State");
+
+            typeSpecificVariableNamesToSkipForStates["Container"] = new List<string>
+            {
+                "Alpha",
+                "Blend",
+                "IsRenderTarget"
+            };
 
 
         }
@@ -480,6 +489,16 @@ namespace GumPlugin.CodeGeneration
             if (toReturn && mVariableNamesToSkipForStates.Contains(variableRootName))
             {
                 toReturn = false;
+            }
+
+            if(toReturn && typeSpecificVariableNamesToSkipForStates.ContainsKey(container.Name))
+            {
+                var typeSpecificVariables = typeSpecificVariableNamesToSkipForStates[container.Name];
+
+                if(typeSpecificVariables.Contains(variableRootName))
+                {
+                    toReturn = false;
+                }
             }
 
             bool hasSourceObject = !string.IsNullOrEmpty(variable.SourceObject);
