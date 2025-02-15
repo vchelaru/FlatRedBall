@@ -217,10 +217,12 @@ namespace FlatRedBall.Content.ContentLoaders
                         // Update Feb 14, 2025
                         // can we mipmap textures
                         // that aren't power of 2 now?
-                        //result = new RenderTarget2D(Renderer.GraphicsDevice, file.Width, file.Height);
+#if WEB
+                        result = new RenderTarget2D(Renderer.GraphicsDevice, file.Width, file.Height);
+#else
                         //result = new RenderTarget2D(Renderer.GraphicsDevice, file.Width, file.Height,);
                         result = new RenderTarget2D(Renderer.GraphicsDevice, file.Width, file.Height, CreateMipMaps, SurfaceFormat.Color, DepthFormat.None);
-
+#endif
                     }
 
 
