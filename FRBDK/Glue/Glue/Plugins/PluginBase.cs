@@ -684,16 +684,29 @@ namespace FlatRedBall.Glue.Plugins
             return menuItem;
         }
 
+        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, Action action, string container, int preferredIndex = -1)
+        {
+            return AddMenuItemTo(whatToAdd, (_, _) => action(), container, preferredIndex);
+        }
+
+        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, EventHandler eventHandler, string container, int preferredIndex = -1)
+        {
+            return AddMenuItemTo(whatToAdd, whatToAddId:null, eventHandler, container, preferredIndex);
+        }
+
+        [Obsolete("Use AddMenuItemTo which does not take an ID")]
         protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, string whatToAddId, EventHandler eventHandler, string container)
         {
             return AddMenuItemTo(whatToAdd, whatToAddId, eventHandler, container, -1);
         }
 
+        [Obsolete("Use AddMenuItemTo which does not take an ID")]
         protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, string whatToAddId, Action action, string container)
         {
             return AddMenuItemTo(whatToAdd, whatToAddId, (not, used) => action?.Invoke(), container, -1);
         }
 
+        [Obsolete("Use AddMenuItemTo which does not take an ID")]
         protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, string whatToAddId, EventHandler eventHandler, string container, int preferredIndex)
         {
             var menuItem = new ToolStripMenuItem(whatToAdd, null, eventHandler);

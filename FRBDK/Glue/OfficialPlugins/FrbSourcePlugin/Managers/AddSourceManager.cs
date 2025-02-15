@@ -217,7 +217,7 @@ internal static class AddSourceManager
     #endregion
 
     public static async Task HandleLinkToSourceClicked(AddFrbSourceViewModel viewModel) =>
-        await LinkToSourceInternal(viewModel.FrbRootFolder, viewModel.GumRootFolder, viewModel.IncludeGumSkia, GlueState.Self.CurrentMainProject);
+        await LinkToSourceInternal(viewModel.FrbRootFolder, viewModel.GumRootFolder, viewModel.IncludeGumSkia, viewModel.VisualStudioProject);
 
     public static async Task LinkToSourceUsingDefaults(VisualStudioProject visualStudioProject)
     {

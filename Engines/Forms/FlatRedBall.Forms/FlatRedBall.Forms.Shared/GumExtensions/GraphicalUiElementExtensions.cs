@@ -3,7 +3,6 @@ using RenderingLibrary;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using RenderingLibrary;
 using RenderingLibrary.Graphics;
 
 namespace FlatRedBall.Forms.GumExtensions

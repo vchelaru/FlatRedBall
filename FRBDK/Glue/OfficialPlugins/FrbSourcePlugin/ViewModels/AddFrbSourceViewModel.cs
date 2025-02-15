@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.VSHelpers.Projects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,14 @@ namespace OfficialPlugins.FrbSourcePlugin.ViewModels
         public string FrbRootFolder { get; set; }
         public string GumRootFolder { get; set; }
         public bool IncludeGumSkia { get; set; }
+
+        public VisualStudioProject VisualStudioProject
+        {
+            get => Get<VisualStudioProject>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(VisualStudioProject))]
+        public string Title => $"Add source to {VisualStudioProject}?";
     }
 }

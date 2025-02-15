@@ -60,15 +60,21 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         private AddFrbSourceView control;
         private AddFrbSourceViewModel ViewModel;
 
-        private ToolStripMenuItem miLinkSource;
+        private ToolStripMenuItem _linkToSourceMenuItem;
+        private readonly GlueState _glueState;
 
         public override string FriendlyName => "FRB Source";
 
         #endregion
 
+        public FrbSourcePlugin()
+        {
+            _glueState = GlueState.Self;
+        }
+
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
-            miLinkSource.Owner.Items.Remove(miLinkSource);
+            _linkToSourceMenuItem.Owner.Items.Remove(_linkToSourceMenuItem);
 
             this.ReactToLoadedGlux -= HandleGluxLoaded;
             this.ReactToUnloadedGlux -= HandleGluxUnloaded;
@@ -78,13 +84,12 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         public override void StartUp()
         {
-            miLinkSource = this.AddMenuItemTo(
+            _linkToSourceMenuItem = this.AddMenuItemTo(
                 "Link Game to FRB Source", 
-                Localization.MenuIds.LinkGameToFrbSourceId, 
-                ShowGameToGlueSourceTab, 
-                Localization.MenuIds.ProjectId);
+                (Action)null, 
+                "Project");
 
-            miLinkSource.Enabled = false;
+            _linkToSourceMenuItem.Enabled = false;
 
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
@@ -92,24 +97,62 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         private void HandleGluxUnloaded()
         {
-            miLinkSource.Enabled = false;
+            _linkToSourceMenuItem.Enabled = false;
+            RefreshLinkToSourceItems();
         }
 
         private void HandleGluxLoaded()
         {
             var mainProject = GlueState.Self.CurrentMainProject;
             if (mainProject is MonoGameDesktopGlBaseProject 
-                or FnaDesktopProject or AndroidProject 
-                or IosMonogameProject or Xna4Project or AndroidMonoGameNet8Project 
-                or IosMonoGameNet8Project or KniWebProject)
+                or FnaDesktopProject
+                or Xna4Project
+                or AndroidMonoGameNet8Project 
+                or IosMonoGameNet8Project
+                or KniWebProject)
             {
-                miLinkSource.Enabled = true;
+                _linkToSourceMenuItem.Enabled = true;
+            }
+
+            RefreshLinkToSourceItems();
+        }
+
+        private void RefreshLinkToSourceItems()
+        {
+            var project = _glueState.CurrentMainProject;
+
+            if(project == null)
+            {
+                _linkToSourceMenuItem.DropDownItems.Clear();
+
+            }
+            else
+            {
+                void AddItem(VisualStudioProject project)
+                {
+                    _linkToSourceMenuItem.DropDownItems.Add(
+                        project.Name,
+                        null,
+                        (_, _) => ShowGameToGlueSourceTab(project));
+
+                }
+                AddItem(_glueState.CurrentMainProject);
+
+                foreach (var item in _glueState.SyncedProjects)
+                {
+                    if(item is VisualStudioProject visualStudioProject)
+                    {
+                        AddItem(visualStudioProject);
+                    }
+                }
             }
         }
 
-        private void ShowGameToGlueSourceTab()
+        private void ShowGameToGlueSourceTab(VisualStudioProject project)
         {
             CreateTabIfNecessary();
+
+
 
             // Github for desktop has a standard folder for source files, so let's default to that if it exists
 
@@ -122,7 +165,8 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                 ViewModel.GumRootFolder = AddSourceManager.DefaultGumFilePath;
             }
 
-            var alreadyLinked = GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+            var alreadyLinked = project.IsFrbSourceLinked();
+            ViewModel.VisualStudioProject = project;
             ViewModel.AlreadyLinkedMessageVisibility = alreadyLinked.ToVisibility();
 
             Tab.Show();
