@@ -55,6 +55,7 @@
     <Compile Remove="Embedded\GumCollidableExtensions.cs" />
     <Compile Remove="Embedded\GumIdb.cs" />
     <Compile Remove="Embedded\GumToFrbShapeRelationship.cs" />
+    <Compile Remove="Embedded\LocalizationManagerWrapper.cs" />
     <Compile Remove="Embedded\PositionedObjectGueWrapper.cs" />
     <Compile Remove="Embedded\SystemManagers.FlatRedBall.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />

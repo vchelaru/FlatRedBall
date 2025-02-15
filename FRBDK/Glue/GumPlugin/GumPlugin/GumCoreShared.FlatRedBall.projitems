@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Embedded\GumToFrbShapeRelationship.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Embedded\IFrameworkElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Embedded\IGumScreenOwner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Embedded\LocalizationManagerWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Embedded\PositionedObjectGueWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Embedded\SystemManagers.FlatRedBall.cs" />
   </ItemGroup>

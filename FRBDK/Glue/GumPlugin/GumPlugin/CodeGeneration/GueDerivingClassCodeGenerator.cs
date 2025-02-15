@@ -194,15 +194,18 @@ namespace GumPlugin.CodeGeneration
 
             foreach(var behaviorReference in elementSave.Behaviors)
             {
-                var behavior = ObjectFinder.Self.GetBehavior(behaviorReference);
-
-                if(behavior != null)
+                if(ObjectFinder.Self.GumProjectSave != null)
                 {
-                    // This could be a bad reference, so tolerate it
-                    var fullName = CodeGeneratorManager.Self.BehaviorCodeGenerator
-                        .GetFullyQualifiedBehaviorName(behavior);
+                    var behavior = ObjectFinder.Self.GetBehavior(behaviorReference);
 
-                    inheritance += $", {fullName}";
+                    if(behavior != null)
+                    {
+                        // This could be a bad reference, so tolerate it
+                        var fullName = CodeGeneratorManager.Self.BehaviorCodeGenerator
+                            .GetFullyQualifiedBehaviorName(behavior);
+
+                        inheritance += $", {fullName}";
+                    }
                 }
             }
 
