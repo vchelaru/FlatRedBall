@@ -1,42 +1,36 @@
 {
   "UserEvents": {
-    "vchel": [
+    "vchel": [],
+    "Owner": [],
+    "d1638316d18f4a1e23a287aaaa12b6c540f704e257a6549bc9a672497ccc934e": [
       {
-        "NewName": "FormsScreenGum.ListBoxInstance",
+        "NewName": "TestScreen.TextWrappingSetInGumRelativeToChildren1",
         "OldName": null,
         "ElementType": "Screens",
         "EventType": 5,
-        "TimestampUtc": "2025-02-01T11:51:39.9152236Z"
+        "TimestampUtc": "2025-02-16T18:22:43.5936725Z"
       },
       {
-        "NewName": "FormsScreenGum.PreFilledListBox",
-        "OldName": "FormsScreenGum.ListBoxInstance",
+        "NewName": "TestScreen.TruncateVerticalTextInstance",
+        "OldName": "TestScreen.TextWrappingSetInGumRelativeToChildren1",
         "ElementType": "Screens",
         "EventType": 7,
-        "TimestampUtc": "2025-02-01T11:51:46.4248279Z"
+        "TimestampUtc": "2025-02-16T18:22:58.8773212Z"
       },
       {
-        "NewName": "FormsScreenGum.ListBoxItemInstance",
-        "OldName": null,
+        "NewName": "TestScreen.TruncateVerticalTextInstance",
+        "OldName": "TestScreen.TextWrappingSetInGumRelativeToChildren1",
         "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-02-01T11:52:11.0317194Z"
+        "EventType": 7,
+        "TimestampUtc": "2025-02-16T18:22:58.8783221Z"
       },
       {
-        "NewName": "FormsScreenGum.ListBoxItemInstance1",
-        "OldName": null,
+        "NewName": "TestScreen.TruncateVerticalTextInstance",
+        "OldName": "TestScreen.TextWrappingSetInGumRelativeToChildren1",
         "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-02-01T11:52:15.2735895Z"
-      },
-      {
-        "NewName": "FormsScreenGum.ListBoxItemInstance2",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-02-01T11:52:16.8730004Z"
+        "EventType": 7,
+        "TimestampUtc": "2025-02-16T18:22:58.8793235Z"
       }
-    ],
-    "Owner": []
+    ]
   }
 }

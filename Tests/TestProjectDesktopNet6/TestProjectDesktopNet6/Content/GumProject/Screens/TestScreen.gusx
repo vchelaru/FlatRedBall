@@ -1342,6 +1342,59 @@ wrap the text.</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>int</Type>
+      <Name>TruncateVerticalTextInstance.FontSize</Name>
+      <Value xsi:type="xsd:int">14</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TruncateVerticalTextInstance.Height</Name>
+      <Value xsi:type="xsd:float">33</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>TruncateVerticalTextInstance.Parent</Name>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>TruncateVerticalTextInstance.Text</Name>
+      <Value xsi:type="xsd:string">This text has multiple lines. They should truncate after a few.</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>TextOverflowVerticalMode</Type>
+      <Name>TruncateVerticalTextInstance.TextOverflowVerticalMode</Name>
+      <Value xsi:type="xsd:int">1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TruncateVerticalTextInstance.Width</Name>
+      <Value xsi:type="xsd:float">90</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>DimensionUnitType</Type>
+      <Name>TruncateVerticalTextInstance.WidthUnits</Name>
+      <Value xsi:type="xsd:int">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TruncateVerticalTextInstance.X</Name>
+      <Value xsi:type="xsd:float">627</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TruncateVerticalTextInstance.Y</Name>
+      <Value xsi:type="xsd:float">793</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>string</Type>
       <Name>TypedContainer.ContainedType</Name>
       <Value xsi:type="xsd:string">Circle</Value>
@@ -1377,6 +1430,11 @@ wrap the text.</Value>
       <Value xsi:type="xsd:float">440.5</Value>
       <SetsValue>true</SetsValue>
     </Variable>
+    <Variable>
+      <Type>VerticalTruncationState</Type>
+      <Name>VerticalTruncationStateState</Name>
+      <SetsValue>true</SetsValue>
+    </Variable>
   </State>
   <Category>
     <Name>StateCategory1</Name>
@@ -1395,6 +1453,27 @@ wrap the text.</Value>
         <Type>State</Type>
         <Name>SwitchInstance.State</Name>
         <Value xsi:type="xsd:string">Off</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+  </Category>
+  <Category>
+    <Name>VerticalTruncationState</Name>
+    <State>
+      <Name>YesTruncate</Name>
+      <Variable>
+        <Type>TextOverflowVerticalMode</Type>
+        <Name>TruncateVerticalTextInstance.TextOverflowVerticalMode</Name>
+        <Value xsi:type="xsd:int">1</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+    <State>
+      <Name>NoTruncate</Name>
+      <Variable>
+        <Type>TextOverflowVerticalMode</Type>
+        <Name>TruncateVerticalTextInstance.TextOverflowVerticalMode</Name>
+        <Value xsi:type="xsd:int">0</Value>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>
@@ -1621,6 +1700,11 @@ wrap the text.</Value>
   </Instance>
   <Instance>
     <Name>TextWrappingSetInGumRelativeToChildren</Name>
+    <BaseType>Text</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>TruncateVerticalTextInstance</Name>
     <BaseType>Text</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>

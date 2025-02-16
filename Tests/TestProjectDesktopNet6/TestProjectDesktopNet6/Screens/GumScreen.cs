@@ -85,6 +85,22 @@ public partial class GumScreen
         TextGue_ShouldMatchInternalText_WhenMismatchOccursOnAssignment();
 
         TextGue_ShouldMatchInternalText_WhenAssigignedOnTextRuntime();
+
+        TextGue_ShouldTruncate_WhenSetToTruncate();
+    }
+
+    private void TextGue_ShouldTruncate_WhenSetToTruncate()
+    {
+        var text = this.GumScreen_.GetGraphicalUiElementByName("TruncateVerticalTextInstance") as TextRuntime;
+
+        text.TextOverflowVerticalMode.ShouldBe(TextOverflowVerticalMode.TruncateLine);
+
+        EntireGumScreen.CurrentVerticalTruncationStateState = TestScreenRuntime.VerticalTruncationState.NoTruncate;
+        text.TextOverflowVerticalMode.ShouldBe(TextOverflowVerticalMode.SpillOver);
+
+        EntireGumScreen.CurrentVerticalTruncationStateState = TestScreenRuntime.VerticalTruncationState.YesTruncate;
+        text.TextOverflowVerticalMode.ShouldBe(TextOverflowVerticalMode.TruncateLine);
+
     }
 
     private void TextGue_ShouldMatchInternalText_WhenMismatchOccursOnAssignment()

@@ -72,13 +72,13 @@ public partial class FormsScreen
 
     void CustomInitialize()
     {
+        DialogBox_ShouldHaveMultiplePages_WhenEnteringLongText();
         Forms_ShouldRemoveInternalBinding_WhenBindingContextChanges();
 
         Binding_ShouldCascadeToChildren_WhenChildrenAreAddedToParent();
 
         DerivedControls_ShouldHaveVisualCreated_WhenInstantiated();
 
-        DialogBox_ShouldHaveMultiplePages_WhenEnteringLongText();
         DialogBox_ShouldWrapTextProperly_WhenShowingMultiplePages();
 
         ListBox_ShouldRaiseSelectectionChanged_WhenSelectedObjectIsSet();
@@ -155,6 +155,10 @@ public partial class FormsScreen
         {
             dialogBoxString += "This is a long string.\n";
         }
+
+        var textInstance = dialogBox.Visual.GetGraphicalUiElementByName("TextInstance");
+        textInstance.HeightUnits.ShouldNotBe(Gum.DataTypes.DimensionUnitType.RelativeToChildren);
+        textInstance.TextOverflowVerticalMode.ShouldBe(RenderingLibrary.Graphics.TextOverflowVerticalMode.TruncateLine);
 
         dialogBox.Show(dialogBoxString);
         dialogBox.PagesRemaining.ShouldNotBe(0, "because this text should be long enough to require multiple pages");
