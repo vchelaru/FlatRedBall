@@ -59,7 +59,7 @@ jobs:
     - name: Build FlatRedBall Web Debug
       run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Kni.Web.sln'
     - name: Package FlatRedBall Web
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: WebKniNet8Debug
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Kni.Web\bin\Debug\net8.0\
@@ -74,7 +74,7 @@ jobs:
       run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Kni.Web.sln'
       ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
     - name: Package FlatRedBall Web
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: WebKniNet8Release
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Kni.Web\bin\Release\net8.0-ios\
@@ -83,7 +83,7 @@ jobs:
     - name: Build FlatRedBall iOS .NET 8 Debug
       run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
     - name: Package FlatRedBall iOS .NET 8
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: iOSMonoGameNet8Debug
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Debug\net8.0-ios\
@@ -98,7 +98,7 @@ jobs:
       run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
       ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
     - name: Package FlatRedBall iOS .NET 8
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: iOSMonoGameNet8Release
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Release\net8.0-ios\
@@ -107,7 +107,7 @@ jobs:
     - name: Build FlatRedBall Android .NET 8 Debug
       run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
     - name: Package FlatRedBall Android .NET 8
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: AndroidMonoGameNet8Debug
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Debug\net8.0-android\
@@ -122,7 +122,7 @@ jobs:
       run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
       ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
     - name: Package FlatRedBall Android .NET 8
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: AndroidMonoGameNet8Release
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Release\net8.0-android\
@@ -133,7 +133,7 @@ jobs:
     - name: Build FlatRedBall FNA .NET 7 Debug
       run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
     - name: Package FlatRedBall FNA .NET 7
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: DesktopGlFnaNet7Debug
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Debug/net7.0/
@@ -148,7 +148,7 @@ jobs:
       run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
       ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
     - name: Package FlatRedBall FNA .NET 7
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: DesktopGlFnaNet7Release
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Release/net7.0/    
@@ -157,7 +157,7 @@ jobs:
     - name: Build FlatRedBall DesktopGL .NET 6 Debug
       run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
     - name: Package FlatRedBall .NET 6
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: DesktopGlNet6Debug
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Debug/net6.0/
@@ -172,7 +172,7 @@ jobs:
       run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
       ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
     - name: Package FlatRedBall .NET 6
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: DesktopGlNet6Release
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Release/net6.0/
