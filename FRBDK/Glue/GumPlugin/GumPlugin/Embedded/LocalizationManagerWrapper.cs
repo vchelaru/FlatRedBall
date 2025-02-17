@@ -10,7 +10,8 @@ public class LocalizationManagerWrapper : ILocalizationService
 {
     public string Translate(string stringId)
     {
-        return LocalizationManager.Translate(stringId);
+        var toReturn = LocalizationManager.Translate(stringId);
+        return toReturn;
     }
 
 

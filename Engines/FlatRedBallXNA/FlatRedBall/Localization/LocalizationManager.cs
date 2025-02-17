@@ -65,6 +65,12 @@ namespace FlatRedBall.Localization
             get => databaseFileNamesReadOnly;
         }
 
+        /// <summary>
+        /// Characters to replace when returning a localized string. This can be used to strip smart quotes, or
+        /// replace characters for glyphs to support remapped gamepad buttons.
+        /// </summary>
+        public static Dictionary<char, char> CharacterReplacements { get; private set; } = new Dictionary<char, char>();
+
         #endregion
 
         static LocalizationManager()
@@ -244,7 +250,9 @@ namespace FlatRedBall.Localization
                 var entry = mStringDatabase[stringID];
                 if (entry.Rows[0].Count() > language)
                 {
-                    return mStringDatabase[stringID].Rows[0][language];
+
+                    var beforeReplacement = mStringDatabase[stringID].Rows[0][language];
+                    return ReplaceCharacters(beforeReplacement);
                 }
                 else
                 {
@@ -271,7 +279,7 @@ namespace FlatRedBall.Localization
             {
                 var language = forcedLanguage ?? CurrentLanguage;
                 var entry = mStringDatabase[stringID];
-                var toReturn = entry.Rows.Select(item => item[language]);
+                var toReturn = entry.Rows.Select(item => ReplaceCharacters(item[language]));
 
                 return toReturn.ToArray();
             }
@@ -283,6 +291,19 @@ namespace FlatRedBall.Localization
             {
                 return new string[] { stringID + " - UNTRANSLATED" };
             }
+        }
+
+        static string ReplaceCharacters(string beforeReplacement)
+        {
+            var toReturn = beforeReplacement;
+            foreach(var kvp in CharacterReplacements)
+            {
+                if(toReturn.Contains(kvp.Key))
+                {
+                    toReturn = toReturn.Replace(kvp.Key, kvp.Value);
+                }
+            }
+            return toReturn;
         }
 
 		/// <summary>
