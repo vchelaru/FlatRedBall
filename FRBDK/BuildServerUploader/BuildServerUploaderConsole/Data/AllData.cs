@@ -166,8 +166,8 @@ namespace BuildServerUploaderConsole.Data
                 // This is the built folder when building FlatRedBall.Forms sln
                 // All files below (DebugFiles and ReleaseFiles) should be contained
                 // in that output folder because the project should reference those files
-                var debugBinFolder = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA\bin\Debug\net7.0\";
-                var releaseBinFolder = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA\bin\Release\net7.0\";
+                var debugBinFolder = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA\bin\Debug\net8.0\";
+                var releaseBinFolder = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA\bin\Release\net8.0\";
 
                 engine.DebugFiles.Add($"{debugBinFolder}FlatRedBall.FNA.dll");
                 engine.DebugFiles.Add($"{debugBinFolder}FlatRedBall.FNA.pdb");
