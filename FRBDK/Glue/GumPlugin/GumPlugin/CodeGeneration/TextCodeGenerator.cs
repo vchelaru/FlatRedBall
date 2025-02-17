@@ -23,52 +23,8 @@ namespace GumPlugin.CodeGeneration
         {
             standardSetterReplacements.Add("Text", (codeBlock) =>
             {
-                //codeBlock.If("this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren")
-                //    .Line("// make it have no line wrap width before assignign the text:")
-                //    .Line("ContainedText.Width = 0;");
-
-                //codeBlock.Line("ContainedText.RawText = value;");
-                //codeBlock.Line("UpdateLayout();");
-
-                codeBlock.Line("var widthBefore = ContainedText.WrappedTextWidth;");
-                codeBlock.Line("var heightBefore = ContainedText.WrappedTextHeight;");
-
-                codeBlock.Line("if (this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren)");
-                codeBlock.Line("{");
-                codeBlock.Line("    // make it have no line wrap width before assignign the text:");
-                codeBlock.Line("    ContainedText.Width = 0;");
-                codeBlock.Line("}");
-
-                var fileVersion = GlueState.Self.CurrentGlueProject?.FileVersion;
-
-                // don't directly set it, go through the CustomSetPropertyOnRenderable so bbcode works
-                if(fileVersion >= (int)GluxVersions.GumTextSupportsBbCode)
-                {
-                    codeBlock.Line("global::Gum.Wireframe.CustomSetPropertyOnRenderable.TrySetPropertyOnText(ContainedText, this, nameof(Text), value);");
-                }
-                else
-                {
-                    codeBlock.Line("ContainedText.RawText = value;");
-                }
-
-                if (fileVersion >= (int)GluxVersions.GraphicalUiElementINotifyPropertyChanged)
-                {
-                    codeBlock.Line("NotifyPropertyChanged();");
-                }
-
-                codeBlock.Line("var shouldUpdate = widthBefore != ContainedText.WrappedTextWidth || heightBefore != ContainedText.WrappedTextHeight;");
-
-                codeBlock.Line("if (shouldUpdate)");
-                codeBlock.Line("{");
-                if (fileVersion >= (int)GluxVersions.GumTextObjectsUpdateTextWith0ChildDepth)
-                {
-                    codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, int.MaxValue/2);");
-                }
-                else
-                {
-                    codeBlock.Line("    UpdateLayout(true, int.MaxValue/2);");
-                }
-                codeBlock.Line("}");
+                var textVariable = "nameof(Text)";
+                GenerateTextAssignment(codeBlock, textVariable);
             });
 
             standardSetterReplacements.Add("FontScale", (codeBlock) =>
@@ -93,6 +49,50 @@ namespace GumPlugin.CodeGeneration
                     .Line("ContainedText.IsTruncatingWithEllipsisOnLastLine = false;");
             });
               
+        }
+
+        private static void GenerateTextAssignment(ICodeBlock codeBlock, string textVariable)
+        {
+            codeBlock.Line("var widthBefore = ContainedText.WrappedTextWidth;");
+            codeBlock.Line("var heightBefore = ContainedText.WrappedTextHeight;");
+
+            codeBlock.Line("if (this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren)");
+            codeBlock.Line("{");
+            codeBlock.Line("    // make it have no line wrap width before assignign the text:");
+            codeBlock.Line("    ContainedText.Width = 0;");
+            codeBlock.Line("}");
+
+            var fileVersion = GlueState.Self.CurrentGlueProject?.FileVersion;
+
+            // don't directly set it, go through the CustomSetPropertyOnRenderable so bbcode works
+            if (fileVersion >= (int)GluxVersions.GumTextSupportsBbCode)
+            {
+                codeBlock.Line($"global::Gum.Wireframe.CustomSetPropertyOnRenderable.TrySetPropertyOnText(ContainedText, this, {textVariable}, value);");
+            }
+            else
+            {
+                codeBlock.Line("ContainedText.RawText = value;");
+            }
+
+            if (fileVersion >= (int)GluxVersions.GraphicalUiElementINotifyPropertyChanged)
+            {
+                codeBlock.Line("NotifyPropertyChanged();");
+            }
+
+            codeBlock.Line("var shouldUpdate = widthBefore != ContainedText.WrappedTextWidth || heightBefore != ContainedText.WrappedTextHeight;");
+
+            codeBlock.Line("if (shouldUpdate)");
+            codeBlock.Line("{");
+            if (fileVersion >= (int)GluxVersions.GumTextObjectsUpdateTextWith0ChildDepth)
+            {
+                codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, int.MaxValue/2);");
+            }
+            else
+            {
+                codeBlock.Line("    UpdateLayout(true, int.MaxValue/2);");
+            }
+
+            codeBlock.Line("}");
         }
 
         public void AddVariableNamesToSkipForProperties(List<string> mVariableNamesToSkipForProperties)
@@ -180,7 +180,19 @@ namespace GumPlugin.CodeGeneration
                     standardElementSave,
                     generateSetter: false);
 
+                GenerateTextNoTranslate(currentBlock);
             }
+        }
+
+        private void GenerateTextNoTranslate(ICodeBlock currentBlock)
+        {
+            var property = currentBlock.Property("public string", "TextNoTranslate");
+
+            property.Get().Line("return Text;");
+            var setBlock = property.Set();
+
+            var textVariable = "\"TextNoTranslate\"";
+            GenerateTextAssignment(setBlock, textVariable);
         }
     }
 }
