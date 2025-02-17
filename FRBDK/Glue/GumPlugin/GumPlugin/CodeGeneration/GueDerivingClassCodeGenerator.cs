@@ -16,6 +16,7 @@ using FlatRedBall.Glue.SaveClasses;
 using GumPlugin.ViewModels;
 using GumPlugin.CodeGeneration;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
+using ExCSS;
 
 namespace GumPlugin.CodeGeneration
 {
@@ -291,6 +292,17 @@ namespace GumPlugin.CodeGeneration
 
         #region Generate Properties
 
+        private void GenerateProperties(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            GenerateInstanceProperties(elementSave, currentBlock);
+
+            // We only generate exposed variables here, because all other
+            // variables are declared in the base class.
+            GenerateExposedVariableProperties(elementSave, currentBlock);
+
+            GenerateCustomVariableProperties(elementSave, currentBlock);
+        }
+
         public string GetQualifiedRuntimeTypeFor(InstanceSave instance, ElementSave container, bool includeGlobalPrefix = true)
         {
             var element = ObjectFinder.Self.GetElementSave(instance);
@@ -321,15 +333,6 @@ namespace GumPlugin.CodeGeneration
 
                 return $"{qualifiedRuntimeType}";
             }
-        }
-
-        private void GenerateProperties(ElementSave elementSave, ICodeBlock currentBlock)
-        {
-            GenerateInstanceProperties(elementSave, currentBlock);
-
-            // We only generate exposed variables here, because all other
-            // variables are declared in the base class.
-            GenerateExposedVariableProperties(elementSave, currentBlock);
         }
 
         private void GenerateInstanceProperties(ElementSave elementSave, ICodeBlock currentBlock)
@@ -375,7 +378,7 @@ namespace GumPlugin.CodeGeneration
             if (elementSave.DefaultState != null)
             {
                 var allVariablesToProcess = elementSave.DefaultState.Variables
-                    .Where(item => !string.IsNullOrEmpty(item.ExposedAsName))
+                    .Where(item => !string.IsNullOrEmpty(item.ExposedAsName) && !item.IsCustomVariable)
                     .ToList();
 
                 foreach (var variable in allVariablesToProcess)
@@ -384,6 +387,33 @@ namespace GumPlugin.CodeGeneration
                 }
 
             }
+        }
+
+        private void GenerateCustomVariableProperties(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            if(elementSave.DefaultState != null)
+            {
+                var allVariablesToProcess = elementSave.DefaultState.Variables
+                    .Where(item => item.IsCustomVariable)
+                    .ToList();
+
+                // todo - need to figure out how to handle inheritance. But for now I need this
+                // on my project at the top level
+
+                foreach(var variable in allVariablesToProcess)
+                {
+                    GenerateCustomVariableProperty(elementSave, currentBlock, variable);
+                }
+            }
+        }
+
+        private void GenerateCustomVariableProperty(ElementSave elementSave, ICodeBlock currentBlock, VariableSave variable)
+        {
+            string variableType = variable.Type;
+
+            string propertyName = variable.Name.Replace(" ", "_");
+
+            ICodeBlock property = currentBlock.AutoProperty("public " + variableType, propertyName);
         }
 
         private void GenerateExposedVariableProperty(ElementSave elementSave, ICodeBlock currentBlock, VariableSave variable)
@@ -1040,6 +1070,18 @@ namespace GumPlugin.CodeGeneration
                 var value = Convert.ToSingle(variableValue, System.Globalization.CultureInfo.CurrentCulture);
                 variableValue = value.ToString(System.Globalization.CultureInfo.InvariantCulture) + "f";
 
+            }
+            else if(variableSave.Type == "float?")
+            {
+                if(variableValue == null)
+                {
+                    variableValue = "null";
+                }
+                else
+                {
+                    var value = Convert.ToSingle(variableValue, System.Globalization.CultureInfo.CurrentCulture);
+                    variableValue = value.ToString(System.Globalization.CultureInfo.InvariantCulture) + "f";
+                }
             }
             else if(variableSave.Type == "decimal")
             {

@@ -56,38 +56,45 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 
     public class CodeBlockAutoProperty : CodeBlockBase
     {
-        public CodeBlockAutoProperty(ICodeBlock pParent, string pPre, string pName, string pGetPre, string pSetPre) : base(pParent)
+        public CodeBlockAutoProperty(ICodeBlock pParent, string pPre, string propertyName, string getPrefix, string setPrefix) : base(pParent)
         {
-            PreCodeLines.Add(new CodeLine(StringHelper.SpaceStrings(pPre,pName,"{", pGetPre, "get;", pSetPre, "set;", "}")));
+            PreCodeLines.Add(new CodeLine(StringHelper.SpaceStrings(pPre, propertyName, "{", getPrefix, "get;", setPrefix, "set;", "}")));
         }
     }
 
     public static class CodeBlockPropertyExtension
     {
-        public static ICodeBlock AutoProperty(this ICodeBlock pParent, string pPre, string pName)
+        /// <summary>
+        /// Creates an auto property.
+        /// </summary>
+        /// <param name="parentCodeBlock">The parent code block, like the entire class</param>
+        /// <param name="propertyPrefix">Property prefix, like "public int"</param>
+        /// <param name="propertyName">Property name like "CurrentHealth"</param>
+        /// <returns>The code block</returns>
+        public static ICodeBlock AutoProperty(this ICodeBlock parentCodeBlock, string propertyPrefix, string propertyName)
         {
-            return new CodeBlockAutoProperty(pParent, pPre, pName, null, null);
+            return new CodeBlockAutoProperty(parentCodeBlock, propertyPrefix, propertyName, null, null);
         }
 
-        public static ICodeBlock AutoProperty(this ICodeBlock pParent, string pPre, string pName, string pGetPre, string pSetPre)
+        public static ICodeBlock AutoProperty(this ICodeBlock parentCodeBlock, string propertyPrefix, string propertyName, string getterPrefix, string setterPrefix)
         {
-            return new CodeBlockAutoProperty(pParent, pPre, pName, pGetPre, pSetPre);
+            return new CodeBlockAutoProperty(parentCodeBlock, propertyPrefix, propertyName, getterPrefix, setterPrefix);
         }
 
-        public static ICodeBlock Property(this ICodeBlock pParent, string pPre, string pName)
+        public static ICodeBlock Property(this ICodeBlock parentCodeBlock, string pPre, string pName)
         {
-            return new CodeBlockProperty(pParent, pPre, pName);
+            return new CodeBlockProperty(parentCodeBlock, pPre, pName);
         }
 
-        public static ICodeBlock Get(this ICodeBlock pParent, string pPre)
+        public static ICodeBlock Get(this ICodeBlock parentCodeBlock, string pPre)
         {
-            return new CodeBlockGet(pParent, pPre);
+            return new CodeBlockGet(parentCodeBlock, pPre);
         }
 
 
-        public static ICodeBlock AutoGet(this ICodeBlock pParent)
+        public static ICodeBlock AutoGet(this ICodeBlock parentCodeBlock)
         {
-            return new CodeBlockAutoGet(pParent);
+            return new CodeBlockAutoGet(parentCodeBlock);
         }
 
         public static ICodeBlock Get(this ICodeBlock pParent)
