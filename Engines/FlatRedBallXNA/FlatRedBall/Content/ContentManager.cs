@@ -63,6 +63,13 @@ namespace FlatRedBall.Content
 	{
         #region Fields
 
+        /// <summary>
+        /// If true, the ContentManager calls Section.GetAndStartContextAndTime and
+        /// Section.EndContextAndTime for every content load. Typically if this is set to
+        /// true, then a top-level section should be active to receive these calls
+        /// </summary>
+        public static bool CreateLoadSections { get; set; } = false;
+
         TextureContentLoader textureContentLoader = new TextureContentLoader();
 
 		//internal Dictionary<string, Type> mAssetTypeAssociation;
@@ -583,52 +590,58 @@ namespace FlatRedBall.Content
 				FileManager.ThrowExceptionIfFileDoesntExist(assetName);
 #endif
 #endif
+                if(CreateLoadSections)
+                {
+                    Section.GetAndStartContextAndTime("Load " + assetName);
+                }
+                try
+                {
 
-				IDisposable loadedAsset = null;
+                    IDisposable loadedAsset = null;
 
-				if (typeof(T) == typeof(Texture2D) || typeof(T) == typeof(Microsoft.Xna.Framework.Graphics.Texture2D))
-				{
-                    // for now we'll create it here, eventually have it in a dictionary:
-					loadedAsset = textureContentLoader.Load(assetName);
-				}
+                    if (typeof(T) == typeof(Texture2D) || typeof(T) == typeof(Microsoft.Xna.Framework.Graphics.Texture2D))
+                    {
+                        // for now we'll create it here, eventually have it in a dictionary:
+                        loadedAsset = textureContentLoader.Load(assetName);
+                    }
 
-				#region Scene
+                    #region Scene
 
-				else if (typeof(T) == typeof(FlatRedBall.Scene))
-				{
-					FlatRedBall.Scene scene = FlatRedBall.Content.Scene.SceneSave.FromFile(assetName).ToScene(mName);
+                    else if (typeof(T) == typeof(FlatRedBall.Scene))
+                    {
+                        FlatRedBall.Scene scene = FlatRedBall.Content.Scene.SceneSave.FromFile(assetName).ToScene(mName);
 
-					object sceneAsObject = scene;
+                        object sceneAsObject = scene;
 
-					lock (mNonDisposableDictionary)
-					{
-						if (!mNonDisposableDictionary.ContainsKey(fullNameWithType))
-						{
-							mNonDisposableDictionary.Add(fullNameWithType, scene);
-						}
-					}
-					return (T)sceneAsObject;
-				}
+                        lock (mNonDisposableDictionary)
+                        {
+                            if (!mNonDisposableDictionary.ContainsKey(fullNameWithType))
+                            {
+                                mNonDisposableDictionary.Add(fullNameWithType, scene);
+                            }
+                        }
+                        return (T)sceneAsObject;
+                    }
 
-				#endregion
+                    #endregion
 
-				#region EmitterList
+                    #region EmitterList
 
-				else if (typeof(T) == typeof(EmitterList))
-				{
-					EmitterList emitterList = EmitterSaveList.FromFile(assetName).ToEmitterList(mName);
-
-
-					mNonDisposableDictionary.Add(fullNameWithType, emitterList);
+                    else if (typeof(T) == typeof(EmitterList))
+                    {
+                        EmitterList emitterList = EmitterSaveList.FromFile(assetName).ToEmitterList(mName);
 
 
-					return (T)((object)emitterList);
+                        mNonDisposableDictionary.Add(fullNameWithType, emitterList);
 
-				}
 
-				#endregion
+                        return (T)((object)emitterList);
 
-				#region Image
+                    }
+
+                    #endregion
+
+                    #region Image
 #if !MONOGAME && !FNA
 				else if (typeof(T) == typeof(Image))
 				{
@@ -643,9 +656,9 @@ namespace FlatRedBall.Content
 
 				}
 #endif
-				#endregion
+                    #endregion
 
-				#region BitmapList
+                    #region BitmapList
 #if !MONOGAME && !FNA
 
 				else if (typeof(T) == typeof(BitmapList))
@@ -655,222 +668,230 @@ namespace FlatRedBall.Content
 				}
 #endif
 
-				#endregion
+                    #endregion
 
-				#region NodeNetwork
-				else if (typeof(T) == typeof(NodeNetwork))
-				{
-					NodeNetwork nodeNetwork = NodeNetworkSave.FromFile(assetName).ToNodeNetwork();
-
-					mNonDisposableDictionary.Add(fullNameWithType, nodeNetwork);
-
-					return (T)((object)nodeNetwork);
-				}
-				#endregion
-
-				#region ShapeCollection
-
-				else if (typeof(T) == typeof(ShapeCollection))
-				{
-					ShapeCollection shapeCollection =
-						ShapeCollectionSave.FromFile(assetName).ToShapeCollection();
-
-					mNonDisposableDictionary.Add(fullNameWithType, shapeCollection);
-
-					return (T)((object)shapeCollection);
-				}
-				#endregion
-
-				#region PositionedObjectList<Polygon>
-
-				else if (typeof(T) == typeof(PositionedObjectList<FlatRedBall.Math.Geometry.Polygon>))
-				{
-					PositionedObjectList<FlatRedBall.Math.Geometry.Polygon> polygons =
-						PolygonSaveList.FromFile(assetName).ToPolygonList();
-					mNonDisposableDictionary.Add(fullNameWithType, polygons);
-					return (T)((object)polygons);
-				}
-
-				#endregion
-
-				#region AnimationChainList
-
-				else if (typeof(T) == typeof(AnimationChainList))
-				{
-
-					if (assetName.EndsWith("gif"))
-					{
-                        throw new NotImplementedException();
-
-						// We used to support gif => AnimationChain but this is being
-						// dropped. It could be added in the future if needed.
-						//AnimationChainList acl = new AnimationChainList();
-						//acl.Add(FlatRedBall.Graphics.Animation.AnimationChain.FromGif(assetName, this.mName));
-						//acl[0].ParentGifFileName = assetName;
-						//loadedAsset = acl;
-					}
-#if NET6_0_OR_GREATER
-                    else if(assetName.EndsWith("aseprite") || assetName.EndsWith("ase"))
-					{
-						loadedAsset = AsepriteFileLoader.Load(assetName).ToAnimationChainList();
-					}
-#endif
-                    else
+                    #region NodeNetwork
+                    else if (typeof(T) == typeof(NodeNetwork))
                     {
-						loadedAsset =
-							AnimationChainListSave.FromFile(assetName).ToAnimationChainList(mName);
+                        NodeNetwork nodeNetwork = NodeNetworkSave.FromFile(assetName).ToNodeNetwork();
+
+                        mNonDisposableDictionary.Add(fullNameWithType, nodeNetwork);
+
+                        return (T)((object)nodeNetwork);
+                    }
+                    #endregion
+
+                    #region ShapeCollection
+
+                    else if (typeof(T) == typeof(ShapeCollection))
+                    {
+                        ShapeCollection shapeCollection =
+                            ShapeCollectionSave.FromFile(assetName).ToShapeCollection();
+
+                        mNonDisposableDictionary.Add(fullNameWithType, shapeCollection);
+
+                        return (T)((object)shapeCollection);
+                    }
+                    #endregion
+
+                    #region PositionedObjectList<Polygon>
+
+                    else if (typeof(T) == typeof(PositionedObjectList<FlatRedBall.Math.Geometry.Polygon>))
+                    {
+                        PositionedObjectList<FlatRedBall.Math.Geometry.Polygon> polygons =
+                            PolygonSaveList.FromFile(assetName).ToPolygonList();
+                        mNonDisposableDictionary.Add(fullNameWithType, polygons);
+                        return (T)((object)polygons);
+                    }
+
+                    #endregion
+
+                    #region AnimationChainList
+
+                    else if (typeof(T) == typeof(AnimationChainList))
+                    {
+
+                        if (assetName.EndsWith("gif"))
+                        {
+                            throw new NotImplementedException();
+
+                            // We used to support gif => AnimationChain but this is being
+                            // dropped. It could be added in the future if needed.
+                            //AnimationChainList acl = new AnimationChainList();
+                            //acl.Add(FlatRedBall.Graphics.Animation.AnimationChain.FromGif(assetName, this.mName));
+                            //acl[0].ParentGifFileName = assetName;
+                            //loadedAsset = acl;
+                        }
+#if NET6_0_OR_GREATER
+                        else if (assetName.EndsWith("aseprite") || assetName.EndsWith("ase"))
+                        {
+                            loadedAsset = AsepriteFileLoader.Load(assetName).ToAnimationChainList();
+                        }
+#endif
+                        else
+                        {
+                            loadedAsset =
+                                AnimationChainListSave.FromFile(assetName).ToAnimationChainList(mName);
 
 
-					}
+                        }
 
-					mNonDisposableDictionary.Add(fullNameWithType, loadedAsset);
-				}
+                        mNonDisposableDictionary.Add(fullNameWithType, loadedAsset);
+                    }
 
-				#endregion
+                    #endregion
 
-				else if(typeof(T) == typeof(Song))
-				{
-                    var loader = new SongLoader();
-                    return (T)(object) loader.Load(assetName);
-				}
+                    else if (typeof(T) == typeof(Song))
+                    {
+                        var loader = new SongLoader();
+                        return (T)(object)loader.Load(assetName);
+                    }
 #if MONOGAME || FNA
 
-                else if (typeof(T) == typeof(SoundEffect))
-                {
-                    SoundEffect soundEffect = null;
+                    else if (typeof(T) == typeof(SoundEffect))
+                    {
+                        SoundEffect soundEffect = null;
 
-					var modifiedAssetName = (assetName.StartsWith(@".\") || assetName.StartsWith(@"./")
-						? assetName.Substring(2)
-						: assetName);
+                        var modifiedAssetName = (assetName.StartsWith(@".\") || assetName.StartsWith(@"./")
+                            ? assetName.Substring(2)
+                            : assetName);
 
-					if(string.IsNullOrEmpty(extension))
-					{
-						soundEffect = base.Load<SoundEffect>(assetName.Substring(2));
-						// return here so we don't add the asset to the dictionary
-						return (T)(object)soundEffect;
-					}
-					else
-					{
+                        if (string.IsNullOrEmpty(extension))
+                        {
+                            soundEffect = base.Load<SoundEffect>(assetName.Substring(2));
+                            // return here so we don't add the asset to the dictionary
+                            return (T)(object)soundEffect;
+                        }
+                        else
+                        {
 #if WEB || FNA || KNI
 						using var stream = FileManager.GetStreamForFile(assetName);
 						soundEffect = SoundEffect.FromStream(stream);
 #elif NET6_0_OR_GREATER
-						soundEffect = SoundEffect.FromFile(assetName);
+                            soundEffect = SoundEffect.FromFile(assetName);
 #endif
-                        loadedAsset = soundEffect;
+                            loadedAsset = soundEffect;
+                        }
+
+                    }
+#endif
+
+                    #region RuntimeCsvRepresentation
+
+                    else if (typeof(T) == typeof(RuntimeCsvRepresentation))
+                    {
+
+                        return (T)((object)CsvFileManager.CsvDeserializeToRuntime(assetName));
                     }
 
-                }
-#endif
+                    #endregion
 
-							#region RuntimeCsvRepresentation
+                    #region SplineList
 
-				else if (typeof(T) == typeof(RuntimeCsvRepresentation))
-                {
+                    else if (typeof(T) == typeof(List<Spline>))
+                    {
+                        List<Spline> splineList = SplineSaveList.FromFile(assetName).ToSplineList();
+                        mNonDisposableDictionary.Add(fullNameWithType, splineList);
+                        object asObject = splineList;
 
-                    return (T)((object)CsvFileManager.CsvDeserializeToRuntime(assetName));
-                }
+                        return (T)asObject;
 
-				#endregion
+                    }
 
-				#region SplineList
+                    else if (typeof(T) == typeof(SplineList))
+                    {
+                        SplineList splineList = SplineSaveList.FromFile(assetName).ToSplineList();
+                        mNonDisposableDictionary.Add(fullNameWithType, splineList);
+                        object asObject = splineList;
 
-                else if (typeof(T) == typeof(List<Spline>))
-                {
-                    List<Spline> splineList = SplineSaveList.FromFile(assetName).ToSplineList();
-                    mNonDisposableDictionary.Add(fullNameWithType, splineList);
-                    object asObject = splineList;
+                        return (T)asObject;
+                    }
 
-                    return (T)asObject;
+                    #endregion
 
-                }
+                    #region BitmapFont
 
-                else if (typeof(T) == typeof(SplineList))
-                {
-                    SplineList splineList = SplineSaveList.FromFile(assetName).ToSplineList();
-                    mNonDisposableDictionary.Add(fullNameWithType, splineList);
-                    object asObject = splineList;
+                    else if (typeof(T) == typeof(BitmapFont))
+                    {
+                        // We used to assume the texture is named the same as the font file
+                        // But now FRB understands the .fnt file and gets the PNG from the font file
+                        //string pngFile = FileManager.RemoveExtension(assetName) + ".png";
+                        string fntFile = FileManager.RemoveExtension(assetName) + ".fnt";
 
-                    return (T)asObject;
-                }
+                        BitmapFont bitmapFont = new BitmapFont(fntFile, this.mName);
 
-				#endregion
+                        object bitmapFontAsObject = bitmapFont;
 
-				#region BitmapFont
+                        return (T)bitmapFontAsObject;
+                    }
 
-                else if (typeof(T) == typeof(BitmapFont))
-                {
-                    // We used to assume the texture is named the same as the font file
-                    // But now FRB understands the .fnt file and gets the PNG from the font file
-                    //string pngFile = FileManager.RemoveExtension(assetName) + ".png";
-                    string fntFile = FileManager.RemoveExtension(assetName) + ".fnt";
-
-                    BitmapFont bitmapFont = new BitmapFont(fntFile, this.mName);
-
-                    object bitmapFontAsObject = bitmapFont;
-
-                    return (T)bitmapFontAsObject;
-                }
-
-				#endregion
+                    #endregion
 
 
-#region Text
+                    #region Text
 
-                else if (typeof(T) == typeof(string))
-                {
-                    return (T)((object)FileManager.FromFileText(assetName));
-                }
+                    else if (typeof(T) == typeof(string))
+                    {
+                        return (T)((object)FileManager.FromFileText(assetName));
+                    }
 
-#endregion
+                    #endregion
 
-#region Catch mistakes
+                    #region Catch mistakes
 
 #if DEBUG
-                else if (typeof(T) == typeof(Spline))
-                {
-                    throw new Exception("Cannot load Splines.  Try using the List<Spline> type instead.");
+                    else if (typeof(T) == typeof(Spline))
+                    {
+                        throw new Exception("Cannot load Splines.  Try using the List<Spline> type instead.");
 
-                }
-                else if (typeof(T) == typeof(Emitter))
-                {
-                    throw new Exception("Cannot load Emitters.  Try using the EmitterList type instead.");
+                    }
+                    else if (typeof(T) == typeof(Emitter))
+                    {
+                        throw new Exception("Cannot load Emitters.  Try using the EmitterList type instead.");
 
-                }
+                    }
 #endif
 
-#endregion
+                    #endregion
 
-				else if(typeof(T) == typeof(Effect))
-				{
-					return base.Load<T>(assetName);
-				}
+                    else if (typeof(T) == typeof(Effect))
+                    {
+                        return base.Load<T>(assetName);
+                    }
 
-#region else, exception!
+                    #region else, exception!
 
-                else
-                {
-                    throw new NotImplementedException("Cannot load content of type " +
-                        typeof(T).AssemblyQualifiedName + " from file.  If you are loading " +
-                        "through the content pipeline be sure to remove the extension of the file " +
-                        "name.");
+                    else
+                    {
+                        throw new NotImplementedException("Cannot load content of type " +
+                            typeof(T).AssemblyQualifiedName + " from file.  If you are loading " +
+                            "through the content pipeline be sure to remove the extension of the file " +
+                            "name.");
+                    }
+
+                    #endregion
+
+                    if (loadedAsset != null)
+                    {
+                        lock (mDisposableDictionary)
+                        {
+                            // Multiple threads could try to load this content simultaneously
+                            if (!mDisposableDictionary.ContainsKey(fullNameStandardizeWithType))
+                            {
+                                mDisposableDictionary.Add(fullNameStandardizeWithType, loadedAsset);
+                            }
+                        }
+                    }
+
+                    return ((T)loadedAsset);
                 }
-
-#endregion
-
-				if (loadedAsset != null)
-				{
-					lock (mDisposableDictionary)
-					{
-						// Multiple threads could try to load this content simultaneously
-						if (!mDisposableDictionary.ContainsKey(fullNameStandardizeWithType))
-						{
-							mDisposableDictionary.Add(fullNameStandardizeWithType, loadedAsset);
-						}
-					}
-				}
-
-				return ((T)loadedAsset);
+                finally
+                {
+                    if(CreateLoadSections)
+                    {
+                        Section.EndContextAndTime();
+                    }
+                }
 			}
 		}
 
