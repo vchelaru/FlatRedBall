@@ -520,6 +520,17 @@ namespace GumPlugin.CodeGeneration
                         toReturn = false;
                     }
 
+
+                    if (toReturn && typeSpecificVariableNamesToSkipForStates.ContainsKey(baseElement.Name))
+                    {
+                        var typeSpecificVariables = typeSpecificVariableNamesToSkipForStates[baseElement.Name];
+
+                        if (typeSpecificVariables.Contains(variableRootName))
+                        {
+                            toReturn = false;
+                        }
+                    }
+
                     if (toReturn)
                     {
 
