@@ -265,7 +265,7 @@ namespace OfficialPlugins.MonoGameContent
             }
             else if (extension == "png")
             {
-                contentItem = ContentItem.CreateTextureBuild();
+                contentItem = ContentItem.CreateTextureBuild(project);
             }
             else if (extension == "fx")
             {

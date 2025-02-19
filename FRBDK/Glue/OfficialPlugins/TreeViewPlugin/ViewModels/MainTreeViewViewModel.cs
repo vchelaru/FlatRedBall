@@ -570,7 +570,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     if (!ReferencedFilesRootNodeViewModel.DirectoriesToIgnore.Contains(nameOfNewNode))
                     {
 
-                        NodeViewModel treeNode = null;
+                        NodeViewModel? treeNode = null;
 
                         if(screenOrEntity == ScreenOrEntity.Entity)
                         {

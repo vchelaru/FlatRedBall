@@ -523,7 +523,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             else // assume content for now
             {
 
-                ReferencedFileSave referencedFileSave = treeNode.Tag as ReferencedFileSave;
+                ReferencedFileSave referencedFileSave = (ReferencedFileSave)treeNode.Tag;
 
                 if (!ProjectManager.GlueProjectSave.GlobalFiles.Contains(referencedFileSave))
                 {

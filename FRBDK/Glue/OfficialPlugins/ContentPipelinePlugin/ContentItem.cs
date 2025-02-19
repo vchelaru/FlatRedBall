@@ -27,6 +27,9 @@ namespace OfficialPlugins.MonoGameContent
         // /processorParam:Quality=Best
         public List<string> ProcessorParameters { get; set; } = new List<string>();
 
+        // Adding "compress:True" will append "/compress:True", so no prefixed slashes are needed
+        public List<string> AdditionalParameters { get; set; } = new List<string>();
+
         // /build:C:\Users\vchel\Documents\FlatRedBallProjects\GlTest8\GlTest8\Content\FR_BattleSong_Loop.mp3
         /// <summary>
         /// The raw (prebuilt) file to build to XNB.
@@ -119,7 +122,7 @@ namespace OfficialPlugins.MonoGameContent
              */
         }
 
-        public static ContentItem CreateTextureBuild()
+        public static ContentItem CreateTextureBuild(ProjectBase project)
         {
             var toReturn = new ContentItem();
 
@@ -129,6 +132,12 @@ namespace OfficialPlugins.MonoGameContent
             toReturn.ProcessorParameters.Add("GenerateMipmaps=False");
             toReturn.ProcessorParameters.Add("PremultiplyAlpha=True");
             toReturn.ProcessorParameters.Add("TextureFormat=Color");
+
+            if(project is KniWebProject)
+            {
+                toReturn.AdditionalParameters.Add("compress:True");
+                toReturn.AdditionalParameters.Add("compression:Brotli");
+            }
 
             return toReturn;
         }
@@ -155,6 +164,11 @@ namespace OfficialPlugins.MonoGameContent
             foreach(var parameter in ProcessorParameters)
             {
                 stringBuilder.Append($"/processorParam:{parameter} ");
+            }
+
+            foreach(var parameter in AdditionalParameters)
+            {
+                stringBuilder.Append($"/{parameter} ");
             }
 
             // iOS and Android have case sensitive file systems, so we'll to-lower it here
