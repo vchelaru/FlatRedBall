@@ -269,7 +269,7 @@ namespace FlatRedBall.Glue.Parsing
                     if (loadAsync)
                     {
                         blockToUse = classLevelBlock
-                            .Function("static void", "Load" + rfs.Name.Replace("/", "_").Replace(".", "_"), "");
+                            .Function("public static void", "Load" + rfs.Name.Replace("/", "_").Replace(".", "_").Replace("-", "_"), "");
                     }
 
 
@@ -411,7 +411,7 @@ namespace FlatRedBall.Glue.Parsing
 
                 foreach (ReferencedFileSave rfs in filesToLoad)
                 {
-                    funcBlock.Line("Load" + rfs.Name.Replace("/", "_").Replace(".", "_") + "();");
+                    funcBlock.Line("Load" + rfs.Name.Replace("/", "_").Replace(".", "_").Replace("-", "_") + "();");
                     funcBlock.Line("loadInfo.LoadedItemCount++;");
                     funcBlock.Line("actionBetweenEachLoad?.Invoke(loadInfo);");
                     funcBlock.Line("await global::FlatRedBall.TimeManager.DelayFrames(1);");
@@ -435,7 +435,7 @@ namespace FlatRedBall.Glue.Parsing
                 if (!ReferencedFileSaveCodeGenerator.IsRfsHighPriority(rfs) && !rfs.LoadedOnlyWhenReferenced && rfs.LoadedAtRuntime)
                 {
                     currentBlock.Line("namedDelegate.Name = \"" + rfs.Name + "\";");
-                    currentBlock.Line("namedDelegate.LoadMethod = Load" + rfs.Name.Replace("/", "_").Replace(".", "_") + ";");
+                    currentBlock.Line("namedDelegate.LoadMethod = Load" + rfs.Name.Replace("/", "_").Replace(".", "_").Replace("-", "_") + ";");
                     currentBlock.Line("LoadMethodList.Add( namedDelegate );");
                 }
             }
