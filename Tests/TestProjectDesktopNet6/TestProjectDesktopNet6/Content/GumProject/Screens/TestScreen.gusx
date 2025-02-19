@@ -702,6 +702,52 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>int</Type>
+      <Name>NineSliceInstance10.Alpha</Name>
+      <Value xsi:type="xsd:int">100</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>NineSliceInstance10.Parent</Name>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance10.X</Name>
+      <Value xsi:type="xsd:float">1055.2063</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance10.Y</Name>
+      <Value xsi:type="xsd:float">85.7143</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>int</Type>
+      <Name>NineSliceInstance11.Alpha</Name>
+      <Value xsi:type="xsd:int">50</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>NineSliceInstance11.Parent</Name>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance11.X</Name>
+      <Value xsi:type="xsd:float">1124.2063</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance11.Y</Name>
+      <Value xsi:type="xsd:float">85.7143</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>string</Type>
       <Name>NineSliceInstance2.Parent</Name>
       <Value xsi:type="xsd:string">TopToBottomStackTest</Value>
@@ -801,6 +847,59 @@
       <Type>float</Type>
       <Name>NineSliceInstance6.Y</Name>
       <Value xsi:type="xsd:float">0</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance7.X</Name>
+      <Value xsi:type="xsd:float">849.20636</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance7.Y</Name>
+      <Value xsi:type="xsd:float">85.7143</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>int</Type>
+      <Name>NineSliceInstance8.Alpha</Name>
+      <Value xsi:type="xsd:int">200</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance8.X</Name>
+      <Value xsi:type="xsd:float">917.20636</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance8.Y</Name>
+      <Value xsi:type="xsd:float">85.7143</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>int</Type>
+      <Name>NineSliceInstance9.Alpha</Name>
+      <Value xsi:type="xsd:int">150</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>NineSliceInstance9.Parent</Name>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance9.X</Name>
+      <Value xsi:type="xsd:float">985.20636</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>NineSliceInstance9.Y</Name>
+      <Value xsi:type="xsd:float">85.7143</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -1431,6 +1530,30 @@ wrap the text.</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>int</Type>
+      <Name>UsedToBeANineSlice.Alpha</Name>
+      <Value xsi:type="xsd:int">128</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>UsedToBeANineSlice.Height</Name>
+      <Value xsi:type="xsd:float">75</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>UsedToBeANineSlice.X</Name>
+      <Value xsi:type="xsd:float">849.20636</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>UsedToBeANineSlice.Y</Name>
+      <Value xsi:type="xsd:float">159.7143</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>VerticalTruncationState</Type>
       <Name>VerticalTruncationStateState</Name>
       <SetsValue>true</SetsValue>
@@ -1726,6 +1849,36 @@ wrap the text.</Value>
   <Instance>
     <Name>TextWith0PercentWidth</Name>
     <BaseType>Text</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>NineSliceInstance7</Name>
+    <BaseType>NineSlice</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>UsedToBeANineSlice</Name>
+    <BaseType>Container</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>NineSliceInstance8</Name>
+    <BaseType>NineSlice</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>NineSliceInstance9</Name>
+    <BaseType>NineSlice</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>NineSliceInstance10</Name>
+    <BaseType>NineSlice</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>NineSliceInstance11</Name>
+    <BaseType>NineSlice</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />

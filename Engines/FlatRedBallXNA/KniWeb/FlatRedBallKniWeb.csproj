@@ -16,6 +16,6 @@
 
   <ItemGroup>
     <PackageReference Include="AsepriteDotNet" Version="1.9.0" />
-    <PackageReference Include="nkast.Xna.Framework.Blazor" Version="3.13.9001" />
+    <PackageReference Include="nkast.Kni.Platform.Blazor.GL" Version="4.0.9001.1" />
   </ItemGroup>
 </Project>
