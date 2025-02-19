@@ -80,7 +80,7 @@ namespace FlatRedBall.AI.Pathfinding
 
         #region IEquatable<Link> Members
 
-        bool IEquatable<Link>.Equals(Link other)
+        bool IEquatable<Link>.Equals(Link? other)
         {
             return this == other;
         }

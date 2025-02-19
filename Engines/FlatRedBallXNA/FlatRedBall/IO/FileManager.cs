@@ -1843,8 +1843,10 @@ namespace FlatRedBall.IO
                     fileName = fileName.Substring(1);
                 }
 
-                var suffix =
-                    "?token=" + DateTime.Now.Ticks;
+                var suffix = "";
+#if DEBUG
+                suffix = "?token=" + DateTime.Now.Ticks;
+#endif
 
                 stream = TitleContainer.OpenStream(fileName + suffix);
 

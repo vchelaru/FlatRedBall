@@ -2377,7 +2377,7 @@ namespace FlatRedBall
 
         #region IEquatable<PositionedObject> Members
 
-        bool IEquatable<PositionedObject>.Equals(PositionedObject other)
+        bool IEquatable<PositionedObject>.Equals(PositionedObject? other)
         {
             return this == other;
         }

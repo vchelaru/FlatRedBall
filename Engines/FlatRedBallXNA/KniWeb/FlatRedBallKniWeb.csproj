@@ -10,7 +10,7 @@
     <Version>1.0.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591</NoWarn>
-
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
 

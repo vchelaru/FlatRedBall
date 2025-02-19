@@ -1524,7 +1524,7 @@ namespace FlatRedBall.Math.Geometry
 
         #region IEquatable<AxisAlignedRectangle> Members
 
-        bool IEquatable<AxisAlignedRectangle>.Equals(AxisAlignedRectangle other)
+        bool IEquatable<AxisAlignedRectangle>.Equals(AxisAlignedRectangle? other)
         {
             return this == other;
         }

@@ -342,7 +342,7 @@ namespace FlatRedBall.Math.Geometry
 
         #region IEquatable<AxisAlignedCube> Members
 
-        public bool Equals(AxisAlignedCube other)
+        public bool Equals(AxisAlignedCube? other)
         {
             return this == other;
         }

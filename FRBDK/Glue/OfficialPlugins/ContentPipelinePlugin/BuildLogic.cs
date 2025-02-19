@@ -14,6 +14,7 @@ using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Math.Geometry;
 using OfficialPlugins.ContentPipelinePlugin;
+using System.Windows.Navigation;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -25,6 +26,7 @@ namespace OfficialPlugins.MonoGameContent
         static List<FilePath> possibleMGCBPaths = new List<FilePath>()
         {
             new FilePath( AppDomain.CurrentDomain.BaseDirectory + @"..\PrebuiltTools\MGCB\MGCB.exe"),
+            new FilePath(@"C:\Program Files (x86)\KNI\v4.0\Tools\MGCB.exe"),
             new FilePath(@"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe"),
             new FilePath(AppDomain.CurrentDomain.BaseDirectory + @"..\..\..\..\PrebuiltTools\MGCB\MGCB.exe"),
         };
@@ -33,7 +35,15 @@ namespace OfficialPlugins.MonoGameContent
         {
             if(project is KniWebProject)
             {
-                return Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
+                // prefer the new location, but then fall back to the old location if the new one doesn't exist:
+                var mgcbLocation =
+                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\KNI\v4.0\Tools\MGCB.exe";
+
+                if (!System.IO.File.Exists(mgcbLocation))
+                {
+                    mgcbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
+                }
+                return mgcbLocation;
             }
             else if(project.DotNetVersion?.Major >= 6)
             {

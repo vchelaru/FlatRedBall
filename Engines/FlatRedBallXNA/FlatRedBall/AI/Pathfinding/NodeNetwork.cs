@@ -1186,7 +1186,7 @@ namespace FlatRedBall.AI.Pathfinding
 
         #region IEquatable<NodeNetwork> Members
 
-        bool IEquatable<NodeNetwork>.Equals(NodeNetwork other)
+        bool IEquatable<NodeNetwork>.Equals(NodeNetwork? other)
         {
             return this == other;
         }

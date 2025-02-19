@@ -799,7 +799,7 @@ namespace FlatRedBall.Math
             
         //}
 
-        int IList.Add(object value)
+        int IList.Add(object? value)
         {
             int returnValue = this.Count;
 
@@ -810,12 +810,12 @@ namespace FlatRedBall.Math
 
         }
 
-        bool IList.Contains(object value)
+        bool IList.Contains(object? value)
         {
             return ((IList)mInternalList).Contains(value);
         }
 
-        int IList.IndexOf(object value)
+        int IList.IndexOf(object? value)
         {
             return ((IList)mInternalList).IndexOf(value);
         }
