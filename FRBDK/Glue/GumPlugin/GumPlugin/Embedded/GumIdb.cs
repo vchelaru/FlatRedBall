@@ -131,8 +131,14 @@ namespace FlatRedBall.Gum
 
         public static void StaticInitialize(string projectFileName)
         {
+            ///////////////////Early Out///////////////////////////
             if (mManagers != null) return;
+            ////////////////End Early Out//////////////////////////
 
+            if(FlatRedBall.Content.ContentManager.CreateLoadSections)
+            {
+                FlatRedBall.Performance.Measurement.Section.GetAndStartContextAndTime("Loading Gum project " + projectFileName);
+            }
             mManagers = new SystemManagers();
             mManagers.Initialize(FlatRedBallServices.GraphicsDevice);
             mManagers.Renderer.Camera.AbsoluteLeft = 0;
@@ -205,6 +211,17 @@ namespace FlatRedBall.Gum
 
             ObjectFinder.Self.GumProjectSave = GumProjectSave.Load(mProjectFileName, out result);
 
+            if (FlatRedBall.Content.ContentManager.CreateLoadSections)
+            {
+                FlatRedBall.Performance.Measurement.Section.EndContextAndTime();
+            }
+
+
+            if (FlatRedBall.Content.ContentManager.CreateLoadSections)
+            {
+                FlatRedBall.Performance.Measurement.Section.GetAndStartContextAndTime("Initialize Gum Elements");
+            }
+
 #if DEBUG
             if (ObjectFinder.Self.GumProjectSave == null)
             {
@@ -258,6 +275,10 @@ namespace FlatRedBall.Gum
             }
 
             StandardElementsManager.Self.Initialize();
+            if (FlatRedBall.Content.ContentManager.CreateLoadSections)
+            {
+                FlatRedBall.Performance.Measurement.Section.EndContextAndTime();
+            }
         }
 
         public void HandleResolutionChanged(object sender, EventArgs args)
