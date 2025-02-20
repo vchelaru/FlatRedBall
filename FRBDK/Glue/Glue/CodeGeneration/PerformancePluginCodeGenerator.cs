@@ -44,8 +44,8 @@ namespace FlatRedBall.Glue.Plugins.Performance
             {
                 codeBlock.Line("FlatRedBall.Performance.Measurement.Section mSection;");
             }
-
         }
+        // todo - need to make this part of global content too, but we'll worry about that later
 
         public static void GenerateStartTimingInitialize(IElement saveObject, ICodeBlock codeBlock)
         {
