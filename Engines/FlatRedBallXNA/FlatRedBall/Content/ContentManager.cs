@@ -425,15 +425,12 @@ namespace FlatRedBall.Content
 			// in the project.
 			string extension = FileManager.GetExtension(assetName);
 
-            #region If there is an extension, loading from file or returning an already-loaded asset
 			assetName = FileManager.Standardize(assetName);
 
 			if (extension != String.Empty)
 			{
 				return LoadFromFile<T>(assetName);
 			}
-
-#endregion
 
             #region Else there is no extension, so the file is already part of the project.  Use a ContentManager
 			else
@@ -466,10 +463,13 @@ namespace FlatRedBall.Content
 
 		public T LoadFromProject<T>(string assetName)
 		{
-			string oldRelativePath = FileManager.RelativeDirectory;
+            if(CreateLoadSections)
+            {
+                Section.GetAndStartContextAndTime("Load " + assetName);
+            }
+
+            string oldRelativePath = FileManager.RelativeDirectory;
 			FlatRedBall.IO.FileManager.RelativeDirectory = FileManager.GetDirectory(assetName);
-
-
 
 
 #if DEBUG
@@ -524,7 +524,14 @@ namespace FlatRedBall.Content
 
 			FileManager.RelativeDirectory = oldRelativePath;
 
-			return AdjustNewAsset(asset, assetName);
+			var toReturn = AdjustNewAsset(asset, assetName);
+
+            if (CreateLoadSections)
+            {
+                Section.EndContextAndTime();
+            }
+
+            return toReturn;
 		}
 
 		public T LoadFromFile<T>(string assetName)
