@@ -4,27 +4,65 @@
         <name>GumCommon</name>
     </assembly>
     <members>
-        <member name="M:GumRuntime.ElementSaveExtensions.ApplyVariableReferences(Gum.Wireframe.GraphicalUiElement,Gum.DataTypes.Variables.StateSave)">
+        <member name="T:Gum.Wireframe.BindableGue">
             <summary>
-            Loops through all variable references in the argument graphicalUiElement, evaluates them, then applies the evlauated value to the
-            owner of each variable reference.
+            The base object for all Gum runtime objects. It contains functionality for
+            setting variables, states, and performing layout. The GraphicalUiElement can
+            wrap an underlying rendering object.
             </summary>
-            <param name="graphicalElement">The top level owner for which to apply variables.</param>
-            <param name="stateSave">The current state, such as the argument graphicalElement's default state</param>
         </member>
-        <member name="M:GumRuntime.ElementSaveExtensions.ApplyVariableReferencesOnSpecificOwner(Gum.Wireframe.GraphicalUiElement,System.String,Gum.DataTypes.Variables.StateSave)">
+        <member name="P:Gum.Wireframe.InputEventArgs.InputDevice">
             <summary>
-            Evaluates the reference string (such as X = SomeOtherItem.X), applying the right side to the left side.
+            The input device which was responsible for this event, such as the Gamepad.
             </summary>
-            <param name="referenceOwner">The owner that owns the variable reference, such as the instance.</param>
-            <param name="referenceString">The string such as "X = SomeItem.X"</param>
-            <param name="stateSave">The state save which owns the variable reference.</param>
+        </member>
+        <member name="T:Gum.Wireframe.SelectionChangedEventArgs">
+            <summary>
+            Contains information about objects which have been added to or removed from the current selection.
+            This is typically used by Gum Forms for elements which support selection such as ListBox.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.SelectionChangedEventArgs.RemovedItems">
+            <summary>
+            The items which were just removed from selection.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.SelectionChangedEventArgs.AddedItems">
+            <summary>
+            The items which were just added to selection.
+            </summary>
         </member>
         <member name="T:Gum.Wireframe.InteractiveGue">
             <summary>
             The base object for all Gum runtime objects. It contains functionality for
             setting variables, states, and performing layout. The GraphicalUiElement can
             wrap an underlying rendering object.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.InteractiveGue.HasEvents">
+            <summary>
+            Whether this instance supports events and whether the Cursor considers this when
+            determining what it is over. Typically this is assigned once based 
+            on its type, usually when objects are created from a Gum project. Objects which 
+            should consume cursor events without raising them should keep this value set to true
+            but should set IsEnabled to false.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.InteractiveGue.RaiseChildrenEventsOutsideOfBounds">
+            <summary>
+            Whether to check each individual child for raising UI events even if the cursor
+            is outside of the bounds of this object. Setting this to false can have a slight
+            performance cost since each child is checked even if the cursor is not over this.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.InteractiveGue.IsEnabled">
+            <summary>
+            Whether this is enabled. If this is false, then this will not raise events.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.InteractiveGue.FormsControlAsObject">
+            <summary>
+            Provides an uncasted reference to the Gum Forms element which uses this as visual element.
             </summary>
         </member>
         <member name="E:Gum.Wireframe.InteractiveGue.Click">
@@ -63,13 +101,23 @@
         </member>
         <member name="E:Gum.Wireframe.InteractiveGue.RollOver">
             <summary>
-            Event raised every frame the cursor is over this object.
+            Event raised every frame the cursor is over this object and the Cursor has changed position.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.HoverOver">
+            <summary>
+            Event raised every frame the cursor is over this object whether the Cursor has changed positions or not.
             </summary>
         </member>
         <member name="E:Gum.Wireframe.InteractiveGue.Dragging">
             <summary>
             Event raised when the cursor pushes on an object and moves. This is similar to RollOver, but is raised even
             if outside of the bounds of the object.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.EnabledChange">
+            <summary>
+            Event raised when the Enabled property changed.
             </summary>
         </member>
         <member name="E:Gum.Wireframe.InteractiveGue.MouseWheelScroll">
@@ -93,6 +141,32 @@
             Event raised when this Window is pushed, then is no longer the pushed window due to a cursor releasing the primary button.
             </summary>
         </member>
+        <member name="M:Gum.Wireframe.InteractiveGue.HasCursorOver(Gum.Wireframe.ICursor)">
+            <summary>
+            Returns whether the argument cursor is over this instance. If RaiseChildrenEventsOutsideOfBounds is set
+            to true, then each of the individual chilren are also checked if the cursor is not inside this object's bounds.
+            </summary>
+            <param name="cursor">The cursor to check whether it is over this.</param>
+            <returns>Whether the cursor is over this.</returns>
+        </member>
+        <member name="M:Gum.Wireframe.InteractiveGue.AddNextPushAction(System.Action)">
+            <summary>
+            Adds an action to be called the next time the Cursor performs a push action 
+            (the left button is not down the previous frame but is down this frame). The 
+            argument action is invoked one time.
+            </summary>
+            <param name="action">The action to invoke one time.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if the argument action is null.</exception>
+        </member>
+        <member name="M:Gum.Wireframe.InteractiveGue.AddNextClickAction(System.Action)">
+            <summary>
+            Adds an action to be called the next time the Cursor performs a click action
+            (the left button was down last frame and is released this frame). The argument
+            action is invoked one time.
+            </summary>
+            <param name="action">The action to invoke one time.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if the argument action is null.</exception>
+        </member>
         <member name="M:Gum.Wireframe.IInputReceiver.OnGainFocus">
             <summary>
             Called by the engine automatically when an IInputReceiver gains focus.
@@ -104,6 +178,12 @@
         <member name="M:Gum.Wireframe.IInputReceiver.OnLoseFocus">
             <summary>
             Called by the engine automatically when an IInputReceiver loses focus.
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.IInputReceiver.OnFocusUpdate">
+            <summary>
+            Called every frame if this has focus. Allows general every-frame updates such as
+            handling gamepad input.
             </summary>
         </member>
         <member name="P:Gum.Wireframe.ICursor.PrimaryClickNoSlide">
@@ -265,6 +345,16 @@
             this uses a WidthUnits depending on the parent.
             </summary>
         </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType,System.Int32,System.Nullable{Gum.Converters.XOrY})">
+            <summary>
+            Performs an update to this, and optionally to its parent and children depending on the parameters.
+            </summary>
+            <param name="parentUpdateType">A filter determining whether whether to update the parent. If All is passed, then
+            the parent will always update. If other properties are passed, then the update happens only if the parent matches
+            the update type. For example if ParentUpdateType.IfParentStacks is passed, then an update happens if the parent stacks its children.</param>
+            <param name="childrenUpdateDepth"></param>
+            <param name="xOrY"></param>
+        </member>
         <member name="M:Gum.Wireframe.GraphicalUiElement.SetInitialState">
             <summary>
             Sets the default state.
@@ -274,6 +364,12 @@
             and provide a quicker method for setting default states
             </remarks>
         </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.AddToManagers">
+            <summary>
+            Adds this as a renderable to the SystemManagers if not already added. If already added
+            this does not perform any operations - it can be safely called multiple times.
+            </summary>
+        </member>
         <member name="M:Gum.Wireframe.GraphicalUiElement.AddToManagers(RenderingLibrary.ISystemManagers,RenderingLibrary.Graphics.Layer)">
             <summary>
             Adds this as a renderable to the SystemManagers on the argument layer if not already added
@@ -281,6 +377,15 @@
             this does not perform any operations - it can be safely called multiple times, but
             calling it multiple times will not move this to a different layer.
             </summary>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.SetProperty(System.String,System.Object)">
+            <summary>
+            Sets a variable on this object (such as "X") to the argument value
+            (such as 100.0f). This can be a primitive property like Height, or it can be
+            a state.
+            </summary>
+            <param name="propertyName">The name of the variable on this object such as X or Height. If the property is a state, then the name should be "{CategoryName}State".</param>
+            <param name="value">The value, casted to the correct type.</param>
         </member>
         <member name="M:Gum.Wireframe.GraphicalUiElement.GetGraphicalUiElementByName(System.String)">
             <summary>
@@ -297,15 +402,6 @@
             </summary>
             <param name="names">The names to search for, allowing retrieval multiple levels deep.</param>
             <returns>The found element, or null if no match is found.</returns>
-        </member>
-        <member name="M:Gum.Wireframe.GraphicalUiElement.SetProperty(System.String,System.Object)">
-            <summary>
-            Sets a variable on this object (such as "X") to the argument value
-            (such as 100.0f). This can be a primitive property like Height, or it can be
-            a state.
-            </summary>
-            <param name="propertyName">The name of the variable on this object such as X or Height. If the property is a state, then the name should be "{CategoryName}State".</param>
-            <param name="value">The value, casted to the correct type.</param>
         </member>
         <member name="M:Gum.Wireframe.GraphicalUiElement.AnimateSelf(System.Double)">
             <summary>
@@ -326,6 +422,12 @@
             * StandardButton.TextInstance
             * Text
             </example>
+        </member>
+        <member name="P:Gum.Managers.TypedElementReference.OwnerOfReferencingObject">
+            <summary>
+            The owner of the reference. This may be the owner of the StateSave that has a variable referending the type, 
+            or the owner of the instance. If the element is an instance of the type, then this is the element that is referenced.
+            </summary>
         </member>
         <member name="P:Gum.Managers.TypedElementReference.ReferencingObject">
             <summary>
@@ -375,6 +477,13 @@
             <param name="elementSave">The element for which to get the inheritance list.</param>
             <returns>The list, with the most derived (direct inheritance) first.</returns>
         </member>
+        <member name="M:Gum.Managers.ObjectFinder.GetElementReferencesToThis(Gum.DataTypes.ElementSave)">
+            <summary>
+            Returns a list of TypedElementReferences which include all items that reference the argument element.
+            </summary>
+            <param name="element">The argument element.</param>
+            <returns>All referenced to this.</returns>
+        </member>
         <member name="M:Gum.Managers.ObjectFinder.GetRootVariable(System.String,Gum.DataTypes.InstanceSave)">
             <summary>
             Returns the root variable (defined on the standard element usually) for the argument instance.
@@ -382,6 +491,14 @@
             <param name="name">The name, including the period such as "InstanceName.X"</param>
             <param name="instance">The instance, which should match the instance in the variable name.</param>
             <returns>The root VariableSave</returns>
+        </member>
+        <member name="M:Gum.Managers.ObjectFinder.GetRootVariable(System.String,Gum.DataTypes.ElementSave)">
+            <summary>
+            Returns the root variable (defined on the standard element usually) for the argument instance.
+            </summary>
+            <param name="name">Fully qualified variable name</param>
+            <param name="element">The element containing the variable</param>
+            <returns>The root variable if found</returns>
         </member>
         <member name="M:Gum.DataTypes.GumProjectSaveExtensionMethods.Initialize(Gum.DataTypes.GumProjectSave,System.Boolean)">
             <summary>
@@ -408,6 +525,20 @@
             happens that this consolidates all
             logic in one place
             </summary>
+        </member>
+        <member name="M:Gum.DataTypes.RecursiveVariableFinder.#ctor(Gum.DataTypes.InstanceSave,Gum.DataTypes.ElementSave)">
+            <summary>
+            Creates a new RecursiveVariableFinder for the argument InstanceSave and Container. The InstanceSave
+            should not be null.
+            </summary>
+            <remarks>
+            If a RecursiveVariableFinder is created with an instance parameter, then GetValue calls
+            should be performed with the unqualified variable name. In other words, to get the X value
+            on the instnace, the "X" value should be passed rather than "InstanceName.X"
+            </remarks>
+            <param name="instanceSave">The InstanceSave which has variables that will be requested.</param>
+            <param name="container">The container of the instance.</param>
+            <exception cref="T:System.ArgumentException">Thrown if the instance is null</exception>
         </member>
         <member name="M:Gum.DataTypes.RecursiveVariableFinder.GetValueByBottomName(System.String,System.Nullable{System.Int32})">
             <summary>
@@ -437,7 +568,17 @@
             <param name="variableName"></param>
             <returns></returns>
         </member>
-        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.AssignVariableSave(Gum.DataTypes.Variables.StateSave,System.String,System.Object,Gum.DataTypes.InstanceSave,System.String,System.Boolean)">
+        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.SetValue(Gum.DataTypes.Variables.StateSave,System.String,System.Object,Gum.DataTypes.InstanceSave,System.String)">
+            <summary>
+            Sets the value on the argument instance save, determining internally if it is a VariableSave or VariableListSave.
+            </summary>
+            <param name="stateSave">The StateSave which contains the variable, or which will be given the new variable.</param>
+            <param name="variableName">The name of the variable</param>
+            <param name="value">The value of the variable</param>
+            <param name="instanceSave">The instance modified by the variable.</param>
+            <param name="variableType">The type of the variable. If this is a VariableList, then the type of the items inside the list (like int)</param>
+        </member>
+        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.AssignVariableSave(Gum.DataTypes.Variables.StateSave,System.String,System.Object,Gum.DataTypes.InstanceSave,System.String)">
             <summary>
             Assigns a value to a variable.  If the variable doesn't exist then the variable is instantiated, then the value is assigned.
             </summary>
@@ -473,6 +614,22 @@
             </summary>
             <param name="variableSave">The VariableSave to fix.</param>
             <returns>Whether any changes were made.</returns>
+        </member>
+        <member name="M:GumRuntime.ElementSaveExtensions.ApplyVariableReferences(Gum.Wireframe.GraphicalUiElement,Gum.DataTypes.Variables.StateSave)">
+            <summary>
+            Loops through all variable references in the argument graphicalUiElement, evaluates them, then applies the evlauated value to the
+            owner of each variable reference.
+            </summary>
+            <param name="graphicalElement">The top level owner for which to apply variables.</param>
+            <param name="stateSave">The current state, such as the argument graphicalElement's default state</param>
+        </member>
+        <member name="M:GumRuntime.ElementSaveExtensions.ApplyVariableReferencesOnSpecificOwner(Gum.Wireframe.GraphicalUiElement,System.String,Gum.DataTypes.Variables.StateSave)">
+            <summary>
+            Evaluates the reference string (such as X = SomeOtherItem.X), applying the right side to the left side.
+            </summary>
+            <param name="referenceOwner">The owner that owns the variable reference, such as the instance.</param>
+            <param name="referenceString">The string such as "X = SomeItem.X"</param>
+            <param name="stateSave">The state save which owns the variable reference.</param>
         </member>
         <member name="M:RenderingLibrary.Graphics.IRenderable.PreRender">
             <summary>
@@ -564,6 +721,13 @@
             </summary>
             <param name="ipso">The RenderableIpso to return the value for.</param>
             <returns>The world Y coordinate.</returns>
+        </member>
+        <member name="M:RenderingLibrary.IPositionedSizedObjectExtensionMethods.GetTopParent(RenderingLibrary.Graphics.IRenderableIpso)">
+            <summary>
+            Returns the topmost parent in the hierarchy, returning this if there is no parent.
+            </summary>
+            <param name="ipso">The argument ipso</param>
+            <returns>The top parent</returns>
         </member>
         <member name="M:RenderingLibrary.IPositionedSizedObjectExtensionMethods.GetAbsoluteRotation(RenderingLibrary.Graphics.IRenderableIpso)">
             <summary>

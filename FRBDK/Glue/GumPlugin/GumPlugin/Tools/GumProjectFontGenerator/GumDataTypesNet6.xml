@@ -62,6 +62,11 @@
             This is a relative path like "../../"
             </summary>
         </member>
+        <member name="P:Gum.DataTypes.InstanceSave.ParentContainer">
+            <summary>
+            The ElementSave which contains this instance.
+            </summary>
+        </member>
         <member name="M:Gum.DataTypes.Variables.StateSave.GetValue(System.String)">
             <summary>
             Attempts to get the value for the argument variableName, or null if not found.
@@ -71,7 +76,7 @@
         </member>
         <member name="P:Gum.DataTypes.Variables.VariableListSave.Type">
             <summary>
-             The type of each individual item in the list
+             The type of each individual item in the list. For example, this should be "int" rather than a list of int
             </summary>
         </member>
         <member name="T:Gum.DataTypes.Variables.VariableSaveValues">
@@ -98,6 +103,13 @@
             Determines whether a null value should be set, or whether the variable is
             an ignored value.  If this value is true, then null values will be set on the underlying data.
             </summary>
+        </member>
+        <member name="M:Gum.DataTypes.Variables.VariableSave.GetRootName">
+            <summary>
+            Returns the name of the variable on the instance. For example "Rectangle.X" would return "X".
+            If this does not have a SourceObect, then the Name is returned.
+            </summary>
+            <returns>The root name (name on the instance)</returns>
         </member>
     </members>
 </doc>

@@ -32,6 +32,12 @@
             UI does not receive events.
             </summary>
         </member>
+        <member name="P:MonoGameGum.Forms.Controls.FrameworkElement.IsFocused">
+            <summary>
+            Whether this element has input focus. If true, the element shows its focused
+            state and receives input from keyboards and gamepads.
+            </summary>
+        </member>
         <member name="P:MonoGameGum.Forms.Controls.FrameworkElement.ActualHeight">
             <summary>
             The height in pixels. This is a calculated value considering HeightUnits and Height.
@@ -74,11 +80,6 @@
                 typeof(ProjectName.GumRuntimes.LargeMenuButtonRuntime);
             </example>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.CallLoaded">
-            <summary>
-            Calls the loaded event. This should not be called in custom code, but instead is called by Gum
-            </summary>
-        </member>
         <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.Show(RenderingLibrary.Graphics.Layer)">
             <summary>
             Displays this element visually and adds it to the underlying managers for Cursor interaction.
@@ -89,9 +90,20 @@
             this will result in the object being added twice.</remarks>
             <param name="layer">The layer to add this to, can be null to add it directly to managers</param>
         </member>
+        <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.CallLoaded">
+            <summary>
+            Calls the loaded event. This should not be called in custom code, but instead is called by Gum
+            </summary>
+        </member>
         <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.Activity">
             <summary>
             Every-frame logic. This will automatically be called if this element is added to the FrameworkElementManager
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.ReactToVisualRemoved">
+            <summary>
+            Method raised when the current visual is changed or set to null. If the visual
+            is being replaced, this is called before the new visual is assigned.
             </summary>
         </member>
         <member name="P:MonoGameGum.Forms.Controls.FrameworkElement.IsUsingLeftAndRightGamepadDirectionsForNavigation">
@@ -99,11 +111,56 @@
             Whether to use left and right directions as navigation. If false, left and right directions are ignored for navigation.
             </summary>
         </member>
+        <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.HandleTab(MonoGameGum.Forms.Controls.TabDirection,MonoGameGum.Forms.Controls.FrameworkElement,System.Boolean)">
+            <summary>
+            Shifts focus to the next or previous element in the tab depending on the tabDirection argument.
+            </summary>
+            <param name="tabDirection">The direction to tab</param>
+            <param name="requestingElement">The element which is requesting the tab. This can be a parent of the current element. If null is passed, then this element is 
+            treated as the origin of the tab action.</param>
+            <param name="loop">Whether to loop around to the beginning or end if at the last focusable item.</param>
+        </member>
+        <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.HandleTab(MonoGameGum.Forms.Controls.TabDirection,Gum.Wireframe.InteractiveGue,Gum.Wireframe.InteractiveGue,System.Boolean,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="tabDirection"></param>
+            <param name="requestingVisual">The current element that is either focused, or that has been tested for focus and failed. If this is null
+            then the first or last (depending on direction) element is selected.</param>
+            <param name="parentVisual"></param>
+            <param name="shouldAskParent"></param>
+            <param name="loop"></param>
+            <returns></returns>
+        </member>
         <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.UpdateState">
             <summary>
             Gets the state according to the element's current properties (such as whether it is enabled) and applies it
             to refresh the Visual's appearance.
             </summary>
+        </member>
+        <member name="P:MonoGameGum.Forms.Controls.ItemsControl.Items">
+            <summary>
+            The items contained by this ItemsControl. This can contain regular
+            data such as strings, instances of ViewModels, or FrameworkElement instances
+            such as ListBoxItem instances.
+            
+            Typically the Items is assigned or bound to an ObservableCollection. In this case
+            the ItemsControl automatically creates FrameworkElements (such as ListBoxItem instances)
+            in response to items being added or removed from the Items list.
+            </summary>
+            <remarks>
+            The Items list is not guaranteed to reflect the items contained in the ItemsControl
+            if Visual elements have been added directly to the InnerPanel. This can happen if the
+            Visual's InnerPanel's Children are directly added to, or if an instance of an ItemsControl,
+            such as a ListBox, is loaded from the Gum tool pre-filled with ListBoxItems. 
+            
+            If items are not added directly to the InnerPanel, then the Items list and the internal InnerPanel
+            Children will remain in sync since the ItemsControl automatically creates FrameworkElement instances
+            in response to the Items.
+            </remarks>
+        </member>
+        <member name="M:MonoGameGum.Forms.Controls.ItemsControl.ReactToVisualRemoved">
+            <inheritdoc/>
         </member>
         <member name="F:MonoGameGum.Forms.Controls.ScrollIntoViewStyle.BringIntoView">
             <summary>
@@ -111,6 +168,13 @@
             In other words, if the item is above the visible area, then the scrolling brings the item to the top.
             If the item is below the visible area, then the scrolling brings the item to the bottom.
             If the item is already into view, no scrolling is performed.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Forms.Controls.ListBox.CanListItemsLoseFocus">
+            <summary>
+            Whether pressing the B button (back/cancel) should result in individual items losing focus and
+            returning focus to the top level. This should be false if the list box is the only object in the 
+            screen which can receive focus.
             </summary>
         </member>
         <member name="P:MonoGameGum.Forms.Controls.ListBox.LoseListItemFocusOnPrimaryInput">
@@ -129,10 +193,15 @@
             contains information about the changed selected items.
             </summary>
         </member>
-        <member name="E:MonoGameGum.Forms.Controls.ListBox.GenericGamepadButtonPushed">
+        <member name="E:MonoGameGum.Forms.Controls.ListBox.ControllerButtonPushed">
             <summary>
-            Event raised when the user presses a button at the top-level (if the list box has focus, but the individual items do not)
+            Event raised when the user presses a button, whether at the top level or internally on
+            an item.
             </summary>
+            <remarks>
+            Until July 2024 this was only firing at the top level. July 2024 version also raises
+            this event when a button is pushed on an item.
+            </remarks>
         </member>
         <member name="M:MonoGameGum.Forms.Controls.ListBox.ScrollIntoView(System.Object,MonoGameGum.Forms.Controls.ScrollIntoViewStyle)">
             <summary>
@@ -140,6 +209,25 @@
             </summary>
             <param name="item">The item to scroll into view.</param>
             <param name="scrollIntoViewStyle">The desired location of the item after scrolling.</param>
+        </member>
+        <member name="M:MonoGameGum.Forms.Controls.ListBox.ShowPopupListBox(MonoGameGum.Forms.Controls.ScrollViewer,Gum.Wireframe.GraphicalUiElement)">
+            <summary>
+            Shows the argument popup using the argument listBoxParent to determine its destination layer.
+            </summary>
+            <param name="popup">The popup to show, for example a dropdown from a ComboBox or MenuItem</param>
+            <param name="listBoxParent">The parent visual, which would be something like the ComboBox.Visual</param>
+        </member>
+        <member name="P:MonoGameGum.Forms.Controls.ListBox.AdditionalOffsetToCheckForDPadNavigation">
+            <summary>
+            The additional offset to check when attempting to find a control when performing DPad navigation. This value is added
+            to the InnerPanel's StackSpacing. Increasing this value is useful if objects in the ListBox are not of uniform size, but
+            if the value is too large then navigation may skip rows or columns.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Forms.Controls.ListBox.OnLoseFocus">
+            <summary>
+            Removes focus from the ListBox, both at the top level and at the individual item level, even if CanListItemsLoseFocus is set to false.
+            </summary>
         </member>
         <member name="E:MonoGameGum.Forms.Controls.Primitives.ButtonBase.Click">
             <summary>
@@ -156,7 +244,7 @@
             The "push" terminology comes from the Cursor's PrimaryPush property.
             </summary>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.Primitives.ButtonBase.#ctor">
+        <member name="E:MonoGameGum.Forms.Controls.Primitives.ButtonBase.ControllerButtonPushed">
             <summary>
             Event raised when any button is pressed on an Xbox360GamePad which is being used by the 
             GuiManager.GamePadsForUiControl.
@@ -168,6 +256,18 @@
             If the element is horizontal, this is an X value. If the element is vertical, this is a Y value.
             </summary>
         </member>
+        <member name="P:MonoGameGum.Forms.Controls.Primitives.RangeBase.LargeChange">
+            <summary>
+            The amount to change Value when the user clicks on the track.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Forms.Controls.Primitives.RangeBase.SmallChange">
+            <summary>
+            The amount of to change Value when the user presses the up or down buttons on a scrollbar.
+            Also currently the amount of distance to move per mouse wheel tick - note that this may change
+            in future versions of Forms.
+            </summary>
+        </member>
         <member name="P:MonoGameGum.Forms.Controls.Primitives.RangeBase.Minimum">
             <summary>
             The minimum inclusive value which can be set through the UI.
@@ -177,6 +277,9 @@
             <summary>
             The maximum inclusive value which can be set through the UI.
             </summary>
+        </member>
+        <member name="M:MonoGameGum.Forms.Controls.Primitives.RangeBase.ReactToVisualRemoved">
+            <inheritdoc/>
         </member>
         <member name="F:MonoGameGum.Forms.Controls.ScrollBarVisibility.Auto">
             <summary>
@@ -193,22 +296,32 @@
             The ScrollBar always displays
             </summary>
         </member>
+        <member name="M:MonoGameGum.Forms.Controls.ScrollViewer.ReactToVisualRemoved">
+            <inheritdoc/>
+        </member>
+        <member name="T:MonoGameGum.Forms.Controls.Slider">
+            <summary>
+            A control enabling changing a value between the specified Minimum and Maximum
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Forms.Controls.Slider.TicksFrequency">
+            <summary>
+            The frequency to snap the Slider value when IsSnapToTickEnabled is true. If IsSnapToTickEnabled
+            is false, then this value is ignored.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Forms.Controls.Slider.IsSnapToTickEnabled">
+            <summary>
+            Controls whether the TickFrequency is applied when the slider is moved throuh the UI. If false, then any
+            value between Minimum and Maximum is possible. If true, then values snap to the TickFrequency.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Forms.Controls.Slider.ReactToVisualRemoved">
+            <inheritdoc/>
+        </member>
         <member name="P:MonoGameGum.Forms.Controls.TextCompositionEventArgs.Text">
             <summary>
             The new text value.
-            </summary>
-        </member>
-        <member name="F:MonoGameGum.Forms.Controls.TextWrapping.NoWrap">
-            <summary>
-            No line wrapping is performed.
-            </summary>
-        </member>
-        <member name="F:MonoGameGum.Forms.Controls.TextWrapping.Wrap">
-            <summary>
-            Line-breaking occurs if the line overflows beyond the available block width,
-            even if the standard line breaking algorithm cannot determine any line break
-            opportunity, as in the case of a very long word constrained in a fixed-width
-            container with no scrolling allowed.
             </summary>
         </member>
         <member name="F:MonoGameGum.Forms.Controls.TextBoxBase.indexPushed">
@@ -219,6 +332,11 @@
         <member name="P:MonoGameGum.Forms.Controls.TextBoxBase.IsCaretVisibleWhenNotFocused">
             <summary>
             Whether the caret is visible when not focused. If true, the caret will always stay visible even if the TextBox has lost focus.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Forms.Controls.TextBoxBase.UpdateToSelection">
+            <summary>
+            Updates the Selection visuals to match the current selection values.
             </summary>
         </member>
         <member name="F:MonoGameGum.Forms.Controls.TextBoxBase.edgeToTextPadding">
@@ -257,6 +375,84 @@
             Projects can make further customization to Forms such as by modifying the FrameworkElement.Root or the DefaultFormsComponents.
             </remarks>
         </member>
+        <member name="F:MonoGameGum.Forms.TextWrapping.NoWrap">
+            <summary>
+            No line wrapping is performed.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Forms.TextWrapping.Wrap">
+            <summary>
+            Line-breaking occurs if the line overflows beyond the available block width,
+            even if the standard line breaking algorithm cannot determine any line break
+            opportunity, as in the case of a very long word constrained in a fixed-width
+            container with no scrolling allowed.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.AnalogButton.Position">
+            <summary>
+            The current value of the AnalogButton, with ranges 0 - 1
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.DeadzoneInterpolationType.Instant">
+            <summary>
+            No interpolation is performed. Values less than the deadzone are set to 0.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.DeadzoneInterpolationType.Linear">
+            <summary>
+            Linear interpolation is performed for values greater than the deadzone. 
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.DeadzoneInterpolationType.Quadratic">
+            <summary>
+            Quadratic (in) interpolation is performed for values greater than the deadzone. This increases
+            accuracy at lower values (values closer to the deadzone) so that small movements are easier to perform.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.AnalogStick.DPadOnValue">
+            <summary>
+            The DPadOnValue and DPadOffValue
+            values are used to simulate D-Pad control
+            with the analog stick.  When the user is above
+            the absolute value of the mDPadOnValue then it is
+            as if the DPad is held down.  To release the DPad the
+            value must come under the off value.  If there was only
+            one value then the user could hold the stick near the threshold
+            and get rapid on/off values due to the inaccuracy of the analog stick. 
+            Therefore the DPadOnValue must be larger than DPadOffValue. The spread between
+            these values should be large enough to prevent rapid on/off values, but small enough
+            so the user can still release the analog stick and have it feel like a DPad.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.AnalogStick.DefaultTimeAfterPush">
+            <summary>
+            Number of seconds to wait after a push before repeating.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.AnalogStick.DefaultTimeBetweenRepeating">
+            <summary>
+            Number of seconds between repeating.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.AnalogStick.IsMaxPositionNormalized">
+            <summary>
+            Whether Position values should be limited so that Position.Length is less than or equal to 1.
+            This is recommended for top-down games.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.AnalogStick.DeadzoneInterpolation">
+            <summary>
+            The type of interpolation to perform up to the max value when outside of the deadzone value.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Input.AnalogStick.AsDPadPushed(MonoGameGum.Input.DPadDirection)">
+            <summary>
+            Returns whether the user has pressed a particular direction, returning true only once per push similar to a d-pad. This can be used for UI navigation.
+            </summary>
+            <seealso cref="M:MonoGameGum.Input.AnalogStick.AsDPadDown(MonoGameGum.Input.DPadDirection)"/>
+            <param name="direction">The direction to test</param>
+            <returns>Whether the direction was pressed.</returns>
+        </member>
         <member name="P:MonoGameGum.Input.Cursor.XChange">
             <summary>
             Returns the screen space (in pixels) change on the X axis since the last frame.
@@ -266,6 +462,47 @@
             <summary>
             Returns the screen space (in pixel) change on the Y axis since the last frame.
             </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.ZVelocity">
+            <summary>
+            The movement rate of the controlling input (usually mouse) on the z axis. For the mouse this refers to the scroll wheel.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.WindowOver">
+            <summary>
+            The last window that the cursor was over. This typically gets updated every frame in Update, usually by calls to 
+            FormsUtilities.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.GamePad.LeftStick">
+            <summary>
+            Returns a reference to the left analog stick. This value will always be non-null even if the gamepad doesn't have a physical analog stick.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.GamePad.RightStick">
+            <summary>
+            Returns a reference to the right analog stick. This value will always be non-null even if the gamepad doesn't have a physical analog stick.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.GamePad.mLeftTrigger">
+            <summary>
+            The left trigger values as reported directly by the gamepad, not flipped for Gamecube
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.GamePad.mRightTrigger">
+            <summary>
+            The right trigger values as reported directly by the gamepad, not flipped for Gamecube
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Input.GamePad.ButtonRepeatRate(Microsoft.Xna.Framework.Input.Buttons,System.Double,System.Double)">
+            <summary>
+            Returns whether the argument was pushed this frame, or whether it is continually being held down and a "repeat" press
+            has occurred.
+            </summary>
+            <param name="button">The button to test, which includes DPad directions.</param>
+            <param name="timeAfterPush">The number of seconds after initial push to wait before raising repeat rates. This value is typically larger than timeBetweenRepeating.</param>
+            <param name="timeBetweenRepeating">The number of seconds between repeats once the timeAfterPush. This value is typically smaller than timeAfterPush.</param>
+            <returns>Whether the button was pushed or repeated this frame.</returns>
         </member>
         <member name="M:MonoGameGum.Input.KeyboardStateProcessor.Clear">
             <summary>
@@ -930,29 +1167,6 @@
             This is similar to the Visible property, but affects only this.
             This allows LineRectangles to not render without making their children invisible.
             </summary>
-        </member>
-        <member name="M:RenderingLibrary.Math.MathFunctions.RoundToInt(System.Single)">
-            <summary>
-            Rounds the float to the nearest int, using MidpointRounding.AwayFromZero.
-            </summary>
-            <param name="floatToRound">The float to round.</param>
-            <returns>The rounded int.</returns>
-            <exception cref="T:System.ArgumentException">Thrown if the float is NaN (not a number)</exception>
-        </member>
-        <member name="M:RenderingLibrary.Math.MathFunctions.RotatePointAroundPoint(System.Drawing.Point,System.Drawing.Point@,System.Single)">
-            <summary>
-            Rotates a Point around another Point by a given number of radians.
-            </summary>
-            <param name="basePoint">Point to rotate around.</param>
-            <param name="pointToRotate">Point to rotate (changes position).</param>
-            <param name="radiansToChangeBy">Radians to rotate by.</param>
-        </member>
-        <member name="M:RenderingLibrary.Math.MathFunctions.RotateVector(System.Numerics.Vector2@,System.Single)">
-            <summary>
-            Rotates (and modifies) the argument vector2 by the argument radians, where a positive value is clockwise.
-            </summary>
-            <param name="vector2">The vector to rotate.</param>
-            <param name="radians">The radians to rotate counterclockwise.</param>
         </member>
         <member name="P:RenderingLibrary.SystemManagers.GlobalFontScale">
             <summary>
