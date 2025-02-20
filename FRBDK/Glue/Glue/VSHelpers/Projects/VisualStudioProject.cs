@@ -1205,27 +1205,30 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         private void RemoveItem(string itemName, ProjectItem item)
         {
+            /////////////////////Early Out/////////////
+            if(item == null)
+            {
+                return;
+            }
+            ////////////////End Early Out///////////////
             lock (this)
             {
-                if (item != null)
+                Project.RemoveItem(item);
+                // Not sure why, but the project can be readonly, so let's try, and move on if it fails:
+                try
                 {
-                    Project.RemoveItem(item);
-                    // Not sure why, but the project can be readonly, so let's try, and move on if it fails:
-                    try
-                    {
-                        Project.ReevaluateIfNecessary();
-                    }
-                    catch { }
+                    Project.ReevaluateIfNecessary();
+                }
+                catch { }
 
-                    mBuildItemDictionaries.Remove(itemName);
+                mBuildItemDictionaries.Remove(itemName);
 
-                    if(item.Metadata.Any(metadata => metadata.ItemType == "Link"))
+                if(item.Metadata.Any(metadata => metadata.ItemType == "Link"))
+                {
+                    var evaluated = item.Metadata.First(metadata => metadata.ItemType == "Link").EvaluatedValue;
+                    if(LinkedDictionary.ContainsKey(evaluated))
                     {
-                        var evaluated = item.Metadata.First(metadata => metadata.ItemType == "Link").EvaluatedValue;
-                        if(LinkedDictionary.ContainsKey(evaluated))
-                        {
-                            LinkedDictionary.Remove(evaluated);
-                        }
+                        LinkedDictionary.Remove(evaluated);
                     }
                 }
             }

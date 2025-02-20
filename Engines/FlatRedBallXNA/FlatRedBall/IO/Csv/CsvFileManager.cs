@@ -94,7 +94,7 @@ namespace FlatRedBall.IO.Csv
                 string.Equals(extension, "txt", StringComparison.OrdinalIgnoreCase))
             {
 #if MONOGAME
-                
+
                 Stream stream = FileManager.GetStreamForFile(fileName);
 #else
                 // Creating a filestream then using that enables us to open files that are open by other apps.

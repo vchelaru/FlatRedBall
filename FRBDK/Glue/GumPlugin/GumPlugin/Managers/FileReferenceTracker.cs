@@ -77,6 +77,19 @@ namespace GumPlugin.Managers
         {
             AppState.Self.GumProjectSave = gumProjectSave;
 
+            if(!string.IsNullOrEmpty(gumProjectSave.LocalizationFile))
+            {
+                var localizationFile =
+                    FileManager.GetDirectory(gumProjectSave.FullFileName) + gumProjectSave.LocalizationFile;
+                listToFill.Add(localizationFile);
+            }
+            if(!string.IsNullOrEmpty(gumProjectSave.SinglePixelTextureFile))
+            {
+                var singlePixelFile =
+                    FileManager.GetDirectory(gumProjectSave.FullFileName) + gumProjectSave.SinglePixelTextureFile;
+                listToFill.Add(singlePixelFile);
+            }
+
             foreach (var element in gumProjectSave.Screens)
             {
                 AddElementFileFor(listToFill, element, projectOrDisk);

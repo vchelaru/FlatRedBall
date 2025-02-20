@@ -297,8 +297,7 @@ namespace FlatRedBall.Glue.Parsing
         private static ICodeBlock GenerateInitializeMethod(ICodeBlock currentBlock, ICodeBlock classLevelBlock, out ICodeBlock initializeFunction, out bool loadAsync)
         {
             initializeFunction = currentBlock.Function("public static void", "Initialize", "");
-            currentBlock = initializeFunction
-                    ._();
+            currentBlock = initializeFunction._();
 
             // Vic asks - should this be in a plugin? Or should it be core FRB? Let's put it here in core for now.
             // This is needed for Tiled shapes
@@ -306,6 +305,8 @@ namespace FlatRedBall.Glue.Parsing
             // But maybe we should do this for everything just to be safe?
             currentBlock.Line("bool oldShapeManagerSuppressAdd = FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue;");
             currentBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = true;");
+
+
 
             foreach (var generator in CodeWriter.GlobalContentCodeGenerators)
             {
