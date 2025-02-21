@@ -16,11 +16,13 @@
     <div id="app">
         <div id="loading" style="display: table-cell; margin: auto; width:100vw; height:100vh; vertical-align: middle; background: #000000;">
             <div style="display: block; margin: auto; width: 40em; color: white;font-family: 'Segoe UI', sans-serif; ">
-                <div style="text-align: center; font-size: 1.8em;">Made with
+                <div style="text-align: center; font-size: 1.8em;">
+                    Made with
                     <br /><a href="https://github.com/vchelaru/FlatRedBall"><img src="frblogo.png" border="0" alt="FlatRedBall"></a>
                     <br />and
-                    <br /><a href="https://github.com/kniEngine/kni"><img src="kni.png" border="0" alt="Kni"></a></div>
-                    <br />
+                    <br /><a href="https://github.com/kniEngine/kni"><img src="kni.png" border="0" alt="Kni"></a>
+                </div>
+                <br />
                 <div style="text-align: center; font-size: 1.8em;">loading&nbsp;<marquee style="width:0.9em; vertical-align: bottom;">.&nbsp;.&nbsp;.&nbsp;&nbsp;&nbsp;</marquee></div>
             </div>
         </div>
@@ -34,6 +36,7 @@
         <script src="_framework/blazor.webassembly.js" autostart="false"></script>
         <script type="module">
             import { BrotliDecode } from './js/decode.min.js';
+            window.BrotliDecode = BrotliDecode;
             // Set this to enable Brotli (.br) decompression on static webServers
             // that don't support content compression and http://.
             var enableBrotliDecompression = false;
@@ -60,16 +63,17 @@
             });
         </script>
 
-        <script src="_content/nkast.Wasm.Dom/js/JSObject.8.0.2.js"></script>
-        <script src="_content/nkast.Wasm.Dom/js/Window.8.0.2.js"></script>
-        <script src="_content/nkast.Wasm.Dom/js/Document.8.0.2.js"></script>
-        <script src="_content/nkast.Wasm.Dom/js/Navigator.8.0.2.js"></script>
-        <script src="_content/nkast.Wasm.Dom/js/Gamepad.8.0.2.js"></script>
-        <script src="_content/nkast.Wasm.Dom/js/Media.8.0.2.js"></script>
-        <script src="_content/nkast.Wasm.XHR/js/XHR.8.0.2.js"></script>
-        <script src="_content/nkast.Wasm.Canvas/js/Canvas.8.0.2.js"></script>
-        <script src="_content/nkast.Wasm.Canvas/js/CanvasGLContext.8.0.2.js"></script>
-        <script src="_content/nkast.Wasm.Audio/js/Audio.8.0.2.js"></script>
+        <script src="_content/nkast.Wasm.Dom/js/JSObject.8.0.5.js"></script>
+        <script src="_content/nkast.Wasm.Dom/js/Window.8.0.5.js"></script>
+        <script src="_content/nkast.Wasm.Dom/js/Document.8.0.5.js"></script>
+        <script src="_content/nkast.Wasm.Dom/js/Navigator.8.0.5.js"></script>
+        <script src="_content/nkast.Wasm.Dom/js/Gamepad.8.0.5.js"></script>
+        <script src="_content/nkast.Wasm.Dom/js/Media.8.0.5.js"></script>
+        <script src="_content/nkast.Wasm.XHR/js/XHR.8.0.5.js"></script>
+        <script src="_content/nkast.Wasm.Canvas/js/Canvas.8.0.5.js"></script>
+        <script src="_content/nkast.Wasm.Canvas/js/CanvasGLContext.8.0.5.js"></script>
+        <script src="_content/nkast.Wasm.Audio/js/Audio.8.0.5.js"></script>
+        <script src="_content/nkast.Wasm.XR/js/XR.8.0.5.js"></script>
 
         <script>
             function tickJS() {
