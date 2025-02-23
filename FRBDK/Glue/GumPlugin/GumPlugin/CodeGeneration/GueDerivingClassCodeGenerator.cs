@@ -147,6 +147,8 @@ namespace GumPlugin.CodeGeneration
             GenerateRaiseExposedEvents(elementSave, classBlock);
 
             GenerateFormsCode(elementSave, classBlock);
+
+            GenerateRemoveFromManagers(elementSave, classBlock);
         }
 
 
@@ -759,6 +761,10 @@ namespace GumPlugin.CodeGeneration
 
             }
         }
+        private void GeneratePartialMethods(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            currentBlock.Line("partial void CustomInitialize();");
+        }
 
         #endregion
 
@@ -858,12 +864,8 @@ namespace GumPlugin.CodeGeneration
 
         #endregion
 
+        #region AddToManagers
 
-
-        private void GeneratePartialMethods(ElementSave elementSave, ICodeBlock currentBlock)
-        {
-            currentBlock.Line("partial void CustomInitialize();");
-        }
 
         internal string GetAddToManagersFunc(IElement glueElement, NamedObjectSave namedObjectSave, ReferencedFileSave referencedFileSave, string layerName)
         {
@@ -902,6 +904,17 @@ namespace GumPlugin.CodeGeneration
 
             return stringBuilder.ToString();
         }
+
+        #endregion
+
+        private void GenerateRemoveFromManagers(ElementSave elementSave, ICodeBlock classBlock)
+        {
+            var method = classBlock.Function("public override void", "RemoveFromManagers");
+
+            method.Line("StopAnimations();");
+            method.Line("base.RemoveFromManagers();");
+        }
+
 
         private void ModifyVariableTypeForProperty(ref string variableType, VariableSave variableSave, ElementSave elementSave)
         {

@@ -660,6 +660,11 @@ namespace FlatRedBall.Gui
         public Vector2 WorldPosition => new Vector2(WorldX, WorldY);
 
         /// <summary>
+        /// Returns the world position at the Z=0 plane.
+        /// </summary>
+        public Vector3 WorldPosition3D => new Vector3(WorldX, WorldY, 0);
+
+        /// <summary>
         /// The window that the cursor was over when the mouse button was pressed.
         /// </summary>
         /// <remarks>
