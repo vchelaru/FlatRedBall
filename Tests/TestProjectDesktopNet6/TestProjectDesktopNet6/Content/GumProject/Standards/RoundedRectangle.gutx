@@ -123,6 +123,13 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>bool</Type>
+      <Name>ExposeChildrenEvents</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Behavior</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float</Type>
       <Name>GradientInnerRadius</Name>
       <Value xsi:type="xsd:float">50</Value>
@@ -239,6 +246,13 @@
       <Name>HasDropshadow</Name>
       <Value xsi:type="xsd:boolean">false</Value>
       <Category>Dropshadow</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>HasEvents</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <Category>Behavior</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>

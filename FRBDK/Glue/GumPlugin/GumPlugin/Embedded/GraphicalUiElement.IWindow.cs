@@ -1280,6 +1280,10 @@ namespace Gum.Wireframe
                 {
                     convertedValue = (double)asFloat;
                 }
+                else if(value is string asString && double.TryParse(asString, out double doubleResult))
+                {
+                    convertedValue = doubleResult;
+                }
             }
             else if (desiredType == typeof(decimal))
             {
@@ -1294,6 +1298,10 @@ namespace Gum.Wireframe
                 else if (value is float asFloat)
                 {
                     convertedValue = (decimal)asFloat;
+                }
+                else if(value is string asString && decimal.TryParse(asString, out decimal asDecimal))
+                {
+                    convertedValue = asDecimal;
                 }
             }
             else if (desiredType == typeof(float))
@@ -1337,6 +1345,11 @@ namespace Gum.Wireframe
                 else if(value is float asFloat)
                 {
                     numeric = (decimal)asFloat;
+                    isNumeric = true;
+                }
+                else if(value is string asString && byte.TryParse(asString, out byte asByte))
+                {
+                    numeric = (decimal)asByte;
                     isNumeric = true;
                 }
 

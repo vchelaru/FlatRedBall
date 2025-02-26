@@ -30,6 +30,20 @@
         "ElementType": "Screens",
         "EventType": 7,
         "TimestampUtc": "2025-02-16T18:22:58.8793235Z"
+      },
+      {
+        "NewName": "FormsScreenGum.TextBoxInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-02-26T03:46:15.2308383Z"
+      },
+      {
+        "NewName": "FormsScreenGum.TextBoxBoundToNumericValues",
+        "OldName": "FormsScreenGum.TextBoxInstance",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-02-26T03:46:36.7089938Z"
       }
     ]
   }

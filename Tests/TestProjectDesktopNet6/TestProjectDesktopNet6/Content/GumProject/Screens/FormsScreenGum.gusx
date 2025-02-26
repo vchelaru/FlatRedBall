@@ -168,6 +168,17 @@
     </Variable>
     <Variable>
       <Type>float</Type>
+      <Name>TextBoxBoundToNumericValues.X</Name>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>TextBoxBoundToNumericValues.Y</Name>
+      <Value xsi:type="xsd:float">289</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
       <Name>UserControlInstance.X</Name>
       <Value xsi:type="xsd:float">0</Value>
       <SetsValue>true</SetsValue>
@@ -261,6 +272,11 @@
   <Instance>
     <Name>ListBoxItemInstance2</Name>
     <BaseType>DefaultForms/ListBoxItem</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>TextBoxBoundToNumericValues</Name>
+    <BaseType>DefaultForms/TextBox</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />

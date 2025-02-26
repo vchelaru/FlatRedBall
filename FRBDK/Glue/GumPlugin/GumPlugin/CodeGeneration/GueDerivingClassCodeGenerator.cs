@@ -40,6 +40,7 @@ namespace GumPlugin.CodeGeneration
         #endregion
 
 
+
         public GueDerivingClassCodeGenerator()
         {
             mTypeToQualifiedTypes.Add("HorizontalAlignment", "RenderingLibrary.Graphics.HorizontalAlignment");

@@ -62,6 +62,12 @@ class GumPageViewModel : ViewModel
         get => Get<bool>();
         set => Set(value);
     }
+
+    public decimal DecimalValueForTextBox { get => Get<decimal>(); set => Set(value); }
+    public double DoubleValueForTextBox { get => Get<double>(); set => Set(value); }
+    public float FloatValueForTextBox { get => Get<float>(); set => Set(value); }
+    public int IntValueForTextBox { get => Get<int>(); set => Set(value); }
+    public byte ByteValueForTextBox { get => Get<byte>(); set => Set(value); }
 }
 
 #endregion
@@ -88,9 +94,10 @@ public partial class FormsScreen
 
         PreFilledListBox_ShouldHaveListBoxItems_WhenAddedInGum();
 
-
+        TextBox_ShouldBindCorrectly_WhenBoundToNumericValues();
 
     }
+
 
     private void Binding_ShouldCascadeToChildren_WhenChildrenAreAddedToParent()
     {
@@ -288,6 +295,45 @@ public partial class FormsScreen
         radioButton1.Visual.RemoveFromManagers();
         radioButton2.Visual.RemoveFromManagers();
     }
+
+    private void TextBox_ShouldBindCorrectly_WhenBoundToNumericValues()
+    {
+        var viewModel = new GumPageViewModel();
+        GumScreen.BindingContext = viewModel;
+        var textBox = Forms.TextBoxBoundToNumericValues;
+
+        textBox.SetBinding(nameof(textBox.Text), nameof(GumPageViewModel.DecimalValueForTextBox));
+        viewModel.DecimalValueForTextBox = 2m;
+        textBox.Text.ShouldBe("2");
+        textBox.Text = "3";
+        viewModel.DecimalValueForTextBox.ShouldBe(3m);
+
+        textBox.SetBinding(nameof(textBox.Text), nameof(GumPageViewModel.DoubleValueForTextBox));
+        viewModel.DoubleValueForTextBox = 10;
+        textBox.Text.ShouldBe("10");
+        textBox.Text = "11";
+        viewModel.DoubleValueForTextBox.ShouldBe(11);
+
+        textBox.SetBinding(nameof(textBox.Text), nameof(GumPageViewModel.FloatValueForTextBox));
+        viewModel.FloatValueForTextBox = 12f;
+        textBox.Text.ShouldBe("12");
+        textBox.Text = "13";
+        viewModel.FloatValueForTextBox.ShouldBe(13f);
+
+        textBox.SetBinding(nameof(textBox.Text), nameof(GumPageViewModel.IntValueForTextBox));
+        viewModel.IntValueForTextBox = 14;
+        textBox.Text.ShouldBe("14");
+        textBox.Text = "15";
+        viewModel.IntValueForTextBox.ShouldBe(15);
+
+        textBox.SetBinding(nameof(textBox.Text), nameof(GumPageViewModel.ByteValueForTextBox));
+        viewModel.ByteValueForTextBox = 16;
+        textBox.Text.ShouldBe("16");
+        textBox.Text = "17";
+        viewModel.ByteValueForTextBox.ShouldBe((byte)17);
+
+    }
+
 
     void CustomActivity(bool firstTimeCalled)
     {
