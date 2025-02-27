@@ -101,7 +101,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             this.TopGumCanvas.Children.Add(GumBackground);
         }
 
-        public void ForceRefreshMainSpriteTexture(FilePath value)
+        public void ForceRefreshMainSpriteTexture(FilePath? value)
         {
             if (value == null || value.Exists() == false)
             {
@@ -185,12 +185,18 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             {
 
                 var firstFrame = animationChain.Frames.FirstOrDefault();
+                if(firstFrame?.TextureName != null)
+                {
+                    var textureName = firstFrame.TextureName;
 
-                var textureName = firstFrame.TextureName;
+                    var textureAbsolute = achxFilePath.GetDirectoryContainingThis() + textureName;
 
-                var textureAbsolute = achxFilePath.GetDirectoryContainingThis() + textureName;
-
-                ForceRefreshMainSpriteTexture(textureAbsolute);
+                    ForceRefreshMainSpriteTexture(textureAbsolute);
+                }
+                else
+                {
+                    ForceRefreshMainSpriteTexture(null);
+                }
             }
         }
 
