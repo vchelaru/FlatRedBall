@@ -243,6 +243,10 @@ namespace FlatRedBall.Gum
             // Now we can set the directory to Gum's root:
             ToolsUtilities.FileManager.RelativeDirectory = ToolsUtilities.FileManager.GetDirectory(mProjectFileName);
 
+            global::RenderingLibrary.Graphics.Renderer.TextureFilter =
+                ObjectFinder.Self.GumProjectSave.TextureFilter == "Linear" ? TextureFilter.Linear
+                : TextureFilter.Point;
+
             // The Gum tool does a lot more init than this, but we're going to only do a subset 
             //of initialization for performance
             // reasons:
