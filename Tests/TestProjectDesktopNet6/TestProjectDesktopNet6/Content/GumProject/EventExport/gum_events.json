@@ -4,34 +4,6 @@
     "Owner": [],
     "d1638316d18f4a1e23a287aaaa12b6c540f704e257a6549bc9a672497ccc934e": [
       {
-        "NewName": "TestScreen.TextWrappingSetInGumRelativeToChildren1",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-02-16T18:22:43.5936725Z"
-      },
-      {
-        "NewName": "TestScreen.TruncateVerticalTextInstance",
-        "OldName": "TestScreen.TextWrappingSetInGumRelativeToChildren1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-02-16T18:22:58.8773212Z"
-      },
-      {
-        "NewName": "TestScreen.TruncateVerticalTextInstance",
-        "OldName": "TestScreen.TextWrappingSetInGumRelativeToChildren1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-02-16T18:22:58.8783221Z"
-      },
-      {
-        "NewName": "TestScreen.TruncateVerticalTextInstance",
-        "OldName": "TestScreen.TextWrappingSetInGumRelativeToChildren1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-02-16T18:22:58.8793235Z"
-      },
-      {
         "NewName": "FormsScreenGum.TextBoxInstance",
         "OldName": null,
         "ElementType": "Screens",
@@ -44,6 +16,20 @@
         "ElementType": "Screens",
         "EventType": 7,
         "TimestampUtc": "2025-02-26T03:46:36.7089938Z"
+      },
+      {
+        "NewName": "EventBindingComponent",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 0,
+        "TimestampUtc": "2025-03-03T11:40:03.8939776Z"
+      },
+      {
+        "NewName": "EventBindingComponent (Container).TextInstance",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 5,
+        "TimestampUtc": "2025-03-03T11:40:08.6530888Z"
       }
     ]
   }

@@ -17,6 +17,7 @@ using GlueTestProject.TestFramework;
 using FlatRedBall.Forms.MVVM;
 using FlatRedBall.Screens;
 using System.Net.NetworkInformation;
+using GlueTestProject.GumRuntimes;
 
 namespace GlueTestProject.Screens;
 
@@ -70,6 +71,13 @@ class GumPageViewModel : ViewModel
     public byte ByteValueForTextBox { get => Get<byte>(); set => Set(value); }
 }
 
+public class MethodCallingViewModel : ViewModel
+{
+    public event Action TestEvent;
+
+    public void RaiseTestEvent() => TestEvent?.Invoke();
+}
+
 #endregion
 
 public partial class FormsScreen
@@ -82,6 +90,8 @@ public partial class FormsScreen
         Forms_ShouldRemoveInternalBinding_WhenBindingContextChanges();
 
         Binding_ShouldCascadeToChildren_WhenChildrenAreAddedToParent();
+
+        Binding_ShouldRaiseEvents_WhenBindingToEvents();
 
         DerivedControls_ShouldHaveVisualCreated_WhenInstantiated();
 
@@ -98,6 +108,39 @@ public partial class FormsScreen
 
     }
 
+    private void Binding_ShouldRaiseEvents_WhenBindingToEvents()
+    {
+        var instance = new EventBindingComponentRuntime();
+        instance.SetBinding(
+            nameof(instance.BoundEventHandler),
+            nameof(MethodCallingViewModel.TestEvent));
+        var vm = new MethodCallingViewModel();
+        instance.BindingContext = vm;
+
+        instance.TimesEventRaised.ShouldBe(0);
+        vm.RaiseTestEvent();
+        instance.TimesEventRaised.ShouldBe(1);
+
+        // now test it with indirect binding context
+
+
+        var container = new ContainerRuntime();
+        container.BindingContext = vm;
+        var childInstance = new EventBindingComponentRuntime();
+        childInstance.SetBinding(
+            nameof(instance.BoundEventHandler),
+            nameof(MethodCallingViewModel.TestEvent));
+        container.Children.Add(childInstance);
+
+        childInstance.TimesEventRaised.ShouldBe(0);
+        vm.RaiseTestEvent();
+        childInstance.TimesEventRaised.ShouldBe(1);
+        container.Children.Remove(childInstance);
+        vm.RaiseTestEvent();
+        childInstance.TimesEventRaised.ShouldBe(1);
+
+
+    }
 
     private void Binding_ShouldCascadeToChildren_WhenChildrenAreAddedToParent()
     {
@@ -134,7 +177,7 @@ public partial class FormsScreen
         listBox.Width = 100;
         listBox.Height = 100;
 
-        for(int i = 0; i < 100; i++)
+        for (int i = 0; i < 100; i++)
         {
             // intentionally add the same item multiple times
             listBox.Items.Add(0);
@@ -158,7 +201,7 @@ public partial class FormsScreen
         var dialogBox = Forms.DialogBoxInstance;
 
         var dialogBoxString = string.Empty;
-        for(int i = 0; i < 30; i++)
+        for (int i = 0; i < 30; i++)
         {
             dialogBoxString += "This is a long string.\n";
         }

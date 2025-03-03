@@ -225,6 +225,11 @@
     <LinkType>ReferenceOriginal</LinkType>
   </ComponentReference>
   <ComponentReference>
+    <Name>EventBindingComponent</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>Folder With Space/ComponentInFolderWithSpace</Name>
     <ElementType>Component</ElementType>
     <LinkType>ReferenceOriginal</LinkType>

@@ -586,6 +586,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>UserControl</Name>
     </None>
+    <None Include="Content\GumProject\Components\EventBindingComponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>EventBindingComponent</Name>
+    </None>
     <None Include="Content\GumProject\Components\Folder With Space\ComponentInFolderWithSpace.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ComponentInFolderWithSpace</Name>
@@ -2067,6 +2071,10 @@
     <Compile Include="GumRuntimes\DerivedScreenGumRuntime.cs" />
     <Compile Include="GumRuntimes\DerivedScreenGumRuntime.Generated.cs">
       <DependentUpon>DerivedScreenGumRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\EventBindingComponentRuntime.cs" />
+    <Compile Include="GumRuntimes\EventBindingComponentRuntime.Generated.cs">
+      <DependentUpon>EventBindingComponentRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\Folder With Space\ComponentInFolderWithSpaceRuntime.cs" />
     <Compile Include="GumRuntimes\Folder With Space\ComponentInFolderWithSpaceRuntime.Generated.cs">
