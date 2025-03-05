@@ -10,6 +10,8 @@ using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.Elements;
+using Gum.DataTypes.Variables;
+using FlatRedBall.Entities;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
 {
@@ -24,7 +26,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
         private TypeConverter HandleGetInstanceTypeConverter(IElement containerAsIElement, NamedObjectSave instance, Type memberType, string memberName, string customType)
         {
             ///////////////////////////////////Early Out///////////////////////////////////
-            if(instance == null)
+            if (instance == null)
             {
                 // Instances can be null - we can have type converters on core elements such as Screens for the DefaultLayer property.
                 //    throw new ArgumentNullException(nameof(instance));
@@ -32,7 +34,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
             }
             //////////////////////////////////End Early Out///////////////////////////////////
 
-            if(memberType == null)
+            CustomVariable rootVariable = null;
+            var variable = instance.GetCustomVariable(memberName);
+            var variableDefinition = ObjectFinder.Self.GetVariableDefinition(memberName, instance);
+
+            if (memberType == null)
             {
                 throw new ArgumentNullException(nameof(memberType));
             }
@@ -48,38 +54,61 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
 
             bool handled = false;
 
-            if (instance.SourceType == SourceType.FlatRedBallType)
+            if(variableDefinition != null)
             {
-                Type type = TypeManager.GetTypeFromString(instance.SourceClassType);
-
-                if (type == typeof(Sprite) && memberName == "CurrentChainName")
+                if(variableDefinition.Type == "AnimationChainList")
                 {
-                    // special case handling for CurrentChainName
-                    typeConverter = new AvailableAnimationChainsStringConverter(container, instance);
+                    var availableNamedObjectsAndFiles = new AvailableNamedObjectsAndFiles(container);
+                    availableNamedObjectsAndFiles.NamedObjectTypeRestriction = "FlatRedBall.Graphics.Animation.AnimationChainList";
+                    availableNamedObjectsAndFiles.FileTypeRestriction = "FlatRedBall.Graphics.Animation.AnimationChainList";
+
+                    typeConverter = availableNamedObjectsAndFiles;
+
 
                     handled = true;
                 }
-                else if (memberType?.Name == "Sprite")
+                else if(variableDefinition.Name == "CurrentChainName")
                 {
-                    var nosTypeConverter = new AvailableNamedObjectsAndFiles(container);
-                    nosTypeConverter.NamedObjectTypeRestriction = "FlatRedBall.Sprite";
-                    typeConverter = nosTypeConverter;
+                    var converter = new AvailableAnimationChainsStringConverter(containerAsIElement, instance);
+                    typeConverter = converter;
                     handled = true;
                 }
-
-            }
-            else if (instance.SourceType == SourceType.File)
-            {
-                if (instance.ClassType == "Sprite" && memberName == "CurrentChainName")
-                {
-                    // special case handling for CurrentChainName
-                    typeConverter = new AvailableAnimationChainsStringConverter(container, instance);
-
-                    handled = true;
-                }
-
             }
 
+            if (!handled)
+            {
+                if (instance.SourceType == SourceType.FlatRedBallType)
+                {
+                    Type type = TypeManager.GetTypeFromString(instance.SourceClassType);
+
+                    if (type == typeof(Sprite) && memberName == "CurrentChainName")
+                    {
+                        // special case handling for CurrentChainName
+                        typeConverter = new AvailableAnimationChainsStringConverter(container, instance);
+
+                        handled = true;
+                    }
+                    else if (memberType?.Name == "Sprite")
+                    {
+                        var nosTypeConverter = new AvailableNamedObjectsAndFiles(container);
+                        nosTypeConverter.NamedObjectTypeRestriction = "FlatRedBall.Sprite";
+                        typeConverter = nosTypeConverter;
+                        handled = true;
+                    }
+
+                }
+                else if (instance.SourceType == SourceType.File)
+                {
+                    if (instance.ClassType == "Sprite" && memberName == "CurrentChainName")
+                    {
+                        // special case handling for CurrentChainName
+                        typeConverter = new AvailableAnimationChainsStringConverter(container, instance);
+
+                        handled = true;
+                    }
+
+                }
+            }
             if (!handled)
             {
                 if (instance.DoesMemberNeedToBeSetByContainer(memberName))
@@ -100,7 +129,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
                 else if (IsTypeFile(memberType, customType))
                 {
                     AvailableFileStringConverter availableFileStringConverter = new AvailableFileStringConverter(container);
-                    if(instance != null)
+                    if (instance != null)
                     {
                         availableFileStringConverter.IncludeNamedObjectsOfMatchingType = true;
                     }
@@ -125,17 +154,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
 
                         if (customVariable != null)
                         {
+                            // If we use the base variable, then the value from the base variable
+                            // is used which we don't want:
                             var baseVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable);
                             typeConverter = baseVariable.GetTypeConverter(entity);
                         }
                     }
                 }
             }
-            //else if (this.SourceType == SaveClasses.SourceType.FlatRedBallType &&
-            //    typedMember != null && typedMember.MemberType != null)
-            //{
-
-            //}
 
             // November 25, 2021
             // Vic asks = what does this code do? Nothing...is it a bug?
@@ -169,7 +195,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
                     return true;
                 }
 
-                if(!string.IsNullOrEmpty(customTypeName) && 
+                if (!string.IsNullOrEmpty(customTypeName) &&
                     ati.QualifiedRuntimeTypeName.QualifiedType == customTypeName)
                 {
                     return true;

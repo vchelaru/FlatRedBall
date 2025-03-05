@@ -1344,6 +1344,51 @@ public class ObjectFinder : IObjectFinder
         return customVariable;
     }
 
+    public CustomVariable GetRootCustomVariable(CustomVariableInNamedObject variable, NamedObjectSave nos)
+    {
+        var element = ObjectFinder.Self.GetElement(nos);
+        var variableInElement = element?.GetCustomVariableRecursively(variable.Member);
+
+        if(variableInElement != null)
+        {
+            return GetRootCustomVariable(variableInElement);
+        }
+        return null;
+    }
+
+    public VariableDefinition GetVariableDefinition(string variableName, NamedObjectSave instance)
+    {
+        var element = ObjectFinder.Self.GetElement(instance);
+
+        var customVariable = element?.GetCustomVariableRecursively(variableName);
+
+        if(!string.IsNullOrEmpty( customVariable?.SourceObject ))
+        {
+            var innerInstance = element?.GetNamedObjectRecursively(customVariable.SourceObject);
+            var variableOnInstance = customVariable.SourceObjectProperty;
+
+            if(innerInstance != null)
+            {
+                return GetVariableDefinition(customVariable.SourceObjectProperty, innerInstance);
+            }
+        }
+
+        if(element != null)
+        {
+            var rootElement = ObjectFinder.Self.GetRootBaseElement(element) ?? element;
+
+            var ati = rootElement?.GetAssetTypeInfo();
+
+        }
+        else
+        {
+            return instance.GetAssetTypeInfo()?.VariableDefinitions.Find(item => item.Name == variableName);
+        }
+
+
+        return null;
+    }
+
     public CustomVariable GetRootCustomVariable(CustomVariable customVariable)
     {
         var element = GetElementContaining(customVariable);

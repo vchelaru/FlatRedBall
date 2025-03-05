@@ -50,6 +50,11 @@ namespace FlatRedBall.Glue.GuiDisplay
             get; set;
         }
 
+        public string FileTypeRestriction
+        {
+            get; set;
+        }
+
         #endregion
 
         public override bool GetStandardValuesSupported(
@@ -71,7 +76,8 @@ namespace FlatRedBall.Glue.GuiDisplay
             IncludeReferencedFiles = true;
         }
 
-        public static List<string> GetAvailableObjects(bool addNone, bool includeReferencedfiles, IElement currentElement, string namedObjectTypeRestriction)
+        public static List<string> GetAvailableObjects(bool addNone, bool includeReferencedfiles,
+            IElement currentElement, string namedObjectTypeRestriction, string? fileTypeRestriction = null)
         {
             if(currentElement == null)
             {
@@ -97,13 +103,13 @@ namespace FlatRedBall.Glue.GuiDisplay
 
             if (includeReferencedfiles)
             {
-                AddAvailableReferencedFiles(currentElement);
+                AddAvailableReferencedFiles(currentElement, fileTypeRestriction);
             }
             stringListToReturn.Sort();
             return stringListToReturn;
         }
 
-        private static void AddAvailableReferencedFiles(IElement currentElement)
+        private static void AddAvailableReferencedFiles(IElement currentElement, string? fileTypeRestriction)
         {
             List<ReferencedFileSave> referencedFiles = new List<ReferencedFileSave>(); ;
 
@@ -120,7 +126,11 @@ namespace FlatRedBall.Glue.GuiDisplay
             // Loop through the named objects and add them here
             foreach (ReferencedFileSave referencedFile in referencedFiles)
             {
-                stringListToReturn.Add(FileManager.RemovePath(FileManager.RemoveExtension(referencedFile.GetInstanceName())));
+                if(fileTypeRestriction == null || referencedFile.RuntimeType == fileTypeRestriction)
+                {
+                    stringListToReturn.Add(FileManager.RemovePath(FileManager.RemoveExtension(referencedFile.GetInstanceName())));
+
+                }
             }
         }
 
@@ -144,7 +154,7 @@ namespace FlatRedBall.Glue.GuiDisplay
         public override System.ComponentModel.TypeConverter.StandardValuesCollection
                      GetStandardValues(ITypeDescriptorContext context)
         {
-            List<string> stringList = GetAvailableObjects(true, IncludeReferencedFiles, CurrentElement, this.NamedObjectTypeRestriction);
+            List<string> stringList = GetAvailableObjects(true, IncludeReferencedFiles, CurrentElement, this.NamedObjectTypeRestriction, FileTypeRestriction);
 
             return new System.ComponentModel.TypeConverter.StandardValuesCollection(stringList);
         }
