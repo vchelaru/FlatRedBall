@@ -52,7 +52,11 @@ internal static class PostProcessLogic
 
         if (hasGlobalPostProcessing)
         {
+            var oldViewport = Renderer.GraphicsDevice.Viewport;
+
             ApplyPostProcessing(postProcesses, swapChain, previousRenderTarget);
+
+            Renderer.GraphicsDevice.Viewport = oldViewport;
         }
     }
 
