@@ -238,6 +238,9 @@ namespace OfficialPlugins.MonoGameContent
             {
                 var rfs = GlueState.CurrentReferencedFileSave;
 
+                // this can cause aliases to change
+                aliasCodeGenerator.GenerateFileAliasLogicCode();
+
                 HandleRfsChange(rfs);
             }
             else if(memberName == nameof(ReferencedFileSave.RuntimeType))
@@ -247,6 +250,8 @@ namespace OfficialPlugins.MonoGameContent
                 if(rfs.GetCanUseContentPipeline() == false && rfs.UseContentPipeline)
                 {
                     rfs.UseContentPipeline = false;
+                    aliasCodeGenerator.GenerateFileAliasLogicCode();
+
 
                     HandleRfsChange(rfs);
 
