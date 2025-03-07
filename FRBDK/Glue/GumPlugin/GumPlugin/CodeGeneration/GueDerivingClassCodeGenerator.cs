@@ -1043,17 +1043,21 @@ namespace GumPlugin.CodeGeneration
             }
             else if(variableSave.GetRootName() == "Parent")
             {
-                if(container is ComponentSave)
+                // Gum has changed to support screens having children. This is a Gum change, not a Gum change, so we need to
+                // handle this. It may break old projects but there's not an easy way to version this
+                //if(container is ComponentSave)
                 {
                     // This does a strict comparison, but GetGraphicalUiElementByName supports the dot index, so use that
                     //variableValue = $"this.ContainedElements.FirstOrDefault(item =>item.Name == \"{variableValue}\") ?? this";
                     variableValue = $"this.GetGraphicalUiElementByName(\"{variableValue}\") ?? this";
                     
                 }
-                else
-                {
-                    variableValue = $"this.GetGraphicalUiElementByName(\"{variableValue}\")";
-                }
+                // See above why this was commented out:
+                //else
+                //{
+
+                //    variableValue = $"this.GetGraphicalUiElementByName(\"{variableValue}\")";
+                //}
             }
             else if(variableSave.IsFile)
             {

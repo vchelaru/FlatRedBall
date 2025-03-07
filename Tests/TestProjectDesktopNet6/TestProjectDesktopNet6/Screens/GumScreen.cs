@@ -87,8 +87,16 @@ public partial class GumScreen
         TextGue_ShouldMatchInternalText_WhenAssigignedOnTextRuntime();
 
         TextGue_ShouldTruncate_WhenSetToTruncate();
+
+        ItemInScreen_ShouldHaveScreenParent_WhenInvalidParentIsAssignedInGum();
     }
 
+    private void ItemInScreen_ShouldHaveScreenParent_WhenInvalidParentIsAssignedInGum()
+    {
+        var itemWithBadParent = TestScreen.GetGraphicalUiElementByName("RectangleWithInvalidParent");
+        itemWithBadParent.ShouldNotBe(null);
+        itemWithBadParent.Parent.ShouldNotBe(null, "Because an invalid parent assignment should fall back to the screen");
+    }
     private void TextGue_ShouldTruncate_WhenSetToTruncate()
     {
         var text = this.GumScreen_.GetGraphicalUiElementByName("TruncateVerticalTextInstance") as TextRuntime;

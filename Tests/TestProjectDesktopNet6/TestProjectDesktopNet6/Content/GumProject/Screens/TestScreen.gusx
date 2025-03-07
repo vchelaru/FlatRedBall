@@ -951,6 +951,24 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>string</Type>
+      <Name>RectangleWithInvalidParent.Parent</Name>
+      <Value xsi:type="xsd:string">InvalidParent</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>RectangleWithInvalidParent.X</Name>
+      <Value xsi:type="xsd:float">86</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>RectangleWithInvalidParent.Y</Name>
+      <Value xsi:type="xsd:float">-66</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>ChildrenLayout</Type>
       <Name>StackWithChildrenWidthDependsOnParent.ChildrenLayout</Name>
       <Value xsi:type="xsd:int">0</Value>
@@ -1879,6 +1897,11 @@ wrap the text.</Value>
   <Instance>
     <Name>NineSliceInstance11</Name>
     <BaseType>NineSlice</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>RectangleWithInvalidParent</Name>
+    <BaseType>ColoredRectangle</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />

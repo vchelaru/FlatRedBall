@@ -30,6 +30,48 @@
         "ElementType": "Components",
         "EventType": 5,
         "TimestampUtc": "2025-03-03T11:40:08.6530888Z"
+      },
+      {
+        "NewName": "TestScreen.ColoredRectangleInstance1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-03-07T12:27:01.4154925Z"
+      },
+      {
+        "NewName": "TestScreen.RectangleWithInvalidParent",
+        "OldName": "TestScreen.ColoredRectangleInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-07T12:27:15.5787244Z"
+      },
+      {
+        "NewName": "TestScreen.RectangleWithInvalidParent",
+        "OldName": "TestScreen.ColoredRectangleInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-07T12:27:15.5797247Z"
+      },
+      {
+        "NewName": "TestScreen.RectangleWithInvalidParent",
+        "OldName": "TestScreen.ColoredRectangleInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-07T12:27:15.5797247Z"
+      },
+      {
+        "NewName": "TestScreen.RectangleWithInvalidParent",
+        "OldName": "TestScreen.ColoredRectangleInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-07T12:27:15.5807245Z"
+      },
+      {
+        "NewName": "TestScreen.RectangleWithInvalidParent",
+        "OldName": "TestScreen.ColoredRectangleInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-07T12:27:15.5817245Z"
       }
     ]
   }
