@@ -12,6 +12,11 @@ namespace FlatRedBall.Input
 
         public bool AnyKeyPushed()
         {
+            return GetKeyPushed() != null;
+        }
+
+        public Keys? GetKeyPushed()
+        { 
             // loop through all pressed keys...
             for(int i= 0; i < Keyboard.NumberOfKeys; i++)
             {
@@ -19,10 +24,10 @@ namespace FlatRedBall.Input
                 if(KeyPushed((Keys)i))
                 {
                     // if so, we can return true
-                    return true;
+                    return (Keys)i;
                 }
             }
-            return false;
+            return null;
         }
 
         /// <summary>
@@ -45,6 +50,8 @@ namespace FlatRedBall.Input
             return mKeyboardState.IsKeyDown(key) &&
                 !mLastFrameKeyboardState.IsKeyDown(key);
         }
+
+
 
         public bool KeyReleased(Keys key)
         {

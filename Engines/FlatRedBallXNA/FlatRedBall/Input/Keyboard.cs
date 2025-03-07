@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using System.Threading.Tasks;
 using FlatRedBall;
 
 using Microsoft.Xna.Framework;
@@ -120,6 +120,26 @@ namespace FlatRedBall.Input
         public bool AnyKeyPushed()
         {
             return keyboardStateProcessor.AnyKeyPushed();
+        }
+
+        public async Task<Keys> WaitForAnyKeyPushed()
+        {
+            Keys keyPushed = Keys.None;
+
+            await TimeManager.DelayUntil(() =>
+            {
+                var keyPushedInner = keyboardStateProcessor.GetKeyPushed();
+
+                if (keyPushedInner != null)
+                {
+                    keyPushed = keyPushedInner.Value;
+                    return true;
+                }
+
+                return false;
+            });
+
+            return keyPushed;
         }
 
         /// <summary>
