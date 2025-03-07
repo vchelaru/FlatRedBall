@@ -485,10 +485,6 @@ internal class ReplaceClassName : IPostProcess
     {
         var surfaceFormat = SurfaceFormat.HalfVector4;
 
-#if WEB
-        // Do this until kni supports this format, and until we upgrade to this version:
-        surfaceFormat = SurfaceFormat.Color;
-#endif
 
         PostProcessingHelper.CreateRenderTarget(
             ref _intermediatePass,

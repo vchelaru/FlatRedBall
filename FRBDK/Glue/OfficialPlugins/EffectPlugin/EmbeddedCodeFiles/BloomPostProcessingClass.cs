@@ -407,10 +407,6 @@ internal class ReplaceClassName : IPostProcess
         int height = (int)(FlatRedBallServices.ClientHeight * Quality);
 
         var surfaceFormat = SurfaceFormat.HalfVector4;
-#if WEB
-        // Until Kni supports HalfVector4, and until we upgrade to that version, we have to do this:
-        surfaceFormat = SurfaceFormat.Color;
-#endif
 
         PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip0, width, height, surfaceFormat);
         PostProcessingHelper.CreateRenderTarget(ref _bloomRenderTarget2DMip1, width / 2, height / 2, surfaceFormat, usage);
