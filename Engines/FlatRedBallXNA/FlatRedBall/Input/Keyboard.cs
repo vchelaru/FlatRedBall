@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FlatRedBall;
 
@@ -122,7 +123,7 @@ namespace FlatRedBall.Input
             return keyboardStateProcessor.AnyKeyPushed();
         }
 
-        public async Task<Keys> WaitForAnyKeyPushed()
+        public async Task<Keys> WaitForAnyKeyPushed(CancellationToken cancellationToken = default)
         {
             Keys keyPushed = Keys.None;
 
@@ -137,7 +138,7 @@ namespace FlatRedBall.Input
                 }
 
                 return false;
-            });
+            }, cancellationToken);
 
             return keyPushed;
         }

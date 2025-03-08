@@ -48,6 +48,7 @@ struct PredicateTask
 {
     public Func<bool> Predicate;
     public TaskCompletionSource<object> TaskCompletionSource;
+    public CancellationToken CancellationToken;
 }
 
 struct FrameTask
@@ -596,7 +597,7 @@ public static class TimeManager
     /// <param name="seconds">The number of seconds to wait.</param>
     /// <param name="cancellationToken">The cancellation token to use to cancel the task.</param>
     /// <returns>The task which will complete when the argument time passes.</returns>
-    public static Task DelaySeconds(double seconds, CancellationToken cancellationToken = default(CancellationToken))
+    public static Task DelaySeconds(double seconds, CancellationToken cancellationToken = default)
     {
         if(seconds <= 0)
         {
@@ -624,15 +625,17 @@ public static class TimeManager
     /// Returns a task which completes once the argument predicate is fulfilled. This is checked once per frame.
     /// </summary>
     /// <param name="predicate">The predicate to check for completion.</param>
+    /// <param name="cancellationToken">The cancellation token to use to cancel the task.</param>
     /// <returns>The task which will complete when the predicate returns true.</returns>
-    public static Task DelayUntil(Func<bool> predicate)
+    public static Task DelayUntil(Func<bool> predicate, CancellationToken cancellationToken = default)
     {
         if(predicate())
         {
             return Task.CompletedTask;
         }
         var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
-        predicateTasks.Add(new PredicateTask { Predicate = predicate, TaskCompletionSource = taskSource });
+        predicateTasks.Add(new PredicateTask
+        { Predicate = predicate, TaskCompletionSource = taskSource, CancellationToken = cancellationToken });
         return taskSource.Task;
     }
 
@@ -778,7 +781,13 @@ public static class TimeManager
         for(int i = predicateTasks.Count - 1; i > -1; i--)
         {
             var predicateTask = predicateTasks[i];
-            if(predicateTask.Predicate())
+
+            if (predicateTask.CancellationToken.IsCancellationRequested == true)
+            {
+                predicateTask.TaskCompletionSource.TrySetCanceled(predicateTask.CancellationToken);
+            }
+
+            else if (predicateTask.Predicate())
             {
                 predicateTasks.RemoveAt(i);
                 predicateTask.TaskCompletionSource.SetResult(null);
@@ -805,19 +814,19 @@ public static class TimeManager
     {
         foreach (var timedTasks in screenTimeDelayedTasks.ToList())
         {
-            timedTasks.TaskCompletionSource.SetCanceled();
+            timedTasks.TaskCompletionSource.TrySetCanceled();
         }
         screenTimeDelayedTasks.Clear();
 
         foreach(var predicateTask in predicateTasks.ToList())
         {
-            predicateTask.TaskCompletionSource.SetCanceled();
+            predicateTask.TaskCompletionSource.TrySetCanceled();
         }   
         predicateTasks.Clear();
 
         foreach(var frameTask in frameTasks.ToList())
         {
-            frameTask.TaskCompletionSource.SetCanceled();
+            frameTask.TaskCompletionSource.TrySetCanceled();
         }
         frameTasks.Clear();
     }
