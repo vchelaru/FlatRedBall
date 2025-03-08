@@ -120,13 +120,9 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         private void RefreshLinkToSourceItems()
         {
             var project = _glueState.CurrentMainProject;
+            _linkToSourceMenuItem.DropDownItems.Clear();
 
-            if(project == null)
-            {
-                _linkToSourceMenuItem.DropDownItems.Clear();
-
-            }
-            else
+            if(project != null)
             {
                 void AddItem(VisualStudioProject project)
                 {
