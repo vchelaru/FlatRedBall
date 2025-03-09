@@ -1259,7 +1259,7 @@ public class Xbox360GamePad : IInputDevice
     public Xbox360ButtonReference GetButton(ButtonPosition buttonPosition) =>
         GetButton(GetButtonFromPosition(buttonPosition));
 
-    public ButtonPosition GetPositionFromButton(Button button)
+    public ButtonPosition? GetPositionFromButton(Button button)
     {
         // Calling GetButtonFromPosition multiple times is slower,
         // but safer if we add new gamepads in the futuer:
@@ -1279,7 +1279,7 @@ public class Xbox360GamePad : IInputDevice
         {
             return ButtonPosition.FaceUp;
         }
-        return ButtonPosition.FaceDown;
+        return null;
     }
 
     public Button GetButtonFromPosition(ButtonPosition buttonPosition)

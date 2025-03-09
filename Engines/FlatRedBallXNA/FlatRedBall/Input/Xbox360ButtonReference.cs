@@ -9,7 +9,7 @@ namespace FlatRedBall.Input
     {
         public FlatRedBall.Input.Xbox360GamePad.Button Button { get; set; }
 
-        public ButtonPosition ButtonPosition => GamePad.GetPositionFromButton(this.Button);
+        public ButtonPosition? ButtonPosition => GamePad.GetPositionFromButton(this.Button);
 
         public Xbox360GamePad GamePad { get; set; }
 
