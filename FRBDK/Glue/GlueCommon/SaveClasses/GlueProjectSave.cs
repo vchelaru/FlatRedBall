@@ -171,7 +171,10 @@ namespace FlatRedBall.Glue.SaveClasses
             GumHasRenderableCloneLogic = 61,
 
             // November 26, 2024
-            ShapeCollectionHasIsPointOnOrInside = 62
+            ShapeCollectionHasIsPointOnOrInside = 62,
+
+            // March 9, 2025
+            AudioManagerStopSongTakesBool = 63
 
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
@@ -182,7 +185,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.ShapeCollectionHasIsPointOnOrInside;
+        public const int LatestVersion = (int)GluxVersions.AudioManagerStopSongTakesBool;
 
         public int FileVersion { get; set; }
 

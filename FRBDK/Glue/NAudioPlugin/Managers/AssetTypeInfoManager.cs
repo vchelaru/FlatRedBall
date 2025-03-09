@@ -52,13 +52,21 @@ namespace NAudioPlugin.Managers
         {
             var ati = new AssetTypeInfo();
 
+            var glujVersion =
+                GlueState.Self.CurrentGlueProject.FileVersion;
+
             // check if the GlueProjectSave file version has ISong
-            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ISongInFrb)
+            if (glujVersion >= (int)GlueProjectSave.GluxVersions.ISongInFrb)
             {
                 var toClone = AvailableAssetTypes.Self.AllAssetTypes
                     .FirstOrDefault(item => item.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Media.Song" && item.Extension == "mp3");
 
                 ati = FileManager.CloneObject(toClone);
+
+                if(glujVersion >= (int)GlueProjectSave.GluxVersions.AudioManagerStopSongTakesBool)
+                {
+                    ati.DestroyMethod = "FlatRedBall.Audio.AudioManager.StopSong(true)";
+                }
             }
 
             ati.AddToManagersFunc = HandleSongAddToManagers;

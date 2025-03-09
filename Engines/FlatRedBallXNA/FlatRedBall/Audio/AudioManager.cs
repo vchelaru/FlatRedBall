@@ -39,10 +39,10 @@ public static partial class AudioManager
 
 
     private static bool mIsInitialized = false;
-    private static Song mCurrentSong = null;
+    private static Song _currentSong = null;
     private static Song mPreviousSong = null;
 
-    private static ISong mCurrentISong = null;
+    private static ISong _currentISong = null;
     private static ISong mPreviousISong = null;
 
 
@@ -165,9 +165,9 @@ public static partial class AudioManager
     ///  music from playing.  The AudioManager remembers this to resume playing later.
     /// </summary>
 
-    public static Song CurrentSong => mCurrentSong;
+    public static Song CurrentSong => _currentSong;
 
-    public static ISong CurrentISong => mCurrentISong;
+    public static ISong CurrentISong => _currentISong;
     
 
     static bool mIsSongUsingGlobalContent;
@@ -244,9 +244,9 @@ public static partial class AudioManager
 
     static void OnUnsuspending(object sender, EventArgs e)
     {
-        if (mCurrentSong != null)
+        if (_currentSong != null)
         {
-            PlaySong(mCurrentSong, true, mIsSongUsingGlobalContent);
+            PlaySong(_currentSong, true, mIsSongUsingGlobalContent);
         }
     }
 
@@ -281,13 +281,13 @@ public static partial class AudioManager
     public static void PlaySong()
     {
         Playlist = null;
-        if(mCurrentISong != null)
+        if(_currentISong != null)
         {
-            PlaySong(mCurrentISong, false, mIsSongUsingGlobalContent);
+            PlaySong(_currentISong, false, mIsSongUsingGlobalContent);
         }
-        else if(mCurrentSong != null)
+        else if(_currentSong != null)
         {
-            PlaySong(mCurrentSong, false, mIsSongUsingGlobalContent);
+            PlaySong(_currentSong, false, mIsSongUsingGlobalContent);
         }
     }
 
@@ -366,9 +366,9 @@ public static partial class AudioManager
 
         if (shouldPlay && AreSongsEnabled)
         {
-            mCurrentSong = toPlay;
+            _currentSong = toPlay;
 
-            CurrentlyPlayingSong = mCurrentSong;
+            CurrentlyPlayingSong = _currentSong;
             mIsSongUsingGlobalContent = isSongGlobalContent;
 
 
@@ -429,11 +429,11 @@ public static partial class AudioManager
         }
         if (shouldPlay && AreSongsEnabled)
         {
-            if(mCurrentISong != toPlay)
+            if(_currentISong != toPlay)
             {
-                if (mCurrentISong != null)
+                if (_currentISong != null)
                 {
-                    mCurrentISong.PlaybackStopped -= HandleISongPlaybackStopped;
+                    _currentISong.PlaybackStopped -= HandleISongPlaybackStopped;
                 }
                 if(toPlay != null)
                 {
@@ -444,16 +444,16 @@ public static partial class AudioManager
             {
                 toPlay.Volume = masterSongVolume.Value;
             }
-            mCurrentISong = toPlay;
-            CurrentlyPlayingISong = mCurrentISong;
+            _currentISong = toPlay;
+            CurrentlyPlayingISong = _currentISong;
             mIsSongUsingGlobalContent = isSongGlobalContent;
             if(forceRestart)
             {
-                mCurrentISong.StartOver();
+                _currentISong.StartOver();
             }
             else
             {
-                mCurrentISong.Play();
+                _currentISong.Play();
             }
         }
     }
@@ -465,9 +465,12 @@ public static partial class AudioManager
 
     /// <summary>
     /// Stops the current song (either XNA or ISong) and sets the currently playing song
-    /// to null. This does not clear the CurrentSong/CurrentISong properties, so PlaySong can be called to resume the same song.
+    /// to null. This optionally clears the current songs
     /// </summary>
-    public static void StopSong()
+    /// <param name="clearCurrentSong">Whether to clear the current song.
+    /// If true, the current song will be set to null and the no-arg PlaySong will not do anything
+    /// if called after this. If false (default) then the song can be resumed with PlaySong</param>
+    public static void StopSong(bool clearCurrentSong = false)
     {
         if(CurrentlyPlayingISong != null)
         {
@@ -481,6 +484,12 @@ public static partial class AudioManager
         CurrentlyPlayingISong = null;
 
         CurrentlyPlayingSong = null;
+
+        if(clearCurrentSong)
+        {
+            _currentISong = null;
+            _currentSong = null;
+        }
     }
 
     /// <summary>
@@ -527,10 +536,10 @@ public static partial class AudioManager
 
     public static void PlaySongThenResumeCurrent(Song toPlay, bool songUsesGlobalContent)
     {
-        mPreviousSong = mCurrentSong;
+        mPreviousSong = _currentSong;
         mPreviousSongUsesGlobalContent = mIsSongUsingGlobalContent;
 
-        mCurrentSong = toPlay;
+        _currentSong = toPlay;
         mIsSongUsingGlobalContent = songUsesGlobalContent;
         try
         {
