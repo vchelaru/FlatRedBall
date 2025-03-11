@@ -460,7 +460,10 @@ public static partial class AudioManager
 
     private static void HandleISongPlaybackStopped(object sender, EventArgs e)
     {
-        CurrentlyPlayingISong = null;
+        if(sender == CurrentlyPlayingISong)
+        {
+            CurrentlyPlayingISong = null;
+        }
     }
 
     /// <summary>
@@ -475,21 +478,26 @@ public static partial class AudioManager
         if(CurrentlyPlayingISong != null)
         {
             CurrentlyPlayingISong.Stop();
+
+            if (clearCurrentSong && _currentISong == CurrentlyPlayingISong)
+            {
+                _currentISong = null;
+            }
         }
         else if (CurrentlyPlayingSong != null)
         {
             Microsoft.Xna.Framework.Media.MediaPlayer.Stop();
+
+            if (clearCurrentSong && _currentSong == CurrentlyPlayingSong)
+            {
+                _currentSong = null;
+            }
         }
+
 
         CurrentlyPlayingISong = null;
-
         CurrentlyPlayingSong = null;
 
-        if(clearCurrentSong)
-        {
-            _currentISong = null;
-            _currentSong = null;
-        }
     }
 
     /// <summary>
