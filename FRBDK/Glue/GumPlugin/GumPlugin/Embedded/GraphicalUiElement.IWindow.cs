@@ -247,7 +247,16 @@ namespace Gum.Wireframe
 
         public virtual void Activity(FlatRedBall.Camera camera)
         {
-
+            if(this.Children != null)
+            {
+                foreach(var child in this.Children)
+                {
+                    if(child is GraphicalUiElement childGue)
+                    {
+                        childGue.Activity(camera);
+                    }
+                }
+            }
         }
 
         public void CallClick() => Click?.Invoke(this);
