@@ -138,7 +138,11 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("X");
             mVariableNamesToSkipForProperties.Add("Y");
             mVariableNamesToSkipForProperties.Add("Width");
+            mVariableNamesToSkipForProperties.Add("MinWidth");
+            mVariableNamesToSkipForProperties.Add("MaxWidth");
             mVariableNamesToSkipForProperties.Add("Height");
+            mVariableNamesToSkipForProperties.Add("MinHeight");
+            mVariableNamesToSkipForProperties.Add("MaxHeight");
             mVariableNamesToSkipForProperties.Add("Visible");
 
 

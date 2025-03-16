@@ -6,35 +6,36 @@
              mc:Ignorable="d" 
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:controls="clr-namespace:GlueFormsCore.Controls;assembly=GlueFormsCore"
              d:DesignHeight="50" d:DesignWidth="200">
-    <Grid>
-        <xctk:SplitButton
+  <Grid>
+    <xctk:SplitButton
             ToolTip="Open Tiled"
             Opened="HandleOpened"
             Closed="DropDownButton_Closed"
             Click="HandleButtonClick"
             x:Name="DropDownButton">
-            <xctk:SplitButton.DropDownContent>
-                <StackPanel x:Name="TiledDropdown" MinWidth="100">
-                    <controls:SearchBar 
+      <xctk:SplitButton.DropDownContent>
+        <StackPanel x:Name="TiledDropdown" MinWidth="100">
+          <controls:SearchBar 
                         ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked" 
                         ArrowKeyPushed="SearchBar_ArrowKeyPushed"
                         EnterPressed="SearchBar_EnterPressed"
                         ></controls:SearchBar>
 
-                    <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding AvailableTmxFiles}" >
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <controls:HighlightableMenuItem Header="{Binding}" IsSelected="{Binding IsSelected}" Click="MenuItem_Click" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </xctk:SplitButton.DropDownContent>
-            <Image Source="/TiledPlugin;component/Icons/TiledIcon.png"></Image>
+          <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding AvailableTmxFiles}" >
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <controls:HighlightableMenuItem Header="{Binding}" IsSelected="{Binding IsSelected}" Click="MenuItem_Click" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <CheckBox IsChecked="{Binding IsOpenNewTiledInstanceChecked}">Open New Tiled Instance</CheckBox>
+        </StackPanel>
+      </xctk:SplitButton.DropDownContent>
+      <Image Source="/TiledPlugin;component/Icons/TiledIcon.png"></Image>
 
-        </xctk:SplitButton>
-        <!--<Button Width="22" Height="22" Click="HandleButtonClick">
+    </xctk:SplitButton>
+    <!--<Button Width="22" Height="22" Click="HandleButtonClick">
             <Image Source="/TiledPlugin;component/Icons/TiledIcon.png"></Image>
-        </Button>-->            
-    </Grid>
+        </Button>-->
+  </Grid>
 </UserControl>
