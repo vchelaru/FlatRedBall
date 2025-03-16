@@ -55,7 +55,14 @@ namespace GlueFormsCore.Controls
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            ViewModel.IsSearchBoxFocused = true;
+            if(ViewModel != null)
+            {
+                ViewModel.IsSearchBoxFocused = true;
+            }
+            else
+            {
+                this.SearchTextBox.Focus();
+            }
         }
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)

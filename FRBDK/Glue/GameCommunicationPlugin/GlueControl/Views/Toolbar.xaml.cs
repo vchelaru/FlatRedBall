@@ -1,6 +1,7 @@
 ﻿using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -130,9 +131,13 @@ namespace GameCommunicationPlugin.GlueControl
             }
         }
 
-        private void SplitButton_Opened(object sender, RoutedEventArgs e)
+        private async void SplitButton_Opened(object sender, RoutedEventArgs e)
         {
             HighlightFirstItem();
+
+            await Task.Delay(100);
+
+            this.StartupScreenSearchInstance.FocusTextBox();
         }
     }
 }

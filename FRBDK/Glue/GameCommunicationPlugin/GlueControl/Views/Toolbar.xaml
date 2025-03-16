@@ -23,7 +23,8 @@
             </StackPanel>
             <xctk:SplitButton.DropDownContent>
                 <StackPanel MinWidth="50">
-                    <controls:SearchBar 
+                    <controls:SearchBar
+                        x:Name="StartupScreenSearchInstance"
                         ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked"
                         ArrowKeyPushed="SearchBar_ArrowKeyPushed"
                         EnterPressed="SearchBar_EnterPressed"

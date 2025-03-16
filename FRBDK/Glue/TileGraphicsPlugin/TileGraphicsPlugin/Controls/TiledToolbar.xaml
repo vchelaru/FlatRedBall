@@ -15,7 +15,8 @@
             x:Name="DropDownButton">
       <xctk:SplitButton.DropDownContent>
         <StackPanel x:Name="TiledDropdown" MinWidth="100">
-          <controls:SearchBar 
+          <controls:SearchBar
+                        x:Name="TiledSearchBarInstance"
                         ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked" 
                         ArrowKeyPushed="SearchBar_ArrowKeyPushed"
                         EnterPressed="SearchBar_EnterPressed"

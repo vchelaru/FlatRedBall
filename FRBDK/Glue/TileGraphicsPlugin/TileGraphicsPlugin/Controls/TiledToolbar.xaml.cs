@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.IO;
+using GlueFormsCore.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -166,9 +168,13 @@ public partial class TiledToolbar : UserControl
         this.ViewModel.HandleOpenTiled();
     }
 
-    private void HandleOpened(object sender, RoutedEventArgs e)
+    private async void HandleOpened(object sender, RoutedEventArgs e)
     {
         Opened?.Invoke(this, null);
+
+        // give it a sec or else it will immediately lose focus due to the click from being opened
+        await Task.Delay(100);
+        TiledSearchBarInstance.FocusTextBox();
     }
 
     [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
