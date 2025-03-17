@@ -55,6 +55,11 @@
     <LinkType>ReferenceOriginal</LinkType>
   </ScreenReference>
   <ScreenReference>
+    <Name>GumScreenStronglyTypedGum</Name>
+    <ElementType>Screen</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ScreenReference>
+  <ScreenReference>
     <Name>InputScreenGum</Name>
     <ElementType>Screen</ElementType>
     <LinkType>ReferenceOriginal</LinkType>

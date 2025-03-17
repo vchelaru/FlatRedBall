@@ -435,9 +435,9 @@ public partial class GumScreen
     }
 
 
+    int NumberOfFramesToWait = 6;
     void CustomActivity(bool firstTimeCalled)
     {
-        int numberOfFramesToWait = 5;
 
         // give it a few frames...
         if (this.ActivityCallCount == 4)
@@ -453,7 +453,7 @@ public partial class GumScreen
         }
 
 
-        if (this.ActivityCallCount > numberOfFramesToWait)
+        if (this.ActivityCallCount > NumberOfFramesToWait)
         {
             IsActivityFinished = true;
         }

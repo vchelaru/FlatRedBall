@@ -419,6 +419,9 @@
       "Name": "Screens\\GumScreenNoGumIdbScreen"
     },
     {
+      "Name": "Screens\\GumScreenStronglyTyped"
+    },
+    {
       "Name": "Screens\\InheritanceScreen"
     },
     {

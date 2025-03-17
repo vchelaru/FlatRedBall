@@ -197,7 +197,7 @@ namespace GlueTestProject.Screens
             }
 
             // Give us some time to do instructions and time-based checks
-            if (this.ActivityCallCount >= 15 && !hasTestedAttachment)
+            if (this.ActivityCallCount >= 16 && !hasTestedAttachment)
             {
                 hasTestedAttachment = true;
                 TestDetachedManualUpdateVelocityVariables();

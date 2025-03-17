@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AnimationChainArraySave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <FileRelativeTextures>true</FileRelativeTextures>
+  <TimeMeasurementUnit>Undefined</TimeMeasurementUnit>
+  <CoordinateType>Pixel</CoordinateType>
+  <AnimationChain>
+    <Name>MainAnimation</Name>
+    <Frame>
+      <TextureName>texturefileforachx.png</TextureName>
+      <FrameLength>0.2</FrameLength>
+      <LeftCoordinate>0</LeftCoordinate>
+      <RightCoordinate>39</RightCoordinate>
+      <TopCoordinate>0</TopCoordinate>
+      <BottomCoordinate>40</BottomCoordinate>
+      <ShapeCollectionSave>
+        <AxisAlignedRectangleSaves />
+        <AxisAlignedCubeSaves />
+        <PolygonSaves />
+        <CircleSaves />
+        <SphereSaves />
+      </ShapeCollectionSave>
+    </Frame>
+    <Frame>
+      <TextureName>texturefileforachx.png</TextureName>
+      <FrameLength>0.2</FrameLength>
+      <LeftCoordinate>0</LeftCoordinate>
+      <RightCoordinate>19</RightCoordinate>
+      <TopCoordinate>0</TopCoordinate>
+      <BottomCoordinate>21</BottomCoordinate>
+      <ShapeCollectionSave>
+        <AxisAlignedRectangleSaves />
+        <AxisAlignedCubeSaves />
+        <PolygonSaves />
+        <CircleSaves />
+        <SphereSaves />
+      </ShapeCollectionSave>
+    </Frame>
+    <Frame>
+      <TextureName>texturefileforachx.png</TextureName>
+      <FrameLength>0.2</FrameLength>
+      <LeftCoordinate>24</LeftCoordinate>
+      <RightCoordinate>39</RightCoordinate>
+      <TopCoordinate>0</TopCoordinate>
+      <BottomCoordinate>18</BottomCoordinate>
+      <ShapeCollectionSave>
+        <AxisAlignedRectangleSaves />
+        <AxisAlignedCubeSaves />
+        <PolygonSaves />
+        <CircleSaves />
+        <SphereSaves />
+      </ShapeCollectionSave>
+    </Frame>
+    <Frame>
+      <TextureName>texturefileforachx.png</TextureName>
+      <FrameLength>0.2</FrameLength>
+      <LeftCoordinate>0</LeftCoordinate>
+      <RightCoordinate>19</RightCoordinate>
+      <TopCoordinate>20</TopCoordinate>
+      <BottomCoordinate>40</BottomCoordinate>
+      <ShapeCollectionSave>
+        <AxisAlignedRectangleSaves />
+        <AxisAlignedCubeSaves />
+        <PolygonSaves />
+        <CircleSaves />
+        <SphereSaves />
+      </ShapeCollectionSave>
+    </Frame>
+    <Frame>
+      <TextureName>texturefileforachx.png</TextureName>
+      <FrameLength>0.2</FrameLength>
+      <LeftCoordinate>16</LeftCoordinate>
+      <RightCoordinate>35</RightCoordinate>
+      <TopCoordinate>19</TopCoordinate>
+      <BottomCoordinate>39</BottomCoordinate>
+      <ShapeCollectionSave>
+        <AxisAlignedRectangleSaves />
+        <AxisAlignedCubeSaves />
+        <PolygonSaves />
+        <CircleSaves />
+        <SphereSaves />
+      </ShapeCollectionSave>
+    </Frame>
+  </AnimationChain>
+  <ProjectFile>..\..\..\testprojectdesktopnet6.gluj</ProjectFile>
+</AnimationChainArraySave>

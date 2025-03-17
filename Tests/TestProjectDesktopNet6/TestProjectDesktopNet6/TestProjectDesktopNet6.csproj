@@ -406,6 +406,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>OtherRedBall</Name>
     </None>
+    <None Include="content\FrbVisualTiles.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>FrbVisualTiles</Name>
+    </None>
+    <None Include="content\FrbVisualTiles.tsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>FrbVisualTiles</Name>
+    </None>
     <None Include="Content\globalcontent\arrow01.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>arrow01</Name>
@@ -734,6 +742,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>GumScreenNoGumIdbScreenGum</Name>
     </None>
+    <None Include="Content\GumProject\Screens\GumScreenStronglyTypedGum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>GumScreenStronglyTypedGum</Name>
+    </None>
     <None Include="Content\GumProject\Screens\InputScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>InputScreenGum</Name>
@@ -1014,6 +1026,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>SceneFile</Name>
     </None>
+    <None Include="Content\Screens\GumScreen\AnimationForGumSprite.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationForGumSprite</Name>
+    </None>
+    <None Include="Content\Screens\GumScreen\TextureFileForAchx.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TextureFileForAchx</Name>
+    </None>
     <None Include="Content\Screens\LayerScreen\SceneFile.scnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>SceneFile</Name>
@@ -1074,9 +1094,13 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>SceneFile</Name>
     </None>
-    <None Include="Content\Screens\TiledLevelScreen\Levels\Level1.tmx">
+    <None Include="content\screens\tiledlevelscreen\levels\level1_onlywhenreferenced.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>Level1</Name>
+      <Name>Level1_OnlyWhenReferenced</Name>
+    </None>
+    <None Include="Content\Screens\TiledLevelScreen\Levels\RegularMapFile.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>RegularMapFile</Name>
     </None>
     <None Include="content\screens\tiledlevelscreen\Tilesets\PlatformerTiles.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1927,6 +1951,7 @@
     <Compile Include="Forms\Screens\GameScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\GumScreenLayeredGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\GumScreenNoGumIdbScreenGumForms.Generated.cs" />
+    <Compile Include="Forms\Screens\GumScreenStronglyTypedGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\InputScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\Level1GumForms.Generated.cs" />
     <Compile Include="Forms\Screens\PauseGumScreenGumForms.Generated.cs" />
@@ -2104,6 +2129,10 @@
     <Compile Include="GumRuntimes\GumScreenNoGumIdbScreenGumRuntime.cs" />
     <Compile Include="GumRuntimes\GumScreenNoGumIdbScreenGumRuntime.Generated.cs">
       <DependentUpon>GumScreenNoGumIdbScreenGumRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\GumScreenStronglyTypedGumRuntime.cs" />
+    <Compile Include="GumRuntimes\GumScreenStronglyTypedGumRuntime.Generated.cs">
+      <DependentUpon>GumScreenStronglyTypedGumRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\InheritFromInFolderRuntime.cs" />
     <Compile Include="GumRuntimes\InheritFromInFolderRuntime.Generated.cs">
@@ -2333,6 +2362,10 @@
     <Compile Include="Screens\GumScreenNoGumIdbScreen.cs" />
     <Compile Include="Screens\GumScreenNoGumIdbScreen.Generated.cs">
       <DependentUpon>GumScreenNoGumIdbScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\GumScreenStronglyTyped.cs" />
+    <Compile Include="Screens\GumScreenStronglyTyped.Generated.cs">
+      <DependentUpon>GumScreenStronglyTyped.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\InheritanceScreen.cs" />
     <Compile Include="Screens\InheritanceScreen.Generated.cs">

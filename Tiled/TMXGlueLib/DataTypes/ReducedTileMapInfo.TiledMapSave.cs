@@ -211,6 +211,8 @@ namespace TMXGlueLib.DataTypes
                     TileHeight = tileHeight,
                     ParallaxMultiplierX = tiledLayer.ParallaxX,
                     ParallaxMultiplierY = tiledLayer.ParallaxY,
+                    OffsetX = tiledLayer.OffsetX,
+                    OffsetY = tiledLayer.OffsetY,
                 };
 
                 reducedTileMapInfo.Layers.Add(reducedLayerInfo);

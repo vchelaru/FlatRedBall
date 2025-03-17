@@ -4,34 +4,6 @@
     "Owner": [],
     "d1638316d18f4a1e23a287aaaa12b6c540f704e257a6549bc9a672497ccc934e": [
       {
-        "NewName": "FormsScreenGum.TextBoxInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-02-26T03:46:15.2308383Z"
-      },
-      {
-        "NewName": "FormsScreenGum.TextBoxBoundToNumericValues",
-        "OldName": "FormsScreenGum.TextBoxInstance",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-02-26T03:46:36.7089938Z"
-      },
-      {
-        "NewName": "EventBindingComponent",
-        "OldName": null,
-        "ElementType": "Components",
-        "EventType": 0,
-        "TimestampUtc": "2025-03-03T11:40:03.8939776Z"
-      },
-      {
-        "NewName": "EventBindingComponent (Container).TextInstance",
-        "OldName": null,
-        "ElementType": "Components",
-        "EventType": 5,
-        "TimestampUtc": "2025-03-03T11:40:08.6530888Z"
-      },
-      {
         "NewName": "TestScreen.ColoredRectangleInstance1",
         "OldName": null,
         "ElementType": "Screens",
@@ -72,6 +44,62 @@
         "ElementType": "Screens",
         "EventType": 7,
         "TimestampUtc": "2025-03-07T12:27:15.5817245Z"
+      },
+      {
+        "NewName": "TestScreen.SpriteInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-03-17T12:23:16.8585174Z"
+      },
+      {
+        "NewName": "TestScreen.AnimatedSpriteInstance",
+        "OldName": "TestScreen.SpriteInstance",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-17T12:28:16.3165098Z"
+      },
+      {
+        "NewName": "TestScreen.AnimatedSpriteInstance",
+        "OldName": "TestScreen.SpriteInstance",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-17T12:28:16.3177914Z"
+      },
+      {
+        "NewName": "TestScreen.AnimatedSpriteInstance",
+        "OldName": "TestScreen.SpriteInstance",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-17T12:28:16.3177914Z"
+      },
+      {
+        "NewName": "TestScreen.AnimatedSpriteInstance",
+        "OldName": "TestScreen.SpriteInstance",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-17T12:28:16.3187977Z"
+      },
+      {
+        "NewName": "TestScreen.AnimatedSpriteInstance",
+        "OldName": "TestScreen.SpriteInstance",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-17T12:28:16.3187977Z"
+      },
+      {
+        "NewName": null,
+        "OldName": "TestScreen.Sprite AnimatedSpriteInstance in TestScreen",
+        "ElementType": "Screens",
+        "EventType": 6,
+        "TimestampUtc": "2025-03-17T12:43:49.4557936Z"
+      },
+      {
+        "NewName": "GumScreenStronglyTypedGum.AnimatedSpriteInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-03-17T12:43:57.5372718Z"
       }
     ]
   }

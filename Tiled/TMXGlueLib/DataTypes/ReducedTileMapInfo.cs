@@ -109,9 +109,12 @@ namespace TMXGlueLib.DataTypes
         public float ParallaxMultiplierX = 1f;
         public float ParallaxMultiplierY = 1f;
 
+        // Vic asks - why are these camera offset values here, this is a runtime property isn't it?
         public float CameraOffsetX = 0f;
         public float CameraOffsetY = 0f;
 
+        public float OffsetX = 0;
+        public float OffsetY = 0;
 
         public static ReducedLayerInfo ReadFrom(BinaryReader reader, int version)
         {

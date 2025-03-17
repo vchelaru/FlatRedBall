@@ -6,7 +6,7 @@
   "NextScreen": "Screens\\NodeNetworkScreen",
   "ReferencedFiles": [
     {
-      "Name": "Screens/TiledLevelScreen/Levels/Level1.tmx",
+      "Name": "Screens/TiledLevelScreen/Levels/Level1_OnlyWhenReferenced.tmx",
       "Properties": [
         {
           "Name": "LoadedOnlyWhenReferenced",
@@ -16,6 +16,18 @@
       "IsSharedStatic": true,
       "LoadedOnlyWhenReferenced": true,
       "BuildTool": "<None>",
+      "RuntimeType": "FlatRedBall.TileGraphics.LayeredTileMap",
+      "ProjectsToExcludeFrom": []
+    },
+    {
+      "Name": "Screens/TiledLevelScreen/Levels/RegularMapFile.tmx",
+      "Properties": [
+        {
+          "Name": "CreationOptions",
+          "Value": "{\"IsWithVisualsChecked\":true,\"IsNoVisualsChecked\":false,\"IsOverworldPlatformerASelected\":true,\"PlatformerLevelVisibility\":0,\"IsOverworldPlatformerBSelected\":false,\"IsOverworldPlatformerCSelected\":false,\"IsOverworldTopDownASelected\":false,\"TopDownLevelVisibility\":0,\"IsOverworldTopDownBSelected\":false,\"IsOverworldTopDownCSelected\":false,\"WithVisualsUiVisibility\":0,\"NoVisualsUiVisibility\":2,\"IncludeDefaultTileset\":true,\"IncludeGameplayLayer\":true,\"SolidCollisionCheckBoxVisibility\":0,\"IsSolidCollisionBorderChecked\":true,\"WithVisualType\":0,\"SelectedLevel\":0,\"ShouldAddCollisionBorder\":true}"
+        }
+      ],
+      "IsSharedStatic": true,
       "RuntimeType": "FlatRedBall.TileGraphics.LayeredTileMap",
       "ProjectsToExcludeFrom": []
     }
@@ -158,9 +170,30 @@
           "Member": "CreateEntitiesFromTiles",
           "Value": true,
           "Time": 0.0
+        },
+        {
+          "Type": "bool",
+          "Member": "ShiftMapToMoveGameplayLayerToZ0",
+          "Value": true,
+          "Time": 0.0
         }
       ],
-      "SourceFile": "Screens/TiledLevelScreen/Levels/Level1.tmx",
+      "SourceFile": "Screens/TiledLevelScreen/Levels/Level1_OnlyWhenReferenced.tmx",
+      "SourceName": "Entire File (LayeredTileMap)",
+      "AttachToContainer": true,
+      "GenerateTimedEmit": true
+    },
+    {
+      "InstanceName": "RegularMap",
+      "Properties": [
+        {
+          "Name": "AssociateWithFactory",
+          "Value": true,
+          "Type": "bool"
+        }
+      ],
+      "InstructionSaves": [],
+      "SourceFile": "Screens/TiledLevelScreen/Levels/RegularMapFile.tmx",
       "SourceName": "Entire File (LayeredTileMap)",
       "AttachToContainer": true,
       "GenerateTimedEmit": true

@@ -3,7 +3,7 @@
     "GLUE"
   ],
   "Source": "GLUE",
-  "NextScreen": "Screens\\SkiaGumScreen",
+  "NextScreen": "Screens\\GumScreenStronglyTyped",
   "ReferencedFiles": [
     {
       "Name": "GumProject/Screens/TestScreen.gusx",
@@ -16,6 +16,18 @@
       "Name": "GumProject/Screens/ScreenLoadedAsGraphicalUiElement.gusx",
       "IsSharedStatic": true,
       "RuntimeType": "Gum.Wireframe.GraphicalUiElement",
+      "ProjectsToExcludeFrom": []
+    },
+    {
+      "Name": "Screens/GumScreen/AnimationForGumSprite.achx",
+      "IsSharedStatic": true,
+      "RuntimeType": "FlatRedBall.Graphics.Animation.AnimationChainList",
+      "ProjectsToExcludeFrom": []
+    },
+    {
+      "Name": "Screens/GumScreen/TextureFileForAchx.png",
+      "IsSharedStatic": true,
+      "RuntimeType": "Microsoft.Xna.Framework.Graphics.Texture2D",
       "ProjectsToExcludeFrom": []
     }
   ],

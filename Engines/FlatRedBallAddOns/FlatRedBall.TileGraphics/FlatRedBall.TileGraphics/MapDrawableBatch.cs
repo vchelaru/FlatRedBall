@@ -275,6 +275,10 @@ namespace FlatRedBall.TileGraphics
             set { _parallaxMultiplierY = 1 - value; }
         }
 
+
+        public float OffsetX { get; set; } = 0;
+        public float OffsetY { get; set; } = 0;
+
         public TextureFilter? TextureFilter { get; set; } = null;
 
         #endregion
@@ -630,6 +634,11 @@ namespace FlatRedBall.TileGraphics
 
             toReturn.ParallaxMultiplierX = reducedLayerInfo.ParallaxMultiplierX;
             toReturn.ParallaxMultiplierY = reducedLayerInfo.ParallaxMultiplierY;
+
+
+            toReturn.OffsetX = reducedLayerInfo.OffsetX;
+            // FRB has positive Y up
+            toReturn.OffsetY = -reducedLayerInfo.OffsetY;
 
             return toReturn;
         }
@@ -1559,6 +1568,10 @@ namespace FlatRedBall.TileGraphics
                 this.RelativeX = cameraOffsetX * _parallaxMultiplierX;
                 this.RelativeY = cameraOffsetY * _parallaxMultiplierY;
             }
+
+
+            this.RelativeX += OffsetX;
+            this.RelativeY += OffsetY;
         }
 
         public static float? NativeCameraWidth;

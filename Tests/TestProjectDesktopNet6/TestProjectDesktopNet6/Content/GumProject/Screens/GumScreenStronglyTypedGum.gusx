@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ScreenSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>GumScreenStronglyTypedGum</Name>
+  <State>
+    <Name>Default</Name>
+    <Variable>
+      <Type>bool</Type>
+      <Name>AnimatedSpriteInstance.Animate</Name>
+      <Value xsi:type="xsd:boolean">true</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>AnimatedSpriteInstance.Parent</Name>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <IsFile>true</IsFile>
+      <Type>string</Type>
+      <Name>AnimatedSpriteInstance.SourceFile</Name>
+      <Value xsi:type="xsd:string">..\Screens\GumScreen\AnimationForGumSprite.achx</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>Gum.Managers.TextureAddress</Type>
+      <Name>AnimatedSpriteInstance.TextureAddress</Name>
+      <Value xsi:type="xsd:int">1</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>AnimatedSpriteInstance.X</Name>
+      <Value xsi:type="xsd:float">28</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>AnimatedSpriteInstance.Y</Name>
+      <Value xsi:type="xsd:float">23</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <VariableList xsi:type="VariableListSaveOfString">
+      <Type>string</Type>
+      <Name>AnimatedSpriteInstance.AnimationFrames</Name>
+      <IsFile>false</IsFile>
+      <IsHiddenInPropertyGrid>false</IsHiddenInPropertyGrid>
+      <Value />
+    </VariableList>
+  </State>
+  <Instance>
+    <Name>AnimatedSpriteInstance</Name>
+    <BaseType>Sprite</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Behaviors />
+</ScreenSave>

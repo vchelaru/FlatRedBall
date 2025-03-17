@@ -19,6 +19,8 @@ using FlatRedBall.Localization;
 using System.Linq;
 using FlatRedBall.TileGraphics;
 using TMXGlueLib.DataTypes;
+using System.Reflection.Metadata.Ecma335;
+
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -36,6 +38,9 @@ namespace GlueTestProject.Screens
 
 		void CustomInitialize()
 		{
+
+            Camera.Main.Detach();
+
             ReducedTileMapInfo.FastCreateFromTmx = true;
 
             //InitializeLevel("Level1");
@@ -45,7 +50,7 @@ namespace GlueTestProject.Screens
                 throw new Exception("Entities created from tiled are not appearing in the screen's list");
             }
 
-            if(CreatedByTiledList.Count(item=>item.Z == 2) == 0)
+            if(CreatedByTiledList.Count(item=>item.Z == 1) == 0)
             {
                 throw new Exception("Entities created from tiled object layers are not appearing in the screen's list with the right Z.");
             }
@@ -99,9 +104,26 @@ namespace GlueTestProject.Screens
             first.SetByDefaultInt.ShouldBe(4, "because entities should have default values set from the tileset");
         }
 
+        int framesToShow = 16;
+
         void CustomActivity(bool firstTimeCalled)
 		{
-            if(!firstTimeCalled)
+
+            if(Camera.Main.X != 0 && ActivityCallCount > 0)
+            {
+                var cloudsWithOffset = RegularMap.MapLayers.FindByName("CloudsWithOffset");
+                var cloudsNoOffset = RegularMap.MapLayers.FindByName("Clouds");
+
+                cloudsWithOffset.OffsetX.ShouldBe(300);
+                cloudsWithOffset.OffsetY.ShouldBe(200);
+
+
+                cloudsWithOffset.RelativeX.ShouldBe(cloudsNoOffset.RelativeX + 300);
+            }
+
+            Camera.Main.X++;
+
+            if(this.ActivityCallCount >= framesToShow)
             {
                 IsActivityFinished = true;
             }
