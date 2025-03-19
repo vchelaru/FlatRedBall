@@ -254,9 +254,20 @@ namespace GumPlugin.Controls
 
         private async void RegenerateAllCodeClicked(object sender, RoutedEventArgs e)
         {
+            var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
+
+            var behavior = EmbeddedResourceManager.Self.GetBehavior(gumRfs);
+
+            EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
+
             await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync();
 
             await CodeGeneratorManager.Self.GenerateAllBehaviors();
+
+            FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject();
+
+            // the UpdatecodeInProjectPresence may add new files, so save:
+            GlueCommands.Self.ProjectCommands.SaveProjects();
         }
     }
 }

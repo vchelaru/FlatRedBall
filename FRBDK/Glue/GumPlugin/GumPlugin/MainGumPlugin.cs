@@ -682,7 +682,7 @@ public class MainGumPlugin : PluginBase
                 // setting up the new file:
                 if (this.propertiesManager.IsReactingToProperyChanges)
                 {
-                    var behavior = GetBehavior(gumRfs);
+                    var behavior = EmbeddedResourceManager.Self.GetBehavior(gumRfs);
                     EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
                     GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
@@ -720,26 +720,6 @@ public class MainGumPlugin : PluginBase
         }
 
         UpdateMenuItemVisibility();
-    }
-
-    public static FileAdditionBehavior GetBehavior(ReferencedFileSave gumRfs)
-    {
-        var behavior = FileAdditionBehavior.EmbedCodeFiles;
-        if (gumRfs != null)
-        {
-            // At some point Glue no longer shows this UI. Therefore, new Gum projects cannot have this value modified
-            // If we are on a newer version, then don't embed files:
-            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GumGueHasGetAnimation)
-            {
-                behavior = FileAdditionBehavior.IncludeNoFiles;
-            }
-            else
-            {
-                behavior = (FileAdditionBehavior)gumRfs.Properties.GetValue<int>(nameof(FileAdditionBehavior));
-            }
-        }
-
-        return behavior;
     }
 
     public async Task CreateGumProjectWithForms(bool askToOverwrite)
@@ -957,7 +937,7 @@ public class MainGumPlugin : PluginBase
         {
             FileChangeManager.Self.RegisterAdditionalContentTypes();
 
-            var behavior = GetBehavior(gumRfs);
+            var behavior = EmbeddedResourceManager.Self.GetBehavior(gumRfs);
 
             // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
             await TaskManager.Self.AddAsync(async () =>

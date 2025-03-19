@@ -67,7 +67,7 @@ namespace GumPlugin.Managers
 
                     var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
-                    var behavior = MainGumPlugin.GetBehavior(gumRfs);
+                    var behavior = EmbeddedResourceManager.Self.GetBehavior(gumRfs);
                     EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
 
