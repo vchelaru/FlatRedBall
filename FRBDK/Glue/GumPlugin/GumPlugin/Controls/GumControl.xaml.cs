@@ -251,5 +251,12 @@ namespace GumPlugin.Controls
                 }, "Inner");
             }, "Single async task " + DateTime.Now, doOnUiThread:true);
         }
+
+        private async void RegenerateAllCodeClicked(object sender, RoutedEventArgs e)
+        {
+            await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync();
+
+            CodeGeneratorManager.Self.GenerateAllBehaviors();
+        }
     }
 }

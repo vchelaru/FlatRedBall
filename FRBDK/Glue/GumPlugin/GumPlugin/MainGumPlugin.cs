@@ -49,10 +49,7 @@ public class MainGumPlugin : PluginBase
 
     #region Properties
 
-    public override string FriendlyName
-    {
-        get { return "Gum Plugin"; }
-    }
+    public override string FriendlyName => "Gum Plugin"; 
 
     public override Version Version
     {

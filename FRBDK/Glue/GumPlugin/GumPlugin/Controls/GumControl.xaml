@@ -16,6 +16,7 @@
 
       <CheckBox x:Name="UseAtlasesCheckBox" VerticalContentAlignment="Center" Content="Use Atlases" IsChecked="{Binding UseAtlases}"></CheckBox>
       <CheckBox x:Name="MakeInstancesPublicCheckBox" VerticalAlignment="Center" Content="Make Generated Code Instances Public" IsChecked="{Binding MakeGumInstancesPublic}"></CheckBox>
+      <Button Margin="7,5,0,0" Width="220" HorizontalAlignment="Left" Click="RegenerateAllCodeClicked" Content="Re-generate All Gum Code" />
       <Button Margin="7,5,0,0" Width="220" HorizontalAlignment="Left" Click="RegenerateFontsClicked" Content="Re-generate Fonts" />
       <Button Margin="7,5,0,0" Width="220" HorizontalAlignment="Left" Click="RemoveOrphanCustomCodeClicked" Content="Remove Orphaned Custom Runtime Files" />
 
