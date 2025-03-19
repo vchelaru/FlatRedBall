@@ -22,11 +22,15 @@ namespace FlatRedBall.Glue.SaveClasses
     }
     #endregion
 
+    #region GlueBookmark Class
+
     public class GlueBookmark
     {
         public string Name { get; set; }
         public string ImageSource { get; set; }
     }
+
+    #endregion
 
     public class GlueProjectSave
     {
@@ -295,6 +299,8 @@ namespace FlatRedBall.Glue.SaveClasses
         /// Whether to generate the base Type class for all base screens and entities. If false, these will not be generated.
         /// </summary>
         public bool SuppressBaseTypeGeneration { get; set; }
+
+        public bool IsAutomaticallyRefreshingUnreferencedFiles { get; set; } = true;
 
         #endregion
 

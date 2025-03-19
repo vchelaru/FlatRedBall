@@ -1227,7 +1227,7 @@ public class GluxCommands : IGluxCommands
 
         if (GlueCommands.Self.FileCommands.IsContent(rfsFilePath))
         {
-            UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
+            UnreferencedFilesManager.Self.TryRefreshUnreferencedFiles(false);
             foreach (var file in UnreferencedFilesManager.LastAddedUnreferencedFiles)
             {
                 additionalFilesToRemove.Add(file.FilePath);

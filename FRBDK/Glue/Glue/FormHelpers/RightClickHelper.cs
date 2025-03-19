@@ -882,9 +882,6 @@ public static class RightClickHelper
         mMakeRequiredAtStartup = new GeneralToolStripMenuItem(L.Texts.MakeRequiredAtStartup);
         mMakeRequiredAtStartup.Click += ToggleRequiredAtStartupClick;
 
-        mRebuildFile = new GeneralToolStripMenuItem("Rebuild File");
-        mRebuildFile.Click += RebuildFileClick;
-
         mViewSourceInExplorer = new GeneralToolStripMenuItem(L.Texts.ViewSourceExplorer);
         mViewSourceInExplorer.Click += ViewSourceInExplorerClick;
 
@@ -2239,48 +2236,6 @@ public static class RightClickHelper
         }
     }
 
-    private static async void RebuildFileClick(object sender, EventArgs e)
-    {
-        // search terms: rebuild file
-        ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
-
-        if (rfs != null)
-        {
-            string error;
-            // This used to be false,
-            // but I'm not sure we want
-            // to skip building on missing
-            // file.  We are forcing a build
-            // so we should always build
-            const bool buildOnMissingFile = true;
-
-            rfs.RefreshSourceFileCache(buildOnMissingFile, out error);
-            if (!string.IsNullOrEmpty(error))
-            {
-                FileErrorReporter.ReportError(rfs.Name, error, false);
-            }
-            else
-            {
-                error = rfs.PerformExternalBuild(runAsync: true);
-
-                if (!string.IsNullOrEmpty(error))
-                {
-                    FileErrorReporter.ReportError(FileManager.MakeAbsolute(rfs.Name), error, true);
-                }
-
-                var absoluteFileName =
-                    GlueCommands.Self.GetAbsoluteFileName(rfs);
-
-                await UpdateReactor.UpdateFile(absoluteFileName);
-
-                PluginManager.ReactToChangedBuiltFile(absoluteFileName);
-
-                UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
-            }
-
-            PluginManager.ReactToFileBuildCommand(rfs);
-        }
-    }
 
     private static void ViewSourceInExplorerClick(object sender, EventArgs e)
     {

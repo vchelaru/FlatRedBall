@@ -265,7 +265,7 @@ namespace FlatRedBall.Glue.IO
 
                 if (shouldRefreshUnreferencedFiles)
                 {
-                    UnreferencedFilesManager.Self.RefreshUnreferencedFiles(async: true);
+                    UnreferencedFilesManager.Self.TryRefreshUnreferencedFiles(createTask: true);
                 }
                 IsFlushing = false;
             }

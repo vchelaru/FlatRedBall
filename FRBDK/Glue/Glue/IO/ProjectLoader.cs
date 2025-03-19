@@ -189,7 +189,8 @@ namespace FlatRedBall.Glue.IO
 
                 SetInitWindowText("Cleaning extra Screens and Entities", initializationWindow);
 
-                UnreferencedFilesManager.Self.RefreshUnreferencedFiles(true);
+
+                UnreferencedFilesManager.Self.TryRefreshUnreferencedFiles(true);
 
                 TaskManager.Self.OnUiThread(() => MainGlueWindow.Self.Text = Texts.FrbEditor + " - " + projectFileName);
 

@@ -76,7 +76,7 @@ namespace OfficialPlugins.FilesPlugin.ViewModels
                        }
                    });
                },
-               "Refreshing unreferenced files");
+               $"Refreshing unreferenced files for {ReferencedFileSave}");
             }
         }
     }

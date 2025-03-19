@@ -22,7 +22,7 @@ namespace FlatRedBall.Glue.Managers
         #region Fields
 
         static List<ProjectSpecificFile> mLastAddedUnreferencedFiles = new List<ProjectSpecificFile>();
-        static List<FilePath> mListBeforeAddition = new List<FilePath>();
+        static HashSet<FilePath> mListBeforeAddition = new HashSet<FilePath>();
         static List<ProjectSpecificFile> mUnreferencedFiles = new List<ProjectSpecificFile>();
 
         public bool mHasHadFailure = false;
@@ -86,6 +86,25 @@ namespace FlatRedBall.Glue.Managers
         #endregion
 
         static bool alreadyShowedMessage = false;
+
+        public bool TryRefreshUnreferencedFiles(bool createTask)
+        {
+            var shouldRefresh = true;
+
+            var glueProject = GlueState.Self.CurrentGlueProject;
+
+            if(glueProject != null)
+            {
+                shouldRefresh = glueProject.IsAutomaticallyRefreshingUnreferencedFiles;
+            }
+
+            if(shouldRefresh)
+            {
+                RefreshUnreferencedFiles(createTask);
+            }
+            return shouldRefresh;
+        }
+
         public void RefreshUnreferencedFiles(bool async)
         {
             if (async)
@@ -239,41 +258,6 @@ namespace FlatRedBall.Glue.Managers
                     File = nameToInclude,
                     ProjectName = project.Name
                 });
-            }
-        }
-
-        internal void RefreshAndRemoveNewlyAddedUnreferenced()
-        {
-            RefreshUnreferencedFiles(false);
-
-            bool shouldRefreshAgainst = false;
-                // use the property to be thread-safe
-                
-            var lastAddedUnreferenced = UnreferencedFilesManager.LastAddedUnreferencedFiles;
-            foreach (ProjectSpecificFile projectSpecificFile in lastAddedUnreferenced)
-            {
-                if (projectSpecificFile.File.Exists())
-                {
-                    DialogResult result =
-                        System.Windows.Forms.MessageBox.Show(
-                            "The following file is no longer referenced by the project\n\n" +
-                            projectSpecificFile +
-                            "\n\nRemove and delete this file?", "Remove unreferenced file?", MessageBoxButtons.YesNo);
-
-                    if (result == DialogResult.Yes)
-                    {
-                        ProjectManager.GetProjectByName(projectSpecificFile.ProjectName).ContentProject.RemoveItem(
-                            projectSpecificFile.File.FullPath);
-
-                        FileHelper.MoveToRecycleBin(projectSpecificFile.File.FullPath);
-                        shouldRefreshAgainst = true;
-                    }
-                }
-            }
-
-            if (shouldRefreshAgainst)
-            {
-                UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
             }
         }
 
