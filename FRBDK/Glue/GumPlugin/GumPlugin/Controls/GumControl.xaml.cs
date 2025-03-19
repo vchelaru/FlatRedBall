@@ -256,7 +256,7 @@ namespace GumPlugin.Controls
         {
             await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync();
 
-            CodeGeneratorManager.Self.GenerateAllBehaviors();
+            await CodeGeneratorManager.Self.GenerateAllBehaviors();
         }
     }
 }

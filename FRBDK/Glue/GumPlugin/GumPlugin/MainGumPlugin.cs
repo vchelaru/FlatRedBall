@@ -966,7 +966,7 @@ public class MainGumPlugin : PluginBase
 
                 await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync();
 
-                CodeGeneratorManager.Self.GenerateAllBehaviors();
+                await CodeGeneratorManager.Self.GenerateAllBehaviors();
 
                 FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject();
 

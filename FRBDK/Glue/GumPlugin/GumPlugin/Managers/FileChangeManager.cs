@@ -69,8 +69,7 @@ public class FileChangeManager : Singleton<FileChangeManager>
                 }
 
 
-                // todo: make this take just 1 behavior for speed
-                CodeGeneratorManager.Self.GenerateAllBehaviors();
+                await CodeGeneratorManager.Self.GenerateAllBehaviors();
                 CodeGeneratorManager.Self.GenerateAndSaveRuntimeAssociations();
             }
             else if (extension == "ganx")
@@ -199,7 +198,7 @@ public class FileChangeManager : Singleton<FileChangeManager>
         }
 
         // Behaviors could have been added, so generate them
-        CodeGeneratorManager.Self.GenerateAllBehaviors(CodeGeneratorManager.DefaultVerbosity);
+        await CodeGeneratorManager.Self.GenerateAllBehaviors(CodeGeneratorManager.DefaultVerbosity);
 
         EventsManager.Self.RefreshEvents();
 

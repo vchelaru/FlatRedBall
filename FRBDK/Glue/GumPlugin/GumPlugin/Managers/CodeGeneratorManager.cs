@@ -263,31 +263,41 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
     {
         await TaskManager.Self.AddAsync(() =>
         {
-            if ((forceReload || AppState.Self.GumProjectSave == null) &&
-                FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject != null)
+            try
             {
-                var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GetAllReferencedFiles()
-                    .FirstOrDefault(item => FlatRedBall.IO.FileManager.GetExtension(item.Name) == "gumx");
 
-                if (rfs != null)
+                if ((forceReload || AppState.Self.GumProjectSave == null) &&
+                    FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject != null)
                 {
-                    string fullFileName = GlueState.Self.ContentDirectory + rfs.Name;
+                    var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GetAllReferencedFiles()
+                        .FirstOrDefault(item => FlatRedBall.IO.FileManager.GetExtension(item.Name) == "gumx");
 
-                    string gumXDirectory = FlatRedBall.IO.FileManager.GetDirectory(fullFileName);
+                    if (rfs != null)
+                    {
+                        string fullFileName = GlueState.Self.ContentDirectory + rfs.Name;
 
-                    FileReferenceTracker.Self.LoadGumxIfNecessaryFromDirectory(gumXDirectory, forceReload);
+                        string gumXDirectory = FlatRedBall.IO.FileManager.GetDirectory(fullFileName);
+
+                        FileReferenceTracker.Self.LoadGumxIfNecessaryFromDirectory(gumXDirectory, forceReload);
+                    }
+                }
+
+                ObjectFinder.Self.EnableCache();
+
+                if (Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
+                {
+                    var directoryToSave = GumRuntimesFolder;
+
+                    System.IO.Directory.CreateDirectory(directoryToSave.FullPath);
+
+                    GenerateAndSaveRuntimeAssociations();
+
+                    GenerateAllElements(directoryToSave, generationVerbosity);
                 }
             }
-
-            if (Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
+            finally
             {
-                var directoryToSave = GumRuntimesFolder;
-
-                System.IO.Directory.CreateDirectory(directoryToSave.FullPath);
-
-                GenerateAndSaveRuntimeAssociations();
-
-                GenerateAllElements(directoryToSave, generationVerbosity);
+                ObjectFinder.Self.DisableCache();
             }
 
         }, "Generating all Gum runtimes code");
@@ -714,23 +724,36 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
         
     }
 
-    public void GenerateAllBehaviors(GenerationVerbosity verbosity = GenerationVerbosity.Minimal)
+    public async Task GenerateAllBehaviors(GenerationVerbosity verbosity = GenerationVerbosity.Minimal)
     {
-        var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
-
-        if(gumProject?.Behaviors != null)
+        await TaskManager.Self.AddAsync(() =>
         {
-            foreach (var behavior in gumProject.Behaviors)
+            try
             {
-                // In case there's a weird behavior - Vic had this on Cthulhu:
-                if (!string.IsNullOrWhiteSpace(behavior.Name))
+                var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
+
+                ObjectFinder.Self.EnableCache();
+
+                if (gumProject?.Behaviors != null)
                 {
-                    GenerateCodeFor(behavior, saveProjects:false, verbosity);
+                    foreach (var behavior in gumProject.Behaviors)
+                    {
+                        // In case there's a weird behavior - Vic had this on Cthulhu:
+                        if (!string.IsNullOrWhiteSpace(behavior.Name))
+                        {
+                            GenerateCodeFor(behavior, saveProjects: false, verbosity);
+                        }
+                    }
                 }
             }
-        }
+            finally
+            {
+                ObjectFinder.Self.DisableCache();
+            }
 
-        GlueCommands.Self.ProjectCommands.SaveProjects();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+        },
+        "Generate all Behaviors");
     }
 
     private void GenerateCodeFor(BehaviorSave behavior, bool saveProjects, GenerationVerbosity verbosity)

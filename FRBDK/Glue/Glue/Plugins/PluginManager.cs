@@ -1953,7 +1953,7 @@ namespace FlatRedBall.Glue.Plugins
                 }
                 else
                 {
-                    mMenuStrip.Invoke((MethodInvoker)delegate
+                    mMenuStrip.Invoke(()=>
                     {
                         try
                         {

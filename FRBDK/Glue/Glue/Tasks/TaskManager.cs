@@ -399,12 +399,6 @@ namespace FlatRedBall.Glue.Managers
                 (arg)=>ExecuteParallelAction(action, details));
         }
 
-        /// <summary>
-        /// Adds an action to be executed, guaranteeing that no other actions will be executed at the same time as this.
-        /// Actions added will be executed in the order they were added (fifo).
-        /// </summary>
-        [Obsolete("Use Add, which allows specifying the priority")]
-        public void AddSync(Action action, string displayInfo) => Add(action, displayInfo);
 
         /// <summary>
         /// Force adds a task to the queue, even if already in a task. To optionally add if not in a task, see AddAsync.

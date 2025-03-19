@@ -277,7 +277,7 @@ namespace OfficialPlugins.Wizard.Models
         private void AddItem(StackPanel stackPanel, Grid grid, DataItem dataItem)
         {
             var vmType = ViewModel.GetType();
-            PropertyInfo vmProperty = null;
+            PropertyInfo? vmProperty = null;
             if (!string.IsNullOrEmpty(dataItem.ViewModelProperty))
             {
                 vmProperty = vmType.GetProperty(dataItem.ViewModelProperty);
