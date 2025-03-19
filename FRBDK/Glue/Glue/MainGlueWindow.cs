@@ -516,9 +516,10 @@ public partial class MainGlueWindow : Form
 
     public new void Invoke(Action action)
     {
+
         var wasInTask = TaskManager.Self.IsInTask();
 
-        this.Invoke(() =>
+        base.Invoke(delegate
         {
             try
             {
@@ -546,7 +547,7 @@ public partial class MainGlueWindow : Form
     {
         var wasInTask = TaskManager.Self.IsInTask();
 
-        base.Invoke(()=>
+        base.Invoke(delegate
         {
             try
             {
@@ -577,7 +578,7 @@ public partial class MainGlueWindow : Form
         var wasInTask = TaskManager.Self.IsInTask();
         Task toReturn = Task.CompletedTask;
 
-        var asyncResult = base.BeginInvoke(()=>
+        var asyncResult = base.BeginInvoke(delegate
         {
             try
             {
@@ -603,7 +604,7 @@ public partial class MainGlueWindow : Form
         var wasInTask = TaskManager.Self.IsInTask();
         Task<T> toReturn = Task.FromResult(default(T));
 
-        base.Invoke(()=>
+        base.Invoke(delegate
         {
             try
             {
