@@ -88,8 +88,8 @@ namespace TileGraphicsPlugin.CodeGeneration
                                     else
                                     {
                                         var tileset = tiledMapSave.Tilesets.FirstOrDefault(possibleTileset => possibleTileset.Firstgid <= item.gid);
-                                        var foundTile = tileset.Tiles.First(tile => tile.id + tileset.Firstgid == item.gid);
-                                        className = foundTile.Class;
+                                        var foundTile = tileset?.Tiles.First(tile => tile.id + tileset.Firstgid == item.gid);
+                                        className = foundTile?.Class;
                                     }
                                     var entity = ObjectFinder.Self.GetEntitySaveUnqualified(className);
 

@@ -145,7 +145,7 @@ class ProjectCommands : IProjectCommands
     /// </remarks>
     /// <param name="referencedFileSave">The RFS representing the file to update membership on.</param>
     /// <returns>Whether anything was added to any projects.</returns>
-    public bool UpdateFileMembershipInProject(ReferencedFileSave referencedFileSave)
+    public bool UpdateFileMembershipInProject(ReferencedFileSave referencedFileSave, bool reEvaluateAfterAdd = true)
     {
         var assetTypeInfo = referencedFileSave.GetAssetTypeInfo();
 
@@ -170,7 +170,10 @@ class ProjectCommands : IProjectCommands
             if (!isExcludedFromProject)
             {
                 var absoluteFilePath = GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave);
-                wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, absoluteFilePath, useContentPipeline, false, fileRfs: referencedFileSave);
+                wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, absoluteFilePath,
+                    useContentPipeline, false,
+                    fileRfs: referencedFileSave,
+                    reEvaluateAfterAdd: reEvaluateAfterAdd);
             }
 
             foreach (ProjectSpecificFile projectSpecificFile in referencedFileSave.ProjectSpecificFiles)
@@ -197,7 +200,8 @@ class ProjectCommands : IProjectCommands
     /// <param name="parentFile"></param>
     /// <returns>Whether the project was modified.</returns>
     public bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink,
-        string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null, ReferencedFileSave fileRfs = null)
+        string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null, ReferencedFileSave fileRfs = null,
+        bool reEvaluateAfterAdd = true)
     {
         bool wasProjectModified = false;
         ///////////////////Early Out/////////////////////
@@ -303,7 +307,7 @@ class ProjectCommands : IProjectCommands
 
             if (needsToBeInContentProject)
             {
-                AddFileToContentProject(project, useContentPipeline, shouldLink, fileToAddAbsolute, fileRfs);
+                AddFileToContentProject(project, useContentPipeline, shouldLink, fileToAddAbsolute, fileRfs, reEvaluateAfterAdd);
             }
             else
             {
@@ -356,7 +360,7 @@ class ProjectCommands : IProjectCommands
                 }
                 else
                 {
-                    wasProjectModified |= UpdateFileMembershipInProject(project, file, useContentPipeline, shouldLink, fileToAddAbsolute, recursive: true, alreadyReferencedFiles: alreadyReferencedFiles);
+                    wasProjectModified |= UpdateFileMembershipInProject(project, file, useContentPipeline, shouldLink, fileToAddAbsolute, recursive: true, alreadyReferencedFiles: alreadyReferencedFiles, reEvaluateAfterAdd:reEvaluateAfterAdd);
                 }
             }
         }
@@ -411,7 +415,8 @@ class ProjectCommands : IProjectCommands
         return toReturn;
     }
 
-    private static void AddFileToContentProject(ProjectBase project, bool useContentPipeline, bool shouldLink, string fileToAddAbsolute, ReferencedFileSave rfs)
+    private static void AddFileToContentProject(ProjectBase project, bool useContentPipeline,
+        bool shouldLink, string fileToAddAbsolute, ReferencedFileSave rfs, bool reEvaluateAfterAdd = true)
     {
         string relativeFileName = FileManager.MakeRelative(
             fileToAddAbsolute,
@@ -445,7 +450,7 @@ class ProjectCommands : IProjectCommands
             contentProject.AddContentBuildItem(
                 fileToAddAbsolute,
                 shouldLink ? SyncedProjectRelativeType.Linked : SyncedProjectRelativeType.Contained,
-                useContentPipeline, rfs);
+                useContentPipeline, rfs, reEvaluateAfterAdd);
 
         }
 

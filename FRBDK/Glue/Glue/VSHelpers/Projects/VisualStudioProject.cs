@@ -206,7 +206,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// <param name="absoluteFile">The absolute file name to add.</param>
         /// <returns>The ProjectItem which was created and added to the project.</returns>
         public ProjectItem AddContentBuildItem(string absoluteFile,
-            SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained, bool forceToContentPipeline = false, ReferencedFileSave rfs = null)
+            SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained,
+            bool forceToContentPipeline = false,
+            ReferencedFileSave rfs = null,
+            bool reEvaluateAfterAdd = true)
         {
             /////////////////////////Early Out////////////////////////////
             string extension = FileManager.GetExtension(absoluteFile);
@@ -261,7 +264,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 if (addToContentPipeline && AllowContentCompile)
                 {
                     buildItem = mProject.AddItem("Compile", ProcessInclude(itemInclude)).First();
-                    mProject.ReevaluateIfNecessary();
+
+                    // this can be slow on larger projects (around 200-300 ms)
+                    // and we do it down below too, so why are we doing it here as well?
+                    //mProject.ReevaluateIfNecessary();
 
                     if (string.IsNullOrEmpty(assetTypeInfo.ContentImporter) ||
                         string.IsNullOrEmpty(assetTypeInfo.ContentProcessor))
@@ -282,7 +288,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 else
                 {
                     buildItem = mProject.AddItem(DefaultContentAction, itemInclude).FirstOrDefault();
-                    mProject.ReevaluateIfNecessary();
+
+                    // This is handled down below, no need to evaluate here too
+                    //mProject.ReevaluateIfNecessary();
                     if (ContentCopiedToOutput)
                     {
                         try
@@ -352,21 +360,30 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                     }
                 }
-                try
-                {
-                    mProject.ReevaluateIfNecessary();
-                }
-                catch
-                {
-                    // this can be readonly so wait and try again
-                    System.Threading.Thread.Sleep(1000);
-                    mProject.ReevaluateIfNecessary();
 
+                if(reEvaluateAfterAdd)
+                {
+                    ReevaluateItems();
                 }
 
                 return buildItem;
             }
 
+        }
+
+        public void ReevaluateItems()
+        {
+            try
+            {
+                mProject.ReevaluateIfNecessary();
+            }
+            catch
+            {
+                // this can be readonly so wait and try again
+                System.Threading.Thread.Sleep(1000);
+                mProject.ReevaluateIfNecessary();
+
+            }
         }
 
         public void AddProjectReference(string projectPath)

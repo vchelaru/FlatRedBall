@@ -405,7 +405,9 @@ namespace FlatRedBall.Glue.IO
                     var wasAnythingModified = false;
                     foreach (var rfs in allReferencedFileSaves)
                     {
-                        if(GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs))
+                        if(GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs,
+                            // By not re-evaluating, we go faster. We can re-evaluate after everything is added
+                            reEvaluateAfterAdd: false))
                         {
                             wasAnythingModified = true;
                         }
@@ -413,6 +415,11 @@ namespace FlatRedBall.Glue.IO
 
                     if(wasAnythingModified)
                     {
+                        GlueState.Self.CurrentMainProject.ReevaluateItems();
+                        foreach(var item in GlueState.Self.SyncedProjects)
+                        {
+                            (item as VisualStudioProject)?.ReevaluateItems();
+                        }
                         GlueCommands.Self.ProjectCommands.SaveProjects();
                     }
                 },

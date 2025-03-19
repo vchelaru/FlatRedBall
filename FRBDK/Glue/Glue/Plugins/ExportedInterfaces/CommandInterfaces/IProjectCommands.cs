@@ -79,7 +79,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         /// <param name="referencedFileSave"></param>
         /// <returns>Whether anything was added</returns>
-        bool UpdateFileMembershipInProject(ReferencedFileSave referencedFileSave);
+        bool UpdateFileMembershipInProject(ReferencedFileSave referencedFileSave, bool reEvaluateAfterAdd = true);
 
         /// <summary>
         /// Updates the argument fileName's membership to the argument project.
@@ -96,7 +96,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             string parentFile = null,
             bool recursive = true,
             List<string> alreadyReferencedFiles = null,
-            ReferencedFileSave fileRfs = null);
+            ReferencedFileSave fileRfs = null, bool reEvaluateAfterAdd = true);
 
         ProjectBase AddSyncedProject(FilePath filePath);
 
