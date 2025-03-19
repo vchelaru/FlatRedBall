@@ -95,7 +95,7 @@ namespace FlatRedBall.Glue.Managers
 
             if(glueProject != null)
             {
-                shouldRefresh = glueProject.IsAutomaticallyRefreshingUnreferencedFiles;
+                shouldRefresh = !glueProject.IsSuppressingRefreshUnreferencedFiles;
             }
 
             if(shouldRefresh)

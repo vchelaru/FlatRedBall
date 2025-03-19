@@ -300,7 +300,7 @@ namespace FlatRedBall.Glue.SaveClasses
         /// </summary>
         public bool SuppressBaseTypeGeneration { get; set; }
 
-        public bool IsAutomaticallyRefreshingUnreferencedFiles { get; set; } = true;
+        public bool IsSuppressingRefreshUnreferencedFiles { get; set; }
 
         #endregion
 
