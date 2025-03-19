@@ -686,7 +686,7 @@ namespace FlatRedBall.Glue.Plugins
 
         protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, Action action, string container, int preferredIndex = -1)
         {
-            return AddMenuItemTo(whatToAdd, (_, _) => action(), container, preferredIndex);
+            return AddMenuItemTo(whatToAdd, (_, _) => action?.Invoke(), container, preferredIndex);
         }
 
         protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, EventHandler eventHandler, string container, int preferredIndex = -1)
