@@ -111,17 +111,9 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         private static void AddAvailableReferencedFiles(IElement currentElement, string? fileTypeRestriction)
         {
-            List<ReferencedFileSave> referencedFiles = new List<ReferencedFileSave>(); ;
+            List<ReferencedFileSave> referencedFiles =
+                currentElement?.ReferencedFiles ?? new List<ReferencedFileSave>();
 
-            if (currentElement as EntitySave != null)
-            {
-                // Don't do anything here... yet
-                //referencedFiles = EditorLogic.CurrentEntitySave.ReferencedFiles;
-            }
-            else
-            {
-                referencedFiles = (currentElement as ScreenSave).ReferencedFiles;
-            }
 
             // Loop through the named objects and add them here
             foreach (ReferencedFileSave referencedFile in referencedFiles)
