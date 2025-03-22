@@ -48,6 +48,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\PasswordBox.cs">
       <Link>Controls\%(Filename)%(Extension)</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\Panel.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\RadioButton.cs">
       <Link>Controls\%(Filename)%(Extension)</Link>
     </Compile>
