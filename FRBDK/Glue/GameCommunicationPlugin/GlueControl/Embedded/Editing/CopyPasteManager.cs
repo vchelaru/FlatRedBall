@@ -45,7 +45,7 @@ namespace GlueControl.Editing
                 {
                     HandleCopy(selectedObjects, selectedNamedObjects);
                 }
-                if (keyboard.KeyPushed(Keys.V) && CopiedObjects != null)
+                if (keyboard.KeyPushed(Keys.V) && CopiedObjects?.Count > 0)
                 {
                     if (CopiedObjectsOwner == null)
                     {

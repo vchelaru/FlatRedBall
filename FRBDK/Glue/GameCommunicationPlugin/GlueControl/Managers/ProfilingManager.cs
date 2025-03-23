@@ -74,6 +74,11 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         {
                             itemCountString = $" {item.FirstItemListCount} vs {item.SecondItemListCount}";
                         }
+                        // This could happen if dealing with a List vs. TileShapeCollection:
+                        else if(item.FirstItemListCount != null)
+                        {
+                            itemCountString = $" {item.FirstItemListCount}";
+                        }
 
                         string partitionText = null;
                         if(item.IsPartitioned == false)

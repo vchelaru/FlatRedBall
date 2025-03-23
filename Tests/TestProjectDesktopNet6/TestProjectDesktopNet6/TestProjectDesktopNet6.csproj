@@ -1106,6 +1106,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>PlatformerTiles</Name>
     </None>
+    <None Include="Content\Screens\TileShapeCollectionScreen\TallMapFile.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TallMapFile</Name>
+    </None>
     <None Include="content\screens\tileshapecollectionscreen\Tiles.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Tiles</Name>
@@ -1117,6 +1121,10 @@
     <None Include="Content\Screens\TileShapeCollectionScreen\TmxFile.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxFile</Name>
+    </None>
+    <None Include="Content\Screens\TileShapeCollectionScreen\WideMapFile.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>WideMapFile</Name>
     </None>
     <None Include="Content\Screens\TmxScreen\barontown.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -29,9 +29,24 @@ namespace GlueTestProject.Screens
             FromPropertyTileShapeCollection.Rectangles.Count().ShouldBe(5);
 
             FromTypeTileShapeCollection.Rectangles.Count().ShouldBe(6);
-		}
 
-		void CustomActivity(bool firstTimeCalled)
+            TestFromTallMapClassTileShapeCollection();
+
+            TestFromWideMapClassTileShapeCollection();
+
+        }
+
+        private void TestFromWideMapClassTileShapeCollection()
+        {
+            FromWideMapClassTileShapeCollection.SortAxis.ShouldBe(FlatRedBall.Math.Axis.X);
+        }
+
+        private void TestFromTallMapClassTileShapeCollection()
+        {
+            FromTallMapClassTileShapeCollection.SortAxis.ShouldBe(FlatRedBall.Math.Axis.Y);
+        }
+
+        void CustomActivity(bool firstTimeCalled)
 		{
             IsActivityFinished = true;
 

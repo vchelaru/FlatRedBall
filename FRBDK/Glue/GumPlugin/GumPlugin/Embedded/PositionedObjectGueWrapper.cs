@@ -92,7 +92,7 @@ namespace GumCoreShared.FlatRedBall.Embedded
             UpdateGumObject();
         }
 
-        private void UpdateGumObject()
+        public void UpdateGumObject()
         {
 
             // This is going to get positioned according to the FRB object. I guess we'll force update dependencies, which is expensive...

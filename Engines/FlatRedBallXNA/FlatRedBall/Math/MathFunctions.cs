@@ -996,6 +996,11 @@ namespace FlatRedBall.Math
         /// <summary>
         /// Returns a value which has been rounded to the nearest mulitple of the mulipleOf value.
         /// </summary>
+        /// <example>
+        /// RoundFloat(0, 1) returns 0
+        /// RoundFloat(0.5, 1) returns 1
+        /// RoundFloat(1, 1) returns 1
+        /// </example>
         /// <param name="valueToRound">The value to round, such as the position of an object.</param>
         /// <param name="multipleOf">The multiple of value, such as the size of a tile.</param>
         /// <returns>The rounded value.</returns>
@@ -1005,6 +1010,18 @@ namespace FlatRedBall.Math
             return ((int)( System.Math.Sign(valueToRound) * .5f + valueToRound  / multipleOf)) * multipleOf;
         }
 
+        /// <summary>
+        /// Returns a value which has been rounded to the nearest mulitple of the mulipleOf value from the seed value.
+        /// </summary>
+        /// <example>
+        /// The seed value is considered the starting point for multiple of values.
+        /// For example, if multipleOf is set to 1 and seed is set to 0.3, then possible
+        /// values are 0.3, 1.3, 2.3, etc.
+        /// </example>
+        /// <param name="valueToRound">The value to round.</param>
+        /// <param name="multipleOf">The multiple of value.</param>
+        /// <param name="seed">The seed value from where the multipleOf is calculated.</param>
+        /// <returns>The rounded value.</returns>
         public static float RoundFloat(float valueToRound, float multipleOf, float seed)
         {
             valueToRound -= seed;

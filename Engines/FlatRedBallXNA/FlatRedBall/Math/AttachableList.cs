@@ -172,7 +172,12 @@ namespace FlatRedBall.Math
             }
             else if (mInternalList.Contains(attachable))
             {
-                throw new InvalidOperationException("Can't add the following object twice: " + attachable.Name);
+                var name = attachable.Name;
+                if(string.IsNullOrEmpty(name))
+                {
+                    name = attachable.GetType().ToString();
+                }
+                throw new InvalidOperationException("Can't add the following object twice: " + name);
             }
 #endif
 

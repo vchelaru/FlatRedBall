@@ -401,7 +401,6 @@ namespace TileGraphicsPlugin.CodeGeneration
             codeBlock.Line($"{instanceName}.BottomSeedY = {remainderY.ToString(CultureInfo.InvariantCulture)};");
 
             codeBlock.Line($"{instanceName}.SortAxis = FlatRedBall.Math.Axis.X;");
-            //TileShapeCollectionInstance.SortAxis = FlatRedBall.Math.Axis.X;
 
             var xFor = codeBlock.For($"int x = 0; x < {widthFill}; x++");
             //int(int x = 0; x < width; x++)
@@ -456,6 +455,12 @@ namespace TileGraphicsPlugin.CodeGeneration
                 {
                     method = "AddMergedCollisionFromTilesWithType";
                 }
+
+                codeBlock.If($"{mapName}.Height > {mapName}.Width")
+                    .Line($"{namedObjectSave.InstanceName}.SortAxis = FlatRedBall.Math.Axis.Y;")
+                .End().Else()
+                    .Line($"{namedObjectSave.InstanceName}.SortAxis = FlatRedBall.Math.Axis.X;");
+
                 codeBlock.Line("FlatRedBall.TileCollisions.TileShapeCollectionLayeredTileMapExtensions" +
                     $".{method}(" +
                     $"{namedObjectSave.InstanceName}, {mapName}, \"{typeName}\", {removeTiles.ToString().ToLowerInvariant()});");

@@ -22,6 +22,30 @@
       "IsSharedStatic": true,
       "RuntimeType": "Microsoft.Xna.Framework.Graphics.Texture2D",
       "ProjectsToExcludeFrom": []
+    },
+    {
+      "Name": "Screens/TileShapeCollectionScreen/TallMapFile.tmx",
+      "Properties": [
+        {
+          "Name": "CreationOptions",
+          "Value": "{\"WithVisualType\":0,\"WithVisualsUiVisibility\":0,\"SelectedLevel\":2,\"IsWithVisualsChecked\":true,\"IsOverworldPlatformerASelected\":false,\"IsOverworldPlatformerBSelected\":false,\"IsOverworldPlatformerCSelected\":true,\"IsOverworldTopDownASelected\":false,\"IsOverworldTopDownBSelected\":false,\"IsOverworldTopDownCSelected\":false,\"PlatformerLevelVisibility\":0,\"TopDownLevelVisibility\":0,\"IncludeDefaultTileset\":true,\"IncludeGameplayLayer\":true,\"SolidCollisionCheckBoxVisibility\":0,\"IsSolidCollisionBorderChecked\":true,\"ShouldAddCollisionBorder\":true,\"IsNoVisualsChecked\":false,\"NoVisualsUiVisibility\":2}"
+        }
+      ],
+      "IsSharedStatic": true,
+      "RuntimeType": "FlatRedBall.TileGraphics.LayeredTileMap",
+      "ProjectsToExcludeFrom": []
+    },
+    {
+      "Name": "Screens/TileShapeCollectionScreen/WideMapFile.tmx",
+      "Properties": [
+        {
+          "Name": "CreationOptions",
+          "Value": "{\"WithVisualType\":0,\"WithVisualsUiVisibility\":0,\"SelectedLevel\":0,\"IsWithVisualsChecked\":true,\"IsOverworldPlatformerASelected\":true,\"IsOverworldPlatformerBSelected\":false,\"IsOverworldPlatformerCSelected\":false,\"IsOverworldTopDownASelected\":false,\"IsOverworldTopDownBSelected\":false,\"IsOverworldTopDownCSelected\":false,\"PlatformerLevelVisibility\":0,\"TopDownLevelVisibility\":0,\"IncludeDefaultTileset\":true,\"IncludeGameplayLayer\":true,\"SolidCollisionCheckBoxVisibility\":0,\"IsSolidCollisionBorderChecked\":true,\"ShouldAddCollisionBorder\":true,\"IsNoVisualsChecked\":false,\"NoVisualsUiVisibility\":2}"
+        }
+      ],
+      "IsSharedStatic": true,
+      "RuntimeType": "FlatRedBall.TileGraphics.LayeredTileMap",
+      "ProjectsToExcludeFrom": []
     }
   ],
   "CustomVariables": [
@@ -291,6 +315,62 @@
       "SourceType": 2,
       "SourceFile": "TileShapeCollection",
       "GenerateTimedEmit": true
+    },
+    {
+      "InstanceName": "FromTallMapClassTileShapeCollection",
+      "SourceClassType": "TileShapeCollection",
+      "Properties": [
+        {
+          "Name": "SourceType",
+          "Value": 2
+        },
+        {
+          "Name": "CollisionCreationOptions",
+          "Value": 4
+        },
+        {
+          "Name": "CollisionTileTypeName",
+          "Value": "SolidCollision"
+        },
+        {
+          "Name": "SourceTmxName",
+          "Value": "TallMapFile"
+        }
+      ],
+      "InstructionSaves": [],
+      "SourceType": 2,
+      "SourceFile": "",
+      "SourceName": "",
+      "GenerateTimedEmit": true,
+      "IndependentOfCamera": true
+    },
+    {
+      "InstanceName": "FromWideMapClassTileShapeCollection",
+      "SourceClassType": "TileShapeCollection",
+      "Properties": [
+        {
+          "Name": "SourceType",
+          "Value": 2
+        },
+        {
+          "Name": "CollisionCreationOptions",
+          "Value": 4
+        },
+        {
+          "Name": "CollisionTileTypeName",
+          "Value": "SolidCollision"
+        },
+        {
+          "Name": "SourceTmxName",
+          "Value": "WideMapFile"
+        }
+      ],
+      "InstructionSaves": [],
+      "SourceType": 2,
+      "SourceFile": "",
+      "SourceName": "",
+      "GenerateTimedEmit": true,
+      "IndependentOfCamera": true
     }
   ],
   "Name": "Screens\\TileShapeCollectionScreen",
