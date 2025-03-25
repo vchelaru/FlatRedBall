@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BuildServerUploaderConsole.Processes;
+using BuildServerUploaderConsole.Sftp;
 using FlatRedBall.IO;
+using Renci.SshNet;
 
 namespace BuildServerUploaderConsole
 {
@@ -106,6 +108,7 @@ namespace BuildServerUploaderConsole
 
         private static void CreateZipAndUploadTemplates(string[] args)
         {
+
             ProcessSteps.Add(new CopyBuiltEnginesToReleaseFolder(Results));
 
             ProcessSteps.Add(new ZipTemplates(Results));
@@ -167,9 +170,10 @@ namespace BuildServerUploaderConsole
             for (int i = 0; i < ProcessSteps.Count; i++)
             {
                 int step1Based = i + 1;
-                Results.WriteMessage($"Processing {step1Based}/{ProcessSteps.Count} : {ProcessSteps[i].Message}");
-                ProcessSteps[i].ExecuteStep();
-                await ProcessSteps[i].ExecuteStepAsync();
+                var step = ProcessSteps[i];
+                Results.WriteMessage($"Processing {step1Based}/{ProcessSteps.Count} : {step.Message}");
+                step.ExecuteStep();
+                await step.ExecuteStepAsync();
             }
         }
 

@@ -1,17 +1,17 @@
-﻿using Renci.SshNet;
-using Renci.SshNet.Sftp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using Renci.SshNet;
+using Renci.SshNet.Sftp;
 
 namespace BuildServerUploaderConsole.Sftp
 {
     static class SftpManager
     {
-        public static IEnumerable<SftpFile> GetList(string host, string folder, string userName, string password)
+        public static IEnumerable<ISftpFile> GetList(string host, string folder, string userName, string password)
         {
 
             using (var sftp = new SftpClient(host, userName, password))

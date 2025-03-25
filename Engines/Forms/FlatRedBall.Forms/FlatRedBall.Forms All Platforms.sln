@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaInGum", "..\..\..\..\Gu
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.Forms.FNA", "FlatRedBall.Forms.FNA\FlatRedBall.Forms.FNA.csproj", "{4F719824-95F7-4864-97CA-0DC91A795BA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,6 +117,22 @@ Global
 		{7AE61851-BDC2-4B77-B159-BFF52550C423}.ReleaseAutoBuild|Any CPU.Build.0 = Release|Any CPU
 		{7AE61851-BDC2-4B77-B159-BFF52550C423}.ReleaseAutoBuild|x86.ActiveCfg = Release|Any CPU
 		{7AE61851-BDC2-4B77-B159-BFF52550C423}.ReleaseAutoBuild|x86.Build.0 = Release|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.Debug|x86.Build.0 = Debug|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.DebugAutoBuild|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.DebugAutoBuild|Any CPU.Build.0 = Debug|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.DebugAutoBuild|x86.ActiveCfg = Debug|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.DebugAutoBuild|x86.Build.0 = Debug|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.Release|x86.ActiveCfg = Release|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.Release|x86.Build.0 = Release|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.ReleaseAutoBuild|Any CPU.ActiveCfg = Release|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.ReleaseAutoBuild|Any CPU.Build.0 = Release|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.ReleaseAutoBuild|x86.ActiveCfg = Release|Any CPU
+		{4F719824-95F7-4864-97CA-0DC91A795BA4}.ReleaseAutoBuild|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -129,6 +147,7 @@ Global
 		..\..\..\FRBDK\Glue\GumPlugin\GumPlugin\GumCoreShared.FlatRedBall.projitems*{30c8fdca-92b4-4998-a692-ab72f46e3943}*SharedItemsImports = 5
 		..\..\..\..\Gum\GumCoreShared.projitems*{30c8fdca-92b4-4998-a692-ab72f46e3943}*SharedItemsImports = 5
 		FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{346e0cc5-d25f-4e9f-970f-678f4d019c9f}*SharedItemsImports = 5
+		FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{4f719824-95f7-4864-97ca-0dc91a795ba4}*SharedItemsImports = 5
 		FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{728151f0-03e0-4253-94fe-46b9c77edea6}*SharedItemsImports = 13
 		..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{d00d287d-385b-42fb-bf5f-04401e7d37d0}*SharedItemsImports = 13
 		..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{db8cd659-8187-494a-a94e-8adf16f3e7f7}*SharedItemsImports = 5
