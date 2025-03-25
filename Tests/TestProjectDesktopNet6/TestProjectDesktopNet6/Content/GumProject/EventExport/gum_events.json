@@ -4,48 +4,6 @@
     "Owner": [],
     "d1638316d18f4a1e23a287aaaa12b6c540f704e257a6549bc9a672497ccc934e": [
       {
-        "NewName": "TestScreen.ColoredRectangleInstance1",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-03-07T12:27:01.4154925Z"
-      },
-      {
-        "NewName": "TestScreen.RectangleWithInvalidParent",
-        "OldName": "TestScreen.ColoredRectangleInstance1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-03-07T12:27:15.5787244Z"
-      },
-      {
-        "NewName": "TestScreen.RectangleWithInvalidParent",
-        "OldName": "TestScreen.ColoredRectangleInstance1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-03-07T12:27:15.5797247Z"
-      },
-      {
-        "NewName": "TestScreen.RectangleWithInvalidParent",
-        "OldName": "TestScreen.ColoredRectangleInstance1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-03-07T12:27:15.5797247Z"
-      },
-      {
-        "NewName": "TestScreen.RectangleWithInvalidParent",
-        "OldName": "TestScreen.ColoredRectangleInstance1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-03-07T12:27:15.5807245Z"
-      },
-      {
-        "NewName": "TestScreen.RectangleWithInvalidParent",
-        "OldName": "TestScreen.ColoredRectangleInstance1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-03-07T12:27:15.5817245Z"
-      },
-      {
         "NewName": "TestScreen.SpriteInstance",
         "OldName": null,
         "ElementType": "Screens",
@@ -100,6 +58,62 @@
         "ElementType": "Screens",
         "EventType": 5,
         "TimestampUtc": "2025-03-17T12:43:57.5372718Z"
+      },
+      {
+        "NewName": "ComponentWithCustomVariables",
+        "OldName": null,
+        "ElementType": "Components",
+        "EventType": 0,
+        "TimestampUtc": "2025-03-24T23:45:15.5153562Z"
+      },
+      {
+        "NewName": "TestScreen.ComponentWithCustomVariablesInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-03-24T23:46:20.9059763Z"
+      },
+      {
+        "NewName": "TestScreen.ComponentWithCustomVariablesInstance1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2025-03-25T00:15:48.7117315Z"
+      },
+      {
+        "NewName": "TestScreen.CustomVariablesOnInstance",
+        "OldName": "TestScreen.ComponentWithCustomVariablesInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-25T00:16:00.3648276Z"
+      },
+      {
+        "NewName": "TestScreen.CustomVariablesOnInstance",
+        "OldName": "TestScreen.ComponentWithCustomVariablesInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-25T00:16:00.3668298Z"
+      },
+      {
+        "NewName": "TestScreen.CustomVariablesOnInstance",
+        "OldName": "TestScreen.ComponentWithCustomVariablesInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-25T00:16:00.36783Z"
+      },
+      {
+        "NewName": "TestScreen.CustomVariablesOnInstance",
+        "OldName": "TestScreen.ComponentWithCustomVariablesInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-25T00:16:00.3688317Z"
+      },
+      {
+        "NewName": "TestScreen.CustomVariablesOnInstance",
+        "OldName": "TestScreen.ComponentWithCustomVariablesInstance1",
+        "ElementType": "Screens",
+        "EventType": 7,
+        "TimestampUtc": "2025-03-25T00:16:00.3688317Z"
       }
     ]
   }

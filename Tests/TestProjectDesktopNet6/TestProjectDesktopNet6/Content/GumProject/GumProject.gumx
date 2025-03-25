@@ -150,6 +150,11 @@
     <LinkType>ReferenceOriginal</LinkType>
   </ComponentReference>
   <ComponentReference>
+    <Name>ComponentWithCustomVariables</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>ContainerOfInFolder</Name>
     <ElementType>Component</ElementType>
     <LinkType>ReferenceOriginal</LinkType>

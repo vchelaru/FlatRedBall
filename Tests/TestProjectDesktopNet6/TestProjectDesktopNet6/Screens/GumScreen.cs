@@ -89,6 +89,29 @@ public partial class GumScreen
         TextGue_ShouldTruncate_WhenSetToTruncate();
 
         ItemInScreen_ShouldHaveScreenParent_WhenInvalidParentIsAssignedInGum();
+
+        CustomVariables_ShouldBeSetToDefaults();
+
+        CustomVariables_ShouldMatchInstanceValues();
+    }
+
+    private void CustomVariables_ShouldMatchInstanceValues()
+    {
+        var instance = EntireGumScreen.CustomVariablesOnInstance;
+
+        instance.IntDefault25.ShouldBe(50);
+        instance.FloatDefault1f.ShouldBe(2.0f);
+        instance.StringDefaultabcd.ShouldBe("efgh");
+        instance.BoolDefaultTrue.ShouldBe(false);
+    }
+
+    private void CustomVariables_ShouldBeSetToDefaults()
+    {
+        var instance = EntireGumScreen.ComponentWithCustomVariablesInstance;
+        instance.IntDefault25.ShouldBe(25);
+        instance.FloatDefault1f.ShouldBe(1f);
+        instance.StringDefaultabcd.ShouldBe("abcd");
+        instance.BoolDefaultTrue.ShouldBe(true);
     }
 
     private void ItemInScreen_ShouldHaveScreenParent_WhenInvalidParentIsAssignedInGum()

@@ -530,6 +530,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ComponentWithCustomInitialize</Name>
     </None>
+    <None Include="Content\GumProject\Components\ComponentWithCustomVariables.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ComponentWithCustomVariables</Name>
+    </None>
     <None Include="Content\GumProject\Components\ContainerOfInFolder.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ContainerOfInFolder</Name>
@@ -2031,6 +2035,10 @@
     <Compile Include="GumRuntimes\ComponentWithCustomInitializeRuntime.cs" />
     <Compile Include="GumRuntimes\ComponentWithCustomInitializeRuntime.Generated.cs">
       <DependentUpon>ComponentWithCustomInitializeRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\ComponentWithCustomVariablesRuntime.cs" />
+    <Compile Include="GumRuntimes\ComponentWithCustomVariablesRuntime.Generated.cs">
+      <DependentUpon>ComponentWithCustomVariablesRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\ContainerOfInFolderRuntime.cs" />
     <Compile Include="GumRuntimes\ContainerOfInFolderRuntime.Generated.cs">

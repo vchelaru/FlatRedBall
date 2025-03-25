@@ -430,6 +430,18 @@
     </Variable>
     <Variable>
       <Type>float</Type>
+      <Name>ComponentWithCustomVariablesInstance.X</Name>
+      <Value xsi:type="xsd:float">153</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ComponentWithCustomVariablesInstance.Y</Name>
+      <Value xsi:type="xsd:float">-173</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
       <Name>ContainerInstance.X</Name>
       <Value xsi:type="xsd:float">38</Value>
       <SetsValue>true</SetsValue>
@@ -438,6 +450,42 @@
       <Type>float</Type>
       <Name>ContainerInstance.Y</Name>
       <Value xsi:type="xsd:float">415</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>bool</Type>
+      <Name>CustomVariablesOnInstance.BoolDefaultTrue</Name>
+      <Value xsi:type="xsd:boolean">false</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>CustomVariablesOnInstance.FloatDefault1f</Name>
+      <Value xsi:type="xsd:float">2</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>int</Type>
+      <Name>CustomVariablesOnInstance.IntDefault25</Name>
+      <Value xsi:type="xsd:int">50</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>string</Type>
+      <Name>CustomVariablesOnInstance.StringDefaultabcd</Name>
+      <Value xsi:type="xsd:string">efgh</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>CustomVariablesOnInstance.X</Name>
+      <Value xsi:type="xsd:float">329</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>CustomVariablesOnInstance.Y</Name>
+      <Value xsi:type="xsd:float">-176</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -1902,6 +1950,16 @@ wrap the text.</Value>
   <Instance>
     <Name>RectangleWithInvalidParent</Name>
     <BaseType>ColoredRectangle</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>ComponentWithCustomVariablesInstance</Name>
+    <BaseType>ComponentWithCustomVariables</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>CustomVariablesOnInstance</Name>
+    <BaseType>ComponentWithCustomVariables</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />

@@ -14,578 +14,586 @@ using System.Windows.Forms.Design;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
-namespace GumPlugin.CodeGeneration
+namespace GumPlugin.CodeGeneration;
+
+public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
 {
-    public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
+    #region Fields
+
+    List<string> mVariableNamesToSkipForStates = new List<string>();
+
+    Dictionary<string, List<string>> typeSpecificVariableNamesToSkipForStates = new();
+
+    public static Dictionary<string, string> VariableNamesToReplaceForStates = new Dictionary<string, string>();
+
+    #endregion
+
+
+    #region Constructor/Init
+
+    static StateCodeGenerator()
     {
-        #region Fields
+        VariableNamesToReplaceForStates.Add("Texture Address", "TextureAddress");
+        VariableNamesToReplaceForStates.Add("Texture Height Scale", "TextureHeightScale");
+        VariableNamesToReplaceForStates.Add("Texture Width Scale", "TextureWidthScale");
+        VariableNamesToReplaceForStates.Add("Texture Height", "TextureHeight");
+        VariableNamesToReplaceForStates.Add("Texture Width", "TextureWidth");
+        VariableNamesToReplaceForStates.Add("Texture Left", "TextureLeft");
+        VariableNamesToReplaceForStates.Add("Texture Top", "TextureTop");
+        VariableNamesToReplaceForStates.Add("Font Scale", "FontScale");
+        VariableNamesToReplaceForStates.Add("Clips Children", "ClipsChildren");
+        VariableNamesToReplaceForStates.Add("Children Layout", "ChildrenLayout");
+        VariableNamesToReplaceForStates.Add("Custom Texture Coordinates", "CustomTextureCoordinates");
 
-        List<string> mVariableNamesToSkipForStates = new List<string>();
 
-        Dictionary<string, List<string>> typeSpecificVariableNamesToSkipForStates = new ();
+        VariableNamesToReplaceForStates.Add("X Origin", "XOrigin");
+        VariableNamesToReplaceForStates.Add("X Units", "XUnits");
+        VariableNamesToReplaceForStates.Add("Y Origin", "YOrigin");
+        VariableNamesToReplaceForStates.Add("Y Units", "YUnits");
+        VariableNamesToReplaceForStates.Add("Wraps Children", "WrapsChildren");
+        VariableNamesToReplaceForStates.Add("Source File", "SourceFile");
 
-        public static Dictionary<string, string> VariableNamesToReplaceForStates = new Dictionary<string, string>();
+        VariableNamesToReplaceForStates.Add("Width Units", "WidthUnits");
+        VariableNamesToReplaceForStates.Add("Height Units", "HeightUnits");
 
-        #endregion
+    }
 
+    public StateCodeGenerator()
+    {
+        AddVariablesToSkipForStates();
+    }
 
-        #region Constructor/Init
+    private void AddVariablesToSkipForStates()
+    {
+        //mVariableNamesToSkipForStates.Add("CustomFontFile");
+        //mVariableNamesToSkipForStates.Add("UseCustomFont");
+        mVariableNamesToSkipForStates.Add("Guide");
+        //mVariableNamesToSkipForStates.Add("Parent");
 
-        static StateCodeGenerator()
+        // Why did we skip width units and height units?
+        //mVariableNamesToSkipForStates.Add("Height Units");
+        //mVariableNamesToSkipForStates.Add("Width Units");
+        mVariableNamesToSkipForStates.Add("Custom Texture Coordinates"); // This is now handled by TextureCoordinateType
+        mVariableNamesToSkipForStates.Add("CustomTextureCoordinates"); // This is now handled by TextureCoordinateType
+        //mVariableNamesToSkipForStates.Add("Children Layout");
+
+        //mVariableNamesToSkipForStates.Add("Font");
+        //mVariableNamesToSkipForStates.Add("FontSize");
+        //mVariableNamesToSkipForStates.Add("OutlineThickness");
+
+        // August 29 - adding support for these:
+        //mVariableNamesToSkipForStates.Add("HasEvents");
+        //mVariableNamesToSkipForStates.Add("ExposeChildrenEvents");
+
+        //mVariableNamesToSkipForStates.Add("SourceFile");
+        mVariableNamesToSkipForStates.Add("Contained Type");
+        mVariableNamesToSkipForStates.Add("ContainedType");
+        mVariableNamesToSkipForStates.Add("IsXamarinFormsControl");
+        mVariableNamesToSkipForStates.Add("IsOverrideInCodeGen");
+        //mVariableNamesToSkipForStates.Add("IsBold");
+
+        // Eventually we'll support this but first Gum needs to support 
+        // setting categorized states on instances
+        // September 17 2014
+        // no longer needed:
+        //mVariableNamesToSkipForStates.Add("State");
+
+        typeSpecificVariableNamesToSkipForStates["Container"] = new List<string>
         {
-            VariableNamesToReplaceForStates.Add("Texture Address", "TextureAddress");
-            VariableNamesToReplaceForStates.Add("Texture Height Scale", "TextureHeightScale");
-            VariableNamesToReplaceForStates.Add("Texture Width Scale", "TextureWidthScale");
-            VariableNamesToReplaceForStates.Add("Texture Height", "TextureHeight");
-            VariableNamesToReplaceForStates.Add("Texture Width", "TextureWidth");
-            VariableNamesToReplaceForStates.Add("Texture Left", "TextureLeft");
-            VariableNamesToReplaceForStates.Add("Texture Top", "TextureTop");
-            VariableNamesToReplaceForStates.Add("Font Scale", "FontScale");
-            VariableNamesToReplaceForStates.Add("Clips Children", "ClipsChildren");
-            VariableNamesToReplaceForStates.Add("Children Layout", "ChildrenLayout");
-            VariableNamesToReplaceForStates.Add("Custom Texture Coordinates", "CustomTextureCoordinates");
+            "Alpha",
+            "Blend",
+            "IsRenderTarget"
+        };
 
 
-            VariableNamesToReplaceForStates.Add("X Origin", "XOrigin");
-            VariableNamesToReplaceForStates.Add("X Units", "XUnits");
-            VariableNamesToReplaceForStates.Add("Y Origin", "YOrigin");
-            VariableNamesToReplaceForStates.Add("Y Units", "YUnits");
-            VariableNamesToReplaceForStates.Add("Wraps Children", "WrapsChildren");
-            VariableNamesToReplaceForStates.Add("Source File", "SourceFile");
+    }
 
-            VariableNamesToReplaceForStates.Add("Width Units", "WidthUnits");
-            VariableNamesToReplaceForStates.Add("Height Units", "HeightUnits");
+    public void RefreshVariableNamesToSkipBasedOnGlueVersion()
+    {
+        var version = (int)GlueState.Self.CurrentGlueProject.FileVersion;
 
+        if (version >= (int)GluxVersions.GumSupportsStackSpacing)
+        {
+            Include("StackSpacing");
+        }
+        else
+        {
+            Skip("StackSpacing");
         }
 
-        public StateCodeGenerator()
+        if (version >= (int)GluxVersions.GumUsesSystemTypes)
         {
-            AddVariablesToSkipForStates();
+            Include("CustomFrameTextureCoordinateWidth");
+            Include("AutoGridHorizontalCells");
+            Include("AutoGridVerticalCells");
+            Include("LineHeightMultiplier");
+        }
+        else
+        {
+            Skip("CustomFrameTextureCoordinateWidth");
+            Skip("AutoGridHorizontalCells");
+            Skip("AutoGridVerticalCells");
+            Skip("LineHeightMultiplier");
         }
 
-        private void AddVariablesToSkipForStates()
+        if (version >= (int)GluxVersions.GumHasIgnoredByParentSize)
         {
-            //mVariableNamesToSkipForStates.Add("CustomFontFile");
-            //mVariableNamesToSkipForStates.Add("UseCustomFont");
-            mVariableNamesToSkipForStates.Add("Guide");
-            //mVariableNamesToSkipForStates.Add("Parent");
-
-            // Why did we skip width units and height units?
-            //mVariableNamesToSkipForStates.Add("Height Units");
-            //mVariableNamesToSkipForStates.Add("Width Units");
-            mVariableNamesToSkipForStates.Add("Custom Texture Coordinates"); // This is now handled by TextureCoordinateType
-            mVariableNamesToSkipForStates.Add("CustomTextureCoordinates"); // This is now handled by TextureCoordinateType
-            //mVariableNamesToSkipForStates.Add("Children Layout");
-
-            //mVariableNamesToSkipForStates.Add("Font");
-            //mVariableNamesToSkipForStates.Add("FontSize");
-            //mVariableNamesToSkipForStates.Add("OutlineThickness");
-
-            // August 29 - adding support for these:
-            //mVariableNamesToSkipForStates.Add("HasEvents");
-            //mVariableNamesToSkipForStates.Add("ExposeChildrenEvents");
-
-            //mVariableNamesToSkipForStates.Add("SourceFile");
-            mVariableNamesToSkipForStates.Add("Contained Type");
-            mVariableNamesToSkipForStates.Add("ContainedType");
-            mVariableNamesToSkipForStates.Add("IsXamarinFormsControl");
-            mVariableNamesToSkipForStates.Add("IsOverrideInCodeGen");
-            //mVariableNamesToSkipForStates.Add("IsBold");
-
-            // Eventually we'll support this but first Gum needs to support 
-            // setting categorized states on instances
-            // September 17 2014
-            // no longer needed:
-            //mVariableNamesToSkipForStates.Add("State");
-
-            typeSpecificVariableNamesToSkipForStates["Container"] = new List<string>
-            {
-                "Alpha",
-                "Blend",
-                "IsRenderTarget"
-            };
-
-
+            Include("IgnoredByParentSize");
+        }
+        else
+        {
+            Skip("IgnoredByParentSize");
         }
 
-        public void RefreshVariableNamesToSkipBasedOnGlueVersion()
+        if (version >= (int)GluxVersions.GumTextHasIsBold)
         {
-            var version = (int)GlueState.Self.CurrentGlueProject.FileVersion;
+            // We can include this one, it's handled by 
+            Include("IsBold");
+        }
+        else
+        {
+            Skip("IsBold");
+        }
 
-            if (version >= (int)GluxVersions.GumSupportsStackSpacing)
-            {
-                Include("StackSpacing");
-            }
-            else
-            {
-                Skip("StackSpacing");
-            }
-
-            if (version >= (int)GluxVersions.GumUsesSystemTypes)
-            {
-                Include("CustomFrameTextureCoordinateWidth");
-                Include("AutoGridHorizontalCells");
-                Include("AutoGridVerticalCells");
-                Include("LineHeightMultiplier");
-            }
-            else
-            {
-                Skip("CustomFrameTextureCoordinateWidth");
-                Skip("AutoGridHorizontalCells");
-                Skip("AutoGridVerticalCells");
-                Skip("LineHeightMultiplier");
-            }
-
-            if (version >= (int)GluxVersions.GumHasIgnoredByParentSize)
-            {
-                Include("IgnoredByParentSize");
-            }
-            else
-            {
-                Skip("IgnoredByParentSize");
-            }
-
-            if (version >= (int)GluxVersions.GumTextHasIsBold)
-            {
-                // We can include this one, it's handled by 
-                Include("IsBold");
-            }
-            else
-            {
-                Skip("IsBold");
-            }
-
-            TextCodeGenerator.Self.AddVariableNamesToSkipForStates(mVariableNamesToSkipForStates);
+        TextCodeGenerator.Self.AddVariableNamesToSkipForStates(mVariableNamesToSkipForStates);
 
 
-            return;
+        return;
 
-            void Include(string variable)
+        void Include(string variable)
+        {
+            if (mVariableNamesToSkipForStates.Contains(variable))
             {
-                if (mVariableNamesToSkipForStates.Contains(variable))
+                mVariableNamesToSkipForStates.Remove(variable);
+            }
+        }
+        void Skip(string variable)
+        {
+            if (!mVariableNamesToSkipForStates.Contains(variable))
+            {
+                mVariableNamesToSkipForStates.Add(variable);
+            }
+        }
+    }
+
+    #endregion
+
+    public void GenerateEverythingFor(ElementSave elementSave, ICodeBlock currentBlock)
+    {
+        GenerateStateEnums(elementSave, currentBlock);
+
+        GenerateCurrentStateFields(elementSave, currentBlock);
+
+        GenerateCurrentStateProperties(elementSave, currentBlock);
+
+        GenerateStateInterpolateBetween(elementSave, currentBlock);
+
+        GenerateStateInterpolateTo(elementSave, currentBlock);
+
+        GenerateAnimationEnumerables(elementSave, currentBlock);
+
+        GenerateStopAnimations(elementSave, currentBlock);
+
+        GenerateGetAnimations(elementSave, currentBlock);
+
+        GenerateGetCurrentValuesOnState(elementSave, currentBlock);
+
+        GenerateApplyStateOverride(elementSave, currentBlock);
+    }
+
+    private void GenerateApplyStateOverride(ElementSave elementSave, ICodeBlock currentBlock)
+    {
+        currentBlock = currentBlock.Function("public override void", "ApplyState", "Gum.DataTypes.Variables.StateSave state");
+        {
+            currentBlock.Line("bool matches = this.ElementSave.AllStates.Contains(state);");
+
+            var ifStatement = currentBlock.If("matches");
+            {
+                ifStatement.Line("var category = this.ElementSave.Categories.FirstOrDefault(item => item.States.Contains(state));");
+
+                var innerIf = ifStatement.If("category == null");
                 {
-                    mVariableNamesToSkipForStates.Remove(variable);
-                }
-            }
-            void Skip(string variable)
-            {
-                if (!mVariableNamesToSkipForStates.Contains(variable))
-                {
-                    mVariableNamesToSkipForStates.Add(variable);
-                }
-            }
-        }
-
-        #endregion
-
-        public void GenerateEverythingFor(ElementSave elementSave, ICodeBlock currentBlock)
-        {
-            GenerateStateEnums(elementSave, currentBlock);
-
-            GenerateCurrentStateFields(elementSave, currentBlock);
-
-            GenerateCurrentStateProperties(elementSave, currentBlock);
-
-            GenerateStateInterpolateBetween(elementSave, currentBlock);
-
-            GenerateStateInterpolateTo(elementSave, currentBlock);
-
-            GenerateAnimationEnumerables(elementSave, currentBlock);
-
-            GenerateStopAnimations(elementSave, currentBlock);
-
-            GenerateGetAnimations(elementSave, currentBlock);
-
-            GenerateGetCurrentValuesOnState(elementSave, currentBlock);
-
-            GenerateApplyStateOverride(elementSave, currentBlock);
-        }
-
-        private void GenerateApplyStateOverride(ElementSave elementSave, ICodeBlock currentBlock)
-        {
-            currentBlock = currentBlock.Function("public override void", "ApplyState", "Gum.DataTypes.Variables.StateSave state");
-            {
-                currentBlock.Line("bool matches = this.ElementSave.AllStates.Contains(state);");
-
-                var ifStatement = currentBlock.If("matches");
-                {
-                    ifStatement.Line("var category = this.ElementSave.Categories.FirstOrDefault(item => item.States.Contains(state));");
-
-                    var innerIf = ifStatement.If("category == null");
+                    foreach (var state in elementSave.States)
                     {
-                        foreach (var state in elementSave.States)
+                        innerIf.Line($"if (state.Name == \"{state.Name}\") this.mCurrentVariableState = VariableState.{state.MemberNameInCode()};");
+                    }
+                }
+                foreach (var category in elementSave.Categories)
+                {
+                    var elseIf = ifStatement.ElseIf($"category.Name == \"{category.Name}\"");
+                    {
+                        foreach (var state in category.States)
                         {
-                            innerIf.Line($"if (state.Name == \"{state.Name}\") this.mCurrentVariableState = VariableState.{state.MemberNameInCode()};");
+                            elseIf.Line($"if(state.Name == \"{state.Name}\") this.mCurrent{category.Name}State = {category.EnumNameInCode()}.{state.MemberNameInCode()};");
                         }
                     }
-                    foreach (var category in elementSave.Categories)
+                }
+            }
+
+            currentBlock.Line("base.ApplyState(state);");
+        }
+    }
+
+    #region Generate Enums
+
+    public bool SupportsEnumsInInterfaces => GlueState.Self.CurrentMainProject?.DotNetVersion?.Major >= 5;
+
+    bool IsUncagetgorizedStateNew(IStateContainer stateContainer)
+    {
+        var isStandard = stateContainer is StandardElementSave;
+
+        var toReturn = !isStandard;
+
+        if (!isStandard && stateContainer is ScreenSave screenSave && string.IsNullOrEmpty(screenSave.BaseType))
+        {
+            toReturn = false;
+        }
+        return toReturn;
+    }
+
+    public void GenerateStateEnums(IStateContainer stateContainer, ICodeBlock currentBlock, string enumNamePrefix = null)
+    {
+        bool hasUncategorized = (stateContainer is BehaviorSave) == false;
+
+        var canGenerate = true;
+
+        if (stateContainer is BehaviorSave)
+        {
+            // If it's a behavior, we need to make sure we are on a version of C# that supports enums in interfaces
+            canGenerate = SupportsEnumsInInterfaces;
+        }
+
+
+        if (canGenerate)
+        {
+            currentBlock.Line("#region State Enums");
+
+            if (hasUncategorized)
+            {
+                string categoryName = "VariableState";
+                var states = stateContainer.UncategorizedStates;
+
+                var newAndSpace = IsUncagetgorizedStateNew(stateContainer) ? "new " : string.Empty;
+
+                GenerateEnumsForCategory(currentBlock, categoryName, states, newAndSpace);
+            }
+            // loop through categories:
+            foreach (var category in stateContainer.Categories)
+            {
+                string categoryName = enumNamePrefix + category.EnumNameInCode();
+                var states = category.States;
+                GenerateEnumsForCategory(currentBlock, categoryName, states, string.Empty);
+
+            }
+
+            currentBlock.Line("#endregion");
+        }
+
+    }
+
+    public void GenerateEnumsForCategory(ICodeBlock codeBlock, string categoryName, IEnumerable<StateSave> states, string newAndSpace)
+    {
+        var enumBlock = codeBlock.Enum("public " + newAndSpace, categoryName);
+
+        foreach (var item in states)
+        {
+            if (item == states.Last())
+            {
+                enumBlock.Line(item.MemberNameInCode());
+            }
+            else
+            {
+                enumBlock.Line(item.MemberNameInCode() + ",");
+            }
+        }
+    }
+
+    #endregion
+
+    #region Fields (aka StateType mCurrentStateTypeState)
+    private void GenerateCurrentStateFields(ElementSave elementSave, ICodeBlock currentBlock)
+    {
+        currentBlock.Line("#region State Fields");
+        string propertyName = "CurrentVariableState";
+        string propertyType = "VariableState";
+        currentBlock.Line(propertyType + " m" + propertyName + ";");
+
+
+        foreach (var category in elementSave.Categories)
+        {
+            propertyName = "Current" + category.Name + "State";
+            propertyType = category.EnumNameInCode();
+
+            // Make these nullable because categorized states may not be set at all
+            currentBlock.Line($"{propertyType}? m{propertyName};");
+        }
+        currentBlock.Line("#endregion");
+    }
+    #endregion
+
+    #region Properties (which contain all the individual setters
+
+    private void GeneratePropertyForCurrentState(ICodeBlock currentBlock, string propertyType, string propertyName,
+        List<Gum.DataTypes.Variables.StateSave> states, ElementSave container, bool isNullable, string newAndSpace)
+    {
+        string propertyPrefix;
+
+        if (isNullable)
+        {
+            propertyPrefix = $"public {newAndSpace}{propertyType}?";
+        }
+        else
+        {
+            propertyPrefix = $"public {newAndSpace}{propertyType}";
+        }
+        var property = currentBlock.Property(propertyPrefix, propertyName);
+
+        property.Get().Line("return m" + propertyName + ";");
+
+        var setter = property.Set();
+        {
+            setter = GenerateSetterForCurrentState(propertyType, propertyName, states, container, isNullable, setter);
+        }
+    }
+
+    private ICodeBlock GenerateSetterForCurrentState(string propertyType, string propertyName, List<StateSave> states, ElementSave container, bool isNullable, ICodeBlock setter)
+    {
+        if (isNullable)
+        {
+            setter = setter.If("value != null");
+        }
+        setter.Line("m" + propertyName + " = value;");
+
+        if (states.Count > 0)
+        {
+            var switchBlock = setter.Switch("m" + propertyName);
+
+            var shouldIncludeSwitchBlock = false;
+            foreach (var state in states)
+            {
+                var caseBlock = switchBlock.Case(propertyType + "." + state.MemberNameInCode());
+                {
+                    // Parent variables need to be assigned in the order of the objects in the component so that they're attached in the right order.
+                    // If they're attached in the wrong order, then stacking won't work properly:
+                    var instanceNames = container.Instances.Select(item => item.Name).ToList();
+
+                    var orderedVariables = state.Variables
+                        .OrderByDescending(variable => variable.GetRootName() == "Parent")
+                        .ThenByDescending(variable => variable.IsState(container))
+                        .ThenBy(variable => instanceNames.IndexOf(variable.SourceObject))
+                        .ToList();
+
+                    foreach (var variable in orderedVariables)
                     {
-                        var elseIf = ifStatement.ElseIf($"category.Name == \"{category.Name}\"");
+                        var shouldGenerate = false;
+                        try
                         {
-                            foreach (var state in category.States)
+                            shouldGenerate = GetIfShouldGenerateStateVariable(variable, container);
+                        }
+                        catch (Exception e)
+                        {
+                            GlueCommands.Self.PrintError(e.ToString());
+                        }
+                        // where block doesn't debug well for some reason, so I unrolled it...
+                        if (shouldGenerate)
+                        {
+                            shouldIncludeSwitchBlock = true;
+                            // Note that this could return values like "1,2" instead of "1.2" depending
+                            // on the current language, so the AdjustVariableValueIfNecessary needs to account for that.
+                            string variableValue = variable.Value.ToString();
+                            bool isEntireAssignment;
+
+                            GueDerivingClassCodeGenerator.Self.AdjustVariableValueIfNecessary(variable, container, ref variableValue, out isEntireAssignment);
+                            if (isEntireAssignment)
                             {
-                                elseIf.Line($"if(state.Name == \"{state.Name}\") this.mCurrent{category.Name}State = {category.EnumNameInCode()}.{state.MemberNameInCode()};");
+                                caseBlock.Line(variableValue);
+                            }
+                            else
+                            {
+                                string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
+                                caseBlock.Line(memberNameInCode + " = " + variableValue + ";");
                             }
                         }
                     }
                 }
+            }
 
-                currentBlock.Line("base.ApplyState(state);");
+            // even though this has variables, it could have all variables that are not generated;
+            if (!shouldIncludeSwitchBlock)
+            {
+                switchBlock.Parent.BodyCodeLines.Remove(switchBlock);
             }
         }
 
-        #region Generate Enums
+        return setter;
+    }
 
-        public bool SupportsEnumsInInterfaces => GlueState.Self.CurrentMainProject?.DotNetVersion?.Major >= 5;
+    private void GenerateCurrentStateProperties(ElementSave elementSave, ICodeBlock currentBlock)
+    {
+        currentBlock.Line("#region State Properties");
 
-        bool IsUncagetgorizedStateNew (IStateContainer stateContainer)
+        string propertyName = "CurrentVariableState";
+        string propertyType = "VariableState";
+        var states = elementSave.States;
+
+        var isStandard = elementSave is StandardElementSave;
+
+        //var newAndSpace = isStandard ? string.Empty : "new ";
+        var newAndSpace = IsUncagetgorizedStateNew(elementSave) ? "new " : string.Empty;
+
+
+        GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable: false, newAndSpace: newAndSpace);
+
+        if (elementSave.Categories.Count > 0)
         {
-            var isStandard = stateContainer is StandardElementSave;
-
-            var toReturn = !isStandard;
-
-            if (!isStandard && stateContainer is ScreenSave screenSave && string.IsNullOrEmpty(screenSave.BaseType))
-            {
-                toReturn = false;
-            }
-            return toReturn;
-        }
-
-        public void GenerateStateEnums(IStateContainer stateContainer, ICodeBlock currentBlock, string enumNamePrefix = null)
-        {
-            bool hasUncategorized = (stateContainer is BehaviorSave) == false;
-
-            var canGenerate = true;
-
-            if (stateContainer is BehaviorSave)
-            {
-                // If it's a behavior, we need to make sure we are on a version of C# that supports enums in interfaces
-                canGenerate = SupportsEnumsInInterfaces;
-            }
-
-
-            if (canGenerate)
-            {
-                currentBlock.Line("#region State Enums");
-
-                if (hasUncategorized)
-                {
-                    string categoryName = "VariableState";
-                    var states = stateContainer.UncategorizedStates;
-
-                    var newAndSpace = IsUncagetgorizedStateNew(stateContainer) ? "new " : string.Empty;
-
-                    GenerateEnumsForCategory(currentBlock, categoryName, states, newAndSpace);
-                }
-                // loop through categories:
-                foreach (var category in stateContainer.Categories)
-                {
-                    string categoryName = enumNamePrefix + category.EnumNameInCode();
-                    var states = category.States;
-                    GenerateEnumsForCategory(currentBlock, categoryName, states, string.Empty);
-
-                }
-
-                currentBlock.Line("#endregion");
-            }
-
-        }
-
-        public void GenerateEnumsForCategory(ICodeBlock codeBlock, string categoryName, IEnumerable<StateSave> states, string newAndSpace)
-        {
-            var enumBlock = codeBlock.Enum("public " + newAndSpace, categoryName);
-
-            foreach (var item in states)
-            {
-                if (item == states.Last())
-                {
-                    enumBlock.Line(item.MemberNameInCode());
-                }
-                else
-                {
-                    enumBlock.Line(item.MemberNameInCode() + ",");
-                }
-            }
-        }
-
-        #endregion
-
-        #region Fields (aka StateType mCurrentStateTypeState)
-        private void GenerateCurrentStateFields(ElementSave elementSave, ICodeBlock currentBlock)
-        {
-            currentBlock.Line("#region State Fields");
-            string propertyName = "CurrentVariableState";
-            string propertyType = "VariableState";
-            currentBlock.Line(propertyType + " m" + propertyName + ";");
-
+            var baseElement = ObjectFinder.Self.GetElementSave(elementSave.BaseType);
 
             foreach (var category in elementSave.Categories)
             {
                 propertyName = "Current" + category.Name + "State";
                 propertyType = category.EnumNameInCode();
+                states = category.States;
 
-                // Make these nullable because categorized states may not be set at all
-                currentBlock.Line($"{propertyType}? m{propertyName};");
+                newAndSpace = baseElement?.Categories.Any(item => item.Name == category.Name) == true ? "new " : string.Empty;
+
+                GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable: true, newAndSpace: newAndSpace);
             }
-            currentBlock.Line("#endregion");
         }
-        #endregion
 
-        #region Properties (which contain all the individual setters
+        currentBlock.Line("#endregion");
+    }
 
-        private void GeneratePropertyForCurrentState(ICodeBlock currentBlock, string propertyType, string propertyName,
-            List<Gum.DataTypes.Variables.StateSave> states, ElementSave container, bool isNullable, string newAndSpace)
+    #endregion
+
+    private bool GetIfShouldGenerateStateVariable(Gum.DataTypes.Variables.VariableSave variable, ElementSave container)
+    {
+        bool toReturn = true;
+
+        string variableRootName = variable.GetRootName();
+
+
+
+        if (variable.Value == null || !variable.SetsValue)
         {
-            string propertyPrefix;
+            toReturn = false;
+        }
 
-            if (isNullable)
+        var isVariableState = variable.IsState(container);
+
+        // states can't set states on this
+        if (isVariableState && string.IsNullOrEmpty(variable.SourceObject))
+        {
+            toReturn = false;
+        }
+
+        if (toReturn && mVariableNamesToSkipForStates.Contains(variableRootName))
+        {
+            toReturn = false;
+        }
+
+        if (toReturn && typeSpecificVariableNamesToSkipForStates.ContainsKey(container.Name))
+        {
+            var typeSpecificVariables = typeSpecificVariableNamesToSkipForStates[container.Name];
+
+            if (typeSpecificVariables.Contains(variableRootName))
             {
-                propertyPrefix = $"public {newAndSpace}{propertyType}?";
+                toReturn = false;
+            }
+        }
+
+        bool hasSourceObject = !string.IsNullOrEmpty(variable.SourceObject);
+
+        if (toReturn && hasSourceObject)
+        {
+            InstanceSave instanceSave = container.GetInstance(variable.SourceObject);
+
+            if (instanceSave == null)
+            {
+                toReturn = false;
             }
             else
             {
-                propertyPrefix = $"public {newAndSpace}{propertyType}";
-            }
-            var property = currentBlock.Property(propertyPrefix, propertyName);
+                var baseElement = Gum.Managers.ObjectFinder.Self.GetElementSave(instanceSave.BaseType);
 
-            property.Get().Line("return m" + propertyName + ";");
-
-            var setter = property.Set();
-            {
-                setter = GenerateSetterForCurrentState(propertyType, propertyName, states, container, isNullable, setter);
-            }
-        }
-
-        private ICodeBlock GenerateSetterForCurrentState(string propertyType, string propertyName, List<StateSave> states, ElementSave container, bool isNullable, ICodeBlock setter)
-        {
-            if (isNullable)
-            {
-                setter = setter.If("value != null");
-            }
-            setter.Line("m" + propertyName + " = value;");
-
-            if (states.Count > 0)
-            {
-                var switchBlock = setter.Switch("m" + propertyName);
-
-                var shouldIncludeSwitchBlock = false;
-                foreach (var state in states)
-                {
-                    var caseBlock = switchBlock.Case(propertyType + "." + state.MemberNameInCode());
-                    {
-                        // Parent variables need to be assigned in the order of the objects in the component so that they're attached in the right order.
-                        // If they're attached in the wrong order, then stacking won't work properly:
-                        var instanceNames = container.Instances.Select(item => item.Name).ToList();
-
-                        var orderedVariables = state.Variables
-                            .OrderByDescending(variable => variable.GetRootName() == "Parent")
-                            .ThenByDescending(variable => variable.IsState(container))
-                            .ThenBy(variable => instanceNames.IndexOf(variable.SourceObject))
-                            .ToList();
-
-                        foreach (var variable in orderedVariables)
-                        {
-                            var shouldGenerate = false;
-                            try
-                            {
-                                shouldGenerate = GetIfShouldGenerateStateVariable(variable, container);
-                            }
-                            catch (Exception e)
-                            {
-                                GlueCommands.Self.PrintError(e.ToString());
-                            }
-                            // where block doesn't debug well for some reason, so I unrolled it...
-                            if (shouldGenerate)
-                            {
-                                shouldIncludeSwitchBlock = true;
-                                // Note that this could return values like "1,2" instead of "1.2" depending
-                                // on the current language, so the AdjustVariableValueIfNecessary needs to account for that.
-                                string variableValue = variable.Value.ToString();
-                                bool isEntireAssignment;
-
-                                GueDerivingClassCodeGenerator.Self.AdjustVariableValueIfNecessary(variable, container, ref variableValue, out isEntireAssignment);
-                                if (isEntireAssignment)
-                                {
-                                    caseBlock.Line(variableValue);
-                                }
-                                else
-                                {
-                                    string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
-                                    caseBlock.Line(memberNameInCode + " = " + variableValue + ";");
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // even though this has variables, it could have all variables that are not generated;
-                if(!shouldIncludeSwitchBlock)
-                {
-                    switchBlock.Parent.BodyCodeLines.Remove(switchBlock);
-                }
-            }
-
-            return setter;
-        }
-
-        private void GenerateCurrentStateProperties(ElementSave elementSave, ICodeBlock currentBlock)
-        {
-            currentBlock.Line("#region State Properties");
-
-            string propertyName = "CurrentVariableState";
-            string propertyType = "VariableState";
-            var states = elementSave.States;
-
-            var isStandard = elementSave is StandardElementSave;
-
-            //var newAndSpace = isStandard ? string.Empty : "new ";
-            var newAndSpace = IsUncagetgorizedStateNew(elementSave) ? "new " : string.Empty;
-
-
-            GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable: false, newAndSpace:newAndSpace);
-
-            if(elementSave.Categories.Count > 0)
-            {
-                var baseElement = ObjectFinder.Self.GetElementSave(elementSave.BaseType);
-
-                foreach (var category in elementSave.Categories)
-                {
-                    propertyName = "Current" + category.Name + "State";
-                    propertyType = category.EnumNameInCode();
-                    states = category.States;
-
-                    newAndSpace = baseElement?.Categories.Any(item => item.Name == category.Name) == true ? "new " : string.Empty;
-
-                    GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable: true, newAndSpace: newAndSpace);
-                }
-            }
-
-            currentBlock.Line("#endregion");
-        }
-
-        #endregion
-
-        private bool GetIfShouldGenerateStateVariable(Gum.DataTypes.Variables.VariableSave variable, ElementSave container)
-        {
-            bool toReturn = true;
-
-            string variableRootName = variable.GetRootName();
-
-
-
-            if (variable.Value == null || !variable.SetsValue)
-            {
-                toReturn = false;
-            }
-
-            var isVariableState = variable.IsState(container);
-
-            // states can't set states on this
-            if (isVariableState && string.IsNullOrEmpty(variable.SourceObject))
-            {
-                toReturn = false;
-            }
-
-            if (toReturn && mVariableNamesToSkipForStates.Contains(variableRootName))
-            {
-                toReturn = false;
-            }
-
-            if(toReturn && typeSpecificVariableNamesToSkipForStates.ContainsKey(container.Name))
-            {
-                var typeSpecificVariables = typeSpecificVariableNamesToSkipForStates[container.Name];
-
-                if(typeSpecificVariables.Contains(variableRootName))
+                if (baseElement == null)
                 {
                     toReturn = false;
                 }
-            }
 
-            bool hasSourceObject = !string.IsNullOrEmpty(variable.SourceObject);
 
-            if (toReturn && hasSourceObject)
-            {
-                InstanceSave instanceSave = container.GetInstance(variable.SourceObject);
-
-                if (instanceSave == null)
+                if (toReturn && typeSpecificVariableNamesToSkipForStates.ContainsKey(baseElement.Name))
                 {
-                    toReturn = false;
-                }
-                else
-                {
-                    var baseElement = Gum.Managers.ObjectFinder.Self.GetElementSave(instanceSave.BaseType);
+                    var typeSpecificVariables = typeSpecificVariableNamesToSkipForStates[baseElement.Name];
 
-                    if (baseElement == null)
+                    if (typeSpecificVariables.Contains(variableRootName))
                     {
                         toReturn = false;
                     }
+                }
 
+                if (toReturn)
+                {
 
-                    if (toReturn && typeSpecificVariableNamesToSkipForStates.ContainsKey(baseElement.Name))
+                    // Gum (just like Glue) keeps variables that aren't needed around.  This allows users to rename things and not lose
+                    // important information accidentally.  But because of that we have to make sure that the variable we're working with is
+                    // valid for the type of object we're dealing with.  
+                    var defaultState = baseElement.DefaultState;
+
+                    // October 26, 2018
+                    // Bernardo reported
+                    // a crash caused by the
+                    // RecursiveVariableFinder
+                    // being given a state without
+                    // a ParentContainer. This is a
+                    // sign that the element hasn't
+                    // been initialized yet. Elements
+                    // should be initialized, but if they're
+                    // not, we could just catch it here and initialize
+                    // it on the spot. Not sure if I like this solution
+                    // or not. It allows code to behave a little unpredictably,
+                    // but at the same time, we could simply solve the problem by
+                    // initializing here, so I'm going to do that:
+                    if (defaultState.ParentContainer == null)
                     {
-                        var typeSpecificVariables = typeSpecificVariableNamesToSkipForStates[baseElement.Name];
-
-                        if (typeSpecificVariables.Contains(variableRootName))
-                        {
-                            toReturn = false;
-                        }
+                        baseElement.Initialize(null);
                     }
 
-                    if (toReturn)
+                    RecursiveVariableFinder rvf = new RecursiveVariableFinder(defaultState);
+
+                    var foundVariable = rvf.GetVariable(variableRootName);
+
+                    if (foundVariable == null)
                     {
+                        // This doesn't exist anywhere in the inheritance chain, so we don't want to generate it:
+                        toReturn = false;
+                    }
 
-                        // Gum (just like Glue) keeps variables that aren't needed around.  This allows users to rename things and not lose
-                        // important information accidentally.  But because of that we have to make sure that the variable we're working with is
-                        // valid for the type of object we're dealing with.  
-                        var defaultState = baseElement.DefaultState;
+                    if (isVariableState)
+                    {
+                        // see if the base type has this category. If so, see if the state name exists. If not, we should skip generation:
+                        var category = baseElement.Categories.FirstOrDefault(item => item.Name == variable.Type);
+                        var variableValueAsString = variable.Value?.ToString();
 
-                        // October 26, 2018
-                        // Bernardo reported
-                        // a crash caused by the
-                        // RecursiveVariableFinder
-                        // being given a state without
-                        // a ParentContainer. This is a
-                        // sign that the element hasn't
-                        // been initialized yet. Elements
-                        // should be initialized, but if they're
-                        // not, we could just catch it here and initialize
-                        // it on the spot. Not sure if I like this solution
-                        // or not. It allows code to behave a little unpredictably,
-                        // but at the same time, we could simply solve the problem by
-                        // initializing here, so I'm going to do that:
-                        if (defaultState.ParentContainer == null)
+                        if (!string.IsNullOrEmpty(variableValueAsString) && category != null && !category.States.Any(item => item.Name == variableValueAsString))
                         {
-                            baseElement.Initialize(null);
-                        }
-
-                        RecursiveVariableFinder rvf = new RecursiveVariableFinder(defaultState);
-
-                        var foundVariable = rvf.GetVariable(variableRootName);
-
-                        if (foundVariable == null)
-                        {
-                            // This doesn't exist anywhere in the inheritance chain, so we don't want to generate it:
+                            // this references an invalid state. This can happen if a state is deleted from an entity 
                             toReturn = false;
-                        }
-
-                        if (isVariableState)
-                        {
-                            // see if the base type has this category. If so, see if the state name exists. If not, we should skip generation:
-                            var category = baseElement.Categories.FirstOrDefault(item => item.Name == variable.Type);
-                            var variableValueAsString = variable.Value?.ToString();
-
-                            if (!string.IsNullOrEmpty(variableValueAsString) && category != null && !category.States.Any(item => item.Name == variableValueAsString))
-                            {
-                                // this references an invalid state. This can happen if a state is deleted from an entity 
-                                toReturn = false;
-                            }
                         }
                     }
                 }
             }
+        }
 
-            if (toReturn && !hasSourceObject)
+        if (toReturn && !hasSourceObject)
+        {
+            if (variable.IsCustomVariable)
             {
+                // all good, we can generate this:
+                toReturn = true;
+            }
+            else
+            {
+
                 // If a variable is part of a component, it better be defined in the base type or else we won't generate it.
                 // For example, consider a component that used to inherit from Text. It will have variables for fonts. If that
                 // component switches to inheriting from Sprite, those variables will still exist in the XML for that component,
@@ -630,130 +638,130 @@ namespace GumPlugin.CodeGeneration
                     toReturn = wasMatchFound;
                 }
             }
-
-            // special case (for now)
-            if (container.Name == "Svg")
-            {
-                if (variable.Name == "SourceFile")
-                {
-                    toReturn = false;
-                }
-            }
-            if (container.Name == "LottieAnimation")
-            {
-                if (variable.Name == "SourceFile")
-                {
-                    toReturn = false;
-                }
-            }
-            return toReturn;
         }
 
-        private void GenerateGetCurrentValuesOnState(ElementSave elementSave, ICodeBlock currentBlock)
+        // special case (for now)
+        if (container.Name == "Svg")
         {
-            currentBlock.Line("#region Get Current Values on State");
-
-            string categoryName = "VariableState";
-            var states = elementSave.States;
-            GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryName, states, addValues: false);
-            GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryName, states, addValues: true);
-
-
-            foreach (var category in elementSave.Categories)
+            if (variable.Name == "SourceFile")
             {
-                var categoryType = category.EnumNameInCode();
-                states = category.States;
-                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryType, states, addValues: false);
-                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryType, states, addValues: true);
+                toReturn = false;
             }
+        }
+        if (container.Name == "LottieAnimation")
+        {
+            if (variable.Name == "SourceFile")
+            {
+                toReturn = false;
+            }
+        }
+        return toReturn;
+    }
 
-            currentBlock.Line("#endregion");
+    private void GenerateGetCurrentValuesOnState(ElementSave elementSave, ICodeBlock currentBlock)
+    {
+        currentBlock.Line("#region Get Current Values on State");
+
+        string categoryName = "VariableState";
+        var states = elementSave.States;
+        GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryName, states, addValues: false);
+        GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryName, states, addValues: true);
+
+
+        foreach (var category in elementSave.Categories)
+        {
+            var categoryType = category.EnumNameInCode();
+            states = category.States;
+            GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryType, states, addValues: false);
+            GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryType, states, addValues: true);
         }
 
-        private void GenerateGetCurrentValuesOnStateForCategory(ICodeBlock currentBlock, ElementSave container, string categoryType, List<Gum.DataTypes.Variables.StateSave> states, bool addValues = false)
+        currentBlock.Line("#endregion");
+    }
+
+    private void GenerateGetCurrentValuesOnStateForCategory(ICodeBlock currentBlock, ElementSave container, string categoryType, List<Gum.DataTypes.Variables.StateSave> states, bool addValues = false)
+    {
+        string methodName = "GetCurrentValuesOnState";
+
+        if (addValues)
         {
-            string methodName = "GetCurrentValuesOnState";
+            methodName = "AddToCurrentValuesWithState";
+        }
 
-            if (addValues)
+        currentBlock = currentBlock.Function("private Gum.DataTypes.Variables.StateSave", methodName, categoryType + " state");
+
+        currentBlock.Line("Gum.DataTypes.Variables.StateSave newState = new Gum.DataTypes.Variables.StateSave();");
+
+        if (states.Count > 0)
+        {
+            var switchBlock = currentBlock.Switch("state");
             {
-                methodName = "AddToCurrentValuesWithState";
-            }
-
-            currentBlock = currentBlock.Function("private Gum.DataTypes.Variables.StateSave", methodName, categoryType + " state");
-
-            currentBlock.Line("Gum.DataTypes.Variables.StateSave newState = new Gum.DataTypes.Variables.StateSave();");
-
-            if (states.Count > 0)
-            {
-                var switchBlock = currentBlock.Switch("state");
+                foreach (var state in states)
                 {
-                    foreach (var state in states)
+                    var caseBlock = switchBlock.Case(categoryType + "." + state.MemberNameInCode());
                     {
-                        var caseBlock = switchBlock.Case(categoryType + "." + state.MemberNameInCode());
+                        var instanceNames = container.Instances.Select(item => item.Name).ToList();
+                        var orderedVariables = state.Variables
+                            .Where(item => GetIfShouldGenerateStateVariable(item, container))
+                            .OrderBy(variable => instanceNames.IndexOf(variable.SourceObject));
+
+                        foreach (var variable in orderedVariables)
                         {
-                            var instanceNames = container.Instances.Select(item => item.Name).ToList();
-                            var orderedVariables = state.Variables
-                                .Where(item => GetIfShouldGenerateStateVariable(item, container))
-                                .OrderBy(variable => instanceNames.IndexOf(variable.SourceObject));
+                            string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
 
-                            foreach (var variable in orderedVariables)
+                            caseBlock.Line("newState.Variables.Add(new Gum.DataTypes.Variables.VariableSave()");
+                            var instantiatorBlock = caseBlock.Block();
                             {
-                                string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
+                                instantiatorBlock.Line("SetsValue = true,");
 
-                                caseBlock.Line("newState.Variables.Add(new Gum.DataTypes.Variables.VariableSave()");
-                                var instantiatorBlock = caseBlock.Block();
+                                // Don't use memberNameInCode - states from the XML files will not, and we want this
+                                // to behave the same so merging (used in interpolation) works properly
+                                //instantiatorBlock.Line("Name = \"" + memberNameInCode + "\",");
+                                instantiatorBlock.Line("Name = \"" + variable.Name + "\",");
+
+                                instantiatorBlock.Line($"Type = \"{variable.Type}\",");
+
+                                string valueString = "Value = " + memberNameInCode + "";
+
+
+                                if (addValues && IsVariableNumeric(variable))
                                 {
-                                    instantiatorBlock.Line("SetsValue = true,");
 
-                                    // Don't use memberNameInCode - states from the XML files will not, and we want this
-                                    // to behave the same so merging (used in interpolation) works properly
-                                    //instantiatorBlock.Line("Name = \"" + memberNameInCode + "\",");
-                                    instantiatorBlock.Line("Name = \"" + variable.Name + "\",");
+                                    string variableValue = variable.Value.ToString();
+                                    bool isEntireAssignment;
+                                    GueDerivingClassCodeGenerator.Self.AdjustVariableValueIfNecessary(variable, container, ref variableValue, out isEntireAssignment);
 
-                                    instantiatorBlock.Line($"Type = \"{variable.Type}\",");
-
-                                    string valueString = "Value = " + memberNameInCode + "";
-
-
-                                    if (addValues && IsVariableNumeric(variable))
+                                    if (isEntireAssignment)
                                     {
-
-                                        string variableValue = variable.Value.ToString();
-                                        bool isEntireAssignment;
-                                        GueDerivingClassCodeGenerator.Self.AdjustVariableValueIfNecessary(variable, container, ref variableValue, out isEntireAssignment);
-
-                                        if (isEntireAssignment)
-                                        {
-                                            valueString = variableValue;
-                                        }
-                                        else
-                                        {
-                                            valueString += " + " + variableValue;
-                                        }
+                                        valueString = variableValue;
                                     }
-                                    instantiatorBlock.Line(valueString);
-
+                                    else
+                                    {
+                                        valueString += " + " + variableValue;
+                                    }
                                 }
-                                caseBlock.Line(");");
+                                instantiatorBlock.Line(valueString);
+
                             }
+                            caseBlock.Line(");");
                         }
                     }
                 }
             }
-            currentBlock.Line("return newState;");
         }
-
-        private bool IsVariableNumeric(VariableSave variable)
-        {
-            string type = variable.Type;
-
-            return type == "float" ||
-                type == "int" ||
-                type == "double" ||
-                type == "byte" ||
-                type == "decimal" ||
-                type == "long";
-        }
-
+        currentBlock.Line("return newState;");
     }
+
+    private bool IsVariableNumeric(VariableSave variable)
+    {
+        string type = variable.Type;
+
+        return type == "float" ||
+            type == "int" ||
+            type == "double" ||
+            type == "byte" ||
+            type == "decimal" ||
+            type == "long";
+    }
+
 }

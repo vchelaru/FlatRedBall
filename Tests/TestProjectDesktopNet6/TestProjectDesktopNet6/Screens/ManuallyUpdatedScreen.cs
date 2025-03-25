@@ -204,7 +204,6 @@ namespace GlueTestProject.Screens
 
                 TestDetachedManualUpdateAccelerationVariables();
 
-                TestAttachedManualUpdateVariables();
 
                 TestManualUpdateRelativeVelocityVariables();
 
@@ -219,7 +218,13 @@ namespace GlueTestProject.Screens
 
             }
 
-            if (this.PauseAdjustedCurrentTime > .6f && hasTestedAttachment)
+            if(hasCalledCustomUpdateDependencies)
+            {
+                TestAttachedManualUpdateVariables();
+
+            }
+
+            if (this.PauseAdjustedCurrentTime > .6f && hasTestedAttachment && hasCalledCustomUpdateDependencies)
             {
                 // UpdateDependencies is only called when there is a draw, 
                 // and multiple draws may be skipped if fps is low enough
@@ -346,7 +351,11 @@ namespace GlueTestProject.Screens
 
 
         #endregion
-
+        bool hasCalledCustomUpdateDependencies = false;
+        partial void CustomUpdateDependencies(double currentTime)
+        {
+            hasCalledCustomUpdateDependencies = true;
+        }
         void CustomDestroy()
 		{
             TextManager.RemoveText(manuallyUpdatedTextInCode);
