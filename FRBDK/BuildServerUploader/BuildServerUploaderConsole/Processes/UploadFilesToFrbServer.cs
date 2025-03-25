@@ -6,6 +6,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using FlatRedBall.IO;
 using BuildServerUploaderConsole.Sftp;
+using System.Net.Sockets;
 
 namespace BuildServerUploaderConsole.Processes
 {
@@ -197,7 +198,14 @@ namespace BuildServerUploaderConsole.Processes
 
             using (var client = SftpManager.GetClient(host, Username, Password))
             {
-                client.Connect();
+                try
+                {
+                    client.Connect();
+                }
+                catch(SocketException ex)
+                {
+                    throw new Exception($"Error trying to connect to host {host}", ex);
+                }
                 for (int i = 0; i < engineFiles.Count; i++)
                 {
                     string localFile = engineFiles[i].DestinationFile;
