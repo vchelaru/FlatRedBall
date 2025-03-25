@@ -21,11 +21,8 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Configurations>BuildServer;Debug Docs;Debug;DebugChangeVersion;DebugProfile;DebugUpload;Profile;Release;Submission Phone;Submission;UnitTests</Configurations>
     <AssemblyTitle>BuildServerUploaderConsole</AssemblyTitle>
-    <Company>Microsoft</Company>
-    <Product>BuildServerUploaderConsole</Product>
-    <Copyright>Copyright © Microsoft 2011</Copyright>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\x86\Debug\</OutputPath>
