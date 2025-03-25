@@ -560,9 +560,9 @@ namespace FlatRedBall.Math.Geometry
             Segment secondSegment = new Segment();
             const double allowedError = .0005;
 
-            bool debug = false;
 
 #if !MONOGAME
+            bool debug = false;
             if (debug)
             {
                 FlatRedBall.Content.Polygon.PolygonSaveList psl = new FlatRedBall.Content.Polygon.PolygonSaveList();

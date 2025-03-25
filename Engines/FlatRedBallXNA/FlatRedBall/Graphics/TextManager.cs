@@ -962,22 +962,22 @@ namespace FlatRedBall.Graphics
 
             // keep the centerX a certain number of pixels from the edge
             
-            float leftEdge = (SpriteManager.Camera.X - SpriteManager.Camera.RelativeXEdgeAt(mZForVertexBuffer));
+            float leftEdge = (Camera.Main.X - Camera.Main.RelativeXEdgeAt(mZForVertexBuffer));
 
             float unitsFromEdge = mXForVertexBuffer - leftEdge;
             //unitsFromEdge = Text.PixelPerfectOffset + Math.MathFunctions.RoundFloat(unitsFromEdge, 1 / SpriteManager.Camera.PixelsPerUnitAt(mZForVertexBuffer));
             float tempXToUse =  MathFunctions.RoundFloat(leftEdge + unitsFromEdge, 
-                GuiManager.XEdge * 2 /(float)SpriteManager.Camera.DestinationRectangle.Width);
-            tempXToUse += SpriteManager.Camera.XEdge * .1f / (float)SpriteManager.Camera.DestinationRectangle.Width;
+                GuiManager.XEdge * 2 /(float)Camera.Main.DestinationRectangle.Width);
+            tempXToUse += Camera.Main.XEdge * .1f / (float)Camera.Main.DestinationRectangle.Width;
 
-            float bottomEdge = (SpriteManager.Camera.Y - SpriteManager.Camera.RelativeYEdgeAt(mZForVertexBuffer));
+            float bottomEdge = (Camera.Main.Y - Camera.Main.RelativeYEdgeAt(mZForVertexBuffer));
             unitsFromEdge =
                 mYForVertexBuffer - bottomEdge + newlineShift;
             //unitsFromEdge = Text.PixelPerfectOffset + Math.MathFunctions.RoundFloat(unitsFromEdge, 1 / SpriteManager.Camera.PixelsPerUnitAt(mZForVertexBuffer));
             unitsFromEdge = MathFunctions.RoundFloat(unitsFromEdge,
-                                GuiManager.YEdge * 2 / (float)SpriteManager.Camera.DestinationRectangle.Height);
+                                GuiManager.YEdge * 2 / (float)Camera.Main.DestinationRectangle.Height);
             
-            unitsFromEdge += SpriteManager.Camera.YEdge * .1f / (float)SpriteManager.Camera.DestinationRectangle.Height;
+            unitsFromEdge += Camera.Main.YEdge * .1f / (float)Camera.Main.DestinationRectangle.Height;
 
             float sx = 0;
             if (mAlignmentForVertexBuffer == HorizontalAlignment.Left)

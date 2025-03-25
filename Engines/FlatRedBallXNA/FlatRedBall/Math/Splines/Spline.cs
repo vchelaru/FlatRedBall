@@ -585,8 +585,9 @@ namespace FlatRedBall.Math.Splines
             {
 #if DEBUG
                 throw new InvalidOperationException("CalculateDistanceTimeRelationships() must be called before getting the closest point on a spline.");
-#endif
+#else
                 return new DistanceToTimeRelationship();
+#endif
             }
 
             float shortestDistSquared = float.MaxValue;
@@ -803,7 +804,7 @@ namespace FlatRedBall.Math.Splines
             }
         }
 
-        #endregion
+#endregion
 
         #region Private Methods
 
@@ -955,7 +956,7 @@ namespace FlatRedBall.Math.Splines
 
         #endregion
 
-        #endregion
+#endregion
 
     }
 }

@@ -40,7 +40,7 @@ namespace BuildServerUploaderConsole.Processes
             {
                 foreach (ZipEntry e in zip)
                 {
-                    e.Extract(FileManager.RelativeDirectory + "FRBDK", true);
+                    e.Extract(FileManager.RelativeDirectory + "FRBDK", ExtractExistingFileAction.OverwriteSilently);
                 }
             }
         }

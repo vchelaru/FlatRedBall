@@ -356,6 +356,7 @@ namespace FlatRedBall.Math.Geometry
         /// </remarks>
         /// <param name="numberOfSides">The number of sides of the Polygon.  Must be at least 3.</param>
         /// <param name="angleOfFirstPoint">The angle relative to the polygon of the first point.</param>
+        /// <param name="radius">The radius of the Polygon.</param>
         /// <returns>The newly-created Polygon.</returns>
         static public Polygon CreateEquilateral(int numberOfSides, float radius, float angleOfFirstPoint)
         {

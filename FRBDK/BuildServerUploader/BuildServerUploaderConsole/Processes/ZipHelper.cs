@@ -77,6 +77,6 @@ namespace BuildServerUploaderConsole.Processes
             results.WriteMessage("Zipped directory " + sourceDirectory + " into " + zipFileNameNoExtension);
         }
 
-        private static void Zip_SaveProgress(object sender, SaveProgressEventArgs e) => throw new System.NotImplementedException();
+        //private static void Zip_SaveProgress(object sender, SaveProgressEventArgs e) => throw new System.NotImplementedException();
     }
 }
