@@ -56,7 +56,6 @@ namespace FlatRedBall.Entities
                 // damage area, so deal damage and record the time in the damageAreaLastDamage
                 // dictionary.
                 damageable.DamageAreaLastDamage.Add(damageArea, TimeManager.CurrentScreenTime);
-                damageable.LastDamageTime = TimeManager.CurrentScreenTime;
 
                 // Remove the damage area from the dictionary when it is destroyed or else
                 // the Player may accumulate a large collection of damage areas, resulting in
@@ -74,7 +73,6 @@ namespace FlatRedBall.Entities
                 {
                     // If so, update the last damage time.
                     damageable.DamageAreaLastDamage[damageArea] = TimeManager.CurrentScreenTime;
-                    damageable.LastDamageTime                   = TimeManager.CurrentScreenTime;
                     return true;
                 }
                 else
@@ -111,6 +109,8 @@ namespace FlatRedBall.Entities
             
             if (modifiedByBoth != 0)
             {
+                damageable.LastDamageTime = TimeManager.CurrentScreenTime;
+
                 decimal newHealth = damageable.CurrentHealth - modifiedByBoth;
                 
                 if (newHealth > damageable.MaxHealth)
