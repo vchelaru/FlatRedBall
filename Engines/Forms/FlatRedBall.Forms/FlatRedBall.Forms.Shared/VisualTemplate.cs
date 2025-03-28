@@ -62,7 +62,7 @@ namespace FlatRedBall.Forms
         /// </summary>
         /// <param name="bindingContext">The binding context to pass in to the newly-created GraphicalUiElement</param>
         /// <returns>The new GraphicalUiElement instance</returns>
-        public GraphicalUiElement CreateContent(object bindingContext)
+        public GraphicalUiElement CreateContent(object bindingContext, bool createFormsInternally = false)
         {
             return creationFunc(bindingContext);
         }
