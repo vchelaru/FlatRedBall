@@ -2644,39 +2644,15 @@ namespace FlatRedBall
         #endregion
         public static void ReplaceTexture(Texture2D oldTexture, Texture2D newTexture)
         {
-            float oldScaleX = 0;
-            float oldScaleY = 0;
 
             foreach (Sprite sprite in mAutomaticallyUpdatedSprites)
             {
-                if (sprite.Texture == oldTexture)
-                {
-                    // This could change the PixelSize.  The user may have set the PixelSize,
-                    // but then overrode it, so let's preserve it.
-                    oldScaleX = sprite.ScaleX;
-                    oldScaleY = sprite.ScaleY;
-
-                    sprite.Texture = newTexture;
-
-                    sprite.ScaleX = oldScaleX;
-                    sprite.ScaleY = oldScaleY;
-                }
+                ReplaceTexture(oldTexture, newTexture, sprite);
             }
 
             foreach (Sprite sprite in mManuallyUpdatedSprites)
             {
-                if (sprite.Texture == oldTexture)
-                {
-                    // This could change the PixelSize.  The user may have set the PixelSize,
-                    // but then overrode it, so let's preserve it.
-                    oldScaleX = sprite.ScaleX;
-                    oldScaleY = sprite.ScaleY;
-
-                    sprite.Texture = newTexture;
-
-                    sprite.ScaleX = oldScaleX;
-                    sprite.ScaleY = oldScaleY;
-                }
+                ReplaceTexture(oldTexture, newTexture, sprite);
             }
 
 
@@ -2703,6 +2679,38 @@ namespace FlatRedBall
                 //}
             }
 
+        }
+
+        private static void ReplaceTexture(Texture2D oldTexture, Texture2D newTexture, Sprite sprite)
+        {
+            float oldScaleX = 0;
+            float oldScaleY = 0;
+
+            if (sprite.Texture == oldTexture)
+            {
+                // This could change the PixelSize.  The user may have set the PixelSize,
+                // but then overrode it, so let's preserve it.
+                oldScaleX = sprite.ScaleX;
+                oldScaleY = sprite.ScaleY;
+
+                sprite.Texture = newTexture;
+
+                sprite.ScaleX = oldScaleX;
+                sprite.ScaleY = oldScaleY;
+            }
+            if (sprite.AnimationChains != null)
+            {
+                foreach (var animation in sprite.AnimationChains)
+                {
+                    foreach (var frame in animation)
+                    {
+                        if (frame.Texture == oldTexture)
+                        {
+                            frame.Texture = newTexture;
+                        }
+                    }
+                }
+            }
         }
 
         #region Sort Methods

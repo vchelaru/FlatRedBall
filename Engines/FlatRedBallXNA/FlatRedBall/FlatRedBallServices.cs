@@ -270,6 +270,8 @@ namespace FlatRedBall
         public static event EventHandler Suspending;
         public static event EventHandler Unsuspending;
 
+        public static event Action<Texture2D, Texture2D> ReplaceTextureCalled;
+
         #endregion
 
         #region Event Methods
@@ -1055,6 +1057,8 @@ namespace FlatRedBall
             // Replace the texture for all objects managed by all of the managers
             SpriteManager.ReplaceTexture(oldTexture, newTexture);
             TextManager.ReplaceTexture(oldTexture, newTexture);
+
+            ReplaceTextureCalled?.Invoke(oldTexture, newTexture);
         }
 
         #region XML Docs

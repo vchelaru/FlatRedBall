@@ -160,9 +160,13 @@ namespace Microsoft.Xna.Framework
             }
             else
             {
+                var oldZ = vector3.Z;
+
                 var existingAngle = vector3.Angle().Value;
                 var newAngle = existingAngle + radiansToRotateBy;
-                return FromAngle(newAngle) * vector3.Length();
+                var toReturn = FromAngle(newAngle) * vector3.Length();
+                toReturn.Z = oldZ;
+                return toReturn;
             }
         }
 
@@ -174,9 +178,13 @@ namespace Microsoft.Xna.Framework
             }
             else
             {
+                var oldZ = vector3.Z;
+
                 var existingAngle = vector3.AngleDegrees().Value;
                 var newAngle = existingAngle + degreesToRotateBy;
-                return FromAngleDegrees(newAngle) * vector3.Length();
+                var toReturn = FromAngleDegrees(newAngle) * vector3.Length();
+                toReturn.Z = oldZ;
+                return toReturn;
             }
         }
 

@@ -218,9 +218,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         try
                         {
                             var extension = fileName.Extension;
-                            var shouldReloadFile = extension == "csv";
+                            var shouldReloadFile =
+                                extension == "csv" ||
+                                extension == "png";
+
 
                             var shouldReloadScreen = false;
+
+                            
 
                             if (shouldReloadFile)
                             {
@@ -237,7 +242,11 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                                 // Typically localization is applied in custom code, so we can't
                                 // apply these changes without reloading the screen
-                                shouldReloadScreen = dto.IsLocalizationDatabase;
+                                shouldReloadScreen = dto.IsLocalizationDatabase ||
+                                    // FRB tries to update files, but .achx files don't
+                                    // update their references which causes disposed errors.
+                                    // Therefore, we're going to reload the screen on .png reload
+                                    extension == "png";
                             }
                             else
                             {
@@ -251,7 +260,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                                 GlueCommands.Self.PrintOutput($"Telling game to restart screen {DateTime.Now}");
 
                                 var dto = new RestartScreenDto();
-                                dto.ReloadGlobalContent = isGlobalContent;
+                                // If we do this, we invalidate all global content including
+                                // content that may be handled outside of the global content files
+                                // which causes crashes. Instead, we should rely on reload file calls
+                                //dto.ReloadGlobalContent = isGlobalContent;
                                 await CommandSender.Self.Send(dto);
                             }
                             handled = true;

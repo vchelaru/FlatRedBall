@@ -135,7 +135,7 @@ namespace FlatRedBall.Gum
             if (mManagers != null) return;
             ////////////////End Early Out//////////////////////////
 
-            if(FlatRedBall.Content.ContentManager.CreateLoadSections)
+            if (FlatRedBall.Content.ContentManager.CreateLoadSections)
             {
                 FlatRedBall.Performance.Measurement.Section.GetAndStartContextAndTime("Loading Gum project " + projectFileName);
             }
@@ -650,6 +650,8 @@ namespace FlatRedBall.Gum
             }
         }
 
+        #endregion
+
         // temporary to allow Glue to attach.  Eventually I'll change how Glue generates this code
         public void CopyAbsoluteToRelative()
         {
@@ -661,6 +663,100 @@ namespace FlatRedBall.Gum
             Parent = newParent;
         }
 
-        #endregion
+        public void ReplaceTexture(Texture2D oldTexture, Texture2D newTexture)
+        {
+            var layers = mManagers.Renderer.Layers;
+
+            foreach (var layer in layers)
+            {
+                foreach (var renderable in layer.Renderables)
+                {
+                    ReplaceTextureOnRenderable(oldTexture, newTexture, renderable);
+                }
+            }
+        }
+
+        private static void ReplaceTextureOnRenderable(Texture2D oldTexture, Texture2D newTexture, RenderingLibrary.Graphics.IRenderableIpso renderable)
+        {
+            ReplaceTexturesOnThisRenderable(oldTexture, newTexture, renderable);
+            if(renderable is GraphicalUiElement gue && gue.RenderableComponent != null)
+            {
+                ReplaceTexturesOnThisRenderable(oldTexture, newTexture, gue.RenderableComponent);
+            }
+
+            if (renderable.Children != null)
+            {
+                foreach (var child in renderable.Children)
+                {
+                    ReplaceTextureOnRenderable(oldTexture, newTexture, child);
+                }
+            }
+        }
+
+        private static void ReplaceTexturesOnThisRenderable(Texture2D oldTexture, Texture2D newTexture, RenderingLibrary.Graphics.IRenderable renderable)
+        {
+            if (renderable is RenderingLibrary.Graphics.Sprite asSprite)
+            {
+                if (asSprite.Texture == oldTexture)
+                {
+                    asSprite.Texture = newTexture;
+                }
+            }
+            else if (renderable is RenderingLibrary.Graphics.NineSlice asNineSlice)
+            {
+                if (asNineSlice.TopLeftTexture == oldTexture)
+                {
+                    asNineSlice.TopLeftTexture = newTexture;
+                }
+                if (asNineSlice.TopTexture == oldTexture)
+                {
+                    asNineSlice.TopTexture = newTexture;
+                }
+                if (asNineSlice.TopRightTexture == oldTexture)
+                {
+                    asNineSlice.TopRightTexture = newTexture;
+                }
+                if (asNineSlice.RightTexture == oldTexture)
+                {
+                    asNineSlice.RightTexture = newTexture;
+                }
+                if (asNineSlice.BottomRightTexture == oldTexture)
+                {
+                    asNineSlice.BottomRightTexture = newTexture;
+                }
+                if (asNineSlice.BottomTexture == oldTexture)
+                {
+                    asNineSlice.BottomTexture = newTexture;
+                }
+                if (asNineSlice.BottomLeftTexture == oldTexture)
+                {
+                    asNineSlice.BottomLeftTexture = newTexture;
+                }
+                if (asNineSlice.LeftTexture == oldTexture)
+                {
+                    asNineSlice.LeftTexture = newTexture;
+                }
+                if (asNineSlice.CenterTexture == oldTexture)
+                {
+                    asNineSlice.CenterTexture = newTexture;
+                }
+            }
+            else if (renderable is RenderingLibrary.Graphics.Text asText)
+            {
+                var bitmapFont = asText.BitmapFont;
+                if (bitmapFont != null)
+                {
+
+                    for (int i = 0; i < bitmapFont.Textures.Length; i++)
+                    {
+                        if (bitmapFont.Textures[i] == oldTexture)
+                        {
+                            bitmapFont.Textures[i] = newTexture;
+                        }
+                    }
+
+                }
+            }
+        }
     }
 }

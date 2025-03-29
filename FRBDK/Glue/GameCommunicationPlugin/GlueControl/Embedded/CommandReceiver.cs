@@ -1379,7 +1379,7 @@ namespace GlueControl
 
             if (file != null)
             {
-                GlobalContent.Reload(dto);
+                GlobalContent.Reload(file);
             }
 
 

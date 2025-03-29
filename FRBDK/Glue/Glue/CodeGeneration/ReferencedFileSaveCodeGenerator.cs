@@ -1004,7 +1004,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     codeBlock.Line($"var oldTexture = {referencedFile.GetInstanceName()};");
                     GetInitializationForReferencedFile(referencedFile, container, codeBlock, loadType);
-                    codeBlock.Line($"FlatRedBall.SpriteManager.ReplaceTexture(oldTexture, {referencedFile.GetInstanceName()});");
+                    codeBlock.Line($"FlatRedBall.FlatRedBallServices.ReplaceTexture(oldTexture, {referencedFile.GetInstanceName()});");
                 }
                 else if (ati?.CustomReloadFunc != null)
                 {

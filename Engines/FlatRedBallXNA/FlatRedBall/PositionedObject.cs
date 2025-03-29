@@ -2126,6 +2126,22 @@ namespace FlatRedBall
             }
             #endregion
 
+
+#if DEBUG
+            if(float.IsNaN(Velocity.X))
+            {
+                throw new Exception("Bad VelocityX value");
+            }
+            if (float.IsNaN(Velocity.Y))
+            {
+                throw new Exception("Bad VelocityY value");
+            }
+            if (float.IsNaN(Velocity.Z))
+            {
+                throw new Exception("Bad VelocityZ value");
+            }
+#endif
+
             Position.X += (float)(Velocity.X * secondDifference + Acceleration.X * secondDifferenceSquaredDividedByTwo);
             Position.Y += (float)(Velocity.Y * secondDifference + Acceleration.Y * secondDifferenceSquaredDividedByTwo);
             Position.Z += (float)(Velocity.Z * secondDifference + Acceleration.Z * secondDifferenceSquaredDividedByTwo);
