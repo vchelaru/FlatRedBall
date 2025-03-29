@@ -508,6 +508,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         }
                         else
                         {
+                            var owner = ObjectFinder.Self.GetElementContaining(existingFile);
+                            GlueCommands.Self.DialogCommands.ShowMessageBox($"The file {existingFile.Name} is already a part of {owner}");
                             GlueCommands.Self.DoOnUiThread(() => GlueState.Self.CurrentReferencedFileSave = existingFile);
                         }
                     }, $"Adding file {file}");

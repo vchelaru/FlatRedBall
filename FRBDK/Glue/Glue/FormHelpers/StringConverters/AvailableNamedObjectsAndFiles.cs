@@ -111,9 +111,18 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         private static void AddAvailableReferencedFiles(IElement currentElement, string? fileTypeRestriction)
         {
-            List<ReferencedFileSave> referencedFiles =
-                currentElement?.ReferencedFiles ?? new List<ReferencedFileSave>();
+            // include files in base too:
 
+            List<ReferencedFileSave> referencedFiles;
+
+            if(currentElement != null)
+            {
+                referencedFiles = currentElement.GetAllReferencedFileSavesRecursively().ToList();
+            }
+            else
+            {
+                referencedFiles = new List<ReferencedFileSave>();
+            }
 
             // Loop through the named objects and add them here
             foreach (ReferencedFileSave referencedFile in referencedFiles)

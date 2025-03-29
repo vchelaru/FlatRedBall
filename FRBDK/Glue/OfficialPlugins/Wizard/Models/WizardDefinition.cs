@@ -26,13 +26,17 @@ namespace OfficialPlugins.Wizard.Models
 
         #region Events
 
-        public event Action DoneClicked;
+        public event Action? DoneClicked;
 
         #endregion
 
-        public void CreateInitialUi()
+        public WizardFormsDefinition()
         {
             ViewModel = new WizardViewModel();
+        }
+
+        public void CreateInitialUi()
+        {
             ViewModel.ApplyDefaults();
 
             {
@@ -78,7 +82,7 @@ namespace OfficialPlugins.Wizard.Models
                     ViewModel.AddGum = true;
                     ViewModel.AddFlatRedBallForms = true;
                     ViewModel.AdditionalNonGameScreens.Add("MainMenu");
-                    DoneClicked();
+                    DoneClicked?.Invoke();
                 };
 
                 page.CustomClicked += () =>
@@ -477,7 +481,7 @@ namespace OfficialPlugins.Wizard.Models
 
                 if(isLastInner)
                 {
-                    DoneClicked();
+                    DoneClicked?.Invoke();
                 }
                 else
                 {
