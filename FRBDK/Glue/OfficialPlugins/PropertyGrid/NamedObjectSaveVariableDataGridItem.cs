@@ -334,10 +334,19 @@ namespace OfficialPlugins.PropertyGrid
                 {
 
                     // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
-                    await System.Threading.Tasks.Task.Delay(400);
+                    // Update March 29, 2025 - why not spam the system? Let the CPU do its thing. This just makes FRB seems
+                    // less responsive. We have "throttling" in place by checking if a commit is full.
+                    // I'm taking this out so Glue is even more responsive:
+                    //await System.Threading.Tasks.Task.Delay(100);
 
                     // Set subtext before refreshing property grid
-                    NamedObjectVariableShowingLogic.AssignVariableSubtext(NamedObjectSave, categories.ToList(), NamedObjectSave.GetAssetTypeInfo());
+                    var didChange = NamedObjectVariableShowingLogic.AssignVariableSubtext(NamedObjectSave, categories.ToList(), NamedObjectSave.GetAssetTypeInfo());
+
+                    if(didChange)
+                    {
+                        // we changed subtext, so we need to refresh the grid again:
+                        GlueCommands.Self.RefreshCommands.RefreshVariables();
+                    }
 
                     IsDefault = makeDefault;
 

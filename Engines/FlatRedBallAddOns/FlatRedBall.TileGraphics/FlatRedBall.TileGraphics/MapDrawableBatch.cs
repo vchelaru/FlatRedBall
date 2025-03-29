@@ -1633,13 +1633,34 @@ namespace FlatRedBall.TileGraphics
         {
             int quadsOnThis = QuadCount;
 
+            mapDrawableBatches = mapDrawableBatches.Where(item => item.QuadCount > 0).ToArray();
+
+            if (mapDrawableBatches.Count() == 0)
+            {
+                // no need to do anything:
+                return;
+            }
+
             // If this is empty, then this will inherit the first MDB's texture
 
             if (quadsOnThis == 0 && this.Texture == null)
             {
                 var firstWithNonNullTexture = mapDrawableBatches.FirstOrDefault(item => item.Texture != null);
 
-                this.Texture = firstWithNonNullTexture?.Texture;
+                if (firstWithNonNullTexture == null)
+                {
+                    var message = $"Merging failed because there are no layers with non-null textures. All are null. " +
+                        $"There are {mapDrawableBatches.Count()} total layers.";
+
+                    foreach (var item in mapDrawableBatches)
+                    {
+                        message += "\n" + item.Name;
+                    }
+
+                    throw new InvalidOperationException(message);
+                }
+
+                this.Texture = firstWithNonNullTexture.Texture;
             }
 
 

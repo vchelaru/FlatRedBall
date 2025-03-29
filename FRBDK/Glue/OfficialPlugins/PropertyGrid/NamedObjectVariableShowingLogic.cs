@@ -124,18 +124,18 @@ namespace OfficialPlugins.VariableDisplay
                 {
                     var shouldAdd = true;
 
-                    if(definition.IsVariableVisibleInEditor != null)
+                    if (definition.IsVariableVisibleInEditor != null)
                     {
                         shouldAdd = definition.IsVariableVisibleInEditor(container, instance);
                     }
 
-                    if(shouldAdd)
+                    if (shouldAdd)
                     {
                         variableDefinitions[definition.Name] = definition;
                     }
                 }
             }
-            else if(instance.SourceType == SourceType.Entity)
+            else if (instance.SourceType == SourceType.Entity)
             {
                 var instanceElement = ObjectFinder.Self.GetElement(instance);
                 if (instanceElement != null)
@@ -174,9 +174,9 @@ namespace OfficialPlugins.VariableDisplay
                                 }
 
                                 var subtext = variableInElement?.Summary ?? baseVariable?.Summary;
-                                if(!string.IsNullOrWhiteSpace(subtext))
+                                if (!string.IsNullOrWhiteSpace(subtext))
                                 {
-                                    baseVariableDefinition.SubtextFunc = (_,_) => subtext;
+                                    baseVariableDefinition.SubtextFunc = (_, _) => subtext;
                                 }
 
                                 if (variableInElement.CustomGetForcedOptionsFunc != null)
@@ -318,17 +318,17 @@ namespace OfficialPlugins.VariableDisplay
         public static void UpdateConditionalVisibility(DataUiGrid grid, NamedObjectSave instance, GlueElement container, AssetTypeInfo ati)
         {
             var needsFullRefresh = false;
-            foreach(var category in grid.Categories)
+            foreach (var category in grid.Categories)
             {
-                foreach(var member in category.Members)
+                foreach (var member in category.Members)
                 {
-                    if(member is NamedObjectSaveVariableDataGridItem namedObjectSaveVariableDataGridItem)
+                    if (member is NamedObjectSaveVariableDataGridItem namedObjectSaveVariableDataGridItem)
                     {
-                        if(namedObjectSaveVariableDataGridItem.VariableDefinition.IsVariableVisibleInEditor != null)
+                        if (namedObjectSaveVariableDataGridItem.VariableDefinition.IsVariableVisibleInEditor != null)
                         {
                             // Is it true?
                             var shouldBeVisible = namedObjectSaveVariableDataGridItem.VariableDefinition.IsVariableVisibleInEditor(container, instance);
-                            if(!shouldBeVisible)
+                            if (!shouldBeVisible)
                             {
                                 // this shouldn't be here, we need a refresh
                                 needsFullRefresh = true;
@@ -338,24 +338,24 @@ namespace OfficialPlugins.VariableDisplay
                 }
             }
 
-            if(!needsFullRefresh && ati != null)
+            if (!needsFullRefresh && ati != null)
             {
-                foreach(var variableDefinition in ati.VariableDefinitions)
+                foreach (var variableDefinition in ati.VariableDefinitions)
                 {
-                    if(variableDefinition.IsVariableVisibleInEditor != null)
+                    if (variableDefinition.IsVariableVisibleInEditor != null)
                     {
                         var shouldBeShown = variableDefinition.IsVariableVisibleInEditor(container, instance);
-                        if(shouldBeShown)
+                        if (shouldBeShown)
                         {
                             var wasFound = false;
                             // This better be in one of the categories
-                            foreach(var category in grid.Categories)
+                            foreach (var category in grid.Categories)
                             {
-                                foreach(var member in category.Members)
+                                foreach (var member in category.Members)
                                 {
-                                    if(member is NamedObjectSaveVariableDataGridItem namedObjectSaveVariableDataGridItem)
+                                    if (member is NamedObjectSaveVariableDataGridItem namedObjectSaveVariableDataGridItem)
                                     {
-                                        if(namedObjectSaveVariableDataGridItem.VariableDefinition.Name == variableDefinition.Name)
+                                        if (namedObjectSaveVariableDataGridItem.VariableDefinition.Name == variableDefinition.Name)
                                         {
                                             // This is good, we found it
                                             wasFound = true;
@@ -364,7 +364,7 @@ namespace OfficialPlugins.VariableDisplay
                                     }
                                 }
                             }
-                            if(!wasFound)
+                            if (!wasFound)
                             {
                                 needsFullRefresh = true;
                                 break;
@@ -375,7 +375,7 @@ namespace OfficialPlugins.VariableDisplay
                 }
             }
 
-            if(needsFullRefresh)
+            if (needsFullRefresh)
             {
                 UpdateShownVariables(grid, instance, container, ati);
             }
@@ -427,7 +427,7 @@ namespace OfficialPlugins.VariableDisplay
             return topmostCategory;
         }
 
-        public static void AssignVariableSubtext(NamedObjectSave instance, List<MemberCategory> categories, AssetTypeInfo assetTypeInfo)
+        public static bool AssignVariableSubtext(NamedObjectSave instance, List<MemberCategory> categories, AssetTypeInfo assetTypeInfo)
         {
             var xVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "X");
             var yVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "Y");
@@ -461,18 +461,36 @@ namespace OfficialPlugins.VariableDisplay
                 setZ = true;
             }
 
-
+            var changed = false;
             if (xVariable != null)
-            { xVariable.DetailText = subtext; }
+            {
+                if (xVariable.DetailText != subtext)
+                {
+                    changed = true;
+                    xVariable.DetailText = subtext;
+                }
+            }
 
 
             if (yVariable != null)
-            { yVariable.DetailText = subtext; }
+            {
+                if (yVariable.DetailText != subtext)
+                {
+                    changed = true;
+                    yVariable.DetailText = subtext;
+                }
+            }
 
             if (zVariable != null && setZ)
             {
-                zVariable.DetailText = subtext;
+                if(zVariable.DetailText != subtext)
+                {
+                    changed = true;
+                    zVariable.DetailText = subtext;
+                }
             }
+
+            return changed;
         }
 
         private static void AddForTypedMember(NamedObjectSave instance, GlueElement container, List<MemberCategory> categories,
