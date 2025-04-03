@@ -390,8 +390,10 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             foreach (var nos in firstEntity.AllNamedObjects)
             {
-                var canBeSubCollision = IsShape(nos) || nos.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection ||
-                     IsTileShapeCollection(nos);
+                var canBeSubCollision = IsShape(nos) ||
+                    nos.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection ||
+                    IsTileShapeCollection(nos) ||
+                    nos.IsCollidableOrCollidableList();
 
                 if (canBeSubCollision)
                 {
