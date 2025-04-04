@@ -117,50 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LoadingPlugins" xml:space="preserve">
-    <value>Loading Plugins</value>
-  </data>
-  <data name="LoadingSettings" xml:space="preserve">
-    <value>Loading Settings</value>
-  </data>
-  <data name="InitializingGlueSystems" xml:space="preserve">
-    <value>Initializing Glue Systems</value>
-  </data>
-  <data name="InitializingEventManager" xml:space="preserve">
-    <value>Initializing EventManager</value>
-  </data>
-  <data name="InitializingExposedVariableManager" xml:space="preserve">
-    <value>Initializing ExposedVariableManager</value>
-  </data>
-  <data name="ErrorCannotLoadGlue" xml:space="preserve">
-    <value>Could not load assemblies - you probably need to rebuild Glue.</value>
-  </data>
   <data name="Error" xml:space="preserve">
     <value>Error</value>
   </data>
-  <data name="InitializeErrorReporting" xml:space="preserve">
-    <value>Initialize Error Reporting</value>
-  </data>
-  <data name="InitializingRightClickMenus" xml:space="preserve">
-    <value>Initializing Right Click Menus</value>
-  </data>
-  <data name="InitializingPropertyGrids" xml:space="preserve">
-    <value>Initializing Property Grids</value>
-  </data>
-  <data name="InitializingInstructionManager" xml:space="preserve">
-    <value>Initializing InstructionManager</value>
-  </data>
-  <data name="InitializingTypeConverter" xml:space="preserve">
-    <value>Initializing TypeConverter</value>
-  </data>
   <data name="InitializingNavigationStack" xml:space="preserve">
     <value>Initializing Navigation Stack</value>
-  </data>
-  <data name="InitializingFileWatch" xml:space="preserve">
-    <value>Initializing File Watch</value>
-  </data>
-  <data name="LoadingCustomTypeInfo" xml:space="preserve">
-    <value>Loading Custom Type Info</value>
   </data>
   <data name="LoadingProject" xml:space="preserve">
     <value>Loading Project</value>
@@ -441,12 +402,6 @@ for {1}?</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
-  </data>
-  <data name="BuildSettings" xml:space="preserve">
-    <value>Build Settings</value>
-  </data>
-  <data name="Building" xml:space="preserve">
-    <value>Building...</value>
   </data>
   <data name="CancelBuild" xml:space="preserve">
     <value>Cancel Build</value>
@@ -753,9 +708,6 @@ for {1}?</value>
   </data>
   <data name="ProjectView" xml:space="preserve">
     <value>View Projects</value>
-  </data>
-  <data name="CameraSettings" xml:space="preserve">
-    <value>Camera Settings</value>
   </data>
   <data name="ProjectCopyFileLinks" xml:space="preserve">
     <value>Copy project file links</value>
@@ -1930,9 +1882,6 @@ for {1}?</value>
   <data name="ElementsToExportSelect" xml:space="preserve">
     <value>Select elements to export:</value>
   </data>
-  <data name="BuildToolAdd" xml:space="preserve">
-    <value>Add new build tool</value>
-  </data>
   <data name="FileRootExternalToCsProj" xml:space="preserve">
     <value>External file root (relative paths are relative to the .csproj):</value>
   </data>
@@ -2238,9 +2187,6 @@ for {1}?</value>
   </data>
   <data name="ExportCant" xml:space="preserve">
     <value>Can't export:</value>
-  </data>
-  <data name="BuilderWhichForFile" xml:space="preserve">
-    <value>Which builder would you like to use for this file?</value>
   </data>
   <data name="CliExtraArguments" xml:space="preserve">
     <value>Enter extra command line arguments:</value>

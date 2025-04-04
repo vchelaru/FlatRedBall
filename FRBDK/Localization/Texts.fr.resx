@@ -117,50 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LoadingPlugins" xml:space="preserve">
-    <value>Chargement des plugins</value>
-  </data>
-  <data name="LoadingSettings" xml:space="preserve">
-    <value>Chargement des paramètres</value>
-  </data>
-  <data name="InitializingGlueSystems" xml:space="preserve">
-    <value>Initialisation des systèmes Glue</value>
-  </data>
-  <data name="InitializingEventManager" xml:space="preserve">
-    <value>Initialisation du système d'événements</value>
-  </data>
-  <data name="InitializingExposedVariableManager" xml:space="preserve">
-    <value>Initialisation du système de variables exposées</value>
-  </data>
-  <data name="ErrorCannotLoadGlue" xml:space="preserve">
-    <value>Impossible de charger les assemblys : vous devrez probablement reconstruire Glue.</value>
-  </data>
   <data name="Error" xml:space="preserve">
     <value>Erreur</value>
   </data>
-  <data name="InitializeErrorReporting" xml:space="preserve">
-    <value>Initialiser le rapport d'erreurs</value>
-  </data>
-  <data name="InitializingRightClickMenus" xml:space="preserve">
-    <value>Initialisation des menus contextuels</value>
-  </data>
-  <data name="InitializingPropertyGrids" xml:space="preserve">
-    <value>Initialisation des grilles de propriétés</value>
-  </data>
-  <data name="InitializingInstructionManager" xml:space="preserve">
-    <value>Initialisation du gestionnaire d'instructions</value>
-  </data>
-  <data name="InitializingTypeConverter" xml:space="preserve">
-    <value>Initialisation du convertisseur de type</value>
-  </data>
   <data name="InitializingNavigationStack" xml:space="preserve">
     <value>Initialisation de la pile de navigation</value>
-  </data>
-  <data name="InitializingFileWatch" xml:space="preserve">
-    <value>Initialisation du suivi des fichiers</value>
-  </data>
-  <data name="LoadingCustomTypeInfo" xml:space="preserve">
-    <value>Chargement d'informations de type personnalisé</value>
   </data>
   <data name="LoadingProject" xml:space="preserve">
     <value>Chargement du projet</value>
@@ -440,12 +401,6 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Annuler</value>
-  </data>
-  <data name="BuildSettings" xml:space="preserve">
-    <value>Paramètres de construction</value>
-  </data>
-  <data name="Building" xml:space="preserve">
-    <value>Bâtiment...</value>
   </data>
   <data name="CancelBuild" xml:space="preserve">
     <value>Annuler la construction</value>
@@ -752,9 +707,6 @@
   </data>
   <data name="ProjectView" xml:space="preserve">
     <value>Voir les projets</value>
-  </data>
-  <data name="CameraSettings" xml:space="preserve">
-    <value>Paramètres de la caméra</value>
   </data>
   <data name="ProjectCopyFileLinks" xml:space="preserve">
     <value>Copier les liens des fichiers de projet</value>
@@ -1929,9 +1881,6 @@
   <data name="ElementsToExportSelect" xml:space="preserve">
     <value>Sélectionnez les éléments à exporter :</value>
   </data>
-  <data name="BuildToolAdd" xml:space="preserve">
-    <value>Ajouter un nouvel outil de construction</value>
-  </data>
   <data name="FileRootExternalToCsProj" xml:space="preserve">
     <value>Racine du fichier externe (les chemins relatifs sont relatifs au .csproj) :</value>
   </data>
@@ -2234,9 +2183,6 @@
   </data>
   <data name="ExportCant" xml:space="preserve">
     <value>Impossible d'exporter :</value>
-  </data>
-  <data name="BuilderWhichForFile" xml:space="preserve">
-    <value>Quel constructeur souhaitez-vous utiliser pour ce fichier ?</value>
   </data>
   <data name="CliExtraArguments" xml:space="preserve">
     <value>Entrez des arguments de ligne de commande supplémentaires :</value>

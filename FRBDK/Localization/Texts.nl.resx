@@ -117,50 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LoadingPlugins" xml:space="preserve">
-    <value>Plugins worden geladen</value>
-  </data>
-  <data name="LoadingSettings" xml:space="preserve">
-    <value>Instellingen worden geladen</value>
-  </data>
-  <data name="InitializingGlueSystems" xml:space="preserve">
-    <value>Glue systeem initialiseren</value>
-  </data>
-  <data name="InitializingEventManager" xml:space="preserve">
-    <value>Eventmanager initialiseren</value>
-  </data>
-  <data name="InitializingExposedVariableManager" xml:space="preserve">
-    <value>Openbare variabelen manager initialiseren</value>
-  </data>
-  <data name="ErrorCannotLoadGlue" xml:space="preserve">
-    <value>Kan niet de vereiste libraries inladen - u moet waarschijnlijk Glue hercompileren</value>
-  </data>
   <data name="Error" xml:space="preserve">
     <value>Foutmelding</value>
   </data>
-  <data name="InitializeErrorReporting" xml:space="preserve">
-    <value>Foutmelding systeem initialiseren</value>
-  </data>
-  <data name="InitializingRightClickMenus" xml:space="preserve">
-    <value>Rechtermuisknop-menus initialiseren</value>
-  </data>
-  <data name="InitializingPropertyGrids" xml:space="preserve">
-    <value>Eigenschappenrooster initialiseren</value>
-  </data>
-  <data name="InitializingInstructionManager" xml:space="preserve">
-    <value>Instructiemanagers initialiseren</value>
-  </data>
-  <data name="InitializingTypeConverter" xml:space="preserve">
-    <value>TypeConverter initialiseren</value>
-  </data>
   <data name="InitializingNavigationStack" xml:space="preserve">
     <value>Navigatiestapel initialiseren</value>
-  </data>
-  <data name="InitializingFileWatch" xml:space="preserve">
-    <value>Bestandtracker initialiseren</value>
-  </data>
-  <data name="LoadingCustomTypeInfo" xml:space="preserve">
-    <value>Maatwerk datatype-informatie laden</value>
   </data>
   <data name="LoadingProject" xml:space="preserve">
     <value>Project laden</value>
@@ -440,12 +401,6 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Annuleren</value>
-  </data>
-  <data name="BuildSettings" xml:space="preserve">
-    <value>Bouw-instellingen</value>
-  </data>
-  <data name="Building" xml:space="preserve">
-    <value>Bouwen...</value>
   </data>
   <data name="CancelBuild" xml:space="preserve">
     <value>Bouwen annuleren</value>
@@ -752,9 +707,6 @@
   </data>
   <data name="ProjectView" xml:space="preserve">
     <value>Bekijk projecten</value>
-  </data>
-  <data name="CameraSettings" xml:space="preserve">
-    <value>Camera instellingen</value>
   </data>
   <data name="ProjectCopyFileLinks" xml:space="preserve">
     <value>Kopieer projectbestandslinks</value>
@@ -1929,9 +1881,6 @@
   <data name="ElementsToExportSelect" xml:space="preserve">
     <value>Selecteer elementen om te exporteren:</value>
   </data>
-  <data name="BuildToolAdd" xml:space="preserve">
-    <value>Nieuwe build-tool toevoegen</value>
-  </data>
   <data name="FileRootExternalToCsProj" xml:space="preserve">
     <value>Externe bestandshoofdmap (relatieve paden zijn relatief ten opzichte van de .csproj):</value>
   </data>
@@ -2237,9 +2186,6 @@
   </data>
   <data name="ExportCant" xml:space="preserve">
     <value>Kan niet exporteren:</value>
-  </data>
-  <data name="BuilderWhichForFile" xml:space="preserve">
-    <value>Welchen Builder möchten Sie für diese Datei verwenden?</value>
   </data>
   <data name="CliExtraArguments" xml:space="preserve">
     <value>Voer extra opdrachtregelargumenten in:</value>

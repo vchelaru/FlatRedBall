@@ -61,51 +61,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Which builder would you like to use for this file?.
-        /// </summary>
-        public static string BuilderWhichForFile {
-            get {
-                return ResourceManager.GetString("BuilderWhichForFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Building....
-        /// </summary>
-        public static string Building {
-            get {
-                return ResourceManager.GetString("Building", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Build Settings.
-        /// </summary>
-        public static string BuildSettings {
-            get {
-                return ResourceManager.GetString("BuildSettings", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Add new build tool.
-        /// </summary>
-        public static string BuildToolAdd {
-            get {
-                return ResourceManager.GetString("BuildToolAdd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Camera Settings.
-        /// </summary>
-        public static string CameraSettings {
-            get {
-                return ResourceManager.GetString("CameraSettings", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Can Be Set By Derived.
         /// </summary>
         public static string CanBeSetByDerived {
@@ -1308,15 +1263,6 @@ namespace Localization {
         public static string Error {
             get {
                 return ResourceManager.GetString("Error", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Could not load assemblies - you probably need to rebuild Glue..
-        /// </summary>
-        public static string ErrorCannotLoadGlue {
-            get {
-                return ResourceManager.GetString("ErrorCannotLoadGlue", resourceCulture);
             }
         }
         
@@ -3347,92 +3293,11 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Initialize Error Reporting.
-        /// </summary>
-        public static string InitializeErrorReporting {
-            get {
-                return ResourceManager.GetString("InitializeErrorReporting", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing EventManager.
-        /// </summary>
-        public static string InitializingEventManager {
-            get {
-                return ResourceManager.GetString("InitializingEventManager", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing ExposedVariableManager.
-        /// </summary>
-        public static string InitializingExposedVariableManager {
-            get {
-                return ResourceManager.GetString("InitializingExposedVariableManager", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing File Watch.
-        /// </summary>
-        public static string InitializingFileWatch {
-            get {
-                return ResourceManager.GetString("InitializingFileWatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing Glue Systems.
-        /// </summary>
-        public static string InitializingGlueSystems {
-            get {
-                return ResourceManager.GetString("InitializingGlueSystems", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing InstructionManager.
-        /// </summary>
-        public static string InitializingInstructionManager {
-            get {
-                return ResourceManager.GetString("InitializingInstructionManager", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Initializing Navigation Stack.
         /// </summary>
         public static string InitializingNavigationStack {
             get {
                 return ResourceManager.GetString("InitializingNavigationStack", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing Property Grids.
-        /// </summary>
-        public static string InitializingPropertyGrids {
-            get {
-                return ResourceManager.GetString("InitializingPropertyGrids", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing Right Click Menus.
-        /// </summary>
-        public static string InitializingRightClickMenus {
-            get {
-                return ResourceManager.GetString("InitializingRightClickMenus", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing TypeConverter.
-        /// </summary>
-        public static string InitializingTypeConverter {
-            get {
-                return ResourceManager.GetString("InitializingTypeConverter", resourceCulture);
             }
         }
         
@@ -3698,38 +3563,11 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Loading Custom Type Info.
-        /// </summary>
-        public static string LoadingCustomTypeInfo {
-            get {
-                return ResourceManager.GetString("LoadingCustomTypeInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loading Plugins.
-        /// </summary>
-        public static string LoadingPlugins {
-            get {
-                return ResourceManager.GetString("LoadingPlugins", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Loading Project.
         /// </summary>
         public static string LoadingProject {
             get {
                 return ResourceManager.GetString("LoadingProject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loading Settings.
-        /// </summary>
-        public static string LoadingSettings {
-            get {
-                return ResourceManager.GetString("LoadingSettings", resourceCulture);
             }
         }
         

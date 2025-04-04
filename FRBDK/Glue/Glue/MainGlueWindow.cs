@@ -279,7 +279,7 @@ public partial class MainGlueWindow : Form
         GlueGui.Initialize(mMenu);
         initializationWindow.Show();
 
-        SetScreenMessage(Localization.Texts.InitializingGlueSystems);
+        SetScreenMessage("Initialiizing FlatRedBall");
 
         // Add Glue.Common
         PropertyValuePair.AdditionalAssemblies.Add(typeof(PlatformSpecificType).Assembly);
@@ -288,9 +288,9 @@ public partial class MainGlueWindow : Form
         PropertyValuePair.AdditionalAssemblies.Add(typeof(SoundEffectInstance).Assembly);
 
         // Event manager
-        SetScreenSubMessage(Localization.Texts.InitializingEventManager);
-        TaskManager.Self.Add(EventManager.Initialize, Localization.Texts.InitializingEventManager);
-        SetScreenSubMessage(Localization.Texts.InitializingExposedVariableManager);
+        SetScreenSubMessage("Initializing EventManager");
+        TaskManager.Self.Add(EventManager.Initialize, "Initializing EventManager");
+        SetScreenSubMessage("Initializing ExposedVariableManager");
 
         try
         {
@@ -298,27 +298,27 @@ public partial class MainGlueWindow : Form
         }
         catch (Exception ex)
         {
-            GlueGui.ShowException(Localization.Texts.ErrorCannotLoadGlue, Localization.Texts.Error, ex);
+            GlueGui.ShowException("Could not load assemblies - you probably need to rebuild Glue.", Localization.Texts.Error, ex);
             Environment.Exit(2);
             return;
         }
 
-        SetScreenSubMessage(Localization.Texts.InitializeErrorReporting);
+        SetScreenSubMessage("Initialize Error Reporting");
         FileErrorReporter.Initialize(this);
 
-        SetScreenSubMessage(Localization.Texts.InitializingRightClickMenus);
+        SetScreenSubMessage("Initializing Right Click Menus");
         RightClickHelper.Initialize();
 
-        SetScreenSubMessage(Localization.Texts.InitializingPropertyGrids);
+        SetScreenSubMessage("Initializing Property Grids");
         PropertyGridRightClickHelper.Initialize();
 
-        SetScreenSubMessage(Localization.Texts.InitializingInstructionManager);
+        SetScreenSubMessage("Initializing InstructionManager");
         InstructionManager.Initialize();
 
-        SetScreenSubMessage(Localization.Texts.InitializingTypeConverter);
+        SetScreenSubMessage("Initializing TypeConverter");
         TypeConverterHelper.InitializeClasses();
 
-        SetScreenMessage(Localization.Texts.LoadingSettings);
+        SetScreenMessage("Loading Settings");
 
         // Initialize before loading GlueSettings;
         // Also initialize before loading plugins so that plugins
@@ -327,7 +327,7 @@ public partial class MainGlueWindow : Form
 
         AvailableAssetTypes.Self.Initialize(startupPath);
 
-        SetScreenMessage(Localization.Texts.LoadingPlugins);
+        SetScreenMessage("Loading Plugins");
 
         var pluginsToIgnore = (GlueState.Self.CurrentPluginSettings != null)
             ? GlueState.Self.CurrentPluginSettings.PluginsToIgnore
@@ -340,10 +340,10 @@ public partial class MainGlueWindow : Form
         {
             FileManager.PreserveCase = true;
 
-            SetScreenMessage(Localization.Texts.InitializingFileWatch);
+            SetScreenMessage("Initializing File Watch");
             FileWatchManager.Initialize();
 
-            SetScreenMessage(Localization.Texts.LoadingCustomTypeInfo);
+            SetScreenMessage("Loading Custom Type Info");
             ProjectManager.Initialize();
 
             // LoadSettings before loading projects

@@ -37,7 +37,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
             cameraToolbar = new CameraToolbar();
 
-            base.AddMenuItemTo(L.Texts.CameraSettings, L.MenuIds.CameraSettingsId, HandleCameraSettings, L.MenuIds.SettingsId);
+            base.AddMenuItemTo("Camera Settings", L.MenuIds.CameraSettingsId, HandleCameraSettings, L.MenuIds.SettingsId);
         }
 
         private void HandleUnloadedGlux()
