@@ -569,7 +569,7 @@ public partial class Camera : PositionedObject
 
     /// <summary>
     /// Gets and sets the top side of the destination rectangle (where on the window
-    /// the camera will display).  Measured in pixels.  Destination uses an inverted Y (positive points down).
+    /// the camera displays).  Measured in pixels.  Destination uses an inverted Y (positive points down).
     /// </summary>
     public virtual float TopDestination
     {
@@ -584,7 +584,7 @@ public partial class Camera : PositionedObject
 
     /// <summary>
     /// Gets and sets the bottom side of the destination rectangle (where on the window
-    /// the camera will display).  Measured in pixels.   Destination uses an inverted Y (positive points down).
+    /// the camera displays).  Measured in pixels.   Destination uses an inverted Y (positive points down).
     /// </summary>
     public virtual float BottomDestination
     {
@@ -599,7 +599,7 @@ public partial class Camera : PositionedObject
 
     /// <summary>
     /// Gets and sets the left side of the destination rectangle (where on the window
-    /// the camera will display).  Measured in pixels.
+    /// the camera displays).  Measured in pixels.
     /// </summary>
     public virtual float LeftDestination
     {
@@ -614,7 +614,7 @@ public partial class Camera : PositionedObject
 
     /// <summary>
     /// Gets and sets the right side of the destination rectangle (where on the window
-    /// the camera will display).  Measured in pixels.
+    /// the camera displays).  Measured in pixels.
     /// </summary>
     public virtual float RightDestination
     {

@@ -376,6 +376,9 @@ namespace FlatRedBall.Glue.StateInterpolation
             Running = false;
         }
 
+        /// <summary>
+        /// Sets the elapsed time back to 0 and the starting position to the current position.
+        /// </summary>
         public void Reset()
         {
             elapsed = 0.0f;
