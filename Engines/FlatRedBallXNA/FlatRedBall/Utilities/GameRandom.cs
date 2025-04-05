@@ -55,7 +55,8 @@ namespace FlatRedBall.Utilities
         /// <param name="list">The list to pull from"</param>
         /// <param name="numberToReturn">The number of unique items to return, which must be less than the size of the argument list</param>
         /// <returns>A resulting collection of size numberToReturn</returns>
-        /// <exception cref="ArgumentException">Thrown if the numberToReturn argument is greater than the size of the list argument.</exception>
+        /// <exception cref="ArgumentException">Thrown if the numberToReturn argument is greater than the size of the list argument. This includes
+        /// if trying to get items out of an empty list.</exception>
         public IList<T> MultipleIn<T>(IList<T> list, int numberToReturn)
         {
 #if DEBUG
