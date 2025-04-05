@@ -242,11 +242,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                                 // Typically localization is applied in custom code, so we can't
                                 // apply these changes without reloading the screen
-                                shouldReloadScreen = dto.IsLocalizationDatabase ||
+                                shouldReloadScreen = dto.IsLocalizationDatabase
                                     // FRB tries to update files, but .achx files don't
                                     // update their references which causes disposed errors.
                                     // Therefore, we're going to reload the screen on .png reload
-                                    extension == "png";
+                                    // Update May 5 2025 - new reload code now handles .achx reloading
+                                    // so let's try removing this again:
+                                    //|| extension == "png"
+                                    ;
                             }
                             else
                             {
