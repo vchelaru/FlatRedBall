@@ -1345,7 +1345,7 @@ namespace GlueControl
         }
 
 
-        private static void HandleDto(Dtos.ForceReloadFileDto dto)
+        private static async void HandleDto(Dtos.ForceReloadFileDto dto)
         {
             var gameType = FlatRedBallServices.Game.GetType();
             var gameAssembly = gameType.Assembly;
@@ -1379,7 +1379,22 @@ namespace GlueControl
 
             if (file != null)
             {
-                GlobalContent.Reload(file);
+                int numberOfTimesToTry = 10;
+                int numberOfFailures = 0;
+                while (numberOfFailures < numberOfTimesToTry)
+                {
+                    try
+                    {
+                        GlobalContent.Reload(file);
+                        break;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        numberOfFailures++;
+
+                        await Task.Delay(250);
+                    }
+                }
             }
 
 

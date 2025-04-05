@@ -795,6 +795,26 @@ namespace FlatRedBall
                 {
                     throw new InvalidOperationException("AnimationChains cannot be set to null. To clear the animations, assign the value to a new AnimationChainList.");
                 }
+
+                if(mAnimationChains != value)
+                {
+                    // only do this if it's changed:
+                    foreach(var chain in mAnimationChains)
+                    {
+                        for (int i = 0; i < chain.Count; i++)
+                        {
+                            AnimationFrame frame = chain[i];
+                            if (frame.Texture?.IsDisposed == true)
+                            {
+                                var message =
+                                    $"The sprite {this.Name} with parent {Parent?.Name} is being assigned an animation chain " +
+                                    $"{value.Name} which has a disposed texture in animation {chain.Name} index {i}";
+                                throw new InvalidOperationException(message);
+                            }
+                        }
+                    }
+                }
+
 #endif
                 mAnimationChains = value;
                 // If the user sets a new set of chains, then the CurrentChain may not have enough frames, so reset it
