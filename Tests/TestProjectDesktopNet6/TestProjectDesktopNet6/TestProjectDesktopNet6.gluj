@@ -231,6 +231,38 @@
       "IsSharedStatic": true,
       "HasPublicProperty": true,
       "ProjectsToExcludeFrom": []
+    },
+    {
+      "Name": "GlobalContent/ReloadableContent/ReloadableTexture1.png",
+      "IsSharedStatic": true,
+      "DestroyOnUnload": false,
+      "HasPublicProperty": true,
+      "RuntimeType": "Microsoft.Xna.Framework.Graphics.Texture2D",
+      "ProjectsToExcludeFrom": []
+    },
+    {
+      "Name": "GlobalContent/ReloadableContent/ReloadableTexture2.png",
+      "IsSharedStatic": true,
+      "DestroyOnUnload": false,
+      "HasPublicProperty": true,
+      "RuntimeType": "Microsoft.Xna.Framework.Graphics.Texture2D",
+      "ProjectsToExcludeFrom": []
+    },
+    {
+      "Name": "GlobalContent/ReloadableContent/ReloadableAnimation1.achx",
+      "IsSharedStatic": true,
+      "DestroyOnUnload": false,
+      "HasPublicProperty": true,
+      "RuntimeType": "FlatRedBall.Graphics.Animation.AnimationChainList",
+      "ProjectsToExcludeFrom": []
+    },
+    {
+      "Name": "GlobalContent/ReloadableContent/ReloadableAnimation2.achx",
+      "IsSharedStatic": true,
+      "DestroyOnUnload": false,
+      "HasPublicProperty": true,
+      "RuntimeType": "FlatRedBall.Graphics.Animation.AnimationChainList",
+      "ProjectsToExcludeFrom": []
     }
   ],
   "GlobalContentSettingsSave": {
@@ -468,6 +500,9 @@
     },
     {
       "Name": "Screens\\PositioningScreen"
+    },
+    {
+      "Name": "Screens\\ReloadContentScreen"
     },
     {
       "Name": "Screens\\RenderTargetScreen"

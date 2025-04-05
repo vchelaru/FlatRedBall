@@ -196,6 +196,8 @@ namespace FlatRedBall.Graphics.Animation
 				if (this[i].Texture == oldTexture)
 				{
 					this[i].Texture = newTexture;
+                    // todo - this needs to be relative to the .achx. But for now, we can deal with this because
+                    // ReplaceTexture is a game runtime thing and not (yet?) used to save the texture to disk.
 					this[i].TextureName = newTexture.Name;
 				}
 			}

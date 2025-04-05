@@ -474,6 +474,22 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>NotLoadedTextFile</Name>
     </None>
+    <None Include="Content\GlobalContent\ReloadableContent\ReloadableAnimation1.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ReloadableAnimation1</Name>
+    </None>
+    <None Include="Content\GlobalContent\ReloadableContent\ReloadableAnimation2.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ReloadableAnimation2</Name>
+    </None>
+    <None Include="content\globalcontent\reloadablecontent\reloadabletexture1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ReloadableTexture1</Name>
+    </None>
+    <None Include="content\globalcontent\reloadablecontent\reloadabletexture2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ReloadableTexture2</Name>
+    </None>
     <None Include="Content\GlobalContent\Resources.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Resources</Name>
@@ -761,6 +777,10 @@
     <None Include="Content\GumProject\Screens\PauseGumScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>PauseGumScreenGum</Name>
+    </None>
+    <None Include="Content\GumProject\Screens\ReloadContentScreenGum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ReloadContentScreenGum</Name>
     </None>
     <None Include="Content\GumProject\Screens\RenderTargetScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1967,6 +1987,7 @@
     <Compile Include="Forms\Screens\InputScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\Level1GumForms.Generated.cs" />
     <Compile Include="Forms\Screens\PauseGumScreenGumForms.Generated.cs" />
+    <Compile Include="Forms\Screens\ReloadContentScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\RenderTargetScreenGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\ScreenLoadedAsGraphicalUiElementForms.Generated.cs" />
     <Compile Include="Forms\Screens\SkiaGumScreenGumForms.Generated.cs" />
@@ -2184,6 +2205,10 @@
     <Compile Include="GumRuntimes\RedRectContainerRuntime.cs" />
     <Compile Include="GumRuntimes\RedRectContainerRuntime.Generated.cs">
       <DependentUpon>RedRectContainerRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\ReloadContentScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\ReloadContentScreenGumRuntime.Generated.cs">
+      <DependentUpon>ReloadContentScreenGumRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\RenderTargetScreenGumRuntime.cs" />
     <Compile Include="GumRuntimes\RenderTargetScreenGumRuntime.Generated.cs">
@@ -2446,6 +2471,10 @@
     <Compile Include="Screens\PositioningScreen.cs" />
     <Compile Include="Screens\PositioningScreen.Generated.cs">
       <DependentUpon>PositioningScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\ReloadContentScreen.cs" />
+    <Compile Include="Screens\ReloadContentScreen.Generated.cs">
+      <DependentUpon>ReloadContentScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\RenderTargetScreen.cs" />
     <Compile Include="Screens\RenderTargetScreen.Generated.cs">

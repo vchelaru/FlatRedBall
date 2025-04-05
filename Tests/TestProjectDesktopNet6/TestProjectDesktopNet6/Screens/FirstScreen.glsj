@@ -3,7 +3,25 @@
     "GLUE"
   ],
   "Source": "GLUE",
-  "NextScreen": "Screens\\RenderTargetScreen",
+  "NextScreen": "Screens\\ReloadContentScreen",
+  "CustomVariables": [
+    {
+      "Properties": [
+        {
+          "Name": "Type",
+          "Value": "string",
+          "Type": "String"
+        },
+        {
+          "Name": "Category",
+          "Value": "Layer",
+          "Type": "String"
+        }
+      ],
+      "Name": "DefaultLayer",
+      "Category": "Layer"
+    }
+  ],
   "Name": "Screens\\FirstScreen",
   "CustomClassesForExport": []
 }

@@ -42,6 +42,7 @@ using FlatRedBall.Managers;
 using Color = Microsoft.Xna.Framework.Color;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace FlatRedBall
 {
@@ -1057,6 +1058,33 @@ namespace FlatRedBall
             // Replace the texture for all objects managed by all of the managers
             SpriteManager.ReplaceTexture(oldTexture, newTexture);
             TextManager.ReplaceTexture(oldTexture, newTexture);
+
+            List<IDisposable> itemsToRemove = new List<IDisposable>();
+            foreach(var contentManager in ContentManagers)
+            {
+                foreach(var disposableObject in contentManager.DisposableObjects)
+                {
+                    if(disposableObject is AnimationChainList animationChainList)
+                    {
+                        foreach(var animationChain in animationChainList)
+                        {
+                            animationChain.ReplaceTexture(oldTexture, newTexture);
+                        }
+                    }
+                    else if(disposableObject == oldTexture)
+                    {
+                        itemsToRemove.Add(disposableObject);
+                    }
+                }
+
+                foreach (var item in itemsToRemove)
+                {
+                    contentManager.RemoveDisposable(item);
+                }
+
+                // do we need to add it?
+                //contentManager.AddDisposable()
+            }
 
             ReplaceTextureCalled?.Invoke(oldTexture, newTexture);
         }
