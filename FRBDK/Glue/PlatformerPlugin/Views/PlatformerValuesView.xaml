@@ -204,7 +204,7 @@
                 <CheckBox.ToolTip>
                     <Label Content="{x:Static localization:Texts.HintPressDownThroughClouds}"/>
                 </CheckBox.ToolTip>
-                <Label Content="{x:Static localization:Texts.CanFallThroughClouds}"/>
+        <Label Content="Can Fall Through Clouds"/>
             </CheckBox>
             <StackPanel Visibility="{Binding FallThroughCloudPlatformsVisibility}">
                 <TextBlock>
@@ -249,7 +249,7 @@
                 <CheckBox.ToolTip>
                     <Label Content="{x:Static localization:Texts.HintClimbingPressingUp}"/>
                 </CheckBox.ToolTip>
-                <Label Content="{x:Static localization:Texts.CanClimb}"/>
+                <Label Content="Can Climb"/>
             </CheckBox>
             <TextBlock Margin="0,5,0,0" Visibility="{Binding ClimbingUiVisibility}" Text="{x:Static localization:Texts.ClimbingSpeed}"/>
             <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding MaxClimbingSpeed}"  Visibility="{Binding ClimbingUiVisibility}"

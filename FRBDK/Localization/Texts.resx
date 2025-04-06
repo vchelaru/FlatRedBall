@@ -400,9 +400,6 @@ for {1}?</value>
   <data name="Ok" xml:space="preserve">
     <value>OK</value>
   </data>
-  <data name="CancelBuild" xml:space="preserve">
-    <value>Cancel Build</value>
-  </data>
   <data name="SlowDown" xml:space="preserve">
     <value>Slow Down</value>
   </data>
@@ -589,9 +586,6 @@ for {1}?</value>
   <data name="HintPressDownThroughClouds" xml:space="preserve">
     <value>If checked, the player can press the down direction and jump to fall through clouds.</value>
   </data>
-  <data name="CanFallThroughClouds" xml:space="preserve">
-    <value>Can Fall Through Clouds</value>
-  </data>
   <data name="CloudPlatformThickness" xml:space="preserve">
     <value>Cloud Platform Thickness:</value>
   </data>
@@ -627,9 +621,6 @@ for {1}?</value>
   </data>
   <data name="HintVerticalSpeedForClimbing" xml:space="preserve">
     <value>The vertical movement speed when climbing.</value>
-  </data>
-  <data name="CanClimb" xml:space="preserve">
-    <value>Can Climb</value>
   </data>
   <data name="HintDeletesMovementValues" xml:space="preserve">
     <value>Deletes this set of movement values.</value>
@@ -813,9 +804,6 @@ for {1}?</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name:</value>
-  </data>
-  <data name="Category" xml:space="preserve">
-    <value>Category:</value>
   </data>
   <data name="Summary" xml:space="preserve">
     <value>Summary:</value>

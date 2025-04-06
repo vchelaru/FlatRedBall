@@ -399,9 +399,6 @@
   <data name="Ok" xml:space="preserve">
     <value>Ok</value>
   </data>
-  <data name="CancelBuild" xml:space="preserve">
-    <value>Bau abbrechen</value>
-  </data>
   <data name="SlowDown" xml:space="preserve">
     <value>Verlangsamen</value>
   </data>
@@ -588,9 +585,6 @@
   <data name="HintPressDownThroughClouds" xml:space="preserve">
     <value>Wenn diese Option aktiviert ist, kann der Spieler die Abwärtsrichtung drücken und springen, um durch Wolken zu fallen.</value>
   </data>
-  <data name="CanFallThroughClouds" xml:space="preserve">
-    <value>Kann durch Wolken fallen</value>
-  </data>
   <data name="CloudPlatformThickness" xml:space="preserve">
     <value>Dicke der Cloud-Plattform:</value>
   </data>
@@ -626,9 +620,6 @@
   </data>
   <data name="HintVerticalSpeedForClimbing" xml:space="preserve">
     <value>Die vertikale Bewegungsgeschwindigkeit beim Klettern.</value>
-  </data>
-  <data name="CanClimb" xml:space="preserve">
-    <value>Kann klettern</value>
   </data>
   <data name="HintDeletesMovementValues" xml:space="preserve">
     <value>Löscht diesen Satz von Bewegungswerten.</value>
@@ -812,9 +803,6 @@
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name:</value>
-  </data>
-  <data name="Category" xml:space="preserve">
-    <value>Kategorie:</value>
   </data>
   <data name="Summary" xml:space="preserve">
     <value>Zusammenfassung:</value>

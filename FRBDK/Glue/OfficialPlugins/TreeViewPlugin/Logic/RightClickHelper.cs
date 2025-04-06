@@ -32,6 +32,7 @@ using FlatRedBall.Glue.Utilities;
 using System.Windows.Media.Imaging;
 using L = Localization;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using OfficialPlugins.TreeViewPlugin.Logic;
 
 namespace FlatRedBall.Glue.FormHelpers;
 
@@ -188,7 +189,13 @@ public static class RightClickHelper
                 AddRemoveFromProjectItems();
 
                 AddSeparator();
-
+                Add("Rename", () =>
+                {
+                    if (SelectionLogic.CurrentNode?.IsEditable == true)
+                    {
+                        SelectionLogic.CurrentNode.IsEditing = true;
+                    }
+                });
                 AddEvent("Find all references to this", FindAllReferencesClick);
                 AddItem(mRefreshTreeNodesMenuItem);
 
@@ -227,6 +234,13 @@ public static class RightClickHelper
                 AddRemoveFromProjectItems();
 
                 AddSeparator();
+                Add("Rename", () =>
+                {
+                    if (SelectionLogic.CurrentNode?.IsEditable == true)
+                    {
+                        SelectionLogic.CurrentNode.IsEditing = true;
+                    }
+                });
                 mExportElement.Text = "Export Entity";
                 AddItem(mExportElement);
                 AddItem(mFindAllReferences);

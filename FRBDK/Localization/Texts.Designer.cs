@@ -61,42 +61,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cancel Build.
-        /// </summary>
-        public static string CancelBuild {
-            get {
-                return ResourceManager.GetString("CancelBuild", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can Climb.
-        /// </summary>
-        public static string CanClimb {
-            get {
-                return ResourceManager.GetString("CanClimb", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can Fall Through Clouds.
-        /// </summary>
-        public static string CanFallThroughClouds {
-            get {
-                return ResourceManager.GetString("CanFallThroughClouds", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Category:.
-        /// </summary>
-        public static string Category {
-            get {
-                return ResourceManager.GetString("Category", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add State Category.
         /// </summary>
         public static string CategoryAddState {
