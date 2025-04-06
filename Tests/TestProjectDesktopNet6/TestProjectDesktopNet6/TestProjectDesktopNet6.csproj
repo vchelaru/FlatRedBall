@@ -398,6 +398,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>SceneFileForSourceFileSet</Name>
     </None>
+    <None Include="Content\Entities\VariantEntityBase\FileInBase.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>FileInBase</Name>
+    </None>
+    <None Include="Content\Entities\VariantEntityDerived\FileInDerived.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>FileInDerived</Name>
+    </None>
     <None Include="Content\Entities\XmlEntity\XMLFile.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>XMLFile</Name>
@@ -805,6 +813,10 @@
     <None Include="Content\GumProject\Screens\TileShapeCollectionScreenGum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TileShapeCollectionScreenGum</Name>
+    </None>
+    <None Include="Content\GumProject\Screens\VariantScreenGum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>VariantScreenGum</Name>
     </None>
     <None Include="Content\GumProject\Standards\Arc.gutx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1938,6 +1950,14 @@
     <Compile Include="Entities\VariableEntity.Generated.cs">
       <DependentUpon>VariableEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\VariantEntityBase.cs" />
+    <Compile Include="Entities\VariantEntityBase.Generated.cs">
+      <DependentUpon>VariantEntityBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\VariantEntityDerived.cs" />
+    <Compile Include="Entities\VariantEntityDerived.Generated.cs">
+      <DependentUpon>VariantEntityDerived.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\XmlEntity.cs" />
     <Compile Include="Entities\XmlEntity.Generated.cs">
       <DependentUpon>XmlEntity.cs</DependentUpon>
@@ -1974,6 +1994,8 @@
     <Compile Include="Factories\ShapeEntityCreatedByOtherEntitiesFactory.Generated.cs" />
     <Compile Include="Factories\TextInheritingEntityFactory.Generated.cs" />
     <Compile Include="Factories\TiledEntityInFolderFactory.Generated.cs" />
+    <Compile Include="Factories\VariantEntityBaseFactory.Generated.cs" />
+    <Compile Include="Factories\VariantEntityDerivedFactory.Generated.cs" />
     <Compile Include="FileAliases.Generated.cs" />
     <Compile Include="Forms\Controls\CustomUserControl.cs" />
     <Compile Include="Forms\Screens\BaseGlueScreenNotBaseGumForms.Generated.cs" />
@@ -1994,6 +2016,7 @@
     <Compile Include="Forms\Screens\TestScreenForms.Generated.cs" />
     <Compile Include="Forms\Screens\TestScreenUnusedForms.Generated.cs" />
     <Compile Include="Forms\Screens\TileShapeCollectionScreenGumForms.Generated.cs" />
+    <Compile Include="Forms\Screens\VariantScreenGumForms.Generated.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Game1.Generated.cs">
       <DependentUpon>Game1.cs</DependentUpon>
@@ -2278,6 +2301,10 @@
     <Compile Include="GumRuntimes\UsedToInheritFromTextComponentRuntime.Generated.cs">
       <DependentUpon>UsedToInheritFromTextComponentRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\VariantScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\VariantScreenGumRuntime.Generated.cs">
+      <DependentUpon>VariantScreenGumRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="Performance\IEntityFactory.Generated.cs" />
     <Compile Include="Performance\PoolList.Generated.cs" />
     <Compile Include="Platformer\Enums.Generated.cs" />
@@ -2543,6 +2570,10 @@
     <Compile Include="Screens\TunneledVariableScreen.cs" />
     <Compile Include="Screens\TunneledVariableScreen.Generated.cs">
       <DependentUpon>TunneledVariableScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\VariantScreen.cs" />
+    <Compile Include="Screens\VariantScreen.Generated.cs">
+      <DependentUpon>VariantScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\XmlScreen.cs" />
     <Compile Include="Screens\XmlScreen.Generated.cs">

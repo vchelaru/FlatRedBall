@@ -3,7 +3,15 @@
     "GLUE"
   ],
   "Source": "GLUE",
-  "NextScreen": "Screens\\VariantScreen",
+  "NextScreen": "Screens\\ReloadContentScreen",
+  "ReferencedFiles": [
+    {
+      "Name": "GumProject/Screens/VariantScreenGum.gusx",
+      "IsSharedStatic": true,
+      "RuntimeType": "GlueTestProject.GumRuntimes.VariantScreenGumRuntime",
+      "ProjectsToExcludeFrom": []
+    }
+  ],
   "CustomVariables": [
     {
       "Properties": [
@@ -22,6 +30,6 @@
       "Category": "Layer"
     }
   ],
-  "Name": "Screens\\FirstScreen",
+  "Name": "Screens\\VariantScreen",
   "CustomClassesForExport": []
 }

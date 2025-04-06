@@ -556,6 +556,9 @@
       "Name": "Screens\\TunneledVariableScreen"
     },
     {
+      "Name": "Screens\\VariantScreen"
+    },
+    {
       "Name": "Screens\\XmlScreen"
     },
     {
@@ -1024,6 +1027,12 @@
     },
     {
       "Name": "Entities\\VariableEntity"
+    },
+    {
+      "Name": "Entities\\VariantEntityBase"
+    },
+    {
+      "Name": "Entities\\VariantEntityDerived"
     },
     {
       "Name": "Entities\\XmlEntity"

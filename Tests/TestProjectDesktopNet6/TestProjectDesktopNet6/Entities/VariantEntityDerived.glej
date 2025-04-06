@@ -1,0 +1,19 @@
+{
+  "Tags": [
+    "GLUE"
+  ],
+  "Source": "GLUE",
+  "BaseEntity": "Entities\\VariantEntityBase",
+  "CreatedByOtherEntities": true,
+  "Is2D": true,
+  "ReferencedFiles": [
+    {
+      "Name": "Entities/VariantEntityDerived/FileInDerived.png",
+      "IsSharedStatic": true,
+      "RuntimeType": "Microsoft.Xna.Framework.Graphics.Texture2D",
+      "ProjectsToExcludeFrom": []
+    }
+  ],
+  "Name": "Entities\\VariantEntityDerived",
+  "CustomClassesForExport": []
+}

@@ -109,6 +109,11 @@
     <ElementType>Screen</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
   </ScreenReference>
+  <ScreenReference>
+    <Name>VariantScreenGum</Name>
+    <ElementType>Screen</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ScreenReference>
   <ComponentReference>
     <Name>AlignmentObject</Name>
     <ElementType>Component</ElementType>
