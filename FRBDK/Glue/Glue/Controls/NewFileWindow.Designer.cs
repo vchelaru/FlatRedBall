@@ -50,7 +50,7 @@ partial class NewFileWindow
         this.mCancelButton.Name = "mCancelButton";
         this.mCancelButton.Size = new System.Drawing.Size(95, 34);
         this.mCancelButton.TabIndex = 5;
-        this.mCancelButton.Text = L.Texts.Cancel;
+        this.mCancelButton.Text = "Cancel";
         this.mCancelButton.UseVisualStyleBackColor = true;
         // 
         // mOkWindow
@@ -60,7 +60,7 @@ partial class NewFileWindow
         this.mOkWindow.Name = "mOkWindow";
         this.mOkWindow.Size = new System.Drawing.Size(95, 34);
         this.mOkWindow.TabIndex = 4;
-        this.mOkWindow.Text = L.Texts.Ok;
+        this.mOkWindow.Text = "OK";
         this.mOkWindow.UseVisualStyleBackColor = true;
         this.mOkWindow.Click += new System.EventHandler(this.mOkWindow_Click);
         // 

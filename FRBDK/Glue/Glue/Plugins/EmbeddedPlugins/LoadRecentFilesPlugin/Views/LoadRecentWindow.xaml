@@ -47,8 +47,8 @@
         </ListBox>
         
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
-            <Button Click="LoadButton_Click"  Content="{x:Static localization:Texts.Load}" />
-            <Button Click="CancelButton_Click" Margin="5,0,0,0" Content="{x:Static localization:Texts.Cancel}" />
+            <Button Click="LoadButton_Click"  Content="Load" />
+            <Button Click="CancelButton_Click" Margin="5,0,0,0" Content="Cancel" />
         </StackPanel>
     </Grid>
 </Window>

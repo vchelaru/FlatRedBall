@@ -269,6 +269,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region Folders
         Task RenameFolder(ITreeNode treeNode, string newName);
+
+        void DeleteFolderClick(ITreeNode targetNode);
         #endregion
+
+        #region Reordering
+
+        void MoveToTop();
+        void MoveToBottom();
+        Task MoveSelectedObjectUp();
+        Task MoveSelectedObjectDown();
+
+        #endregion
+
+        Task RemoveFromProjectOptionalSaveAndRegenerate(bool saveAndRegenerate = true, bool askAreYouSure = true, bool askToDeleteFiles = true);
     }
 }

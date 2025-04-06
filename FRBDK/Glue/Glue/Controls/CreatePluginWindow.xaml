@@ -41,8 +41,8 @@
         </DockPanel>
 
         <DockPanel Grid.Row="53"  Height="28" VerticalAlignment="Bottom" Margin="0, 15, 0, 0">
-            <Button Content="{x:Static localization:Texts.Ok}" Margin="10,0,0,0" Padding="10, 0" Width="38" Click="Submit"></Button>
-            <Button Content="{x:Static localization:Texts.Cancel}" Margin="10,0,10,0" Padding="10, 0" Click="Cancel"></Button>
+            <Button Content="OK" Margin="10,0,0,0" Padding="10, 0" Width="38" Click="Submit"></Button>
+            <Button Content="Cancel" Margin="10,0,10,0" Padding="10, 0" Click="Cancel"></Button>
         </DockPanel>
     </Grid>
 </Window>

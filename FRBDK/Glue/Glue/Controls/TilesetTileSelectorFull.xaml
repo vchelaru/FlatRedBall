@@ -21,8 +21,8 @@
         </Grid>
         
         <StackPanel Orientation="Horizontal" Margin="4" HorizontalAlignment="Right">
-            <Button x:Name="OkButton" Click="OkButton_Click" Width="60"  Content="{x:Static localization:Texts.Ok}" />
-            <Button x:Name="CancelButton" Click="CancelButton_Click" Width="60" Margin="2,0,0,0" Content="{x:Static localization:Texts.Cancel}" />
+            <Button x:Name="OkButton" Click="OkButton_Click" Width="60"  Content="OK" />
+            <Button x:Name="CancelButton" Click="CancelButton_Click" Width="60" Margin="2,0,0,0" Content="Cancel" />
         </StackPanel>
     </StackPanel>
 </UserControl>

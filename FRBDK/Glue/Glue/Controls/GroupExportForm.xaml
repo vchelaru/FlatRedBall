@@ -24,8 +24,8 @@
         <TreeView Grid.Row="1" Grid.Column="1" Margin="10, 0" Name="ToExportTreeView" />
 
         <DockPanel Margin="10,0,10,10" Height="28" Grid.Row="2" Grid.Column="1">
-            <Button Click="OkButton_Click" HorizontalAlignment="Right" Content="{x:Static localization:Texts.Ok}" Padding="10, 0"></Button>
-            <Button Click="CancelButton_Click" HorizontalAlignment="Right" Content="{x:Static localization:Texts.Cancel}" Margin="10,0,0,0"  Padding="10, 0"></Button>
+            <Button Click="OkButton_Click" HorizontalAlignment="Right" Content="OK" Padding="10, 0"></Button>
+            <Button Click="CancelButton_Click" HorizontalAlignment="Right" Content="Cancel" Margin="10,0,0,0"  Padding="10, 0"></Button>
         </DockPanel>
     </Grid>
 </Window>

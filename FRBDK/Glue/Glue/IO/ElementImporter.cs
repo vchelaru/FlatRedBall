@@ -20,7 +20,7 @@ using L = Localization;
 
 namespace FlatRedBall.Glue.IO;
 
-class ElementImporter
+public class ElementImporter
 {
     public static void AskAndImportGroup()
     {

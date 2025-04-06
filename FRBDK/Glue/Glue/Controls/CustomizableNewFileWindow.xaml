@@ -92,9 +92,9 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Margin="0,8,4,0"
-                    Click="HandleOkClicked" Content="{x:Static localization:Texts.Ok}" />
+                    Click="HandleOkClicked" Content="OK" />
             <Button Grid.Column="1" Margin="4,8,0,0"
-                    Click="HandleCancelClicked" Content="{x:Static localization:Texts.Cancel}" />
+                    Click="HandleCancelClicked" Content="Cancel" />
         </Grid>
     </Grid>
 </Window>

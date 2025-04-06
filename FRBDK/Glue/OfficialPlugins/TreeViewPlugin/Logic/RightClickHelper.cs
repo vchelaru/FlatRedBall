@@ -227,7 +227,7 @@ public static class RightClickHelper
                 AddRemoveFromProjectItems();
 
                 AddSeparator();
-                mExportElement.Text = L.Texts.EntityExport;
+                mExportElement.Text = "Export Entity";
                 AddItem(mExportElement);
                 AddItem(mFindAllReferences);
 
@@ -262,7 +262,7 @@ public static class RightClickHelper
             AddSeparator();
             if (targetNode.IsFolderInFilesContainerNode())
             {
-                Add("Delete Folder", () => DeleteFolderClick(targetNode));
+                Add("Delete Folder", () => GlueCommands.Self.GluxCommands.DeleteFolderClick(targetNode));
             }
         }
 
@@ -583,7 +583,7 @@ public static class RightClickHelper
 
             AddSeparator();
 
-            Add(L.Texts.FolderDelete, () => DeleteFolderClick(targetNode));
+            Add(L.Texts.FolderDelete, () => GluxCommands.Self.DeleteFolderClick(targetNode));
             if (isEntityContainingFolder || isScreenContainingFolder)
             {
                 Add(L.Texts.FolderRename, () => HandleRenameFolderClick(targetNode));
@@ -1066,23 +1066,6 @@ public static class RightClickHelper
     static void AddEventClicked(object sender, EventArgs e) =>
         GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(GlueState.Self.CurrentElement);
 
-    public static void HandleAddEventOk(AddEventWindow addEventWindow)
-    {
-        var viewModel = new GlueFormsCore.ViewModels.AddEventViewModel
-        {
-            EventName = addEventWindow.ResultName,
-            TunnelingObject = addEventWindow.TunnelingObject,
-            TunnelingEvent = addEventWindow.TunnelingEvent,
-            SourceVariable = addEventWindow.SourceVariable,
-            BeforeOrAfter = addEventWindow.BeforeOrAfter,
-            DelegateType = addEventWindow.ResultDelegateType
-        };
-
-        GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(viewModel, GlueState.Self.CurrentElement);
-
-    }
-
-
 
     static void ViewFileOrderClick(object sender, EventArgs e)
     {
@@ -1265,385 +1248,19 @@ public static class RightClickHelper
     {
         bool saveAndRegenerate = true;
 
-        await RemoveFromProjectOptionalSaveAndRegenerate(saveAndRegenerate, true, true);
+        await GlueCommands.Self.GluxCommands.RemoveFromProjectOptionalSaveAndRegenerate(saveAndRegenerate, true, true);
     }
 
     private static void RemoveFromProjectQuick(object sender, EventArgs e)
     {
-        RemoveFromProjectOptionalSaveAndRegenerate(false, true, true);
-    }
-
-    private static async Task RemoveFromProjectOptionalSaveAndRegenerate(bool saveAndRegenerate = true, bool askAreYouSure = true, bool askToDeleteFiles = true)
-    {
-        // delete object, remove object, DeleteObject, RemoveObject, remove from project, 
-        // remove from screen, remove from entity, remove file
-        ///////////////////////////////EARLY OUT///////////////////////////////////////
-        // This can now be called by pushing Delete, so we should check if deleting is valid
-        var glueState = GlueState.Self;
-        var currentObject =
-            (object)glueState.CurrentNamedObjectSave ??
-            glueState.CurrentStateSave ??
-            glueState.CurrentStateSaveCategory ??
-            glueState.CurrentReferencedFileSave ??
-            glueState.CurrentCustomVariable ??
-            glueState.CurrentEventResponseSave ??
-            // screens and entities will be current when the objects earlier in this statement are also current,
-            // so only make them the currentObject if the types above are not current.
-            (object)glueState.CurrentEntitySave ??
-            glueState.CurrentScreenSave;
-
-        if (currentObject == null)
-        {
-            return;
-        }
-        //////////////////////////////END EARLY OUT/////////////////////////////////////
-
-        var currentElementBeforeRemoval = GlueState.Self.CurrentElement;
-
-        if (currentObject is NamedObjectSave asNos)
-        {
-            GlueCommands.Self.DialogCommands.AskToRemoveObjectList(glueState.CurrentNamedObjectSaves.ToList(), saveAndRegenerate);
-        }
-        else
-        {
-            // Search terms: removefromproject, remove from project, remove file, remove referencedfilesave
-            List<string> filesToRemove = new List<string>();
-
-            if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
-            {
-                GlueElement deletedElement = null;
-                ReferencedFileSave deletedRfs = null;
-                #region Find out if the user really wants to remove this - don't ask if askAreYouSure is false
-                var reallyRemoveResult = System.Windows.MessageBoxResult.Yes;
-
-                // Some objects may use a custom delete dialog. Those types should be checked here first:
-                if(currentObject is ScreenSave screenToRemove)
-                {
-
-                    await TaskManager.Self.AddAsync(() =>
-                    {
-                        if (RemoveScreen(screenToRemove, filesToRemove))
-                        {
-                            deletedElement = screenToRemove;
-                        }
-
-                    }, L.Texts.ScreenRemove);
-
-                    askAreYouSure = false;
-                }
-
-                    
-
-                if (askAreYouSure)
-                {
-
-                    string message = string.Empty;
-                    if(currentObject is ReferencedFileSave)
-                    {
-                        // don't say "delete" because it's just being removed unless the user 
-                        // choses to delete on the subsequent dialog
-                        message = $"Are you sure you want to remove\n{currentObject}";
-                    }
-                    else
-                    {
-                        message = String.Format(L.Texts.DeleteQuestionX, currentObject);
-                    }
-
-                    reallyRemoveResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message, "Remove?");
-                }
-                #endregion
-
-                if (reallyRemoveResult == System.Windows.MessageBoxResult.Yes)
-                {
-                    #region If is NamedObjectSave
-                    // handled above in AskToRemoveObject
-                    #endregion
-
-                    #region Else if is StateSave
-                    if (GlueState.Self.CurrentStateSave != null)
-                    {
-                        var name = GlueState.Self.CurrentStateSave.Name;
-
-                        GlueState.Self.CurrentElement.RemoveState(GlueState.Self.CurrentStateSave);
-
-                        AskToRemoveCustomVariablesWithoutState(GlueState.Self.CurrentElement);
-
-                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-
-                        PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
-
-                        GluxCommands.Self.SaveProjectAndElements();
-                    }
-
-                    #endregion
-
-                    #region Else if is StateSaveCategory
-
-                    else if (GlueState.Self.CurrentStateSaveCategory != null)
-                    {
-                        GlueCommands.Self.GluxCommands.RemoveStateSaveCategory(GlueState.Self.CurrentStateSaveCategory);
-                    }
-
-                    #endregion
-
-                    #region Else if is ReferencedFileSave
-
-                    else if (currentObject is ReferencedFileSave rfs)
-                    {
-                        // the GluxCommand handles saving and regenerate internally, no need to do it twice
-                        saveAndRegenerate = false;
-                        var toRemove = rfs;
-                        deletedRfs = rfs;
-                        if (GlueState.Self.Find.IfReferencedFileSaveIsReferenced(toRemove))
-                        {
-                            await GlueCommands.Self.GluxCommands.RemoveReferencedFileAsync(toRemove, filesToRemove, regenerateAndSave: true);
-                        }
-                    }
-                    #endregion
-
-                    #region Else if is CustomVariable
-
-                    else if (GlueState.Self.CurrentCustomVariable != null)
-                    {
-                        GlueCommands.Self.GluxCommands.RemoveCustomVariable(GlueState.Self.CurrentCustomVariable, filesToRemove);
-                    }
-
-                    #endregion
-
-                    #region Else if is EventSave
-                    else if (GlueState.Self.CurrentEventResponseSave != null)
-                    {
-                        var element = GlueState.Self.CurrentElement;
-                        var eventResponse = GlueState.Self.CurrentEventResponseSave;
-                        GlueState.Self.CurrentElement.Events.Remove(eventResponse);
-                        PluginManager.ReactToEventResponseRemoved(element, eventResponse);
-                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-                    }
-                    #endregion
-
-                    #region Else if is EntitySave
-
-                    else if (GlueState.Self.CurrentEntitySave != null)
-                    {
-                        var entityToRemove = GlueState.Self.CurrentEntitySave;
-                        await TaskManager.Self.AddAsync(async () =>
-                        {
-                            await RemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
-                            //ProjectManager.RemoveEntity(EditorLogic.CurrentEntitySave);
-                            deletedElement = entityToRemove;
-                        }, L.Texts.EntityRemove);
-
-                    }
-
-                    #endregion
-
-                    #region Files were deleted and the user wants to be asked to delete
-
-                    if (filesToRemove.Count != 0 && askToDeleteFiles)
-                    {
-
-                        for (int i = 0; i < filesToRemove.Count; i++)
-                        {
-                            if (FileManager.IsRelative(filesToRemove[i]))
-                            {
-                                filesToRemove[i] = GlueCommands.Self.GetAbsoluteFileName(filesToRemove[i], false);
-                            }
-                            filesToRemove[i] = filesToRemove[i].Replace("\\", "/");
-                        }
-
-                        StringFunctions.RemoveDuplicates(filesToRemove, true);
-
-                        var lbw = new ListBoxWindowWpf();
-
-                        string messageString = "What would you like to do with the following files:\n";
-                        lbw.Message = messageString;
-
-                        foreach (string s in filesToRemove)
-                        {
-
-                            lbw.AddItem(s);
-                        }
-                        lbw.ClearButtons();
-                        lbw.AddButton(L.Texts.FilesLeaveAsPartOfProject, DialogResult.No);
-                        lbw.AddButton(L.Texts.FilesRemoveFromProjectButKeep, DialogResult.OK);
-                        lbw.AddButton(L.Texts.FilesRemoveAndDelete, DialogResult.Yes);
-
-                        var dialogShowResult = lbw.ShowDialog();
-
-                        if(lbw.ClickedOption is DialogResult result)
-                        {
-                            if (result == DialogResult.OK || result == DialogResult.Yes)
-                            {
-                                await TaskManager.Self.AddAsync(() =>
-                                {
-                                    foreach (var file in filesToRemove)
-                                    {
-                                        FilePath filePath = GlueCommands.Self.GetAbsoluteFileName(file, false);
-                                        // This file may have been removed
-                                        // in windows explorer, and now removed
-                                        // from Glue.  Check to prevent a crash.
-
-                                        GlueCommands.Self.ProjectCommands.RemoveFromProjects(filePath, false);
-
-                                        if (result == DialogResult.Yes && filePath.Exists())
-                                        {
-                                            FileHelper.MoveToRecycleBin(filePath.FullPath);
-                                        }
-                                    }
-                                    GluxCommands.Self.ProjectCommands.SaveProjects();
-
-                                }, L.Texts.FilesRemove);
-                            }
-
-                        }
-                    }
-
-                    #endregion
-
-                    if(deletedElement == null && GlueState.Self.CurrentElement == null && currentElementBeforeRemoval != null)
-                    {
-                        GlueState.Self.CurrentElement = currentElementBeforeRemoval;
-                    }
-
-                    await TaskManager.Self.AddAsync(() =>
-                    {
-                        // Nodes aren't directly removed in the code above. Instead, 
-                        // a "refresh nodes" method is called, which may remove unneeded
-                        // nodes, but event raising is suppressed. Therefore, we have to explicitly 
-                        // do it here:
-                        if (deletedElement != null)
-                        {
-                            GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
-                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(deletedElement);
-
-                        }
-                        else if (glueState.CurrentElement != null)
-                        {
-                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(glueState.CurrentElement);
-                        }
-                        else
-                        {
-                            GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
-                        }
-                    }, L.Texts.RefreshingTreeNodes);
-
-
-                    if (saveAndRegenerate)
-                    {
-                        if (GlueState.Self.CurrentElement != null)
-                        {
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
-                        }
-                        else if (GlueState.Self.CurrentReferencedFileSave != null)
-                        {
-                            GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCodeTask();
-
-                            // Vic asks - do we have to do anything else here?  I don't think so...
-                        }
-
-
-                        GluxCommands.Self.ProjectCommands.SaveProjects();
-                        GluxCommands.Self.SaveProjectAndElements();
-                    }
-                }
-            }
-
-        }
-    }
-
-    private static async Task RemoveEntity(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved)
-    {
-        var namedObjectsToRemove = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entityToRemove.Name);
-
-        string message = null;
-
-        if (namedObjectsToRemove.Count != 0)
-        {
-            message = String.Format(L.Texts.EntityReferencedByFollowingObjects, entityToRemove);
-
-            for (var i = 0; i < namedObjectsToRemove.Count; i++)
-            {
-                message += "\n" + namedObjectsToRemove[i];
-            }
-        }
-
-        var inheritingEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entityToRemove);
-
-        if (inheritingEntities.Count != 0)
-        {
-            message = String.Format(L.Texts.EntityIsBaseForEntities, entityToRemove);
-            for (int i = 0; i < inheritingEntities.Count; i++)
-            {
-                message += "\n" + inheritingEntities[i];
-
-            }
-        }
-
-        if (message != null)
-        {
-            message += "\n\n" + L.Texts.DeleteQuestion;
-
-            var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message);
-            if(result == System.Windows.MessageBoxResult.Yes) {
-                await GlueCommands.Self.GluxCommands.RemoveEntityAsync(entityToRemove, filesThatCouldBeRemoved);
-            }
-        }
-        else
-        {
-            await GlueCommands.Self.GluxCommands.RemoveEntityAsync(entityToRemove, filesThatCouldBeRemoved);
-        }
+        GlueCommands.Self.GluxCommands.RemoveFromProjectOptionalSaveAndRegenerate(false, true, true);
     }
 
 
-    private static bool RemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved)
-    {
-        var message = String.Format(L.Texts.DeleteQuestionX, screenToRemove);
 
-        List<ScreenSave> inheritingScreens = ObjectFinder.Self.GetAllScreensThatInheritFrom(screenToRemove);
-        if (inheritingScreens.Count != 0)
-        {
-            message += String.Format("\n\n" + L.Texts.WarningScreenXBaseForScreens, screenToRemove.GetStrippedName());
-            for (var i = 0; i < inheritingScreens.Count; i++)
-            {
-                message += "\n" + inheritingScreens[i];
-            }
-        }
 
-        var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message, "Are you sure?");
 
-        var wasRemoved = false;
-        if (result == System.Windows.MessageBoxResult.Yes)
-        {
-            wasRemoved = true;
 
-            GlueCommands.Self.GluxCommands.RemoveScreen(screenToRemove, filesThatCouldBeRemoved);
-        }
-        return wasRemoved;
-    }
-
-    private static void AskToRemoveCustomVariablesWithoutState(IElement element)
-    {
-        for (var i = 0; i < element.CustomVariables.Count; i++)
-        {
-            var variable = element.CustomVariables[i];
-
-            if (CustomVariableHelper.IsStateMissingFor(variable, element))
-            {
-                var mbmb = new MultiButtonMessageBoxWpf();
-                mbmb.MessageText = String.Format(L.Texts.VariableHasNoStates, variable);
-
-                mbmb.AddButton(L.Texts.VariableRemove, DialogResult.OK);
-                mbmb.AddButton(L.Texts.VariableRemoveNothing, DialogResult.Cancel);
-
-                if(mbmb.ShowDialog() == true && mbmb.ClickedResult is DialogResult asDialogResult && asDialogResult == DialogResult.OK)
-                {
-                    element.CustomVariables.RemoveAt(i);
-                    i--;
-                }
-
-            }
-        }
-    }
 
     internal static void AddFolderClick(ITreeNode targetNode)
     {
@@ -1764,80 +1381,6 @@ public static class RightClickHelper
         }
     }
 
-    /// <summary>
-    /// Deletes the folder represented by this tree node. Note that this should only be called on tree nodes which
-    /// are folders.
-    /// </summary>
-    /// <param name="targetNode">The tree node to delete.</param>
-    public static async void DeleteFolderClick(ITreeNode targetNode)
-    {
-        // delete folder, deletefolder
-
-        var forceContent = targetNode.IsChildOfGlobalContent() || targetNode.IsFolderInFilesContainerNode();
-
-        var absolutePath = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), forceContent);
-
-        string[] files = null;
-        string[] directories = null;
-        if (Directory.Exists(absolutePath))
-        {
-
-            files = Directory.GetFiles(absolutePath);
-            directories = Directory.GetDirectories(absolutePath);
-        }
-
-        var shouldDelete = System.Windows.MessageBoxResult.Yes;
-
-        if ((files != null && files.Length != 0) || (directories != null && directories.Length != 0))
-        {
-            shouldDelete = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(String.Format(L.Texts.FolderDeleteNotEmpty, absolutePath), L.Texts.Sure);
-        }
-
-        if (shouldDelete == System.Windows.MessageBoxResult.Yes)
-        {
-            if (targetNode.IsChildOfRootEntityNode() && targetNode.IsFolderForEntities())
-            {
-                // We have to remove all contained Entities
-                // from the project.
-                List<EntitySave> allEntitySaves = new List<EntitySave>();
-                GetAllEntitySavesIn(targetNode, allEntitySaves);
-
-                foreach (EntitySave entitySave in allEntitySaves)
-                {
-                    GlueState.Self.CurrentEntitySave = entitySave;
-                    await RemoveFromProjectOptionalSaveAndRegenerate(entitySave == allEntitySaves[^1], false, false);
-
-                }
-            }
-            else if(targetNode.IsChildOfRootScreenNode() && targetNode.IsFolderForScreens())
-            {
-                List<ScreenSave> allScreenSaves = new List<ScreenSave>();
-                GetAllScreenSavesIn(targetNode, allScreenSaves);
-
-                foreach(ScreenSave screenSave in allScreenSaves)
-                {
-                    GlueState.Self.CurrentScreenSave = screenSave;
-                    await RemoveFromProjectOptionalSaveAndRegenerate(screenSave == allScreenSaves[^1], false, false);
-                }
-            }
-            else if (targetNode.IsFolderInFilesContainerNode() || targetNode.IsChildOfGlobalContent())
-            {
-                List<ReferencedFileSave> allReferencedFileSaves = new List<ReferencedFileSave>();
-                GetAllReferencedFileSavesIn(targetNode, allReferencedFileSaves);
-
-                foreach (ReferencedFileSave rfs in allReferencedFileSaves)
-                {
-                    GlueState.Self.CurrentReferencedFileSave = rfs;
-                    // I guess we won't ask to delete here, but maybe eventually we want to?
-                    await RemoveFromProjectOptionalSaveAndRegenerate(rfs == allReferencedFileSaves[allReferencedFileSaves.Count - 1], false, false);
-                }
-            }
-
-            System.IO.Directory.Delete(absolutePath, true);
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
-            GlueCommands.Self.RefreshCommands.RefreshDirectoryTreeNodes();
-        }
-    }
 
     static void HandleRenameFolderClick(ITreeNode treeNode)
     {
@@ -1853,51 +1396,8 @@ public static class RightClickHelper
         }
     }
 
-    static void GetAllEntitySavesIn(ITreeNode treeNode, List<EntitySave> allEntitySaves)
-    {
-        foreach (var subNode in treeNode.Children)
-        {
-            if (subNode.IsDirectoryNode())
-            {
-                GetAllEntitySavesIn(subNode, allEntitySaves);
-            }
-            else if (subNode.Tag is EntitySave asEntitySave)
-            {
-                allEntitySaves.Add(asEntitySave);
-            }
-        }
-    }
 
-    static void GetAllScreenSavesIn(ITreeNode treeNode, List<ScreenSave> allScreenSaves)
-    {
-        foreach(var subnode in treeNode.Children)
-        {
-            if(subnode.IsDirectoryNode())
-            {
-                GetAllScreenSavesIn(subnode, allScreenSaves);
-            }
-            else if(subnode.Tag is ScreenSave asScreenSave)
-            {
-                allScreenSaves.Add(asScreenSave);
-            }
-        }
-    }
 
-    static void GetAllReferencedFileSavesIn(ITreeNode treeNode, List<ReferencedFileSave> allReferencedFileSaves)
-    {
-        foreach (var subNode in treeNode.Children)
-        {
-            if (subNode.IsDirectoryNode())
-            {
-                GetAllReferencedFileSavesIn(subNode, allReferencedFileSaves);
-            }
-            else if (subNode.IsReferencedFile())
-            {
-                ReferencedFileSave rfs = subNode.Tag as ReferencedFileSave;
-                allReferencedFileSaves.Add(rfs);
-            }
-        }
-    }
 
     static void ViewCodeFolderInExplorerClick(ITreeNode targetNode)
     {
@@ -1913,328 +1413,33 @@ public static class RightClickHelper
 
     private static void MoveToTopClick(object sender, EventArgs e)
     {
-        MoveToTop();
+        GlueCommands.Self.GluxCommands.MoveToTop();
 
     }
 
-    public static void MoveToTop()
-    {
-        TaskManager.Self.Add(() =>
-        {
-            object objectToMove;
-            IList listToRemoveFrom;
-            IList listForIndexing;
-            GetObjectAndListForMoving(out objectToMove, out listToRemoveFrom, out listForIndexing);
-            if (listToRemoveFrom != null)
-            {
-                int index = listToRemoveFrom.IndexOf(objectToMove);
-                if (index > 0)
-                {
-                    listToRemoveFrom.Remove(objectToMove);
-                    listToRemoveFrom.Insert(0, objectToMove);
-                    PostMoveActivity(objectToMove, index, 0);
-                }
-            }
-        }, L.Texts.MovingToTop, TaskExecutionPreference.Asap);
-    }
 
     private static async void MoveUpClick(object sender, EventArgs e)
     {
-        await MoveSelectedObjectUp();
+        await GlueCommands.Self.GluxCommands.MoveSelectedObjectUp();
     }
 
     private static async void MoveDownClick(object sender, EventArgs e)
     {
-        await MoveSelectedObjectDown();
+        await GlueCommands.Self.GluxCommands.MoveSelectedObjectDown();
     }
 
-    public static async Task MoveSelectedObjectUp()
-    {
-        int direction = -1;
-        await MoveObjectInDirection(direction);
-    }
 
-    public static async Task MoveSelectedObjectDown()
-    {
-        int direction = 1;
-        await MoveObjectInDirection(direction);
-    }
-
-    private static async Task MoveObjectInDirection(int direction)
-    {
-        await TaskManager.Self.AddAsync(() =>
-            {
-                object objectToMove;
-                // The list that contains the object that will be removed/added to. For example,
-                // an Entity's NamedObjectSaves (top level)
-                IList listToRemoveFrom;
-                // The list that is used to determine indexing. For example, an list created with 
-                // the indexes of all CollisionRelationships. This is needed because if a CollisionRelationship
-                // is moved up or down, this may change the index of the CollisionRelationship in the NamedObjectSaves
-                // by more than 1 index.
-                IList listForIndexing;
-                GetObjectAndListForMoving(out objectToMove, out listToRemoveFrom, out listForIndexing);
-                if (listToRemoveFrom != null)
-                {
-                    int index = listToRemoveFrom.IndexOf(objectToMove);
-
-                    var oldIndexInListForIndexing = listForIndexing.IndexOf(objectToMove);
-                    var newIndexInListForIndexing = oldIndexInListForIndexing + direction;
-                    if(newIndexInListForIndexing != -1 && newIndexInListForIndexing < listForIndexing.Count)
-                    {
-                        object objectToMoveBeforeOrAfter = objectToMove;
-                        if (newIndexInListForIndexing >= 0 && newIndexInListForIndexing < listForIndexing.Count)
-                        {
-                            objectToMoveBeforeOrAfter = listForIndexing[newIndexInListForIndexing];
-                        }
-
-                        //int newIndex = index + direction;
-                        int newIndex = listToRemoveFrom.IndexOf(objectToMoveBeforeOrAfter);
-
-                        if (newIndex >= 0 && newIndex < listToRemoveFrom.Count)
-                        {
-                            listToRemoveFrom.Remove(objectToMove);
-
-                            listToRemoveFrom.Insert(newIndex, objectToMove);
-                            PostMoveActivity(objectToMove, index, newIndex);
-                        }
-                    }
-                }
-
-            },
-            String.Format(L.Texts.MovingXUpOrDown, GlueState.Self.CurrentCustomVariable?.ToString() ?? GlueState.Self.CurrentNamedObjectSave?.ToString()), 
-            TaskExecutionPreference.Asap);
-    }
 
 
     private static void MoveToBottomClick(object sender, EventArgs e)
     {
-        MoveToBottom();
-    }
-
-    public static void MoveToBottom()
-    {
-        TaskManager.Self.Add(() =>
-        {
-            object objectToMove;
-            IList listToRemoveFrom;
-            IList throwaway;
-            GetObjectAndListForMoving(out objectToMove, out listToRemoveFrom, out throwaway);
-            if (listToRemoveFrom != null)
-            {
-
-                int oldIndex = listToRemoveFrom.IndexOf(objectToMove);
-
-                if (oldIndex < listToRemoveFrom.Count - 1)
-                {
-                    listToRemoveFrom.Remove(objectToMove);
-                    var newIndex = listToRemoveFrom.Count;
-                    listToRemoveFrom.Insert(newIndex, objectToMove);
-                    PostMoveActivity(objectToMove, oldIndex, newIndex);
-                }
-            }
-        }, L.Texts.MovingToBottom, TaskExecutionPreference.Asap);
-    }
-
-    /// <summary>
-    /// Gets the list that contains the argument objectToMove and the list that should be used to determine the new index.
-    /// </summary>
-    /// <param name="objectToMove">The object to move, such as a Layer</param>
-    /// <param name="listToRemoveFrom">The list to remove from, such as an Entity's NamedObjectSaves.</param>
-    /// <param name="listForIndexing">A subset of the listToRemoveFrom which contains all other objects that are visible
-    /// in the tree view as siblings. For example, the CollisionRelationships in a NamedObjectSave.</param>
-    private static void GetObjectAndListForMoving(out object objectToMove,
-        out IList listToRemoveFrom, 
-        // The list to use when adjusting index, which is needed if the object being shifted is in a list that is filtered. For example,
-        // Layers appear in a sub-list of all layers.
-        out IList listForIndexing)
-    {
-        objectToMove = null;
-        listToRemoveFrom = null;
-        listForIndexing = null;
-        if (GlueState.Self.CurrentCustomVariable != null)
-        {
-            objectToMove = GlueState.Self.CurrentCustomVariable;
-            listToRemoveFrom = GlueState.Self.CurrentElement.CustomVariables;
-            listForIndexing = listToRemoveFrom;
-        }
-        else if(GlueState.Self.CurrentStateSave != null)
-        {
-            var category = GlueState.Self.CurrentStateSaveCategory;
-
-            objectToMove = GlueState.Self.CurrentStateSave;
-            listToRemoveFrom = category.States ?? GlueState.Self.CurrentElement.States;
-            listForIndexing = listToRemoveFrom;
-        }
-
-        else if (GlueState.Self.CurrentNamedObjectSave != null)
-        {
-            var currentNamedObject = GlueState.Self.CurrentNamedObjectSave;
-
-            objectToMove = currentNamedObject;
-
-            NamedObjectSave container = NamedObjectContainerHelper.GetNamedObjectThatIsContainerFor(
-                GlueState.Self.CurrentElement, GlueState.Self.CurrentNamedObjectSave);
-
-            if (container != null)
-            {
-                listToRemoveFrom = container.ContainedObjects;
-                listForIndexing = listToRemoveFrom;
-            }
-            else if (currentNamedObject.IsLayer)
-            {
-                listToRemoveFrom = GlueState.Self.CurrentElement.NamedObjects;
-                listForIndexing = GlueState.Self.CurrentElement.NamedObjects.Where(item => item.IsLayer).ToList();
-            }
-            else if (currentNamedObject.IsCollisionRelationship())
-            {
-                listToRemoveFrom = GlueState.Self.CurrentElement.NamedObjects;
-                listForIndexing = GlueState.Self.CurrentElement.NamedObjects.Where(item => item.IsCollisionRelationship()).ToList();
-            }
-            else
-            {
-                listToRemoveFrom = GlueState.Self.CurrentElement.NamedObjects;
-                listForIndexing = GlueState.Self.CurrentElement.NamedObjects
-                    .Where(item => item.IsLayer == false && item.IsCollisionRelationship() == false)
-                    .ToList();
-            }
-        }
-        else if(GlueState.Self.CurrentReferencedFileSave != null)
-        {
-            objectToMove = GlueState.Self.CurrentReferencedFileSave;
-            listToRemoveFrom = GlueState.Self.CurrentElement.ReferencedFiles;
-            listForIndexing = GlueState.Self.CurrentElement.ReferencedFiles;
-        }
+        GlueCommands.Self.GluxCommands.MoveToBottom();
     }
 
 
-    private static void PostMoveActivity(object objectMoved, int oldIndex, int newIndex)
-    {
-        // do this before refreshing the tree nodes
-        var variableMoved = objectMoved as CustomVariable;
-        var namedObjectMoved = objectMoved as NamedObjectSave;
-        var stateSaveMoved = objectMoved as StateSave;
-        var fileMoved = objectMoved as ReferencedFileSave;
-
-        // Should this be the current? Or the "container" of what was moved...
-        var element = GlueState.Self.CurrentElement;
 
 
-        // I think the variables are complete remade. I could make it preserve them, but it's easier to do this:
-        if (variableMoved != null)
-        {
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.CustomVariables);
-            //GlueState.Self.CurrentCustomVariable = null;
-            GlueState.Self.CurrentCustomVariable = variableMoved;
-        }
-        else if (namedObjectMoved != null)
-        {
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.NamedObjects);
-            //GlueState.Self.CurrentNamedObjectSave = null;
-            GlueState.Self.CurrentNamedObjectSave = namedObjectMoved;
-        }
-        else if (stateSaveMoved != null)
-        {
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.All); // todo - this could be more efficient...
 
-            GlueState.Self.CurrentStateSave = stateSaveMoved;
-        }
-        else if(fileMoved != null)
-        {
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.All); // this could be just files eventually
-
-            GlueState.Self.CurrentReferencedFileSave = fileMoved;
-        }
-
-        GlueState.Self.CurrentElement.SortStatesToCustomVariables();
-        var elementsToRegen = new HashSet<GlueElement>();
-        if(element != null)
-        {
-            elementsToRegen.Add(element);
-        }
-
-        foreach (NamedObjectSave nos in ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element))
-        {
-            nos.UpdateCustomProperties();
-
-            // We only want to re-generate this if the object actually has this variable assigned.
-            // If it doesn't, then the re-order won't matter
-
-            var shouldRegenerateEntity = true;
-
-            if (variableMoved != null)
-            {
-                var doesNosAssignVariable = nos.InstructionSaves.Any(item => item.Member == variableMoved.Name);
-
-                if(!doesNosAssignVariable)
-                {
-                    shouldRegenerateEntity = false;
-                }
-            }
-
-
-            if (shouldRegenerateEntity)
-            {
-                var container = nos.GetContainer();
-
-                var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(container);
-                if(!elementsToRegen.ContainsAny(baseElements))
-                {
-                    elementsToRegen.Add(container);
-                }
-            }
-        }
-
-        foreach (var elementToRegen in elementsToRegen)
-        {
-            // February 18, 2022
-            // performance note: This generates all elements that inherit from the argument, so this
-            // could re-generate lots of code over and over. This could be improved if needed, but I'm 
-            // writing this as I've already made tons of performance improvements to the post move activity
-            // method. Therefore, I'll leave this for a 2nd pass if we really need it.
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementToRegen);
-        }
-
-        foreach(var elementToSave in elementsToRegen)
-        {
-            GlueCommands.Self.GluxCommands.SaveElementAsync(elementToSave, TaskExecutionPreference.AddOrMoveToEnd);
-        }
-
-        PluginManager.ReactToObjectReordered(objectMoved, oldIndex, newIndex);
-        ObjectMoved?.Invoke(objectMoved);
-    }
-
-    public static event Action<object> ObjectMoved;
-
-    public static void SetExternallyBuiltFileIfHigherThanCurrent(string directoryOfFile, bool performSave)
-    {
-        if (directoryOfFile == null)
-        {
-            throw new ArgumentNullException(nameof(directoryOfFile));
-        }
-        string currentExternalDirectory = null;
-
-        if (!string.IsNullOrEmpty(ProjectManager.GlueProjectSave.ExternallyBuiltFileDirectory))
-        {
-            currentExternalDirectory = GlueCommands.Self.GetAbsoluteFileName(ProjectManager.GlueProjectSave.ExternallyBuiltFileDirectory, true);
-        }
-
-        if (string.IsNullOrEmpty(currentExternalDirectory) ||
-            !FileManager.IsRelativeTo(directoryOfFile, currentExternalDirectory))
-        {
-
-            //FileWatchManager.SetExternallyBuiltContentDirectory(directoryOfFile);
-            //      
-            string newExternalDirectoryRelativeToContent = ProjectManager.MakeRelativeContent(directoryOfFile);
-
-            ProjectManager.GlueProjectSave.ExternallyBuiltFileDirectory = newExternalDirectoryRelativeToContent;
-
-            if (performSave)
-            {
-                GluxCommands.Self.SaveProjectAndElements();
-            }
-        }
-    }
 
 
     private static void ViewSourceInExplorerClick(object sender, EventArgs e)
@@ -2315,12 +1520,6 @@ public static class RightClickHelper
             ati, false, directory, resultNameInFolder);
 
         GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-    }
-
-    internal static void ErrorCheckClick()
-    {
-        ErrorManager.HandleCheckErrors();
-
     }
 
 

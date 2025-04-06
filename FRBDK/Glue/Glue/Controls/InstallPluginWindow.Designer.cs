@@ -97,7 +97,7 @@ partial class InstallPluginWindow
         this.btnOk.Name = "btnOk";
         this.btnOk.Size = new System.Drawing.Size(139, 23);
         this.btnOk.TabIndex = 5;
-        this.btnOk.Text = L.Texts.Ok;
+        this.btnOk.Text = "OK";
         this.btnOk.UseVisualStyleBackColor = true;
         this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
         // 
@@ -108,7 +108,7 @@ partial class InstallPluginWindow
         this.btnCancel.Name = "btnCancel";
         this.btnCancel.Size = new System.Drawing.Size(139, 23);
         this.btnCancel.TabIndex = 6;
-        this.btnCancel.Text = L.Texts.Cancel;
+        this.btnCancel.Text = "Cancel";
         this.btnCancel.UseVisualStyleBackColor = true;
         this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
         // 

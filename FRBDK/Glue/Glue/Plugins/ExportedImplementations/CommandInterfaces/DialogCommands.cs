@@ -403,9 +403,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         lbw.AddItem(s);
                     }
                     lbw.ClearButtons();
-                    lbw.AddButton(L.Texts.FilesLeaveAsPartOfProject, DialogResult.No);
-                    lbw.AddButton(L.Texts.FilesRemoveFromProjectButKeep, DialogResult.OK);
-                    lbw.AddButton(L.Texts.FilesRemoveAndDelete, DialogResult.Yes);
+                    lbw.AddButton("Nothing - leave them as part of the game project", DialogResult.No);
+                    lbw.AddButton("Remove them from the project but keep the files", DialogResult.OK);
+                    lbw.AddButton("Remove and delete the files", DialogResult.Yes);
 
                     lbw.ShowDialog();
                     var result = (DialogResult)lbw.ClickedOption;
@@ -442,7 +442,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(owner);
                     }
-                }, L.Texts.RefreshingTreeNodes);
+                }, "Refreshing tree nodes");
 
 
                 if (saveAndRegenerate)
@@ -1082,7 +1082,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (addEventWindow.ShowDialog() == true)
             {
-                RightClickHelper.HandleAddEventOk(addEventWindow);
+                var viewModelInternal = new GlueFormsCore.ViewModels.AddEventViewModel
+                {
+                    EventName = addEventWindow.ResultName,
+                    TunnelingObject = addEventWindow.TunnelingObject,
+                    TunnelingEvent = addEventWindow.TunnelingEvent,
+                    SourceVariable = addEventWindow.SourceVariable,
+                    BeforeOrAfter = addEventWindow.BeforeOrAfter,
+                    DelegateType = addEventWindow.ResultDelegateType
+                };
+
+                GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(viewModelInternal, GlueState.Self.CurrentElement);
+
             }
 
         }

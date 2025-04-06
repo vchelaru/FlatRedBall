@@ -125,8 +125,8 @@
                 <ColumnDefinition Width="10"></ColumnDefinition>
                 <ColumnDefinition Width="100"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Click="OkClicked" IsEnabled="{Binding IsOkButtonEnabled}" Content="{x:Static localization:Texts.Ok}" />
-            <Button Click="CancelClicked" Grid.Column="2" Content="{x:Static localization:Texts.Cancel}" />
+            <Button Click="OkClicked" IsEnabled="{Binding IsOkButtonEnabled}" Content="OK" />
+            <Button Click="CancelClicked" Grid.Column="2" Content="Cancel" />
         </Grid>
     </Grid>
 </Window>

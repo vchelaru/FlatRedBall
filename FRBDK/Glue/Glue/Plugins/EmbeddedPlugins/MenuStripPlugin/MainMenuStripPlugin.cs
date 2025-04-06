@@ -55,7 +55,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             var Project = AddTopLevelMenuItem(Localization.Texts.Project, Localization.MenuIds.ProjectId);
             {
-                Project.Add(Localization.Texts.ErrorCheck, RightClickHelper.ErrorCheckClick);
+                Project.Add(Localization.Texts.ErrorCheck, ErrorManager.HandleCheckErrors);
                 Project.DropDownItems.Add(new ToolStripSeparator());
                 Project.Add(Localization.Texts.GroupExport, exportToolStripMenuItem_Click);
                 Project.Add(Localization.Texts.GroupImport, ElementImporter.AskAndImportGroup);

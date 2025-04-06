@@ -527,7 +527,38 @@ namespace FlatRedBall.Glue.IO
             if(!string.IsNullOrEmpty(directoryToSet))
             {
 
-                RightClickHelper.SetExternallyBuiltFileIfHigherThanCurrent(directoryToSet, false);
+                SetExternallyBuiltFileIfHigherThanCurrent(directoryToSet, false);
+            }
+        }
+
+
+        public void SetExternallyBuiltFileIfHigherThanCurrent(string directoryOfFile, bool performSave)
+        {
+            if (directoryOfFile == null)
+            {
+                throw new ArgumentNullException(nameof(directoryOfFile));
+            }
+            string currentExternalDirectory = null;
+
+            if (!string.IsNullOrEmpty(ProjectManager.GlueProjectSave.ExternallyBuiltFileDirectory))
+            {
+                currentExternalDirectory = GlueCommands.Self.GetAbsoluteFileName(ProjectManager.GlueProjectSave.ExternallyBuiltFileDirectory, true);
+            }
+
+            if (string.IsNullOrEmpty(currentExternalDirectory) ||
+                !FileManager.IsRelativeTo(directoryOfFile, currentExternalDirectory))
+            {
+
+                //FileWatchManager.SetExternallyBuiltContentDirectory(directoryOfFile);
+                //      
+                string newExternalDirectoryRelativeToContent = ProjectManager.MakeRelativeContent(directoryOfFile);
+
+                ProjectManager.GlueProjectSave.ExternallyBuiltFileDirectory = newExternalDirectoryRelativeToContent;
+
+                if (performSave)
+                {
+                    GluxCommands.Self.SaveProjectAndElements();
+                }
             }
         }
 

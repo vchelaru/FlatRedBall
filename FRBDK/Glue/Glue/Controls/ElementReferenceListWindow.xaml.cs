@@ -177,7 +177,7 @@ public partial class ElementReferenceListWindow
     /// <summary>
     /// Populates the list view with references to the supplied <paramref name="container"/>'s CustomVariables if they have <paramref name="namedObjectSave"/> as SourceObject.
     /// </summary>
-    internal void PopulateWithReferencesTo(NamedObjectSave namedObjectSave, IElement container)
+    public void PopulateWithReferencesTo(NamedObjectSave namedObjectSave, IElement container)
     {
         foreach (var variable in container.CustomVariables.Where(item => item.SourceObject == namedObjectSave.InstanceName))
         {
@@ -197,7 +197,7 @@ public partial class ElementReferenceListWindow
     /// <summary>
     /// Populates the list view with references to the supplied <paramref name="container"/>'s States' instructions if they have <paramref name="customVariable"/> as Member.
     /// </summary>
-    internal void PopulateWithReferencesTo(CustomVariable customVariable, IElement container)
+    public void PopulateWithReferencesTo(CustomVariable customVariable, IElement container)
     {
         foreach (var state in container.AllStates)
         {

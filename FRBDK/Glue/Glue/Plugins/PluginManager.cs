@@ -807,7 +807,7 @@ namespace FlatRedBall.Glue.Plugins
                 nameof(AddNewFileOptions));
         }
 
-        internal static string CreateNewFile(AssetTypeInfo assetTypeInfo, object extraData, string directory, string name)
+        public static string CreateNewFile(AssetTypeInfo assetTypeInfo, object extraData, string directory, string name)
         {
             string createdFile = null;
             bool created = false;
@@ -917,7 +917,7 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        internal static void ReactToTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
+        public static void ReactToTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> menuToModify)
         {
             SaveRelativeDirectory();
 

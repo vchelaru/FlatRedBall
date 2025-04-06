@@ -306,9 +306,6 @@ public partial class MainGlueWindow : Form
         SetScreenSubMessage("Initialize Error Reporting");
         FileErrorReporter.Initialize(this);
 
-        SetScreenSubMessage("Initializing Right Click Menus");
-        RightClickHelper.Initialize();
-
         SetScreenSubMessage("Initializing Property Grids");
         PropertyGridRightClickHelper.Initialize();
 

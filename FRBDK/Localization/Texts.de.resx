@@ -399,9 +399,6 @@
   <data name="Ok" xml:space="preserve">
     <value>Ok</value>
   </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Abbrechen</value>
-  </data>
   <data name="CancelBuild" xml:space="preserve">
     <value>Bau abbrechen</value>
   </data>
@@ -828,9 +825,6 @@
   <data name="StaticAllObjectsShareVariable" xml:space="preserve">
     <value>Statisch (alle Objekte teilen sich eine Kopie derselben Variablen)</value>
   </data>
-  <data name="CanBeSetByDerived" xml:space="preserve">
-    <value>Kann durch Abgeleitet festgelegt werden</value>
-  </data>
   <data name="Search" xml:space="preserve">
     <value>Suchen...</value>
   </data>
@@ -893,9 +887,6 @@
   </data>
   <data name="DeleteAlsoFollowing" xml:space="preserve">
     <value>Die folgenden Elemente werden ebenfalls gelöscht:</value>
-  </data>
-  <data name="DeleteQuestion" xml:space="preserve">
-    <value>Sind Sie sicher, dass Sie löschen möchten?</value>
   </data>
   <data name="InstallUpdate" xml:space="preserve">
     <value>Installiere Update</value>
@@ -1064,18 +1055,6 @@
   </data>
   <data name="ExposedInDerivedCannotDelete" xml:space="preserve">
     <value>Folgendes kann nicht gelöscht werden, da ein Basisobjekt als ExposedInDerived oder SetByDerived markiert ist:</value>
-  </data>
-  <data name="FilesLeaveAsPartOfProject" xml:space="preserve">
-    <value>Nichts – belassen Sie sie als Teil des Spielprojekts</value>
-  </data>
-  <data name="FilesRemoveFromProjectButKeep" xml:space="preserve">
-    <value>Entfernen Sie sie aus dem Projekt, aber behalten Sie die Dateien</value>
-  </data>
-  <data name="FilesRemoveAndDelete" xml:space="preserve">
-    <value>Löschen Sie die Dateien dauerhaft</value>
-  </data>
-  <data name="RefreshingTreeNodes" xml:space="preserve">
-    <value>Baumknoten werden aktualisiert</value>
   </data>
   <data name="Spreadsheet" xml:space="preserve">
     <value>Kalkulationstabelle</value>
@@ -1950,38 +1929,14 @@
   <data name="NewFolderEnter" xml:space="preserve">
     <value>Geben Sie einen neuen Ordnernamen ein</value>
   </data>
-  <data name="VariableRemove" xml:space="preserve">
-    <value>Entfernen Sie die Variable</value>
-  </data>
   <data name="VariableHasNoStates" xml:space="preserve">
     <value>Der Variablen {0} sind keine Zustände mehr zugeordnet. Was würdest du gern tun?</value>
-  </data>
-  <data name="DeleteQuestionX" xml:space="preserve">
-    <value>Sind Sie sicher, dass Sie {0} löschen möchten?</value>
-  </data>
-  <data name="WarningScreenXBaseForScreens" xml:space="preserve">
-    <value>Achtung: Der Bildschirm {0} ist die Basis für die folgenden Bildschirme:</value>
-  </data>
-  <data name="VariableRemoveNothing" xml:space="preserve">
-    <value>Nichts (Projekt wird möglicherweise nicht ausgeführt, bis das Problem behoben ist)</value>
   </data>
   <data name="ProjectGlueLoadOrCreateFirst" xml:space="preserve">
     <value>Sie müssen zunächst ein Glue-Projekt laden oder erstellen</value>
   </data>
   <data name="EntityIsBaseForEntities" xml:space="preserve">
     <value>De Entiteit {0} is de basis voor de volgende Entiteiten:</value>
-  </data>
-  <data name="EntityReferencedByFollowingObjects" xml:space="preserve">
-    <value>Die Entität {0} wird von den folgenden Objekten referenziert:</value>
-  </data>
-  <data name="FilesRemove" xml:space="preserve">
-    <value>Dateien entfernen</value>
-  </data>
-  <data name="EntityRemove" xml:space="preserve">
-    <value>Entität wird entfernt</value>
-  </data>
-  <data name="ScreenRemove" xml:space="preserve">
-    <value>Bildschirm entfernen</value>
   </data>
   <data name="ItemRemove" xml:space="preserve">
     <value>Gegenstand entfernen</value>
@@ -2112,9 +2067,6 @@
   <data name="EntityAddInstance" xml:space="preserve">
     <value>Entitätsinstanz hinzufügen</value>
   </data>
-  <data name="EntityExport" xml:space="preserve">
-    <value>Entität exportieren</value>
-  </data>
   <data name="FileOpenCs" xml:space="preserve">
     <value>Öffnen Sie die .cs-Datei</value>
   </data>
@@ -2132,21 +2084,6 @@
   </data>
   <data name="FolderGlueMadeWhenFileAdded" xml:space="preserve">
     <value>Dieses {0} hat keinen Inhaltsordner. Es wird erstellt, wenn eine Datei zu diesem {1} hinzugefügt wird.</value>
-  </data>
-  <data name="Sure" xml:space="preserve">
-    <value>Bist du sicher?</value>
-  </data>
-  <data name="FolderDeleteNotEmpty" xml:space="preserve">
-    <value>Das Verzeichnis {0} ist nicht leer. Sind Sie sicher, dass Sie es und alles darin löschen möchten?</value>
-  </data>
-  <data name="MovingToTop" xml:space="preserve">
-    <value>Nach oben verschieben</value>
-  </data>
-  <data name="MovingToBottom" xml:space="preserve">
-    <value>Nach unten bewegen</value>
-  </data>
-  <data name="MovingXUpOrDown" xml:space="preserve">
-    <value>{0} nach oben oder unten verschieben</value>
   </data>
   <data name="ObjectNullSource" xml:space="preserve">
     <value>Dieses Objekt hat eine Null-Quelldatei.</value>

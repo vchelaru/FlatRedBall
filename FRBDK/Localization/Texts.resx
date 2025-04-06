@@ -400,9 +400,6 @@ for {1}?</value>
   <data name="Ok" xml:space="preserve">
     <value>OK</value>
   </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
   <data name="CancelBuild" xml:space="preserve">
     <value>Cancel Build</value>
   </data>
@@ -829,9 +826,6 @@ for {1}?</value>
   <data name="StaticAllObjectsShareVariable" xml:space="preserve">
     <value>Static (all objects share one copy of the same variable)</value>
   </data>
-  <data name="CanBeSetByDerived" xml:space="preserve">
-    <value>Can Be Set By Derived</value>
-  </data>
   <data name="Search" xml:space="preserve">
     <value>Search...</value>
   </data>
@@ -894,9 +888,6 @@ for {1}?</value>
   </data>
   <data name="DeleteAlsoFollowing" xml:space="preserve">
     <value>The following items will also be deleted:</value>
-  </data>
-  <data name="DeleteQuestion" xml:space="preserve">
-    <value>Are you sure you want to delete?</value>
   </data>
   <data name="InstallUpdate" xml:space="preserve">
     <value>Install Update</value>
@@ -1065,18 +1056,6 @@ for {1}?</value>
   </data>
   <data name="ExposedInDerivedCannotDelete" xml:space="preserve">
     <value>The following cannot be deleted because a base object has it marked as ExposedInDerived or SetByDerived:</value>
-  </data>
-  <data name="FilesLeaveAsPartOfProject" xml:space="preserve">
-    <value>Nothing - leave them as part of the game project</value>
-  </data>
-  <data name="FilesRemoveFromProjectButKeep" xml:space="preserve">
-    <value>Remove them from the project but keep the files</value>
-  </data>
-  <data name="FilesRemoveAndDelete" xml:space="preserve">
-    <value>Remove and delete the files</value>
-  </data>
-  <data name="RefreshingTreeNodes" xml:space="preserve">
-    <value>Refreshing tree nodes</value>
   </data>
   <data name="Spreadsheet" xml:space="preserve">
     <value>Spreadsheet</value>
@@ -1951,38 +1930,14 @@ for {1}?</value>
   <data name="NewFolderEnter" xml:space="preserve">
     <value>Enter new folder name</value>
   </data>
-  <data name="VariableRemove" xml:space="preserve">
-    <value>Remove the variable</value>
-  </data>
   <data name="VariableHasNoStates" xml:space="preserve">
     <value>The variable {0} no longer has any states associated with it.  What would you like to do?</value>
-  </data>
-  <data name="DeleteQuestionX" xml:space="preserve">
-    <value>Are you sure you want to delete {0}?</value>
-  </data>
-  <data name="WarningScreenXBaseForScreens" xml:space="preserve">
-    <value>Warning: the Screen {0} is the base for the following Screens:</value>
-  </data>
-  <data name="VariableRemoveNothing" xml:space="preserve">
-    <value>Nothing (project may not run until this is fixed)</value>
   </data>
   <data name="ProjectGlueLoadOrCreateFirst" xml:space="preserve">
     <value>You must first load or create a Glue project</value>
   </data>
   <data name="EntityIsBaseForEntities" xml:space="preserve">
     <value>The Entity {0} is the base for the following Entities:</value>
-  </data>
-  <data name="EntityReferencedByFollowingObjects" xml:space="preserve">
-    <value>The Entity {0} is referenced by the following objects:</value>
-  </data>
-  <data name="FilesRemove" xml:space="preserve">
-    <value>Removing files</value>
-  </data>
-  <data name="EntityRemove" xml:space="preserve">
-    <value>Removing Entity</value>
-  </data>
-  <data name="ScreenRemove" xml:space="preserve">
-    <value>Removing Screen</value>
   </data>
   <data name="ItemRemove" xml:space="preserve">
     <value>Remove item</value>
@@ -2116,9 +2071,6 @@ for {1}?</value>
   <data name="EntityAddInstance" xml:space="preserve">
     <value>Add Entity Instance</value>
   </data>
-  <data name="EntityExport" xml:space="preserve">
-    <value>Export Entity</value>
-  </data>
   <data name="FileOpenCs" xml:space="preserve">
     <value>Open .cs file</value>
   </data>
@@ -2136,21 +2088,6 @@ for {1}?</value>
   </data>
   <data name="FolderGlueMadeWhenFileAdded" xml:space="preserve">
     <value>This {0} does not have a content folder. It will be created when a file is added to this {1}.</value>
-  </data>
-  <data name="Sure" xml:space="preserve">
-    <value>Are you sure?</value>
-  </data>
-  <data name="FolderDeleteNotEmpty" xml:space="preserve">
-    <value>The {0} directory is not empty. Are you sure you want to delete it and everything in it?</value>
-  </data>
-  <data name="MovingToTop" xml:space="preserve">
-    <value>Moving to top</value>
-  </data>
-  <data name="MovingToBottom" xml:space="preserve">
-    <value>Moving to bottom</value>
-  </data>
-  <data name="MovingXUpOrDown" xml:space="preserve">
-    <value>Moving {0} up or down</value>
   </data>
   <data name="ObjectNullSource" xml:space="preserve">
     <value>This object has a null source file.</value>

@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using PropertyTools.Wpf;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
 namespace OfficialPlugins.TreeViewPlugin.Views;
 
@@ -47,7 +48,7 @@ public partial class MainTreeViewControl : UserControl
     public MainTreeViewControl()
     {
         InitializeComponent();
-        RightClickHelper.ObjectMoved += movedObject =>
+        GluxCommands.ObjectMoved += movedObject =>
         {
             if (GlueState.Self.Find.TreeNodeByTag(movedObject) is { } treeNode &&
                 MainTreeView.ItemContainerGenerator.ContainerFromItem(treeNode) is TreeListBoxItem treeItem)

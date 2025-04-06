@@ -85,8 +85,8 @@
             </StackPanel>
         </GroupBox>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Width="60" Click="OkClickInternal" Content="{x:Static localization:Texts.Ok}" />
-            <Button Margin="5,0,0,0" Width="60" Click="CancelClickInternal" Content="{x:Static localization:Texts.Cancel}"/>
+            <Button Width="60" Click="OkClickInternal" Content="OK" />
+            <Button Margin="5,0,0,0" Width="60" Click="CancelClickInternal" Content="Cancel"/>
         </StackPanel>
     </StackPanel>
 </Window>

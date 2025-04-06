@@ -61,24 +61,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can Be Set By Derived.
-        /// </summary>
-        public static string CanBeSetByDerived {
-            get {
-                return ResourceManager.GetString("CanBeSetByDerived", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cancel.
-        /// </summary>
-        public static string Cancel {
-            get {
-                return ResourceManager.GetString("Cancel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cancel Build.
         /// </summary>
         public static string CancelBuild {
@@ -727,24 +709,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to delete?.
-        /// </summary>
-        public static string DeleteQuestion {
-            get {
-                return ResourceManager.GetString("DeleteQuestion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to delete {0}?.
-        /// </summary>
-        public static string DeleteQuestionX {
-            get {
-                return ResourceManager.GetString("DeleteQuestionX", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Desktop.
         /// </summary>
         public static string Desktop {
@@ -1177,15 +1141,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Export Entity.
-        /// </summary>
-        public static string EntityExport {
-            get {
-                return ResourceManager.GetString("EntityExport", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Import Entity.
         /// </summary>
         public static string EntityImport {
@@ -1227,24 +1182,6 @@ namespace Localization {
         public static string EntityMain {
             get {
                 return ResourceManager.GetString("EntityMain", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The Entity {0} is referenced by the following objects:.
-        /// </summary>
-        public static string EntityReferencedByFollowingObjects {
-            get {
-                return ResourceManager.GetString("EntityReferencedByFollowingObjects", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Removing Entity.
-        /// </summary>
-        public static string EntityRemove {
-            get {
-                return ResourceManager.GetString("EntityRemove", resourceCulture);
             }
         }
         
@@ -1780,42 +1717,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Nothing - leave them as part of the game project.
-        /// </summary>
-        public static string FilesLeaveAsPartOfProject {
-            get {
-                return ResourceManager.GetString("FilesLeaveAsPartOfProject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Removing files.
-        /// </summary>
-        public static string FilesRemove {
-            get {
-                return ResourceManager.GetString("FilesRemove", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove and delete the files.
-        /// </summary>
-        public static string FilesRemoveAndDelete {
-            get {
-                return ResourceManager.GetString("FilesRemoveAndDelete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove them from the project but keep the files.
-        /// </summary>
-        public static string FilesRemoveFromProjectButKeep {
-            get {
-                return ResourceManager.GetString("FilesRemoveFromProjectButKeep", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The file already exist {0}. Overwrite?.
         /// </summary>
         public static string FileXExistsOverwrite {
@@ -1938,15 +1839,6 @@ namespace Localization {
         public static string FolderDelete {
             get {
                 return ResourceManager.GetString("FolderDelete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The {0} directory is not empty. Are you sure you want to delete it and everything in it?.
-        /// </summary>
-        public static string FolderDeleteNotEmpty {
-            get {
-                return ResourceManager.GetString("FolderDeleteNotEmpty", resourceCulture);
             }
         }
         
@@ -3833,33 +3725,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Moving to bottom.
-        /// </summary>
-        public static string MovingToBottom {
-            get {
-                return ResourceManager.GetString("MovingToBottom", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Moving to top.
-        /// </summary>
-        public static string MovingToTop {
-            get {
-                return ResourceManager.GetString("MovingToTop", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Moving {0} up or down.
-        /// </summary>
-        public static string MovingXUpOrDown {
-            get {
-                return ResourceManager.GetString("MovingXUpOrDown", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Name:.
         /// </summary>
         public static string Name {
@@ -5066,15 +4931,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Refreshing tree nodes.
-        /// </summary>
-        public static string RefreshingTreeNodes {
-            get {
-                return ResourceManager.GetString("RefreshingTreeNodes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Refresh UI.
         /// </summary>
         public static string RefreshUi {
@@ -5359,15 +5215,6 @@ namespace Localization {
         public static string ScreenProperties {
             get {
                 return ResourceManager.GetString("ScreenProperties", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Removing Screen.
-        /// </summary>
-        public static string ScreenRemove {
-            get {
-                return ResourceManager.GetString("ScreenRemove", resourceCulture);
             }
         }
         
@@ -5867,15 +5714,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure?.
-        /// </summary>
-        public static string Sure {
-            get {
-                return ResourceManager.GetString("Sure", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Take Snapshot.
         /// </summary>
         public static string TakeSnapshot {
@@ -6317,24 +6155,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove the variable.
-        /// </summary>
-        public static string VariableRemove {
-            get {
-                return ResourceManager.GetString("VariableRemove", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Nothing (project may not run until this is fixed).
-        /// </summary>
-        public static string VariableRemoveNothing {
-            get {
-                return ResourceManager.GetString("VariableRemoveNothing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Edit Reset Variables.
         /// </summary>
         public static string VariableResetEdit {
@@ -6529,15 +6349,6 @@ namespace Localization {
         public static string WarningLocalizationFileChange {
             get {
                 return ResourceManager.GetString("WarningLocalizationFileChange", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Warning: the Screen {0} is the base for the following Screens:.
-        /// </summary>
-        public static string WarningScreenXBaseForScreens {
-            get {
-                return ResourceManager.GetString("WarningScreenXBaseForScreens", resourceCulture);
             }
         }
         

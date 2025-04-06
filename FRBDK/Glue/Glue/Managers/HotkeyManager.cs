@@ -115,11 +115,11 @@ namespace FlatRedBall.Glue.Managers
                     {
                         if(shiftDown)
                         {
-                            RightClickHelper.MoveToTop();
+                            GlueCommands.Self.GluxCommands.MoveToTop();
                         }
                         else
                         {
-                            RightClickHelper.MoveSelectedObjectUp();
+                            GlueCommands.Self.GluxCommands.MoveSelectedObjectUp();
                         }
                         return true;
                     }
@@ -130,11 +130,11 @@ namespace FlatRedBall.Glue.Managers
                     {
                         if(shiftDown)
                         {
-                            RightClickHelper.MoveToBottom();
+                            GlueCommands.Self.GluxCommands.MoveToBottom();
                         }
                         else
                         {
-                            RightClickHelper.MoveSelectedObjectDown();
+                            GlueCommands.Self.GluxCommands.MoveSelectedObjectDown();
                         }
                         return true;
                     }
@@ -188,11 +188,16 @@ namespace FlatRedBall.Glue.Managers
                 //treeNode.IsFilesContainerNode() || 
                 treeNode.IsFolderInFilesContainerNode() || treeNode.IsDirectoryNode())
             {
-                RightClickHelper.DeleteFolderClick(treeNode);
+                GlueCommands.Self.GluxCommands.DeleteFolderClick(treeNode);
             }
             else
             {
-                await RightClickHelper.RemoveFromProjectToolStripMenuItem();
+                //await RightClickHelper.RemoveFromProjectToolStripMenuItem();
+
+
+                bool saveAndRegenerate = true;
+
+                await GlueCommands.Self.GluxCommands.RemoveFromProjectOptionalSaveAndRegenerate(saveAndRegenerate, true, true);
             }
         }
     }

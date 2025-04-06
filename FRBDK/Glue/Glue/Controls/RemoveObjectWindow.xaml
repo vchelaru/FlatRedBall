@@ -24,8 +24,8 @@
             </ListBox>
         </Grid>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Click="DeleteButton_Click" IsDefault="True" Content="{x:Static localization:Texts.Delete}" />
-            <Button Click="CancelButton_Click" IsCancel="True" Margin="5,0,0,0" Content="{x:Static localization:Texts.Cancel}" />
+            <Button Click="DeleteButton_Click" IsDefault="True" Content="Delete" />
+            <Button Click="CancelButton_Click" IsCancel="True" Margin="5,0,0,0" Content="Cancel" />
         </StackPanel>
     </Grid>
 </Window>

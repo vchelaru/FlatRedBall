@@ -24,6 +24,6 @@
                 VerticalAlignment="Bottom" 
                 HorizontalAlignment="Right" 
                 Click="CancelButton_Click"
-                MinWidth="100"  Content="{x:Static localization:Texts.Cancel}" />
+                MinWidth="100"  Content="Cancel" />
     </Grid>
 </Window>

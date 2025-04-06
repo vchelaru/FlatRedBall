@@ -26,7 +26,8 @@ namespace TiledPlugin.Views
 
         private void DeleteLevelClicked(object sender, RoutedEventArgs e)
         {
-            var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(Localization.Texts.DeleteQuestion);
+            var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
+                "Are you sure you want to delete?");
             if(result == MessageBoxResult.Yes)
             {
                 System.IO.File.Delete(ViewModel.SelectedTmxFilePath.FullPath);

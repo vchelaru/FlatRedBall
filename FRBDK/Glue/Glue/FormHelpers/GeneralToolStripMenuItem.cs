@@ -12,11 +12,11 @@ namespace GlueFormsCore.FormHelpers
 
         public GeneralToolStripMenuItem(string text) { Text = text; }
 
-        public string Text { get; internal set; }
+        public string Text { get; set; }
         public EventHandler Click { get; set; }
-        public string ShortcutKeyDisplayString { get; internal set; }
+        public string ShortcutKeyDisplayString { get; set; }
 
-        public System.Windows.Controls.Image Image { get; internal set; }
+        public System.Windows.Controls.Image Image { get; set; }
 
         public List<GeneralToolStripMenuItem> DropDownItems { get; private set; } = new List<GeneralToolStripMenuItem>();
 

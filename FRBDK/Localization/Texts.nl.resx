@@ -399,9 +399,6 @@
   <data name="Ok" xml:space="preserve">
     <value>OK</value>
   </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Annuleren</value>
-  </data>
   <data name="CancelBuild" xml:space="preserve">
     <value>Bouwen annuleren</value>
   </data>
@@ -828,9 +825,6 @@
   <data name="StaticAllObjectsShareVariable" xml:space="preserve">
     <value>Statisch (alle objecten delen één kopie van dezelfde variabele)</value>
   </data>
-  <data name="CanBeSetByDerived" xml:space="preserve">
-    <value>Kan worden ingesteld door afgeleide variabele</value>
-  </data>
   <data name="Search" xml:space="preserve">
     <value>Zoeken...</value>
   </data>
@@ -893,9 +887,6 @@
   </data>
   <data name="DeleteAlsoFollowing" xml:space="preserve">
     <value>De volgende items worden ook verwijderd:</value>
-  </data>
-  <data name="DeleteQuestion" xml:space="preserve">
-    <value>Weet je zeker dat je wilt verwijderen?</value>
   </data>
   <data name="InstallUpdate" xml:space="preserve">
     <value>Installeer update</value>
@@ -1064,18 +1055,6 @@
   </data>
   <data name="ExposedInDerivedCannotDelete" xml:space="preserve">
     <value>Het volgende kan niet worden verwijderd omdat het bij een basisobject is gemarkeerd als ExposedInDerived of SetByDerived:</value>
-  </data>
-  <data name="FilesLeaveAsPartOfProject" xml:space="preserve">
-    <value>Niets - laat ze achter als onderdeel van het spelproject</value>
-  </data>
-  <data name="FilesRemoveFromProjectButKeep" xml:space="preserve">
-    <value>Verwijder ze uit het project, maar bewaar de bestanden</value>
-  </data>
-  <data name="FilesRemoveAndDelete" xml:space="preserve">
-    <value>Verwijder de bestanden permanent</value>
-  </data>
-  <data name="RefreshingTreeNodes" xml:space="preserve">
-    <value>Tree Nodes vernieuwen</value>
   </data>
   <data name="Spreadsheet" xml:space="preserve">
     <value>Spreadsheet</value>
@@ -1950,38 +1929,14 @@
   <data name="NewFolderEnter" xml:space="preserve">
     <value>Voer een nieuwe mapnaam in</value>
   </data>
-  <data name="VariableRemove" xml:space="preserve">
-    <value>Verwijder de variabele</value>
-  </data>
   <data name="VariableHasNoStates" xml:space="preserve">
     <value>Aan de variabele {0} zijn geen statussen meer gekoppeld. Wat zou je willen doen?</value>
-  </data>
-  <data name="DeleteQuestionX" xml:space="preserve">
-    <value>Weet je zeker dat je {0} wilt verwijderen?</value>
-  </data>
-  <data name="WarningScreenXBaseForScreens" xml:space="preserve">
-    <value>Waarschuwing: het scherm {0} is de basis voor de volgende schermen:</value>
-  </data>
-  <data name="VariableRemoveNothing" xml:space="preserve">
-    <value>Niets (project loopt mogelijk niet totdat dit is opgelost)</value>
   </data>
   <data name="ProjectGlueLoadOrCreateFirst" xml:space="preserve">
     <value>U moet eerst een Glue-project laden of maken</value>
   </data>
   <data name="EntityIsBaseForEntities" xml:space="preserve">
     <value>De Entiteit {0} is de basis voor de volgende Entiteiten:</value>
-  </data>
-  <data name="EntityReferencedByFollowingObjects" xml:space="preserve">
-    <value>Er wordt verwezen naar de entiteit {0} door de volgende objecten:</value>
-  </data>
-  <data name="FilesRemove" xml:space="preserve">
-    <value>Bestanden verwijderen</value>
-  </data>
-  <data name="EntityRemove" xml:space="preserve">
-    <value>Entiteit verwijderen</value>
-  </data>
-  <data name="ScreenRemove" xml:space="preserve">
-    <value>Scherm verwijderen</value>
   </data>
   <data name="ItemRemove" xml:space="preserve">
     <value>Verwijder voorwerp</value>
@@ -2115,9 +2070,6 @@
   <data name="EntityAddInstance" xml:space="preserve">
     <value>Entiteitsinstantie toevoegen</value>
   </data>
-  <data name="EntityExport" xml:space="preserve">
-    <value>Entiteit exporteren</value>
-  </data>
   <data name="FileOpenCs" xml:space="preserve">
     <value>Open het .cs-bestand</value>
   </data>
@@ -2135,21 +2087,6 @@
   </data>
   <data name="FolderGlueMadeWhenFileAdded" xml:space="preserve">
     <value>Deze {0} heeft geen inhoudsmap. Het wordt gemaakt wanneer een bestand wordt toegevoegd aan deze {1}.</value>
-  </data>
-  <data name="Sure" xml:space="preserve">
-    <value>Weet u het zeker?</value>
-  </data>
-  <data name="FolderDeleteNotEmpty" xml:space="preserve">
-    <value>Das Verzeichnis {0} is niet leerzaam. Als u zeker weet dat u alles wilt doen wat u wilt?</value>
-  </data>
-  <data name="MovingToTop" xml:space="preserve">
-    <value>Verplaatsen naar boven</value>
-  </data>
-  <data name="MovingToBottom" xml:space="preserve">
-    <value>Verplaatsen naar beneden</value>
-  </data>
-  <data name="MovingXUpOrDown" xml:space="preserve">
-    <value>{0} omhoog of omlaag verplaatsen</value>
   </data>
   <data name="ObjectNullSource" xml:space="preserve">
     <value>Dit object heeft een nulbronbestand.</value>

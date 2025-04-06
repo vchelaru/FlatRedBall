@@ -115,12 +115,12 @@
                     Content="{x:Static localization:Texts.StaticAllObjectsShareVariable}" />
         <CheckBox
                     IsChecked="{Binding SetByDerived}"
-                    Content="{x:Static localization:Texts.CanBeSetByDerived}" />
+                    Content="Can Be Set By Derived" />
       </StackPanel>
     </Grid>
     <StackPanel Orientation="Horizontal" Grid.Row="4" HorizontalAlignment="Right">
-      <Button Margin="10" Width="70" Click="OkButton_Click" Content="{x:Static localization:Texts.Ok}" />
-      <Button Margin="0,10,10,10" Width="70" Click="CancelButton_Click" Content="{x:Static localization:Texts.Cancel}" />
+      <Button Margin="10" Width="70" Click="OkButton_Click" Content="OK" />
+      <Button Margin="0,10,10,10" Width="70" Click="CancelButton_Click" Content="Cancel" />
     </StackPanel>
   </Grid>
 </Window>

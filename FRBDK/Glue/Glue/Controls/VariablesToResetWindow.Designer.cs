@@ -53,7 +53,7 @@ partial class VariablesToResetWindow
         this.CancelButton.Name = "CancelButton";
         this.CancelButton.Size = new System.Drawing.Size(180, 27);
         this.CancelButton.TabIndex = 2;
-        this.CancelButton.Text = L.Texts.Cancel;
+        this.CancelButton.Text = "Cancel";
         this.CancelButton.UseVisualStyleBackColor = true;
         this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
         // 

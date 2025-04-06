@@ -27,7 +27,7 @@ namespace FlatRedBall.Glue.IO
 
     #endregion
 
-    static class FileWatchManager
+    public static class FileWatchManager
     {
         #region Fields
 
