@@ -563,26 +563,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     if (string.IsNullOrEmpty(executable) && !WindowsFileAssociation.NativelyHandledExtensions.Contains(effectiveExtension))
                     {
                         //Attempt to get relative projects
-                        FilePath? absoluteExe = null;
-                        if (GumFileExtensions.Contains(textExtension.ToLower()))
-                        {
-                            absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
-
-                            if(absoluteExe?.Exists() == false)
-                            {
-                                absoluteExe = GlueState.Self.GlueExeDirectory + "Gum/Data/Gum.exe";
-                            }
-                        }
-                        if (String.Equals(textExtension, "achx", StringComparison.OrdinalIgnoreCase))
-                        {
-                            absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
-                            var foundAnimationEditor = absoluteExe?.Exists() == true;
-                            if(!foundAnimationEditor)
-                            {
-                                // check if it's in the default built location if the user is running from prebuilt:
-                                absoluteExe = GlueState.Self.GlueExeDirectory + "AnimationEditor/AnimationEditor.exe";
-                            }
-                        }
+                        FilePath absoluteExe = TryToGetFilePathFromExtension(textExtension);
                         if ((absoluteExe != "") && absoluteExe?.Exists() == true)
                         {
                             Process.Start(new ProcessStartInfo(absoluteExe.FullPath, fileName));
@@ -653,6 +634,32 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     System.Diagnostics.Process.Start(startInfo);
                 }
             }
+        }
+
+        private FilePath TryToGetFilePathFromExtension(string textExtension)
+        {
+            FilePath? absoluteExe = null;
+            if (GumFileExtensions.Contains(textExtension.ToLower()))
+            {
+                absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+
+                if (absoluteExe?.Exists() == false)
+                {
+                    absoluteExe = GlueState.Self.GlueExeDirectory + "Gum/Data/Gum.exe";
+                }
+            }
+            if (String.Equals(textExtension, "achx", StringComparison.OrdinalIgnoreCase))
+            {
+                absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
+                var foundAnimationEditor = absoluteExe?.Exists() == true;
+                if (!foundAnimationEditor)
+                {
+                    // check if it's in the default built location if the user is running from prebuilt:
+                    absoluteExe = GlueState.Self.GlueExeDirectory + "AnimationEditor/AnimationEditor.exe";
+                }
+            }
+
+            return absoluteExe;
         }
 
         private static string GetFileName(ReferencedFileSave currentReferencedFileSave)

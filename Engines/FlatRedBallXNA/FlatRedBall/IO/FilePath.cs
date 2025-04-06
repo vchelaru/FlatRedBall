@@ -176,16 +176,25 @@ namespace FlatRedBall.IO
 
         public bool Exists()
         {
-            var standardized = this.StandardizedCaseSensitive;
-            if(standardized.EndsWith("/"))
+            try
             {
-                return System.IO.Directory.Exists(this.StandardizedCaseSensitive);
+                var standardized = this.StandardizedCaseSensitive;
+                if(standardized.EndsWith("/"))
+                {
+                    return System.IO.Directory.Exists(this.StandardizedCaseSensitive);
+                }
+                else
+                {
+                    // Update - this may be a directory like "c:/SomeDirectory/" or "c:/SomeDirectory/". We don't know, so we have to check both directory and file:
+                    return System.IO.File.Exists(this.StandardizedCaseSensitive) ||
+                        System.IO.Directory.Exists(this.StandardizedCaseSensitive);
+                }
             }
-            else
+            catch(InvalidOperationException)
             {
-                // Update - this may be a directory like "c:/SomeDirectory/" or "c:/SomeDirectory/". We don't know, so we have to check both directory and file:
-                return System.IO.File.Exists(this.StandardizedCaseSensitive) ||
-                    System.IO.Directory.Exists(this.StandardizedCaseSensitive);
+                // This can happen if we have a file path with too many ../'s, going past the root
+                // In that case, the file does not exist
+                return false;
             }
         }
 
