@@ -302,6 +302,13 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public bool IsSuppressingRefreshUnreferencedFiles { get; set; }
 
+        public bool IsSuppressingAutomaticErrorChecking { get; set; }
+
+        // Any new properties here must be added such that they are in their default state to preserve backwards compatabilty
+        // For example, if adding a bool variable here, the value must be false so that old projects have the value set to false
+        // Do not use a default value other than the default value of the type (false for bool, 0 for int, etc.) because the JSON
+        // is serialized to omit defaults.
+
         #endregion
 
         #region Methods
