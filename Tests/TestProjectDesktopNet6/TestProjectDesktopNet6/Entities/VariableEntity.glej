@@ -220,6 +220,22 @@
       "Name": "ColorVariable",
       "DefaultValue": "Azure",
       "SetByDerived": true
+    },
+    {
+      "Properties": [
+        {
+          "Name": "Type",
+          "Value": "List<string>",
+          "Type": "String"
+        }
+      ],
+      "Name": "StringListVariable",
+      "DefaultValue": [
+        "Item1",
+        "Item3",
+        "Item4"
+      ],
+      "SetByDerived": true
     }
   ],
   "Properties": [
@@ -358,7 +374,8 @@
         "VariableThatCreatesVelocity",
         "CustomVariable",
         "FloatWithLotsOfDecimals",
-        "ColorVariable"
+        "ColorVariable",
+        "StringListVariable"
       ]
     }
   ],
