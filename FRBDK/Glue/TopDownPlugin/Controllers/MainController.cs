@@ -368,7 +368,7 @@ namespace TopDownPlugin.Controllers
             UpdateViewModelTo(currentEntitySave);
 
 
-            if(IsTopDown(currentEntitySave))
+            if(IsTopDown(currentEntitySave) || GetIfInheritsFromTopDown(currentEntitySave))
             {
                 if (TopDownPlugin.Controllers.AnimationController.TopDownViewModel == null)
                 {
