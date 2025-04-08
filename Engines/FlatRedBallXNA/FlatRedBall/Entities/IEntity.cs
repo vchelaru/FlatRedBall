@@ -7,5 +7,6 @@ namespace FlatRedBall.Entities
     public interface IEntity
     {
         void ActivityEditMode();
+        void Destroy();
     }
 }
