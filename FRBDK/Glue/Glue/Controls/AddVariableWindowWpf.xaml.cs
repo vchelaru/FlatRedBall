@@ -7,75 +7,74 @@ using GlueFormsCore.ViewModels;
 using System.Windows;
 using System.Windows.Input;
 
-namespace FlatRedBall.Glue.Controls
+namespace FlatRedBall.Glue.Controls;
+
+/// <summary>
+/// Interaction logic for AddVariableWindowWpf.xaml
+/// </summary>
+public partial class AddVariableWindowWpf : Window
 {
-    /// <summary>
-    /// Interaction logic for AddVariableWindowWpf.xaml
-    /// </summary>
-    public partial class AddVariableWindowWpf : Window
+    AddCustomVariableViewModel ViewModel => DataContext as AddCustomVariableViewModel;
+
+    public AddVariableWindowWpf()
     {
-        AddCustomVariableViewModel ViewModel => DataContext as AddCustomVariableViewModel;
+        InitializeComponent();
 
-        public AddVariableWindowWpf()
+        Loaded += (not, used) =>
         {
-            InitializeComponent();
-
-            Loaded += (not, used) =>
+            if(ViewModel?.DesiredVariableType == CustomVariableType.New)
             {
-                if(ViewModel?.DesiredVariableType == CustomVariableType.New)
-                {
-                    NewVariableTextBox.Focus();
-                }
-                GlueCommands.Self.DialogCommands.MoveToCursor(this);
+                NewVariableTextBox.Focus();
+            }
+            GlueCommands.Self.DialogCommands.MoveToCursor(this);
 
-            };
-        }
+        };
+    }
 
 
-        private void OkButton_Click(object sender, RoutedEventArgs e)
+    private void OkButton_Click(object sender, RoutedEventArgs e)
+    {
+        HandleOkClicked();
+    }
+
+    private void HandleOkClicked()
+    {
+        if(!string.IsNullOrEmpty(ViewModel.FailureText))
         {
+            GlueCommands.Self.DialogCommands.ShowMessageBox(ViewModel.FailureText);
+        }
+        else
+        {
+            this.DialogResult = true;
+        }
+    }
+
+    private void CancelButton_Click(object sender, RoutedEventArgs e)
+    {
+        this.DialogResult = false;
+    }
+
+    private void TextBox_KeyDown(object sender, KeyEventArgs e)
+    {
+        HandleKeyboardKey(e);
+    }
+
+    private void HandleKeyboardKey(KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
+        {
+            e.Handled = true;
             HandleOkClicked();
         }
-
-        private void HandleOkClicked()
+        else if (e.Key == Key.Escape)
         {
-            if(!string.IsNullOrEmpty(ViewModel.FailureText))
-            {
-                GlueCommands.Self.DialogCommands.ShowMessageBox(ViewModel.FailureText);
-            }
-            else
-            {
-                this.DialogResult = true;
-            }
-        }
-
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
-        {
+            e.Handled = true;
             this.DialogResult = false;
         }
+    }
 
-        private void TextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            HandleKeyboardKey(e);
-        }
-
-        private void HandleKeyboardKey(KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                e.Handled = true;
-                HandleOkClicked();
-            }
-            else if (e.Key == Key.Escape)
-            {
-                e.Handled = true;
-                this.DialogResult = false;
-            }
-        }
-
-        private void TunneledVariableTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            HandleKeyboardKey(e);
-        }
+    private void TunneledVariableTextBox_KeyDown(object sender, KeyEventArgs e)
+    {
+        HandleKeyboardKey(e);
     }
 }

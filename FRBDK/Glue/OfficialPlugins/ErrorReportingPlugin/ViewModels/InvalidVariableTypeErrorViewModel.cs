@@ -68,6 +68,7 @@ namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
                     // it better be a CSV or state or Texture
                     var found =
                         variable.Type == "Microsoft.Xna.Framework.Graphics.Texture2D" ||
+                        variable.Type == "Microsoft.Xna.Framework.Color" ||
                         variable.GetIsCsv() ||
                         variable.GetIsVariableState() ||
                         variable.GetIsBaseElementType();

@@ -208,6 +208,18 @@
       ],
       "Name": "FloatWithLotsOfDecimals",
       "DefaultValue": 1.2345679
+    },
+    {
+      "Properties": [
+        {
+          "Name": "Type",
+          "Value": "Microsoft.Xna.Framework.Color",
+          "Type": "String"
+        }
+      ],
+      "Name": "ColorVariable",
+      "DefaultValue": "Azure",
+      "SetByDerived": true
     }
   ],
   "Properties": [
@@ -345,7 +357,8 @@
         "CustomByteVariable",
         "VariableThatCreatesVelocity",
         "CustomVariable",
-        "FloatWithLotsOfDecimals"
+        "FloatWithLotsOfDecimals",
+        "ColorVariable"
       ]
     }
   ],

@@ -196,6 +196,18 @@
       "SourceObject": "SpriteInstance",
       "SourceObjectProperty": "TextureScale",
       "Category": "Size"
+    },
+    {
+      "Properties": [
+        {
+          "Name": "Type",
+          "Value": "Microsoft.Xna.Framework.Color",
+          "Type": "String"
+        }
+      ],
+      "Name": "ColorVariable",
+      "DefaultValue": "Pink",
+      "SetByDerived": true
     }
   ],
   "States": [
@@ -373,7 +385,8 @@
         "LongVariableWithVelocity",
         "IntVariableWithVelocity",
         "CurrentColorCategoryState",
-        "SpriteInstanceTextureScale"
+        "SpriteInstanceTextureScale",
+        "ColorVariable"
       ]
     },
     {
@@ -387,6 +400,12 @@
               "Member": "CircleObjectColor",
               "Value": "Red",
               "Time": 0.0
+            },
+            {
+              "Type": "Microsoft.Xna.Framework.Color",
+              "Member": "ColorVariable",
+              "Value": "Red",
+              "Time": 0.0
             }
           ]
         },
@@ -396,6 +415,12 @@
             {
               "Type": "Color",
               "Member": "CircleObjectColor",
+              "Value": "Blue",
+              "Time": 0.0
+            },
+            {
+              "Type": "Microsoft.Xna.Framework.Color",
+              "Member": "ColorVariable",
               "Value": "Blue",
               "Time": 0.0
             }
@@ -437,7 +462,8 @@
       "ExcludedVariables": [
         "VariableToGetChangedByState",
         "CurrentAdvancedInterpolationCategoryState",
-        "SpriteInstanceTextureScale"
+        "SpriteInstanceTextureScale",
+        "ColorVariable"
       ]
     },
     {
@@ -455,7 +481,8 @@
       "ExcludedVariables": [
         "VariableToGetChangedByState",
         "CurrentAdvancedInterpolationCategoryState",
-        "SpriteInstanceTextureScale"
+        "SpriteInstanceTextureScale",
+        "ColorVariable"
       ]
     },
     {
@@ -473,7 +500,8 @@
       "ExcludedVariables": [
         "VariableToGetChangedByState",
         "CurrentAdvancedInterpolationCategoryState",
-        "SpriteInstanceTextureScale"
+        "SpriteInstanceTextureScale",
+        "ColorVariable"
       ]
     },
     {
@@ -493,7 +521,8 @@
         "CurrentState",
         "IntVariableWithVelocity",
         "CurrentAdvancedInterpolationCategoryState",
-        "SpriteInstanceTextureScale"
+        "SpriteInstanceTextureScale",
+        "ColorVariable"
       ]
     },
     {
@@ -530,7 +559,8 @@
         "VariableToGetChangedByState",
         "CurrentAdvancedInterpolationCategoryState",
         "CurrentTypeState",
-        "VariableOnlySetInOneUncategorizedState"
+        "VariableOnlySetInOneUncategorizedState",
+        "ColorVariable"
       ]
     }
   ],

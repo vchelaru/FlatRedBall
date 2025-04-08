@@ -727,10 +727,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                     rightSide = rightSide.Replace("\"", "");
                 }
             
-                else if (variableConsideringDefinedByBase?.Type == "Color" || forcedType == "Color" || forcedType == "Microsoft.Xna.Framework.Color")
+                else if (
+                    variableConsideringDefinedByBase?.Type == "Color" ||
+                    variableConsideringDefinedByBase?.Type == "Microsoft.Xna.Framework.Color" ||
+                    forcedType == "Color" ||
+                    forcedType == "Microsoft.Xna.Framework.Color")
                 {
-                    rightSide = "Microsoft.Xna.Framework.Color." + rightSide.Replace("\"", "");
-
+                    if(!string.IsNullOrEmpty(rightSide))
+                    {
+                        rightSide = "Microsoft.Xna.Framework.Color." + rightSide.Replace("\"", "");
+                    }
                 }
                 else if(IsQualifiedGumState(customVariable?.Type ?? forcedType))
                 {

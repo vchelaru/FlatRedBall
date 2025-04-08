@@ -24,6 +24,19 @@
       "SetByDerived": true,
       "DefinedByBase": true,
       "Category": "Size"
+    },
+    {
+      "Properties": [
+        {
+          "Name": "Type",
+          "Value": "Microsoft.Xna.Framework.Color",
+          "Type": "String"
+        }
+      ],
+      "Name": "ColorVariable",
+      "DefaultValue": "Pink",
+      "SetByDerived": true,
+      "DefinedByBase": true
     }
   ],
   "States": [

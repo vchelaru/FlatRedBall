@@ -310,7 +310,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 var valueAsString = whatToConvert?.ToString();
 
                 // If this is a color like "White", we want to keep that named color
-                if(variable.Type == "Color")
+                if(variable.Type == "Color" || variable.Type == "Microsoft.Xna.Framework.Color")
                 {
                     // keep this as-is.
                 }
