@@ -119,7 +119,7 @@ public class MainErrorPlugin : PluginBase
     private void HandleLoadedGlux()
     {
         var glueProject = GlueState.Self.CurrentGlueProject;
-        if (glueProject != null && glueProject.IsSuppressingRefreshUnreferencedFiles == false)
+        if (glueProject != null && glueProject.IsSuppressingAutomaticErrorChecking == false)
         {
             RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
         }
