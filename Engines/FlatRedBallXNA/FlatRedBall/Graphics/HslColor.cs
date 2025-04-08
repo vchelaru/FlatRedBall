@@ -151,7 +151,7 @@ public struct HSLColor
     /// </summary>
     /// <param name="color">The color to convert</param>
     /// <returns>An HSL color that approximates the RGB values</returns>
-    public static HSLColor FromRgb(this Color color)
+    public static HSLColor FromRgb(Color color)
     {
         return FromRgb(color.R, color.G, color.B);
     }

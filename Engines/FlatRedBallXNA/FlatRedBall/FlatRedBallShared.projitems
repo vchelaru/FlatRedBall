@@ -93,6 +93,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\IDamageArea.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\IEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ITiledTileMetadata.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\ColorExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\EnumerableExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\FloatExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\PointExtensionMethods.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\BitmapCharacterInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\BitmapFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\CustomEffectManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\HslColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\IDrawableBatch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\GenericEffect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\GraphicalEmumerations.cs" />
