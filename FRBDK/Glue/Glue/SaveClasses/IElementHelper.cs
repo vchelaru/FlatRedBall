@@ -54,7 +54,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 for (int i = state.InstructionSaves.Count - 1; i > -1; i--)
                 {
                     // Make sure this variable is good:
-                    if (!element.ContainsCustomVariable(state.InstructionSaves[i].Member))
+                    if (!element.ContainsCustomVariableRecursively(state.InstructionSaves[i].Member))
                     {
                         state.InstructionSaves.RemoveAt(i);
                     }

@@ -291,6 +291,28 @@ public static class IElementExtensionMethods
         return false;
     }
 
+    public static bool ContainsCustomVariableRecursively(this IElement container, string variableName)
+    {
+        for (int i = 0; i < container.CustomVariables.Count; i++)
+        {
+            if (container.CustomVariables[i].Name == variableName)
+            {
+                return true;
+            }
+        }
+
+        // didn't find it, so let's look at the base:
+        if(!string.IsNullOrEmpty(container.BaseElement))
+        {
+            var baseElement = ObjectFinder.Self.GetElement(container.BaseElement);
+            if(baseElement != null && baseElement.ContainsCustomVariableRecursively(variableName))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public static void PostLoadInitialize(this IElement element)
     {

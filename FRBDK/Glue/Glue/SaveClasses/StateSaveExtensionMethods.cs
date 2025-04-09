@@ -102,7 +102,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     var variableType = matchingVariable?.Type;
 
-                    if(!string.IsNullOrEmpty(matchingVariable.TypeConverter) && matchingVariable.TypeConverter != "<default>")
+                    if(!string.IsNullOrEmpty(matchingVariable?.TypeConverter) && matchingVariable.TypeConverter != "<default>")
                     {
                         int m = 3;
                     }
