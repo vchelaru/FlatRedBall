@@ -374,7 +374,7 @@
   ],
   "ApplyToFixedResolutionPlatforms": true,
   "ExternallyBuiltFileDirectory": "../../",
-  "FileVersion": 52,
+  "FileVersion": 53,
   "ScreenReferences": [
     {
       "Name": "Screens\\AnimationChainScreen"

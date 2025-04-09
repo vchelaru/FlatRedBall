@@ -26,12 +26,12 @@ namespace GlueTestProject.Screens
         {
             // This gluj version still uses the "Type" suffix.
             // If this project is upgraded, then this must be refactored:
-            VariantEntityBaseType.VariantEntityBase.LoadStaticContent(ContentManagerName);
-            VariantEntityBaseType.VariantEntityDerived.LoadStaticContent(ContentManagerName);
+            VariantEntityBaseVariant.VariantEntityBase.LoadStaticContent(ContentManagerName);
+            VariantEntityBaseVariant.VariantEntityDerived.LoadStaticContent(ContentManagerName);
 
-            VariantEntityBaseType.VariantEntityBase.GetFile("FileInBase").ShouldNotBe(null);
-            VariantEntityBaseType.VariantEntityDerived.GetFile("FileInDerived").ShouldNotBe(null);
-            VariantEntityBaseType.VariantEntityDerived.GetFile("FileInBase").ShouldNotBe(null);
+            VariantEntityBaseVariant.VariantEntityBase.GetFile("FileInBase").ShouldNotBe(null);
+            VariantEntityBaseVariant.VariantEntityDerived.GetFile("FileInDerived").ShouldNotBe(null);
+            VariantEntityBaseVariant.VariantEntityDerived.GetFile("FileInBase").ShouldNotBe(null);
         }
 
         private void CustomActivity(bool firstTimeCalled)
