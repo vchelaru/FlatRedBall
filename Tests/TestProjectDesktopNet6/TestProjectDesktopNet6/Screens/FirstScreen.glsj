@@ -3,7 +3,7 @@
     "GLUE"
   ],
   "Source": "GLUE",
-  "NextScreen": "Screens\\VariantScreen",
+  "NextScreen": "Screens\\Level1",
   "CustomVariables": [
     {
       "Properties": [

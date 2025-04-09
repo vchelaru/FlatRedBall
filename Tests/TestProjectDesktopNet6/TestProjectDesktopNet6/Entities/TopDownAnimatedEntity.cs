@@ -9,6 +9,8 @@ using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Graphics.Particle;
 using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
+using GlueTestProject.TestFramework;
+using GlueTestProject.TopDown;
 
 namespace GlueTestProject.Entities
 {
@@ -21,7 +23,7 @@ namespace GlueTestProject.Entities
         /// </summary>
         private void CustomInitialize()
         {
-            //this.AnimationController.ShouldNotBe(null);
+            this.TopDownAnimationController.ShouldNotBe<TopDownAnimationController>(null);
         }
 
         private void CustomActivity()

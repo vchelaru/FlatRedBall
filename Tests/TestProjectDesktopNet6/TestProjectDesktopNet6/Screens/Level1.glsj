@@ -4,6 +4,7 @@
   ],
   "Source": "GLUE",
   "BaseScreen": "Screens\\GameScreen",
+  "NextScreen": "Screens\\VariantScreen",
   "BaseElement": "Screens\\GameScreen",
   "ReferencedFiles": [
     {
@@ -23,6 +24,24 @@
       "IsSharedStatic": true,
       "RuntimeType": "FlatRedBall.TileGraphics.LayeredTileMap",
       "ProjectsToExcludeFrom": []
+    }
+  ],
+  "CustomVariables": [
+    {
+      "Properties": [
+        {
+          "Name": "Type",
+          "Value": "string",
+          "Type": "String"
+        },
+        {
+          "Name": "Category",
+          "Value": "Layer",
+          "Type": "String"
+        }
+      ],
+      "Name": "DefaultLayer",
+      "Category": "Layer"
     }
   ],
   "NamedObjects": [
