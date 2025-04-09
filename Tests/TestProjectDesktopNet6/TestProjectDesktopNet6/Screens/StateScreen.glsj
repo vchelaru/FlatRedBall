@@ -356,6 +356,22 @@
       "AttachToContainer": true,
       "GenerateTimedEmit": true,
       "IndependentOfCamera": true
+    },
+    {
+      "InstanceName": "StateEntityChildInstanceBaseDerivedStates",
+      "SourceClassType": "Entities\\StateEntityChild",
+      "Properties": [
+        {
+          "Name": "AssociateWithFactory",
+          "Value": true,
+          "Type": "bool"
+        }
+      ],
+      "InstructionSaves": [],
+      "SourceType": 1,
+      "SourceFile": "Entities/StateEntityChild",
+      "AttachToContainer": true,
+      "GenerateTimedEmit": true
     }
   ],
   "StateCategoryList": [

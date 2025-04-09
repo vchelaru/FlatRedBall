@@ -1,0 +1,18 @@
+{
+  "Values": [
+    {
+      "AnimationName": "DerivedIdle",
+      "IsDirectionFacingAppended": true,
+      "MinVelocityAbsolute": null,
+      "MaxVelocityAbsolute": null,
+      "AbsoluteVelocityAnimationSpeedMultiplier": null,
+      "MinMovementInputAbsolute": null,
+      "MaxMovementInputAbsolute": null,
+      "MaxSpeedRatioMultiplier": null,
+      "MovementName": null,
+      "CustomCondition": null,
+      "AnimationSpeedAssignment": 0,
+      "Notes": null
+    }
+  ]
+}

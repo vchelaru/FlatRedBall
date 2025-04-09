@@ -364,7 +364,8 @@
     {
       "Name": "TopDownValues",
       "CsvFilesUsingThis": [
-        "Entities/TopDownPluginEntity/TopDownValuesStatic.csv"
+        "Entities/TopDownPluginEntity/TopDownValuesStatic.csv",
+        "Entities/TopDownAnimatedEntity/TopDownValuesStatic.csv"
       ],
       "RequiredProperties": [],
       "GenerateCode": true,
@@ -373,7 +374,7 @@
   ],
   "ApplyToFixedResolutionPlatforms": true,
   "ExternallyBuiltFileDirectory": "../../",
-  "FileVersion": 51,
+  "FileVersion": 52,
   "ScreenReferences": [
     {
       "Name": "Screens\\AnimationChainScreen"
@@ -882,6 +883,9 @@
       "Name": "Entities\\NewEntity2"
     },
     {
+      "Name": "Entities\\NoFactoryEntity"
+    },
+    {
       "Name": "Entities\\NoInstantiationObjectContainer"
     },
     {
@@ -1018,6 +1022,12 @@
     },
     {
       "Name": "Entities\\ToBeDeleted"
+    },
+    {
+      "Name": "Entities\\TopDownAnimatedEntity"
+    },
+    {
+      "Name": "Entities\\TopDownAnimatedEntityDerived"
     },
     {
       "Name": "Entities\\TopDownPluginEntity"

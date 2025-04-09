@@ -457,14 +457,15 @@ public partial class GumScreen
 
     }
 
-
+    bool hasTestedGumComponent;
     int NumberOfFramesToWait = 6;
     void CustomActivity(bool firstTimeCalled)
     {
 
         // give it a few frames...
-        if (this.ActivityCallCount == 4)
+        if (this.ActivityCallCount >= 4 && hasCalledUpdateDependencies && !hasTestedGumComponent)
         {
+            hasTestedGumComponent = true;
             GumComponentContainer_ForAttachment.VerifyGumOnFrbAttachments();
 
             var textInstance = this.GumRuntimeEntityInstanceForRotation.TextRuntimeInstance.RenderableComponent
@@ -476,10 +477,17 @@ public partial class GumScreen
         }
 
 
-        if (this.ActivityCallCount > NumberOfFramesToWait)
+        if (this.ActivityCallCount > NumberOfFramesToWait && hasTestedGumComponent)
         {
             IsActivityFinished = true;
         }
+    }
+
+    bool hasCalledUpdateDependencies = false;
+    public override void UpdateDependencies(double currentTime)
+    {
+        hasCalledUpdateDependencies = true;
+        base.UpdateDependencies(currentTime);
     }
 
     void CustomDestroy()

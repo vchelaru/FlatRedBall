@@ -208,6 +208,17 @@
       "Name": "ColorVariable",
       "DefaultValue": "Pink",
       "SetByDerived": true
+    },
+    {
+      "Properties": [
+        {
+          "Name": "Type",
+          "Value": "float",
+          "Type": "String"
+        }
+      ],
+      "Name": "VariableSetInBothBaseAndDerivedEntity",
+      "SetByDerived": true
     }
   ],
   "States": [
@@ -386,7 +397,8 @@
         "IntVariableWithVelocity",
         "CurrentColorCategoryState",
         "SpriteInstanceTextureScale",
-        "ColorVariable"
+        "ColorVariable",
+        "VariableSetInBothBaseAndDerivedEntity"
       ]
     },
     {
@@ -430,7 +442,8 @@
       "ExcludedVariables": [
         "VariableToGetChangedByState",
         "CurrentAdvancedInterpolationCategoryState",
-        "SpriteInstanceTextureScale"
+        "SpriteInstanceTextureScale",
+        "VariableSetInBothBaseAndDerivedEntity"
       ]
     },
     {
@@ -463,7 +476,8 @@
         "VariableToGetChangedByState",
         "CurrentAdvancedInterpolationCategoryState",
         "SpriteInstanceTextureScale",
-        "ColorVariable"
+        "ColorVariable",
+        "VariableSetInBothBaseAndDerivedEntity"
       ]
     },
     {
@@ -482,7 +496,8 @@
         "VariableToGetChangedByState",
         "CurrentAdvancedInterpolationCategoryState",
         "SpriteInstanceTextureScale",
-        "ColorVariable"
+        "ColorVariable",
+        "VariableSetInBothBaseAndDerivedEntity"
       ]
     },
     {
@@ -501,7 +516,8 @@
         "VariableToGetChangedByState",
         "CurrentAdvancedInterpolationCategoryState",
         "SpriteInstanceTextureScale",
-        "ColorVariable"
+        "ColorVariable",
+        "VariableSetInBothBaseAndDerivedEntity"
       ]
     },
     {
@@ -522,7 +538,8 @@
         "IntVariableWithVelocity",
         "CurrentAdvancedInterpolationCategoryState",
         "SpriteInstanceTextureScale",
-        "ColorVariable"
+        "ColorVariable",
+        "VariableSetInBothBaseAndDerivedEntity"
       ]
     },
     {
@@ -560,6 +577,53 @@
         "CurrentAdvancedInterpolationCategoryState",
         "CurrentTypeState",
         "VariableOnlySetInOneUncategorizedState",
+        "ColorVariable",
+        "VariableSetInBothBaseAndDerivedEntity"
+      ]
+    },
+    {
+      "Name": "CategoryDefinedInBase",
+      "States": [
+        {
+          "Name": "FirstState",
+          "InstructionSaves": [
+            {
+              "Type": "float",
+              "Member": "VariableSetInBothBaseAndDerivedEntity",
+              "Value": 1.0,
+              "Time": 0.0
+            }
+          ]
+        },
+        {
+          "Name": "SecondState",
+          "InstructionSaves": [
+            {
+              "Type": "float",
+              "Member": "VariableSetInBothBaseAndDerivedEntity",
+              "Value": 2.0,
+              "Time": 0.0
+            }
+          ]
+        }
+      ],
+      "ExcludedVariables": [
+        "SpriteFromScnxCurrentChainName",
+        "CurrentTopOrBottomState",
+        "CurrentState",
+        "CircleObjectColor",
+        "X",
+        "Y",
+        "CurrentColorCategoryState",
+        "CircleObjectVisible",
+        "CurrentCircleVisibilityState",
+        "IntVariableWithVelocity",
+        "LongVariableWithVelocity",
+        "VariableToGetChangedByState",
+        "CurrentAdvancedInterpolationCategoryState",
+        "CurrentTypeState",
+        "VariableOnlySetInOneUncategorizedState",
+        "SpriteInstanceTextureScale",
         "ColorVariable"
       ]
     }

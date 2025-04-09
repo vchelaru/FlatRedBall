@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AnimationChainArraySave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <FileRelativeTextures>true</FileRelativeTextures>
+  <TimeMeasurementUnit>Undefined</TimeMeasurementUnit>
+  <CoordinateType>Pixel</CoordinateType>
+  <AnimationChain>
+    <Name>WalkUp</Name>
+  </AnimationChain>
+  <AnimationChain>
+    <Name>WalkDown</Name>
+  </AnimationChain>
+  <AnimationChain>
+    <Name>WalkLeft</Name>
+  </AnimationChain>
+  <AnimationChain>
+    <Name>WalkRight</Name>
+  </AnimationChain>
+  <AnimationChain>
+    <Name>IdleUp</Name>
+  </AnimationChain>
+  <AnimationChain>
+    <Name>IdleDown</Name>
+  </AnimationChain>
+  <AnimationChain>
+    <Name>IdleLeft</Name>
+  </AnimationChain>
+  <AnimationChain>
+    <Name>IdleRight</Name>
+  </AnimationChain>
+  <ProjectFile>..\..\..\testprojectdesktopnet6.gluj</ProjectFile>
+</AnimationChainArraySave>

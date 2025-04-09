@@ -386,6 +386,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxFile</Name>
     </None>
+    <None Include="Content\Entities\TopDownAnimatedEntityDerived\DerivedAnimations.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>DerivedAnimations</Name>
+    </None>
+    <None Include="Content\Entities\TopDownAnimatedEntity\AnimationChainListFile.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile</Name>
+    </None>
+    <None Include="Content\Entities\TopDownAnimatedEntity\TopDownValuesStatic.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TopDownValuesStatic</Name>
+    </None>
     <None Include="Content\Entities\TopDownPluginEntity\TopDownValuesStatic.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TopDownValuesStatic</Name>
@@ -1742,6 +1754,10 @@
     <Compile Include="Entities\NewEntity2.Generated.Event.cs">
       <DependentUpon>NewEntity2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\NoFactoryEntity.cs" />
+    <Compile Include="Entities\NoFactoryEntity.Generated.cs">
+      <DependentUpon>NoFactoryEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\NoInstantiationObjectContainer.cs" />
     <Compile Include="Entities\NoInstantiationObjectContainer.Generated.cs">
       <DependentUpon>NoInstantiationObjectContainer.cs</DependentUpon>
@@ -1938,6 +1954,14 @@
     <Compile Include="Entities\ToBeDeleted.Generated.cs">
       <DependentUpon>ToBeDeleted.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\TopDownAnimatedEntity.cs" />
+    <Compile Include="Entities\TopDownAnimatedEntity.Generated.cs">
+      <DependentUpon>TopDownAnimatedEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TopDownAnimatedEntityDerived.cs" />
+    <Compile Include="Entities\TopDownAnimatedEntityDerived.Generated.cs">
+      <DependentUpon>TopDownAnimatedEntityDerived.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\TopDownPluginEntity.cs" />
     <Compile Include="Entities\TopDownPluginEntity.Generated.cs">
       <DependentUpon>TopDownPluginEntity.cs</DependentUpon>
@@ -1994,6 +2018,8 @@
     <Compile Include="Factories\ShapeEntityCreatedByOtherEntitiesFactory.Generated.cs" />
     <Compile Include="Factories\TextInheritingEntityFactory.Generated.cs" />
     <Compile Include="Factories\TiledEntityInFolderFactory.Generated.cs" />
+    <Compile Include="Factories\TopDownAnimatedEntityDerivedFactory.Generated.cs" />
+    <Compile Include="Factories\TopDownAnimatedEntityFactory.Generated.cs" />
     <Compile Include="Factories\VariantEntityBaseFactory.Generated.cs" />
     <Compile Include="Factories\VariantEntityDerivedFactory.Generated.cs" />
     <Compile Include="FileAliases.Generated.cs" />

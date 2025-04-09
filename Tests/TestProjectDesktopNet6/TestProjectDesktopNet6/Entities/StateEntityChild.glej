@@ -89,6 +89,37 @@
         }
       ],
       "ExcludedVariables": []
+    },
+    {
+      "Name": "CategoryDefinedInBase",
+      "States": [
+        {
+          "Name": "DerivedFirst",
+          "InstructionSaves": [
+            {
+              "Type": "float",
+              "Member": "VariableSetInBothBaseAndDerivedEntity",
+              "Value": 3.0,
+              "Time": 0.0
+            }
+          ]
+        },
+        {
+          "Name": "DerivedSecond",
+          "InstructionSaves": [
+            {
+              "Type": "float",
+              "Member": "VariableSetInBothBaseAndDerivedEntity",
+              "Value": 4.0,
+              "Time": 0.0
+            }
+          ]
+        }
+      ],
+      "ExcludedVariables": [
+        "SpriteInstanceTextureScale",
+        "ColorVariable"
+      ]
     }
   ],
   "Name": "Entities\\StateEntityChild",

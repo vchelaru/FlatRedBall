@@ -266,9 +266,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
 
                     if (listEntityType != null)
                     {
-                        var factoryTypesToCallAddListOn = allEntitiesWithFactories.Where(item =>
+                        var factoryTypesToCallAddListOn = allEntitiesWithFactories.Where(entityType =>
                         {
-                            return item == listEntityType || item.InheritsFrom(listEntityType.Name);
+                            return entityType == listEntityType || entityType.InheritsFrom(listEntityType.Name);
                         });
 
                         // find any lists of entities that are of this type, or of a derived type.
