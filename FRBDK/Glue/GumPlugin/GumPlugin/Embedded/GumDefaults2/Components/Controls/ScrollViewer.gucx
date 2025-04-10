@@ -190,6 +190,7 @@
     <Variable>
       <Type>State</Type>
       <Name>State</Name>
+      <Category>States and Visibility</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -224,7 +225,6 @@
   </State>
   <Category>
     <Name>ScrollBarVisibility</Name>
-    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>NoScrollBar</Name>
       <Variable>

@@ -110,6 +110,7 @@
     <Variable>
       <Type>State</Type>
       <Name>State</Name>
+      <Category>States and Visibility</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -128,7 +129,6 @@
   </State>
   <Category>
     <Name>IconCategory</Name>
-    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>None</Name>
       <Variable>

@@ -324,6 +324,7 @@
     <Variable>
       <Type>State</Type>
       <Name>State</Name>
+      <Category>States and Visibility</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -437,7 +438,6 @@
   </State>
   <Category>
     <Name>TextBoxCategory</Name>
-    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Enabled</Name>
       <Variable>
@@ -549,7 +549,6 @@
   </Category>
   <Category>
     <Name>LineModeCategory</Name>
-    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Single</Name>
       <Variable>
@@ -565,15 +564,15 @@
         <SetsValue>true</SetsValue>
       </Variable>
       <Variable>
-        <Type>DimensionUnitType</Type>
-        <Name>TextInstance.WidthUnits</Name>
-        <Value xsi:type="xsd:int">4</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
         <Type>float</Type>
         <Name>TextInstance.Width</Name>
         <Value xsi:type="xsd:float">0</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+      <Variable>
+        <Type>DimensionUnitType</Type>
+        <Name>TextInstance.WidthUnits</Name>
+        <Value xsi:type="xsd:int">4</Value>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>

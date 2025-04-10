@@ -66,6 +66,7 @@
     <Variable>
       <Type>State</Type>
       <Name>State</Name>
+      <Category>States and Visibility</Category>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -299,7 +300,6 @@
   </State>
   <Category>
     <Name>ScrollBarCategory</Name>
-    <IsSetRecursively>false</IsSetRecursively>
   </Category>
   <Instance>
     <Name>UpButtonInstance</Name>
