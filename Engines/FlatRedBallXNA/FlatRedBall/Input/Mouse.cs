@@ -242,6 +242,29 @@ namespace FlatRedBall.Input
             get { return mYVelocity; }
         }
 
+        List<MouseButtons> _buttonsPushedInternal = new List<MouseButtons>();
+
+        /// <summary>
+        /// Mouse buttons pushed this frame.
+        /// </summary>
+        public IReadOnlyCollection<MouseButtons> ButtonsPushed
+        {
+            get
+            {
+                _buttonsPushedInternal.Clear();
+
+                for (int i = 0; i < NumberOfButtons; i++)
+                {
+                    var button = (MouseButtons)i;
+
+                    if (ButtonPushed(button))
+                        _buttonsPushedInternal.Add(button);
+                }
+
+                return _buttonsPushedInternal;
+            }
+        }
+
         I2DInput IInputDevice.Default2DInput => Zero2DInput.Instance;
         IRepeatPressableInput IInputDevice.DefaultUpPressable => FalsePressableInput.Instance;
         IRepeatPressableInput IInputDevice.DefaultDownPressable => FalsePressableInput.Instance;
