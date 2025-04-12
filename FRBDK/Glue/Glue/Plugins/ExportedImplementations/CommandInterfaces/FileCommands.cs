@@ -645,6 +645,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (absoluteExe?.Exists() == false)
                 {
+                    absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Gum.exe";
+                }
+
+                if (absoluteExe?.Exists() == false)
+                {
                     absoluteExe = GlueState.Self.GlueExeDirectory + "Gum/Data/Gum.exe";
                 }
             }
