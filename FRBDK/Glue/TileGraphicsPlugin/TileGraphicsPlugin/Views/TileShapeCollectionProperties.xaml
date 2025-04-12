@@ -152,7 +152,7 @@
                                 >
                                 <controls:TilesetTileSelector.ToolTip>
                                     <StackPanel>
-                                        <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.ClickToSetTile}" />
+                                        <TextBlock FontWeight="Bold" Text="Click to set tile" />
                                         <TextBlock Text="{x:Static localization:Texts.HintChangingTileTsx}" />
                                     </StackPanel>
                                 </controls:TilesetTileSelector.ToolTip>

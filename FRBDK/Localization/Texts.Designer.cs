@@ -61,60 +61,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Character moves downhill at full speed on slope.
-        /// </summary>
-        public static string CharacterMovesFullSpeedOnSlope {
-            get {
-                return ResourceManager.GetString("CharacterMovesFullSpeedOnSlope", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Character stops moving uphill on slope.
-        /// </summary>
-        public static string CharacterStopMovingUphillSlope {
-            get {
-                return ResourceManager.GetString("CharacterStopMovingUphillSlope", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Clean all.
-        /// </summary>
-        public static string CleanAll {
-            get {
-                return ResourceManager.GetString("CleanAll", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Would you like to clear the points and replace them with points for a rectangle shape?.
-        /// </summary>
-        public static string ClearPointsAddRectangle {
-            get {
-                return ResourceManager.GetString("ClearPointsAddRectangle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Click to set tile.
-        /// </summary>
-        public static string ClickToSetTile {
-            get {
-                return ResourceManager.GetString("ClickToSetTile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enter extra command line arguments:.
-        /// </summary>
-        public static string CliExtraArguments {
-            get {
-                return ResourceManager.GetString("CliExtraArguments", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Climbing.
         /// </summary>
         public static string Climbing {
@@ -2100,24 +2046,6 @@ namespace Localization {
         public static string GenerateTombstoningCode {
             get {
                 return ResourceManager.GetString("GenerateTombstoningCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to German.
-        /// </summary>
-        public static string German {
-            get {
-                return ResourceManager.GetString("German", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        public static string GlobalContentMembership {
-            get {
-                return ResourceManager.GetString("GlobalContentMembership", resourceCulture);
             }
         }
         

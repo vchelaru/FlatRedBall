@@ -149,14 +149,14 @@
 
                 <StackPanel Orientation="Horizontal">
                     <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Width="255">
-                        <TextBlock Text="{x:Static localization:Texts.CharacterStopMovingUphillSlope}" />
+            <TextBlock Text="Character stops moving uphill on slope" />
                     </StackPanel>
                     <local:SlopeDisplay Angle="{Binding UphillStopSpeedSlope}"></local:SlopeDisplay>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal">
                     <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Width="255">
-                        <TextBlock Text="{x:Static localization:Texts.CharacterMovesFullSpeedOnSlope}" />
+            <TextBlock Text="Character moves downhill at full speed on slope" />
                     </StackPanel>
                     <local:SlopeDisplay IsInverted="True" Angle="{Binding DownhillFullSpeedSlope}" />
                 </StackPanel>

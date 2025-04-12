@@ -143,7 +143,7 @@ namespace OfficialPlugins.PointEditingPlugin
         {
             if(ViewModel.Points?.Count > 0)
             {
-                var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(Localization.Texts.ClearPointsAddRectangle);
+                var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Would you like to clear the points and replace them with points for a rectangle shape?");
                 if(result == MessageBoxResult.Yes)
                 {
                     AddRectanglePoints();
