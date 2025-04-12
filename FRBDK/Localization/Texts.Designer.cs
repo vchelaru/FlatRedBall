@@ -313,15 +313,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Content Pipeline Settings.
-        /// </summary>
-        public static string ContentPipelineSettings {
-            get {
-                return ResourceManager.GetString("ContentPipelineSettings", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Converted Type:.
         /// </summary>
         public static string ConvertedType {

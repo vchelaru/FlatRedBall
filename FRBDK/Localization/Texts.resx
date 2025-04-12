@@ -715,9 +715,6 @@ for {1}?</value>
   <data name="CodeGeneration" xml:space="preserve">
     <value>Code Generation</value>
   </data>
-  <data name="ContentPipelineSettings" xml:space="preserve">
-    <value>Content Pipeline Settings</value>
-  </data>
   <data name="ForceSaveProject" xml:space="preserve">
     <value>Force Save Project</value>
   </data>

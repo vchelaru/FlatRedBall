@@ -94,7 +94,7 @@ namespace OfficialPlugins.MonoGameContent
 
         public override void StartUp()
         {
-            this.AddMenuItemTo(Localization.Texts.ContentPipelineSettings, Localization.MenuIds.ContentPipelineSettingsId, HandleContentPipelineSettings, Localization.MenuIds.ContentId);
+            this.AddMenuItemTo("Content Pipeline Settings", Localization.MenuIds.ContentPipelineSettingsId, HandleContentPipelineSettings, Localization.MenuIds.ContentId);
 
             CreateController();
 
@@ -230,6 +230,7 @@ namespace OfficialPlugins.MonoGameContent
                 tab = base.CreateTab(control, "Content Pipeline");
             }
             tab.Show();
+            tab.Focus();
         }
 
         private void HandleReferencedFileValueChanged(string memberName, object oldValue)
