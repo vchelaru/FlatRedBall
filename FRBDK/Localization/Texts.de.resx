@@ -558,9 +558,6 @@
   <data name="CharacterMovesFullSpeedOnSlope" xml:space="preserve">
     <value>Der Charakter bewegt sich am Hang mit voller Geschwindigkeit bergab</value>
   </data>
-  <data name="CharacterMovesDownhill" xml:space="preserve">
-    <value>Der Charakter bewegt sich bergab</value>
-  </data>
   <data name="XFasterOnSlope" xml:space="preserve">
     <value>% schneller am Hang</value>
   </data>
@@ -731,9 +728,6 @@
   </data>
   <data name="SetVariableByDerived" xml:space="preserve">
     <value>Setzen Sie alle Variablen auf SetByDerived = true</value>
-  </data>
-  <data name="CreateObjectsJson" xml:space="preserve">
-    <value>Erstellen Sie Objekte im JSON-Format</value>
   </data>
   <data name="FrbEditorBinaries" xml:space="preserve">
     <value>Aktualisieren Sie die Binärdateien des FRB-Editors</value>
@@ -1073,12 +1067,6 @@
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>Bestätigen</value>
-  </data>
-  <data name="CategoryEnterName" xml:space="preserve">
-    <value>Geben Sie einen Namen für die neue Kategorie ein</value>
-  </data>
-  <data name="CategoryNew" xml:space="preserve">
-    <value>Neue Kategorie</value>
   </data>
   <data name="StateEnterName" xml:space="preserve">
     <value>Geben Sie einen Namen für den neuen Staat ein</value>
@@ -1967,9 +1955,6 @@
   </data>
   <data name="FileCreateForMissing" xml:space="preserve">
     <value>Erstellen Sie eine neue Datei für die fehlende Datei</value>
-  </data>
-  <data name="CategoryAddState" xml:space="preserve">
-    <value>Statuskategorie hinzufügen</value>
   </data>
   <data name="ResetVariablesPoolingAdd" xml:space="preserve">
     <value>Fügen Sie Reset-Variablen für das Pooling hinzu</value>

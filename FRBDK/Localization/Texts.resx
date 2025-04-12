@@ -559,9 +559,6 @@ for {1}?</value>
   <data name="CharacterMovesFullSpeedOnSlope" xml:space="preserve">
     <value>Character moves downhill at full speed on slope</value>
   </data>
-  <data name="CharacterMovesDownhill" xml:space="preserve">
-    <value>Character moves downhill</value>
-  </data>
   <data name="XFasterOnSlope" xml:space="preserve">
     <value>% faster on slope</value>
   </data>
@@ -732,9 +729,6 @@ for {1}?</value>
   </data>
   <data name="SetVariableByDerived" xml:space="preserve">
     <value>Set All Variables to SetByDerived = true</value>
-  </data>
-  <data name="CreateObjectsJson" xml:space="preserve">
-    <value>Create Objects JSON</value>
   </data>
   <data name="FrbEditorBinaries" xml:space="preserve">
     <value>Update FRB editor binaries</value>
@@ -1074,12 +1068,6 @@ for {1}?</value>
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
-  </data>
-  <data name="CategoryEnterName" xml:space="preserve">
-    <value>Enter a name for the new category</value>
-  </data>
-  <data name="CategoryNew" xml:space="preserve">
-    <value>New Category</value>
   </data>
   <data name="StateEnterName" xml:space="preserve">
     <value>Enter a name for the new state</value>
@@ -1971,9 +1959,6 @@ for {1}?</value>
   </data>
   <data name="FileCreateForMissing" xml:space="preserve">
     <value>Create new file for missing file</value>
-  </data>
-  <data name="CategoryAddState" xml:space="preserve">
-    <value>Add State Category</value>
   </data>
   <data name="ResetVariablesPoolingAdd" xml:space="preserve">
     <value>Add Reset Variables For Pooling</value>

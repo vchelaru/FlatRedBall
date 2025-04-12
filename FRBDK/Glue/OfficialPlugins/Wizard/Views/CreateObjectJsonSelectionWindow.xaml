@@ -6,32 +6,39 @@
         xmlns:localization="clr-namespace:Localization;assembly=Localization"
         xmlns:vms="clr-namespace:OfficialPlugins.Wizard.ViewModels"
         mc:Ignorable="d"
-        Title="CreateObjectJsonSelectionWindow" Height="350" Width="400">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <TreeView Margin="4" ItemsSource="{Binding Elements}">
-            <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type vms:ElementViewModel}" 
+        Title="Create Objects JSON" Height="350" Width="400">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+    <TextBlock TextWrapping="Wrap">Select the items that you would like to create a JSON for. This JSON can be used when creating new projects in the New Project Wizard</TextBlock>
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition></ColumnDefinition>
+        <ColumnDefinition></ColumnDefinition>
+      </Grid.ColumnDefinitions>
+      <TreeView Margin="4" ItemsSource="{Binding Elements}">
+        <TreeView.Resources>
+          <HierarchicalDataTemplate DataType="{x:Type vms:ElementViewModel}" 
                                           ItemsSource="{Binding NamedObjects}">
-                    <TextBlock Text="{Binding Name}"></TextBlock>
-                </HierarchicalDataTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type vms:NamedObjectSaveViewModel}"
+            <TextBlock Text="{Binding Name}"></TextBlock>
+          </HierarchicalDataTemplate>
+          <HierarchicalDataTemplate DataType="{x:Type vms:NamedObjectSaveViewModel}"
                                           ItemsSource="{Binding ContainedObjects}">
-                    <CheckBox Content="{Binding TextDisplay}" IsChecked="{Binding IsSelected}" IsEnabled="{Binding IsEnabled}"></CheckBox>
-                </HierarchicalDataTemplate>
-            </TreeView.Resources>
-        </TreeView>
-        
-        <Grid Grid.Column="1" Margin="4">
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-            </Grid.RowDefinitions>
-            <TextBox AcceptsReturn="True" Text="{Binding GeneratedJson}"></TextBox>
-            <Button Grid.Row="1" Click="CopyJsonToClipboardClicked"  Content="{x:Static localization:Texts.CopyJsonToClipboard}" />
-        </Grid>
+            <CheckBox Content="{Binding TextDisplay}" IsChecked="{Binding IsSelected}" IsEnabled="{Binding IsEnabled}"></CheckBox>
+          </HierarchicalDataTemplate>
+        </TreeView.Resources>
+      </TreeView>
+
+      <Grid Grid.Column="1" Margin="4">
+        <Grid.RowDefinitions>
+          <RowDefinition></RowDefinition>
+          <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBox AcceptsReturn="True" Text="{Binding GeneratedJson}"></TextBox>
+        <Button Grid.Row="1" Click="CopyJsonToClipboardClicked"  Content="{x:Static localization:Texts.CopyJsonToClipboard}" />
+      </Grid>
     </Grid>
+  </Grid>
 </Window>

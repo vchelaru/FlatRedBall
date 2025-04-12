@@ -908,7 +908,7 @@ public static class RightClickHelper
         mAddState = new GeneralToolStripMenuItem(L.Texts.StateAdd);
         mAddState.Click += AddStateClick;
 
-        mAddStateCategory = new GeneralToolStripMenuItem(L.Texts.CategoryAddState);
+        mAddStateCategory = new GeneralToolStripMenuItem("Add State Category");
         mAddStateCategory.Click += AddStateCategoryClick;
 
         mAddResetVariablesForPooling = new GeneralToolStripMenuItem(L.Texts.ResetVariablesPoolingAdd);

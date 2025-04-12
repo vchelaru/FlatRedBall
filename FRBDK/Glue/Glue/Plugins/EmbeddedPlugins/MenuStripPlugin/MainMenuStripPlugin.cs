@@ -229,7 +229,30 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
         {
             string directory = FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles.NewFilePlugin.CustomFileTemplateFolder;
 
-            System.Diagnostics.Process.Start(directory);
+            if(!System.IO.Directory.Exists(directory))
+            {
+                try
+                {
+                    System.IO.Directory.CreateDirectory(directory);
+                }
+                catch(Exception exc)
+                {
+                    GlueCommands.Self.DialogCommands.ShowMessageBox($"Could not create directory for template folders:{exc}");
+                }
+            }
+
+            if(System.IO.Directory.Exists(directory))
+            {
+                try
+                {
+                    GlueCommands.Self.FileCommands.Open(directory);
+                }
+                catch(Exception exc)
+                {
+                    GlueCommands.Self.DialogCommands.ShowMessageBox($"Could not open tempalte folder\n{directory}\n\n{exc}");
+
+                }
+            }
         }
 
         private void newContentCSVToolStripMenuItem_Click(object sender, EventArgs e)

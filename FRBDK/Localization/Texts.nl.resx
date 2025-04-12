@@ -558,9 +558,6 @@
   <data name="CharacterMovesFullSpeedOnSlope" xml:space="preserve">
     <value>Karakter beweegt op volle snelheid bergafwaarts op de helling</value>
   </data>
-  <data name="CharacterMovesDownhill" xml:space="preserve">
-    <value>Karakter gaat bergafwaarts</value>
-  </data>
   <data name="XFasterOnSlope" xml:space="preserve">
     <value>% sneller op helling</value>
   </data>
@@ -731,9 +728,6 @@
   </data>
   <data name="SetVariableByDerived" xml:space="preserve">
     <value>Stel alle variabelen in op SetByDerived = true</value>
-  </data>
-  <data name="CreateObjectsJson" xml:space="preserve">
-    <value>Maak objecten JSON</value>
   </data>
   <data name="FrbEditorBinaries" xml:space="preserve">
     <value>Update de binaire bestanden van de FRB-editor</value>
@@ -1073,12 +1067,6 @@
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>Bevestigen</value>
-  </data>
-  <data name="CategoryEnterName" xml:space="preserve">
-    <value>Voer een naam in voor de nieuwe categorie</value>
-  </data>
-  <data name="CategoryNew" xml:space="preserve">
-    <value>Nieuwe categorie</value>
   </data>
   <data name="StateEnterName" xml:space="preserve">
     <value>Voer een naam in voor de nieuwe status</value>
@@ -1970,9 +1958,6 @@
   </data>
   <data name="FileCreateForMissing" xml:space="preserve">
     <value>Maak een nieuw bestand voor het ontbrekende bestand</value>
-  </data>
-  <data name="CategoryAddState" xml:space="preserve">
-    <value>Statuscategorie toevoegen</value>
   </data>
   <data name="ResetVariablesPoolingAdd" xml:space="preserve">
     <value>Voeg resetvariabelen toe voor pooling</value>

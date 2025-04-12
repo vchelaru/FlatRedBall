@@ -1238,7 +1238,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // add category, addcategory, add state category
             CustomizableTextInputWindow tiw = new()
             {
-                Message = L.Texts.CategoryEnterName
+                Message = "Enter a name for the new category"
             };
 
             if (tiw.ShowDialog() is true)

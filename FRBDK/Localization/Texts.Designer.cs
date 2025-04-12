@@ -61,42 +61,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add State Category.
-        /// </summary>
-        public static string CategoryAddState {
-            get {
-                return ResourceManager.GetString("CategoryAddState", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enter a name for the new category.
-        /// </summary>
-        public static string CategoryEnterName {
-            get {
-                return ResourceManager.GetString("CategoryEnterName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to New Category.
-        /// </summary>
-        public static string CategoryNew {
-            get {
-                return ResourceManager.GetString("CategoryNew", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Character moves downhill.
-        /// </summary>
-        public static string CharacterMovesDownhill {
-            get {
-                return ResourceManager.GetString("CharacterMovesDownhill", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Character moves downhill at full speed on slope.
         /// </summary>
         public static string CharacterMovesFullSpeedOnSlope {
@@ -507,15 +471,6 @@ namespace Localization {
         public static string CreatedClass {
             get {
                 return ResourceManager.GetString("CreatedClass", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Create Objects JSON.
-        /// </summary>
-        public static string CreateObjectsJson {
-            get {
-                return ResourceManager.GetString("CreateObjectsJson", resourceCulture);
             }
         }
         

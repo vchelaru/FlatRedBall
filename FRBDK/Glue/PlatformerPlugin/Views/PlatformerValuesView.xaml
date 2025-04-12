@@ -163,7 +163,7 @@
 
                 <StackPanel Orientation="Horizontal">
                     <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Width="255">
-                        <TextBlock VerticalAlignment="Center" Text="{x:Static localization:Texts.CharacterMovesDownhill}" />
+            <TextBlock VerticalAlignment="Center" Text="Character moves downhill" />
                         <TextBox Width="24" Height="18" Text="{Binding Path=DownhillMaxSpeedBoostPercentage, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                         <TextBlock VerticalAlignment="Center" Text="{x:Static localization:Texts.XFasterOnSlope}" />
                     </StackPanel>
