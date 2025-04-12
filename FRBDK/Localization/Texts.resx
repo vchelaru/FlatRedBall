@@ -553,6 +553,12 @@ for {1}?</value>
   <data name="SlopeMoveUphill" xml:space="preserve">
     <value>Character moves uphill at full speed on slope</value>
   </data>
+  <data name="CharacterStopMovingUphillSlope" xml:space="preserve">
+    <value>Character stops moving uphill on slope</value>
+  </data>
+  <data name="CharacterMovesFullSpeedOnSlope" xml:space="preserve">
+    <value>Character moves downhill at full speed on slope</value>
+  </data>
   <data name="XFasterOnSlope" xml:space="preserve">
     <value>% faster on slope</value>
   </data>
@@ -709,11 +715,11 @@ for {1}?</value>
   <data name="ViewBuiltProjectSizes" xml:space="preserve">
     <value>View Built Project Sizes</value>
   </data>
-  <data name="CodeGenerationPlugin" xml:space="preserve">
-    <value>Code Generation Plugin</value>
-  </data>
   <data name="CodeGeneration" xml:space="preserve">
     <value>Code Generation</value>
+  </data>
+  <data name="ContentPipelineSettings" xml:space="preserve">
+    <value>Content Pipeline Settings</value>
   </data>
   <data name="ForceSaveProject" xml:space="preserve">
     <value>Force Save Project</value>
@@ -973,6 +979,9 @@ for {1}?</value>
   <data name="ProjectGlueNoneLoaded" xml:space="preserve">
     <value>No Glue project loaded</value>
   </data>
+  <data name="CleanAll" xml:space="preserve">
+    <value>Clean all</value>
+  </data>
   <data name="HintOrphanedFilesOfProject" xml:space="preserve">
     <value>Orphaned files are referenced by the current project but do not exist on disk. These files will cause compile errors in your project.</value>
   </data>
@@ -1228,6 +1237,9 @@ for {1}?</value>
   <data name="Remove" xml:space="preserve">
     <value>Remove</value>
   </data>
+  <data name="ClearPointsAddRectangle" xml:space="preserve">
+    <value>Would you like to clear the points and replace them with points for a rectangle shape?</value>
+  </data>
   <data name="HintEnterNumberOfPoints" xml:space="preserve">
     <value>Enter the number of points for the new polygon. At least 3 points are required. Note that the last point is automatically repeated, so only enter the number of visible points. For example, 3 for a triangle.</value>
   </data>
@@ -1473,6 +1485,9 @@ for {1}?</value>
   </data>
   <data name="FromTmxCollision" xml:space="preserve">
     <value>From TMX Collision - requires shapes defined in the tileset (TSX)</value>
+  </data>
+  <data name="ClickToSetTile" xml:space="preserve">
+    <value>Click to set tile</value>
   </data>
   <data name="HintChangingTileTsx" xml:space="preserve">
     <value>Changing the tile may also modify the underlying TSX</value>
@@ -1755,6 +1770,9 @@ for {1}?</value>
   </data>
   <data name="French" xml:space="preserve">
     <value>French</value>
+  </data>
+  <data name="German" xml:space="preserve">
+    <value>German</value>
   </data>
   <data name="Dutch" xml:space="preserve">
     <value>Dutch</value>
@@ -2077,6 +2095,9 @@ for {1}?</value>
   <data name="ExportCant" xml:space="preserve">
     <value>Can't export:</value>
   </data>
+  <data name="CliExtraArguments" xml:space="preserve">
+    <value>Enter extra command line arguments:</value>
+  </data>
   <data name="WhichTemplateUse" xml:space="preserve">
     <value>Which template would you like to use?</value>
   </data>
@@ -2105,6 +2126,9 @@ for {1}?</value>
     <value />
   </data>
   <data name="ProjectWizardOpen" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GlobalContentMembership" xml:space="preserve">
     <value />
   </data>
   <data name="EntityBase" xml:space="preserve">

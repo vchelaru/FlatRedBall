@@ -714,9 +714,6 @@
   <data name="ViewBuiltProjectSizes" xml:space="preserve">
     <value>Anzeigen der gebauten Projektgrößen</value>
   </data>
-  <data name="CodeGenerationPlugin" xml:space="preserve">
-    <value>Plugin zur Codegenerierung</value>
-  </data>
   <data name="CodeGeneration" xml:space="preserve">
     <value>Codegenerierung</value>
   </data>

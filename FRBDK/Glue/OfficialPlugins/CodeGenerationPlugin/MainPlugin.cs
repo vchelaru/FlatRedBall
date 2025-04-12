@@ -38,7 +38,7 @@ namespace OfficialPlugins.CodeGenerationPlugin
 
         public override void StartUp()
         {
-            base.AddMenuItemTo(Localization.Texts.CodeGenerationPlugin, Localization.MenuIds.CodeGenerationPluginId, HandleOpenClick, Localization.MenuIds.PluginId);
+            base.AddMenuItemTo("Code Generation Plugin", Localization.MenuIds.CodeGenerationPluginId, HandleOpenClick, Localization.MenuIds.PluginId);
         }
 
         private void HandleOpenClick(object sender, EventArgs e)
@@ -54,6 +54,7 @@ namespace OfficialPlugins.CodeGenerationPlugin
                 tab = base.CreateTab(control, Localization.Texts.CodeGeneration, TabLocation.Bottom);
             }
             tab.Show();
+            tab.Focus();
         }
     }
 }
