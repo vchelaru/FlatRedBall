@@ -320,11 +320,15 @@ namespace OfficialPlugins.PropertyGrid
                 // away. This can cause the property grid to display the old value after the user
                 // presses ENTER. Therefore, for now we need to use the obsolete SetVariableOn, and 
                 // think of a more sophisticated solution.
+                // Update April 14, 2025 - this does actually await internally, and execution of this
+                // method continues before the internal logic finishes. therefore, we should performSave
+                // and generate
 #pragma warning disable CS0618 // Type or member is obsolete
                 GlueCommands.Self.GluxCommands.SetVariableOn(
                     NamedObjectSave,
                     NameOnInstance,
-                    value, performSaveAndGenerateCode: false, updateUi: false, commitType: args.CommitType);
+                    value, performSaveAndGenerateCode: args.CommitType == SetPropertyCommitType.Full,
+                    updateUi: false, commitType: args.CommitType);
 #pragma warning restore CS0618 // Type or member is obsolete
 
 

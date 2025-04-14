@@ -98,6 +98,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region Inheritance
 
+        [Obsolete("Use InheritanceManager UpdateFromBaseType")]
         bool UpdateFromBaseType(GlueElement glueElement, bool showPopupAboutObjectErrors = true);
 
         #endregion

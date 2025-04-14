@@ -18,6 +18,7 @@ using Gum.DataTypes;
 
 namespace FlatRedBall.Glue.SetVariable;
 
+
 public class CustomVariableSaveSetPropertyLogic
 {
     public async Task ReactToCustomVariableChangedValue(string changedMember, CustomVariable customVariable, object oldValue)
@@ -90,70 +91,7 @@ public class CustomVariableSaveSetPropertyLogic
 
         else if (changedMember == nameof(CustomVariable.DefaultValue))
         {
-            customVariable.FixEnumerationTypes();
-
-            var currentElement = GlueState.Self.CurrentElement;
-
-            if (!string.IsNullOrEmpty(customVariable.SourceObject))
-            {
-
-                // See if the source NamedObjectSave has
-                // this variable exposed, and if so, set that 
-                // variable too so the two mirror each other...
-                // or make it null if this is a recasted variable.
-                NamedObjectSave nos = currentElement?.GetNamedObjectRecursively(customVariable.SourceObject);
-
-                if (nos != null)
-                {
-                    var cvino = nos.GetCustomVariable(customVariable.SourceObjectProperty);
-
-                    var variableDefinition = nos.GetAssetTypeInfo()
-                        ?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
-
-                    if (variableDefinition?.CustomVariableSet != null)
-                    {
-                        variableDefinition.CustomVariableSet(
-                            element, nos, customVariable.Name, customVariable.DefaultValue);
-                    }
-                    else
-                    {
-                        // If the cvino is null, that means that the NOS doesn't have this exposed, so we don't
-                        // need to do anything.
-                        // Update June 12, 2022
-                        // Actually, if we don't
-                        // set this, then changing
-                        // the tunneled value will not
-                        // change the SourceObject value
-                        // which can cause confusion.
-
-
-
-                        if (cvino != null)
-                        {
-                            if (string.IsNullOrEmpty(customVariable.OverridingPropertyType))
-                            {
-                                cvino.Value = customVariable.DefaultValue;
-                            }
-                            else
-                            {
-                                cvino.Value = null;
-                            }
-                        }
-                        else
-                        {
-                            // This is a new add June 12, 2022. Not sure if we should globally
-                            // add this value, or if it should only be for NOS's which have an ATI
-                            // with a variable definition. Let's be safe and require ATIs for now:
-                            if (variableDefinition != null)
-                            {
-                                GlueCommands.Self.GluxCommands.SetVariableOn(nos, customVariable.SourceObjectProperty, customVariable.DefaultValue, false, false);
-                            }
-                        }
-                    }
-                }
-            }
-
-            Plugins.PluginManager.ReactToElementVariableChange(currentElement, customVariable, oldValue);
+            HandleCustomVariableValueSet(customVariable, oldValue, element);
         }
 
         #endregion
@@ -192,6 +130,102 @@ public class CustomVariableSaveSetPropertyLogic
         }
         #endregion
     }
+
+    #region Default Value
+    private static void HandleCustomVariableValueSet(CustomVariable customVariable, object oldValue, GlueElement variableOwner)
+    {
+        customVariable.FixEnumerationTypes();
+
+        NamedObjectSave? namedObjectOwningVariable;
+        string? propertyName = null;
+        (namedObjectOwningVariable, propertyName)= GetNamedObjectOwningVariable(customVariable, variableOwner);
+
+        if (namedObjectOwningVariable != null)
+        {
+            var cvino = namedObjectOwningVariable.GetCustomVariable(propertyName);
+
+            var variableDefinition = namedObjectOwningVariable.GetAssetTypeInfo()
+                ?.VariableDefinitions.Find(item => item.Name == propertyName);
+
+            if (variableDefinition?.CustomVariableSet != null)
+            {
+                variableDefinition.CustomVariableSet(
+                    variableOwner, namedObjectOwningVariable, customVariable.Name, customVariable.DefaultValue);
+            }
+            else
+            {
+                // If the cvino is null, that means that the NOS doesn't have this exposed, so we don't
+                // need to do anything.
+                // Update June 12, 2022
+                // Actually, if we don't
+                // set this, then changing
+                // the tunneled value will not
+                // change the SourceObject value
+                // which can cause confusion.
+
+                if (cvino != null)
+                {
+                    if (string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                    {
+                        cvino.Value = customVariable.DefaultValue;
+                    }
+                    else
+                    {
+                        cvino.Value = null;
+                    }
+                }
+                else
+                {
+                    // This is a new add June 12, 2022. Not sure if we should globally
+                    // add this value, or if it should only be for NOS's which have an ATI
+                    // with a variable definition. Let's be safe and require ATIs for now:
+                    if (variableDefinition != null)
+                    {
+                        GlueCommands.Self.GluxCommands.SetVariableOn(namedObjectOwningVariable, customVariable.SourceObjectProperty, customVariable.DefaultValue, false, false);
+                    }
+                }
+            }
+        }
+
+        Plugins.PluginManager.ReactToElementVariableChange(variableOwner, customVariable, oldValue);
+    }
+
+    private static (NamedObjectSave?, string?) GetNamedObjectOwningVariable(CustomVariable customVariable, GlueElement variableOwner)
+    {
+        NamedObjectSave? namedObjectOwningVariable = null;
+        string? propertyName = null;
+
+        // This could be a tunneled variable that was created in a base.
+        // The derived does not contain the SourceObject/SourceProperty so
+        CustomVariable? variableWithSourceObject = null;
+        if(!string.IsNullOrEmpty(customVariable.SourceObject))
+        {
+            variableWithSourceObject = customVariable;
+        }
+        else if(customVariable.DefinedByBase)
+        {
+            var rootVariable = ObjectFinder.Self.GetRootCustomVariable(customVariable);
+            if(!string.IsNullOrEmpty(rootVariable?.SourceObject))
+            {
+                variableWithSourceObject = rootVariable;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(variableWithSourceObject?.SourceObject))
+        {
+
+            // See if the source NamedObjectSave has
+            // this variable exposed, and if so, set that 
+            // variable too so the two mirror each other...
+            // or make it null if this is a recasted variable.
+            namedObjectOwningVariable = variableOwner?.GetNamedObjectRecursively(variableWithSourceObject.SourceObject);
+            propertyName = variableWithSourceObject.SourceObjectProperty;
+        }
+
+        return (namedObjectOwningVariable, propertyName);
+    }
+
+    #endregion
 
     #region Name
 
@@ -348,8 +382,8 @@ public class CustomVariableSaveSetPropertyLogic
         // set per instance.
         //if (customVariable.SetByDerived && customVariable.IsShared)
         //{
-            //GlueCommands.Self.DialogCommands.ShowMessageBox("Variables that are IsShared cannot be SetByDerived");
-            //didErrorOccur = true;
+        //GlueCommands.Self.DialogCommands.ShowMessageBox("Variables that are IsShared cannot be SetByDerived");
+        //didErrorOccur = true;
         //}
 
         if (didErrorOccur)
@@ -490,35 +524,35 @@ public class CustomVariableSaveSetPropertyLogic
 
         var didErrorOccur = false;
 
-        if(newScope == Scope.Private && customVariable.SetByDerived)
+        if (newScope == Scope.Private && customVariable.SetByDerived)
         {
             GlueCommands.Self.DialogCommands.ShowMessageBox($"The variable {customVariable.Name} has its scope set to {newScope}, but it also has its SetByDerived to true " +
                 $"(requiring the variable to be virtual) which will result in compile errors. To set the scope to {newScope}, change SetByDerived to false.");
             didErrorOccur = true;
         }
 
-        if(!didErrorOccur)
+        if (!didErrorOccur)
         {
-            if(newScope == Scope.Private || newScope == Scope.Protected)
+            if (newScope == Scope.Private || newScope == Scope.Protected)
             {
                 // if any instances use this entity, and if those instances set those variables, we need to remove those variables:
                 var instances = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(owner);
                 List<NamedObjectSave> namedObjectsUsingVariable = new List<NamedObjectSave>();
-                foreach(var nos in instances)
+                foreach (var nos in instances)
                 {
                     var variable = nos.GetCustomVariable(customVariable.Name);
 
-                    if(variable?.Value != null)
+                    if (variable?.Value != null)
                     {
                         namedObjectsUsingVariable.Add(nos);
                     }
                 }
 
-                if(namedObjectsUsingVariable.Count > 0)
+                if (namedObjectsUsingVariable.Count > 0)
                 {
                     var message = $"By setting the variable's scope to {newScope}, the following variables would get removed:\n";
 
-                    foreach(var item in namedObjectsUsingVariable)
+                    foreach (var item in namedObjectsUsingVariable)
                     {
                         var variable = item.GetCustomVariable(customVariable.Name);
                         message += $"\n{item.InstanceName}.{variable?.ToString()}";
@@ -528,17 +562,17 @@ public class CustomVariableSaveSetPropertyLogic
 
                     var dialogResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message);
 
-                    if(dialogResult == System.Windows.MessageBoxResult.Yes)
+                    if (dialogResult == System.Windows.MessageBoxResult.Yes)
                     {
                         var elementsToRegenerate = new HashSet<GlueElement>();
 
-                        foreach(var nos in namedObjectsUsingVariable)
+                        foreach (var nos in namedObjectsUsingVariable)
                         {
                             nos.InstructionSaves.RemoveAll(item => item.Member == customVariable.Name);
                             elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
                         }
 
-                        foreach(var element in elementsToRegenerate)
+                        foreach (var element in elementsToRegenerate)
                         {
                             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element, generateDerivedElements: false);
                         }
@@ -551,7 +585,7 @@ public class CustomVariableSaveSetPropertyLogic
             }
         }
 
-        if(didErrorOccur)
+        if (didErrorOccur)
         {
             customVariable.Scope = (Scope)oldValue;
         }
@@ -686,12 +720,12 @@ public class CustomVariableSaveSetPropertyLogic
         }
 
         List<NamedObjectSave> instancesUsingVariable = new List<NamedObjectSave>();
-        if(variableContainer != null)
+        if (variableContainer != null)
         {
             instancesUsingVariable.AddRange(ObjectFinder.Self.GetAllNamedObjectsThatUseElement(variableContainer));
 
             var derivedElements = ObjectFinder.Self.GetAllDerivedElementsRecursive(variableContainer);
-            foreach(var derivedElement in derivedElements)
+            foreach (var derivedElement in derivedElements)
             {
                 instancesUsingVariable.AddRange(ObjectFinder.Self.GetAllNamedObjectsThatUseElement(derivedElement));
             }
@@ -712,7 +746,7 @@ public class CustomVariableSaveSetPropertyLogic
                         var oldDerivedValue = derived.DefaultValue;
                         var oldDerivedType = derived.Type;
                         // Derived could have changed somehow and this could be a "fix" by changing the base.
-                        if(derived.Type != customVariable.Type)
+                        if (derived.Type != customVariable.Type)
                         {
                             derived.Type = customVariable.Type;
                             ConvertVariableValueToCurrentType(derived, oldDerivedValue, oldDerivedType);
@@ -721,11 +755,11 @@ public class CustomVariableSaveSetPropertyLogic
                     }
                 }
 
-                foreach(var instanceUsingVariable in instancesUsingVariable)
+                foreach (var instanceUsingVariable in instancesUsingVariable)
                 {
                     var variable = instanceUsingVariable.GetCustomVariable(customVariable.Name);
 
-                    if(variable != null && variable.Type != customVariable.Type)
+                    if (variable != null && variable.Type != customVariable.Type)
                     {
                         variable.Type = customVariable.Type;
                         variable.Value = ConvertVariableValueToCurrentType(customVariable.Type, variable.Value, oldType);
@@ -737,7 +771,7 @@ public class CustomVariableSaveSetPropertyLogic
 
             }, "Converting variables according to type change");
 
-            foreach(var element in elementsContainingChangedInstances)
+            foreach (var element in elementsContainingChangedInstances)
             {
                 var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
 
@@ -768,7 +802,7 @@ public class CustomVariableSaveSetPropertyLogic
     }
 
     private static object ConvertVariableValueToCurrentType(string newType, object currentValue, string oldType)
-    { 
+    {
         // This could migrate to the TypeManager but I haven't yet because the cod e here uses both old type and new type strings, which
         // the TypeManager doesn't yet handle. But we should unify that code
         bool wasAbleToConvert = false;
@@ -897,25 +931,25 @@ public class CustomVariableSaveSetPropertyLogic
             {
                 var valueAsString = (string)currentValue;
 
-                if(newType?.Contains(".") == true)
+                if (newType?.Contains(".") == true)
                 {
                     // This could be a CSV, entity type, or state.
                     // For now just going to add entity type, but will
                     // eventually add more:
-                    if(CustomVariableExtensionMethods.GetIsBaseElementType(newType, out GlueElement containingElement))
+                    if (CustomVariableExtensionMethods.GetIsBaseElementType(newType, out GlueElement containingElement))
                     {
-                        if(string.IsNullOrEmpty(valueAsString) || valueAsString == "<NONE>")
+                        if (string.IsNullOrEmpty(valueAsString) || valueAsString == "<NONE>")
                         {
                             newValue = "";
-                                    wasAbleToConvert = true;
+                            wasAbleToConvert = true;
                         }
-                        else if(containingElement != null)
+                        else if (containingElement != null)
                         {
                             var entityType = ObjectFinder.Self.GetAllElementsThatInheritFrom(containingElement)
                                 .FirstOrDefault(item => item.Name.EndsWith("\\" + valueAsString));
 
                             newValue = entityType?.Name ?? "";
-                                    wasAbleToConvert = true;
+                            wasAbleToConvert = true;
                         }
                     }
                 }
@@ -1029,7 +1063,7 @@ public class CustomVariableSaveSetPropertyLogic
 
                 }
             }
-            else if(oldType?.EndsWith("Type") == true || newType?.EndsWith("Variant") == true)
+            else if (oldType?.EndsWith("Type") == true || newType?.EndsWith("Variant") == true)
             {
                 // This is converting form a type to something else like a variant. Let's leave it the same
 

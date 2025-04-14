@@ -370,34 +370,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (namedObjectSave?.GetCustomVariable(changedMember) != null)
             {
-                // See if this variable is tunneled into in this element.
-                // If so, set that value too.
-                CustomVariableInNamedObject cvino = namedObjectSave.GetCustomVariable(changedMember);
-                object value = cvino.Value;
-
-                if(element != null)
-                {
-                    foreach (CustomVariable customVariable in element.CustomVariables)
-                    {
-                        if (customVariable.SourceObject == namedObjectSave.InstanceName &&
-                            customVariable.SourceObjectProperty == changedMember)
-                        {
-                            // The custom variable may have a different type:
-                            if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
-                            {
-                                // it does, so convert
-                                Type overridingType = TypeManager.GetTypeFromString(customVariable.OverridingPropertyType);
-
-                                customVariable.DefaultValue = System.Convert.ChangeType(value, overridingType);
-                            }
-                            else
-                            {
-                                customVariable.DefaultValue = value;
-                            }
-                            break;
-                        }
-                    }
-                }
+                HandleCustomVariableValueSet(changedMember, namedObjectSave, element);
             }
 
             #endregion
@@ -418,7 +391,49 @@ namespace FlatRedBall.Glue.SetVariable
             PluginManager.ReactToNamedObjectChangedValue(changedMember, oldValue, namedObjectSave);
         }
 
+        private static void HandleCustomVariableValueSet(string customVariableName, NamedObjectSave namedObjectSave, GlueElement element)
+        {
+            // See if this variable is tunneled into in this element.
+            // If so, set that value too.
+            CustomVariableInNamedObject cvino = namedObjectSave.GetCustomVariable(customVariableName);
+            object value = cvino.Value;
 
+            if (element != null)
+            {
+                foreach (CustomVariable customVariable in element.CustomVariables)
+                {
+                    var isTunneledVariable = customVariable.SourceObject == namedObjectSave.InstanceName &&
+                        customVariable.SourceObjectProperty == customVariableName;
+
+                    if(!isTunneledVariable)
+                    {
+                        // it may be tunneled recursively, so check the root:
+                        var rootVariable = ObjectFinder.Self.GetRootCustomVariable(customVariable);
+
+                        isTunneledVariable = rootVariable?.SourceObject == namedObjectSave.InstanceName &&
+                            rootVariable?.SourceObjectProperty == customVariableName;
+                    }
+
+
+                    if (isTunneledVariable)
+                    {
+                        // The custom variable may have a different type:
+                        if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                        {
+                            // it does, so convert
+                            Type overridingType = TypeManager.GetTypeFromString(customVariable.OverridingPropertyType);
+
+                            customVariable.DefaultValue = System.Convert.ChangeType(value, overridingType);
+                        }
+                        else
+                        {
+                            customVariable.DefaultValue = value;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
 
         private void ReactToSourceClassGenericType(NamedObjectSave namedObjectSave, object oldValue, GlueElement element)
         {

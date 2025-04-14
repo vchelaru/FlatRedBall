@@ -139,6 +139,11 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        /// <summary>
+        /// Returns a new Vector3 of Length 1 unless the vector has a length of 0. If the vector has a length of 0, then a vector pointing to the right is returned.
+        /// </summary>
+        /// <param name="vector3">The vector to normalize</param>
+        /// <returns>A vector of length 1 pointing in the direction of the argument vector, or a vector of length 1 pointing to the right if the argument has a length of 0.</returns>
         public static Vector3 NormalizedOrRight(this Vector3 vector3)
         {
             if (vector3.X != 0 || vector3.Y != 0 || vector3.Z != 0)
@@ -152,6 +157,12 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        /// <summary>
+        /// Returns a Vector3 rotated by the specified angle in radians. The Z value is not modified.
+        /// </summary>
+        /// <param name="vector3"></param>
+        /// <param name="radiansToRotateBy"></param>
+        /// <returns></returns>
         public static Vector3 RotatedBy(this Vector3 vector3, float radiansToRotateBy)
         {
             if(vector3.X == 0 && vector3.Y == 0)
