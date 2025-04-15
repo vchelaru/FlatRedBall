@@ -284,7 +284,8 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// The red component of the color value to be used with the color operation. This value should be between 0 and 1.
+        /// The red component of the color value to be used with the color operation.
+        /// This value should be between 0 and 1.
         /// </summary>
         public float Red
         {
@@ -378,6 +379,17 @@ namespace FlatRedBall
             }
         }
 
+        public Microsoft.Xna.Framework.Color Color
+        {
+            set
+            {
+                Red = value.R / 255f;
+                Green = value.G / 255f;
+                Blue = value.B / 255f;
+                Alpha = value.A / 255f;
+            }
+
+        }
 
         public ColorOperation ColorOperation
         {
