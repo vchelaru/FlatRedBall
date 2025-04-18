@@ -63,7 +63,7 @@ public partial class MainGlueWindow : Form
     }
 
     #endregion
-
+    
     private static void SetMsBuildEnvironmentVariable()
     {
         // August 21, 2023
@@ -274,6 +274,17 @@ public partial class MainGlueWindow : Form
         AddErrorReporters();
 
         var initializationWindow = new InitializationWindowWpf();
+        initializationWindow.Closed += (_, _) =>
+        {
+            if (GlueState.Self.GlueSettingsSave.MainWindowState is { } lastWindow)
+            {
+                Left = lastWindow.Left;
+                Top = lastWindow.Top;
+                Width = lastWindow.Width;
+                Height = lastWindow.Height;
+                WindowState = lastWindow.IsMaximized ? FormWindowState.Maximized : FormWindowState.Normal;
+            }
+        };
 
         // Initialize GlueGui before using it:
         GlueGui.Initialize(mMenu);
@@ -686,6 +697,15 @@ public partial class MainGlueWindow : Form
     private static bool _wantsToExit = false;
     private void MainGlueWindow_FormClosing(object sender, FormClosingEventArgs e)
     {
+        GlueState.Self.GlueSettingsSave.MainWindowState = new WindowState
+        {
+            Left = Left,
+            Top = Top,
+            Width = Width,
+            Height = Height,
+            IsMaximized = WindowState is FormWindowState.Maximized
+        };
+        GlueCommands.Self.GluxCommands.SaveSettings();
         // If this function is async, all the awaited calls in here may get called after the window
         // is closed, and that's bad. But we can't Wait the task to finish as that would freeze the UI.
         // Therefore to fix this, we'll tell Glue to not shut down if this is the first time the user wanted
