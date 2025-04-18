@@ -1029,9 +1029,6 @@
       "Name": "Entities\\TopDownAnimatedEntity"
     },
     {
-      "Name": "Entities\\TopDownAnimatedEntityDerived"
-    },
-    {
       "Name": "Entities\\TopDownMovementEntity"
     },
     {

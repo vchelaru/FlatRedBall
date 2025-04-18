@@ -100,7 +100,7 @@ public class EntityTopDownAnimationCodeGenerator : ElementComponentCodeGenerator
             // I started working on it but realized
             // that the problem is more complicated than
             // I originally planned. The animation UI should
-            // behave the same as top dow movement variables -
+            // behave the same as top down movement variables -
             // it should show values from base, and let you overwrite
             // them. This is more work than simply modifying the code generation.
             // This is somewhat low priority because the common pattern is (currently)

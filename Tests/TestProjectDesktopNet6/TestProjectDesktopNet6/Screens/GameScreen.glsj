@@ -111,25 +111,7 @@
       "SourceClassGenericType": "Entities\\TopDownAnimatedEntity",
       "ExposedInDerived": true,
       "AttachToContainer": true,
-      "GenerateTimedEmit": true,
-      "ContainedObjects": [
-        {
-          "InstanceName": "TopDownAnimatedEntityDerived1",
-          "SourceClassType": "Entities\\TopDownAnimatedEntityDerived",
-          "Properties": [
-            {
-              "Name": "AssociateWithFactory",
-              "Value": true,
-              "Type": "bool"
-            }
-          ],
-          "InstructionSaves": [],
-          "SourceType": 1,
-          "SourceFile": "Entities\\TopDownAnimatedEntityDerived",
-          "AttachToContainer": true,
-          "GenerateTimedEmit": true
-        }
-      ]
+      "GenerateTimedEmit": true
     },
     {
       "InstanceName": "TopDownMovementEntityList",

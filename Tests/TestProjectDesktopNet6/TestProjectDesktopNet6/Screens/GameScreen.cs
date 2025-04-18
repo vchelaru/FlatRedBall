@@ -24,7 +24,6 @@ namespace GlueTestProject.Screens
 
         void CustomInitialize()
         {
-            this.TopDownAnimatedEntityDerived1.DoInitializeTests();
 
         }
 

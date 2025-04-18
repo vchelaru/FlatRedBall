@@ -386,10 +386,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TmxFile</Name>
     </None>
-    <None Include="Content\Entities\TopDownAnimatedEntityDerived\DerivedAnimations.achx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>DerivedAnimations</Name>
-    </None>
     <None Include="Content\Entities\TopDownAnimatedEntity\AnimationChainListFile.achx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>AnimationChainListFile</Name>
@@ -1966,10 +1962,6 @@
     <Compile Include="Entities\TopDownAnimatedEntity.Generated.cs">
       <DependentUpon>TopDownAnimatedEntity.cs</DependentUpon>
     </Compile>
-    <Compile Include="Entities\TopDownAnimatedEntityDerived.cs" />
-    <Compile Include="Entities\TopDownAnimatedEntityDerived.Generated.cs">
-      <DependentUpon>TopDownAnimatedEntityDerived.cs</DependentUpon>
-    </Compile>
     <Compile Include="Entities\TopDownMovementEntity.cs" />
     <Compile Include="Entities\TopDownMovementEntity.Generated.cs">
       <DependentUpon>TopDownMovementEntity.cs</DependentUpon>
@@ -2034,7 +2026,6 @@
     <Compile Include="Factories\ShapeEntityCreatedByOtherEntitiesFactory.Generated.cs" />
     <Compile Include="Factories\TextInheritingEntityFactory.Generated.cs" />
     <Compile Include="Factories\TiledEntityInFolderFactory.Generated.cs" />
-    <Compile Include="Factories\TopDownAnimatedEntityDerivedFactory.Generated.cs" />
     <Compile Include="Factories\TopDownAnimatedEntityFactory.Generated.cs" />
     <Compile Include="Factories\TopDownMovementEntityDerivedFactory.Generated.cs" />
     <Compile Include="Factories\TopDownMovementEntityFactory.Generated.cs" />

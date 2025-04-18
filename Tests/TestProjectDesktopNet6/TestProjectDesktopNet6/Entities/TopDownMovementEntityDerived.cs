@@ -9,6 +9,7 @@ using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Graphics.Particle;
 using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
+using GlueTestProject.TestFramework;
 
 namespace GlueTestProject.Entities
 {
@@ -21,7 +22,8 @@ namespace GlueTestProject.Entities
         /// </summary>
         private void CustomInitialize()
         {
-            
+            this.TopDownValues["Default"].MaxSpeed.ShouldBe(76);
+            this.TopDownValues["OverrideMe"].MaxSpeed.ShouldBe(100);
         }
 
         private void CustomActivity()
