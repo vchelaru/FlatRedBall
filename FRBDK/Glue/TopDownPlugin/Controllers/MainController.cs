@@ -89,7 +89,7 @@ namespace TopDownPlugin.Controllers
             bool shouldGenerateCsv, shouldGenerateEntity, shouldReAddTopDownVariables;
             bool shouldRemoveCsvRfs = false;
 
-            if(viewModel.IsTopDown == false)
+            if(viewModel.IsEffectivelyTopDown == false)
             {
                 shouldRemoveCsvRfs = true;
             }

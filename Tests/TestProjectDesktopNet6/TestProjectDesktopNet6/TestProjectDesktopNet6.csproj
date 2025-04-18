@@ -398,6 +398,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TopDownValuesStatic</Name>
     </None>
+    <None Include="Content\Entities\TopDownMovementEntityDerived\TopDownValuesStatic.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TopDownValuesStatic</Name>
+    </None>
+    <None Include="Content\Entities\TopDownMovementEntity\TopDownValuesStatic.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TopDownValuesStatic</Name>
+    </None>
     <None Include="Content\Entities\TopDownPluginEntity\TopDownValuesStatic.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TopDownValuesStatic</Name>
@@ -1962,6 +1970,14 @@
     <Compile Include="Entities\TopDownAnimatedEntityDerived.Generated.cs">
       <DependentUpon>TopDownAnimatedEntityDerived.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\TopDownMovementEntity.cs" />
+    <Compile Include="Entities\TopDownMovementEntity.Generated.cs">
+      <DependentUpon>TopDownMovementEntity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\TopDownMovementEntityDerived.cs" />
+    <Compile Include="Entities\TopDownMovementEntityDerived.Generated.cs">
+      <DependentUpon>TopDownMovementEntityDerived.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\TopDownPluginEntity.cs" />
     <Compile Include="Entities\TopDownPluginEntity.Generated.cs">
       <DependentUpon>TopDownPluginEntity.cs</DependentUpon>
@@ -2020,6 +2036,8 @@
     <Compile Include="Factories\TiledEntityInFolderFactory.Generated.cs" />
     <Compile Include="Factories\TopDownAnimatedEntityDerivedFactory.Generated.cs" />
     <Compile Include="Factories\TopDownAnimatedEntityFactory.Generated.cs" />
+    <Compile Include="Factories\TopDownMovementEntityDerivedFactory.Generated.cs" />
+    <Compile Include="Factories\TopDownMovementEntityFactory.Generated.cs" />
     <Compile Include="Factories\VariantEntityBaseFactory.Generated.cs" />
     <Compile Include="Factories\VariantEntityDerivedFactory.Generated.cs" />
     <Compile Include="FileAliases.Generated.cs" />

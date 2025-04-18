@@ -36,7 +36,7 @@ namespace TopDownPlugin.ViewModels
 
         [DependsOn(nameof(IsTopDown))]
         [DependsOn(nameof(InheritsFromTopDown))]
-        bool IsEffectivelyTopDown => IsTopDown || InheritsFromTopDown;
+        public bool IsEffectivelyTopDown => IsTopDown || InheritsFromTopDown;
 
         [DependsOn(nameof(IsEffectivelyTopDown))]
         public Visibility TopDownUiVisibility => IsEffectivelyTopDown.ToVisibility();

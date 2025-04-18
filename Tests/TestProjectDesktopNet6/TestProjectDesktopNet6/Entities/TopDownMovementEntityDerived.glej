@@ -1,0 +1,20 @@
+{
+  "Tags": [
+    "GLUE"
+  ],
+  "Source": "GLUE",
+  "BaseEntity": "Entities\\TopDownMovementEntity",
+  "CreatedByOtherEntities": true,
+  "Is2D": true,
+  "ReferencedFiles": [
+    {
+      "Name": "Entities/TopDownMovementEntityDerived/TopDownValuesStatic.csv",
+      "IsSharedStatic": true,
+      "HasPublicProperty": true,
+      "CreatesDictionary": true,
+      "ProjectsToExcludeFrom": []
+    }
+  ],
+  "Name": "Entities\\TopDownMovementEntityDerived",
+  "CustomClassesForExport": []
+}
