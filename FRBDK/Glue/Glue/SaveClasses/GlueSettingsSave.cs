@@ -107,10 +107,7 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         } = new List<ProjectFileGlueFilePair>();
 
-        public int WindowLeft { get; set; }
-        public int WindowTop { get; set; }
-        public int WindowWidth { get; set; }
-        public int WindowHeight { get; set; }
+        public WindowState? MainWindowState { get; set; }
         public int MainSplitterDistance { get; set; }
         public int StoredRecentFiles { get; set; }
 
@@ -213,5 +210,14 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         #endregion
+    }
+
+    public record WindowState
+    {
+        public int Left { get; set; }
+        public int Top { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public bool IsMaximized { get; set; }
     }
 }
