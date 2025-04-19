@@ -279,7 +279,7 @@ namespace FlatRedBall.Glue.Parsing
             }
 
 
-            ReferencedFileSaveCodeGenerator.GenerateReloadFileMethod(classLevelBlock, ProjectManager.GlueProjectSave.GlobalFiles);
+            ReferencedFileSaveCodeGenerator.GenerateReloadFileMethod(classLevelBlock, ProjectManager.GlueProjectSave.GlobalFiles, null);
 
 
 

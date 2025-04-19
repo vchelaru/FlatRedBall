@@ -394,6 +394,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TopDownValuesStatic</Name>
     </None>
+    <None Include="Content\Entities\TopDownMovementEntityDerivedDerived\TopDownValuesStatic.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TopDownValuesStatic</Name>
+    </None>
     <None Include="Content\Entities\TopDownMovementEntityDerived\TopDownValuesStatic.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>TopDownValuesStatic</Name>
@@ -1970,6 +1974,10 @@
     <Compile Include="Entities\TopDownMovementEntityDerived.Generated.cs">
       <DependentUpon>TopDownMovementEntityDerived.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\TopDownMovementEntityDerivedDerived.cs" />
+    <Compile Include="Entities\TopDownMovementEntityDerivedDerived.Generated.cs">
+      <DependentUpon>TopDownMovementEntityDerivedDerived.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\TopDownPluginEntity.cs" />
     <Compile Include="Entities\TopDownPluginEntity.Generated.cs">
       <DependentUpon>TopDownPluginEntity.cs</DependentUpon>
@@ -2027,6 +2035,7 @@
     <Compile Include="Factories\TextInheritingEntityFactory.Generated.cs" />
     <Compile Include="Factories\TiledEntityInFolderFactory.Generated.cs" />
     <Compile Include="Factories\TopDownAnimatedEntityFactory.Generated.cs" />
+    <Compile Include="Factories\TopDownMovementEntityDerivedDerivedFactory.Generated.cs" />
     <Compile Include="Factories\TopDownMovementEntityDerivedFactory.Generated.cs" />
     <Compile Include="Factories\TopDownMovementEntityFactory.Generated.cs" />
     <Compile Include="Factories\VariantEntityBaseFactory.Generated.cs" />

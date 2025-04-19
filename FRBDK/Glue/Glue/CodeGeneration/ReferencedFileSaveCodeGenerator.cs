@@ -178,7 +178,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (referencedFile.LoadedOnlyWhenReferenced)
             {
-                WriteLoadedOnlyWhenReferencedPropertyBody(referencedFile, element, contentManagerName, ati, variableName, lastContentManagerVariableName, getBlock);
+                WriteLoadedOnlyWhenReferencedPropertyBody(referencedFile, (GlueElement)element, contentManagerName, ati, variableName, lastContentManagerVariableName, getBlock);
             }
             // global content
             else if (element == null)
@@ -222,7 +222,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     getBlock = getBlock.End();
                 }
                 getBlock.Line("#else");
-                WriteLoadedOnlyWhenReferencedPropertyBody(referencedFile, element, contentManagerName, ati, variableName, lastContentManagerVariableName, getBlock);
+                WriteLoadedOnlyWhenReferencedPropertyBody(referencedFile, (GlueElement)element, contentManagerName, ati, variableName, lastContentManagerVariableName, getBlock);
 
 
                 getBlock.Line("#endif");
@@ -410,7 +410,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             GenerateGetMember(codeBlock, element);
 
-            GenerateReloadFileMethod(codeBlock, element.ReferencedFiles);
+            GenerateReloadFileMethod(codeBlock, element.ReferencedFiles, element as GlueElement);
 
             return codeBlock;
         }
@@ -853,7 +853,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void WriteLoadedOnlyWhenReferencedPropertyBody(ReferencedFileSave referencedFile, IElement element, 
+        private static void WriteLoadedOnlyWhenReferencedPropertyBody(ReferencedFileSave referencedFile, GlueElement element, 
             string contentManagerName, AssetTypeInfo ati, string variableName, string lastContentManagerVariableName, ICodeBlock getBlock)
         {
             string referencedFileName = GetFileToLoadForRfs(referencedFile, ati);
@@ -910,12 +910,29 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
 
 
-                var baseElement = ObjectFinder.Self.GetBaseElement(element);
-                var hasBaseRfsWithSameName = baseElement != null && baseElement.ReferencedFiles.Any(item => item.Name == referencedFile.Name && referencedFile.IsCsvOrTreatedAsCsv);
+                List<string> orderedBaseRfsHolders = new List<string>();
+                if(element != null)
+                {
+                    var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(element);
+                    // revierse it so we get the basemost first:
+                    allBase.Reverse();
+                    foreach (var baseElement in allBase)
+                    {
+                        var hasBaseRfsWithSameName = baseElement != null && baseElement.ReferencedFiles.Any(item => item.GetInstanceName() == referencedFile.GetInstanceName() && referencedFile.IsCsvOrTreatedAsCsv);
+
+                        if (hasBaseRfsWithSameName)
+                        {
+                            orderedBaseRfsHolders.Add(baseElement.Name);
+                        }
+                    }
+
+                    //var baseElement = ObjectFinder.Self.GetBaseElement(element);
+                    //var hasBaseRfsWithSameName = baseElement != null && baseElement.ReferencedFiles.Any(item => item.Name == referencedFile.Name && referencedFile.IsCsvOrTreatedAsCsv);
+                }
 
 
                 GenerateCsvDeserializationCode(referencedFile, ifBlock, mThenVariableName,
-                                                referencedFileName, LoadType.CompleteLoad, hasBaseRfsWithSameName ? baseElement.Name : null);
+                                                referencedFileName, LoadType.CompleteLoad, orderedBaseRfsHolders);
             }
 
 
@@ -1120,7 +1137,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                     else if(referencedFile.IsCsvOrTreatedAsCsv)
                     {
-                        GenerateInitializationForCsvRfs(referencedFile, codeBlock, container, fileName, loadType);
+                        GenerateInitializationForCsvRfs(referencedFile, codeBlock, (GlueElement)container, fileName, loadType);
                     }
                 }
 
@@ -1129,7 +1146,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void GenerateInitializationForCsvRfs(ReferencedFileSave referencedFile, ICodeBlock codeBlock, IElement container, string fileName, LoadType loadType)
+        private static void GenerateInitializationForCsvRfs(ReferencedFileSave referencedFile, ICodeBlock codeBlock, GlueElement container, string fileName, LoadType loadType)
         {
             var curBlock = codeBlock;
 
@@ -1169,10 +1186,25 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             }
 
-            var baseElement = ObjectFinder.Self.GetBaseElement(container);
-            var hasBaseRfsWithSameName = baseElement != null && baseElement.ReferencedFiles.Any(item => item.GetInstanceName() == referencedFile.GetInstanceName() && referencedFile.IsCsvOrTreatedAsCsv);
+            List<string> orderedBaseRfsHolders = new List<string>();
+            if (container != null)
+            {
+                var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(container);
+                // reverse it so we get the base-most first
+                allBase.Reverse();
+                foreach(var baseElement in allBase)
+                {
+                    var hasBaseRfsWithSameName = baseElement != null && baseElement.ReferencedFiles.Any(item => item.GetInstanceName() == referencedFile.GetInstanceName() && referencedFile.IsCsvOrTreatedAsCsv);
 
-            GenerateCsvDeserializationCode(referencedFile, curBlock, variableName, fileName, loadType, hasBaseRfsWithSameName ? baseElement.Name : null);
+                    if(hasBaseRfsWithSameName)
+                    {
+                        orderedBaseRfsHolders.Add(baseElement.Name);
+                    }
+                }
+            }
+
+
+            GenerateCsvDeserializationCode(referencedFile, curBlock, variableName, fileName, loadType, orderedBaseRfsHolders);
         }
 
         private static void GenerateInitializationForAssetTypeInfoRfs(ReferencedFileSave referencedFile, ICodeBlock codeBlock, IElement container, string fileName, AssetTypeInfo ati, ProjectBase project)
@@ -1260,7 +1292,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 string.Format("LocalizationManager.AddDatabase(\"{0}\", '{1}');", fileName, delimiter));
         }
 
-        private static void GenerateCsvDeserializationCode(ReferencedFileSave referencedFile, ICodeBlock codeBlock,  string variableName, string fileName, LoadType loadType, string baseRfsHolder)
+        private static void GenerateCsvDeserializationCode(ReferencedFileSave referencedFile, ICodeBlock codeBlock,  string variableName, string fileName, LoadType loadType, List<string> baseRfsHolders)
         {
             #region Get the typeName (type as a string)
 
@@ -1313,10 +1345,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                 block.Line($"{whatToLoadInto}.Clear();");
             }
 
-            if(baseRfsHolder != null)
+            foreach (var baseRfsHolder in baseRfsHolders)
             {
                 block.ForEach($"var kvp in {baseRfsHolder.Replace("\\", ".")}.{referencedFile.GetInstanceName()}")
-                    .Line($"{whatToLoadInto}.Add(kvp.Key, kvp.Value);");
+                    .Line($"{whatToLoadInto}[kvp.Key] = kvp.Value;");
             }
 
             #region Call CsvFileManager.CsvDeserializeList/Dictionary
@@ -1795,7 +1827,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 assetTypeInfo?.CustomReloadFunc != null;
         }
 
-        public static void GenerateReloadFileMethod(ICodeBlock currentBlock, List<ReferencedFileSave> files)
+        public static void GenerateReloadFileMethod(ICodeBlock currentBlock, List<ReferencedFileSave> files, GlueElement? filesContainer)
         {
             var reloadFunction = currentBlock
                 .Function("public static void", "Reload", "object whatToReload");
@@ -1815,7 +1847,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 var ifInReload = reloadFunction.If("whatToReload == " + rfs.GetInstanceName());
                 {
-                    ReferencedFileSaveCodeGenerator.GetReload(rfs, null, ifInReload, LoadType.MaintainInstance);
+                    ReferencedFileSaveCodeGenerator.GetReload(rfs, filesContainer, ifInReload, LoadType.MaintainInstance);
 
                 }
 

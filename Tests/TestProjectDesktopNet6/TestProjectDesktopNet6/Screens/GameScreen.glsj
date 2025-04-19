@@ -129,7 +129,25 @@
       "SourceClassGenericType": "Entities\\TopDownMovementEntity",
       "ExposedInDerived": true,
       "AttachToContainer": true,
-      "GenerateTimedEmit": true
+      "GenerateTimedEmit": true,
+      "ContainedObjects": [
+        {
+          "InstanceName": "TopDownMovementEntityDerivedDerived1",
+          "SourceClassType": "Entities\\TopDownMovementEntityDerivedDerived",
+          "Properties": [
+            {
+              "Name": "AssociateWithFactory",
+              "Value": true,
+              "Type": "bool"
+            }
+          ],
+          "InstructionSaves": [],
+          "SourceType": 1,
+          "SourceFile": "Entities\\TopDownMovementEntityDerivedDerived",
+          "AttachToContainer": true,
+          "GenerateTimedEmit": true
+        }
+      ]
     },
     {
       "InstanceName": "Map",

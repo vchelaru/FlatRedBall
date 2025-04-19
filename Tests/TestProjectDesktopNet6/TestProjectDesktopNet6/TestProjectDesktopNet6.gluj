@@ -367,7 +367,8 @@
         "Entities/TopDownPluginEntity/TopDownValuesStatic.csv",
         "Entities/TopDownAnimatedEntity/TopDownValuesStatic.csv",
         "Entities/TopDownMovementEntity/TopDownValuesStatic.csv",
-        "Entities/TopDownMovementEntityDerived/TopDownValuesStatic.csv"
+        "Entities/TopDownMovementEntityDerived/TopDownValuesStatic.csv",
+        "Entities/TopDownMovementEntityDerivedDerived/TopDownValuesStatic.csv"
       ],
       "RequiredProperties": [],
       "GenerateCode": true,
@@ -1033,6 +1034,9 @@
     },
     {
       "Name": "Entities\\TopDownMovementEntityDerived"
+    },
+    {
+      "Name": "Entities\\TopDownMovementEntityDerivedDerived"
     },
     {
       "Name": "Entities\\TopDownPluginEntity"

@@ -802,6 +802,11 @@ public class ObjectFinder : IObjectFinder
         }
     }
 
+    /// <summary>
+    /// Returns all base elements, with the most derived first, and the most base last.
+    /// </summary>
+    /// <param name="derivedElement">The derived element for which to get all base.</param>
+    /// <returns>An ordered list of base elements, with the most derived first</returns>
     public List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement)
     {
         var baseElements = new List<GlueElement>();

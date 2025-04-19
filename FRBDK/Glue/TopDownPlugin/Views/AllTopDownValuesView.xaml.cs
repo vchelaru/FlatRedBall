@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using TopDownPlugin.Data;
 using TopDownPlugin.ViewModels;
 
@@ -36,12 +37,15 @@ namespace TopDownPlugin.Views
             {
                 newItemName = FlatRedBall.Utilities.StringFunctions.IncrementNumberAtEnd(newItemName);
             }
-
-            // See MainControl.Xaml.cs for platformer to see a discussion about whether this should use Overwrite as its default behavior instead of inherit....
+            // since this is brand new, make it overwrite:
+            values.InheritOrOverwrite = GlueCommon.Models.InheritOrOverwrite.Overwrite;
 
             values.Name = newItemName;
 
             ViewModel.TopDownValues.Add(values);
+
+            // This adds new items to the dropdowns:
+            GlueCommands.Self.RefreshCommands.RefreshVariables();
         }
 
 
