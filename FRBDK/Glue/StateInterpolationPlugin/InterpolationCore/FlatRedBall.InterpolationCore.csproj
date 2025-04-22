@@ -1,11 +1,24 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
     <RootNamespace>FlatRedBall.InterpolationCore</RootNamespace>
     <AssemblyName>FlatRedBall.InterpolationCore</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Configurations>AutomatedBuild;Debug Docs;Debug;Debug2;DebugProfile;Profile;Release;Submission Phone;Submission;UnitTest;UnitTests</Configurations>
+    <Configurations>Debug;Profile;Release</Configurations>
+
+
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>FlatRedBall.InterpolationCore</PackageId>
+    <Version>2025.4.22.1</Version>
+
+
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+
+    
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <OutputPath>bin\x86\Debug\</OutputPath>

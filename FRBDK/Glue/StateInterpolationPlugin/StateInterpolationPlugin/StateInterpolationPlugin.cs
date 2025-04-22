@@ -19,6 +19,11 @@ using FlatRedBall.Glue.Managers;
 
 namespace OfficialPlugins.StateInterpolation
 {
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+    // this plugin is no longer needed because interpolation is already part of all FRB projects
+    // automatically. I'm keeping this here (as of May 22, 2025) to support old projects, but I'm
+    // removing the menu item to add state interpolation to new projects since it only adds confusion
+
     [Export(typeof(PluginBase))]
     public class StateInterpolationPlugin : PluginBase
     {
@@ -60,24 +65,12 @@ namespace OfficialPlugins.StateInterpolation
 
             CreateCodeItemAdder();
 
-            CreateMenuItems();
+            // Removing this because we no longer need this
+            //CreateMenuItems();
 
-            this.AdjustDisplayedEntity += HandleAdjustDisplayedEntity;
-            this.AdjustDisplayedScreen += HandleAdjustDisplayedScreen;
-            this.ReactToLoadedGlux += HandleGluxLoad;
             mCodeGenerator = new StateInterpolationCodeGenerator();
             CodeWriter.CodeGenerators.Add(mCodeGenerator);
 
-        }
-
-        private void CreateMenuItems()
-        {
-            this.AddMenuItemTo("Add state interpolation classes", Localization.MenuIds.AddStateInterpolationClassesId, HandleAddStateInterpolationClasses, Localization.MenuIds.PluginId);
-        }
-
-        private void HandleAddStateInterpolationClasses(object sender, EventArgs e)
-        {
-            UpdateCodeInProjectPresence();
         }
 
         private void CreateCodeItemAdder()
@@ -106,30 +99,6 @@ namespace OfficialPlugins.StateInterpolation
             mItemAdder.OutputFolderInProject = "StateInterpolation";
         }
 
-        void HandleGluxLoad()
-        {
-            // Update March 28, 2018 - we no longer add these files to projects because they're part of new templates automatically
-            //UpdateCodeInProjectPresence();
-        }
-
-        private void HandleAdjustDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer displayer)
-        {
-            displayer.IncludeCustomPropertyMember(VariableName, typeof(bool));
-        }
-
-        private void HandleAdjustDisplayedScreen(ScreenSave screenSave, ScreenSavePropertyGridDisplayer displayer)
-        {
-            displayer.IncludeCustomPropertyMember(VariableName, typeof(bool));
-        }
-
-
-        private void UpdateCodeInProjectPresence()
-        {
-
-            PluginManager.ReceiveOutput("Adding state interpolation plugin code files");
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            mItemAdder.PerformAddAndSaveTask(assembly);
-        }
 
 
         public override bool ShutDown(FlatRedBall.Glue.Plugins.Interfaces.PluginShutDownReason shutDownReason)
