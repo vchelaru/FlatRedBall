@@ -1,0 +1,68 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>FlatRedBall.InterpolationCore</RootNamespace>
+    <AssemblyName>FlatRedBall.InterpolationCore</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Configurations>AutomatedBuild;Debug Docs;Debug;Debug2;DebugProfile;Profile;Release;Submission Phone;Submission;UnitTest;UnitTests</Configurations>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\StateInterpolationPlugin\Back.cs">
+      <Link>Back.cs</Link>
+    </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Bounce.cs">
+      <Link>Bounce.cs</Link>
+    </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Circular.cs">
+      <Link>Circular.cs</Link>
+    </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Cubic.cs">
+      <Link>Cubic.cs</Link>
+    </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Elastic.cs">
+      <Link>Elastic.cs</Link>
+    </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Exponential.cs">
+      <Link>Exponential.cs</Link>
+    </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Instant.cs">
+      <Link>Instant.cs</Link>
+    </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Linear.cs">
+      <Link>Linear.cs</Link>
+    </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Quadratic.cs">
+      <Link>Quadratic.cs</Link>
+    </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Quartic.cs">
+      <Link>Quartic.cs</Link>
+    </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Quintic.cs">
+      <Link>Quintic.cs</Link>
+    </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Sinusoidal.cs">
+      <Link>Sinusoidal.cs</Link>
+    </Compile>
+    <Compile Include="..\StateInterpolationPlugin\Tweener.cs">
+      <Link>Tweener.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="InfoAboutProject.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+  </ItemGroup>
+</Project>
