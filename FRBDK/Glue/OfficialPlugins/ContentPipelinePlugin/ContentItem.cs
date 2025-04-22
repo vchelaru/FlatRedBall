@@ -172,13 +172,16 @@ namespace OfficialPlugins.MonoGameContent
             }
 
             // iOS and Android have case sensitive file systems, so we'll to-lower it here
-
+            // Update April 21, 2025
+            // We no longer to-lower things
+            // throughout Glue, so we should
+            // keep the case for everything as-is.
             string buildArgument = BuildFileName.FullPath;
+            //if(Platform == "Android" || Platform == "iOS")
+            //{
+            //    buildArgument = buildArgument.ToLowerInvariant();
+            //}
 
-            if(Platform == "Android" || Platform == "iOS")
-            {
-                buildArgument = buildArgument.ToLowerInvariant();
-            }
 
             stringBuilder.Append($"/build:\"{buildArgument}\"");
             if(rebuild == false)
