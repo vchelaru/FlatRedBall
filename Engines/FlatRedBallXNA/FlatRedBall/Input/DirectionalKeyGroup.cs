@@ -154,5 +154,7 @@ namespace FlatRedBall.Input
 
         bool I1DInput.IsAnalog => false;
 
+        public override string ToString() =>
+            $"DirectionalKeyGroup: Up={UpKey}, Down={DownKey}, Left={LeftKey}, Right={RightKey}";
     }
 }
