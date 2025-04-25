@@ -8,12 +8,14 @@ namespace FlatRedBall.Input
 	{
         static partial void PlatformSpecificXbox360GamePadUpdate()
         {
-            for(int i = 0; i < 4; i++)
-            {
-                var state = AndroidGamePadManager.GetState(i, GamePadDeadZone.Circular);
+            // This used to be needed in the old days, but it's not needed anymore as of MonoGame 3.8.1
+            // Keeping it here as reference in case we ever want to work directly with Android input:
+            //for(int i = 0; i < 4; i++)
+            //{
+            //    var state = AndroidGamePadManager.GetState(i, GamePadDeadZone.Circular);
 
-                mXbox360GamePads[i].Update(state);
-            }
+            //    mXbox360GamePads[i].Update(state);
+            //}
 
         }
 
