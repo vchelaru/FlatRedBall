@@ -23,10 +23,8 @@ namespace FlatRedBall.Input
 
 
 
-#if SUPPORTS_XBOX_GAMEPADS
         static Xbox360GamePad[] mXbox360GamePads;
         static GenericGamePad[] genericGamePads;
-#endif
         static bool mUpdateXbox360GamePads = true;
 
         static TouchScreen mTouchScreen;
@@ -124,7 +122,6 @@ namespace FlatRedBall.Input
         /// </summary>
         public static bool UpdateGenericGamePads = true;
 
-#if SUPPORTS_XBOX_GAMEPADS
 
         /// <summary>
         /// Returns an array of Xbox360GamePads. 
@@ -138,8 +135,6 @@ namespace FlatRedBall.Input
 
         static Xbox360GamePad[] mConnectedXbox360GamePads;
         public static Xbox360GamePad[] ConnectedXbox360GamePads => mConnectedXbox360GamePads;
-
-#endif
 
         public static TouchScreen TouchScreen => mTouchScreen;
 
@@ -273,11 +268,7 @@ namespace FlatRedBall.Input
         {
             int padNumber;
 
-#if !ANDROID
             padNumber = 4;
-#else
-            padNumber = 1;
-#endif
 
             for (int i = 0; i < padNumber; i++)
             {
@@ -341,13 +332,9 @@ namespace FlatRedBall.Input
             InitializeTouchScreen();
 #endif
 
-#if SUPPORTS_XBOX_GAMEPADS
             InitializeXbox360GamePads();
 
             InitializeGenericGamepads();
-#endif
-
-
         }
 
 
@@ -374,10 +361,7 @@ namespace FlatRedBall.Input
             mTouchScreen.Update();
 #endif
 
-
-#if SUPPORTS_XBOX_GAMEPADS
             PerformGamePadUpdate();
-#endif
         }
 
         private static void UpdateInputReceiver()
@@ -426,18 +410,15 @@ namespace FlatRedBall.Input
 
         private static void ClearXbox360GamePadInput()
         {
-#if SUPPORTS_XBOX_GAMEPADS
             for (int i = 0; i < mXbox360GamePads.Length; i++)
             {
                 mXbox360GamePads[i].Clear();
             }
-#endif
         }
 
 
         private static void InitializeXbox360GamePads()
         {
-#if SUPPORTS_XBOX_GAMEPADS
             mXbox360GamePads = new Xbox360GamePad[]
             {
                 new Xbox360GamePad(Microsoft.Xna.Framework.PlayerIndex.One),
@@ -445,7 +426,6 @@ namespace FlatRedBall.Input
                 new Xbox360GamePad(Microsoft.Xna.Framework.PlayerIndex.Three),
                 new Xbox360GamePad(Microsoft.Xna.Framework.PlayerIndex.Four)
             };
-#endif
 
             mControllerConnectedStatus = new Dictionary<int, bool>();
             mControllerConnectedStatus.Add(0, false);
@@ -482,15 +462,10 @@ namespace FlatRedBall.Input
             if (mUpdateXbox360GamePads)
             {
                 BackPressed = false;
-    #if SUPPORTS_XBOX_GAMEPADS
-
                 mXbox360GamePads[0].Update();
-    #if !ANDROID
                 mXbox360GamePads[1].Update();
                 mXbox360GamePads[2].Update();
                 mXbox360GamePads[3].Update();
-    #endif
-    #endif
                 PlatformSpecificXbox360GamePadUpdate();
             }
 
