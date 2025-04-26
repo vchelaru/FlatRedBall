@@ -93,6 +93,23 @@ public partial class GumScreen
         CustomVariables_ShouldBeSetToDefaults();
 
         CustomVariables_ShouldMatchInstanceValues();
+
+        AnimatedSprites_ShouldDisplayCorrectFrame_WhenMadeNewlyVisible();
+    }
+
+    private void AnimatedSprites_ShouldDisplayCorrectFrame_WhenMadeNewlyVisible()
+    {
+        var sprite = new SpriteRuntime();
+        sprite.Visible = false;
+        sprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
+        sprite.AnimationChains = AchxAsGumAnimationChain;
+        sprite.CurrentChainName = AchxAsGumAnimationChain.ElementAt(1).Name;
+        sprite.SourceRectangle = null;
+        sprite.AnimateSelf(FlatRedBall.TimeManager.SecondDifference);
+        sprite.SourceRectangle.ShouldBe(null, "because the sprite is invisible, so it shouldn't update yet");
+        sprite.Visible = true;
+        sprite.SourceRectangle.ShouldNotBe(null);
+        sprite.SourceRectangle.Value.Right.ShouldBe(19);
     }
 
     private void CustomVariables_ShouldMatchInstanceValues()

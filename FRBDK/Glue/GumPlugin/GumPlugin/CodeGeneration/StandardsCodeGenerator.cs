@@ -30,6 +30,7 @@ namespace GumPlugin.CodeGeneration
         List<string> mVariableNamesToSkipForProperties = new List<string>();
         // These are new variables that don't appear in the base definitioin of the standard element, but we support in code for convenience
         List<VariableSave> variableNamesToAddForProperties = new List<VariableSave>();
+        private readonly SpriteCodeGenerator _spriteCodeGenerator;
 
         #endregion
 
@@ -37,9 +38,11 @@ namespace GumPlugin.CodeGeneration
 
         public StandardsCodeGenerator()
         {
+            _spriteCodeGenerator = new SpriteCodeGenerator();
+
             TextCodeGenerator.Self.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
 
-            SpriteCodeGenerator.Self.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
+            _spriteCodeGenerator.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
             
             mStandardSetterReplacements.Add("SourceFile", codeBlock =>
             {
@@ -248,7 +251,7 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)
         {
-            SpriteCodeGenerator.Self.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
+            _spriteCodeGenerator.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
             TextCodeGenerator.Self.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
         }
 

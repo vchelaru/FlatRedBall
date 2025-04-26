@@ -29,6 +29,12 @@
       "IsSharedStatic": true,
       "RuntimeType": "Microsoft.Xna.Framework.Graphics.Texture2D",
       "ProjectsToExcludeFrom": []
+    },
+    {
+      "Name": "Screens/GumScreen/AchxAsGumAnimationChain.achx",
+      "IsSharedStatic": true,
+      "RuntimeType": "Gum.Graphics.Animation.AnimationChainList",
+      "ProjectsToExcludeFrom": []
     }
   ],
   "CustomVariables": [
