@@ -6,6 +6,12 @@
     <LangVersion>12.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants);FRB</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants);FRB</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Embedded\EmbeddedObjectGumProject\Behaviors\**" />
@@ -381,7 +387,6 @@
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj" />
     <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\..\Glue\Glue.csproj" />
-    <ProjectReference Include="..\..\StateInterpolationPlugin\StateInterpolationNet6\StateInterpolationNet6.csproj" />
   </ItemGroup>
 
 
