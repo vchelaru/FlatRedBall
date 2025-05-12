@@ -111,7 +111,7 @@ namespace FlatRedBall.Forms.Controls.Games
             base.ReactToVisualChanged();
         }
 
-        protected override void HandleVisualBindingContextChanged(object sender, BindingContextChangedEventArgs args)
+        protected override void OnBindingContextChanged(object sender, BindingContextChangedEventArgs args)
         {
             if(IsSubscribedToGamepadEvents)
             {
@@ -123,7 +123,6 @@ namespace FlatRedBall.Forms.Controls.Games
                 }
 
             }
-            base.HandleVisualBindingContextChanged(sender, args);
         }
 
         private void HandleRemovedFromGuiManager(object sender, EventArgs e)
