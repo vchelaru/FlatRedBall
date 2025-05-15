@@ -172,7 +172,7 @@ namespace Gum.Wireframe
             this.ParentChanged += HandleParentChanged_IWindow;
         }
 
-        private void HandleParentChanged_IWindow(object sender, EventArgs args)
+        private void HandleParentChanged_IWindow(object sender, ParentChangedEventArgs args)
         {
             var parent = this.EffectiveParentGue;
 
@@ -183,6 +183,9 @@ namespace Gum.Wireframe
                 InheritedBindingContext = newInherited;
             }
         }
+
+        public event EventHandler<BindingContextChangedEventArgs>? InheritedBindingContextChanged;
+
 
         private void CallCustomInitialize()
         {
