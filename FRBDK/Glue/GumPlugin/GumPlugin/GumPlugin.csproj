@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Platforms>AnyCPU</Platforms>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -58,6 +58,7 @@
 
   <ItemGroup>
     <Compile Remove="Embedded\ContentManagerWrapper.cs" />
+    <Compile Remove="Embedded\GraphicalUiElement.Binding.cs" />
     <Compile Remove="Embedded\GraphicalUiElement.IWindow.cs" />
     <Compile Remove="Embedded\GumAnimation.cs" />
     <Compile Remove="Embedded\GumCollidableExtensions.cs" />
@@ -224,7 +225,6 @@
     <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\Variables\VariableListSave.cs" Link="Embedded\LibraryFiles\GumDataTypes\VariableListSave.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\GumDataTypes\Variables\VariableSave.cs" Link="Embedded\LibraryFiles\GumDataTypes\VariableSave.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\GumRuntime\ElementSaveExtensions.GumRuntime.cs" Link="Embedded\LibraryFiles\GumRuntime\ElementSaveExtensions.GumRuntime.cs" />
-    <EmbeddedResource Include="..\..\..\..\..\Gum\GumRuntime\GraphicalUiElement.cs" Link="Embedded\LibraryFiles\GumRuntime\GraphicalUiElement.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\GumRuntime\InstanceSaveExtensionMethods.GumRuntime.cs" Link="Embedded\LibraryFiles\GumRuntime\InstanceSaveExtensionMethods.GumRuntime.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\Gum\DataTypes\ElementSaveExtensionMethods.cs" Link="Embedded\LibraryFiles\GumRuntime\ElementSaveExtensionMethods.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\Gum\DataTypes\InstanceSaveExtensionMethods.cs" Link="Embedded\LibraryFiles\GumRuntime\InstanceSaveExtensionMethods.cs" />
@@ -351,6 +351,7 @@
     <EmbeddedResource Include="Embedded\EmptyProject\Standards\StandardGraphics\Red_TopLeft.png" />
     <EmbeddedResource Include="Embedded\EmptyProject\Standards\StandardGraphics\Red_TopRight.png" />
     <EmbeddedResource Include="Embedded\EmptyProject\Standards\Text.gutx" />
+    <EmbeddedResource Include="Embedded\GraphicalUiElement.Binding.cs" />
     <EmbeddedResource Include="Embedded\GraphicalUiElement.IWindow.cs" />
     <EmbeddedResource Include="Embedded\GumAnimation.cs" />
     <EmbeddedResource Include="Embedded\GumCollidableExtensions.cs" />
