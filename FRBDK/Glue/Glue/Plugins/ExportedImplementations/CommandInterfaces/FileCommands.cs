@@ -641,7 +641,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             FilePath? absoluteExe = null;
             if (GumFileExtensions.Contains(textExtension.ToLower()))
             {
-                absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                absoluteExe = GlueState.Self.GlueExeDirectory +     "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
 
                 if (absoluteExe?.Exists() == false)
                 {
@@ -688,7 +688,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public List<string> GumFileExtensions { get; } = new List<string>() { "gusx", "gucx", "gutx", "gumx" };
         public string GetGumExeFilePath() {
-            return FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+            return FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Gum.exe";
         }
 
         public bool SaveIfDiffers(FilePath filePath, string contents, bool ignoreNextChange = false)

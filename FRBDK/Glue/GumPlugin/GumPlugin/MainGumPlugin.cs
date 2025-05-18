@@ -852,10 +852,10 @@ public class MainGumPlugin : PluginBase
     }
 
     static FilePath GumPrebuiltLocation =>
-        GlueState.Self.GlueExeDirectory + "../Gum/Data/Gum.exe";
+        GlueState.Self.GlueExeDirectory + "../Gum/Gum.exe";
 
     static FilePath GumFromSourceLocation =>
-        GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+        GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Gum.exe";
 
     public static string GetGumExecutableLocation()
     {
