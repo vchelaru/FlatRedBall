@@ -91,15 +91,19 @@ class ErrorReporter : ErrorReporterBase
                 {
                     foreach (var layer in tms.Layers)
                     {
-                        if (MultipleTilesetPerLayerErrorViewModel.HasMultipleTilesets(tms, layer))
+                        if(MultipleTilesetPerLayerErrorViewModel.GetIfHasError(filePath, layer.Name, out int? tileIndex))
                         {
-                            errors.Add(new MultipleTilesetPerLayerErrorViewModel()
+                            var error = new MultipleTilesetPerLayerErrorViewModel()
                             {
-                                Details = $"The layer {layer.Name} in {filePath.FullPath} references multiple tilesets. This can cause rendering errors",
                                 FilePath = filePath,
                                 LayerName = layer.Name
 
-                            });
+                            };
+
+                            error.TileIndex = tileIndex.Value;
+                            error.UpdateDetails();
+
+                            errors.Add(error);
 
                         }
                     }

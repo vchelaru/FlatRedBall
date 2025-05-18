@@ -14,6 +14,7 @@ namespace TiledPlugin.Errors
     class MultipleTilesetPerLayerErrorViewModel : FileErrorViewModel
     {
         string layerName;
+        public int TileIndex { get; set; }
         public string LayerName
         {
             get => layerName;
@@ -26,11 +27,11 @@ namespace TiledPlugin.Errors
 
         public override void UpdateDetails()
         {
-            Details = $"Layer {layerName} in {FilePath} references multiple tilesets which is not allowed";
+            Details = $"Layer {layerName} in {FilePath} references multiple tilesets which is not allowed. See tile index {TileIndex}";
         }
 
         
-        public static bool HasMultipleTilesets(TiledMapSave tms, MapLayer layer)
+        public static int? GetFirstTileWithDifferentTileset(TiledMapSave tms, MapLayer layer)
         {
             uint? tilesetForLayer = null;
             if (layer.data.Length > 0)
@@ -50,7 +51,7 @@ namespace TiledPlugin.Errors
                             }
                             else if (tilesetForLayer != null && tilesetForLayer != tileset.Firstgid)
                             {
-                                return true;
+                                return i;
                             }
                         }
                     }
@@ -58,37 +59,69 @@ namespace TiledPlugin.Errors
                 catch
                 {
                     // couldn't parse this, it's busted badly, but this is here to report if a file has multiple tilesets, not if the TMX is broken.
-                    return false;
+                    return null;
                 }
             }
 
-            return false;
+            return null;
         }
 
         public override bool GetIfIsFixed()
         {
+            var hasError = GetIfHasError(FilePath, layerName, out int? tileIndex);
 
-            if(base.GetIfIsFixed())
+            if(hasError)
             {
-                return true;
+                if(tileIndex != null)
+                {
+                    TileIndex = tileIndex.Value;
+                }
+            }
+            else
+            {
+                TileIndex = -1;
+            }
+            return !hasError;
+        }
+
+
+        public static bool GetIfHasError(FilePath filePath, string layerName, out int? tileIndex)
+        {
+            tileIndex = null;
+
+            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(filePath);
+            if (rfs == null)
+            {
+                return false;
             }
 
+            // File doesn't exist anymore
+            if (filePath.Exists() == false)
+            {
+                return false;
+            }
+
+
             // 3. Layer doesn't exist in the TMX
-            var tms = TiledMapSave.FromFile(FilePath.FullPath);
+            var tms = TiledMapSave.FromFile(filePath.FullPath);
             var layer = tms.Layers.FirstOrDefault(item => item.Name == layerName);
             if (layer == null)
             {
-                return true;
+                return false;
             }
 
             // 4. Layer exists, but doen't have anymore duplicates
-            if(!HasMultipleTilesets(tms, layer))
+            var id = GetFirstTileWithDifferentTileset(tms, layer);
+            if(id != null)
             {
+                tileIndex = id.Value;
                 return true;
             }
 
             return false;
 
         }
+
+
     }
 }

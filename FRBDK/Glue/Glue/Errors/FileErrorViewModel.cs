@@ -38,19 +38,20 @@ namespace FlatRedBall.Glue.Errors
         {
             // fixed if:
             // 1. File has been removed from the Glue project
-            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(FilePath);
+            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(filePath);
             if (rfs == null)
             {
                 return true;
             }
 
             // 2. File doesn't exist anymore
-            if (FilePath.Exists() == false)
+            if (filePath.Exists() == false)
             {
                 return true;
             }
 
             return false;
         }
+
     }
 }
