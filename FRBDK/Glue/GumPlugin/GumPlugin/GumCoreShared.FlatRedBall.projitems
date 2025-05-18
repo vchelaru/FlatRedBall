@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Embedded\ContentManagerWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Embedded\GraphicalUiElement.Binding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Embedded\GraphicalUiElement.IWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Embedded\GumAnimation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Embedded\GumCollidableExtensions.cs" />
