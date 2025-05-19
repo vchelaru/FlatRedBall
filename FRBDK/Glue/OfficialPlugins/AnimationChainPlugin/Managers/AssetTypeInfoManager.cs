@@ -62,7 +62,12 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
                 // use the exe location because this internally can get confused by not using the relative directory properly. By making this use 
                 // the exe location, all ambiguity is removed
-                return $"{referencedFileSave.GetInstanceName()} = global::Gum.Content.AnimationChain.AnimationChainListSave.FromFile(global::ToolsUtilities.FileManager.ExeLocation + \"{fileName}\").ToAnimationChainList(\"{contentManager}\");";
+                // AchxAsGumAnimationChain = global::Gum.Graphics.Animation.AnimationChainListSaveExtensionMethods.ToAnimationChainList(global::Gum.Content.AnimationChain.AnimationChainListSave.FromFile(global::ToolsUtilities.FileManager.ExeLocation + "content/screens/gumscreen/achxasgumanimationchain.achx"), "contentManagerName");
+                // 
+                return $"{referencedFileSave.GetInstanceName()} = " +
+                    $"global::Gum.Graphics.Animation.AnimationChainListSaveExtensionMethods.ToAnimationChainList(" +
+                        $"global::Gum.Content.AnimationChain.AnimationChainListSave.FromFile(global::ToolsUtilities.FileManager.ExeLocation + \"{fileName}\"), " +
+                        $"\"{contentManager}\");";
             };
 
             return clone;
