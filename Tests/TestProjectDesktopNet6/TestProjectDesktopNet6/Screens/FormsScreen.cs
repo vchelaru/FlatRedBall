@@ -323,11 +323,13 @@ public partial class FormsScreen
 
     private void RadioButton_SettingIsChecked_ShouldUncheckOtherRadioButtons()
     {
+        var stackPanel = new StackPanel();
+
         var radioButton1 = new RadioButton();
-        radioButton1.Visual.AddToManagers();
+        stackPanel.AddChild(radioButton1);
 
         var radioButton2 = new RadioButton();
-        radioButton2.Visual.AddToManagers();
+        stackPanel.AddChild(radioButton2);
 
         radioButton1.IsChecked = true;
         radioButton2.IsChecked.ShouldBe(false);
