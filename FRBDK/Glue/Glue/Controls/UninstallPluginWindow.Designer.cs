@@ -77,7 +77,7 @@ partial class UninstallPluginWindow
         this.ShowIcon = false;
         this.ShowInTaskbar = false;
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-        this.Text = L.Texts.PluginUninstall;
+        this.Text = "Uninstall Plugin";
         this.Load += new System.EventHandler(this.UninstallPluginWindow_Load);
         ((System.ComponentModel.ISupportInitialize)(this.dgvPlugins)).EndInit();
         this.ResumeLayout(false);

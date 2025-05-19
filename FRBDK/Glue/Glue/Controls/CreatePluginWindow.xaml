@@ -6,7 +6,7 @@
         xmlns:localization="clr-namespace:Localization;assembly=Localization"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="{x:Static localization:Texts.PluginCreate}" Height="220" Width="300">
+        Title="Create Plugin" Height="220" Width="300">
     <Grid Margin="10,10,10,10"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   ScrollViewer.VerticalScrollBarVisibility="Disabled">
@@ -19,7 +19,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0">
-            <Label Content="{x:Static localization:Texts.PluginSource}" />
+      <Label Content="Plugin Source" />
         </DockPanel>
         <DockPanel Grid.Row="1">
             <RadioButton GroupName="pluginSourceGroup" Click="PluginSourceGroupChanged" IsChecked="True" Content="{x:Static localization:Texts.PluginFromInstalled}" />

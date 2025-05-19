@@ -61,69 +61,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Character moves downhill at full speed on slope.
-        /// </summary>
-        public static string CharacterMovesFullSpeedOnSlope {
-            get {
-                return ResourceManager.GetString("CharacterMovesFullSpeedOnSlope", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Character stops moving uphill on slope.
-        /// </summary>
-        public static string CharacterStopMovingUphillSlope {
-            get {
-                return ResourceManager.GetString("CharacterStopMovingUphillSlope", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Clean all.
-        /// </summary>
-        public static string CleanAll {
-            get {
-                return ResourceManager.GetString("CleanAll", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Would you like to clear the points and replace them with points for a rectangle shape?.
-        /// </summary>
-        public static string ClearPointsAddRectangle {
-            get {
-                return ResourceManager.GetString("ClearPointsAddRectangle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Click to set tile.
-        /// </summary>
-        public static string ClickToSetTile {
-            get {
-                return ResourceManager.GetString("ClickToSetTile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enter extra command line arguments:.
-        /// </summary>
-        public static string CliExtraArguments {
-            get {
-                return ResourceManager.GetString("CliExtraArguments", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Climbing.
-        /// </summary>
-        public static string Climbing {
-            get {
-                return ResourceManager.GetString("Climbing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Climbing Speed:.
         /// </summary>
         public static string ClimbingSpeed {
@@ -4229,15 +4166,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create Plugin.
-        /// </summary>
-        public static string PluginCreate {
-            get {
-                return ResourceManager.GetString("PluginCreate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Failed to download plugin.
         /// </summary>
         public static string PluginDownloadFailed {
@@ -4274,15 +4202,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install Plugin.
-        /// </summary>
-        public static string PluginInstall {
-            get {
-                return ResourceManager.GetString("PluginInstall", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Please select a valid folder to create the plugin from..
         /// </summary>
         public static string PluginNeedsValidFolder {
@@ -4306,24 +4225,6 @@ namespace Localization {
         public static string Plugins {
             get {
                 return ResourceManager.GetString("Plugins", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin Source.
-        /// </summary>
-        public static string PluginSource {
-            get {
-                return ResourceManager.GetString("PluginSource", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Uninstall Plugin.
-        /// </summary>
-        public static string PluginUninstall {
-            get {
-                return ResourceManager.GetString("PluginUninstall", resourceCulture);
             }
         }
         
@@ -4945,15 +4846,6 @@ namespace Localization {
         public static string ReplaceProjectName {
             get {
                 return ResourceManager.GetString("ReplaceProjectName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Report a Bug.
-        /// </summary>
-        public static string ReportABug {
-            get {
-                return ResourceManager.GetString("ReportABug", resourceCulture);
             }
         }
         
@@ -5800,15 +5692,6 @@ namespace Localization {
         public static string TreeViewShowLevelScreens {
             get {
                 return ResourceManager.GetString("TreeViewShowLevelScreens", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Tutorials.
-        /// </summary>
-        public static string Tutorials {
-            get {
-                return ResourceManager.GetString("Tutorials", resourceCulture);
             }
         }
         

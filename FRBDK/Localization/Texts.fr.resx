@@ -225,23 +225,8 @@
   <data name="Plugins" xml:space="preserve">
     <value>Plugins</value>
   </data>
-  <data name="PluginInstall" xml:space="preserve">
-    <value>Installer un plugin</value>
-  </data>
-  <data name="PluginUninstall" xml:space="preserve">
-    <value>Désinstaller un plugin</value>
-  </data>
-  <data name="PluginCreate" xml:space="preserve">
-    <value>Créer un plugin</value>
-  </data>
   <data name="Help" xml:space="preserve">
     <value>Aide</value>
-  </data>
-  <data name="Tutorials" xml:space="preserve">
-    <value>Tutoriels</value>
-  </data>
-  <data name="ReportABug" xml:space="preserve">
-    <value>Signaler un bug</value>
   </data>
   <data name="ErrorCannotOpenBrowser" xml:space="preserve">
     <value>Impossible d'ouvrir un navigateur vers l'URL :\n\n{0}\n\nEssayez de saisir manuellement l'adresse dans un navigateur.</value>
@@ -552,12 +537,6 @@
   <data name="SlopeMoveUphill" xml:space="preserve">
     <value>Le personnage monte une pente à toute vitesse</value>
   </data>
-  <data name="CharacterStopMovingUphillSlope" xml:space="preserve">
-    <value>Le personnage arrête de monter une pente</value>
-  </data>
-  <data name="CharacterMovesFullSpeedOnSlope" xml:space="preserve">
-    <value>Le personnage descend une pente à toute vitesse</value>
-  </data>
   <data name="XFasterOnSlope" xml:space="preserve">
     <value>% plus rapide en pente</value>
   </data>
@@ -605,9 +584,6 @@
   </data>
   <data name="HintValuesGroundMovementFallingSpeed" xml:space="preserve">
     <value>Si ces valeurs sont utilisées pour un mouvement au sol avec une vitesse de chute maximale de 0 ou négative, l'entité peut avoir son OnGround défini sur false toutes les deux images.</value>
-  </data>
-  <data name="Climbing" xml:space="preserve">
-    <value>Escalade</value>
   </data>
   <data name="HintClimbingPressingUp" xml:space="preserve">
     <value>Si le fait d'appuyer de haut en bas met le joueur dans un état d'escalade. Lors de l'escalade, il n'y a pas de gravité et l'entrée haut/bas définit directement la vitesse du joueur.</value>
@@ -978,9 +954,6 @@
   <data name="ProjectGlueNoneLoaded" xml:space="preserve">
     <value>Aucun projet Glue chargé</value>
   </data>
-  <data name="CleanAll" xml:space="preserve">
-    <value>Tout vider</value>
-  </data>
   <data name="HintOrphanedFilesOfProject" xml:space="preserve">
     <value>Les fichiers orphelins sont référencés par le projet en cours mais n'existent pas sur le disque. Ces fichiers provoqueront des erreurs de compilation dans votre projet.</value>
   </data>
@@ -1236,9 +1209,6 @@
   <data name="Remove" xml:space="preserve">
     <value>Supprimer</value>
   </data>
-  <data name="ClearPointsAddRectangle" xml:space="preserve">
-    <value>Souhaitez-vous effacer les points et les remplacer par des points pour obtenir une forme rectangulaire ?</value>
-  </data>
   <data name="HintEnterNumberOfPoints" xml:space="preserve">
     <value>Entrez le nombre de points pour le nouveau polygone. Au moins 3 points sont requis. Notez que le dernier point est automatiquement répété, saisissez donc uniquement le nombre de points visibles. Par exemple, 3 pour un triangle.</value>
   </data>
@@ -1484,9 +1454,6 @@
   </data>
   <data name="FromTmxCollision" xml:space="preserve">
     <value>De TMX Collision (utiliser des formes de jeu de tuiles)</value>
-  </data>
-  <data name="ClickToSetTile" xml:space="preserve">
-    <value>Cliquez pour définir la vignette</value>
   </data>
   <data name="HintChangingTileTsx" xml:space="preserve">
     <value>Changer la tuile peut également modifier le TSX sous-jacent</value>
@@ -1857,9 +1824,6 @@
   <data name="FilesAll" xml:space="preserve">
     <value>Tous les fichiers</value>
   </data>
-  <data name="PluginSource" xml:space="preserve">
-    <value>Source du plugin</value>
-  </data>
   <data name="PluginFromInstalled" xml:space="preserve">
     <value>À partir du plugin installé</value>
   </data>
@@ -2090,9 +2054,6 @@
   </data>
   <data name="ExportCant" xml:space="preserve">
     <value>Impossible d'exporter :</value>
-  </data>
-  <data name="CliExtraArguments" xml:space="preserve">
-    <value>Entrez des arguments de ligne de commande supplémentaires :</value>
   </data>
   <data name="WhichTemplateUse" xml:space="preserve">
     <value>Quel modèle souhaiteriez-vous utiliser ?</value>

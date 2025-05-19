@@ -225,23 +225,8 @@
   <data name="Plugins" xml:space="preserve">
     <value>Plugins</value>
   </data>
-  <data name="PluginInstall" xml:space="preserve">
-    <value>Installeer plugin</value>
-  </data>
-  <data name="PluginUninstall" xml:space="preserve">
-    <value>Plugin verwijderen</value>
-  </data>
-  <data name="PluginCreate" xml:space="preserve">
-    <value>Plug-in aanmaken</value>
-  </data>
   <data name="Help" xml:space="preserve">
     <value>Help</value>
-  </data>
-  <data name="Tutorials" xml:space="preserve">
-    <value>Handleidingen</value>
-  </data>
-  <data name="ReportABug" xml:space="preserve">
-    <value>Rapporteer een bug</value>
   </data>
   <data name="ErrorCannotOpenBrowser" xml:space="preserve">
     <value>Kan geen browser openen met de URL:\n\n{0}\n\nProbeer het adres handmatig in een browser in te voeren.</value>
@@ -552,12 +537,6 @@
   <data name="SlopeMoveUphill" xml:space="preserve">
     <value>Karakter beweegt op volle snelheid bergopwaarts op de helling</value>
   </data>
-  <data name="CharacterStopMovingUphillSlope" xml:space="preserve">
-    <value>Karakter stopt met bergopwaarts rijden op een helling</value>
-  </data>
-  <data name="CharacterMovesFullSpeedOnSlope" xml:space="preserve">
-    <value>Karakter beweegt op volle snelheid bergafwaarts op de helling</value>
-  </data>
   <data name="XFasterOnSlope" xml:space="preserve">
     <value>% sneller op helling</value>
   </data>
@@ -605,9 +584,6 @@
   </data>
   <data name="HintValuesGroundMovementFallingSpeed" xml:space="preserve">
     <value>Als deze waarden worden gebruikt voor grondbewegingen met een maximale valsnelheid van 0 of een negatieve maximale valsnelheid, kan de OnGround van de entiteit om het andere frame worden ingesteld op false.</value>
-  </data>
-  <data name="Climbing" xml:space="preserve">
-    <value>Klimmen</value>
   </data>
   <data name="HintClimbingPressingUp" xml:space="preserve">
     <value>Of het nu omhoog of omlaag drukken is, de speler in een klimtoestand brengt. Bij het klimmen is er geen zwaartekracht en wordt de snelheid van de speler rechtstreeks bepaald door de invoer omhoog/omlaag.</value>
@@ -978,9 +954,6 @@
   <data name="ProjectGlueNoneLoaded" xml:space="preserve">
     <value>Geen Glue-project geladen</value>
   </data>
-  <data name="CleanAll" xml:space="preserve">
-    <value>Alles leegmaken</value>
-  </data>
   <data name="HintOrphanedFilesOfProject" xml:space="preserve">
     <value>Er wordt verwezen naar weesbestanden door het huidige project, maar ze bestaan niet op schijf. Deze bestanden veroorzaken compileerfouten in uw project.</value>
   </data>
@@ -1236,9 +1209,6 @@
   <data name="Remove" xml:space="preserve">
     <value>Verwijderen</value>
   </data>
-  <data name="ClearPointsAddRectangle" xml:space="preserve">
-    <value>Wilt u de punten wissen en vervangen door punten voor een rechthoekige vorm?</value>
-  </data>
   <data name="HintEnterNumberOfPoints" xml:space="preserve">
     <value>Voer het aantal punten voor de nieuwe polygoon in. Er zijn minimaal 3 punten nodig. Let op: het laatste punt wordt automatisch herhaald, dus voer alleen het aantal zichtbare punten in. Bijvoorbeeld 3 voor een driehoek.</value>
   </data>
@@ -1484,9 +1454,6 @@
   </data>
   <data name="FromTmxCollision" xml:space="preserve">
     <value>Van TMX-botsing (gebruik tegelsetvormen)</value>
-  </data>
-  <data name="ClickToSetTile" xml:space="preserve">
-    <value>Klik om de tegel in te stellen</value>
   </data>
   <data name="HintChangingTileTsx" xml:space="preserve">
     <value>Het wijzigen van de tegel kan ook de onderliggende TSX wijzigen</value>
@@ -1857,9 +1824,6 @@
   <data name="FilesAll" xml:space="preserve">
     <value>Alle bestanden</value>
   </data>
-  <data name="PluginSource" xml:space="preserve">
-    <value>Plugin bron</value>
-  </data>
   <data name="PluginFromInstalled" xml:space="preserve">
     <value>Van geïnstalleerde plug-in</value>
   </data>
@@ -2093,9 +2057,6 @@
   </data>
   <data name="ExportCant" xml:space="preserve">
     <value>Kan niet exporteren:</value>
-  </data>
-  <data name="CliExtraArguments" xml:space="preserve">
-    <value>Voer extra opdrachtregelargumenten in:</value>
   </data>
   <data name="WhichTemplateUse" xml:space="preserve">
     <value>Welk sjabloon wilt u gebruiken?</value>

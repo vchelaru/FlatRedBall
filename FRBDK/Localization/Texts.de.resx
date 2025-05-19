@@ -225,23 +225,8 @@
   <data name="Plugins" xml:space="preserve">
     <value>Plugins</value>
   </data>
-  <data name="PluginInstall" xml:space="preserve">
-    <value>PIugin installieren</value>
-  </data>
-  <data name="PluginUninstall" xml:space="preserve">
-    <value>Plugin deinstallieren</value>
-  </data>
-  <data name="PluginCreate" xml:space="preserve">
-    <value>Plugin erzeugen</value>
-  </data>
   <data name="Help" xml:space="preserve">
     <value>Hilfe</value>
-  </data>
-  <data name="Tutorials" xml:space="preserve">
-    <value>Tutorials</value>
-  </data>
-  <data name="ReportABug" xml:space="preserve">
-    <value>Melde einen technischen Fehler</value>
   </data>
   <data name="ErrorCannotOpenBrowser" xml:space="preserve">
     <value>Der Browser für die URL konnte nicht geöffnet werden:\n\n{0}\n\nVersuchen Sie, die Adresse manuell in einen Browser einzugeben.</value>
@@ -552,12 +537,6 @@
   <data name="SlopeMoveUphill" xml:space="preserve">
     <value>Der Charakter bewegt sich am Hang mit voller Geschwindigkeit bergauf</value>
   </data>
-  <data name="CharacterStopMovingUphillSlope" xml:space="preserve">
-    <value>Der Charakter hört auf, sich am Hang bergauf zu bewegen</value>
-  </data>
-  <data name="CharacterMovesFullSpeedOnSlope" xml:space="preserve">
-    <value>Der Charakter bewegt sich am Hang mit voller Geschwindigkeit bergab</value>
-  </data>
   <data name="XFasterOnSlope" xml:space="preserve">
     <value>% schneller am Hang</value>
   </data>
@@ -605,9 +584,6 @@
   </data>
   <data name="HintValuesGroundMovementFallingSpeed" xml:space="preserve">
     <value>Wenn diese Werte für Bodenbewegungen mit 0 oder negativer maximaler Fallgeschwindigkeit verwendet werden, kann es sein, dass OnGround der Entität in jedem zweiten Frame auf „Falsch“ gesetzt wird.</value>
-  </data>
-  <data name="Climbing" xml:space="preserve">
-    <value>Klettern</value>
   </data>
   <data name="HintClimbingPressingUp" xml:space="preserve">
     <value>Ob das Drücken nach oben und unten den Spieler in einen Kletterzustand versetzt. Beim Klettern gibt es keine Schwerkraft und die Auf-/Ab-Eingabe bestimmt direkt die Geschwindigkeit des Spielers.</value>
@@ -978,9 +954,6 @@
   <data name="ProjectGlueNoneLoaded" xml:space="preserve">
     <value>Kein Glue-Projekt geladen</value>
   </data>
-  <data name="CleanAll" xml:space="preserve">
-    <value>Alles leeren</value>
-  </data>
   <data name="HintOrphanedFilesOfProject" xml:space="preserve">
     <value>Verwaiste Dateien werden vom aktuellen Projekt referenziert, sind aber nicht auf der Festplatte vorhanden. Diese Dateien verursachen Kompilierungsfehler in Ihrem Projekt.</value>
   </data>
@@ -1236,9 +1209,6 @@
   <data name="Remove" xml:space="preserve">
     <value>Entfernen</value>
   </data>
-  <data name="ClearPointsAddRectangle" xml:space="preserve">
-    <value>Möchten Sie die Punkte löschen und durch Punkte für eine Rechteckform ersetzen?</value>
-  </data>
   <data name="HintEnterNumberOfPoints" xml:space="preserve">
     <value>Geben Sie die Anzahl der Punkte für das neue Polygon ein. Es sind mindestens 3 Punkte erforderlich. Beachten Sie, dass der letzte Punkt automatisch wiederholt wird. Geben Sie daher nur die Anzahl der sichtbaren Punkte ein. Zum Beispiel 3 für ein Dreieck.</value>
   </data>
@@ -1484,9 +1454,6 @@
   </data>
   <data name="FromTmxCollision" xml:space="preserve">
     <value>Von TMX Collision (Kachelsatzformen verwenden)</value>
-  </data>
-  <data name="ClickToSetTile" xml:space="preserve">
-    <value>Klicken Sie, um die Kachel festzulegen</value>
   </data>
   <data name="HintChangingTileTsx" xml:space="preserve">
     <value>Durch das Ändern der Kachel kann sich auch der zugrunde liegende TSX ändern</value>
@@ -1857,9 +1824,6 @@
   <data name="FilesAll" xml:space="preserve">
     <value>Alle Dateien</value>
   </data>
-  <data name="PluginSource" xml:space="preserve">
-    <value>Plugin-Quelle</value>
-  </data>
   <data name="PluginFromInstalled" xml:space="preserve">
     <value>Vom installierten Plugin</value>
   </data>
@@ -2090,9 +2054,6 @@
   </data>
   <data name="ExportCant" xml:space="preserve">
     <value>Kann nicht exportiert werden:</value>
-  </data>
-  <data name="CliExtraArguments" xml:space="preserve">
-    <value>Geben Sie zusätzliche Befehlszeilenargumente ein:</value>
   </data>
   <data name="WhichTemplateUse" xml:space="preserve">
     <value>Welche Vorlage möchten Sie verwenden?</value>

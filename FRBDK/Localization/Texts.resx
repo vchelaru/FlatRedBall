@@ -225,23 +225,8 @@
   <data name="Plugins" xml:space="preserve">
     <value>Plugins</value>
   </data>
-  <data name="PluginInstall" xml:space="preserve">
-    <value>Install Plugin</value>
-  </data>
-  <data name="PluginUninstall" xml:space="preserve">
-    <value>Uninstall Plugin</value>
-  </data>
-  <data name="PluginCreate" xml:space="preserve">
-    <value>Create Plugin</value>
-  </data>
   <data name="Help" xml:space="preserve">
     <value>Help</value>
-  </data>
-  <data name="Tutorials" xml:space="preserve">
-    <value>Tutorials</value>
-  </data>
-  <data name="ReportABug" xml:space="preserve">
-    <value>Report a Bug</value>
   </data>
   <data name="ErrorCannotOpenBrowser" xml:space="preserve">
     <value>Could not open a browser to the URL:\n\n{0}\n\nTry entering the address in a browser manually.</value>
@@ -553,12 +538,6 @@ for {1}?</value>
   <data name="SlopeMoveUphill" xml:space="preserve">
     <value>Character moves uphill at full speed on slope</value>
   </data>
-  <data name="CharacterStopMovingUphillSlope" xml:space="preserve">
-    <value>Character stops moving uphill on slope</value>
-  </data>
-  <data name="CharacterMovesFullSpeedOnSlope" xml:space="preserve">
-    <value>Character moves downhill at full speed on slope</value>
-  </data>
   <data name="XFasterOnSlope" xml:space="preserve">
     <value>% faster on slope</value>
   </data>
@@ -606,9 +585,6 @@ for {1}?</value>
   </data>
   <data name="HintValuesGroundMovementFallingSpeed" xml:space="preserve">
     <value>If these values are used for ground movement with 0 or negative Max Falling Speed, the entity may have its OnGround set to false every other frame.</value>
-  </data>
-  <data name="Climbing" xml:space="preserve">
-    <value>Climbing</value>
   </data>
   <data name="HintClimbingPressingUp" xml:space="preserve">
     <value>Whether pressing up and down puts the player in a climbing state. When climbing, there is no gravity and up/down input directly sets the player's velocity.</value>
@@ -979,9 +955,6 @@ for {1}?</value>
   <data name="ProjectGlueNoneLoaded" xml:space="preserve">
     <value>No Glue project loaded</value>
   </data>
-  <data name="CleanAll" xml:space="preserve">
-    <value>Clean all</value>
-  </data>
   <data name="HintOrphanedFilesOfProject" xml:space="preserve">
     <value>Orphaned files are referenced by the current project but do not exist on disk. These files will cause compile errors in your project.</value>
   </data>
@@ -1237,9 +1210,6 @@ for {1}?</value>
   <data name="Remove" xml:space="preserve">
     <value>Remove</value>
   </data>
-  <data name="ClearPointsAddRectangle" xml:space="preserve">
-    <value>Would you like to clear the points and replace them with points for a rectangle shape?</value>
-  </data>
   <data name="HintEnterNumberOfPoints" xml:space="preserve">
     <value>Enter the number of points for the new polygon. At least 3 points are required. Note that the last point is automatically repeated, so only enter the number of visible points. For example, 3 for a triangle.</value>
   </data>
@@ -1485,9 +1455,6 @@ for {1}?</value>
   </data>
   <data name="FromTmxCollision" xml:space="preserve">
     <value>From TMX Collision - requires shapes defined in the tileset (TSX)</value>
-  </data>
-  <data name="ClickToSetTile" xml:space="preserve">
-    <value>Click to set tile</value>
   </data>
   <data name="HintChangingTileTsx" xml:space="preserve">
     <value>Changing the tile may also modify the underlying TSX</value>
@@ -1858,9 +1825,6 @@ for {1}?</value>
   <data name="FilesAll" xml:space="preserve">
     <value>All Files</value>
   </data>
-  <data name="PluginSource" xml:space="preserve">
-    <value>Plugin Source</value>
-  </data>
   <data name="PluginFromInstalled" xml:space="preserve">
     <value>From Installed Plugin</value>
   </data>
@@ -2094,9 +2058,6 @@ for {1}?</value>
   </data>
   <data name="ExportCant" xml:space="preserve">
     <value>Can't export:</value>
-  </data>
-  <data name="CliExtraArguments" xml:space="preserve">
-    <value>Enter extra command line arguments:</value>
   </data>
   <data name="WhichTemplateUse" xml:space="preserve">
     <value>Which template would you like to use?</value>

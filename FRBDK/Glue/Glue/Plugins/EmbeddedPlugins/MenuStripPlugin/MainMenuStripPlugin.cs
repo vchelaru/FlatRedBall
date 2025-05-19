@@ -24,6 +24,8 @@ using System.Text;
 using System.Windows.Forms;
 using FlatRedBall.Glue.Themes;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
+using System.Net;
+using System.Text.Encodings.Web;
 
 namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 {
@@ -114,9 +116,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             var Plugins = AddTopLevelMenuItem(Localization.Texts.Plugins, Localization.MenuIds.PluginId);
             {
-                Plugins.Add(Localization.Texts.PluginInstall, () => new InstallPluginWindow().Show(MainGlueWindow.Self));
-                Plugins.Add(Localization.Texts.PluginUninstall, () => new UninstallPluginWindow().Show(MainGlueWindow.Self));
-                Plugins.Add(Localization.Texts.PluginCreate, () => new CreatePluginWindow().ShowDialog());
+                Plugins.Add("Install Plugin", () => new InstallPluginWindow().Show(MainGlueWindow.Self));
+                Plugins.Add("Uninstall Plugin", () => new UninstallPluginWindow().Show(MainGlueWindow.Self));
+                Plugins.Add("Create Plugin", () => new CreatePluginWindow().ShowDialog());
                 Plugins.DropDownItems.Add(new ToolStripSeparator());
             }
 
@@ -125,8 +127,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             var Help = AddTopLevelMenuItem(Localization.Texts.Help, Localization.MenuIds.HelpId);
             {
-                Help.Add(Localization.Texts.Tutorials, () => OpenInBrowser("https://docs.flatredball.com/flatredball/tutorials"));
-                Help.Add(Localization.Texts.ReportABug, () => OpenInBrowser("https://github.com/vchelaru/flatredball/issues"));
+                Help.Add("Tutorials", () => OpenInBrowser("https://docs.flatredball.com/flatredball/tutorials"));
+                Help.Add("Report a Bug", () => OpenInBrowser("https://github.com/vchelaru/flatredball/issues"));
             }
         }
 
@@ -135,10 +137,17 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
         {
             try
             {
-                Process.Start(url);
+                ////var builder = new UriBuilder(url);
+                ////Process.Start(builder.ToString());
+                //string urlDecoded = WebUtility.UrlDecode(url);
+                //Process.Start(urlDecoded);
+                // from: https://github.com/dotnet/runtime/issues/17938#issuecomment-249383422
+                url = url.Replace("&", "^&");
+                Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
             }
             catch
             {
+
                 var message = String.Format(Localization.Texts.ErrorCannotOpenBrowser, url);
 
                 GlueCommands.Self.DialogCommands.ShowMessageBox(message);

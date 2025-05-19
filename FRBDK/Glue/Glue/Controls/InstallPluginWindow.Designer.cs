@@ -133,7 +133,7 @@ partial class InstallPluginWindow
         this.ShowIcon = false;
         this.ShowInTaskbar = false;
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-        this.Text = L.Texts.PluginInstall;
+        this.Text = "Install Plugin";
         this.ResumeLayout(false);
         this.PerformLayout();
 
