@@ -30,7 +30,9 @@ namespace GumPlugin.CodeGeneration
         List<string> mVariableNamesToSkipForProperties = new List<string>();
         // These are new variables that don't appear in the base definitioin of the standard element, but we support in code for convenience
         List<VariableSave> variableNamesToAddForProperties = new List<VariableSave>();
-        private readonly SpriteCodeGenerator _spriteCodeGenerator;
+        private SpriteCodeGenerator _spriteCodeGenerator;
+        private TextCodeGenerator _textCodeGenerator;
+        private ContainerCodeGenerator _containerCodeGenerator;
 
         #endregion
 
@@ -38,12 +40,19 @@ namespace GumPlugin.CodeGeneration
 
         public StandardsCodeGenerator()
         {
-            _spriteCodeGenerator = new SpriteCodeGenerator();
 
-            TextCodeGenerator.Self.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
+        }
+
+        public void Initialize(TextCodeGenerator textCodeGenerator, ContainerCodeGenerator containerCodeGenerator)
+        { 
+            _spriteCodeGenerator = new SpriteCodeGenerator();
+            _textCodeGenerator = textCodeGenerator;
+            _containerCodeGenerator = containerCodeGenerator;
+
 
             _spriteCodeGenerator.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
-            
+            _textCodeGenerator.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
+
             mStandardSetterReplacements.Add("SourceFile", codeBlock =>
             {
                 codeBlock.Line("this.Texture = value;");
@@ -99,7 +108,8 @@ namespace GumPlugin.CodeGeneration
         {
             mVariableNamesToSkipForProperties.Clear();
 
-            TextCodeGenerator.Self.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
+            _textCodeGenerator.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
+            _containerCodeGenerator.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
 
             void ExcludeIfVersionLessThan(string propertyName, GluxVersions gluxVersion)
             {
@@ -252,7 +262,8 @@ namespace GumPlugin.CodeGeneration
         private void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)
         {
             _spriteCodeGenerator.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
-            TextCodeGenerator.Self.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
+            _textCodeGenerator.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
+            _containerCodeGenerator.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
         }
 
         private void GenerateGenericContainerCode(ICodeBlock codeBlock)
@@ -369,7 +380,7 @@ namespace GumPlugin.CodeGeneration
                 }
             }
 
-            TextCodeGenerator.Self.GenerateVariableProperties(standardElementSave, currentBlock, containedGraphicalObjectName);
+            _textCodeGenerator.GenerateVariableProperties(standardElementSave, currentBlock, containedGraphicalObjectName);
 
             // Sprites handle this in GenerateAdditionalMethods
         }

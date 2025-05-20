@@ -4,6 +4,11 @@
   <State>
     <Name>Default</Name>
     <Variable>
+      <Type>AlphaSettingCategory</Type>
+      <Name>AlphaSettingCategoryState</Name>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>int</Type>
       <Name>BbcodeTextWithExplicitNewline.FontSize</Name>
       <Value xsi:type="xsd:int">14</Value>
@@ -515,7 +520,7 @@
     <Variable>
       <Type>int</Type>
       <Name>ContainerWithAlpha.Alpha</Name>
-      <Value xsi:type="xsd:int">53</Value>
+      <Value xsi:type="xsd:int">104</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -1747,6 +1752,27 @@ wrap the text.</Value>
         <Type>TextOverflowVerticalMode</Type>
         <Name>TruncateVerticalTextInstance.TextOverflowVerticalMode</Name>
         <Value xsi:type="xsd:int">0</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+  </Category>
+  <Category>
+    <Name>AlphaSettingCategory</Name>
+    <State>
+      <Name>Opaque</Name>
+      <Variable>
+        <Type>int</Type>
+        <Name>ContainerWithAlpha.Alpha</Name>
+        <Value xsi:type="xsd:int">255</Value>
+        <SetsValue>true</SetsValue>
+      </Variable>
+    </State>
+    <State>
+      <Name>PartiallyTransparent</Name>
+      <Variable>
+        <Type>int</Type>
+        <Name>ContainerWithAlpha.Alpha</Name>
+        <Value xsi:type="xsd:int">72</Value>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>

@@ -334,6 +334,12 @@ public class MainGumPlugin : PluginBase
         viewModel = new GumViewModel();
         GumPluginCommands.Self.GumViewModel = viewModel;
         viewModel.PropertyChanged += HandleViewModelPropertyChanged;
+
+        var textCodeGenerator = new TextCodeGenerator();
+        var containerCodeGenerator = new ContainerCodeGenerator(GlueState.Self);
+
+        StandardsCodeGenerator.Self.Initialize(textCodeGenerator, containerCodeGenerator);
+        StateCodeGenerator.Self.Initialize(textCodeGenerator, containerCodeGenerator);
     }
 
     private void AssignEvents()

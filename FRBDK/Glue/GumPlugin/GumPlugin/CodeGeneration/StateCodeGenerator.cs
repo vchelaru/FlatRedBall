@@ -25,6 +25,8 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
     Dictionary<string, List<string>> typeSpecificVariableNamesToSkipForStates = new();
 
     public static Dictionary<string, string> VariableNamesToReplaceForStates = new Dictionary<string, string>();
+    private TextCodeGenerator _textCodeGenerator;
+    private ContainerCodeGenerator _containerCodeGenerator;
 
     #endregion
 
@@ -55,7 +57,12 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
 
         VariableNamesToReplaceForStates.Add("Width Units", "WidthUnits");
         VariableNamesToReplaceForStates.Add("Height Units", "HeightUnits");
+    }
 
+    public void Initialize(TextCodeGenerator textCodeGenerator, ContainerCodeGenerator containerCodeGenerator)
+    {
+        _textCodeGenerator = textCodeGenerator;
+        _containerCodeGenerator = containerCodeGenerator;
     }
 
     public StateCodeGenerator()
@@ -155,8 +162,8 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
             Skip("IsBold");
         }
 
-        TextCodeGenerator.Self.AddVariableNamesToSkipForStates(mVariableNamesToSkipForStates);
-
+        _textCodeGenerator.AddVariableNamesToSkipForStates(mVariableNamesToSkipForStates);
+        _containerCodeGenerator.AddVariableNamesToSkipForStates(mVariableNamesToSkipForStates);
 
         return;
 

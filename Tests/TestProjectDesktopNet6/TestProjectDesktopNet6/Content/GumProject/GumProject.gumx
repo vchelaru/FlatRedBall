@@ -120,6 +120,11 @@
     <LinkType>ReferenceOriginal</LinkType>
   </ComponentReference>
   <ComponentReference>
+    <Name>AlphaSettingComponent</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>AnimatedComponent</Name>
     <ElementType>Component</ElementType>
     <LinkType>ReferenceOriginal</LinkType>

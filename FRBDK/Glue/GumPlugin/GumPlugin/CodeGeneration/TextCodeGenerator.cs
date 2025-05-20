@@ -12,187 +12,186 @@ using System.Text;
 using System.Threading.Tasks;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
-namespace GumPlugin.CodeGeneration
+namespace GumPlugin.CodeGeneration;
+
+public class TextCodeGenerator
 {
-    internal class TextCodeGenerator : Singleton<TextCodeGenerator>
+
+    public void AddStandardGetterSetterReplacements(
+        Dictionary<string, Action<ICodeBlock>> standardGetterReplacements,
+        Dictionary<string, Action<ICodeBlock>> standardSetterReplacements)
     {
-
-        public void AddStandardGetterSetterReplacements(
-            Dictionary<string, Action<ICodeBlock>> standardGetterReplacements,
-            Dictionary<string, Action<ICodeBlock>> standardSetterReplacements)
+        standardSetterReplacements.Add("Text", (codeBlock) =>
         {
-            standardSetterReplacements.Add("Text", (codeBlock) =>
-            {
-                var textVariable = "nameof(Text)";
-                GenerateTextAssignment(codeBlock, textVariable);
-            });
+            var textVariable = "nameof(Text)";
+            GenerateTextAssignment(codeBlock, textVariable);
+        });
 
-            standardSetterReplacements.Add("FontScale", (codeBlock) =>
-            {
-                codeBlock.Line("ContainedText.FontScale = value;");
-                codeBlock.Line("UpdateLayout();");
-            });
+        standardSetterReplacements.Add("FontScale", (codeBlock) =>
+        {
+            codeBlock.Line("ContainedText.FontScale = value;");
+            codeBlock.Line("UpdateLayout();");
+        });
 
 
-            standardGetterReplacements.Add("TextOverflowHorizontalMode", codeBlock =>
-            {
-                codeBlock.Line("return ContainedText.IsTruncatingWithEllipsisOnLastLine " +
-                    "? global::RenderingLibrary.Graphics.TextOverflowHorizontalMode.EllipsisLetter " +
-                    ": RenderingLibrary.Graphics.TextOverflowHorizontalMode.TruncateWord;");
-            });
+        standardGetterReplacements.Add("TextOverflowHorizontalMode", codeBlock =>
+        {
+            codeBlock.Line("return ContainedText.IsTruncatingWithEllipsisOnLastLine " +
+                "? global::RenderingLibrary.Graphics.TextOverflowHorizontalMode.EllipsisLetter " +
+                ": RenderingLibrary.Graphics.TextOverflowHorizontalMode.TruncateWord;");
+        });
 
-            standardSetterReplacements.Add("TextOverflowHorizontalMode", codeBlock =>
-            {
-                codeBlock.If("value == global::RenderingLibrary.Graphics.TextOverflowHorizontalMode.EllipsisLetter")
-                    .Line("ContainedText.IsTruncatingWithEllipsisOnLastLine = true;");
-                codeBlock.Else()
-                    .Line("ContainedText.IsTruncatingWithEllipsisOnLastLine = false;");
-            });
-              
+        standardSetterReplacements.Add("TextOverflowHorizontalMode", codeBlock =>
+        {
+            codeBlock.If("value == global::RenderingLibrary.Graphics.TextOverflowHorizontalMode.EllipsisLetter")
+                .Line("ContainedText.IsTruncatingWithEllipsisOnLastLine = true;");
+            codeBlock.Else()
+                .Line("ContainedText.IsTruncatingWithEllipsisOnLastLine = false;");
+        });
+          
+    }
+
+    private static void GenerateTextAssignment(ICodeBlock codeBlock, string textVariable)
+    {
+        codeBlock.Line("var widthBefore = ContainedText.WrappedTextWidth;");
+        codeBlock.Line("var heightBefore = ContainedText.WrappedTextHeight;");
+
+        codeBlock.Line("if (this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren)");
+        codeBlock.Line("{");
+        codeBlock.Line("    // make it have no line wrap width before assignign the text:");
+        codeBlock.Line("    ContainedText.Width = 0;");
+        codeBlock.Line("}");
+
+        var fileVersion = GlueState.Self.CurrentGlueProject?.FileVersion;
+
+        // don't directly set it, go through the CustomSetPropertyOnRenderable so bbcode works
+        if (fileVersion >= (int)GluxVersions.GumTextSupportsBbCode)
+        {
+            codeBlock.Line($"global::Gum.Wireframe.CustomSetPropertyOnRenderable.TrySetPropertyOnText(ContainedText, this, {textVariable}, value);");
+        }
+        else
+        {
+            codeBlock.Line("ContainedText.RawText = value;");
         }
 
-        private static void GenerateTextAssignment(ICodeBlock codeBlock, string textVariable)
+        if (fileVersion >= (int)GluxVersions.GraphicalUiElementINotifyPropertyChanged)
         {
-            codeBlock.Line("var widthBefore = ContainedText.WrappedTextWidth;");
-            codeBlock.Line("var heightBefore = ContainedText.WrappedTextHeight;");
-
-            codeBlock.Line("if (this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren)");
-            codeBlock.Line("{");
-            codeBlock.Line("    // make it have no line wrap width before assignign the text:");
-            codeBlock.Line("    ContainedText.Width = 0;");
-            codeBlock.Line("}");
-
-            var fileVersion = GlueState.Self.CurrentGlueProject?.FileVersion;
-
-            // don't directly set it, go through the CustomSetPropertyOnRenderable so bbcode works
-            if (fileVersion >= (int)GluxVersions.GumTextSupportsBbCode)
-            {
-                codeBlock.Line($"global::Gum.Wireframe.CustomSetPropertyOnRenderable.TrySetPropertyOnText(ContainedText, this, {textVariable}, value);");
-            }
-            else
-            {
-                codeBlock.Line("ContainedText.RawText = value;");
-            }
-
-            if (fileVersion >= (int)GluxVersions.GraphicalUiElementINotifyPropertyChanged)
-            {
-                codeBlock.Line("NotifyPropertyChanged();");
-            }
-
-            codeBlock.Line("var shouldUpdate = widthBefore != ContainedText.WrappedTextWidth || heightBefore != ContainedText.WrappedTextHeight;");
-
-            codeBlock.Line("if (shouldUpdate)");
-            codeBlock.Line("{");
-            if (fileVersion >= (int)GluxVersions.GumTextObjectsUpdateTextWith0ChildDepth)
-            {
-                codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, int.MaxValue/2);");
-            }
-            else
-            {
-                codeBlock.Line("    UpdateLayout(true, int.MaxValue/2);");
-            }
-
-            codeBlock.Line("}");
+            codeBlock.Line("NotifyPropertyChanged();");
         }
 
-        public void AddVariableNamesToSkipForProperties(List<string> mVariableNamesToSkipForProperties)
+        codeBlock.Line("var shouldUpdate = widthBefore != ContainedText.WrappedTextWidth || heightBefore != ContainedText.WrappedTextHeight;");
+
+        codeBlock.Line("if (shouldUpdate)");
+        codeBlock.Line("{");
+        if (fileVersion >= (int)GluxVersions.GumTextObjectsUpdateTextWith0ChildDepth)
         {
-            mVariableNamesToSkipForProperties.Add("IsItalic");
-            mVariableNamesToSkipForProperties.Add("IsBold");
-
-            mVariableNamesToSkipForProperties.Add("Font");
-            mVariableNamesToSkipForProperties.Add("FontSize");
-
-            mVariableNamesToSkipForProperties.Add("OutlineThickness");
-            mVariableNamesToSkipForProperties.Add("UseFontSmoothing");
-
-            if(GlueState.Self.CurrentGlueProject?.FileVersion < (int)GluxVersions.GumTextObjectsHaveTextOverflowProperties)
-            {
-                mVariableNamesToSkipForProperties.Add("TextOverflowHorizontalMode");
-                mVariableNamesToSkipForProperties.Add("TextOverflowVerticalMode");
-            }
-            else
-            {
-                // skip this still, generate it manually:
-                mVariableNamesToSkipForProperties.Add("TextOverflowVerticalMode");
-            }
+            codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, int.MaxValue/2);");
+        }
+        else
+        {
+            codeBlock.Line("    UpdateLayout(true, int.MaxValue/2);");
         }
 
-        public void AddVariableNamesToSkipForStates(List<string> variableNamesToSkipForStates)
+        codeBlock.Line("}");
+    }
+
+    public void AddVariableNamesToSkipForProperties(List<string> variableNamesToSkipForProperties)
+    {
+        variableNamesToSkipForProperties.Add("IsItalic");
+        variableNamesToSkipForProperties.Add("IsBold");
+
+        variableNamesToSkipForProperties.Add("Font");
+        variableNamesToSkipForProperties.Add("FontSize");
+
+        variableNamesToSkipForProperties.Add("OutlineThickness");
+        variableNamesToSkipForProperties.Add("UseFontSmoothing");
+
+        if(GlueState.Self.CurrentGlueProject?.FileVersion < (int)GluxVersions.GumTextObjectsHaveTextOverflowProperties)
         {
-            if (GlueState.Self.CurrentGlueProject?.FileVersion < (int)GluxVersions.GumTextObjectsHaveTextOverflowProperties)
+            variableNamesToSkipForProperties.Add("TextOverflowHorizontalMode");
+            variableNamesToSkipForProperties.Add("TextOverflowVerticalMode");
+        }
+        else
+        {
+            // skip this still, generate it manually:
+            variableNamesToSkipForProperties.Add("TextOverflowVerticalMode");
+        }
+    }
+
+    public void AddVariableNamesToSkipForStates(List<string> variableNamesToSkipForStates)
+    {
+        if (GlueState.Self.CurrentGlueProject?.FileVersion < (int)GluxVersions.GumTextObjectsHaveTextOverflowProperties)
+        {
+            variableNamesToSkipForStates.Add("TextOverflowHorizontalMode");
+            variableNamesToSkipForStates.Add("TextOverflowVerticalMode");
+        }
+    }
+
+    public void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)
+    {
+        if (standardElementSave.Name == "Text")
+        {
+            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GumDefaults2)
             {
-                variableNamesToSkipForStates.Add("TextOverflowHorizontalMode");
-                variableNamesToSkipForStates.Add("TextOverflowVerticalMode");
+                var overrideTextRenderingPositionModeProperty = classBodyBlock.Property("public RenderingLibrary.Graphics.TextRenderingPositionMode?", "OverrideTextRenderingPositionMode");
+                overrideTextRenderingPositionModeProperty.Line("get => mContainedText.OverrideTextRenderingPositionMode;");
+                overrideTextRenderingPositionModeProperty.Line("set => mContainedText.OverrideTextRenderingPositionMode = value;");
             }
-        }
 
-        public void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)
-        {
-            if (standardElementSave.Name == "Text")
+            if (GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GumTextObjectsHaveTextOverflowProperties)
             {
-                if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GumDefaults2)
-                {
-                    var overrideTextRenderingPositionModeProperty = classBodyBlock.Property("public RenderingLibrary.Graphics.TextRenderingPositionMode?", "OverrideTextRenderingPositionMode");
-                    overrideTextRenderingPositionModeProperty.Line("get => mContainedText.OverrideTextRenderingPositionMode;");
-                    overrideTextRenderingPositionModeProperty.Line("set => mContainedText.OverrideTextRenderingPositionMode = value;");
-                }
+                /*
+                 * public global::RenderingLibrary.Graphics.TextOverflowVerticalMode TextOverflowVerticalMode
+                 * {
+                 *     get
+                 *     {
+                 *         return ContainedText.TextOverflowVerticalMode;
+                 *     }
+                 *     set
+                 *     {
+                 *         ContainedText.TextOverflowVerticalMode = value;
+                 *         NotifyPropertyChanged();
+                 *     }
+                 * }
+                 */
 
-                if (GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GumTextObjectsHaveTextOverflowProperties)
-                {
-                    /*
-                     * public global::RenderingLibrary.Graphics.TextOverflowVerticalMode TextOverflowVerticalMode
-                     * {
-                     *     get
-                     *     {
-                     *         return ContainedText.TextOverflowVerticalMode;
-                     *     }
-                     *     set
-                     *     {
-                     *         ContainedText.TextOverflowVerticalMode = value;
-                     *         NotifyPropertyChanged();
-                     *     }
-                     * }
-                     */
-
-                    // This allows us to inject "new"
-                    classBodyBlock.Property("public new global::RenderingLibrary.Graphics.TextOverflowVerticalMode", "TextOverflowVerticalMode")
-                        .Get().Line("return ContainedText.TextOverflowVerticalMode;").End()
-                        .Set()
-                            .Line("base.TextOverflowVerticalMode = value;")
-                            .Line("NotifyPropertyChanged();");
-                }
-
+                // This allows us to inject "new"
+                classBodyBlock.Property("public new global::RenderingLibrary.Graphics.TextOverflowVerticalMode", "TextOverflowVerticalMode")
+                    .Get().Line("return ContainedText.TextOverflowVerticalMode;").End()
+                    .Set()
+                        .Line("base.TextOverflowVerticalMode = value;")
+                        .Line("NotifyPropertyChanged();");
             }
-        }
 
-        public void GenerateVariableProperties(StandardElementSave standardElementSave, ICodeBlock currentBlock, string containedGraphicalObjectName)
+        }
+    }
+
+    public void GenerateVariableProperties(StandardElementSave standardElementSave, ICodeBlock currentBlock, string containedGraphicalObjectName)
+    {
+        if (standardElementSave.Name == "Text")
         {
-            if (standardElementSave.Name == "Text")
-            {
-                // generate text-specific properties here:
-                StandardsCodeGenerator.Self.GenerateVariable(currentBlock, containedGraphicalObjectName,
-                    new VariableSave { Name = "BitmapFont", Type = "RenderingLibrary.Graphics.BitmapFont" },
-                    standardElementSave);
+            // generate text-specific properties here:
+            StandardsCodeGenerator.Self.GenerateVariable(currentBlock, containedGraphicalObjectName,
+                new VariableSave { Name = "BitmapFont", Type = "RenderingLibrary.Graphics.BitmapFont" },
+                standardElementSave);
 
-                StandardsCodeGenerator.Self.GenerateVariable(currentBlock, containedGraphicalObjectName,
-                    new VariableSave { Name = "WrappedText", Type = "System.Collections.Generic.List<string>" },
-                    standardElementSave,
-                    generateSetter: false);
+            StandardsCodeGenerator.Self.GenerateVariable(currentBlock, containedGraphicalObjectName,
+                new VariableSave { Name = "WrappedText", Type = "System.Collections.Generic.List<string>" },
+                standardElementSave,
+                generateSetter: false);
 
-                GenerateTextNoTranslate(currentBlock);
-            }
+            GenerateTextNoTranslate(currentBlock);
         }
+    }
 
-        private void GenerateTextNoTranslate(ICodeBlock currentBlock)
-        {
-            var property = currentBlock.Property("public string", "TextNoTranslate");
+    private void GenerateTextNoTranslate(ICodeBlock currentBlock)
+    {
+        var property = currentBlock.Property("public string", "TextNoTranslate");
 
-            property.Get().Line("return Text;");
-            var setBlock = property.Set();
+        property.Get().Line("return Text;");
+        var setBlock = property.Set();
 
-            var textVariable = "\"TextNoTranslate\"";
-            GenerateTextAssignment(setBlock, textVariable);
-        }
+        var textVariable = "\"TextNoTranslate\"";
+        GenerateTextAssignment(setBlock, textVariable);
     }
 }

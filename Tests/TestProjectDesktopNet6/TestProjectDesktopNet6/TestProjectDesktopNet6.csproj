@@ -542,6 +542,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>AlignmentObject</Name>
     </None>
+    <None Include="Content\GumProject\Components\AlphaSettingComponent.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AlphaSettingComponent</Name>
+    </None>
     <None Include="Content\GumProject\Components\AnimatedComponent.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>AnimatedComponent</Name>
@@ -2073,6 +2077,10 @@
     <Compile Include="GumRuntimes\AlignmentObjectRuntime.cs" />
     <Compile Include="GumRuntimes\AlignmentObjectRuntime.Generated.cs">
       <DependentUpon>AlignmentObjectRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\AlphaSettingComponentRuntime.cs" />
+    <Compile Include="GumRuntimes\AlphaSettingComponentRuntime.Generated.cs">
+      <DependentUpon>AlphaSettingComponentRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\AnimatedComponentRuntime.cs" />
     <Compile Include="GumRuntimes\AnimatedComponentRuntime.Generated.cs">

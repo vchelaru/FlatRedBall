@@ -178,7 +178,10 @@ namespace FlatRedBall.Glue.SaveClasses
             ShapeCollectionHasIsPointOnOrInside = 62,
 
             // March 9, 2025
-            AudioManagerStopSongTakesBool = 63
+            AudioManagerStopSongTakesBool = 63,
+
+            // Feburary 2, but added as a version on May 19, 2025
+            GumVisualHasRenderTarget = 64
 
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
@@ -189,7 +192,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.AudioManagerStopSongTakesBool;
+        public const int LatestVersion = (int)GluxVersions.GumVisualHasRenderTarget;
 
         public int FileVersion { get; set; }
 
