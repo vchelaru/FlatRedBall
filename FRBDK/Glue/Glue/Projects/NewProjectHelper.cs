@@ -11,10 +11,11 @@ using FlatRedBall.Glue.Managers;
 using L = Localization;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using System.Security.Cryptography.X509Certificates;
 
 namespace FlatRedBall.Glue.Projects;
 
-public static class NewProjectHelper
+public class NewProjectHelper
 {
     static async Task<NewProjectViewModel> RunNewProjectCreatorAsync(FilePath directoryForNewProject = null, string namespaceForNewProject = null, bool creatingSyncedProject = false)
     {
@@ -147,7 +148,7 @@ public static class NewProjectHelper
         }
     }
 
-    public static async Task<NewProjectViewModel> CreateNewSyncedProject()
+    public async Task<NewProjectViewModel?> CreateNewSyncedProject()
     {
         //////////////////////Early Out//////////////////////
         if(GlueState.Self.CurrentMainProject == null)
@@ -161,7 +162,7 @@ public static class NewProjectHelper
         // Gotta find the .sln of this project so we can put the synced project in there
         var directory = GlueState.Self.CurrentSlnFileName?.GetDirectoryContainingThis();
 
-        var viewModel = await NewProjectHelper.RunNewProjectCreatorAsync(directory, 
+        var viewModel = await RunNewProjectCreatorAsync(directory, 
             GlueState.Self.ProjectNamespace, creatingSyncedProject:true);
 
         if (viewModel != null)
@@ -173,12 +174,7 @@ public static class NewProjectHelper
             var newProjectBase = GlueCommands.Self.ProjectCommands.AddSyncedProject(createdProject) as VisualStudioProject;
             ProjectManager.SyncedProjects[^1].SaveAsRelativeSyncedProject = true;
 
-            // Remove Game1.cs so that it will just use the same Game1 of the master project.
-            if (File.Exists(newProjectBase.Directory + "Game1.cs"))
-            {
-                newProjectBase.RemoveItem(newProjectBase.Directory + "Game1.cs");
-                File.Delete(newProjectBase.Directory + "Game1.cs");
-            }
+            RemoveDuplicateFiles(newProjectBase);
 
             await PluginManager.CallPluginMethodAsync("MonoGame Content Plugin", "RefreshXnbsForProject", newProjectBase);
 
@@ -200,5 +196,18 @@ public static class NewProjectHelper
         }
 
         return viewModel;
+    }
+
+    private static void RemoveDuplicateFiles(VisualStudioProject? newProjectBase)
+    {
+        // Remove Game1.cs so that it will just use the same Game1 of the master project.
+        string fileName = "Game1.cs";
+
+        if (File.Exists(newProjectBase.Directory + fileName))
+        {
+            newProjectBase.RemoveItem(newProjectBase.Directory + fileName);
+            File.Delete(newProjectBase.Directory + fileName);
+        }
+
     }
 }

@@ -429,7 +429,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             List<ProjectItemWithFile> projectItemsWithFileNames = new List<ProjectItemWithFile>();
 
             var sourceCodeFiles = ((VisualStudioProject)sourceProjectBase).EvaluatedItems
-                .Where(item => item.UnevaluatedInclude.EndsWith(".cs") && !ShouldIgnoreFile(item.UnevaluatedInclude))
+                .Where(item => item.UnevaluatedInclude.EndsWith(".cs") && !ShouldIgnoreFile(item.UnevaluatedInclude) && IsSyncedCodeFile(item.UnevaluatedInclude))
                 .ToList();
 
             foreach (var bi in sourceCodeFiles)
@@ -472,6 +472,22 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
 
             Project.ReevaluateIfNecessary();
+        }
+
+        /// <summary>
+        /// Whether the unevaluated include should be synced from a source project to a linked project.
+        /// If true, the file is linked. If false, the file is not linked. 
+        /// </summary>
+        /// <param name="unevaluatedInclude"></param>
+        /// <returns></returns>
+        private bool IsSyncedCodeFile(string unevaluatedInclude)
+        {
+            if(unevaluatedInclude == "Program.cs")
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public void AddNugetPackage(string packageName, string versionNumber)

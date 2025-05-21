@@ -13,6 +13,7 @@ using Npc.ViewModels;
 using Npc;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.VSHelpers;
+using FlatRedBall.Glue.Services;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 {
@@ -21,10 +22,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
     /// </summary>
     public partial class SyncedProjectsControl : UserControl
     {
+        private readonly NewProjectHelper _newProjectHelper;
+
         SyncedProjectsViewModel ViewModel => DataContext as SyncedProjectsViewModel;
         public SyncedProjectsControl()
         {
             InitializeComponent();
+
+            _newProjectHelper = Builder.Get<NewProjectHelper>();
         }
 
         private async void AddNewProjectClick(object sender, RoutedEventArgs e)
@@ -33,7 +38,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
             try
             {
-                var newProjectVm = await NewProjectHelper.CreateNewSyncedProject();
+                var newProjectVm = await _newProjectHelper.CreateNewSyncedProject();
 
                 if (newProjectVm != null)
                 {

@@ -30,6 +30,8 @@ static class Program
 
         ApplicationConfiguration.Initialize();
 
+        var builder = new FlatRedBall.Glue.Services.Builder();
+        builder.Build();
 
         var mainGlueWindow =
             new MainGlueWindow();
