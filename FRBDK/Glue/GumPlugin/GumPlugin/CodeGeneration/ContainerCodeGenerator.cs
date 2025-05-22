@@ -50,10 +50,12 @@ public class ContainerCodeGenerator
 
     public void AddVariableNamesToSkipForProperties(List<string> variableNamesToSkipForProperties)
     {
-        if(!HasIsRenderTarget)
+        if (!HasIsRenderTarget)
         {
             variableNamesToSkipForProperties.Add("IsRenderTarget");
-            variableNamesToSkipForProperties.Add("Alpha");
+            // If we globally exclude alpha, then we remove the built-in Alpha logic for Sprites which has
+            // been around for a long time. Don't do that, we need to selectively exclude alpha
+            //variableNamesToSkipForProperties.Add("Alpha");
 
         }
     }
@@ -63,7 +65,28 @@ public class ContainerCodeGenerator
         if (!HasIsRenderTarget)
         {
             variableNamesToSkipForStates.Add("IsRenderTarget");
-            variableNamesToSkipForStates.Add("Alpha");
+            // See above for why we don't exclude alpha here:
+            //variableNamesToSkipForStates.Add("Alpha");
         }
     }
+
+    internal void AddTypeSpecificVariableNamesToSkipForStates(Dictionary<string, List<string>> typeSpecificVariableNamesToSkipForStates)
+    {
+
+        if(!HasIsRenderTarget)
+        {
+            typeSpecificVariableNamesToSkipForStates["Container"] = new List<string>
+            {
+                "Alpha",
+                "Blend",
+                "IsRenderTarget"
+            };
+        }
+    }
+
+    internal void AddTypeSpecificVariableNamesToSkipForProperties(Dictionary<string, List<string>> typedVariableNamesToSkipForProperties)
+    {
+
+    }
 }
+

@@ -63,11 +63,11 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
     {
         _textCodeGenerator = textCodeGenerator;
         _containerCodeGenerator = containerCodeGenerator;
+        AddVariablesToSkipForStates();
     }
 
     public StateCodeGenerator()
     {
-        AddVariablesToSkipForStates();
     }
 
     private void AddVariablesToSkipForStates()
@@ -105,12 +105,8 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         // no longer needed:
         //mVariableNamesToSkipForStates.Add("State");
 
-        typeSpecificVariableNamesToSkipForStates["Container"] = new List<string>
-        {
-            "Alpha",
-            "Blend",
-            "IsRenderTarget"
-        };
+        _containerCodeGenerator.AddTypeSpecificVariableNamesToSkipForStates(typeSpecificVariableNamesToSkipForStates);
+
 
 
     }

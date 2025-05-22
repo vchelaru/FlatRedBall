@@ -28,11 +28,14 @@ namespace GumPlugin.CodeGeneration
         List<string> variablesToCallLayoutAfter = new List<string>();
 
         List<string> mVariableNamesToSkipForProperties = new List<string>();
+        Dictionary<string, List<string>> _typedVariableNamesToSkipForProperties = new Dictionary<string, List<string>>();
+
         // These are new variables that don't appear in the base definitioin of the standard element, but we support in code for convenience
         List<VariableSave> variableNamesToAddForProperties = new List<VariableSave>();
         private SpriteCodeGenerator _spriteCodeGenerator;
         private TextCodeGenerator _textCodeGenerator;
         private ContainerCodeGenerator _containerCodeGenerator;
+        private NineSliceCodeGenerator _nineSliceCodeGenerator;
 
         #endregion
 
@@ -43,11 +46,15 @@ namespace GumPlugin.CodeGeneration
 
         }
 
-        public void Initialize(TextCodeGenerator textCodeGenerator, ContainerCodeGenerator containerCodeGenerator)
+        public void Initialize(
+            TextCodeGenerator textCodeGenerator,
+            ContainerCodeGenerator containerCodeGenerator,
+            NineSliceCodeGenerator nineSliceCodeGenerator)
         { 
             _spriteCodeGenerator = new SpriteCodeGenerator();
             _textCodeGenerator = textCodeGenerator;
             _containerCodeGenerator = containerCodeGenerator;
+            _nineSliceCodeGenerator = nineSliceCodeGenerator;
 
 
             _spriteCodeGenerator.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
@@ -109,7 +116,13 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Clear();
 
             _textCodeGenerator.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
+
             _containerCodeGenerator.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
+            _containerCodeGenerator.AddTypeSpecificVariableNamesToSkipForProperties(_typedVariableNamesToSkipForProperties);
+
+            _nineSliceCodeGenerator.AddTypeSpecificVariableNamesToSkipForProperties(_typedVariableNamesToSkipForProperties);
+
+
 
             void ExcludeIfVersionLessThan(string propertyName, GluxVersions gluxVersion)
             {
@@ -432,6 +445,16 @@ namespace GumPlugin.CodeGeneration
             {
                 return false;
             }
+            if(_typedVariableNamesToSkipForProperties.ContainsKey(standardElementSave.Name))
+            {
+                var list = _typedVariableNamesToSkipForProperties[standardElementSave.Name];
+
+                if(list.Contains(variableName))
+                {
+                    return false;
+                }
+            }
+
             // Core Gum objets don't have states, so if it's a state then don't create a property for it - it'll be handled
             // by the code that handles states
             if(variable.IsState(standardElementSave))

@@ -181,7 +181,9 @@ namespace FlatRedBall.Glue.SaveClasses
             AudioManagerStopSongTakesBool = 63,
 
             // Feburary 2, but added as a version on May 19, 2025
-            GumVisualHasRenderTarget = 64
+            GumVisualHasRenderTarget = 64,
+            // Added around April 4, 2025, so adding this as the same version:
+            GumNineSliceHasAnimate = 64
 
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below

@@ -337,8 +337,9 @@ public class MainGumPlugin : PluginBase
 
         var textCodeGenerator = new TextCodeGenerator();
         var containerCodeGenerator = new ContainerCodeGenerator(GlueState.Self);
+        var nineSliceCodeGenerator = new NineSliceCodeGenerator(GlueState.Self);
 
-        StandardsCodeGenerator.Self.Initialize(textCodeGenerator, containerCodeGenerator);
+        StandardsCodeGenerator.Self.Initialize(textCodeGenerator, containerCodeGenerator, nineSliceCodeGenerator);
         StateCodeGenerator.Self.Initialize(textCodeGenerator, containerCodeGenerator);
     }
 
