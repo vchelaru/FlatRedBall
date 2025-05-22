@@ -114,6 +114,7 @@ namespace GumPlugin.CodeGeneration
         public void RefreshVariableNamesToSkipForProperties()
         {
             mVariableNamesToSkipForProperties.Clear();
+            _typedVariableNamesToSkipForProperties.Clear();
 
             _textCodeGenerator.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
 
