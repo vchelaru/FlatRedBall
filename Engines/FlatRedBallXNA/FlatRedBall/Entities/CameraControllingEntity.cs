@@ -729,42 +729,18 @@ public class CameraControllingEntity : PositionedObject
     /// Shakes the screen for a certain duration. This can be used to create a screen shake effect.
     /// </summary>
     /// <param name="shakeRadius">The shake radius - a larger value creates more shaking.</param>
-    /// <param name="durationInSeconds">How long to perofrm shaking in seconds.</param>
+    /// <param name="durationInSeconds">How long to perform shaking in seconds.</param>
+    /// <param name="cancellationToken">Token to cancel the operation. Cancelling screen shake will NOT
+    /// reset the CameraOffset to (0, 0)</param>
     /// <returns>A task which is completed when the shaking finishes.</returns>
-    public async Task ShakeScreen(float shakeRadius, float durationInSeconds)
-    {
-
-        var random = FlatRedBallServices.Random;
-        for (float timePassed = 0; timePassed < durationInSeconds; timePassed += individualShakeDurationInSeconds)
-        {
-            var point = random.PointInCircle(shakeRadius);
-
-            // todo - use velocity here instead of snapping
-            CameraOffset.X = point.X;
-            CameraOffset.Y = point.Y;
-
-            await TimeManager.DelaySeconds(individualShakeDurationInSeconds);
-        }
-
-        CameraOffset.X = 0;
-        CameraOffset.Y = 0;
-    }
-
-    /// <summary>
-    /// Shakes the screen for a certain duration. This can be used to create a screen shake effect.
-    /// </summary>
-    /// <param name="shakeRadius">The shake radius - a larger value creates more shaking.</param>
-    /// <param name="durationInSeconds">How long to perofrm shaking in seconds.</param>
-    /// <param name="cancellationToken">token to cancel the operation</param>
-    /// <returns>A task which is completed when the shaking finishes.</returns>
-    public async Task ShakeScreen(float shakeRadius, float durationInSeconds, CancellationToken cancellationToken)
+    public async Task ShakeScreen(float shakeRadius, float durationInSeconds, CancellationToken cancellationToken = default)
     {
         var random = FlatRedBallServices.Random;
         for (float timePassed = 0; timePassed < durationInSeconds; timePassed += individualShakeDurationInSeconds)
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                break;
+                return;
             }
 
             var point = random.PointInCircle(shakeRadius);
