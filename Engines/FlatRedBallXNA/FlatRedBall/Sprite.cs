@@ -85,7 +85,7 @@ namespace FlatRedBall
         // Made mTexture protected internal to avoid a getter in tight loops
         // and also to allow users to swap the texture without altering the
         // sprite's internal states in derived classes.
-        protected internal Texture2D mTexture; 
+        protected internal Texture2D mTexture;
         internal float mPixelSize;
         bool mFlipHorizontal;
         bool mFlipVertical;
@@ -139,7 +139,7 @@ namespace FlatRedBall
         #endregion
 
         #region Particle Fields
-        
+
         /// <summary>
         /// Used by particles to flag a particular Sprite as empty.
         /// </summary>
@@ -178,8 +178,8 @@ namespace FlatRedBall
         /// <remarks>
         /// Alpha controls a Sprite's transparency.   A completely opaque Sprite has an
         /// Alpha of 1 while a completely transparent object has an Alpha of 0.
-        /// 
-        /// Setting the AlphaRate of a completely opaque Sprite to -1 will 
+        ///
+        /// Setting the AlphaRate of a completely opaque Sprite to -1 will
         /// make the sprite disappear in one second.  Invisible Sprites continue
         /// to remain in memory and are managed by the SpriteManager.  The Alpha variable
         /// will automatically regulate itself if the value is set to something outside of the
@@ -242,7 +242,7 @@ namespace FlatRedBall
                 greenValue = mGreen * mAlpha;
                 blueValue = mBlue * mAlpha;
             }
-                
+
             else
             {
                 redValue = mRed;
@@ -381,6 +381,14 @@ namespace FlatRedBall
 
         public Microsoft.Xna.Framework.Color Color
         {
+            get
+            {
+                return new Microsoft.Xna.Framework.Color(
+                    (byte)(mRed * 255),
+                    (byte)(mGreen * 255),
+                    (byte)(mBlue * 255),
+                    (byte)(mAlpha * 255));
+            }
             set
             {
                 Red = value.R / 255f;
@@ -388,13 +396,12 @@ namespace FlatRedBall
                 Blue = value.B / 255f;
                 Alpha = value.A / 255f;
             }
-
         }
 
         public ColorOperation ColorOperation
         {
             get { return mColorOperation; }
-            set 
+            set
             {
 #if DEBUG
                 // Check for unsupported color operations
@@ -423,8 +430,8 @@ namespace FlatRedBall
         public BlendOperation BlendOperation
         {
             get { return mBlendOperation; }
-            set 
-            { 
+            set
+            {
                 mBlendOperation = value;
 
                 UpdateVertexColorsAccordingToAlpha();
@@ -442,7 +449,7 @@ namespace FlatRedBall
         public Texture2D Texture
         {
             get { return mTexture; }
-            set 
+            set
             {
 				if (mTexture != value)
 				{
@@ -465,7 +472,7 @@ namespace FlatRedBall
 
 					UpdateVertexColorsAccordingToAlpha ();
 
-					UpdateScale ();            
+					UpdateScale ();
 				}
             }
         }
@@ -496,17 +503,17 @@ namespace FlatRedBall
         public float PixelSize
         {
             get { return mPixelSize; }
-            set 
-            { 
+            set
+            {
                 mPixelSize = value;
 
                 UpdateScale();
-            
+
             }
         }
 
         /// <summary>
-        /// The relationship between the displayed portion of the Sprite's texture and 
+        /// The relationship between the displayed portion of the Sprite's texture and
         /// its Width/Height. If this value is less than or equal to 0, then Width and Height
         /// values are not set according to the displayed portion of the Sprite's texture. Otherwise,
         /// the displayed portion of the texture are multiplied by this value to determine the Sprite's
@@ -529,9 +536,9 @@ namespace FlatRedBall
         /// Whether to flip the Sprite's texture on the y Axis (left and right switch).
         /// </summary>
         /// <remarks>
-        /// This kind of texture rotation can be accomplished by simply rotating 
+        /// This kind of texture rotation can be accomplished by simply rotating
         /// a Sprite on its yAxis; however, there are times when this
-        /// is inconvenient or impossible due to attachment relationships.  There 
+        /// is inconvenient or impossible due to attachment relationships.  There
         /// is no efficiency consequence for using either method.  If a Sprite
         /// is animated, this value will be overwritten by the AnimationChain being used.
         /// </remarks>
@@ -545,9 +552,9 @@ namespace FlatRedBall
         /// Whether to flip the Sprite's texture on the x Axis (top and bottom switch).
         /// </summary>
         /// <remarks>
-        /// This kind of texture rotation can be accomplished by simply rotating a 
+        /// This kind of texture rotation can be accomplished by simply rotating a
         /// Sprite on its xAxis; however, there are times when this
-        /// is inconvenient or impossible due to attachment relationships.  
+        /// is inconvenient or impossible due to attachment relationships.
         /// There is no efficiency consequence for using either method.  If a Sprite
         /// is animated, this value will be overwritten by the AnimationChain being used.
         /// </remarks>
@@ -756,7 +763,7 @@ namespace FlatRedBall
         public TextureAddressMode TextureAddressMode;
 
         /// <summary>
-        /// Sets the forced texture filter for this sprite. 
+        /// Sets the forced texture filter for this sprite.
         /// By default this is null, and will use the GraphicsOptions TextureFilter.
         /// </summary>
         public TextureFilter? TextureFilter;
@@ -948,7 +955,7 @@ namespace FlatRedBall
                 {
                     bool wasAnimationSet = false;
 
-                    // If the animation is null, let's not do anything.  
+                    // If the animation is null, let's not do anything.
                     // This could get set to null through Glue.
                     if (string.IsNullOrEmpty(value))
                     {
@@ -1090,7 +1097,7 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// The number of seconds that have passed since the beginning of the animation. 
+        /// The number of seconds that have passed since the beginning of the animation.
         /// This is effectively the same as setting the CurrentFrameIndex, but allows controlling
         /// the position by time rather than by frame.
         /// </summary>
@@ -1130,7 +1137,7 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// The distance from the center of the Sprite to its edge, which is equal to Height / 2. 
+        /// The distance from the center of the Sprite to its edge, which is equal to Height / 2.
         /// </summary>
         public float ScaleY
         {
@@ -1371,7 +1378,7 @@ namespace FlatRedBall
             mVertices[1].Color.Y = 1;
             mVertices[2].Color.Y = 1;
             mVertices[3].Color.Y = 1;
-            
+
             mVertices[0].Color.Z = 1;
             mVertices[1].Color.Z = 1;
             mVertices[2].Color.Z = 1;
@@ -1383,7 +1390,7 @@ namespace FlatRedBall
             mVertices[3].Color.W = 1;
 
 #endif
-            Alpha = GraphicalEnumerations.MaxColorComponentValue; 
+            Alpha = GraphicalEnumerations.MaxColorComponentValue;
 
             ColorOperation = ColorOperation.Texture;
             mAnimationChains = new AnimationChainList();
@@ -1393,7 +1400,7 @@ namespace FlatRedBall
             TextureAddressMode = TextureAddressMode.Clamp;
 
             mCursorSelectable = true;
-        
+
         }
 
         #endregion
@@ -1601,7 +1608,7 @@ namespace FlatRedBall
         /// </remarks>
         public void UpdateToCurrentAnimationFrame()
         {
-            if (mAnimationChains != null && mAnimationChains.Count > mCurrentChainIndex && mCurrentChainIndex != -1 && 
+            if (mAnimationChains != null && mAnimationChains.Count > mCurrentChainIndex && mCurrentChainIndex != -1 &&
                 mCurrentFrameIndex > -1 &&
                 mCurrentFrameIndex < mAnimationChains[mCurrentChainIndex].Count)
             {
@@ -1686,7 +1693,7 @@ namespace FlatRedBall
             }
 
             sprite.mVerticesForDrawing = new VertexPositionColorTexture[4];
-            
+
             sprite.mAnimationChains = new AnimationChainList();
             for (int i = 0; i < mAnimationChains.Count; i++)
             {
@@ -1719,7 +1726,7 @@ namespace FlatRedBall
 
 
             // This is needed because SpriteChains may
-            // use particle Sprites which can screw up 
+            // use particle Sprites which can screw up
             mVertices[0].TextureCoordinate.X = 0;
             mVertices[0].TextureCoordinate.Y = 0;
             mVertices[0].Scale = new Vector2(-1, 1);
@@ -1929,7 +1936,7 @@ namespace FlatRedBall
         /// Removes the AnimationChain from the Sprite's internal AnimationChain List.
         /// </summary>
         /// <remarks>
-        /// If the chainToRemove is also the CurrentChain, the animate field 
+        /// If the chainToRemove is also the CurrentChain, the animate field
         /// is set to false.
         /// </remarks>
         /// <param name="chainToRemove">The AnimationChain to remove.</param>
@@ -1995,7 +2002,7 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// Updates the shapes in the argument ICollidable to match the shapes in the Sprite's current frame. If the 
+        /// Updates the shapes in the argument ICollidable to match the shapes in the Sprite's current frame. If the
         /// Sprite does not have a frame, or if the frame does not have shapes, then this method makes no changes to the
         /// argument ICollidable.
         /// </summary>
@@ -2013,8 +2020,8 @@ namespace FlatRedBall
         /// <remarks>
         /// This method assumes that the Sprite contains a reference to an AnimationChain with the name matching chainToSet.  Passing a
         /// name that is not found in the Sprite's AnimationChainArray will not cause any changes.
-        /// 
-        /// <para>This method will keep the CurrentFrame property the same (unless it exceeds the bounds of the new AnimationChain).  In the 
+        ///
+        /// <para>This method will keep the CurrentFrame property the same (unless it exceeds the bounds of the new AnimationChain).  In the
         /// case that the CurrentFrame is greater than the bounds of the new AnimationChain, the animation will cycle back to the beginning.
         /// The animate field is not changed to true if it is false.</para>
         /// <seealso cref="FRB.Sprite.AnimationChains"/>
