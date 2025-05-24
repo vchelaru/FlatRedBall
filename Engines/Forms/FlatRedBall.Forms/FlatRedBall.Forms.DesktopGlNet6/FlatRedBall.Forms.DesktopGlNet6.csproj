@@ -5,6 +5,7 @@
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591</NoWarn>
+    <LangVersion>12.0</LangVersion>
 
   </PropertyGroup>
   <ItemGroup>
