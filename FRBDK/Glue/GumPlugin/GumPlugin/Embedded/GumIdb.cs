@@ -151,7 +151,9 @@ namespace FlatRedBall.Gum
             mManagers.Renderer.Camera.Y = 0;
 
             SystemManagers.Default = mManagers;
+#if NET6_0_OR_GREATER
             ISystemManagers.Default = mManagers;
+#endif
             FlatRedBallServices.AddManager(RenderingLibrary.SystemManagers.Default);
 
             RenderingLibrary.Graphics.Text.RenderBoundaryDefault = false;
@@ -679,7 +681,7 @@ namespace FlatRedBall.Gum
         private static void ReplaceTextureOnRenderable(Texture2D oldTexture, Texture2D newTexture, RenderingLibrary.Graphics.IRenderableIpso renderable)
         {
             ReplaceTexturesOnThisRenderable(oldTexture, newTexture, renderable);
-            if(renderable is GraphicalUiElement gue && gue.RenderableComponent != null)
+            if (renderable is GraphicalUiElement gue && gue.RenderableComponent != null)
             {
                 ReplaceTexturesOnThisRenderable(oldTexture, newTexture, gue.RenderableComponent);
             }
