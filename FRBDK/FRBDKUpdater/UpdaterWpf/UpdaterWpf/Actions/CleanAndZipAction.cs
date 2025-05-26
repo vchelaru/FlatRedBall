@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using Ionic.Zip;
+using System.IO.Compression;
 using ToolsUtilities;
 
 namespace FRBDKUpdater.Actions
@@ -20,10 +20,9 @@ namespace FRBDKUpdater.Actions
             if (FileManager.GetExtension(zipFile) == "zip" && !string.IsNullOrEmpty(extractionPath))
             {
                 Logger.Log("Unzipping file " + zipFile + " to " + extractionPath);
-                using (var zip = new ZipFile(zipFile))
-                {
-                    zip.ExtractAll(extractionPath, ExtractExistingFileAction.OverwriteSilently);
-                }
+
+                ZipFile.ExtractToDirectory(zipFile, extractionPath, overwriteFiles: true);
+
                 Logger.Log("Unzip complete");
             }
         }
