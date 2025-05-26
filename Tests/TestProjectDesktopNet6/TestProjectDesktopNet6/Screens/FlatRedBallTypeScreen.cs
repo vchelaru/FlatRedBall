@@ -14,6 +14,10 @@ using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
 using FlatRedBall.Localization;
 using FlatRedBall.Instructions;
+using GlueTestProject.TestFramework;
+using FlatRedBall.Math;
+
+
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -167,11 +171,33 @@ namespace GlueTestProject.Screens
             // to happen after every activity.
             FlatRedBallServices.Game.IsFixedTimeStep = false;
 
-
+            TestParentChildRotation();
 
 		}
 
-		void CustomActivity(bool firstTimeCalled)
+        private void TestParentChildRotation()
+        {
+            var parent = new PositionedObject();
+            var child = new PositionedObject();
+
+            child.AttachTo(parent);
+
+            for (float f = 0; f < 7; f += .0001f)
+            {
+                parent.RotationZ = f;
+
+                child.ForceUpdateDependencies();
+
+                child.RotationX.ShouldBe(0f);
+
+                child.RotationY.ShouldBe(0f);
+                var difference = System.Math.Abs(child.RotationZ - MathFunctions.NormalizeAngle(f));
+                difference.ShouldBeLessThan(.01f);
+            }
+            
+        }
+
+        void CustomActivity(bool firstTimeCalled)
 		{
             // We need this screen to survive a while to make sure the emitter is emitting properly
             //if (!firstTimeCalled)

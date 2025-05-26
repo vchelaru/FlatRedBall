@@ -411,8 +411,8 @@ namespace FlatRedBall
         public float RelativeY
         {
             get { return RelativePosition.Y; }
-            set 
-            { 
+            set
+            {
 #if DEBUG
                 if (float.IsInfinity(value) || float.IsNaN(value))
                 {
@@ -441,7 +441,7 @@ namespace FlatRedBall
                     throw new ArgumentException($"PositionedObject ({Name}): Value ({value}) cannot be NaN or Infinity.", nameof(RelativeZ));
                 }
 #endif
-                
+
                 RelativePosition.Z = value;
             }
         }
@@ -885,7 +885,7 @@ namespace FlatRedBall
                 mRotationZ = value;
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRotationZ);
 
-                if(mRotationX == 0 && mRotationY == 0)
+                if (mRotationX == 0 && mRotationY == 0)
                 {
                     mRotationMatrix = Matrix.CreateRotationZ(mRotationZ);
                 }
@@ -942,7 +942,7 @@ namespace FlatRedBall
                     mRotationMatrix.M42 != 0 ||
                     mRotationMatrix.M43 != 0)
                 {
-                     throw new ArgumentException("The translation on the matrix is not 0.  It is " + value.Translation);
+                    throw new ArgumentException("The translation on the matrix is not 0.  It is " + value.Translation);
 
                 }
 
@@ -1170,8 +1170,8 @@ namespace FlatRedBall
         public float X
         {
             get { return Position.X; }
-            set 
-            { 
+            set
+            {
 #if DEBUG
                 if (float.IsInfinity(value) || float.IsNaN(value))
                 {
@@ -1179,7 +1179,7 @@ namespace FlatRedBall
                 }
 #endif
 
-                Position.X = value; 
+                Position.X = value;
             }
         }
 
@@ -1190,8 +1190,8 @@ namespace FlatRedBall
         public float Y
         {
             get { return Position.Y; }
-            set 
-            { 
+            set
+            {
 #if DEBUG
                 if (float.IsInfinity(value) || float.IsNaN(value))
                 {
@@ -1210,8 +1210,8 @@ namespace FlatRedBall
         public float Z
         {
             get { return Position.Z; }
-            set 
-            { 
+            set
+            {
 #if DEBUG
                 if (float.IsInfinity(value) || float.IsNaN(value))
                 {
@@ -1383,7 +1383,7 @@ namespace FlatRedBall
         /// </summary>
         public string CreationSource
         {
-            get;set;
+            get; set;
         }
 
         #endregion
@@ -1737,62 +1737,73 @@ namespace FlatRedBall
 
                 #region Apply dependency update
 
-                    if (mParentRotationChangesRotation)
+                if (mParentRotationChangesRotation)
+                {
+                    // Set the property RotationMatrix rather than the field mRotationMatrix
+                    // so the individual rotation values get updated.
+
+                    // It's possible for RotationY to get set incorrectly, so let's check what we have on the parent:
+                    if (mParent.RotationX == 0 && mParent.RotationY == 0)
                     {
-                        // Set the property RotationMatrix rather than the field mRotationMatrix
-                        // so the individual rotation values get updated.
-                        RotationMatrix = mRelativeRotationMatrix * mParent.mRotationMatrix;
+                        RotationX = 0;
+                        RotationY = 0;
+                        RotationZ = mParent.RotationZ;
                     }
                     else
                     {
-                        RotationMatrix = mRelativeRotationMatrix;
+                        RotationMatrix = mRelativeRotationMatrix * mParent.mRotationMatrix;
                     }
+                }
+                else
+                {
+                    RotationMatrix = mRelativeRotationMatrix;
+                }
 
-                    if (!IgnoreParentPosition)
+                if (!IgnoreParentPosition)
+                {
+                    if (mParentRotationChangesPosition)
                     {
-                        if (mParentRotationChangesPosition)
-                        {
 
-                            Position.X = mParent.Position.X +
-                                mParent.mRotationMatrix.M11 * RelativePosition.X +
-                                mParent.mRotationMatrix.M21 * RelativePosition.Y +
-                                mParent.mRotationMatrix.M31 * RelativePosition.Z;
+                        Position.X = mParent.Position.X +
+                            mParent.mRotationMatrix.M11 * RelativePosition.X +
+                            mParent.mRotationMatrix.M21 * RelativePosition.Y +
+                            mParent.mRotationMatrix.M31 * RelativePosition.Z;
 
-                            Position.Y = mParent.Position.Y +
-                                mParent.mRotationMatrix.M12 * RelativePosition.X +
-                                mParent.mRotationMatrix.M22 * RelativePosition.Y +
-                                mParent.mRotationMatrix.M32 * RelativePosition.Z;
+                        Position.Y = mParent.Position.Y +
+                            mParent.mRotationMatrix.M12 * RelativePosition.X +
+                            mParent.mRotationMatrix.M22 * RelativePosition.Y +
+                            mParent.mRotationMatrix.M32 * RelativePosition.Z;
 
-                            Position.Z = mParent.Position.Z +
-                                mParent.mRotationMatrix.M13 * RelativePosition.X +
-                                mParent.mRotationMatrix.M23 * RelativePosition.Y +
-                                mParent.mRotationMatrix.M33 * RelativePosition.Z;
+                        Position.Z = mParent.Position.Z +
+                            mParent.mRotationMatrix.M13 * RelativePosition.X +
+                            mParent.mRotationMatrix.M23 * RelativePosition.Y +
+                            mParent.mRotationMatrix.M33 * RelativePosition.Z;
 
-                        }
-                        else
-                        {
-                            Position = RelativePosition + mParent.Position;
-                        }
                     }
+                    else
+                    {
+                        Position = RelativePosition + mParent.Position;
+                    }
+                }
 #if DEBUG
-                    if (float.IsNaN(Position.Z))
-                    {
-                        string error = "The PositionedObject of type " + this.GetType() + " has a " +
-                            "NaN on its Z property.  Its name is \"" + this.Name + "\".  ";
+                if (float.IsNaN(Position.Z))
+                {
+                    string error = "The PositionedObject of type " + this.GetType() + " has a " +
+                        "NaN on its Z property.  Its name is \"" + this.Name + "\".  ";
 
-                        if (this.Parent != null)
-                        {
-                            error += "Its parent is of type " + this.Parent.GetType() + " and its name is \"" + this.Parent.Name + "\".";
-                        }
-                        else
-                        {
-                            error += "This object does not have a parent";
-                        }
-                        throw new Exception(error);
+                    if (this.Parent != null)
+                    {
+                        error += "Its parent is of type " + this.Parent.GetType() + " and its name is \"" + this.Parent.Name + "\".";
                     }
+                    else
+                    {
+                        error += "This object does not have a parent";
+                    }
+                    throw new Exception(error);
+                }
 #endif
 
-                    #endregion
+                #endregion
             }
         }
 
@@ -1809,62 +1820,62 @@ namespace FlatRedBall
 
                 #region Apply dependency update
 
-                    if (mParentRotationChangesRotation)
+                if (mParentRotationChangesRotation)
+                {
+                    // Set the property RotationMatrix rather than the field mRotationMatrix
+                    // so the individual rotation values get updated.
+                    RotationMatrix = mRelativeRotationMatrix * mParent.mRotationMatrix;
+                }
+                else
+                {
+                    RotationMatrix = mRelativeRotationMatrix;
+                }
+
+                if (!IgnoreParentPosition)
+                {
+                    if (mParentRotationChangesPosition)
                     {
-                        // Set the property RotationMatrix rather than the field mRotationMatrix
-                        // so the individual rotation values get updated.
-                        RotationMatrix = mRelativeRotationMatrix * mParent.mRotationMatrix;
+
+                        Position.X = mParent.Position.X +
+                            mParent.mRotationMatrix.M11 * RelativePosition.X +
+                            mParent.mRotationMatrix.M21 * RelativePosition.Y +
+                            mParent.mRotationMatrix.M31 * RelativePosition.Z;
+
+                        Position.Y = mParent.Position.Y +
+                            mParent.mRotationMatrix.M12 * RelativePosition.X +
+                            mParent.mRotationMatrix.M22 * RelativePosition.Y +
+                            mParent.mRotationMatrix.M32 * RelativePosition.Z;
+
+                        Position.Z = mParent.Position.Z +
+                            mParent.mRotationMatrix.M13 * RelativePosition.X +
+                            mParent.mRotationMatrix.M23 * RelativePosition.Y +
+                            mParent.mRotationMatrix.M33 * RelativePosition.Z;
+
                     }
                     else
                     {
-                        RotationMatrix = mRelativeRotationMatrix;
+                        Position = RelativePosition + mParent.Position;
                     }
-
-                    if (!IgnoreParentPosition)
-                    {
-                        if (mParentRotationChangesPosition)
-                        {
-
-                            Position.X = mParent.Position.X +
-                                mParent.mRotationMatrix.M11 * RelativePosition.X +
-                                mParent.mRotationMatrix.M21 * RelativePosition.Y +
-                                mParent.mRotationMatrix.M31 * RelativePosition.Z;
-
-                            Position.Y = mParent.Position.Y +
-                                mParent.mRotationMatrix.M12 * RelativePosition.X +
-                                mParent.mRotationMatrix.M22 * RelativePosition.Y +
-                                mParent.mRotationMatrix.M32 * RelativePosition.Z;
-
-                            Position.Z = mParent.Position.Z +
-                                mParent.mRotationMatrix.M13 * RelativePosition.X +
-                                mParent.mRotationMatrix.M23 * RelativePosition.Y +
-                                mParent.mRotationMatrix.M33 * RelativePosition.Z;
-
-                        }
-                        else
-                        {
-                            Position = RelativePosition + mParent.Position;
-                        }
-                    }
+                }
 #if DEBUG
-                    if (float.IsNaN(Position.Z))
-                    {
-                        string error = "The PositionedObject of type " + this.GetType() + " has a " +
-                            "NaN on its Z property.  Its name is \"" + this.Name + "\".  ";
+                if (float.IsNaN(Position.Z))
+                {
+                    string error = "The PositionedObject of type " + this.GetType() + " has a " +
+                        "NaN on its Z property.  Its name is \"" + this.Name + "\".  ";
 
-                        if (this.Parent != null)
-                        {
-                            error += "Its parent is of type " + this.Parent.GetType() + " and its name is \"" + this.Parent.Name + "\".";
-                        }
-                        else
-                        {
-                            error += "This object does not have a parent";
-                        }
-                        throw new Exception(error);
+                    if (this.Parent != null)
+                    {
+                        error += "Its parent is of type " + this.Parent.GetType() + " and its name is \"" + this.Parent.Name + "\".";
                     }
+                    else
+                    {
+                        error += "This object does not have a parent";
+                    }
+                    throw new Exception(error);
+                }
 #endif
 
-                    #endregion
+                #endregion
 
             }
 
@@ -2128,7 +2139,7 @@ namespace FlatRedBall
 
 
 #if DEBUG
-            if(float.IsNaN(Velocity.X))
+            if (float.IsNaN(Velocity.X))
             {
                 throw new Exception("Bad VelocityX value");
             }
@@ -2211,7 +2222,7 @@ namespace FlatRedBall
             {
                 System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
-                if(string.IsNullOrEmpty(mName))
+                if (string.IsNullOrEmpty(mName))
                 {
                     sb.Append("Type: ").Append(GetType().Name);
                 }
@@ -2258,7 +2269,7 @@ namespace FlatRedBall
                 if (mParentRotationChangesRotation)
                 {
 #if DEBUG
-                    if(mParent == null)
+                    if (mParent == null)
                     {
                         string message = "This object's Parent property is null, but was not null before calling UpdateDependencies on " +
                             "its parent. Setting an object's Parent to null in UpdateDepdencies can cause unexpected behavior so it is not " +
@@ -2319,7 +2330,7 @@ namespace FlatRedBall
                 }
 #endif
 
-                    #endregion
+                #endregion
 
             }
         }
