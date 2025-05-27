@@ -246,12 +246,13 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static bool GetCanUseContentPipeline(this ReferencedFileSave instance)
         {
+            var assetTypeInfo = instance.GetAssetTypeInfo();
             return
                 // CSVs can use content pipeline
                 // Update 1/29/2020 - no it can't:
                 //instance.IsCsvOrTreatedAsCsv ||
 
-                (!string.IsNullOrEmpty(instance.GetAssetTypeInfo()?.ContentProcessor));
+                (!string.IsNullOrEmpty(assetTypeInfo?.ContentProcessor));
         }
 
         public static string ReferencedFileSaveToString(ReferencedFileSave instance)
