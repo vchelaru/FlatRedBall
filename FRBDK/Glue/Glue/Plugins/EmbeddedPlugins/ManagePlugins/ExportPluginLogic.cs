@@ -1,7 +1,6 @@
 ﻿using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.IO;
-using Ionic.Zip;
 using System;
 using System.Collections.Generic;
 using System.IO;

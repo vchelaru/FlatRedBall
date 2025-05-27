@@ -11,7 +11,6 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.IO;
-using Ionic.Zip;
 using Microsoft.CSharp;
 using System.CodeDom.Compiler;
 using System.Reflection;
@@ -46,6 +45,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using WpfDataUi.DataTypes;
 using EditorObjects.IoC;
 using Glue;
+using System.IO.Compression;
 //using Gum.Wireframe;
 //using Gum.Converters;
 
@@ -409,9 +409,14 @@ namespace FlatRedBall.Glue.Plugins
             if (succeeded)
             {
                 //Do install
-                using (var zip = new ZipFile(localPlugFile))
+                using (ZipArchive archive = ZipFile.OpenRead(localPlugFile))
                 {
-                    var rootDirectory = GetRootDirectory(zip.EntryFileNames);
+                    var entryFileNames = archive.Entries
+                        .Where(e => !string.IsNullOrEmpty(e.Name)) // exclude directory entries
+                        .Select(e => e.FullName.Replace('\\', '/')) // normalize to forward slashes
+                        .ToList();
+
+                    var rootDirectory = GetRootDirectory(entryFileNames);
 
                     //Only allow one folder in zip
                     if (String.IsNullOrEmpty(rootDirectory))
@@ -450,7 +455,23 @@ namespace FlatRedBall.Glue.Plugins
                         if (succeeded)
                         {
                             //Extract into install path
-                            zip.ExtractAll(installPath.FullPath);
+                            foreach (var entry in archive.Entries)
+                            {
+                                string destinationPath = Path.Combine(installPath.FullPath, entry.FullName);
+
+                                // Ensure the directory exists
+                                string directoryPath = Path.GetDirectoryName(destinationPath);
+                                if (!string.IsNullOrEmpty(directoryPath))
+                                {
+                                    Directory.CreateDirectory(directoryPath);
+                                }
+
+                                // Skip directory entries
+                                if (!string.IsNullOrEmpty(entry.Name))
+                                {
+                                    entry.ExtractToFile(destinationPath, overwrite: true);
+                                }
+                            }
 
                             Plugins.PluginManager.ReceiveOutput("Installed to " + installPath);
 

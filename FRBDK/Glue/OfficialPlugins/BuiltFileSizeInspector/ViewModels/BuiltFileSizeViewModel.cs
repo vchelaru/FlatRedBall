@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.IO;
-using Ionic.Zip;
 
 namespace OfficialPlugins.BuiltFileSizeInspector.ViewModels
 {
@@ -28,16 +28,18 @@ namespace OfficialPlugins.BuiltFileSizeInspector.ViewModels
 
             ObservableCollection<CategoryViewModel> tempList = new ObservableCollection<CategoryViewModel>();
 
-            using (ZipFile zip = ZipFile.Read(fileName))
+            using (ZipArchive archive = ZipFile.OpenRead(fileName))
             {
-                foreach(var entry in zip.OrderByDescending(item=>item.CompressedSize))
+                foreach (var entry in archive.Entries.OrderByDescending(item => item.CompressedLength))
                 {
-                    string category = GetCategoryForFile(entry.FileName);
+                    string category = GetCategoryForFile(entry.FullName);
                     var categoryVm = GetOrCreateCategoryFor(category, tempList);
 
-                    FileViewModel fileVm = new FileViewModel();
-                    fileVm.Name = entry.FileName;
-                    fileVm.SizeInBytes = entry.CompressedSize;
+                    FileViewModel fileVm = new FileViewModel
+                    {
+                        Name = entry.FullName,
+                        SizeInBytes = entry.CompressedLength
+                    };
 
                     categoryVm.Files.Add(fileVm);
                 }

@@ -1,7 +1,7 @@
-﻿using Ionic.Zip;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,13 +62,27 @@ namespace Npc.Managers
             try
             {
 
-                using (ZipFile zip1 = ZipFile.Read(zipToUnpack))
+                using (ZipArchive archive = ZipFile.OpenRead(zipToUnpack))
                 {
-                    // here, we extract every entry, but we could extract conditionally
-                    // based on entry name, size, date, checkbox status, etc.  
-                    foreach (ZipEntry zipEntry in zip1)
+                    foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-                        zipEntry.Extract(unpackDirectory, ExtractExistingFileAction.OverwriteSilently);
+                        string destinationPath = Path.GetFullPath(Path.Combine(unpackDirectory, entry.FullName));
+
+                        // Security check to prevent extracting files outside of the target directory
+                        if (!destinationPath.StartsWith(Path.GetFullPath(unpackDirectory), StringComparison.Ordinal))
+                        {
+                            throw new IOException("Entry is outside the target extraction directory.");
+                        }
+
+                        if (string.IsNullOrEmpty(entry.Name)) // It's a directory
+                        {
+                            Directory.CreateDirectory(destinationPath);
+                        }
+                        else
+                        {
+                            Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+                            entry.ExtractToFile(destinationPath, overwrite: true);
+                        }
                     }
                 }
             }
