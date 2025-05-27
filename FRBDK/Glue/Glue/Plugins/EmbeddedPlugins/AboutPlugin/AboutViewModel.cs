@@ -1,7 +1,6 @@
 ﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using Ionic.BZip2;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

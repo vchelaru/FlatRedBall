@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Forms;
 using FlatRedBall.IO;
-using Ionic.Zip;
 
 namespace FlatRedBall.Glue.Controls
 {

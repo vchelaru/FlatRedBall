@@ -4,7 +4,6 @@ using System.Linq;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using EditorObjects.Parsing;
-using Ionic.Zip;
 using System.Diagnostics;
 using System.Windows.Forms;
 using FlatRedBall.Utilities;
@@ -14,6 +13,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using L = Localization;
+using System.IO.Compression;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -88,17 +88,45 @@ namespace FlatRedBall.Glue.IO
                 if (result != DialogResult.Cancel)
                 {
                     FilePath whereToSaveFile = fileDialog.FileName;
-                    using (ZipFile zip = new ZipFile())
+                    //using (ZipFile zip = new ZipFile())
+                    //{
+                    //    foreach (string file in filesToEmbed)
+                    //    {
+                    //        string directoryInZip = FileManager.GetDirectory( FileManager.MakeRelative(file, directoryToExportTo), RelativeType.Relative);
+                    //        zip.AddFile(file, directoryInZip);
+                    //    }
+
+                    //    zip.Save(whereToSaveFile.FullPath);
+                    //}
+
+
+                    // Open a FileStream to write the zip archive to
+                    using (FileStream zipToOpen = new FileStream(whereToSaveFile.FullPath, FileMode.Create))
                     {
-                        foreach (string file in filesToEmbed)
+                        // Create a new zip archive to write into
+                        using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
                         {
-                            string directoryInZip = FileManager.GetDirectory( FileManager.MakeRelative(file, directoryToExportTo), RelativeType.Relative);
-                            zip.AddFile(file, directoryInZip);
+                            foreach (string file in filesToEmbed)
+                            {
+                                // Get the path inside the zip (relative directory)
+                                string directoryInZip = FileManager.GetDirectory(
+                                    FileManager.MakeRelative(file, directoryToExportTo),
+                                    RelativeType.Relative);
+
+                                // Combine directory and file name to get the zip entry path
+                                string entryName = Path.Combine(directoryInZip, Path.GetFileName(file)).Replace('\\', '/');
+
+                                // Create the zip entry
+                                ZipArchiveEntry entry = archive.CreateEntry(entryName);
+
+                                // Open streams to copy the file into the zip entry
+                                using (Stream entryStream = entry.Open())
+                                using (FileStream fileToZip = new FileStream(file, FileMode.Open, FileAccess.Read))
+                                {
+                                    fileToZip.CopyTo(entryStream);
+                                }
+                            }
                         }
-
-                        zip.Save(whereToSaveFile.FullPath);
-
-
                     }
 
 
@@ -265,47 +293,105 @@ namespace FlatRedBall.Glue.IO
             // twice.
             StringFunctions.RemoveDuplicates(allFiles);
 
-            using var zip = new ZipFile();
-            
-            foreach (var codeFile in codeFiles)
+            //using var zip = new ZipFile();
+
+            //foreach (var codeFile in codeFiles)
+            //{
+            //    zip.AddFile(codeFile.FullPath, "");
+            //}
+            //zip.AddFile(absoluteXml, "");
+
+            //foreach (string fileToAdd in allFiles)
+            //{
+            //    string relativeDirectory = null;
+
+            //    relativeDirectory = FileManager.MakeRelative(FileManager.GetDirectory(fileToAdd), contentDirectory);
+
+            //    if (relativeDirectory.EndsWith("/"))
+            //    {
+            //        relativeDirectory = relativeDirectory.Substring(0, relativeDirectory.Length - 1);
+            //    }
+
+            //    var isExternal = relativeDirectory.StartsWith("../");
+
+            //    if (isExternal)
+            //    {
+            //        string externalDirectory = "__external/";
+
+            //        string directoryToAddTo = externalDirectory +
+            //                                  FileManager.MakeRelative(fileToAdd, GlueState.Self.CurrentMainContentProject.Directory);
+
+            //        directoryToAddTo = FileManager.GetDirectory(directoryToAddTo, RelativeType.Relative);
+
+            //        zip.AddFile(fileToAdd, directoryToAddTo);
+
+            //    }
+            //    else
+            //    {
+            //        zip.AddFile(fileToAdd, relativeDirectory);
+
+            //    }
+            //}
+
+            //zip.Save(absoluteZip);
+
+            using (FileStream zipToOpen = new FileStream(absoluteZip, FileMode.Create))
+            using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
             {
-                zip.AddFile(codeFile.FullPath, "");
+                // Add code files with no directory path in the zip
+                foreach (var codeFile in codeFiles)
+                {
+                    string entryName = Path.GetFileName(codeFile.FullPath); // just the file name
+                    ZipArchiveEntry entry = archive.CreateEntry(entryName);
+                    using var entryStream = entry.Open();
+                    using var fileStream = new FileStream(codeFile.FullPath, FileMode.Open, FileAccess.Read);
+                    fileStream.CopyTo(entryStream);
+                }
+
+                // Add the XML file with no directory path in the zip
+                {
+                    string entryName = Path.GetFileName(absoluteXml);
+                    ZipArchiveEntry entry = archive.CreateEntry(entryName);
+                    using var entryStream = entry.Open();
+                    using var fileStream = new FileStream(absoluteXml, FileMode.Open, FileAccess.Read);
+                    fileStream.CopyTo(entryStream);
+                }
+
+                // Add all other files with relative or external paths
+                foreach (string fileToAdd in allFiles)
+                {
+                    string relativeDirectory = FileManager.MakeRelative(FileManager.GetDirectory(fileToAdd), contentDirectory);
+
+                    // Remove trailing slash if present
+                    if (relativeDirectory.EndsWith("/"))
+                    {
+                        relativeDirectory = relativeDirectory.Substring(0, relativeDirectory.Length - 1);
+                    }
+
+                    bool isExternal = relativeDirectory.StartsWith("../");
+
+                    string entryName;
+
+                    if (isExternal)
+                    {
+                        string externalDirectory = "__external/";
+                        string directoryToAddTo = externalDirectory +
+                            FileManager.MakeRelative(fileToAdd, GlueState.Self.CurrentMainContentProject.Directory);
+
+                        directoryToAddTo = FileManager.GetDirectory(directoryToAddTo, RelativeType.Relative);
+                        entryName = Path.Combine(directoryToAddTo, Path.GetFileName(fileToAdd)).Replace('\\', '/');
+                    }
+                    else
+                    {
+                        entryName = Path.Combine(relativeDirectory, Path.GetFileName(fileToAdd)).Replace('\\', '/');
+                    }
+
+                    ZipArchiveEntry entry = archive.CreateEntry(entryName);
+                    using var entryStream = entry.Open();
+                    using var fileStream = new FileStream(fileToAdd, FileMode.Open, FileAccess.Read);
+                    fileStream.CopyTo(entryStream);
+                }
             }
-            zip.AddFile(absoluteXml, "");
-
-            foreach (string fileToAdd in allFiles)
-            {
-                string relativeDirectory = null;
-
-                relativeDirectory = FileManager.MakeRelative(FileManager.GetDirectory(fileToAdd), contentDirectory);
-
-                if (relativeDirectory.EndsWith("/"))
-                {
-                    relativeDirectory = relativeDirectory.Substring(0, relativeDirectory.Length - 1);
-                }
-
-                var isExternal = relativeDirectory.StartsWith("../");
-
-                if (isExternal)
-                {
-                    string externalDirectory = "__external/";
-
-                    string directoryToAddTo = externalDirectory +
-                                              FileManager.MakeRelative(fileToAdd, GlueState.Self.CurrentMainContentProject.Directory);
-
-                    directoryToAddTo = FileManager.GetDirectory(directoryToAddTo, RelativeType.Relative);
-
-                    zip.AddFile(fileToAdd, directoryToAddTo);
-
-                }
-                else
-                {
-                    zip.AddFile(fileToAdd, relativeDirectory);
-
-                }
-            }
-
-            zip.Save(absoluteZip);
 
             System.IO.File.Delete(absoluteXml);
 

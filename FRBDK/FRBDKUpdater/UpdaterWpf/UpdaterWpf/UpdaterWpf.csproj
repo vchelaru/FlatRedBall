@@ -10,10 +10,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DotNetZip" Version="1.16.0" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
 		<ProjectReference Include="..\..\..\Localization\Localization.csproj" />
 	</ItemGroup>

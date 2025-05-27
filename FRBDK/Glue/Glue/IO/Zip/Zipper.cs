@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.SaveClasses;
 using EditorObjects.Parsing;
-using Ionic.Zip;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System.IO.Compression;
+using System.IO;
 
 namespace FlatRedBall.Glue.IO.Zip
 {
@@ -54,20 +55,31 @@ namespace FlatRedBall.Glue.IO.Zip
 
                 outputFile = FileManager.RemoveExtension(absoluteFile) + "." + newExtension;
 
-                using (ZipFile zip = new ZipFile())
+                using (FileStream zipToCreate = new FileStream(outputFile, FileMode.Create))
+                using (ZipArchive archive = new ZipArchive(zipToCreate, ZipArchiveMode.Create))
                 {
                     foreach (var fileToAdd in allFiles)
                     {
-                        string directory = FileManager.MakeRelative(fileToAdd.GetDirectoryContainingThis().FullPath, directoryOfMainFile);
+                        // Compute the relative directory path inside the zip
+                        string directory = FileManager.MakeRelative(
+                            fileToAdd.GetDirectoryContainingThis().FullPath,
+                            directoryOfMainFile);
+
+                        // Remove trailing slash if present
                         if (directory.EndsWith("/"))
                         {
                             directory = directory.Substring(0, directory.Length - 1);
                         }
 
-                        zip.AddFile(fileToAdd.FullPath, directory);
-                    }
+                        // Build the full entry name (path inside the zip)
+                        string entryName = Path.Combine(directory, Path.GetFileName(fileToAdd.FullPath)).Replace('\\', '/');
 
-                    zip.Save(outputFile);
+                        // Create the entry and copy the file into it
+                        ZipArchiveEntry entry = archive.CreateEntry(entryName);
+                        using var entryStream = entry.Open();
+                        using var fileStream = new FileStream(fileToAdd.FullPath, FileMode.Open, FileAccess.Read);
+                        fileStream.CopyTo(entryStream);
+                    }
                 }
             }
             return outputFile;
@@ -80,13 +92,24 @@ namespace FlatRedBall.Glue.IO.Zip
 
             if (extension.Length == 4 && extension[3] == 'z')
             {
-                using (ZipFile zip1 = ZipFile.Read(fileName))
+                using (ZipArchive archive = ZipFile.OpenRead(fileName))
                 {
-                    // here, we extract every entry, but we could extract conditionally
-                    // based on entry name, size, date, checkbox status, etc.  
-                    foreach (ZipEntry zipEntry in zip1)
+                    foreach (ZipArchiveEntry zipEntry in archive.Entries)
                     {
-                        zipEntry.Extract(unpackDirectory, ExtractExistingFileAction.OverwriteSilently);
+                        string destinationPath = Path.Combine(unpackDirectory, zipEntry.FullName);
+
+                        // Ensure the directory exists
+                        string destinationDir = Path.GetDirectoryName(destinationPath);
+                        if (!string.IsNullOrEmpty(destinationDir))
+                        {
+                            Directory.CreateDirectory(destinationDir);
+                        }
+
+                        // Only extract if it's a file (not a directory)
+                        if (!string.IsNullOrEmpty(zipEntry.Name))
+                        {
+                            zipEntry.ExtractToFile(destinationPath, overwrite: true);
+                        }
                     }
                 }
                 fileName = fileName.Substring(0, fileName.Length - 1) + 'x';
@@ -109,30 +132,43 @@ namespace FlatRedBall.Glue.IO.Zip
             string csFile = null;
             string elementFile = null;
 
-            using (ZipFile zip1 = ZipFile.Read(fileName))
+            using (ZipArchive archive = ZipFile.OpenRead(fileName))
             {
-                foreach (ZipEntry zipEntry in zip1)
+                foreach (ZipArchiveEntry zipEntry in archive.Entries)
                 {
-                    string extension = FileManager.GetExtension(zipEntry.FileName);
+                    // Get the extension using your custom FileManager (assuming it takes the full path or name)
+                    string extension = FileManager.GetExtension(zipEntry.FullName);
 
                     if (extension == "cs")
                     {
-                        codeFilesInZip.Add(zipEntry.FileName);
+                        codeFilesInZip.Add(zipEntry.FullName);
                     }
                     else if (extension == "entx" || extension == "scrx")
                     {
-                        elementFile = zipEntry.FileName;
+                        elementFile = zipEntry.FullName;
                     }
                     else
                     {
-                        filesToAddToContent.Add(zipEntry.FileName);
+                        filesToAddToContent.Add(zipEntry.FullName);
                     }
 
-                    zipEntry.Extract(unpackDirectory, ExtractExistingFileAction.OverwriteSilently);
+                    // Prepare the destination path
+                    string destinationPath = Path.Combine(unpackDirectory, zipEntry.FullName);
+
+                    // Ensure the destination directory exists
+                    string destinationDir = Path.GetDirectoryName(destinationPath);
+                    if (!string.IsNullOrEmpty(destinationDir))
+                    {
+                        Directory.CreateDirectory(destinationDir);
+                    }
+
+                    // Only extract actual files (skip folder entries)
+                    if (!string.IsNullOrEmpty(zipEntry.Name))
+                    {
+                        zipEntry.ExtractToFile(destinationPath, overwrite: true);
+                    }
                 }
             }
-
-
         }
     }
 }

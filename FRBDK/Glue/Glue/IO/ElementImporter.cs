@@ -12,11 +12,11 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using Ionic.Zip;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Managers;
 using System.Threading.Tasks;
 using L = Localization;
+using System.IO.Compression;
 
 namespace FlatRedBall.Glue.IO;
 
@@ -44,15 +44,25 @@ public class ElementImporter
 
             List<string> foundFiles = new List<string>();
 
-            using (ZipFile zip1 = ZipFile.Read(fileName))
+            using (ZipArchive archive = ZipFile.OpenRead(fileName))
             {
-                foreach (ZipEntry zipEntry in zip1)
+                foreach (ZipArchiveEntry zipEntry in archive.Entries)
                 {
-                    string directory = FileManager.GetDirectory(zipEntry.FileName, RelativeType.Relative);
+                    string destinationPath = Path.Combine(unpackDirectory, zipEntry.FullName);
 
-                    zipEntry.Extract(unpackDirectory, ExtractExistingFileAction.OverwriteSilently);
+                    // Ensure the directory exists
+                    string destinationDir = Path.GetDirectoryName(destinationPath);
+                    if (!string.IsNullOrEmpty(destinationDir))
+                    {
+                        Directory.CreateDirectory(destinationDir);
+                    }
 
-                    foundFiles.Add(unpackDirectory + zipEntry.FileName);
+                    // Extract the file (skip directory entries)
+                    if (!string.IsNullOrEmpty(zipEntry.Name)) // if it's a file
+                    {
+                        zipEntry.ExtractToFile(destinationPath, overwrite: true);
+                        foundFiles.Add(destinationPath);
+                    }
                 }
             }
 
