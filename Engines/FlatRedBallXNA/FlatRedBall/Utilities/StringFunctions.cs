@@ -323,7 +323,7 @@ namespace FlatRedBall.Utilities
         #endregion
         public static int GetIntAfter(string stringToSearchFor, string whereToSearch)
         {
-            return GetIntAfter(stringToSearchFor, whereToSearch, 0);
+            return GetIntAfter(stringToSearchFor, whereToSearch, 0, StringComparison.CurrentCulture);
         }
 
         #region XML Docs
@@ -340,13 +340,32 @@ namespace FlatRedBall.Utilities
         #endregion
         public static int GetIntAfter(string stringToSearchFor, string whereToSearch, int startIndex)
         {
+            return GetIntAfter(stringToSearchFor, whereToSearch, startIndex, StringComparison.CurrentCulture);
+        }
+
+        #region XML Docs
+        /// <summary>
+        /// Returns the first integer found after the argument stringToSearchFor.  The search begins
+        /// at the argument startIndex.
+        /// </summary>
+        /// <param name="stringToSearchFor">The string pattern to search for.</param>
+        /// <param name="whereToSearch">The string that will be searched.</param>
+        /// <param name="startIndex">The index to begin searching at.  This method
+        /// will ignore any instances of stringToSearchFor which begin at an index smaller
+        /// than the argument startIndex.</param>
+        /// <param name="stringComparison">String comparison mode to use. Some modes may affect
+        /// performance.</param>
+        /// <returns></returns>
+        #endregion
+        public static int GetIntAfter(string stringToSearchFor, string whereToSearch, int startIndex, StringComparison stringComparison)
+        {
             int startOfNumber = -1;
             int endOfNumber = -1;
             string substring = string.Empty;
 
             try
             {
-                int indexOf = whereToSearch.IndexOf(stringToSearchFor, startIndex);
+                int indexOf = whereToSearch.IndexOf(stringToSearchFor, startIndex, stringComparison);
 
                 if (indexOf != -1)
                 {
@@ -384,7 +403,7 @@ namespace FlatRedBall.Utilities
             return 0;
         }
 
-        public static int GetIntAfter(string stringToSearchFor, string whereToSearch, ref int startIndex)
+        public static int GetIntAfter(string stringToSearchFor, string whereToSearch, ref int startIndex, StringComparison stringComparison)
         {
             int startOfNumber = -1;
             int endOfNumber = -1;
@@ -397,7 +416,7 @@ namespace FlatRedBall.Utilities
 
             try
             {
-                int indexOf = whereToSearch.IndexOf(stringToSearchFor, startIndex);
+                int indexOf = whereToSearch.IndexOf(stringToSearchFor, startIndex, stringComparison);
 
                 if (indexOf != -1)
                 {
