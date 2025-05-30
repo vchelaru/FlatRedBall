@@ -103,12 +103,10 @@ namespace OfficialPlugins.AnimationChainPlugin
                     var directory = path.GetDirectoryContainingThis();
 
                     // might be faster to read the entire file:
-                    var contents = System.IO.File.ReadAllText(path.FullPath);
-
-                    var splitContents = contents.Split(new[] { '\n' }, StringSplitOptions.None);
+                    var contents = System.IO.File.ReadAllLines(path.FullPath);
 
                     var textureNameLength = "<TextureName>".Length;
-                    foreach(var line in splitContents)
+                    foreach(var line in contents)
                     {
                         if(line.Contains("<TextureName>"))
                         {
