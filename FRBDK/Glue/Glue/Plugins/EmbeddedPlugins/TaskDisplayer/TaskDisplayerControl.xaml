@@ -14,6 +14,7 @@
     <CheckBox IsChecked="{Binding LogGameToFrbCommands}" VerticalContentAlignment="Center">Log Game->FRB Commands</CheckBox>
     <Button Content="Copy Task List to Clipboard" Width="200" HorizontalAlignment="Left" Click="Button_Click" Margin="0,2" />
     <Button Content="Add temp tasks" Width="200" HorizontalAlignment="Left" Click="AddTempTasksClicked" Margin="0,0,0,2"/>
+    <Button Content="Refresh File Membership" Width="200" HorizontalAlignment="Left" Click="HandleRefreshFileMembership" />
 
 
     <Label Content="{Binding CurrentTaskText}"></Label>
