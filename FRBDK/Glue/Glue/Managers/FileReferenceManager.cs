@@ -76,10 +76,16 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
         if(fileReferences.ContainsKey(absoluteName))
         {
             // compare dates:
-            bool isOutOfDate = absoluteName.Exists() && 
-                //File.GetLastWriteTime(standardized) > fileReferences[standardized].LastWriteTime;
-                // Do a != in case the user reverts a file
-                File.GetLastWriteTime(absoluteName.FullPath) != fileReferences[absoluteName].LastWriteTime;
+            bool isOutOfDate = false;
+
+            if(ObjectsForcingTrustedCache.Count == 0)
+            {
+                isOutOfDate = absoluteName.Exists() && 
+                    //File.GetLastWriteTime(standardized) > fileReferences[standardized].LastWriteTime;
+                    // Do a != in case the user reverts a file
+                    File.GetLastWriteTime(absoluteName.FullPath) != fileReferences[absoluteName].LastWriteTime;
+            }
+
 
             if(!isOutOfDate)
             {
