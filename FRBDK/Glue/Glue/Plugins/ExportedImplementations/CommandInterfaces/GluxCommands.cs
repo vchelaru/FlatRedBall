@@ -445,6 +445,33 @@ public class GluxCommands : IGluxCommands
 
     #region ReferencedFileSave
 
+    Dictionary<FilePath, ReferencedFileSave> rfsReferenceCache = new ();
+    List<object> objectsAskingForCache = new List<object>();
+
+    public void RequestFileCache(object objectAskingForCache)
+    {
+        objectsAskingForCache.Add(objectAskingForCache);
+
+        if(objectsAskingForCache.Count == 1)
+        {
+            foreach(var rfs in ObjectFinder.Self.GetAllReferencedFiles())
+            {
+                var filePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                rfsReferenceCache[filePath] = rfs;
+            }
+        }
+    }
+
+    public void RemoveFileCache(object objectAskingForCache)
+    {
+        objectsAskingForCache.Remove(objectsAskingForCache);
+
+        if(objectsAskingForCache.Count == 0)
+        {
+            rfsReferenceCache.Clear();
+        }
+    }
+
     public async Task<ReferencedFileSave> CreateNewFileAndReferencedFileSaveAsync(AddNewFileViewModel viewModel, GlueElement element, object creationOptions = null)
     {
         ReferencedFileSave rfs = null;
@@ -1293,10 +1320,10 @@ public class GluxCommands : IGluxCommands
         return GetReferencedFileSaveFromFile(filePath);
     }
 
+    char[] invalidPathChars = Path.GetInvalidPathChars();
     public ReferencedFileSave GetReferencedFileSaveFromFile(FilePath filePath)
     {
         ////////////////Early Out//////////////////////////////////
-        var invalidPathChars = Path.GetInvalidPathChars();
         if (invalidPathChars.Any(item => filePath.FullPath.Contains(item)))
         {
             // This isn't a RFS, because it's got a bad path. Early out here so that FileManager.IsRelative doesn't throw an exception
@@ -1305,29 +1332,24 @@ public class GluxCommands : IGluxCommands
 
         //////////////End Early Out////////////////////////////////
 
-
-        var project = ObjectFinder.Self.GlueProject;
-        if (project != null)
+        if (rfsReferenceCache.Count != 0)
         {
-            // dont' foreach here. Technically this should be called on tasks, but if it's not, let's make this safe:
-
-            foreach (ScreenSave screenSave in project.Screens.ToArray())
+            if (rfsReferenceCache.TryGetValue(filePath.FullPath, out ReferencedFileSave cachedRfs))
             {
-                foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
-                {
-                    var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
-                    if (absoluteRfs == filePath)
-                    {
-                        return rfs;
-                    }
-                }
+                return cachedRfs;
             }
+        }
 
-            lock (project.Entities)
+        else
+        {
+            var project = ObjectFinder.Self.GlueProject;
+            if (project != null)
             {
-                foreach (EntitySave entitySave in project.Entities.ToArray())
+                // dont' foreach here. Technically this should be called on tasks, but if it's not, let's make this safe:
+
+                foreach (ScreenSave screenSave in project.Screens.ToArray())
                 {
-                    foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
+                    foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
                     {
                         var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
                         if (absoluteRfs == filePath)
@@ -1336,17 +1358,33 @@ public class GluxCommands : IGluxCommands
                         }
                     }
                 }
-            }
 
-            foreach (ReferencedFileSave rfs in project.GlobalFiles.ToArray())
-            {
-                var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
-                if (absoluteRfs == filePath)
+                lock (project.Entities)
                 {
-                    return rfs;
+                    foreach (EntitySave entitySave in project.Entities.ToArray())
+                    {
+                        foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
+                        {
+                            var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                            if (absoluteRfs == filePath)
+                            {
+                                return rfs;
+                            }
+                        }
+                    }
+                }
+
+                foreach (ReferencedFileSave rfs in project.GlobalFiles.ToArray())
+                {
+                    var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                    if (absoluteRfs == filePath)
+                    {
+                        return rfs;
+                    }
                 }
             }
         }
+
 
         return null;
     }

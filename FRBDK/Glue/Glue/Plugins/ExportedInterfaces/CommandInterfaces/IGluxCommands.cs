@@ -76,7 +76,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #region ReferencedFileSave
 
         Task<ReferencedFileSave> CreateNewFileAndReferencedFileSaveAsync(AddNewFileViewModel viewModel, GlueElement element, object creationOptions = null);
-
+        void RequestFileCache(object objectAskingForCache);
+        void RemoveFileCache(object objectAskingForCache);
 
         /// <summary>
         /// Adds a new file to the Glue project in global content. This method updates the in-memory GlueProjectSave,

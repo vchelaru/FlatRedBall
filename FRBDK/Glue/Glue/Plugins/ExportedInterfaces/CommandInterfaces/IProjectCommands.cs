@@ -73,6 +73,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void RemoveFromProjectsTask(FilePath absoluteFileName, bool saveAfterRemoving = true);
         void AddAssemblyBinding(string name, string publicKeyToken, string oldVersion, string newVersion);
 
+        void CallUpdateFileMembershipsOnAllFiles();
+
         /// <summary>
         /// Verifies that the passed ReferencedFileSave is part of the project, and if not, adds it.
         /// This recurisvely adds all files referenced by the argument.

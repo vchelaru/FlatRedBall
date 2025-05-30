@@ -2049,7 +2049,7 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        internal static bool? GetIfUsesContentPipeline(string fileAbsolute)
+        internal static bool? GetIfUsesContentPipeline(FilePath fileAbsolute)
         {
             bool? toReturn = null;
 

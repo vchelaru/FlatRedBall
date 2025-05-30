@@ -1,4 +1,6 @@
 ﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using FlatRedBall.Glue.Services;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,7 +41,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
             }
         }
 
-        
-
+        private void HandleRefreshFileMembership(object sender, RoutedEventArgs e)
+        {
+            Builder.Get<IProjectCommands>().CallUpdateFileMembershipsOnAllFiles();
+        }
     }
 }

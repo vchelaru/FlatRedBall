@@ -26,6 +26,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
 class ProjectCommands : IProjectCommands
 {
+    private FileReferenceManager _fileReferenceManager;
+
+    public void Initialize(FileReferenceManager fileReferenceManager)
+    {
+        _fileReferenceManager = fileReferenceManager;
+    }
+
     /// <summary>
     /// Saves the main project and synced projects immediately if run from an existing task. Adds a task if not.
     /// </summary>
@@ -135,6 +142,48 @@ class ProjectCommands : IProjectCommands
         }
     }
 
+    public void CallUpdateFileMembershipsOnAllFiles()
+    {
+        var allReferencedFileSaves = ObjectFinder.Self.GetAllReferencedFiles();
+        Managers.TaskManager.Self.Add(() =>
+        {
+
+            _fileReferenceManager.ObjectsForcingTrustedCache.Add(this);
+            GlueCommands.Self.GluxCommands.RequestFileCache(this);
+
+            try
+            {
+                var wasAnythingModified = false;
+                foreach (var rfs in allReferencedFileSaves)
+                {
+                    if (UpdateFileMembershipInProject(rfs,
+                        // By not re-evaluating, we go faster. We can re-evaluate after everything is added
+                        reEvaluateAfterAdd: false))
+                    {
+                        wasAnythingModified = true;
+                    }
+                }
+
+                if (wasAnythingModified)
+                {
+                    GlueState.Self.CurrentMainProject.ReevaluateItems();
+                    foreach (var item in GlueState.Self.SyncedProjects)
+                    {
+                        (item as VisualStudioProject)?.ReevaluateItems();
+                    }
+                    SaveProjects();
+                }
+            }
+            finally
+            {
+                _fileReferenceManager.ObjectsForcingTrustedCache.Remove(this);
+                GlueCommands.Self.GluxCommands.RemoveFileCache(this);
+            }
+        },
+        $"Calling UpdateFileMembershipInProject on {allReferencedFileSaves.Count} file(s)",
+        TaskExecutionPreference.AddOrMoveToEnd);
+    }
+
     /// <summary>
     /// Updates the presence of the RFS in the main project. If the RFS has project specific files, then those
     /// files are updated in the appropriate synced project. If the file  
@@ -155,7 +204,6 @@ class ProjectCommands : IProjectCommands
 
         if (!shouldSkip)
         {
-
 
             bool useContentPipeline = referencedFileSave.UseContentPipeline || (assetTypeInfo != null && assetTypeInfo.MustBeAddedToContentPipeline);
             if (assetTypeInfo != null && useContentPipeline)
@@ -368,10 +416,10 @@ class ProjectCommands : IProjectCommands
         return wasProjectModified;
     }
 
-    private static bool GetIfShouldUseContentPipeline(string fileAbsolute, ReferencedFileSave rfs = null)
+    private static bool GetIfShouldUseContentPipeline(FilePath filePath, ReferencedFileSave rfs = null)
     {
         // grab the RFS and see if the rfs forces it
-        rfs = rfs ?? GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(fileAbsolute);
+        rfs = rfs ?? GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(filePath);
         bool useContentPipeline = false;
         if (rfs != null && rfs.UseContentPipeline)
         {
@@ -382,7 +430,7 @@ class ProjectCommands : IProjectCommands
         if (!useContentPipeline)
         {
             // let plugins decide:
-            var returnedValue = PluginManager.GetIfUsesContentPipeline(fileAbsolute);
+            var returnedValue = PluginManager.GetIfUsesContentPipeline(filePath);
             if (returnedValue != null)
             {
                 useContentPipeline = returnedValue.Value;

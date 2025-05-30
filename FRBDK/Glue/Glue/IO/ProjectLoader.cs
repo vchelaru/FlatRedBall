@@ -28,6 +28,7 @@ using GlueSaveClasses;
 using GlueFormsCore.Controls;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
 using Localization;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -37,6 +38,7 @@ namespace FlatRedBall.Glue.IO
 
         static ProjectLoader mSelf;
         private static string mLastLoadedFilename; //to prevent projects from loading/syncing twice
+        private IProjectCommands _projectCommands;
 
         #endregion
 
@@ -63,6 +65,11 @@ namespace FlatRedBall.Glue.IO
 
         #endregion
 
+        // Needed as we kill the singletons:
+        public void Initialize(IProjectCommands projectCommands)
+        {
+            _projectCommands = projectCommands;
+        }
         
         public async Task LoadProject(string projectFileName, InitializationWindowWpf initializationWindow = null)
         {
@@ -373,7 +380,7 @@ namespace FlatRedBall.Glue.IO
                 ProjectManager.GlueProjectSave.UpdateIfTranslationIsUsed();
 
                 Section.GetAndStartContextAndTime("Add items");
-                               
+
 
                 //AddEmptyTreeItems();
 
@@ -397,38 +404,11 @@ namespace FlatRedBall.Glue.IO
                 SetInitWindowText("Building out-of-date external files...", initializationWindow);
                 BuildAllOutOfDateFiles();
                 Section.EndContextAndTime();
-                
-                var allReferencedFileSaves = ObjectFinder.Self.GetAllReferencedFiles();
 
-                // This is going to do it in a task after the load finishes, so we will not pass the ChangedObjects
-                Managers.TaskManager.Self.Add(() =>
-                {
-                    var wasAnythingModified = false;
-                    foreach (var rfs in allReferencedFileSaves)
-                    {
-                        if(GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs,
-                            // By not re-evaluating, we go faster. We can re-evaluate after everything is added
-                            reEvaluateAfterAdd: false))
-                        {
-                            wasAnythingModified = true;
-                        }
-                    }
+                // This task is going to run after the load finishes, so we will not pass the ChangedObjects
+                _projectCommands.CallUpdateFileMembershipsOnAllFiles();
 
-                    if(wasAnythingModified)
-                    {
-                        GlueState.Self.CurrentMainProject.ReevaluateItems();
-                        foreach(var item in GlueState.Self.SyncedProjects)
-                        {
-                            (item as VisualStudioProject)?.ReevaluateItems();
-                        }
-                        GlueCommands.Self.ProjectCommands.SaveProjects();
-                    }
-                },
-                $"Calling UpdateFileMembershipInProject on {allReferencedFileSaves.Count} file(s)",
-                TaskExecutionPreference.AddOrMoveToEnd);
-                
-
-                foreach(var element in ObjectFinder.Self.GlueProject.Screens)
+                foreach (var element in ObjectFinder.Self.GlueProject.Screens)
                 {
                     element.UpdateCustomProperties();
                     CheckForMissingCustomFile(element);
@@ -497,11 +477,11 @@ namespace FlatRedBall.Glue.IO
                 ReferencedFileSaveCodeGenerator.GenerateCaseSensitive =
                     GlueState.Self.CurrentGlueProject.FileVersion >= (int)SaveClasses.GlueProjectSave.GluxVersions.CaseSensitiveLoading;
 
-                if(changedObjects.DidGlobalContentChange)
+                if (changedObjects.DidGlobalContentChange)
                 {
                     GlueCommands.Self.GluxCommands.SaveGlujFile();
                 }
-                foreach(var entity in changedObjects.ChangedEntitiySaves)
+                foreach (var entity in changedObjects.ChangedEntitiySaves)
                 {
                     GlueCommands.Self.GluxCommands.SaveElementAsync(entity);
                 }
@@ -515,6 +495,7 @@ namespace FlatRedBall.Glue.IO
 
             }
         }
+
 
         /// <summary>
         /// Sets any values that should not be left uninitialized.

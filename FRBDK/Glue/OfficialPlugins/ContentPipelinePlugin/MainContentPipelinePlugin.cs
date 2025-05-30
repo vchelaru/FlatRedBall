@@ -207,11 +207,11 @@ namespace OfficialPlugins.MonoGameContent
             viewModel.IsProjectLoaded = false;
         }
 
-        private bool HandleGetIfUsesContentPipeline(string absoluteFileName)
+        private bool HandleGetIfUsesContentPipeline(FilePath filePath)
         {
             if(controller?.Settings != null)
             {
-                var extension = FileManager.GetExtension(absoluteFileName);
+                var extension = filePath.Extension;
                 return extension == "png" && controller.Settings.UseContentPipelineOnAllPngs;
             }
 

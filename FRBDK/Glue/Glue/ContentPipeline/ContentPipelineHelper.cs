@@ -15,12 +15,19 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Microsoft.Build.Evaluation;
+using FlatRedBall.Glue.Services;
 
 namespace FlatRedBall.Glue.ContentPipeline
 {
     public class ContentPipelineHelper
     {
-       
+        private static FileReferenceManager _fileReferenceManager;
+
+        static ContentPipelineHelper()
+        {
+            _fileReferenceManager = Builder.Get<FileReferenceManager>();
+
+        }
         public static void ReactToUseContentPipelineChange(ReferencedFileSave rfs)
         {
             TaskManager.Self.Add(() =>
@@ -209,8 +216,8 @@ namespace FlatRedBall.Glue.ContentPipeline
                     }
                     #endregion
 
-                    var filesReferencedByAsset = 
-                        FileReferenceManager.Self.GetFilesReferencedBy(absoluteName, EditorObjects.Parsing.TopLevelOrRecursive.Recursive);
+                    var filesReferencedByAsset =
+                        _fileReferenceManager.GetFilesReferencedBy(absoluteName, EditorObjects.Parsing.TopLevelOrRecursive.Recursive);
 
                     for (int i = 0; i < filesReferencedByAsset.Count; i++)
                     {
@@ -299,7 +306,7 @@ namespace FlatRedBall.Glue.ContentPipeline
                     if (File.Exists(absoluteFileName))
                     {
                         var filesInPossibleReferencer =
-                            FileReferenceManager.Self.GetFilesReferencedBy(absoluteFileName, TopLevelOrRecursive.Recursive);
+                            _fileReferenceManager.GetFilesReferencedBy(absoluteFileName, TopLevelOrRecursive.Recursive);
 
                         foreach (var containedFile in filesInPossibleReferencer)
                         {

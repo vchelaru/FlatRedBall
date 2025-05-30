@@ -549,7 +549,7 @@ namespace FlatRedBall.Glue.Plugins
         public Action<CustomVariable> ReactToVariableRemoved { get; protected set; }
 
 
-        public Func<string, bool> GetIfUsesContentPipeline { get; protected set; }
+        public Func<FilePath, bool> GetIfUsesContentPipeline { get; protected set; }
 
         /// <summary>
         /// Delegate used to return additional types used by the plugin. Currently this is only used to populate dropdowns, so plugins only need to return enumerations, but eventually
