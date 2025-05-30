@@ -301,9 +301,9 @@ namespace FlatRedBall.Glue.ContentPipeline
                         filesInModifiedRfs.Remove(modifiedPossibleReferencerFile);
                     }
 
-                    string absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(possibleReferencer);
+                    var absoluteFileName = GlueCommands.Self.GetAbsoluteFilePath(possibleReferencer);
 
-                    if (File.Exists(absoluteFileName))
+                    if (absoluteFileName.Exists())
                     {
                         var filesInPossibleReferencer =
                             _fileReferenceManager.GetFilesReferencedBy(absoluteFileName, TopLevelOrRecursive.Recursive);

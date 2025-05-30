@@ -122,6 +122,9 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
                 {
                     var referenceInfo = new FileReferenceInformation
                     {
+                        // Although it might be faster to use DateTime.Now for the last write time, this would only work
+                        // if we were to do a > check. However, users can revert files in Git and that should mark the file
+                        // as out of date. To support that, we have to do strict equality and use the actual file
                         LastWriteTime = absoluteName.Exists() ? File.GetLastWriteTime(absoluteName.FullPath) : DateTime.MinValue,
                         References = topLevelOnly
                     };
@@ -137,10 +140,8 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
                 {
                     FilesWithFailedGetReferenceCalls[absoluteName] = response;
 
-                    // todo - need to raise an event here on parse error:
                     PluginManager.HandleFileReadError(absoluteName, response);
                 }
-
             }
         }
         

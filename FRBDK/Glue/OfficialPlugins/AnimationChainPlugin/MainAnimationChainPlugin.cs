@@ -101,21 +101,24 @@ namespace OfficialPlugins.AnimationChainPlugin
                 if (path.Exists())
                 {
                     var directory = path.GetDirectoryContainingThis();
-                    using (StreamReader reader = new StreamReader(path.FullPath))
+
+                    // might be faster to read the entire file:
+                    var contents = System.IO.File.ReadAllText(path.FullPath);
+
+                    var splitContents = contents.Split(new[] { '\n' }, StringSplitOptions.None);
+
+                    var textureNameLength = "<TextureName>".Length;
+                    foreach(var line in splitContents)
                     {
-                        string line;
-                        var textureNameLength = "<TextureName>".Length;
-                        while ((line = reader.ReadLine()) != null)
+                        if(line.Contains("<TextureName>"))
                         {
-                            if(line.Contains("<TextureName>"))
-                            {
-                                var startIndex = line.IndexOf("<TextureName>") + textureNameLength;
-                                var endIndex = line.IndexOf("</TextureName>");
-                                var textureName = line.Substring(startIndex, endIndex - startIndex);
-                                list.Add(directory + textureName);
-                            }
+                            var startIndex = line.IndexOf("<TextureName>") + textureNameLength;
+                            var endIndex = line.IndexOf("</TextureName>");
+                            var textureName = line.Substring(startIndex, endIndex - startIndex);
+                            list.Add(directory + textureName);
                         }
                     }
+
                     return ToolsUtilities.GeneralResponse.SuccessfulResponse;
                 }
                 else
