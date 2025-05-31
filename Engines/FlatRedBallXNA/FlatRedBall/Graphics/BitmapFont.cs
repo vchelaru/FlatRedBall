@@ -292,9 +292,9 @@ namespace FlatRedBall.Graphics
             else
             {
                 // index is -1, but let's try a regular IndexOf:
-                int forwardIndexOf = fontPattern.IndexOf("char id=");
+                int forwardIndexOf = fontPattern.IndexOf("char id=", StringComparison.Ordinal);
 
-                if(forwardIndexOf != -1 && index == -1)
+                if (forwardIndexOf != -1 && index == -1)
                 {
                     throw new Exception("How is this possible? LastIndexOf \"char id=\" is returning a value of -1, while IndexOf for the same string is returning an index value)");
 
