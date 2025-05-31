@@ -768,7 +768,7 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        internal static GeneralResponse GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<FilePath> listToFill)
+        internal static GeneralResponse GetFilesReferencedBy(FilePath filePath, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, HashSet<FilePath> listToFill)
         {
             GeneralResponse generalResponse =  GeneralResponse.SuccessfulResponse;
             SaveRelativeDirectory();
@@ -778,7 +778,7 @@ namespace FlatRedBall.Glue.Plugins
                 {
                     if(plugin.FillWithReferencedFiles != null)
                     {
-                        var response = plugin.FillWithReferencedFiles(absoluteName, listToFill);
+                        var response = plugin.FillWithReferencedFiles(filePath, listToFill);
 
                         if(!response.Succeeded)
                         {
@@ -788,12 +788,12 @@ namespace FlatRedBall.Glue.Plugins
                 },
                 nameof(GetFilesReferencedBy));
 
-            ResumeRelativeDirectory($"GetFilesReferencedBy for {absoluteName}");
+            ResumeRelativeDirectory($"GetFilesReferencedBy for {filePath}");
 
             return generalResponse;
         }
 
-        internal static void GetFilesNeededOnDiskBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<FilePath> listToFill)
+        internal static void GetFilesNeededOnDiskBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, HashSet<FilePath> listToFill)
         {
             SaveRelativeDirectory();
             CallMethodOnPluginNotUiThread(
@@ -805,7 +805,7 @@ namespace FlatRedBall.Glue.Plugins
                     }
                     else if (plugin.FillWithReferencedFiles != null)
                     {
-                        List<FilePath> innerList = new List<FilePath>();
+                        HashSet<FilePath> innerList = new ();
                         plugin.FillWithReferencedFiles(absoluteName, innerList);
                         listToFill.AddRange(innerList);
 

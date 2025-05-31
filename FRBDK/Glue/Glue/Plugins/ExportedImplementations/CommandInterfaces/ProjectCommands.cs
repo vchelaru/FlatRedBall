@@ -148,8 +148,23 @@ class ProjectCommands : IProjectCommands
         Managers.TaskManager.Self.Add(() =>
         {
 
+            // We can parallel for to update the cache using all threads. We'll do top-level. This won't
+            // catch everything, but will take care of many of the top level files including .achx files which
+            // might be causing slowdown in games like Deadvivors.
+            var filePaths = allReferencedFileSaves.Select(item => GlueCommands.Self.GetAbsoluteFilePath(item))
+                .ToHashSet()
+                .ToArray();
+
+
             _fileReferenceManager.ObjectsForcingTrustedCache.Add(this);
             GlueCommands.Self.GluxCommands.RequestFileCache(this);
+            var fileCommands = GlueCommands.Self.FileCommands;
+            var fileReferenceManager = FileReferenceManager.Self;
+
+            Parallel.ForEach(filePaths, filePath =>
+            {
+                fileReferenceManager.GetFilesReferencedBy(filePath, TopLevelOrRecursive.TopLevel);
+            });
 
             try
             {
@@ -264,7 +279,7 @@ class ProjectCommands : IProjectCommands
 
         bool isFileAlreadyPartOfProject = false;
 
-        bool needsToBeInContentProject = ShouldFileBeInContentProject(fileToAddAbsolute);
+        bool needsToBeInContentProject = ShouldFileBeInContentProject(fileName);
 
         BuildItemMembershipType bimt = BuildItemMembershipType.CopyIfNewer;
 
@@ -289,9 +304,7 @@ class ProjectCommands : IProjectCommands
             isFileAlreadyPartOfProject = project.IsFilePartOfProject(fileName.FullPath, BuildItemMembershipType.CompileOrContentPipeline);
         }
 
-        string fileRelativeToContent = FileManager.MakeRelative(
-            fileToAddAbsolute,
-            project.ContentProject.FullFileName.GetDirectoryContainingThis().FullPath);
+        string fileRelativeToContent = fileName.RelativeTo(project.ContentProject.FullFileName.GetDirectoryContainingThis());
         fileRelativeToContent = fileRelativeToContent.Replace("/", "\\");
 
         if (!isFileAlreadyPartOfProject && needsToBeInContentProject)
@@ -366,10 +379,10 @@ class ProjectCommands : IProjectCommands
         var listOfReferencedFiles = new List<string>();
 
         // Glue is going to assume .cs files can't reference content:
-        if (!fileToAddAbsolute.EndsWith(".cs"))
+        if (fileName.Extension != ".cs")
         {
             var inner = new List<FilePath>();
-            FileReferenceManager.Self.GetFilesReferencedBy(fileToAddAbsolute, TopLevelOrRecursive.TopLevel, inner);
+            FileReferenceManager.Self.GetFilesReferencedBy(fileName, TopLevelOrRecursive.TopLevel, inner);
             listOfReferencedFiles.AddRange(inner.Select(item => item.StandardizedCaseSensitive));
             if (alreadyReferencedFiles != null)
             {
@@ -440,7 +453,7 @@ class ProjectCommands : IProjectCommands
         return useContentPipeline;
     }
 
-    private static bool ShouldFileBeInContentProject(string fileToAddAbsolute)
+    private static bool ShouldFileBeInContentProject(FilePath filePath)
     {
         var mainContentProject = GlueState.Self.CurrentMainContentProject;
         var mainProject = GlueState.Self.CurrentMainProject;
@@ -451,10 +464,10 @@ class ProjectCommands : IProjectCommands
         {
             var contentFolder = mainContentProject.GetAbsoluteContentFolder();
 
-            toReturn = FileManager.IsRelativeTo(fileToAddAbsolute, contentFolder);
+            toReturn = filePath.IsRelativeTo(contentFolder);
 
             // If this is a .cs file and the content project is the same project as the main project, then it's actually a code file
-            if (toReturn && mainContentProject.FullFileName == mainProject.FullFileName && FileManager.GetExtension(fileToAddAbsolute) == "cs")
+            if (toReturn && mainContentProject.FullFileName == mainProject.FullFileName && filePath.Extension == "cs")
             {
                 toReturn = false;
             }

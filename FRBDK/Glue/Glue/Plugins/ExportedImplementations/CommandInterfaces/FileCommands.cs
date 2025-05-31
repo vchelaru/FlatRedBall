@@ -133,7 +133,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (File.Exists(filePath.FullPath))
                 {
-                    List<FilePath> referencedFiles = null;
+                    HashSet<FilePath> referencedFiles = null;
 
                     if (projectOrFile == ProjectOrDisk.Project)
                     {

@@ -179,7 +179,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
                     if (File.Exists(absoluteFileName))
                     {
-                        List<FilePath> referencedFiles = null;
+                        HashSet<FilePath> referencedFiles = null;
 
                         try
                         {

@@ -571,7 +571,7 @@ namespace GumPlugin.Managers
             }
         }
         
-        internal GeneralResponse HandleFillWithReferencedFiles(FilePath filePath, List<FilePath> listToFill)
+        internal GeneralResponse HandleFillWithReferencedFiles(FilePath filePath, HashSet<FilePath> listToFill)
         {
             ProjectOrDisk projectOrDisk = ProjectOrDisk.Project;
 

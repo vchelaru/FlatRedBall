@@ -133,7 +133,7 @@ namespace OfficialPlugins.MonoGameContent
             this.GetFilesNeededOnDiskBy += HandleGetFilesNeededOnDiskBy;
         }
 
-        private void HandleGetFilesNeededOnDiskBy(string fileName, List<FilePath> list)
+        private void HandleGetFilesNeededOnDiskBy(string fileName, HashSet<FilePath> list)
         {
             var filePath = new FilePath(fileName);
             var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(filePath);

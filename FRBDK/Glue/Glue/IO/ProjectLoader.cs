@@ -384,8 +384,6 @@ namespace FlatRedBall.Glue.IO
 
                 //AddEmptyTreeItems();
 
-                Section.EndContextAndTime();
-                Section.GetAndStartContextAndTime("RefreshSourceFileCache");
 
                 // This has to be done before the tree nodes are created.  The reason is because a user
                 // may create a ReferencedFileSave using a source type, but not check in the built file.

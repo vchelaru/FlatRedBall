@@ -1025,7 +1025,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             else
             {
-                List<FilePath> listOfReferencedFiles;
+                HashSet<FilePath> listOfReferencedFiles;
 
                 if (FileHelper.DoesFileReferenceContent(sourceFileName))
                 {
@@ -1033,7 +1033,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
                 else
                 {
-                    listOfReferencedFiles = new List<FilePath>();
+                    listOfReferencedFiles = new HashSet<FilePath>();
                 }
 
 
