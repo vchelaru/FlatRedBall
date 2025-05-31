@@ -397,11 +397,19 @@ namespace FlatRedBall.Graphics
                         int secondCharacter = StringFunctions.GetIntAfter("second=", fontPattern, index, StringComparison.Ordinal);
                         int kearningAmount = StringFunctions.GetIntAfter("amount=", fontPattern, index, StringComparison.Ordinal);
 
-                        if(mCharacterInfo[ID].SecondLetterKearning == null)
+                        var characterInfo = mCharacterInfo[ID];
+
+                        if (characterInfo.SecondLetterKearning == null)
                         {
-                            mCharacterInfo[ID].SecondLetterKearning = new Dictionary<int, int>();
+                            characterInfo.SecondLetterKearning = new Dictionary<int, int>();
                         }
-                        mCharacterInfo[ID].SecondLetterKearning.Add(secondCharacter, kearningAmount);
+
+                        // Some fonts may contain duplicated kerning pairs, avoid the
+                        // crash by checking if the key is has already been added.
+                        if (!characterInfo.SecondLetterKearning.ContainsKey(secondCharacter))
+                        {
+                            characterInfo.SecondLetterKearning.Add(secondCharacter, kearningAmount);
+                        }
 
                         index = fontPattern.IndexOf("first=", index + 1, StringComparison.Ordinal);
                     }
