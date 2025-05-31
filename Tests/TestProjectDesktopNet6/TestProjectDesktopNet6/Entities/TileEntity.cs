@@ -15,6 +15,8 @@ using FlatRedBall.Math.Splines;
 using BitmapFont = FlatRedBall.Graphics.BitmapFont;
 using Cursor = FlatRedBall.Gui.Cursor;
 using GuiManager = FlatRedBall.Gui.GuiManager;
+using System.Linq;
+
 
 #if FRB_XNA || SILVERLIGHT
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -28,12 +30,14 @@ namespace GlueTestProject.Entities
 {
 	public partial class TileEntity
 	{
+        public bool CanProgress { get; private set; }
+
         /// <summary>
         /// Initialization logic which is execute only one time for this Entity (unless the Entity is pooled).
         /// This method is called when the Entity is added to managers. Entities which are instantiated but not
         /// added to managers will not have this method called.
         /// </summary>
-		private void CustomInitialize()
+        private void CustomInitialize()
 		{
 
 
@@ -41,9 +45,19 @@ namespace GlueTestProject.Entities
 
 		private void CustomActivity()
 		{
+            var container = EntireFile.Animation.AnimationChainContainers.Values.First();
 
+            if (container.CurrentFrameIndex > 0)
+            {
+                CanProgress = true;
+            }
 
-		}
+            else if(TimeManager.CurrentScreenTime > 2)
+            {
+                throw new Exception("Animations in Tiled entities are not playing and they should");
+            }
+
+        }
 
 		private void CustomDestroy()
 		{

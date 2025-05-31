@@ -36,6 +36,7 @@ namespace FlatRedBall
     /// <seealso cref="FlatRedBall.Sprite.Remove"/>
     /// </remarks>
     /// <param name="sprite">The Sprite on which the logic should execute.</param>
+    [Obsolete("Do not use this, Sprite custom behaviors have been deprecated in favor of entity CustomActivity")]
     public delegate void SpriteCustomBehavior(Sprite sprite);
 
     /// <summary>
@@ -1324,9 +1325,10 @@ namespace FlatRedBall
         #region Events
 
         // Vic says - I tried removing this but it is used by particles so we'd need a new list for particles to be removed when out of screen.
-        [Obsolete("Do not use this!  This will go away.  Use the Entity pattern instead", error:true)]
+        [Obsolete("Do not use this!  This will go away.  Use FRB entities instead", error:true)]
         public SpriteCustomBehavior CustomBehavior;
 
+        [Obsolete("Do not use this!  This will go away.  Use FRB entities instead")]
         public event SpriteCustomBehavior Remove;
         #endregion
 

@@ -8,7 +8,9 @@ namespace FlatRedBall.TileGraphics
 {
     public partial class LayeredTileMapAnimation
     {
-        Dictionary<string, AnimationChainContainer> mAnimationChainContainers = new Dictionary<string, AnimationChainContainer>();
+        public IReadOnlyDictionary<string, AnimationChainContainer> AnimationChainContainers => _animationChainContainers;
+        Dictionary<string, AnimationChainContainer> _animationChainContainers 
+           = new ();
 
         public LayeredTileMapAnimation(Dictionary<string, AnimationChain> animationChainAssociations)
         {
@@ -16,14 +18,14 @@ namespace FlatRedBall.TileGraphics
             {
                 AnimationChainContainer container = new AnimationChainContainer(kvp.Value);
 
-                mAnimationChainContainers.Add(kvp.Key, container);
+                _animationChainContainers.Add(kvp.Key, container);
 
             }
         }
 
         public void Activity(LayeredTileMap layeredTileMap)
         {
-            foreach (var kvp in mAnimationChainContainers)
+            foreach (var kvp in AnimationChainContainers)
             {
                 AnimationChainContainer container = kvp.Value;
 

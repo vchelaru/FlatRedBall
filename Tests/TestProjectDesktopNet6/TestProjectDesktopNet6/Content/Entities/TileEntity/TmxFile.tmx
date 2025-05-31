@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="16" tileheight="16" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="1">
  <tileset firstgid="1" name="Book" tilewidth="16" tileheight="16" tilecount="6" columns="3">
   <image source="../../GlobalContent/Book.png" width="59" height="33"/>
+  <tile id="2">
+   <animation>
+    <frame tileid="0" duration="20"/>
+    <frame tileid="1" duration="20"/>
+    <frame tileid="2" duration="20"/>
+    <frame tileid="3" duration="20"/>
+    <frame tileid="4" duration="20"/>
+    <frame tileid="5" duration="20"/>
+   </animation>
+  </tile>
  </tileset>
- <layer name="Tile Layer 1" width="32" height="32">
+ <layer id="1" name="Tile Layer 1" width="32" height="32">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3RQQrAIAxE0aRq739kW4gwuMguWf0HQ0s3X6ybmcdm7H9/5Dm+vVZDuys6nf2s290fV7Ozr63T1m9VPJmep8pMdv5L1d0DAAAAQKcNvNLNLgAQAAA=
+   H4sIAAAAAAAACu3RQQrAIAxE0aRq739kW4gwuMguWf0HQ0s3X6ybmcdm7H9/5Dm+vVZDuys6nf2s290fV7Ozr63T1m9VPJmep8pMdv5L1d0DAAAAQKcNvNLNLgAQAAA=
+  </data>
+ </layer>
+ <layer id="2" name="AnimatedLayer" width="32" height="32">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu3NsQkAAAgEsQf339kVtFQSuPoSAJipRR//AACXNc3kco4AEAAA
   </data>
  </layer>
 </map>

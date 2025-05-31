@@ -14,6 +14,7 @@ namespace FlatRedBall.TileGraphics
     /// </summary>
     public class AnimationChainContainer
     {
+
         double mTimeIntoAnimation = 0;
 
         public float AnimationSpeed
@@ -22,10 +23,15 @@ namespace FlatRedBall.TileGraphics
             set;
         }
 
+        int _currentFrameIndex;
         public int CurrentFrameIndex
         {
-            get;
-            set;
+            get => _currentFrameIndex;
+            set
+            {
+                _currentFrameIndex = value;
+                UpdateTimeBasedOffOfAnimationFrame();
+            }
         }
 
         public AnimationFrame CurrentFrame
@@ -54,7 +60,7 @@ namespace FlatRedBall.TileGraphics
         {
             this.AnimationChain = animationChain;
             AnimationSpeed = 1;
-            CurrentFrameIndex = 1;
+            CurrentFrameIndex = 0;
         }
 
         /// <summary>
@@ -72,6 +78,26 @@ namespace FlatRedBall.TileGraphics
                 mTimeIntoAnimation = MathFunctions.Loop(mTimeIntoAnimation, AnimationChain.TotalLength);
 
                 UpdateFrameBasedOffOfTimeIntoAnimation();
+            }
+        }
+
+
+        void UpdateTimeBasedOffOfAnimationFrame()
+        {
+            int animationFrame = _currentFrameIndex;
+
+            if (animationFrame < 0)
+            {
+                throw new ArgumentException("The animationFrame argument must be 0 or positive");
+            }
+            else if (AnimationChain?.Count > 1)
+            {
+                mTimeIntoAnimation = 0.0f;
+                //update to the correct time for this frame
+                for (int x = 0; x < _currentFrameIndex && x < AnimationChain.Count; x++)
+                {
+                    mTimeIntoAnimation += AnimationChain[x].FrameLength;
+                }
             }
         }
 
@@ -96,7 +122,7 @@ namespace FlatRedBall.TileGraphics
                         double frameTime = AnimationChain[frameIndex].FrameLength;
                         if (timeIntoAnimation < frameTime)
                         {
-                            CurrentFrameIndex = frameIndex;
+                            _currentFrameIndex = frameIndex;
 
                             break;
                         }

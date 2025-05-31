@@ -121,8 +121,6 @@ namespace GlueTestProject.Screens
 
 		void CustomActivity(bool firstTimeCalled)
 		{
-            const bool progressImmediately = true;
-
             InputManager.Keyboard.ControlPositionedObject(SpriteManager.Camera, 100);
             if (scene != null)
             {
@@ -130,7 +128,7 @@ namespace GlueTestProject.Screens
             }
             Debugger.Write(SpriteManager.OrderedSprites.Count);
 
-            if (!firstTimeCalled && progressImmediately)
+            if (!firstTimeCalled && TileEntityInstance.CanProgress)
             {
                 IsActivityFinished = true;
             }

@@ -156,7 +156,7 @@ namespace FlatRedBall.Glue.Elements
         /// activity method.
         /// </summary>
         /// <example>"this?.AnimateSelf()"</example>
-        public string ActivityMethod;
+        public string? ActivityMethod;
 
 
         public string AfterCustomActivityMethod;
