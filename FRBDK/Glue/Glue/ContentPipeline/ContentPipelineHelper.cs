@@ -219,11 +219,11 @@ namespace FlatRedBall.Glue.ContentPipeline
                     var filesReferencedByAsset =
                         _fileReferenceManager.GetFilesReferencedBy(absoluteName, EditorObjects.Parsing.TopLevelOrRecursive.Recursive);
 
-                    for (int i = 0; i < filesReferencedByAsset.Count; i++)
+                    foreach(var file in filesReferencedByAsset)
                     {
-                        if (!filesInModifiedRfs.Contains(filesReferencedByAsset[i]))
+                        if (!filesInModifiedRfs.Contains(file))
                         {
-                            filesInModifiedRfs.Add(filesReferencedByAsset[i]);
+                            filesInModifiedRfs.Add(file);
                         }
                     }
                 }

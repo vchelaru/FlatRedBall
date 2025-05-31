@@ -23,7 +23,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Particle
 
         public bool CanFileReferenceContent(string file) => FileManager.GetExtension(file) == "emix";
 
-        internal GeneralResponse FillWithReferencedFiles(FilePath file, List<FilePath> referencedFiles)
+        internal GeneralResponse FillWithReferencedFiles(FilePath file, HashSet<FilePath> referencedFiles)
         {
             if (CanFileReferenceContent(file.FullPath))
             {

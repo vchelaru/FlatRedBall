@@ -25,6 +25,7 @@ using FlatRedBall.Content.Scene;
 using FlatRedBall.Content.SpriteFrame;
 
 using Color = Microsoft.Xna.Framework.Color;
+using System.Collections.Concurrent;
 
 namespace EditorObjects.Parsing
 {
@@ -166,22 +167,22 @@ namespace EditorObjects.Parsing
         }
 
 
-        public static List<FilePath> GetFilesReferencedByAsset(FilePath filePath)
+        public static HashSet<FilePath> GetFilesReferencedByAsset(FilePath filePath)
 		{
 
             return GetFilesReferencedByAsset(filePath, TopLevelOrRecursive.TopLevel);
 		}
 
-        public static List<FilePath> GetFilesReferencedByAsset(FilePath filePath, TopLevelOrRecursive topLevelOrRecursive)
+        public static HashSet<FilePath> GetFilesReferencedByAsset(FilePath filePath, TopLevelOrRecursive topLevelOrRecursive)
 		{
             var referencedFiles = new List<FilePath>();
 
             GetFilesReferencedByAsset(filePath, topLevelOrRecursive, referencedFiles);
 
-            return referencedFiles.Distinct().ToList();
+            return referencedFiles.ToHashSet();
         }
 
-        public static void GetFilesReferencedByAsset(FilePath filePath, TopLevelOrRecursive topLevelOrRecursive, List<FilePath> referencedFiles)
+        public static void GetFilesReferencedByAsset(FilePath filePath, TopLevelOrRecursive topLevelOrRecursive, ICollection<FilePath> referencedFiles)
         {
             var newReferencedFiles = new List<FilePath>();
             if (!CanFileReferenceOtherFiles(filePath))
@@ -285,7 +286,10 @@ namespace EditorObjects.Parsing
 
                 }
 
-                referencedFiles.AddRange(newReferencedFiles);
+                foreach(var item in newReferencedFiles)
+                {
+                    referencedFiles.Add(item);
+                }
 
                 if (didErrorOccur)
                 {

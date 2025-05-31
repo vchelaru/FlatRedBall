@@ -92,14 +92,10 @@ namespace FlatRedBall.Glue.IO
 
 
             // We also need to copy all of the other content files.
-            var referencedFiles = new List<FilePath>();
+            var referencedFiles = FileReferenceManager.Self.GetFilesReferencedBy(sourceFile);
 
-            referencedFiles = FileReferenceManager.Self.GetFilesReferencedBy(sourceFile);
-
-            for (int i = 0; i < referencedFiles.Count; i++)
+            foreach(var file in referencedFiles)
             {
-                var file = referencedFiles[i];
-
                 RecursivelyCopyContentTo(file.FullPath, sourceDirectory, directoryThatFileShouldBeRelativeTo);
 
             }

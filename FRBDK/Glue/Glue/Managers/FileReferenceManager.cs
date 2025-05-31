@@ -10,6 +10,7 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Errors;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System.Collections.Concurrent;
 
 namespace FlatRedBall.Glue.Managers;
 
@@ -21,7 +22,7 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
     class FileReferenceInformation
     {
         public DateTime LastWriteTime;
-        public List<FilePath> References = new List<FilePath>();
+        public HashSet<FilePath> References = new ();
 
         public override string ToString()
         {
@@ -31,7 +32,7 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
 
     #endregion
 
-    Dictionary<FilePath, FileReferenceInformation> fileReferences = new Dictionary<FilePath, FileReferenceInformation>();
+    ConcurrentDictionary<FilePath, FileReferenceInformation> fileReferences = new ConcurrentDictionary<FilePath, FileReferenceInformation>();
 
     Dictionary<FilePath, FileReferenceInformation> filesNeededOnDisk = new Dictionary<FilePath, FileReferenceInformation>();
 
@@ -50,7 +51,7 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
     {
         if (fileReferences.ContainsKey(absoluteName))
         {
-            fileReferences.Remove(absoluteName);
+            fileReferences.Remove(absoluteName, out _);
         }
 
         if(filesNeededOnDisk.ContainsKey(absoluteName))
@@ -59,18 +60,18 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
         }
     }
 
-    public List<FilePath> GetFilesReferencedBy(FilePath absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive = TopLevelOrRecursive.Recursive)
+    public HashSet<FilePath> GetFilesReferencedBy(FilePath absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive = TopLevelOrRecursive.Recursive)
     {
-        var toReturn = new List<FilePath>();
+        var toReturn = new HashSet<FilePath>();
 
         GetFilesReferencedBy(absoluteName, topLevelOrRecursive, listToFill: toReturn);
 
         return toReturn;
     }
 
-    public void GetFilesReferencedBy(FilePath absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<FilePath> listToFill)
+    public void GetFilesReferencedBy(FilePath absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, ICollection<FilePath> listToFill)
     { 
-        List<FilePath> topLevelOnly = null;
+        HashSet<FilePath> topLevelOnly = null;
         bool handledByCache = false;
 
         if(fileReferences.ContainsKey(absoluteName))
@@ -99,7 +100,7 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
             bool succeeded = false;
             try
             {
-                topLevelOnly = ContentParser.GetFilesReferencedByAsset(absoluteName, TopLevelOrRecursive.TopLevel);
+                topLevelOnly = ContentParser.GetFilesReferencedByAsset(absoluteName, TopLevelOrRecursive.TopLevel).ToHashSet();
                 succeeded = true;
             }
             // August 26, 2017
@@ -126,7 +127,7 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
                         // if we were to do a > check. However, users can revert files in Git and that should mark the file
                         // as out of date. To support that, we have to do strict equality and use the actual file
                         LastWriteTime = absoluteName.Exists() ? File.GetLastWriteTime(absoluteName.FullPath) : DateTime.MinValue,
-                        References = topLevelOnly
+                        References = topLevelOnly.ToHashSet()
                     };
 
                     fileReferences[absoluteName] = referenceInfo;
@@ -149,7 +150,10 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
         if(topLevelOnly != null)
         {
             var newFiles = topLevelOnly.Except(listToFill).ToList();
-            listToFill.AddRange(newFiles);
+            foreach(var item in newFiles)
+            {
+                listToFill.Add(item);
+            }
 
             if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
             {
@@ -177,9 +181,9 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
         return false;
     }
 
-    public List<FilePath> GetFilesNeededOnDiskBy(FilePath absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
+    public HashSet<FilePath> GetFilesNeededOnDiskBy(FilePath absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
     {
-        List<FilePath> topLevelOnly = null;
+        HashSet<FilePath> topLevelOnly = null;
         bool handledByCache = false;
 
         if (filesNeededOnDisk.ContainsKey(absoluteName))
@@ -212,12 +216,12 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
             filesNeededOnDisk[absoluteName] = new FileReferenceInformation
             {
                 LastWriteTime = absoluteName.Exists() ? File.GetLastWriteTime(absoluteName.FullPath) : DateTime.MinValue,
-                References = topLevelOnly
+                References = topLevelOnly.ToHashSet()
             };
         }
 
 
-        var toReturn = new List<FilePath>();
+        var toReturn = new HashSet<FilePath>();
         toReturn.AddRange(topLevelOnly);
 
         if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)

@@ -148,8 +148,23 @@ class ProjectCommands : IProjectCommands
         Managers.TaskManager.Self.Add(() =>
         {
 
+            // We can parallel for to update the cache using all threads. We'll do top-level. This won't
+            // catch everything, but will take care of many of the top level files including .achx files which
+            // might be causing slowdown in games like Deadvivors.
+            var filePaths = allReferencedFileSaves.Select(item => GlueCommands.Self.GetAbsoluteFilePath(item))
+                .ToHashSet()
+                .ToArray();
+
+
             _fileReferenceManager.ObjectsForcingTrustedCache.Add(this);
             GlueCommands.Self.GluxCommands.RequestFileCache(this);
+            var fileCommands = GlueCommands.Self.FileCommands;
+            var fileReferenceManager = FileReferenceManager.Self;
+
+            Parallel.ForEach(filePaths, filePath =>
+            {
+                fileReferenceManager.GetFilesReferencedBy(filePath, TopLevelOrRecursive.TopLevel);
+            });
 
             try
             {

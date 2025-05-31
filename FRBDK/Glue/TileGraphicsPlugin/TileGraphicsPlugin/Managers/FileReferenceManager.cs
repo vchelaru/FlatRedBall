@@ -45,7 +45,7 @@ namespace TileGraphicsPlugin.Managers
         }
 
 
-        public GeneralResponse HandleGetFilesReferencedBy(FilePath filePath, List<FilePath> listToFill)
+        public GeneralResponse HandleGetFilesReferencedBy(FilePath filePath, HashSet<FilePath> listToFill)
         {
             GeneralResponse generalResponse = GeneralResponse.SuccessfulResponse;
 
@@ -67,7 +67,7 @@ namespace TileGraphicsPlugin.Managers
             return generalResponse;
         }
 
-        private GeneralResponse GetTsxFileReferences(FilePath tsxFile, List<FilePath> referencedFiles)
+        private GeneralResponse GetTsxFileReferences(FilePath tsxFile, HashSet<FilePath> referencedFiles)
         {
             ExternalTileSet external = null;
 
@@ -106,7 +106,7 @@ namespace TileGraphicsPlugin.Managers
             return response;
         }
 
-        private GeneralResponse GetTmxFileReferences(FilePath fileName, List<FilePath> listToFill)
+        private GeneralResponse GetTmxFileReferences(FilePath fileName, HashSet<FilePath> listToFill)
         {
             TiledMapSave tms = null;
             GeneralResponse response = GeneralResponse.SuccessfulResponse;
@@ -158,7 +158,7 @@ namespace TileGraphicsPlugin.Managers
             return response;
         }
 
-        private static void GetTilbFileReferences(FilePath fileName, List<FilePath> listToFill)
+        private static void GetTilbFileReferences(FilePath fileName, HashSet<FilePath> listToFill)
         {
             try
             {

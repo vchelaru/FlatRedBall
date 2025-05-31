@@ -94,7 +94,7 @@ namespace OfficialPlugins.AnimationChainPlugin
         // from 0.7 seconds to 0.2 seconds. This is a little less flexible
         // since it assumes TextureName rather than relying on reusable reference
         // tracking, but modern .achx files only use this.
-        private ToolsUtilities.GeneralResponse HandleFillWithReferencedFilesNew(FilePath path, List<FilePath> list)
+        private ToolsUtilities.GeneralResponse HandleFillWithReferencedFilesNew(FilePath path, HashSet<FilePath> list)
         {
             if (path.Extension == "achx")
             {

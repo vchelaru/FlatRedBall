@@ -768,7 +768,7 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        internal static GeneralResponse GetFilesReferencedBy(FilePath filePath, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<FilePath> listToFill)
+        internal static GeneralResponse GetFilesReferencedBy(FilePath filePath, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, HashSet<FilePath> listToFill)
         {
             GeneralResponse generalResponse =  GeneralResponse.SuccessfulResponse;
             SaveRelativeDirectory();
@@ -793,7 +793,7 @@ namespace FlatRedBall.Glue.Plugins
             return generalResponse;
         }
 
-        internal static void GetFilesNeededOnDiskBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, List<FilePath> listToFill)
+        internal static void GetFilesNeededOnDiskBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, HashSet<FilePath> listToFill)
         {
             SaveRelativeDirectory();
             CallMethodOnPluginNotUiThread(
@@ -805,7 +805,7 @@ namespace FlatRedBall.Glue.Plugins
                     }
                     else if (plugin.FillWithReferencedFiles != null)
                     {
-                        List<FilePath> innerList = new List<FilePath>();
+                        HashSet<FilePath> innerList = new ();
                         plugin.FillWithReferencedFiles(absoluteName, innerList);
                         listToFill.AddRange(innerList);
 

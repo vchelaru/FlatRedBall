@@ -487,14 +487,14 @@ namespace FlatRedBall.Glue.Plugins
         /// This should return GeneralResponse.Succeeded if either the parse succeeded, or if the file
         /// is ignored by this plugin. This should not return a failure if the file is ignored by the plugin.
         /// </summary>
-        public Func<FilePath, List<FilePath>, GeneralResponse> FillWithReferencedFiles { get; protected set; }
+        public Func<FilePath, HashSet<FilePath>, GeneralResponse> FillWithReferencedFiles { get; protected set; }
         public Action<FilePath, GeneralResponse> ReactToFileReadError { get; protected set; }
 
         /// <summary>
         /// Returns all files needed on disk by the argument file. Files on disk include built files such as content pipeline, or files 
         /// built by command line tools such as .csv files built from .ods files.
         /// </summary>
-        public Action<string, List<FilePath>> GetFilesNeededOnDiskBy { get; protected set; }
+        public Action<string, HashSet<FilePath>> GetFilesNeededOnDiskBy { get; protected set; }
 
         public Action ResolutionChanged { get; protected set; }
 
