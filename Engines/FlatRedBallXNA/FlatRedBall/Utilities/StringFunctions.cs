@@ -20,9 +20,7 @@ namespace FlatRedBall.Utilities
 
         static HashSet<char> sValidNumericalChars = new HashSet<char> { '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ',' };
 
-
         #endregion
-
 
         public static bool IsAscii(string stringToCheck)
         {
@@ -105,7 +103,6 @@ namespace FlatRedBall.Utilities
 
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the number of non-whitespace characters in the argument stringInQuestion.
         /// </summary>
@@ -115,7 +112,6 @@ namespace FlatRedBall.Utilities
         /// </remarks>
         /// <param name="stringInQuestion">The string to have its non-witespace counted.</param>
         /// <returns>The number of non-whitespace characters counted.</returns>
-        #endregion
         public static int CharacterCountWithoutWhitespace(string stringInQuestion)
         {
             int characterCount = 0;
@@ -127,7 +123,6 @@ namespace FlatRedBall.Utilities
             return characterCount;
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns a string of the float with the argument decimalsAfterPoint digits of resolution after the point.
         /// </summary>
@@ -135,7 +130,6 @@ namespace FlatRedBall.Utilities
         /// <param name="decimalsAfterPoint">The number of decimals after the point.  For example, 3.14159 becomes "3.14" if the
         /// decimalsAfterPoint is 2.  This method will not append extra decimals to reach the argument decimalsAfterPoint.</param>
         /// <returns>The string representation of the argument float.</returns>
-        #endregion
         public static string FloatToString(float floatToConvert, int decimalsAfterPoint)
         {
             if (decimalsAfterPoint == 0)
@@ -149,7 +143,6 @@ namespace FlatRedBall.Utilities
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the character that can be found after a particular sequence of characters.
         /// </summary>
@@ -160,7 +153,6 @@ namespace FlatRedBall.Utilities
         /// <param name="stringToSearchFor">The string to search for.</param>
         /// <param name="whereToSearch">The string to search in.</param>
         /// <returns>Returns the character found or the null character '\0' if the string is not found.</returns>
-        #endregion
         public static char GetCharAfter(string stringToSearchFor, string whereToSearch)
         {
             int indexOf = whereToSearch.IndexOf(stringToSearchFor);
@@ -219,7 +211,6 @@ namespace FlatRedBall.Utilities
             return count;
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the float that can be found after a particular sequence of characters.
         /// </summary>
@@ -230,7 +221,6 @@ namespace FlatRedBall.Utilities
         /// <param name="stringToSearchFor">The string to search for.</param>
         /// <param name="whereToSearch">The string to search in.</param>
         /// <returns>Returns the float value found or float.NaN if the string is not found.</returns>
-        #endregion
         public static float GetFloatAfter(string stringToSearchFor, string whereToSearch)
         {
             return GetFloatAfter(stringToSearchFor, whereToSearch, 0);
@@ -308,7 +298,6 @@ namespace FlatRedBall.Utilities
             return float.NaN;
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the first integer found after the argument stringToSearchFor in whereToSearch.
         /// </summary>
@@ -320,13 +309,11 @@ namespace FlatRedBall.Utilities
         /// <param name="stringToSearchFor">The string pattern to search for.</param>
         /// <param name="whereToSearch">The string that will be searched.</param>
         /// <returns>The integer value found after the argument stringToSearchFor.</returns>
-        #endregion
         public static int GetIntAfter(string stringToSearchFor, string whereToSearch)
         {
             return GetIntAfter(stringToSearchFor, whereToSearch, 0, StringComparison.CurrentCulture);
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the first integer found after the argument stringToSearchFor.  The search begins
         /// at the argument startIndex.
@@ -337,13 +324,11 @@ namespace FlatRedBall.Utilities
         /// will ignore any instances of stringToSearchFor which begin at an index smaller
         /// than the argument startIndex.</param>
         /// <returns></returns>
-        #endregion
         public static int GetIntAfter(string stringToSearchFor, string whereToSearch, int startIndex)
         {
             return GetIntAfter(stringToSearchFor, whereToSearch, startIndex, StringComparison.CurrentCulture);
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the first integer found after the argument stringToSearchFor.  The search begins
         /// at the argument startIndex.
@@ -356,7 +341,6 @@ namespace FlatRedBall.Utilities
         /// <param name="stringComparison">String comparison mode to use. Some modes may affect
         /// performance.</param>
         /// <returns></returns>
-        #endregion
         public static int GetIntAfter(string stringToSearchFor, string whereToSearch, int startIndex, StringComparison stringComparison)
         {
             int startOfNumber = -1;
@@ -550,14 +534,12 @@ namespace FlatRedBall.Utilities
 
 
 
-        #region XML Docs
         /// <summary>
         /// Returns the number of lines in a given string.  Newlines '\n' increase the 
         /// line count.
         /// </summary>
         /// <param name="stringInQuestion">The string that will have its lines counted.</param>
         /// <returns>The number of lines in the argument.  "Hello" will return a value of 1, "Hello\nthere" will return a value of 2.</returns>
-        #endregion
         public static int GetLineCount(string stringInQuestion)
         {
             if (string.IsNullOrEmpty(stringInQuestion))
@@ -577,7 +559,6 @@ namespace FlatRedBall.Utilities
             return lines;
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the number found at the end of the argument stringToGetNumberFrom or throws an
         /// ArgumentException if no number is found.
@@ -589,7 +570,6 @@ namespace FlatRedBall.Utilities
         /// <exception cref="System.ArgumentException">Throws ArgumentException if no number is found at the end of the argument string.</exception>
         /// <param name="stringToGetNumberFrom">The number found at the end.</param>
         /// <returns>The integer value found at the end of the stringToGetNumberFrom.</returns>
-        #endregion
         public static int GetNumberAtEnd(string stringToGetNumberFrom)
         {
             int letterChecking = stringToGetNumberFrom.Length;
@@ -682,7 +662,6 @@ namespace FlatRedBall.Utilities
         }
         
 
-        #region XML Docs
         /// <summary>
         /// Inserts spaces before every capital letter in a camel-case
         /// string.  Ignores the first letter.
@@ -693,7 +672,6 @@ namespace FlatRedBall.Utilities
         /// </remarks>
         /// <param name="originalString">The string in which to insert spaces.</param>
         /// <returns>The string with spaces inserted.</returns>
-        #endregion
         public static string InsertSpacesInCamelCaseString(string originalString)
         {
             // Normally in reverse loops you go til i > -1, but 
@@ -942,14 +920,12 @@ namespace FlatRedBall.Utilities
             strings.AddRange(finalList);
         }
 
-        #region XML Docs
         /// <summary>
         /// Removes the number found at the end of the argument originalString and returns the resulting
         /// string, or returns the original string if no number is found.
         /// </summary>
         /// <param name="originalString">The string that will have the number at its end removed.</param>
         /// <returns>The string after the number has been removed.</returns>
-        #endregion
         public static string RemoveNumberAtEnd(string originalString)
         {
             // start at the end of the string and move backwards until reacing a non-Digit.
@@ -968,13 +944,11 @@ namespace FlatRedBall.Utilities
             return originalString.Remove(letterChecking + 1, originalString.Length - letterChecking - 1);
         }
 
-        #region XML Docs
         /// <summary>
         /// Removes all whitespace found in the argument stringToRemoveWhitespaceFrom.
         /// </summary>
         /// <param name="stringToRemoveWhitespaceFrom">The string that will have its whitespace removed.</param>
         /// <returns>The string resulting from removing whitespace from the argument string.</returns>
-        #endregion
         public static string RemoveWhitespace(string stringToRemoveWhitespaceFrom)
         {
             return stringToRemoveWhitespaceFrom.Replace(" ", "").Replace("\t", "").Replace("\n", "").Replace("\r", "");
