@@ -283,19 +283,17 @@ namespace FlatRedBall.Graphics
             // index, so we can just find the last one
             // and save some time.
             int index = fontPattern.LastIndexOf("char id=", fontPattern.Length, StringComparison.Ordinal);
+
             if (index != -1)
             {
                 int ID = StringFunctions.GetIntAfter("char id=", fontPattern, index, StringComparison.Ordinal);
-
                 sizeOfArray = System.Math.Max(sizeOfArray, ID + 1);
-
-
-
             }
             else
             {
                 // index is -1, but let's try a regular IndexOf:
                 int forwardIndexOf = fontPattern.IndexOf("char id=");
+
                 if(forwardIndexOf != -1 && index == -1)
                 {
                     throw new Exception("How is this possible? LastIndexOf \"char id=\" is returning a value of -1, while IndexOf for the same string is returning an index value)");
@@ -308,9 +306,8 @@ namespace FlatRedBall.Graphics
                     throw new Exception(message);
                 }
             }
+
             #endregion
-
-
 
             mCharacterInfo = new BitmapCharacterInfo[sizeOfArray];
             mLineHeightInPixels =
@@ -321,7 +318,6 @@ namespace FlatRedBall.Graphics
             // characters set in the .bmfc.  I don't think we should crash here if so:
             if (mTextures.Length != 0)
             {
-
                 BitmapCharacterInfo space = FillBitmapCharacterInfo(' ', fontPattern,
                    mTextures[0].Width, mTextures[0].Height, mLineHeightInPixels, 0);
 
@@ -335,9 +331,9 @@ namespace FlatRedBall.Graphics
                 mCharacterInfo['t'].Spacing = space.Spacing * 4;
 
                 index = fontPattern.IndexOf("char id=", 0, StringComparison.Ordinal);
+
                 while (index != -1)
                 {
-
                     int ID = StringFunctions.GetIntAfter("char id=", fontPattern, index, StringComparison.Ordinal);
 
                     if (ID == -1)
@@ -368,47 +364,48 @@ namespace FlatRedBall.Graphics
                         }
 #endif
 
-
                         mCharacterInfo[ID] = FillBitmapCharacterInfo(ID, fontPattern, mTextures[0].Width,
                             mTextures[0].Height, mLineHeightInPixels, index);
 
                         int indexOfID = fontPattern.IndexOf("char id=", index, StringComparison.Ordinal);
+
                         if (indexOfID != -1)
                         {
                             index = indexOfID + ID.ToString().Length;
                         }
                         else
+                        {
                             index = -1;
+                        }
                     }
                 }
 
-                #region Get Kearning Info
+                #region Get kerning info
 
                 index = fontPattern.IndexOf("kerning ", 0, StringComparison.Ordinal);
 
                 if (index != -1)
                 {
-
                     index = fontPattern.IndexOf("first=", index, StringComparison.Ordinal);
 
                     while (index != -1)
                     {
                         int ID = StringFunctions.GetIntAfter("first=", fontPattern, index, StringComparison.Ordinal);
                         int secondCharacter = StringFunctions.GetIntAfter("second=", fontPattern, index, StringComparison.Ordinal);
-                        int kearningAmount = StringFunctions.GetIntAfter("amount=", fontPattern, index, StringComparison.Ordinal);
+                        int kerningAmount = StringFunctions.GetIntAfter("amount=", fontPattern, index, StringComparison.Ordinal);
 
                         var characterInfo = mCharacterInfo[ID];
 
-                        if (characterInfo.SecondLetterKearning == null)
+                        if (characterInfo.SecondLetterKerning == null)
                         {
-                            characterInfo.SecondLetterKearning = new Dictionary<int, int>();
+                            characterInfo.SecondLetterKerning = new Dictionary<int, int>();
                         }
 
                         // Some fonts may contain duplicated kerning pairs, avoid the
                         // crash by checking if the key is has already been added.
-                        if (!characterInfo.SecondLetterKearning.ContainsKey(secondCharacter))
+                        if (!characterInfo.SecondLetterKerning.ContainsKey(secondCharacter))
                         {
-                            characterInfo.SecondLetterKearning.Add(secondCharacter, kearningAmount);
+                            characterInfo.SecondLetterKerning.Add(secondCharacter, kerningAmount);
                         }
 
                         index = fontPattern.IndexOf("first=", index + 1, StringComparison.Ordinal);
@@ -417,7 +414,6 @@ namespace FlatRedBall.Graphics
 
                 #endregion
             }
-            //mCharacterInfo[32].ScaleX = .23f;
         }
 
         public void SetFontPatternFromFile(string fntFileName)
