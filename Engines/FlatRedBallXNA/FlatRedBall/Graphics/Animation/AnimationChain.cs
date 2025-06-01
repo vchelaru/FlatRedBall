@@ -40,12 +40,10 @@ namespace FlatRedBall.Graphics.Animation
             get { return mIndexInLoadedAchx; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets the last AnimationFrame of the AnimationChain or null if 
         /// there are no AnimationFrames.
         /// </summary>
-        #endregion
         public AnimationFrame LastFrame
         {
             get 
@@ -62,11 +60,9 @@ namespace FlatRedBall.Graphics.Animation
         }
 
 
-        #region XML Docs
         /// <summary>
         /// The name of the AnimationChain.
         /// </summary>
-        #endregion
         public string Name
         {
             get { return mName; }
@@ -97,8 +93,7 @@ namespace FlatRedBall.Graphics.Animation
                 float sum = 0;
                 for (int i = 0; i < this.Count; i++)
                 {
-                    AnimationFrame af = this[i];
-                    sum += af.FrameLength;
+                    sum += this[i].FrameLength;
                 }
 
                 return sum;

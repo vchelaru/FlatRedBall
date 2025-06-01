@@ -34,14 +34,14 @@ namespace FlatRedBall.TileGraphics
                 container.Activity(TimeManager.SecondDifference);
                 if (container.CurrentFrameIndex != indexBefore)
                 {
-                    ReactToChangedAnimationFrame(kvp.Key, kvp.Value, layeredTileMap);
+                    UpdateToAnimationFrame(kvp.Key, kvp.Value, layeredTileMap);
 
                 }
             }
         }
 
 
-        private void ReactToChangedAnimationFrame(string spriteName, AnimationChainContainer animationChainContainer, LayeredTileMap layeredTileMap)
+        public void UpdateToAnimationFrame(string spriteName, AnimationChainContainer animationChainContainer, LayeredTileMap layeredTileMap)
         {
             AnimationFrame animationFrame = animationChainContainer.CurrentFrame;
             Microsoft.Xna.Framework.Vector4 textureValues = new Microsoft.Xna.Framework.Vector4();
