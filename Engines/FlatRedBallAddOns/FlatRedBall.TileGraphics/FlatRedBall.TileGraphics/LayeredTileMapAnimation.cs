@@ -40,6 +40,19 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
+        public LayeredTileMapAnimation Clone()
+        {
+            Dictionary<string, AnimationChain> clonedDictionary = new Dictionary<string, AnimationChain>();
+
+            foreach (var kvp in this._animationChainContainers)
+            {
+                clonedDictionary[kvp.Key] = kvp.Value.AnimationChain;
+            }
+
+            var toReturn = new LayeredTileMapAnimation(clonedDictionary);
+
+            return toReturn;
+        }
 
         public void UpdateToAnimationFrame(string spriteName, AnimationChainContainer animationChainContainer, LayeredTileMap layeredTileMap)
         {

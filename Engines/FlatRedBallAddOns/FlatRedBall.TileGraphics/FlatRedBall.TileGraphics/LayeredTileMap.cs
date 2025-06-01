@@ -1098,6 +1098,8 @@ namespace FlatRedBall.TileGraphics
                 toReturn.Collisions.Add(collision.Clone());
             }
 
+            toReturn.Animation = this.Animation?.Clone();
+
             return toReturn;
         }
 
