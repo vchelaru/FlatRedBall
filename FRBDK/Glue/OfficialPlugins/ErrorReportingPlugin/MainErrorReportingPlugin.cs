@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.IO;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
@@ -25,8 +26,11 @@ namespace OfficialPlugins.ErrorReportingPlugin
 
         public override void StartUp()
         {
+            var glueState = GlueState.Self;
+            var objectFinder = ObjectFinder.Self;
+
             AddErrorReporter(new NamedObjectSaveErrorReporter());
-            AddErrorReporter(new ReferencedFileSaveErrorReporter());
+            AddErrorReporter(new ReferencedFileSaveErrorReporter(glueState, objectFinder));
             AddErrorReporter(new CustomVariableSaveErrorReporter());
             AddErrorReporter(new ElementInheritanceErrorReporter());
 

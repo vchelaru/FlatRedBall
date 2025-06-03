@@ -2,16 +2,32 @@
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
+using Gum.DataTypes;
 using OfficialPlugins.ErrorReportingPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace OfficialPlugins.ErrorReportingPlugin
 {
     internal class ReferencedFileSaveErrorReporter : ErrorReporterBase
     {
+        private readonly GlueState _glueState;
+        private readonly ObjectFinder _objectFinder;
+
+        public ReferencedFileSaveErrorReporter(
+            GlueState glueState,
+            ObjectFinder objectFinder)
+        {
+            _glueState = glueState;
+            _objectFinder = objectFinder;
+
+        }
+
         public override ErrorViewModel[] GetAllErrors()
         {
             List<ErrorViewModel> errors = new List<ErrorViewModel>();
@@ -20,7 +36,65 @@ namespace OfficialPlugins.ErrorReportingPlugin
 
             FillWithContentPipelineMismatches(errors);
 
+            FillWithUnreferencedCsprojFiles(errors);
+
             return errors.ToArray();
+        }
+
+        private void FillWithUnreferencedCsprojFiles(List<ErrorViewModel> errors)
+        {
+            var projectDirectory = _glueState.CurrentGlueProjectDirectory;
+            if(string.IsNullOrEmpty(projectDirectory))
+            {
+                return;
+            }
+
+            try
+            {
+                FilePath directoryToStartAt = _glueState.CurrentSlnFileName.GetDirectoryContainingThis();
+
+                var files = Directory.GetFiles(directoryToStartAt.FullPath, "*.*", SearchOption.AllDirectories)
+                    .Select(item => new FilePath(item)).ToHashSet();
+
+                FillWithMissingFiles(errors, _glueState.CurrentMainProject, files);
+
+                foreach (var syncedProject in _glueState.SyncedProjects)
+                {
+                    if (syncedProject is VisualStudioProject vsProject)
+                    {
+                        FillWithMissingFiles(errors, vsProject, files);
+                    }
+                }
+            }
+            catch
+            {
+                // if we have an exception such as permissions based, we tolerate it and move on
+
+            }
+        }
+
+        private void FillWithMissingFiles(List<ErrorViewModel> errors, VisualStudioProject currentMainProject, HashSet<FilePath> filesOnDisk)
+        {
+            var directory = currentMainProject.Directory;
+
+            foreach (var file in currentMainProject.EvaluatedItems)
+            {
+                var copyMetadata = file.GetMetadata("CopyToOutputDirectory");
+                // Glue always sets PreserveNewest. Do we want to check for other types?
+                // For the error I'm working on for 6/2/2025 this would catch it.
+                if(copyMetadata?.EvaluatedValue == "PreserveNewest")
+                {
+                    FilePath filePath = directory + file.EvaluatedInclude;
+                    if(!filesOnDisk.Contains(filePath) &&
+                        // fallback to .exists if it's not in the dictionary. This is slower,
+                        // but will catch files referenced outside the .sln folder:
+                        !filePath.Exists() )
+                    {
+                        var vm = new MissingCsprojReferencedFile(currentMainProject, filePath);
+                        errors.Add(vm);
+                    }
+                }
+            }
         }
 
         private void FillWithContentPipelineMismatches(List<ErrorViewModel> errors)
@@ -28,7 +102,7 @@ namespace OfficialPlugins.ErrorReportingPlugin
             var filesUsingContentPipeline = new Dictionary<FilePath, ReferencedFileSave>();
             var filesNotUsingContentPipeline = new Dictionary<FilePath, ReferencedFileSave>();
 
-            var allFiles = ObjectFinder.Self.GetAllReferencedFiles();
+            var allFiles = _objectFinder.GetAllReferencedFiles();
 
             foreach(var rfs in allFiles)
             {
