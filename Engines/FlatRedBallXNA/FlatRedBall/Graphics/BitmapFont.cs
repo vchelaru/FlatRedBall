@@ -569,7 +569,7 @@ namespace FlatRedBall.Graphics
             // char id=101  x=158   y=85    width=5     height=7     xoffset=1     yoffset=6     xadvance=7     page=0  chnl=0 
             BitmapCharacterInfo characterInfoToReturn = new BitmapCharacterInfo();
 
-            int indexOfID = fontString.IndexOf("char id=" + characterID, startingIndex);
+            int indexOfID = fontString.IndexOf("char id=" + characterID, startingIndex, StringComparison.Ordinal);
 
             if (indexOfID != -1)
             {
