@@ -1,4 +1,5 @@
-﻿using OfficialPlugins.Common.ViewModels;
+﻿using Gum.Wireframe;
+using OfficialPlugins.Common.ViewModels;
 using OfficialPlugins.SpritePlugin.ViewModels;
 using OfficialPlugins.SpritePlugin.Views;
 using RenderingLibrary;
@@ -33,7 +34,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         GumSKElement Canvas;
 
-        BindableGraphicalUiElement Background;
+        BindableGue Background;
 
         static double? windowsScaleFactor = null;
         public static double WindowsScaleFactor
@@ -64,7 +65,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         #endregion
 
-        public void Initialize(System.Windows.Controls.UserControl view, ICameraZoomViewModel cameraZoomViewModel, GumSKElement canvas, BindableGraphicalUiElement background)
+        public void Initialize(System.Windows.Controls.UserControl view, ICameraZoomViewModel cameraZoomViewModel, GumSKElement canvas, BindableGue background)
         {
             Canvas = canvas;
             View = view;
