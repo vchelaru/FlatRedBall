@@ -62,14 +62,14 @@ namespace FlatRedBall.Glue.Managers
             List<FilePath> wildcardRootPaths = GetRootPaths(glujFilePath, wildcardRfses);
 
             // This may help, but trying plinq first
-            //HashSet<FilePath> allFiles = new HashSet<FilePath>();
-            //foreach(var root in wildcardRootPaths)
-            //{
-
-            //    var filesInRoot = Directory.GetFiles(root.FullPath, "*", SearchOption.AllDirectories)
-            //        .Select(file => new FilePath(file));
-            //    allFiles.AddRange(filesInRoot);
-            //}
+            HashSet<FilePath>? allFiles = null;
+            foreach(var root in wildcardRootPaths)
+            {
+                allFiles = allFiles ?? new HashSet<FilePath>();
+                //    var filesInRoot = Directory.GetFiles(root.FullPath, "*", SearchOption.AllDirectories)
+                //        .Select(file => new FilePath(file));
+                //    allFiles.AddRange(filesInRoot);
+            }
 
             foreach (var wildcardRfs in wildcardRfses)
             {
@@ -83,13 +83,12 @@ namespace FlatRedBall.Glue.Managers
             //foreach (var wildcardRfs in wildcardRfses)
             Parallel.ForEach(wildcardRfses, wildcardRfs =>
             {
-                //var absoluteFile = GlueCommands.Self.GetAbsoluteFilePath(wildcardRfs);
                 var absoluteFile = new FilePath(contentFolder + wildcardRfs.Name);
                 List<FilePath> files = new List<FilePath>();
 
                 try
                 {
-                    files = GetFilesForWildcard(absoluteFile, null);
+                    files = GetFilesForWildcard(absoluteFile, allFiles);
                 }
                 catch (DirectoryNotFoundException ex)
                 {
@@ -177,20 +176,16 @@ namespace FlatRedBall.Glue.Managers
 
             // In theory this could be faster, but I'm not sure if it is, and not sure if it's even needed
             // if we plinq everything...
-            //List<FilePath>? filesObtainedNewWay = null;
-            //if(allFiles != null)
-            //{
-            //    var matcher = new Matcher();
-            //    matcher.AddInclude(suffix);
+            List<FilePath>? filesObtainedNewWay = null;
+            if (allFiles != null)
+            {
+                var matcher = new Matcher();
+                matcher.AddInclude(suffix);
 
-
-
-            //    filesObtainedNewWay = allFiles
-            //            .Where(f => matcher.Match(f.FullPath.Substring(3)).HasMatches)
-            //            .ToList();
-
-
-            //}
+                filesObtainedNewWay = allFiles
+                        .Where(f => matcher.Match(f.FullPath.Substring(3)).HasMatches)
+                        .ToList();
+            }
 
             return filesObtainedOldWay;
         }
