@@ -81,7 +81,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                                 foreach (var wildcardFile in project.GlobalFileWildcards)
                                 {
                                     var absoluteFile = new FilePath(contentFolder + wildcardFile.Name);
-                                    var files = WildcardReferencedFileSaveLogic.GetFilesForWildcard(absoluteFile);
+                                    var files = WildcardReferencedFileSaveLogic.GetFilesForWildcard(absoluteFile, allFiles:null);
 
                                     foreach(var candidate in files)
                                     {

@@ -1,28 +1,33 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
+using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Enumeration;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Managers
 {
     public class WildcardReferencedFileSaveLogic
     {
+        private static object glujFilePath;
 
-        public static void LoadWildcardReferencedFiles(FilePath fileName, GlueProjectSave mainGlueProjectSave)
+        public static void LoadWildcardReferencedFiles(FilePath glujFilePath, GlueProjectSave mainGlueProjectSave)
         {
-            var wildcardRfses = mainGlueProjectSave.GlobalFiles.Where(item => item.Name.Contains("*")).ToArray();
 
             // the csproj may not have loaded yet, so we can't rely on that:
-            FilePath glueProjectDirectory = fileName.GetDirectoryContainingThis();
+            FilePath glueProjectDirectory = glujFilePath.GetDirectoryContainingThis();
             var contentFolder = glueProjectDirectory + "Content/";
             var globalContentFolder = contentFolder + "GlobalContent/";
 
             // To save comparisons, let's do a dictionary:
-            Dictionary<FilePath, ReferencedFileSave> rfsDictionary = new Dictionary<FilePath, ReferencedFileSave>();
+            ConcurrentDictionary<FilePath, ReferencedFileSave> rfsDictionary = new ();
             foreach (var file in mainGlueProjectSave.GlobalFiles)
             {
                 var filePath = GetAbsoluteFilePathFor(contentFolder, file);
@@ -50,41 +55,114 @@ namespace FlatRedBall.Glue.Managers
                 }
             }
 
+            var wildcardRfses = mainGlueProjectSave.GlobalFiles.Where(item => item.Name.Contains("*")).ToArray();
+
+            HashSet<FilePath> filesReferencedByWildcards = new HashSet<FilePath>();
+
+            List<FilePath> wildcardRootPaths = GetRootPaths(glujFilePath, wildcardRfses);
+
+            // This may help, but trying plinq first
+            //HashSet<FilePath> allFiles = new HashSet<FilePath>();
+            //foreach(var root in wildcardRootPaths)
+            //{
+
+            //    var filesInRoot = Directory.GetFiles(root.FullPath, "*", SearchOption.AllDirectories)
+            //        .Select(file => new FilePath(file));
+            //    allFiles.AddRange(filesInRoot);
+            //}
+
             foreach (var wildcardRfs in wildcardRfses)
             {
                 mainGlueProjectSave.GlobalFiles.Remove(wildcardRfs);
+                mainGlueProjectSave.GlobalFileWildcards.Add(wildcardRfs);
+
+            }
+
+            ConcurrentBag<ReferencedFileSave> newRfses = new();
+
+            //foreach (var wildcardRfs in wildcardRfses)
+            Parallel.ForEach(wildcardRfses, wildcardRfs =>
+            {
                 //var absoluteFile = GlueCommands.Self.GetAbsoluteFilePath(wildcardRfs);
                 var absoluteFile = new FilePath(contentFolder + wildcardRfs.Name);
                 List<FilePath> files = new List<FilePath>();
-                
+
                 try
                 {
-                    files = GetFilesForWildcard(absoluteFile);
+                    files = GetFilesForWildcard(absoluteFile, null);
                 }
-                catch(DirectoryNotFoundException ex)
+                catch (DirectoryNotFoundException ex)
                 {
                     GlueCommands.Self.PrintError($"Error processing wildcard pattern {wildcardRfs.Name}:\n{ex}");
                 }
 
                 foreach (var filePathForPossibleRfs in files)
                 {
-                    if(!rfsDictionary.ContainsKey(filePathForPossibleRfs))
+                    if (!rfsDictionary.ContainsKey(filePathForPossibleRfs))
                     {
                         var clone = wildcardRfs.Clone();
                         clone.IsCreatedByWildcard = true;
                         clone.Name = filePathForPossibleRfs.RelativeTo(contentFolder);
-                        mainGlueProjectSave.GlobalFiles.Add(clone);
+                        newRfses.Add(clone);
                         rfsDictionary[filePathForPossibleRfs] = clone;
                     }
                 }
-                mainGlueProjectSave.GlobalFileWildcards.Add(wildcardRfs);
+            });
+
+            foreach(var item in newRfses)
+            {
+                mainGlueProjectSave.GlobalFiles.Add(item);
             }
 
 
         }
 
+        private static List<FilePath> GetRootPaths(FilePath glujFilePath, ReferencedFileSave[] wildcardRfses)
+        {
+            var rootPaths = new List<FilePath>();
 
-        public static List<FilePath> GetFilesForWildcard(FilePath filePath)
+            FilePath glueProjectDirectory = glujFilePath.GetDirectoryContainingThis();
+            var contentFolder = glueProjectDirectory + "Content/";
+
+            foreach (var wildcardRfs in wildcardRfses)
+            {
+                var absoluteFile = new FilePath(contentFolder + wildcardRfs.Name);
+
+                FilePath directoryWithNoWildcard = absoluteFile;
+                while (directoryWithNoWildcard.FullPath.Contains("*"))
+                {
+                    directoryWithNoWildcard = directoryWithNoWildcard.GetDirectoryContainingThis();
+                }
+
+                var alreadyContained = rootPaths.Any(item => item == directoryWithNoWildcard);
+                if(alreadyContained)
+                {
+                    continue;
+                }
+
+                var isParentOfAny = rootPaths.Any(item => item.IsRelativeTo(directoryWithNoWildcard));
+                if(isParentOfAny)
+                {
+                    rootPaths.RemoveAll(item => item.IsRelativeTo(directoryWithNoWildcard));
+
+                    rootPaths.Add(directoryWithNoWildcard);
+                    continue;
+                }
+
+                var isChildOfAny = rootPaths.Any(item => directoryWithNoWildcard.IsRelativeTo(item));
+                if(isChildOfAny)
+                {
+                    continue;
+                }
+
+                // If we got here, it's a new path
+                rootPaths.Add(directoryWithNoWildcard);
+            }
+
+            return rootPaths;
+        }
+
+        public static List<FilePath> GetFilesForWildcard(FilePath filePath, HashSet<FilePath>? allFiles)
         {
             FilePath directoryWithNoWildcard = filePath;
             while (directoryWithNoWildcard.FullPath.Contains("*"))
@@ -94,26 +172,42 @@ namespace FlatRedBall.Glue.Managers
 
             var suffix = filePath.RelativeTo(directoryWithNoWildcard);
 
-            List<FilePath> files = new List<FilePath>();
+            List<FilePath> filesObtainedOldWay = new List<FilePath>();
+            GetFilesForWildcard(directoryWithNoWildcard, suffix, filesObtainedOldWay);
 
-            GetFilesForWildcard(directoryWithNoWildcard, suffix, files);
+            // In theory this could be faster, but I'm not sure if it is, and not sure if it's even needed
+            // if we plinq everything...
+            //List<FilePath>? filesObtainedNewWay = null;
+            //if(allFiles != null)
+            //{
+            //    var matcher = new Matcher();
+            //    matcher.AddInclude(suffix);
 
-            return files;
+
+
+            //    filesObtainedNewWay = allFiles
+            //            .Where(f => matcher.Match(f.FullPath.Substring(3)).HasMatches)
+            //            .ToList();
+
+
+            //}
+
+            return filesObtainedOldWay;
         }
 
 
-        private static List<FilePath> GetFilesForWildcard(FilePath prefix, string suffix, List<FilePath> files)
+        private static List<FilePath> GetFilesForWildcard(FilePath directoryWithNoWildcard, string relativePathWithWildcard, List<FilePath> foundMatches)
         {
-            var singleSuffix = suffix;
+            var singleSuffix = relativePathWithWildcard;
             if (singleSuffix.Contains('/'))
             {
                 singleSuffix = singleSuffix.Substring(0, singleSuffix.IndexOf('/'));
             }
 
             string remainderSuffix = null;
-            if (singleSuffix != suffix)
+            if (singleSuffix != relativePathWithWildcard)
             {
-                remainderSuffix = suffix.Substring(singleSuffix.Length, suffix.Length - singleSuffix.Length);
+                remainderSuffix = relativePathWithWildcard.Substring(singleSuffix.Length, relativePathWithWildcard.Length - singleSuffix.Length);
 
                 if(remainderSuffix.StartsWith("/"))
                 {
@@ -126,11 +220,11 @@ namespace FlatRedBall.Glue.Managers
                 if(remainderSuffix == null)
                 {
                     // for now assume /*. Expand on this...
-                    var tempFiles = FileManager.GetAllFilesInDirectory(prefix.FullPath, null, 0)
+                    var tempFiles = FileManager.GetAllFilesInDirectory(directoryWithNoWildcard.FullPath, null, 0)
                         .Select(item => new FilePath(item))
                         .ToList();
 
-                    files.AddRange(tempFiles);
+                    foundMatches.AddRange(tempFiles);
                 }
                 else
                 {
@@ -144,24 +238,24 @@ namespace FlatRedBall.Glue.Managers
                 {
                     // We don't have anymore folders, so that means we want to have all files in here too. For example
                     // "**/*.txt" means "all txt files in this folder plus subfolders"
-                    GetFilesForWildcard(prefix.FullPath, remainderSuffix ?? "*", files);
+                    GetFilesForWildcard(directoryWithNoWildcard.FullPath, remainderSuffix ?? "*", foundMatches);
                 }
 
-                if(System.IO.Directory.Exists(prefix.FullPath) == false)
+                if(System.IO.Directory.Exists(directoryWithNoWildcard.FullPath) == false)
                 {
-                    throw new DirectoryNotFoundException("Could not find the directory " + prefix.FullPath);
+                    throw new DirectoryNotFoundException("Could not find the directory " + directoryWithNoWildcard.FullPath);
                 }
 
-                var directories = System.IO.Directory.GetDirectories(prefix.FullPath);
+                var directories = System.IO.Directory.GetDirectories(directoryWithNoWildcard.FullPath);
                 foreach(var directory in directories)
                 {
                     if(remainderSuffix == null)
                     {
-                        GetFilesForWildcard(directory, "*", files);
+                        GetFilesForWildcard(directory, "*", foundMatches);
                     }
                     else
                     {
-                        GetFilesForWildcard(directory, "**/" + remainderSuffix, files);
+                        GetFilesForWildcard(directory, "**/" + remainderSuffix, foundMatches);
                     }
                 }
             }
@@ -169,10 +263,10 @@ namespace FlatRedBall.Glue.Managers
             {
                 if(remainderSuffix == null)
                 {
-                    if(prefix.Exists())
+                    if(directoryWithNoWildcard.Exists())
                     {
-                        var filesTemp = System.IO.Directory.GetFiles(prefix.FullPath, singleSuffix).Select(item => new FilePath(item));
-                        files.AddRange(filesTemp);
+                        var filesTemp = System.IO.Directory.GetFiles(directoryWithNoWildcard.FullPath, singleSuffix).Select(item => new FilePath(item));
+                        foundMatches.AddRange(filesTemp);
                     }
                 }
                 else
@@ -180,12 +274,28 @@ namespace FlatRedBall.Glue.Managers
                     // do we allow this?
                 }
             }
-            return files;
+            return foundMatches;
         }
 
+        // AI says we can do this:
+//        using System.IO.Enumeration;
+
+//List<string> allFiles = new List<string>
+//{
+//    "file1.png",
+//    "file2.jpg",
+//    "file3.PNG",
+//    "subfolder/file4.png"
+//};
+//    string pattern = "*.png";
+//    var matchedFiles = allFiles
+//        .Where(f => FileSystemName.MatchesSimpleExpression(pattern, Path.GetFileName(f), ignoreCase: true))
+//        .ToList();
 
 
-        private static object GetRfsFromFile(GlueProjectSave glueProjectSave, FilePath file, FilePath glueProjectDirectory)
+
+
+    private static object GetRfsFromFile(GlueProjectSave glueProjectSave, FilePath file, FilePath glueProjectDirectory)
         {
             foreach (var candidate in glueProjectSave.GlobalFiles)
             {
