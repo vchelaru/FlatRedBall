@@ -98,7 +98,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             string parentFile = null,
             bool recursive = true,
             List<string> alreadyReferencedFiles = null,
-            ReferencedFileSave fileRfs = null, bool reEvaluateAfterAdd = true);
+            ReferencedFileSave fileRfs = null,
+            bool reEvaluateAfterAdd = true,
+            string reasonForAdd = "");
 
         ProjectBase AddSyncedProject(FilePath filePath);
 

@@ -34,7 +34,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                         !(to is CombinedEmbeddedContentProject);
                 }
 
-                GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(to, absoluteFileName, useContentPipeline: forceToContent, shouldLink: true, recursive:false);
+                GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(to, absoluteFileName, useContentPipeline: forceToContent, shouldLink: true,
+                    recursive:false,
+                    reasonForAdd: $"{from} (original project) references file");
             }
         }
 
