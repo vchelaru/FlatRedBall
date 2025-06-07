@@ -236,7 +236,8 @@ class ProjectCommands : IProjectCommands
                 wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, absoluteFilePath,
                     useContentPipeline, false,
                     fileRfs: referencedFileSave,
-                    reEvaluateAfterAdd: reEvaluateAfterAdd);
+                    reEvaluateAfterAdd: reEvaluateAfterAdd,
+                    reasonForAdd: $"{referencedFileSave} Explicitly added as file in FRB");
             }
 
             foreach (ProjectSpecificFile projectSpecificFile in referencedFileSave.ProjectSpecificFiles)
@@ -262,9 +263,13 @@ class ProjectCommands : IProjectCommands
     /// <param name="shouldLink"></param>
     /// <param name="parentFile"></param>
     /// <returns>Whether the project was modified.</returns>
-    public bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink,
-        string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null, ReferencedFileSave fileRfs = null,
-        bool reEvaluateAfterAdd = true)
+    public bool UpdateFileMembershipInProject(VisualStudioProject project,
+        FilePath fileName, bool useContentPipeline, bool shouldLink,
+        string parentFile = null, bool recursive = true,
+        List<string> alreadyReferencedFiles = null,
+        ReferencedFileSave fileRfs = null,
+        bool reEvaluateAfterAdd = true,
+        string reasonForAdd = "")
     {
         bool wasProjectModified = false;
         ///////////////////Early Out/////////////////////
@@ -368,7 +373,7 @@ class ProjectCommands : IProjectCommands
 
             if (needsToBeInContentProject)
             {
-                AddFileToContentProject(project, useContentPipeline, shouldLink, fileToAddAbsolute, fileRfs, reEvaluateAfterAdd);
+                AddFileToContentProject(project, useContentPipeline, shouldLink, fileToAddAbsolute, fileRfs, reEvaluateAfterAdd, reasonForAdd:reasonForAdd);
             }
             else
             {
@@ -421,7 +426,9 @@ class ProjectCommands : IProjectCommands
                 }
                 else
                 {
-                    wasProjectModified |= UpdateFileMembershipInProject(project, file, useContentPipeline, shouldLink, fileToAddAbsolute, recursive: true, alreadyReferencedFiles: alreadyReferencedFiles, reEvaluateAfterAdd:reEvaluateAfterAdd);
+                    wasProjectModified |= UpdateFileMembershipInProject(project, file, useContentPipeline, shouldLink, fileToAddAbsolute,
+                        recursive: true, alreadyReferencedFiles: alreadyReferencedFiles, reEvaluateAfterAdd:reEvaluateAfterAdd,
+                        reasonForAdd:$"Referenced by {fileName}");
                 }
             }
         }
@@ -477,7 +484,9 @@ class ProjectCommands : IProjectCommands
     }
 
     private static void AddFileToContentProject(ProjectBase project, bool useContentPipeline,
-        bool shouldLink, string fileToAddAbsolute, ReferencedFileSave rfs, bool reEvaluateAfterAdd = true)
+        bool shouldLink, string fileToAddAbsolute,
+        ReferencedFileSave rfs, bool reEvaluateAfterAdd = true,
+        string reasonForAdd = "")
     {
         string relativeFileName = FileManager.MakeRelative(
             fileToAddAbsolute,
@@ -515,7 +524,14 @@ class ProjectCommands : IProjectCommands
 
         }
 
-        PluginManager.ReceiveOutput("Added " + relativeFileName + $" to {project.Name} as content");
+        if(reasonForAdd != string.Empty)
+        {
+            PluginManager.ReceiveOutput("Added " + relativeFileName + $" to {project.Name} as content. Reason: {reasonForAdd}");
+        }
+        else
+        {
+            PluginManager.ReceiveOutput("Added " + relativeFileName + $" to {project.Name} as content");
+        }
     }
 
     public void CreateAndAddCodeFile(string relativeFileName)
