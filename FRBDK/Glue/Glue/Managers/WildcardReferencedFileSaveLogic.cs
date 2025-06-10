@@ -85,10 +85,12 @@ namespace FlatRedBall.Glue.Managers
                 }
             });
 
-            foreach(var item in newRfses)
-            {
-                mainGlueProjectSave.GlobalFiles.Add(item);
-            }
+            // Parallelization causes files to arrive at the list at random times causing sort changes
+            // every time startup is run and this causing noise in GlobalContent.Generated.cs.
+            // We sort the list to avoid it.
+            var sortedReferences = newRfses.OrderBy(r => r.Name).ToList();
+
+            mainGlueProjectSave.GlobalFiles.AddRange(sortedReferences);
         }
 
         private static List<FilePath> GetRootPaths(FilePath glujFilePath, ReferencedFileSave[] wildcardRfses)
