@@ -494,6 +494,8 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
             toReturn = false;
         }
 
+
+
         if (toReturn && typeSpecificVariableNamesToSkipForStates.ContainsKey(container.Name))
         {
             var typeSpecificVariables = typeSpecificVariableNamesToSkipForStates[container.Name];
@@ -501,6 +503,21 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
             if (typeSpecificVariables.Contains(variableRootName))
             {
                 toReturn = false;
+            }
+        }
+
+        // check this and any of its base types:
+        var baseTypes = ObjectFinder.Self.GetBaseElements(container);
+
+        foreach(var baseType in baseTypes)
+        {
+            if(toReturn && typeSpecificVariableNamesToSkipForStates.ContainsKey(baseType.Name))
+            {
+                var typeSpecificVariables = typeSpecificVariableNamesToSkipForStates[baseType.Name];
+                if (typeSpecificVariables.Contains(variableRootName))
+                {
+                    toReturn = false;
+                }
             }
         }
 

@@ -179,6 +179,30 @@
     </Variable>
     <Variable>
       <Type>float</Type>
+      <Name>UserControlDerivedInstance.Height</Name>
+      <Value xsi:type="xsd:float">123</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>UserControlDerivedInstance.Width</Name>
+      <Value xsi:type="xsd:float">113</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>UserControlDerivedInstance.X</Name>
+      <Value xsi:type="xsd:float">176</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>UserControlDerivedInstance.Y</Name>
+      <Value xsi:type="xsd:float">72</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
       <Name>UserControlInstance.X</Name>
       <Value xsi:type="xsd:float">0</Value>
       <SetsValue>true</SetsValue>
@@ -277,6 +301,11 @@
   <Instance>
     <Name>TextBoxBoundToNumericValues</Name>
     <BaseType>DefaultForms/TextBox</BaseType>
+    <DefinedByBase>false</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>UserControlDerivedInstance</Name>
+    <BaseType>UserControlDerived</BaseType>
     <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />

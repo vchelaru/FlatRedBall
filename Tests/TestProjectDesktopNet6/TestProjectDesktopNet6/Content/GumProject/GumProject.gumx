@@ -339,6 +339,11 @@
     <ElementType>Component</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
   </ComponentReference>
+  <ComponentReference>
+    <Name>UserControlDerived</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
   <StandardElementReference>
     <Name>Arc</Name>
     <ElementType>Standard</ElementType>

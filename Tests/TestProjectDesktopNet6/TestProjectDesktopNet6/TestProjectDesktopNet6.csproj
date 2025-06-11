@@ -722,6 +722,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>UsedToInheritFromTextComponent</Name>
     </None>
+    <None Include="Content\GumProject\Components\UserControlDerived.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>UserControlDerived</Name>
+    </None>
     <None Include="Content\GumProject\FontCache\Font14Arial.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>Font14Arial</Name>
@@ -2356,6 +2360,10 @@
     <Compile Include="GumRuntimes\UsedToInheritFromTextComponentRuntime.cs" />
     <Compile Include="GumRuntimes\UsedToInheritFromTextComponentRuntime.Generated.cs">
       <DependentUpon>UsedToInheritFromTextComponentRuntime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\UserControlDerivedRuntime.cs" />
+    <Compile Include="GumRuntimes\UserControlDerivedRuntime.Generated.cs">
+      <DependentUpon>UserControlDerivedRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\VariantScreenGumRuntime.cs" />
     <Compile Include="GumRuntimes\VariantScreenGumRuntime.Generated.cs">
