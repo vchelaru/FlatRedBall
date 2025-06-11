@@ -2053,6 +2053,7 @@
     <Compile Include="Factories\VariantEntityBaseFactory.Generated.cs" />
     <Compile Include="Factories\VariantEntityDerivedFactory.Generated.cs" />
     <Compile Include="FileAliases.Generated.cs" />
+    <Compile Include="Forms\Components\UserControlDerivedForms.Generated.cs" />
     <Compile Include="Forms\Controls\CustomUserControl.cs" />
     <Compile Include="Forms\Screens\BaseGlueScreenNotBaseGumForms.Generated.cs" />
     <Compile Include="Forms\Screens\DerivedOfDerivedScreenGumForms.Generated.cs" />

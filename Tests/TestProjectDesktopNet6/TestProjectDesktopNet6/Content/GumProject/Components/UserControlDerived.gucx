@@ -33,6 +33,24 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>float</Type>
+      <Name>ButtonInstance.Width</Name>
+      <Value xsi:type="xsd:float">124</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ButtonInstance.X</Name>
+      <Value xsi:type="xsd:float">13</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>ButtonInstance.Y</Name>
+      <Value xsi:type="xsd:float">17</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>ChildrenLayout</Type>
       <Name>ChildrenLayout</Name>
       <Value xsi:type="xsd:int">0</Value>
@@ -235,6 +253,11 @@
     <Name>ColoredFrameInstance</Name>
     <BaseType>DefaultForms/ColoredFrame</BaseType>
     <DefinedByBase>true</DefinedByBase>
+  </Instance>
+  <Instance>
+    <Name>ButtonInstance</Name>
+    <BaseType>DefaultForms/Button</BaseType>
+    <DefinedByBase>false</DefinedByBase>
   </Instance>
   <Behaviors />
 </ComponentSave>

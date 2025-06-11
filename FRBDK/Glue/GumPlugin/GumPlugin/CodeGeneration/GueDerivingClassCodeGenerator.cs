@@ -510,17 +510,29 @@ namespace GumPlugin.CodeGeneration
 
             bool hasBase = !string.IsNullOrEmpty(elementSave.BaseType);
 
-            if(hasBase)
+            string throwaway;
+            var thisIsAFormsObject =
+                GetIfShouldGenerateFormsCode(elementSave, out throwaway) || FormsClassCodeGenerator.Self.GetIfShouldGenerate(elementSave);
+
+            if (hasBase)
             {
-                baseCall = "base(false, tryCreateFormsObject)";
+                // If this is a Forms object, then it should NOT try to create a forms object at the base level
+                if(thisIsAFormsObject)
+                {
+                    // don't generate at the base, do it here at the derived
+                    baseCall = "base(false, false)";
+                }
+                else
+                {
+                    baseCall = "base(false, tryCreateFormsObject)";
+                }
             }
             var constructor = currentBlock.Constructor("public", runtimeClassName, "bool fullInstantiation = true, bool tryCreateFormsObject = true",  baseCall );
 
             // This may not have a value, so if not, don't set it:
             var state = elementSave.DefaultState;
 
-            string throwaway;
-            if (GetIfShouldGenerateFormsCode(elementSave, out throwaway) || FormsClassCodeGenerator.Self.GetIfShouldGenerate(elementSave))
+            if (thisIsAFormsObject)
             {
                 constructor.Line("this.tryCreateFormsObject = tryCreateFormsObject;");
             }
