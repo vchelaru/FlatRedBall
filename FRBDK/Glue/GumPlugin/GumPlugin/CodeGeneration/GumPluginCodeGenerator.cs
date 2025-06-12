@@ -70,13 +70,15 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
             var gumScreenRfs = GetGumScreenRfs(element);
             var ati = gumScreenRfs.GetAssetTypeInfo();
 
+            var gumScreenObjectName = GumScreenObjectNameFor(element);
+
             if (ati?.RuntimeTypeName == "GumIdb")
             {
-                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement FlatRedBall.Gum.IGumScreenOwner.GumScreen => GumScreen.Element;");
+                codeBlock.Line($"global::Gum.Wireframe.GraphicalUiElement FlatRedBall.Gum.IGumScreenOwner.GumScreen => {gumScreenObjectName}.Element;");
             }
             else
             {
-                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement FlatRedBall.Gum.IGumScreenOwner.GumScreen => GumScreen;");
+                codeBlock.Line($"global::Gum.Wireframe.GraphicalUiElement FlatRedBall.Gum.IGumScreenOwner.GumScreen => {gumScreenObjectName};");
             }
 
             codeBlock.Line("void FlatRedBall.Gum.IGumScreenOwner.RefreshLayout() => RefreshLayoutInternal(null, null);");

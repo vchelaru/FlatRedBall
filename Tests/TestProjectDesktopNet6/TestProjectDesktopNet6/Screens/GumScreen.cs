@@ -5,13 +5,13 @@ using GlueTestProject.GumRuntimes;
 using System.Linq;
 using RenderingLibrary;
 using RenderingLibrary.Graphics;
+using FlatRedBall.Gum;
 
 
 namespace GlueTestProject.Screens;
 
 public partial class GumScreen
 {
-
     void CustomInitialize()
     {
         if (this.TopButton.Width < 149 || this.TopButton.Width > 151)
@@ -95,8 +95,15 @@ public partial class GumScreen
         CustomVariables_ShouldMatchInstanceValues();
 
         AnimatedSprites_ShouldDisplayCorrectFrame_WhenMadeNewlyVisible();
+
+        GumScreen_ShouldNotBeNull();
     }
 
+    private void GumScreen_ShouldNotBeNull()
+    {
+        this.GumScreen_.ShouldNotBe(null);
+        ((IGumScreenOwner)this).GumScreen.ShouldNotBe(null);
+    }
     private void AnimatedSprites_ShouldDisplayCorrectFrame_WhenMadeNewlyVisible()
     {
         var sprite = new SpriteRuntime();
