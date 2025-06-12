@@ -67,7 +67,19 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         // It's possible to have a Gum screen in derived but not base, but that's rare so I'm not going to handle that case until someone complains
         if(ShouldGenerateGumScreenOwner(element) && !HasBaseWithGumScreen(element as GlueElement))
         {
-            codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement FlatRedBall.Gum.IGumScreenOwner.GumScreen { get; }");
+            var gumScreenRfs = GetGumScreenRfs(element);
+            var ati = gumScreenRfs.GetAssetTypeInfo();
+
+            var gumScreenObjectName = GumScreenObjectNameFor(element);
+
+            if (ati?.RuntimeTypeName == "GumIdb")
+            {
+                codeBlock.Line($"global::Gum.Wireframe.GraphicalUiElement FlatRedBall.Gum.IGumScreenOwner.GumScreen => {gumScreenObjectName}.Element;");
+            }
+            else
+            {
+                codeBlock.Line($"global::Gum.Wireframe.GraphicalUiElement FlatRedBall.Gum.IGumScreenOwner.GumScreen => {gumScreenObjectName};");
+            }
 
             codeBlock.Line("void FlatRedBall.Gum.IGumScreenOwner.RefreshLayout() => RefreshLayoutInternal(null, null);");
         }
