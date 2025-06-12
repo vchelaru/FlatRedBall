@@ -112,10 +112,6 @@ namespace FlatRedBall.Glue.IO
             GlueState.Self.CurrentMainProject = (VisualStudioProject)result.Project;
 
             bool shouldLoad = result.Project != null;
-            if (shouldLoad && result.ShouldTryToLoadProject)
-            {
-                shouldLoad = DetermineIfShouldLoad(projectFileName);
-            }
 
             if (shouldLoad)
             {
@@ -221,86 +217,6 @@ namespace FlatRedBall.Glue.IO
 
             // If we ever want to make things go faster, turn this back on and let's see what's going on.
             //topSection.Save("Sections.xml");
-        }
-
-        private static bool DetermineIfShouldLoad(string projectFileName)
-        {
-            bool shouldLoad = true;
-
-            // see if this project references any plugins that aren't installed:
-            var gluxFileName = FileManager.RemoveExtension(projectFileName) + ".glux";
-            var glueJavascriptFileName = FileManager.RemoveExtension(projectFileName) + ".gluj";
-            var fileToLoad = System.IO.File.Exists(gluxFileName) ? gluxFileName
-                : System.IO.File.Exists(glueJavascriptFileName) ? glueJavascriptFileName
-                : string.Empty;
-            if (!string.IsNullOrEmpty(fileToLoad))
-            {
-                try
-                {
-                    GlueProjectSave tempGlux = null;
-
-                    tempGlux = GlueProjectSaveExtensions.Load(fileToLoad);
-
-                    var requiredPlugins = tempGlux.PluginData.RequiredPlugins;
-
-                    List<string> individualPluginMessages = new List<string>();
-
-                    foreach (var requiredPlugin in requiredPlugins)
-                    {
-                        var matchingPlugin = PluginManager.AllPluginContainers.FirstOrDefault(item => item.Name == requiredPlugin.Name);
-
-                        if (matchingPlugin == null)
-                        {
-                            individualPluginMessages.Add(requiredPlugin.Name);
-                        }
-                        else
-                        {
-                            switch (requiredPlugin.VersionRequirement)
-                            {
-                                case VersionRequirement.EqualToOrNewerThan:
-                                    bool isNewerOrEqual = matchingPlugin.Plugin.Version >= new Version(requiredPlugin.Version);
-                                    if (!isNewerOrEqual)
-                                    {
-                                        individualPluginMessages.Add($"{requiredPlugin.Name} must be updated\n\t{requiredPlugin.Version} required\n\t{matchingPlugin.Plugin.Version} installed");
-                                    }
-                                    break;
-                                default: // eventually fill in the rest
-                                    throw new NotImplementedException();
-                                    //break;
-                            }
-                        }
-                    }
-
-                    string missingPluginMessage = null;
-                    if (individualPluginMessages.Count != 0)
-                    {
-                        missingPluginMessage = $"The project {fileToLoad} requires the following plugins:\n";
-
-                        foreach (var item in individualPluginMessages)
-                        {
-                            missingPluginMessage += "\n" + item;
-                        }
-
-                        missingPluginMessage += "\n\nWould you like to load the project anyway? It may not run, or may run incorrectly until all plugins are installed/updated.";
-                    }
-
-                    if (!string.IsNullOrEmpty(missingPluginMessage))
-                    {
-                        var result = MessageBox.Show(missingPluginMessage, "Missing Plugins", MessageBoxButtons.YesNo);
-
-                        shouldLoad = result == DialogResult.Yes;
-
-                    }
-
-                }
-                catch (Exception e)
-                {
-                    GlueGui.ShowMessageBox($"Could not load .glux file {fileToLoad}. Error:\n\n{e.ToString()}");
-                    shouldLoad = false;
-                }
-            }
-
-            return shouldLoad;
         }
 
         public void GetCsprojToLoad(out string csprojToLoad)

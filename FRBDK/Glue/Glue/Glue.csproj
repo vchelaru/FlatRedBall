@@ -187,6 +187,8 @@
       <!--<ExcludeAssets>runtime</ExcludeAssets>-->
     </PackageReference>
 
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="9.0.5" />
+
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.5" />
 
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.5" />
