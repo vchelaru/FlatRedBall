@@ -74,7 +74,6 @@ public static class RightClickHelper
     static GeneralToolStripMenuItem mMoveUp;
     static GeneralToolStripMenuItem mMoveDown;
     static GeneralToolStripMenuItem mMakeRequiredAtStartup;
-    static GeneralToolStripMenuItem mRebuildFile;
 
     static GeneralToolStripMenuItem mViewSourceInExplorer;
 
