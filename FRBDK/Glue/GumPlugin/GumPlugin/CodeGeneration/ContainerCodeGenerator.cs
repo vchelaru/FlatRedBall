@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Gum.DataTypes;
+using Newtonsoft.Json.Linq;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace GumPlugin.CodeGeneration;
@@ -31,6 +32,17 @@ public class ContainerCodeGenerator
 
         GenerateAlphaProperty(classBodyBlock);
         GenerateIsRenderTargetProperty(classBodyBlock);
+        GenerateBlendProperty(classBodyBlock);
+    }
+
+    private void GenerateBlendProperty(ICodeBlock classBodyBlock)
+    {
+        var property = classBodyBlock.Property("public global::Gum.RenderingLibrary.Blend", "Blend")
+            .Line("get { if (mContainedObjectAsIpso?.BlendState != null) return global::Gum.RenderingLibrary.BlendExtensions.ToBlend(mContainedObjectAsIpso.BlendState); else return global::Gum.RenderingLibrary.Blend.Normal; }")
+            .Line("set { if (mContainedObjectAsIpso is global::RenderingLibrary.Graphics.InvisibleRenderable invisibleRenderable) invisibleRenderable.BlendState = global::Gum.RenderingLibrary.BlendExtensions.ToBlendState(value); }");
+
+        //get { if (mContainedObjectAsIpso?.BlendState != null) return global::Gum.RenderingLibrary.BlendExtensions.ToBlend(mContainedObjectAsIpso.BlendState); else return global::Gum.RenderingLibrary.Blend.Normal; }
+        //set { if (mContainedObjectAsIpso is global::RenderingLibrary.Graphics.InvisibleRenderable invisibleRenderable) invisibleRenderable.BlendState = global::Gum.RenderingLibrary.BlendExtensions.ToBlendState(value); }
     }
 
     private void GenerateAlphaProperty(ICodeBlock classBodyBlock)
