@@ -927,7 +927,9 @@ public class MainGumPlugin : PluginBase
 
         GumPluginCommands.Self.RefreshGumViewModel();
 
+        StateCodeGenerator.Self.RefreshVariablesToSkipForStates();
         StateCodeGenerator.Self.RefreshVariableNamesToSkipBasedOnGlueVersion();
+
 
         StandardsCodeGenerator.Self.RefreshVariableNamesToSkipForProperties();
     }

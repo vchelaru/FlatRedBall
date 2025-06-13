@@ -63,15 +63,17 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
     {
         _textCodeGenerator = textCodeGenerator;
         _containerCodeGenerator = containerCodeGenerator;
-        AddVariablesToSkipForStates();
     }
 
     public StateCodeGenerator()
     {
     }
 
-    private void AddVariablesToSkipForStates()
+    public void RefreshVariablesToSkipForStates()
     {
+        mVariableNamesToSkipForStates.Clear();
+        typeSpecificVariableNamesToSkipForStates.Clear();
+
         //mVariableNamesToSkipForStates.Add("CustomFontFile");
         //mVariableNamesToSkipForStates.Add("UseCustomFont");
         mVariableNamesToSkipForStates.Add("Guide");
