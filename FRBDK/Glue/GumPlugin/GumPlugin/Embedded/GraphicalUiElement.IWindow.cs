@@ -158,7 +158,8 @@ namespace Gum.Wireframe
                 GuiManager.AddWindow(this);
             }
 
-            (this.FormsControlAsObject as IFrameworkElement)?.CallLoaded();
+            // I believe this is now handled by internal Gum
+            //(this.FormsControlAsObject as IFrameworkElement)?.CallLoaded();
 
             if(mContainedObjectAsIpso is IManagedObject containedAsManaged)
             {
