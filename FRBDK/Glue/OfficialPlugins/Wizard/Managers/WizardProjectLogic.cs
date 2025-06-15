@@ -1120,25 +1120,27 @@ namespace OfficialPlugins.Wizard.Managers
             {
                 System.Diagnostics.Debugger.Break();
             }
-
-            if (vm.FollowPlayersWithCamera && vm.FollowPlayersWithCameraVisibility)
+            else
             {
-                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
-                    cameraNos,
-                    nameof(FlatRedBall.Entities.CameraControllingEntity.Targets),
-                    value: "PlayerList",
-                    performSaveAndGenerateCode: false,
-                    updateUi: false);
-            }
-            if (vm.KeepCameraInMap && vm.KeepCameraInMapVisibility)
-            {
-                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
-                    cameraNos,
-                    nameof(FlatRedBall.Entities.CameraControllingEntity.Map),
-                    value: "Map",
-                    performSaveAndGenerateCode: false,
-                    updateUi: false
-                    );
+                if (vm.FollowPlayersWithCamera && vm.FollowPlayersWithCameraVisibility)
+                {
+                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                        cameraNos,
+                        nameof(FlatRedBall.Entities.CameraControllingEntity.Targets),
+                        value: "PlayerList",
+                        performSaveAndGenerateCode: false,
+                        updateUi: false);
+                }
+                if (vm.KeepCameraInMap && vm.KeepCameraInMapVisibility)
+                {
+                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                        cameraNos,
+                        nameof(FlatRedBall.Entities.CameraControllingEntity.Map),
+                        value: "Map",
+                        performSaveAndGenerateCode: false,
+                        updateUi: false
+                        );
+                }
             }
         }
     }

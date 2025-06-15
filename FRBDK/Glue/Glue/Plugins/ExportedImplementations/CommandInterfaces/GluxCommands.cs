@@ -1517,7 +1517,7 @@ public class GluxCommands : IGluxCommands
             currentList);
     }
 
-    public async Task<NamedObjectSave> AddNewNamedObjectToAsync(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true)
+    public async Task<NamedObjectSave> AddNewNamedObjectToAsync(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave? listToAddTo = null, bool selectNewNos = true)
     {
         NamedObjectSave newNos = new NamedObjectSave();
         newNos.SetDefaults();
@@ -1571,7 +1571,7 @@ public class GluxCommands : IGluxCommands
         return newNos;
     }
 
-    public async Task AddNamedObjectToAsync(NamedObjectSave newNos, GlueElement elementToAddTo, NamedObjectSave listToAddTo = null, bool selectNewNos = true,
+    public async Task AddNamedObjectToAsync(NamedObjectSave newNos, GlueElement elementToAddTo, NamedObjectSave? listToAddTo = null, bool selectNewNos = true,
          bool performSaveAndGenerateCode = true, bool updateUi = true)
     {
         var frameId1 = System.Threading.Thread.CurrentThread.ManagedThreadId;

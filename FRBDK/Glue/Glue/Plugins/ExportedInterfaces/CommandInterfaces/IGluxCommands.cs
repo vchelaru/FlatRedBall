@@ -170,9 +170,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         // SourceType sourceType, string sourceClassType, string sourceFile, string objectName, string sourceNameInFile, string sourceClassGenericType
         Task<NamedObjectSave> AddNewNamedObjectToSelectedElementAsync(ViewModels.AddObjectViewModel addObjectViewModel);
-        Task<NamedObjectSave> AddNewNamedObjectToAsync(ViewModels.AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true);
+        Task<NamedObjectSave> AddNewNamedObjectToAsync(ViewModels.AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave? listToAddTo = null, bool selectNewNos = true);
 
-        Task AddNamedObjectToAsync(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true,
+        Task AddNamedObjectToAsync(NamedObjectSave newNos, GlueElement element, NamedObjectSave? listToAddTo = null, bool selectNewNos = true,
             bool performSaveAndGenerateCode = true, bool updateUi = true);
 
         /// <summary>
