@@ -91,7 +91,8 @@ class ErrorReporter : ErrorReporterBase
                 {
                     foreach (var layer in tms.Layers)
                     {
-                        if(MultipleTilesetPerLayerErrorViewModel.GetIfHasError(filePath, layer.Name, out int? tileIndex))
+                        if(MultipleTilesetPerLayerErrorViewModel.GetIfHasError(filePath, layer.Name,
+                            out int? tileIndex, out int? columnCount))
                         {
                             var error = new MultipleTilesetPerLayerErrorViewModel()
                             {
@@ -100,6 +101,7 @@ class ErrorReporter : ErrorReporterBase
 
                             };
 
+                            error.ColumnCount = tms.Width;
                             error.TileIndex = tileIndex.Value;
                             error.UpdateDetails();
 

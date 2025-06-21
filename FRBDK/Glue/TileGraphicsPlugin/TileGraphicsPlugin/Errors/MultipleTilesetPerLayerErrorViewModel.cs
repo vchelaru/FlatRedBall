@@ -15,6 +15,7 @@ namespace TiledPlugin.Errors
     {
         string layerName;
         public int TileIndex { get; set; }
+        public int ColumnCount { get; set; }
         public string LayerName
         {
             get => layerName;
@@ -27,7 +28,17 @@ namespace TiledPlugin.Errors
 
         public override void UpdateDetails()
         {
-            Details = $"Layer {layerName} in {FilePath} references multiple tilesets which is not allowed. See tile index {TileIndex}";
+            if(ColumnCount > 0)
+            {
+                var rowIndex = TileIndex / ColumnCount;
+                var columnIndex = TileIndex % ColumnCount;
+
+                Details = $"Layer {layerName} in {FilePath} references multiple tilesets which is not allowed. See tile ({columnIndex}, {rowIndex})";
+            }
+            else
+            {
+                Details = $"Layer {layerName} in {FilePath} references multiple tilesets which is not allowed. See tile index {TileIndex}";
+            }
         }
 
         
@@ -68,7 +79,7 @@ namespace TiledPlugin.Errors
 
         public override bool GetIfIsFixed()
         {
-            var hasError = GetIfHasError(FilePath, layerName, out int? tileIndex);
+            var hasError = GetIfHasError(FilePath, layerName, out int? tileIndex, out int? columnCount);
 
             if(hasError)
             {
@@ -76,6 +87,7 @@ namespace TiledPlugin.Errors
                 {
                     TileIndex = tileIndex.Value;
                 }
+                this.ColumnCount = columnCount ?? 0;
             }
             else
             {
@@ -85,9 +97,10 @@ namespace TiledPlugin.Errors
         }
 
 
-        public static bool GetIfHasError(FilePath filePath, string layerName, out int? tileIndex)
+        public static bool GetIfHasError(FilePath filePath, string layerName, out int? tileIndex, out int? columnCount)
         {
             tileIndex = null;
+            columnCount = null;
 
             var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(filePath);
             if (rfs == null)
@@ -109,7 +122,7 @@ namespace TiledPlugin.Errors
             {
                 return false;
             }
-
+            columnCount = tms.Width;
             // 4. Layer exists, but doen't have anymore duplicates
             var id = GetFirstTileWithDifferentTileset(tms, layer);
             if(id != null)
