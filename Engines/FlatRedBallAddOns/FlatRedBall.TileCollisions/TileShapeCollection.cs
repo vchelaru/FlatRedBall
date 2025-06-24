@@ -555,6 +555,13 @@ namespace FlatRedBall.TileCollisions
             return toReturn;
         }
 
+        /// <summary>
+        /// Creates a new AxisAlignedRectangle and positions it at the nearest grid location
+        /// to the argument x,y values. If AdjustRepositionDirectionsOnAddAndRemove is set to true,
+        /// then reposition directions are also updated on the newly added rectangle and its neighbors.
+        /// </summary>
+        /// <param name="x">The world X position. If a new rectangle is added, its X is snapped to the grid.</param>
+        /// <param name="y">The world Y position. If a new rectangle is added, its Y is snapped to the grid.</param>
         public void AddCollisionAtWorld(float x, float y)
         {
             // Make sure there isn't already collision here
