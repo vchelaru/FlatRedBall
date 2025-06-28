@@ -560,21 +560,28 @@ namespace FlatRedBall.TileGraphics
                 textureValues.W = -CoordinateAdjustment + (float)(quad.TopTexturePixel + tileDimensionHeight) / (float)texture.Height; // Bottom
 
                 // pad before doing any rotations/flipping
-                const bool pad = true;
-                float amountToAddX = .0000001f;
-                float amountToAddY = .0000001f;
-                if (texture != null)
-                {
-                    amountToAddX = .037f / texture.Width;
-                    amountToAddY = .037f / texture.Height;
-                }
-                if (pad)
-                {
-                    textureValues.X += amountToAddX; // Left
-                    textureValues.Y -= amountToAddX; // Right
-                    textureValues.Z += amountToAddY; // Top
-                    textureValues.W -= amountToAddY; // Bottom
-                }
+                // Update 6/28/2025
+                // Why are we doing additional
+                // padding here? Why not just respect
+                // the CoordianteAdjustment?
+                // If CoordianteAdjustment needs
+                // to be tied to the resolution of the
+                // texture, then there should be a Units value.
+                //const bool pad = true;
+                //float amountToAddX = .0000001f;
+                //float amountToAddY = .0000001f;
+                //if (texture != null)
+                //{
+                //    amountToAddX = .037f / texture.Width;
+                //    amountToAddY = .037f / texture.Height;
+                //}
+                //if (pad)
+                //{
+                //    textureValues.X += amountToAddX; // Left
+                //    textureValues.Y -= amountToAddX; // Right
+                //    textureValues.Z += amountToAddY; // Top
+                //    textureValues.W -= amountToAddY; // Bottom
+                //}
 
                 if ((quad.FlipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag)
                 {
