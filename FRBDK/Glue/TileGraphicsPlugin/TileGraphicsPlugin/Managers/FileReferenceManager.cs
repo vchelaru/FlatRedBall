@@ -260,16 +260,19 @@ namespace TileGraphicsPlugin.Managers
                         relativeDirectoryForImage = FileManager.GetDirectory(absoluteSource);
                     }
 
-                    foreach(var image in tileset.Images)
+                    if(tileset.Images != null)
                     {
-                        FilePath absoluteImage = relativeDirectoryForImage + image.Source;
-
-                        if(pngFilePath == absoluteImage)
+                        foreach(var image in tileset.Images)
                         {
-                            foundAny = true;
-                            break;
-                        }
+                            FilePath absoluteImage = relativeDirectoryForImage + image.Source;
 
+                            if(pngFilePath == absoluteImage)
+                            {
+                                foundAny = true;
+                                break;
+                            }
+
+                        }
                     }
                     if(foundAny)
                     {
