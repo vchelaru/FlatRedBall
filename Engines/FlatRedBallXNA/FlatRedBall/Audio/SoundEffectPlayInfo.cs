@@ -12,7 +12,15 @@ namespace FlatRedBall.Audio
     // to reference these.
     public struct SoundEffectPlayInfo
     {
-        public SoundEffect SoundEffect;
+        public SoundEffect? SoundEffect;
+        public SoundEffectInstance? SoundEffectInstance;
+        /// <summary>
+        /// A value representing the SoundEffectInstance
+        /// </summary>
+        public string? SoundEffectName;
+        /// <summary>
+        /// The game's CurrentTime (not CurrentScreenTime) when this was played
+        /// </summary>
         public double LastPlayTime;
 
     }

@@ -732,7 +732,24 @@ public static partial class AudioManager
 
     #region SoundEffectInstance
 
-    public static void Play(SoundEffectInstance soundEffectInstance)
+    public static bool IsSoundEffectInstancePlaying(string soundEffectInstanceName)
+    {
+        for (int i = 0; i < mSoundEffectPlayInfos.Count; i++)
+        {
+            if (mSoundEffectPlayInfos[i].SoundEffectInstance != null && mSoundEffectPlayInfos[i].SoundEffectName == soundEffectInstanceName)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Plays the argument SoundEffectInstance using a default Volume, and optionally keeps track of the sound effect if a soundEffectName is specified
+    /// </summary>
+    /// <param name="soundEffectInstance">The SoundEffectToPlay</param>
+    /// <param name="soundEffectName">The name of the SoundEffect</param>
+    public static void Play(SoundEffectInstance soundEffectInstance, string? soundEffectName = null)
     {
         ///////////////////Early Out////////////////////////////////
         if (!AreSoundEffectsEnabled || ScreenManager.IsInEditMode)
@@ -748,7 +765,14 @@ public static partial class AudioManager
         soundEffectInstance.Volume = MasterSoundVolume;
         soundEffectInstance.Play();
 
-        // todo - store information about max sound effects playing?
+        if(soundEffectName != null)
+        {
+            SoundEffectPlayInfo sepi = new SoundEffectPlayInfo();
+            sepi.LastPlayTime = TimeManager.CurrentTime;
+            sepi.SoundEffectInstance = soundEffectInstance;
+            sepi.SoundEffectName = soundEffectName;
+            mSoundEffectPlayInfos.Add(sepi);
+        }
     }
 
     #endregion
@@ -780,9 +804,22 @@ public static partial class AudioManager
         for (int i = mSoundEffectPlayInfos.Count - 1; i > -1; i--)
         {
             SoundEffectPlayInfo sepi = mSoundEffectPlayInfos[i];
-            if (TimeManager.SecondsSince(sepi.LastPlayTime + sepi.SoundEffect.Duration.TotalSeconds) > 0)
+
+            if(sepi.SoundEffectInstance != null)
             {
-                mSoundEffectPlayInfos.RemoveAt(i);
+                if(TimeManager.CurrentTime != sepi.LastPlayTime && sepi.SoundEffectInstance.State != SoundState.Playing)
+                {
+                    mSoundEffectPlayInfos.RemoveAt(i);
+                }
+            }
+            else if(sepi.SoundEffect != null)
+            {
+                var soundEffectDuration = sepi.SoundEffect.Duration;
+
+                if (TimeManager.SecondsSince(sepi.LastPlayTime + sepi.SoundEffect.Duration.TotalSeconds) > 0)
+                {
+                    mSoundEffectPlayInfos.RemoveAt(i);
+                }
             }
 
         }
