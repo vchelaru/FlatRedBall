@@ -793,9 +793,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
                 else
                 {
-                    mBuildItemDictionaries.Add(
-                        buildItem.UnevaluatedInclude,
-                        buildItem);
+                    mBuildItemDictionaries[buildItem.UnevaluatedInclude] = buildItem;
 
                     var linkMetadata = buildItem.Metadata.FirstOrDefault(metadata => String.Equals(metadata.ItemType, "Link", StringComparison.OrdinalIgnoreCase));
                     if(linkMetadata != null)
