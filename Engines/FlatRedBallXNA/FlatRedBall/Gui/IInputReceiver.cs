@@ -52,6 +52,9 @@ public interface IInputReceiver
         set;
     }
 
+    IInputReceiver? ParentInputReceiver { get; }
+
+
     #endregion
 
     #region Events

@@ -1,14 +1,15 @@
-﻿using FlatRedBall.Glue.StateInterpolation;
-using FlatRedBall.Gui;
-using FlatRedBall.Input;
-using Gum.Wireframe;
-using Microsoft.Xna.Framework.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.StateInterpolation;
+using FlatRedBall.Gui;
+using FlatRedBall.Input;
+using Gum.Wireframe;
+using Microsoft.Xna.Framework.Input;
+using MonoGameGum.Forms.Controls;
 
 namespace FlatRedBall.Forms.Controls.Games
 {
@@ -37,6 +38,9 @@ namespace FlatRedBall.Forms.Controls.Games
         GraphicalUiElement continueIndicatorInstance;
         RenderingLibrary.Graphics.Text coreTextObject;
 
+
+        public IInputReceiver? ParentInputReceiver =>
+            this.GetParentInputReceiver();
         public static double LastTimeDismissed { get; private set; }
 
         List<DialogPageTask> Pages = new List<DialogPageTask>();

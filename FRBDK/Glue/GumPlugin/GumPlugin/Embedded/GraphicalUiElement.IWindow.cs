@@ -50,6 +50,9 @@ namespace Gum.Wireframe
 
         public event EventHandler RemovedFromGuiManager;
 
+        IInputReceiver? ParentInputReceiver { get; }
+
+
         public event Action<IWindow, FlatRedBall.Gui.RoutedEventArgs> MouseWheelScroll;
         public event Action<IWindow, FlatRedBall.Gui.RoutedEventArgs> RollOverBubbling;
 

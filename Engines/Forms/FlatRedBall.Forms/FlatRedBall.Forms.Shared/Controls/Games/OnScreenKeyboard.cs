@@ -1,20 +1,25 @@
-﻿using FlatRedBall.Gui;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text;
+using FlatRedBall.Gui;
 using FlatRedBall.Input;
 using FlatRedBall.Math.Geometry;
 using Gum.Wireframe;
 using Microsoft.Xna.Framework.Input;
+using MonoGameGum.Forms.Controls;
 using RenderingLibrary;
 using RenderingLibrary.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
 
 namespace FlatRedBall.Forms.Controls.Games
 {
     public class OnScreenKeyboard : Controls.FrameworkElement, IInputReceiver
     {
         #region Fields/Properties
+
+
+        public IInputReceiver? ParentInputReceiver =>
+            this.GetParentInputReceiver();
 
         public TextBox AssociatedTextBox { get; set; }
 
@@ -31,6 +36,7 @@ namespace FlatRedBall.Forms.Controls.Games
         List<GraphicalUiElement> selectableItems = new List<GraphicalUiElement>();
 
         #endregion
+
 
         public OnScreenKeyboard() : base() 
         {
