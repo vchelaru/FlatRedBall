@@ -131,8 +131,6 @@ public class Xbox360GamePad : IInputDevice
 
     DelegateBased2DInput dPad;
 
-    const float AnalogOnThreshold = .5f;
-
     GamePadState mGamePadState;
     GamePadState mLastGamePadState;
 
@@ -221,6 +219,8 @@ public class Xbox360GamePad : IInputDevice
             if (RightStick != null) RightStick.DeadzoneInterpolation = value;
         }
     }
+
+    public float AnalogOnThreshold { get; set; } = .5f;
 
     public I1DInput DPadHorizontal
     {
