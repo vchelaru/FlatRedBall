@@ -10,7 +10,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
+		<ProjectReference Include="..\..\..\..\..\Gum\GumCommon\GumCommon.csproj" />
 		<ProjectReference Include="..\..\..\Localization\Localization.csproj" />
 	</ItemGroup>
 
