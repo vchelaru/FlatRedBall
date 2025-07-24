@@ -797,10 +797,10 @@ namespace OfficialPlugins.MonoGameContent
                 {
                     link = "Assets\\" + link;
                 }
-                link = project.ProcessLink(link);
-                item.SetLink(link.Replace("/", "\\"));
+                link = project.ProcessLink(link).Replace("/", "\\");
+                var didChange = item.TrySetLink(link);
 
-                if(saveProjectAfterAdd)
+                if(saveProjectAfterAdd && didChange)
                 {
                     GlueCommands.TryMultipleTimes(project.Save, 5);
                 }

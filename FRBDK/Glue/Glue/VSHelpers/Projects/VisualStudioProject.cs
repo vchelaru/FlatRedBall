@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using FlatRedBall.IO;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
+using EditorObjects.Parsing;
+using FlatRedBall.Glue.AutomatedGlue;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
-using EditorObjects.Parsing;
-using FlatRedBall.Glue.Controls;
-using System.Windows.Forms;
-using System.Diagnostics;
-using FlatRedBall.Glue.AutomatedGlue;
-using FlatRedBall.Glue.Utilities;
-
-using System.Text;
-using System.Linq;
 using FlatRedBall.Glue.Managers;
-using Microsoft.Build.Evaluation;
-using Container = EditorObjects.IoC.Container;
-using FlatRedBall.Glue.Plugins.ExportedInterfaces;
-using System.Reflection;
-using System.IO;
-using FlatRedBall.Glue.SaveClasses;
-using System.Windows.Forms.VisualStyles;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Utilities;
+using FlatRedBall.IO;
+using Microsoft.Build.Evaluation;
+using Newtonsoft.Json.Linq;
+using Container = EditorObjects.IoC.Container;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -1336,10 +1336,22 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
     public static class BuildItemExtensionMethods
     {
-        public static string GetLink(this ProjectItem buildItem)
+        public static string? GetLink(this ProjectItem buildItem)
         {
-            return (string)buildItem.Metadata.FirstOrDefault(item => item.Name == "Link")?.EvaluatedValue;
+            return (string?)buildItem.Metadata.FirstOrDefault(item => item.Name == "Link")?.EvaluatedValue;
         }
+
+        public static bool TrySetLink(this ProjectItem buildItem, string value)
+        {
+            var existingLink = buildItem.GetLink();
+            if (existingLink != value)
+            {
+                buildItem.SetLink(value);
+                return true;
+            }
+            return false;
+        }
+
         public static void SetLink(this ProjectItem buildItem, string value)
         {
             buildItem.SetMetadataValue("Link", value);
