@@ -27,6 +27,7 @@ public class Builder
         builder.Services.AddSingleton<ProjectLoader>(ProjectLoader.Self);
         builder.Services.AddSingleton<IProjectCommands>(GlueCommands.Self.ProjectCommands);
         builder.Services.AddSingleton<FileReferenceManager>(FileReferenceManager.Self);
+        builder.Services.AddSingleton<DragDropManager>(DragDropManager.Self);
 
         App = builder.Build();
 

@@ -31,6 +31,9 @@ namespace FlatRedBall.Glue.Managers;
 
 public class DragDropManager : Singleton<DragDropManager>
 {
+
+
+
     #region Named Object
 
     #region ... general methods
@@ -1743,6 +1746,11 @@ public class DragDropManager : Singleton<DragDropManager>
             if (nodeMoving == targetNode || nodeMoving == null)
             {
                 // do nothing
+                if(nodeMoving == targetNode && targetNode != null)
+                {
+                    // This was probably an intended click that moved too much, so let's select it:
+                    GlueState.Self.CurrentTreeNode = targetNode;
+                }
             }
             else if (nodeMoving.IsElementNode())
             {
