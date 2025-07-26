@@ -53,6 +53,11 @@ namespace GlueControl.Editing
         double FadingSeed { get; set; }
         Color BrightColor { get; set; }
         string Name { get; set; }
+
+        /// <summary>
+        /// Whether this selection marker can move the item. This can be false if the selectio marker
+        /// is not on the primarily selected object, or if the selection marker is just a highlight marker
+        /// </summary>
         bool CanMoveItem { get; set; }
         Vector3 LastUpdateMovement { get; }
         bool UsesRightMouseButton { get; }
@@ -987,8 +992,7 @@ namespace GlueControl.Editing
 
             var hasMovedEnough = Math.Abs(ScreenPointPushed.X - mouse.X) > 4 ||
                 Math.Abs(ScreenPointPushed.Y - mouse.Y) > 4;
-
-            if (CanMoveItem && mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && didMouseMove && hasMovedEnough &&
+            bool canEffectivelyMove = CanMoveItem && mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && didMouseMove && hasMovedEnough &&
                 !handledByPolygonHandles &&
                 FlatRedBallServices.Game.IsActive &&
                 // Currently only PositionedObjects can be moved. If an object is
@@ -998,7 +1002,19 @@ namespace GlueControl.Editing
                 // we need to have plugins that can map one value (such as X) to another value (such
                 // as XOffset) so that changes in the game can make their way back into Glue. Until then
                 // we'll only allow moving PositionedObjects.
-                item is PositionedObject)
+                item is PositionedObject;
+
+            if (canEffectivelyMove && item is Sprite asSprite )
+            {
+                // don't allow moving this if it is a Sprite that has an AnimationChain and
+                // if the Sprite uses animation chanin positioning:
+                if (asSprite.Parent != null && asSprite.UseAnimationRelativePosition && asSprite.CurrentChain != null && asSprite.CurrentChain.Count > 0)
+                {
+                    canEffectivelyMove = false;
+                }
+            }
+
+            if (canEffectivelyMove)
             {
                 var sideGrabbed = ResizeHandles.SideGrabbed;
                 if (sideGrabbed != ResizeSide.None)
