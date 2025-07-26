@@ -134,7 +134,11 @@ namespace FlatRedBall.Forms.Controls.Popups
                 {
                     try
                     {
-                        toast = new FlatRedBall.Forms.Controls.Popups.Toast();
+                        var visual = FrameworkElement.GetGraphicalUiElementForFrameworkElement(typeof(Toast));
+                        if(visual != null)
+                        {
+                            toast = new FlatRedBall.Forms.Controls.Popups.Toast(visual);
+                        }
                     }
                     // If the user doesn't have any toast implemented in Gum, this will error. 
                     // This causes problems in edit mode, so let's just consume it:
