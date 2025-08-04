@@ -62,7 +62,7 @@ namespace FlatRedBall.Glue.Managers
                 //    isBuiltFile, options, elementToAddTo, directoryOfTreeNode, forcedAssetTypeInfo:forcedAti);
 
                 var response =
-                    await GlueCommands.Self.GluxCommands.CreateReferencedFileSaveForExistingFileAsync(elementToAddTo, fileName, forcedAti);
+                    await GlueCommands.Self.GluxCommands.CreateReferencedFileSaveForExistingFileAsync(elementToAddTo, fileName, forcedAti, buildToolAssociation);
 
                 if(response.Succeeded == false)
                 {

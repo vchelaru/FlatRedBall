@@ -734,7 +734,7 @@ public class GluxCommands : IGluxCommands
 
             toReturn = CreateReferencedFileSaveForExistingFile(
                 sourceElement, directoryToUse, targetFile, PromptHandleEnum.Prompt,
-                assetTypeInfo,
+                assetTypeInfo,null,
                 out creationReport, out errorMessage, selectFileAfterCreation: selectFileAfterCreation);
 
             if (!string.IsNullOrEmpty(errorMessage))
@@ -829,12 +829,14 @@ public class GluxCommands : IGluxCommands
             filePath.FullPath,
             PromptHandleEnum.Prompt,
             ati ?? AvailableAssetTypes.Self.GetAssetTypeFromExtension(filePath.Extension),
+            null,
             out string creationReport,
             out string errorMessage
             );
     }
 
-    public Task< ToolsUtilities.GeneralResponse<ReferencedFileSave>> CreateReferencedFileSaveForExistingFileAsync(GlueElement containerForFile, FilePath filePath, AssetTypeInfo ati = null)
+    public Task< ToolsUtilities.GeneralResponse<ReferencedFileSave>> CreateReferencedFileSaveForExistingFileAsync(GlueElement containerForFile, FilePath filePath, AssetTypeInfo ati = null,
+        BuildToolAssociation bta = null)
     {
         return TaskManager.Self.AddAsync(() =>
         {
@@ -846,6 +848,7 @@ public class GluxCommands : IGluxCommands
                 filePath.FullPath,
                 PromptHandleEnum.Prompt,
                 ati ?? AvailableAssetTypes.Self.GetAssetTypeFromExtension(filePath.Extension),
+                bta,
                 out string creationReport,
                 out string errorMessage
                 );
@@ -865,7 +868,7 @@ public class GluxCommands : IGluxCommands
 
 
     public ReferencedFileSave CreateReferencedFileSaveForExistingFile(GlueElement containerForFile, string directoryInsideContainer, string absoluteFileName,
-        PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage, bool selectFileAfterCreation = true)
+        PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, BuildToolAssociation bta, out string creationReport, out string errorMessage, bool selectFileAfterCreation = true)
     {
         creationReport = "";
         errorMessage = null;
@@ -932,9 +935,7 @@ public class GluxCommands : IGluxCommands
 
             if (string.IsNullOrEmpty(errorMessage))
             {
-                BuildToolAssociation bta = null;
-
-                if (ati != null && !string.IsNullOrEmpty(ati.CustomBuildToolName))
+                if (bta == null && ati != null && !string.IsNullOrEmpty(ati.CustomBuildToolName))
                 {
                     bta =
                         BuildToolAssociationManager.Self.GetBuilderToolAssociationByName(ati.CustomBuildToolName);
