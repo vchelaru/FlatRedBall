@@ -243,6 +243,24 @@ namespace Gum.Wireframe
             }
         }
 
+        public bool IsEnabledRecursively => GetIsEnabledRecursively(this);
+
+        static bool GetIsEnabledRecursively(GraphicalUiElement interactiveGue)
+        {
+            if (!interactiveGue.IsEnabled)
+            {
+                return false;
+            }
+            else if (interactiveGue.Parent is GraphicalUiElement parent)
+            {
+                return GetIsEnabledRecursively(parent);
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         public System.Collections.ObjectModel.ReadOnlyCollection<IWindow> FloatingChildren
         {
             get { return null; }
