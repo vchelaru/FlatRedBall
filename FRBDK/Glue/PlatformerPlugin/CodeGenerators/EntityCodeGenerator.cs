@@ -693,6 +693,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             return CollideAgainst(collidable.Collision, isCloudCollision);
         }
 
+        public bool CollideAgainst(FlatRedBall.Math.Geometry.ICollidable collidable, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisSubcollision, bool isCloudCollision = false)
+        {
+            return CollideAgainst(collidable.Collision, thisSubcollision, isCloudCollision);
+        }
+
         /// <summary>
         /// Performs a standard solid collision against a ShapeCollection.
         /// </summary>
@@ -721,6 +726,21 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             return CollideAgainst(() =>
             {
                 var collided = shapeCollection.CollideAgainstBounce(this.Collision, 1, 0, 0);
+                PositionedObject lastCollided = null;
+                if (shapeCollection.LastCollisionAxisAlignedRectangles.Count > 0) lastCollided = shapeCollection.LastCollisionAxisAlignedRectangles[0];
+                if (shapeCollection.LastCollisionCircles.Count > 0) lastCollided = shapeCollection.LastCollisionCircles[0];
+                if (shapeCollection.LastCollisionPolygons.Count > 0) lastCollided = shapeCollection.LastCollisionPolygons[0];
+                // do we care about other shapes?
+                return (collided, lastCollided);
+            }, isCloudCollision);
+        }
+
+
+        public bool CollideAgainst(FlatRedBall.Math.Geometry.ShapeCollection shapeCollection, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisRect, bool isCloudCollision)
+        {
+            return CollideAgainst(() =>
+            {
+                var collided = shapeCollection.CollideAgainstBounce(thisRect, 1, 0, 0);
                 PositionedObject lastCollided = null;
                 if (shapeCollection.LastCollisionAxisAlignedRectangles.Count > 0) lastCollided = shapeCollection.LastCollisionAxisAlignedRectangles[0];
                 if (shapeCollection.LastCollisionCircles.Count > 0) lastCollided = shapeCollection.LastCollisionCircles[0];
