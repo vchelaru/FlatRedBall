@@ -69,7 +69,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
                 }
                 else if(variableDefinition.Name == "CurrentChainName")
                 {
-                    var converter = new AvailableAnimationChainsStringConverter(containerAsIElement, instance);
+                    var converter = new AvailableAnimationChainsStringConverter(containerAsIElement, instance, memberName);
                     typeConverter = converter;
                     handled = true;
                 }

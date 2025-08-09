@@ -25,10 +25,10 @@ namespace FlatRedBall.Glue.GuiDisplay
     // so I'm inheriting from StringConverter.
     public class AvailableAnimationChainsStringConverter : StringConverter, IObjectsInFileConverter
     {
-        IElement element;
-        StateSave stateSave;
-        NamedObjectSave referencedNos;
-
+        IElement _element;
+        StateSave _stateSave;
+        NamedObjectSave _referencedNos;
+        private string? _variableName;
         string[] mAvailableChains;
 
         public string[] AvailableChains
@@ -79,16 +79,17 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         }
 
-        public AvailableAnimationChainsStringConverter(IElement element, NamedObjectSave namedObjectSave)
+        public AvailableAnimationChainsStringConverter(IElement element, NamedObjectSave namedObjectSave, string? variableName = null)
         {
-            Initialize(element, namedObjectSave);
+            Initialize(element, namedObjectSave, variableName: variableName);
         }
 
-        void Initialize(IElement element, NamedObjectSave referencedNos, StateSave stateSave = null)
+        void Initialize(IElement element, NamedObjectSave referencedNos, StateSave stateSave = null, string? variableName = null)
         {
-            this.element = element;
-            this.stateSave = stateSave;
-            this.referencedNos = referencedNos;
+            _element = element;
+            _stateSave = stateSave;
+            _referencedNos = referencedNos;
+            _variableName = variableName;
 
 
             RefreshList();
@@ -101,12 +102,12 @@ namespace FlatRedBall.Glue.GuiDisplay
             AnimationChainListSave acls = null;
             try
             {
-                acls = GetAnimationChainListFile(element, referencedNos, stateSave);
+                acls = GetAnimationChainListFile(_element, _referencedNos, _stateSave, _variableName);
             }
             catch(Exception e)
             {
                 // file could be corrupt, don't crash the plugin if so, treat it as if it's empty and print output:
-                GlueCommands.Self.PrintError($"Error loading AnimationChains from {referencedNos} when attempting to get list of items:\n{e}");
+                GlueCommands.Self.PrintError($"Error loading AnimationChains from {_referencedNos} when attempting to get list of items:\n{e}");
             }
 
 
@@ -116,7 +117,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
             else
             {
-                var referencedFile = element.ReferencedFiles.FirstOrDefault(item => ObjectFinder.Self.MakeAbsoluteContent(item.Name) == acls.FileName);
+                var referencedFile = _element.ReferencedFiles.FirstOrDefault(item => ObjectFinder.Self.MakeAbsoluteContent(item.Name) == acls.FileName);
 
                 this.ReferencedFileSave = referencedFile;
 
@@ -132,7 +133,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
         }
 
-        public static AnimationChainListSave GetAnimationChainListFile(IElement element, NamedObjectSave referencedNos, StateSave stateSave)
+        static AnimationChainListSave GetAnimationChainListFile(IElement element, NamedObjectSave referencedNos, StateSave stateSave, string? variableName)
         {
             AnimationChainListSave acls = null;
 
@@ -167,6 +168,28 @@ namespace FlatRedBall.Glue.GuiDisplay
                     acls = foundAcls;
 
 
+                }
+                else if(referencedNos.SourceType == SourceType.Entity && variableName != null)
+                {
+                    // That means this variable is a tuneled variable, so we have to check what it is tunneling, find that sprite, and see what its default animation is
+                    var entity = ObjectFinder.Self.GetElement(referencedNos);
+
+                    if(entity != null)
+                    {
+                        CustomVariable innerVariable = entity.GetCustomVariable(variableName);
+
+                        // this variable should have a target NOS:
+                        if(innerVariable?.SourceObject != null)
+                        {
+                            NamedObjectSave? innerNamedObject = entity.GetNamedObjectRecursively(innerVariable.SourceObject);
+
+                            if(innerNamedObject != null)
+                            {
+                                return GetAnimationChainListFile(entity, innerNamedObject, null, innerVariable.Name);
+                            }
+                        }
+
+                    }
                 }
             }
             return acls;

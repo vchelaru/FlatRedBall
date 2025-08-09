@@ -10,12 +10,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using GumObjectFinder= Gum.Managers.ObjectFinder; 
+
 namespace GumPlugin.Managers
 {
     public class ContainedObjectsManager : Singleton<ContainedObjectsManager>
     {
         public bool HandleTryAddContainedObjects(string absoluteFile, List<string> availableObjects)
         {
+            var elementFilePath = new FilePath(absoluteFile);
+
             string extension = FileManager.GetExtension(absoluteFile);
             bool isEitherScreenOrComponent = extension == GumProjectSave.ComponentExtension ||
                 extension == GumProjectSave.ScreenExtension;
@@ -48,9 +52,33 @@ namespace GumPlugin.Managers
 
             }
 
-            ElementSave element = null;
-            if (isEitherScreenOrComponent && System.IO.File.Exists(absoluteFile))
+            ElementSave? element = null;
+
+            // August 9, 2025
+            // Loading from file
+            // seems unnecessary since
+            // we already have the Gum project
+            // loaded. Can we rely on that?
+            if(GumObjectFinder.Self.GumProjectSave != null && isEitherScreenOrComponent)
             {
+                var directory = new FilePath(GumObjectFinder.Self.GumProjectSave.FullFileName).GetDirectoryContainingThis();
+
+                var relative = elementFilePath.RemoveExtension().RelativeTo(directory);
+                if(relative.StartsWith("Screens/"))
+                {
+                    relative = relative.Substring("Screens/".Length);
+                }
+                else if(relative.StartsWith("Components/"))
+                {
+                    relative = relative.Substring("Components/".Length);
+                }
+                element = GumObjectFinder.Self.GetElementSave(relative);
+            }
+
+
+            if (element == null && isEitherScreenOrComponent && System.IO.File.Exists(absoluteFile))
+            {
+
                 try
                 {
                     if (extension == GumProjectSave.ComponentExtension)
@@ -63,10 +91,12 @@ namespace GumPlugin.Managers
                         element =
                             FileManager.XmlDeserialize<Gum.DataTypes.ScreenSave>(absoluteFile);
                     }
+                    // we could initialize more deeply, but this should handle common cases.
+                    element.DefaultState.ParentContainer = element;
                 }
                 catch (Exception ex)
                 {
-                    GlueCommands.Self.PrintOutput("Error trying to load element {} for filling available contained objects: \n" + ex.ToString());
+                    GlueCommands.Self.PrintOutput($"Error trying to load element {absoluteFile} for filling available contained objects: \n" + ex.ToString());
                 }
             }
 
