@@ -306,23 +306,31 @@ namespace GumPlugin.CodeGeneration
             GenerateCustomVariableProperties(elementSave, currentBlock);
         }
 
-        public string GetQualifiedRuntimeTypeFor(InstanceSave instance, ElementSave container, bool includeGlobalPrefix = true)
+        public string GetQualifiedRuntimeTypeFor(InstanceSave instance, ElementSave instanceOwner, bool includeGlobalPrefix = true)
         {
-            var element = ObjectFinder.Self.GetElementSave(instance);
-            if(element == null)
+            var instanceElement = ObjectFinder.Self.GetElementSave(instance);
+            if(instanceElement == null)
             {
                 return "UnknownType";
             }
             else
             {
-                var qualifiedRuntimeType = GetQualifiedRuntimeTypeFor(element, includeGlobalPrefix);
+                var qualifiedRuntimeType = GetQualifiedRuntimeTypeFor(instanceElement, includeGlobalPrefix);
 
-                var isContainer = element is StandardElementSave && element.Name == "Container";
+                var isInstanceContainer = instanceElement is StandardElementSave && instanceElement.Name == "Container";
 
-                if(isContainer)
+                if(isInstanceContainer)
                 {
-                    var genericType = (string)container.DefaultState.GetValueRecursive(instance.Name + ".ContainedType") ??
-                        (string)container.DefaultState.GetValueRecursive(instance.Name + ".Contained Type");
+                    var instanceOwnerDefaultState = instanceOwner.DefaultState;
+
+                    if(instanceOwnerDefaultState.ParentContainer == null)
+                    {
+                        throw new InvalidOperationException("Did you forget to initialize the Gum project after loading it?");
+                    }
+
+                    var genericType =
+                        (string)instanceOwnerDefaultState.GetValueRecursive(instance.Name + ".ContainedType") ??
+                        (string)instanceOwnerDefaultState.GetValueRecursive(instance.Name + ".Contained Type");
 
                     if(!string.IsNullOrEmpty(genericType))
                     {

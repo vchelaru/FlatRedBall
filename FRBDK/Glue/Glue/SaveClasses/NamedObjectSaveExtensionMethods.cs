@@ -900,7 +900,7 @@ namespace FlatRedBall.Glue.SaveClasses
         /// <param name="namedObjectContainer"></param>
         /// <param name="namedObjectName"></param>
         /// <returns></returns>
-        public static NamedObjectSave GetNamedObjectRecursively(this INamedObjectContainer namedObjectContainer, string namedObjectName)
+        public static NamedObjectSave? GetNamedObjectRecursively(this INamedObjectContainer namedObjectContainer, string namedObjectName)
         {
             ////////////////////////early out////////////////////////
             if(string.IsNullOrEmpty(namedObjectName))

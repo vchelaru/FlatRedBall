@@ -4,6 +4,14 @@
   ],
   "Source": "GLUE",
   "NextScreen": "Screens\\ScreenBeforeAsyncScreen",
+  "ReferencedFiles": [
+    {
+      "Name": "Screens/TunneledVariableScreen/AchxInScreen.achx",
+      "IsSharedStatic": true,
+      "RuntimeType": "FlatRedBall.Graphics.Animation.AnimationChainList",
+      "ProjectsToExcludeFrom": []
+    }
+  ],
   "NamedObjects": [
     {
       "InstanceName": "TunneledVariableEntityInstance",
@@ -15,6 +23,12 @@
         }
       ],
       "InstructionSaves": [
+        {
+          "Type": "string",
+          "Member": "SpriteObjectCurrentChainName",
+          "Value": "Animation2",
+          "Time": 0.0
+        },
         {
           "Type": "string",
           "Member": "TextObjectDisplayText",

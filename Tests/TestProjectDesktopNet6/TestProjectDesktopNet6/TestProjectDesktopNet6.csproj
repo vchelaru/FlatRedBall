@@ -414,6 +414,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>AnimationChainListFile</Name>
     </None>
+    <None Include="Content\Entities\TunneledVariableEntity\AnimationChainListFile2.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile2</Name>
+    </None>
+    <None Include="Content\Entities\TunneledVariableEntity\AnimationChainListFile3.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AnimationChainListFile3</Name>
+    </None>
     <None Include="Content\Entities\VariableEntity\SceneFileForSourceFileSet.scnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>SceneFileForSourceFileSet</Name>
@@ -1253,6 +1261,10 @@
     <None Include="Content\Screens\TransparencyRenderingScreen\ColorTest.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ColorTest</Name>
+    </None>
+    <None Include="Content\Screens\TunneledVariableScreen\AchxInScreen.achx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>AchxInScreen</Name>
     </None>
     <None Include="Content\Screens\XmlScreen\XmlFileWithNoBackingObject.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

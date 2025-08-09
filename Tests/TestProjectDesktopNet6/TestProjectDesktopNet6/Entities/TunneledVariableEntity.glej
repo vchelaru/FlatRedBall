@@ -8,6 +8,19 @@
     {
       "Name": "Entities/TunneledVariableEntity/AnimationChainListFile.achx",
       "IsSharedStatic": true,
+      "HasPublicProperty": true,
+      "ProjectsToExcludeFrom": []
+    },
+    {
+      "Name": "Entities/TunneledVariableEntity/AnimationChainListFile2.achx",
+      "IsSharedStatic": true,
+      "RuntimeType": "FlatRedBall.Graphics.Animation.AnimationChainList",
+      "ProjectsToExcludeFrom": []
+    },
+    {
+      "Name": "Entities/TunneledVariableEntity/AnimationChainListFile3.achx",
+      "IsSharedStatic": true,
+      "RuntimeType": "FlatRedBall.Graphics.Animation.AnimationChainList",
       "ProjectsToExcludeFrom": []
     }
   ],
@@ -202,6 +215,25 @@
       "Name": "SpriteObjectTexture",
       "SourceObject": "SpriteObject",
       "SourceObjectProperty": "Texture"
+    },
+    {
+      "Properties": [
+        {
+          "Name": "Type",
+          "Value": "string",
+          "Type": "String"
+        },
+        {
+          "Name": "Category",
+          "Value": "Animation",
+          "Type": "String"
+        }
+      ],
+      "Name": "SpriteObjectCurrentChainName",
+      "SetByDerived": true,
+      "SourceObject": "SpriteObject",
+      "SourceObjectProperty": "CurrentChainName",
+      "Category": "Animation"
     }
   ],
   "States": [
