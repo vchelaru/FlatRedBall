@@ -598,7 +598,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             var namedObject = GlueState.Self.CurrentNamedObjectSave;
 
             var element = GlueState.Self.CurrentElement;
-            var relationshipNos = viewModel.GlueObject as NamedObjectSave;
+            var relationshipNos = (NamedObjectSave)viewModel.GlueObject;
             switch (e.PropertyName)
             {
                 case nameof(viewModel.FirstCollisionName):
@@ -611,7 +611,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                     TryApplyAutoName(element, namedObject);
 
-                    RefreshFirstProperties(element, viewModel, out IElement firstElementType);
+                    RefreshFirstProperties(element, viewModel, out IElement? firstElementType);
                     RefreshSecondProperties(element, ViewModel);
 
                     RefreshPlatformerMovementValues(viewModel, firstElementType);
@@ -648,7 +648,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        static void RefreshFirstProperties(GlueElement collisionRelationshipOwner, CollisionRelationshipViewModel viewModel, out IElement firstNosElementType)
+        static void RefreshFirstProperties(GlueElement collisionRelationshipOwner, CollisionRelationshipViewModel viewModel, out IElement? firstNosElementType)
         {
             firstNosElementType = null;
             var firstName = viewModel.FirstCollisionName;
@@ -681,7 +681,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
         static void RefreshSecondProperties(GlueElement collisionRelationshipOwner, CollisionRelationshipViewModel viewModel)
         {
-            GlueElement secondNosElement = null;
+            GlueElement? secondNosElement = null;
 
             var secondName = viewModel.SecondCollisionName;
 
