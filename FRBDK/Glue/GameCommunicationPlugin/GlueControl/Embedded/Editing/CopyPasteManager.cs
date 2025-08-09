@@ -159,9 +159,11 @@ namespace GlueControl.Editing
 
             Debug.WriteLine($"Looping through CopiedNamedObjects with count {copiedNamedObjects.Count}");
 
-            var positionOnPaste =
-                                new Vector3(FlatRedBall.Gui.GuiManager.Cursor.WorldXAt(0), FlatRedBall.Gui.GuiManager.Cursor.WorldYAt(0), 0); // todo - make this better for 3D
-
+            var positionOnPaste = new Vector3(
+                FlatRedBall.Gui.GuiManager.Cursor.WorldXAt(0),
+                FlatRedBall.Gui.GuiManager.Cursor.WorldYAt(0),
+                // Z is set below basedon the copied object
+                0);
 
             if (EditingManager.Self.IsSnappingEnabled && EditingManager.Self.SnapSize != 0)
             {
@@ -170,7 +172,6 @@ namespace GlueControl.Editing
                 positionOnPaste.X = MathFunctions.RoundFloat(positionOnPaste.X, snapSize);
                 positionOnPaste.Y = MathFunctions.RoundFloat(positionOnPaste.Y, snapSize);
             }
-
 
             var copyResponse = await GlueCommands.Self.GluxCommands.CopyNamedObjectListIntoElement(
                 copiedNamedObjects,
@@ -192,7 +193,6 @@ namespace GlueControl.Editing
 
             if (oldPositionables.Length > 0)
             {
-
                 var minX = oldPositionables.Min(item => item.X);
                 var minY = oldPositionables.Min(item => item.Y);
                 var maxX = oldPositionables.Max(item => item.X);
@@ -224,6 +224,16 @@ namespace GlueControl.Editing
                     var offsetFromMinY = oldPositionables[i].Y - minY;
                     var x = snappedLeft + offsetFromMinX;
                     var y = snappedBottom + offsetFromMinY;
+                    float z = 0;
+                    var zInstruction = copiedNamedObjects[i].InstructionSaves.FirstOrDefault(item => item.Member == "Z");
+                    bool shouldAssignZ = zInstruction != null;
+                    if (shouldAssignZ)
+                    {
+                        if (zInstruction.Value is float asFloatZ)
+                        {
+                            z = asFloatZ;
+                        }
+                    }
 
                     var newINameable = EditingManager.Self.GetObjectByName(newNos.InstanceName);
                     if (newINameable is PositionedObject newPositionedObject && newPositionedObject.Parent != null)
@@ -246,17 +256,29 @@ namespace GlueControl.Editing
                         Value = y
                     });
 
+                    if (shouldAssignZ)
+                    {
+                        variableAssignments.Add(new NosVariableAssignment
+                        {
+                            NamedObjectSave = newNos,
+                            VariableName = "Z",
+                            Value = z
+                        });
+                    }
+
                     if (newINameable is IStaticPositionable positionable)
                     {
                         if (positionable is PositionedObject positionedObject && positionedObject.Parent != null)
                         {
                             positionedObject.RelativeX = x;
                             positionedObject.RelativeY = y;
+                            positionedObject.RelativeZ = z;
                         }
                         else
                         {
                             positionable.X = x;
                             positionable.Y = y;
+                            positionable.Z = z;
                         }
                     }
 
