@@ -911,7 +911,7 @@ namespace GameCommunicationPlugin.GlueControl
             PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", "Waiting for tasks to finish...");
             await TaskManager.Self.WaitForAllTasksFinished();
 
-            PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", "Finishined adding/generating code for GlueControlManager");
+            PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", "Finished adding/generating code for GlueControlManager");
         }
 
         private static void AddNewtonsoft()
