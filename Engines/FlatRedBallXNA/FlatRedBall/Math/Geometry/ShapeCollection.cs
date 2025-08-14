@@ -2025,11 +2025,6 @@ namespace FlatRedBall.Math.Geometry
             List<Segment> currentShapeSegments = new List<Segment>();
             List<Point> currentShapeIntersectionPoints = new List<Point>();
 
-            if(InputManager.Keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Space))
-            {
-                System.Diagnostics.Debugger.Break();
-            }
-
             object collidedObject = null;
 
             var leftmost = (float)System.Math.Min(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
