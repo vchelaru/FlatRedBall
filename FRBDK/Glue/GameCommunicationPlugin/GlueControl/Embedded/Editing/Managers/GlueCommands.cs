@@ -74,6 +74,16 @@ namespace GlueControl.Managers
         {
             GlueProjectFilePath = fileName;
             ObjectFinder.Self.GlueProject = GlueProjectSaveExtensions.Load(fileName);
+
+            var project = ObjectFinder.Self.GlueProject;
+            foreach (var item in project.Screens)
+            {
+                item.FixAllTypes();
+            }
+            foreach (var item in project.Entities)
+            {
+                item.FixAllTypes();
+            }
         }
     }
 }
