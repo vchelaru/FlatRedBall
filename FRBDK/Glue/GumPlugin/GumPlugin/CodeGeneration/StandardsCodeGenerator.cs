@@ -500,6 +500,11 @@ namespace GumPlugin.CodeGeneration
 
             string unmodifiedVariableType = variableType;
 
+            if(variable.Type == null)
+            {
+                throw new InvalidOperationException($"Attempting to generate variable {variable} in {elementSave} which has a null type");
+            }
+
             if (GueDerivingClassCodeGenerator.Self.TypeToQualifiedTypes.ContainsKey(variableType))
             {
                 variableType = GueDerivingClassCodeGenerator.Self.TypeToQualifiedTypes[variableType];
