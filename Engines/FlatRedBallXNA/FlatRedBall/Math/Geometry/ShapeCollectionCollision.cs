@@ -378,10 +378,10 @@ namespace FlatRedBall.Math.Geometry
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+					boundStartPosition = shapeToCollideAgainstThis.X - shapeToCollideAgainstThis.BoundingRadius;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+					boundStartPosition = shapeToCollideAgainstThis.Y - shapeToCollideAgainstThis.BoundingRadius;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();

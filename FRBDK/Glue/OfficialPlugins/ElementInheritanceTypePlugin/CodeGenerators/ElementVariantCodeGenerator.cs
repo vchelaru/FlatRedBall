@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,9 +20,23 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators;
 
 internal class ElementVariantCodeGenerator : ElementComponentCodeGenerator
 {
+    #region External DllImport
+    [System.Runtime.InteropServices.DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
+    private static extern int StrCmpLogicalW(string x, string y);
+
+    #endregion
+
     public override void GenerateAdditionalClasses(ICodeBlock codeBlock, IElement element)
     {
-        var derivedElements = ObjectFinder.Self.GetAllDerivedElementsRecursive(element as GlueElement);
+        var derivedElements = ObjectFinder.Self.GetAllDerivedElementsRecursive((GlueElement)element);
+
+        derivedElements.Sort((first, second) =>
+        {
+            // Sort alphabetically, but use natural comparison so that Type9 comes after Type10
+            return StrCmpLogicalW(first.ClassName, second.ClassName);
+        });
+
+        // let's order these the same order that they appear in the editor.
 
         var glueProject = GlueState.Self.CurrentGlueProject;
 
