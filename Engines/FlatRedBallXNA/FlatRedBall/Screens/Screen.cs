@@ -176,12 +176,8 @@ namespace FlatRedBall.Screens
         /// <seealso cref="MoveToScreen(Type)"/>
         public bool IsActivityFinished
         {
-            get { return mIsActivityFinished; }
-            set 
-			{
-                mIsActivityFinished = value; 
-			}
-
+            get => mIsActivityFinished; 
+            set => mIsActivityFinished = value; 
         }
 
         public AsyncLoadingState AsyncLoadingState
@@ -205,8 +201,8 @@ namespace FlatRedBall.Screens
 
         public bool ManageSpriteGrids
         {
-            get { return mManageSpriteGrids; }
-            set { mManageSpriteGrids = value; }
+            get => mManageSpriteGrids; 
+            set => mManageSpriteGrids = value; 
         }
 
         /// <summary>
@@ -221,8 +217,8 @@ namespace FlatRedBall.Screens
         /// </remarks>
         public string NextScreen
         {
-            get { return mNextScreen; }
-            set { mNextScreen = value; }
+            get => mNextScreen; 
+            set => mNextScreen = value; 
         }
 
         protected bool UnloadsContentManagerWhenDestroyed
