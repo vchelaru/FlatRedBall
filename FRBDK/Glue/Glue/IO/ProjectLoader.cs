@@ -635,22 +635,32 @@ namespace FlatRedBall.Glue.IO
             {
                 if(ProjectManager.GlueProjectSave != null)
                 {
-                    Parallel.ForEach(ProjectManager.GlueProjectSave.Screens, (screenSave) =>
-                    //foreach (ScreenSave screenSave in ProjectManager.GlueProjectSave.Screens)
+                    // August 21, 2025
+                    // We used to run builds
+                    // in parallel, but some apps
+                    // like Libre Office (soffice.exe)
+                    // do not tolerate this and will fail
+                    // to build csv files if you run them in
+                    // parallel. Unfortunately this slows things
+                    // down but it solves the CSV problem so we have
+                    // to deal with it.
+                    const bool runInParallel = false;
+                    //Parallel.ForEach(ProjectManager.GlueProjectSave.Screens, (screenSave) =>
+                    foreach (ScreenSave screenSave in ProjectManager.GlueProjectSave.Screens)
                     {
-                        BuildIfOutOfDate(screenSave.ReferencedFiles, runBuildsAsync: false, runInParallel: true);
+                        BuildIfOutOfDate(screenSave.ReferencedFiles, runBuildsAsync: false, runInParallel: runInParallel);
                     }
-                    );
+                    //);
 
 
-                    Parallel.ForEach(ProjectManager.GlueProjectSave.Entities, (entitySave) =>
-                    //foreach (EntitySave entitySave in ProjectManager.GlueProjectSave.Entities)
+                    //Parallel.ForEach(ProjectManager.GlueProjectSave.Entities, (entitySave) =>
+                    foreach (EntitySave entitySave in ProjectManager.GlueProjectSave.Entities)
                     {
-                        BuildIfOutOfDate(entitySave.ReferencedFiles, runBuildsAsync: false, runInParallel: true);
+                        BuildIfOutOfDate(entitySave.ReferencedFiles, runBuildsAsync: false, runInParallel: runInParallel);
                     }
-                    );
+                    //);
 
-                    BuildIfOutOfDate(ProjectManager.GlueProjectSave.GlobalFiles, runBuildsAsync: false, runInParallel: true);
+                    BuildIfOutOfDate(ProjectManager.GlueProjectSave.GlobalFiles, runBuildsAsync: false, runInParallel: runInParallel);
                 }
             },
             "Build all out of date files");
