@@ -640,6 +640,16 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
                     // especially if new variables have been added in the future. Therefore, use the StandardElementsManager
                     // rather than the DefaultState:
                     //var rootStandardElementVariables = rootStandardElementSave.DefaultState.Variables;
+                    if(StandardElementsManager.Self.DefaultStates.ContainsKey(rootStandardElementSave.Name) == false)
+                    {
+                        var message = $"Could not find default state for {rootStandardElementSave.Name} in the StandardElementsManager. Found the following\n:";
+
+                        foreach(var kvp in StandardElementsManager.Self.DefaultStates)
+                        {
+                            message += kvp.Key + ", ";
+                        }
+                        throw new KeyNotFoundException(message);
+                    }
                     var rootStandardElementVariables = StandardElementsManager.Self
                         .DefaultStates[rootStandardElementSave.Name].Variables;
 
