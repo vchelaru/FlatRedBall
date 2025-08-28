@@ -10,11 +10,11 @@ namespace FlatRedBall.AI.Pathfinding
     public static class TileNodeNetworkCreator
     {
         public static TileNodeNetwork CreateFrom(LayeredTileMap layeredTileMap, DirectionalType directionalType,
-            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate, MapDrawableBatch layer = null)
+            Func<List<TMXGlueLib.DataTypes.NamedValue>, bool> predicate, MapDrawableBatch layer = null, float offsetX = 0, float offsetY = 0)
         {
-            TileNodeNetwork nodeNetwork = CreateTileNodeNetwork(layeredTileMap, directionalType);
+            TileNodeNetwork nodeNetwork = CreateTileNodeNetwork(layeredTileMap, directionalType, offsetX, offsetY);
 
-            FillFromPredicate(nodeNetwork, layeredTileMap, predicate, layer);
+            FillFromPredicate(nodeNetwork, layeredTileMap, predicate, layer, offsetX, offsetY);
 
             return nodeNetwork;
         }
@@ -103,7 +103,7 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
-        public static void FillFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate, MapDrawableBatch layer = null)
+        public static void FillFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate, MapDrawableBatch layer = null, float offsetX = 0, float offsetY = 0)
         {
             var dimensionHalf = layeredTileMap.WidthPerTile.Value / 2.0f;
 
@@ -148,8 +148,8 @@ namespace FlatRedBall.AI.Pathfinding
                         float bottom;
                         innerLayer.GetBottomLeftWorldCoordinateForOrderedTile(index, out left, out bottom);
 
-                        var centerX = left + dimensionHalf;
-                        var centerY = bottom + dimensionHalf;
+                        var centerX = left + dimensionHalf + offsetX;
+                        var centerY = bottom + dimensionHalf + offsetY;
 
                         nodeNetwork.AddAndLinkTiledNodeWorld(centerX, centerY);
                     }
@@ -317,7 +317,7 @@ namespace FlatRedBall.AI.Pathfinding
             return toReturn;
         }
 
-        private static TileNodeNetwork CreateTileNodeNetwork(LayeredTileMap layeredTileMap, DirectionalType directionalType)
+        private static TileNodeNetwork CreateTileNodeNetwork(LayeredTileMap layeredTileMap, DirectionalType directionalType, float offsetX = 0, float offsetY = 0)
         {
             var numberOfTilesWide =
                 MathFunctions.RoundToInt(layeredTileMap.Width / layeredTileMap.WidthPerTile.Value);
@@ -329,8 +329,8 @@ namespace FlatRedBall.AI.Pathfinding
             var dimensionHalf = tileWidth / 2.0f;
 
             TileNodeNetwork nodeNetwork = new TileNodeNetwork(
-                0 + dimensionHalf,
-                -layeredTileMap.Height + tileWidth / 2.0f,
+                0 + dimensionHalf + offsetX,
+                -layeredTileMap.Height + dimensionHalf + offsetY,
                 tileWidth,
                 numberOfTilesWide,
                 numberOfTilesTall,
