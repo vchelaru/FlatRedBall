@@ -952,6 +952,10 @@ namespace OfficialPlugins.Wizard.Managers
 
                 if (vm.CollideAgainstCloudCollision && vm.AddCloudCollision)
                 {
+                    if(playerList == null)
+                    {
+                        throw new NullReferenceException(nameof(playerList));
+                    }
                     if (cloudCollisionNos == null)
                     {
                         throw new NullReferenceException(nameof(cloudCollisionNos));
@@ -972,6 +976,10 @@ namespace OfficialPlugins.Wizard.Managers
 
                 if (vm.CollideAgainstSolidCollision && vm.AddSolidCollision)
                 {
+                    if (playerList == null)
+                    {
+                        throw new NullReferenceException(nameof(playerList));
+                    }
                     if (solidCollisionNos == null)
                     {
                         throw new NullReferenceException(nameof(solidCollisionNos));
