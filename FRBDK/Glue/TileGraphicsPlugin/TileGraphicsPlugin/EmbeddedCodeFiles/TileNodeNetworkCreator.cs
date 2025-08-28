@@ -330,7 +330,7 @@ namespace FlatRedBall.AI.Pathfinding
 
             TileNodeNetwork nodeNetwork = new TileNodeNetwork(
                 0 + dimensionHalf + offsetX,
-                (-layeredTileMap.Height + tileWidth / 2.0f) + offsetY,
+                -layeredTileMap.Height + dimensionHalf + offsetY,
                 tileWidth,
                 numberOfTilesWide,
                 numberOfTilesTall,
