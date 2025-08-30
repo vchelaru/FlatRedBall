@@ -1094,6 +1094,35 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                     this.Velocity.X = velocityBefore.X;
                     this.Position.X = positionBefore.X;
+
+                    float topOfPolygon = float.NegativeInfinity;
+                    var polygon = shapeCollection.LastCollisionPolygons[0];
+                    
+                    for(int i = 0; i < polygon.Points.Count; i++)
+                    {
+                        var absolute = polygon.AbsolutePointPosition(i);
+
+                        topOfPolygon = System.Math.Max(topOfPolygon, absolute.Y);
+                    }
+                    var amountToAdd = multiplier * tangent.Y;
+
+                    // assumes that all rectangles in this are used for collision. This needs to be adjusted:
+                    foreach(var rectangle in this.Collision.AxisAlignedRectangles)
+                    {
+                        var overlap = topOfPolygon - rectangle.Bottom;
+                        if(overlap > 0)
+                        {
+                            amountToAdd = Math.Min(overlap, amountToAdd);
+                        }
+                        else
+                        {
+                            amountToAdd = 0;
+                        }
+                    }
+
+                    this.Position.Y += amountToAdd;
+
+
                     this.Position.Y += multiplier * tangent.Y;
                     //this.Position.Y = Math.Min(this.Position.Y, maxYAfterReposition);
                     this.ForceUpdateDependenciesDeep();
