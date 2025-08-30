@@ -773,7 +773,7 @@ namespace FlatRedBall.Math.Geometry
                 Vector3 otherMoveCollisionReposition = new Vector3();
 
                 CollideAgainstMovePreview(thisMass, otherMass, ref thisMoveCollisionReposition, ref otherMoveCollisionReposition, mVerticesForRectCollision,
-                    !this.isConcaveCache && this.isClockwiseCache, true);
+                    true, true);
 
                 mLastMoveCollisionReposition = thisMoveCollisionReposition;
                 rectangle.mLastMoveCollisionReposition.X = otherMoveCollisionReposition.X;
@@ -1543,7 +1543,7 @@ namespace FlatRedBall.Math.Geometry
                 var b = second.Y - first.X;
 
                 var length = MathF.Min(a, b);
-                edgeNormal = a < b ? edgeNormal : edgeNormal;
+                edgeNormal = a < b ? -edgeNormal : edgeNormal;
 
                 return length * edgeNormal;
             };
@@ -1595,7 +1595,7 @@ namespace FlatRedBall.Math.Geometry
             }
             else if (secondMass == 0)
             {
-                secondVectorResult = -mtv.ToVector3();
+                secondVectorResult = mtv.ToVector3();
             }
 #if false
             firstVectorResult = new Vector3();
