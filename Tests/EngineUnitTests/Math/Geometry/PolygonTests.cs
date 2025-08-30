@@ -60,7 +60,7 @@ public class PolygonTests
             new Point(8, 0),
             new Point(8, -8),
             new Point(-8, -8),
-            //new Point(-8, 8),
+            new Point(-8, 8),
         };
 
         rectangle.CollideAgainstMove(polygon, 0, 1);
