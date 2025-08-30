@@ -12,6 +12,8 @@ using VertexPositionColor = Microsoft.Xna.Framework.Graphics.VertexPositionColor
 
 using System.Collections.ObjectModel;
 using FlatRedBall.Graphics;
+using System.Runtime.CompilerServices;
+using FlatRedBall.Instructions;
 
 namespace FlatRedBall.Math.Geometry
 {
@@ -1498,6 +1500,104 @@ namespace FlatRedBall.Math.Geometry
             out Vector3 firstVectorResult, out Vector3 secondVectorResult,
             out int secondVectorIndex)
         {
+            // we'll use this to store the MTV
+            firstVectorResult = new Vector3();
+
+            // not quite sure what the second vector is for so we'll leave it for now
+            secondVectorResult = new Vector3();
+            secondVectorIndex = 0;
+
+            // SAT implementation
+            var getEdgeSeparationVector = (Vector2 p0, Vector2 p1) =>
+            {
+                // first find the normal of the edge (the projection plane)
+                var edgeNormal = p1 - p0;
+                edgeNormal.Normalize();
+                edgeNormal = new Vector2(-edgeNormal.Y, edgeNormal.X);
+
+                // computes bounds for a polygon on the projection plane
+                var computeBounds = (VertexPositionColor[] verts) =>
+                {
+                    var bounds = new Vector2(float.MaxValue, float.MinValue);
+                    foreach (var vert in verts)
+                    {
+                        float t = Vector2.Dot(vert.Position.ToVector2() - p0, edgeNormal);
+                        bounds.X = MathF.Min(t, bounds.X);
+                        bounds.Y = MathF.Max(t, bounds.Y);
+                    }
+                    return bounds;
+                };
+
+                // bounds for the first and second polygons
+                var first = computeBounds(firstVertices);
+                var second = computeBounds(secondVertices);
+
+                // found le separating axis
+                if (first.Y < second.X || first.X > second.Y)
+                {
+                    return Vector2.Zero;
+                }
+
+                // we have ourselves a MTV!
+                var a = first.Y - second.X;
+                var b = second.Y - first.X;
+
+                var length = MathF.Min(a, b);
+                edgeNormal = a < b ? edgeNormal : edgeNormal;
+
+                return length * edgeNormal;
+            };
+
+            var getPolygonMTV = (VertexPositionColor[] verts) =>
+            {
+                Vector2 mtv = Vector2.Zero;
+                // iterate through every single edge
+                var iLimit = verts.Length - 1;
+                var mtvLength = float.MaxValue;
+                for (int i = 0; i < iLimit; ++i)
+                {
+                    var p0 = verts[i].Position;
+                    var p1 = verts[i + 1].Position;
+                    var separationVector = getEdgeSeparationVector(p0.ToVector2(), p1.ToVector2());
+                    if (separationVector == Vector2.Zero)
+                    {
+                        continue;
+                    }
+                    var separationVectorLength = separationVector.LengthSquared();
+                    if (separationVectorLength < mtvLength)
+                    {
+                        // this is the mtv!
+                        mtv = separationVector;
+                        mtvLength = separationVectorLength;
+                    }
+                }
+                return mtv;
+            };
+
+            var firstMtv = getPolygonMTV(firstVertices);
+            var secondMtv = getPolygonMTV(secondVertices);
+            var mtv = Vector2.Zero;
+            if (firstMtv == Vector2.Zero)
+            {
+                mtv = secondMtv;
+            }
+            else if (secondMtv == Vector2.Zero) {
+                mtv = firstMtv;
+            }
+            else
+            {
+                mtv = firstMtv.LengthSquared() < secondMtv.LengthSquared() ? firstMtv : secondMtv;
+            }
+
+            if (firstMass == 0)
+            {
+                firstVectorResult = mtv.ToVector3();
+            }
+            else if (secondMass == 0)
+            {
+                secondVectorResult = -mtv.ToVector3();
+            }
+#if false
             firstVectorResult = new Vector3();
             secondVectorResult = new Vector3();
             int firstLengthMinusOne = firstVertices.Length - 1;
@@ -1579,6 +1679,7 @@ namespace FlatRedBall.Math.Geometry
                 secondVectorResult.Y = otherRatiotoMove * smallestOverlapVector.Y * smallestOverlapLength.Value;
 
             }
+#endif
         }
 
 
