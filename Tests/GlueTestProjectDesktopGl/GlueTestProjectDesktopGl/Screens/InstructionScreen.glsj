@@ -1,9 +1,0 @@
-{
-  "Tags": [
-    "GLUE"
-  ],
-  "Source": "GLUE",
-  "NextScreen": "Screens\\LastScreen",
-  "Name": "Screens\\InstructionScreen",
-  "CustomClassesForExport": []
-}
