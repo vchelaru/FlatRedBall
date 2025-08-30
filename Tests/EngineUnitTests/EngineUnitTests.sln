@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineUnitTests", "EngineUnitTests.csproj", "{D22D0B7C-E1A2-41E9-8087-9EE3A3E6CCC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallDesktopGL", "..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallDesktopGL.csproj", "{10BDA06C-7269-4CCE-AE2A-D445F414520A}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D22D0B7C-E1A2-41E9-8087-9EE3A3E6CCC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D22D0B7C-E1A2-41E9-8087-9EE3A3E6CCC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D22D0B7C-E1A2-41E9-8087-9EE3A3E6CCC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D22D0B7C-E1A2-41E9-8087-9EE3A3E6CCC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10BDA06C-7269-4CCE-AE2A-D445F414520A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {67EAD23A-5EE9-41C4-A204-921FAF48E37E}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{10bda06c-7269-4cce-ae2a-d445f414520a}*SharedItemsImports = 4
+	EndGlobalSection
+EndGlobal

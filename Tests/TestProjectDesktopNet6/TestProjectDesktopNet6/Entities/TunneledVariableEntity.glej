@@ -9,6 +9,7 @@
       "Name": "Entities/TunneledVariableEntity/AnimationChainListFile.achx",
       "IsSharedStatic": true,
       "HasPublicProperty": true,
+      "RuntimeType": "FlatRedBall.Graphics.Animation.AnimationChainList",
       "ProjectsToExcludeFrom": []
     },
     {
@@ -230,6 +231,7 @@
         }
       ],
       "Name": "SpriteObjectCurrentChainName",
+      "DefaultValue": "asdf",
       "SetByDerived": true,
       "SourceObject": "SpriteObject",
       "SourceObjectProperty": "CurrentChainName",
@@ -324,7 +326,20 @@
           "Value": 2
         }
       ],
-      "InstructionSaves": [],
+      "InstructionSaves": [
+        {
+          "Type": "AnimationChainList",
+          "Member": "AnimationChains",
+          "Value": "AnimationChainListFile",
+          "Time": 0.0
+        },
+        {
+          "Type": "string",
+          "Member": "CurrentChainName",
+          "Value": "asdf",
+          "Time": 0.0
+        }
+      ],
       "SourceType": 2,
       "AttachToContainer": true,
       "GenerateTimedEmit": true,
