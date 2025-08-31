@@ -1561,7 +1561,8 @@ namespace FlatRedBall.Math.Geometry
                     var separationVector = getEdgeSeparationVector(p0.ToVector2(), p1.ToVector2());
                     if (separationVector == Vector2.Zero)
                     {
-                        continue;
+                        mtv = Vector2.Zero;
+                        break;
                     }
                     var separationVectorLength = separationVector.LengthSquared();
                     if (separationVectorLength < mtvLength)
@@ -1576,18 +1577,7 @@ namespace FlatRedBall.Math.Geometry
 
             var firstMtv = getPolygonMTV(firstVertices);
             var secondMtv = getPolygonMTV(secondVertices);
-            var mtv = Vector2.Zero;
-            if (firstMtv == Vector2.Zero)
-            {
-                mtv = secondMtv;
-            }
-            else if (secondMtv == Vector2.Zero) {
-                mtv = firstMtv;
-            }
-            else
-            {
-                mtv = firstMtv.LengthSquared() < secondMtv.LengthSquared() ? firstMtv : secondMtv;
-            }
+            var mtv = firstMtv.LengthSquared() < secondMtv.LengthSquared() ? firstMtv : secondMtv;
 
             if (firstMass == 0)
             {
