@@ -1017,9 +1017,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             var positionBefore = this.Position;
             var velocityBefore = this.Velocity;
 
-
             var collided = CollideAgainst(() => DoCollisionWithShapeCollectionConsideringCornerLanding(shapeCollection, isCloudCollision), isCloudCollision, shapeCollection.Name);
-
 
             if(collided)
             {
@@ -1027,112 +1025,85 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             }
 
             var wasMovedHorizontally = this.X != positionBefore.X;
+            global::FlatRedBall.Math.Geometry.Polygon? polygonCollidedWith = shapeCollection.LastCollisionPolygons.FirstOrDefault();
 
-            var wasSlowedByPolygons = wasMovedHorizontally && shapeCollection.LastCollisionPolygons.Count != 0;
+            var wasSlowedByPolygons = wasMovedHorizontally && polygonCollidedWith != null;
 
             if(wasSlowedByPolygons)
             {
-                var repositionVector = new Microsoft.Xna.Framework.Vector2(0, 1);
-                foreach(var rect in this.Collision.AxisAlignedRectangles)
-                {
-                    if(rect.LastMoveCollisionReposition.X != 0)
-                    {
-                        repositionVector = rect.LastMoveCollisionReposition;
-                        break;
-                    }
-                }
-                var shouldPreserve = DetermineIfHorizontalVelocityShouldBePreserved(velocityBefore.X, shapeCollection, repositionVector);
-
-                if(shouldPreserve)
-                {
-                    // This was an attempt to fix snagging...
-                    // The problem is that when a rectangle collides
-                    // against a polygon, the point on the polygon may
-                    // be the one that defines the reposition direction.
-                    // This means a rectangle could be sitting on a slope
-                    // but still have a perfectly vertical reposition. I tried
-                    // to fix this by only getting reposition vectors from the polygon
-                    // but that caused the platformer to hop in place in some situations.
-
-                    //float maxYMap = float.NegativeInfinity;
-                    //for (int i = 0; i < shapeCollection.LastCollisionPolygons.Count; i++)
-                    //{
-                    //    var polygon = shapeCollection.LastCollisionPolygons[i];
-                    //    for (int j = 0; j < polygon.Points.Count; j++)
-                    //    {
-                    //        maxYMap = Math.Max(maxYMap, polygon.AbsolutePointPosition(j).Y);
-                    //    }
-                    //}
-                    //for(int i = 0; i < shapeCollection.LastCollisionAxisAlignedRectangles.Count; i++)
-                    //{
-                    //    var rectangle = shapeCollection.LastCollisionAxisAlignedRectangles[i];
-                    //    maxYMap = Math.Max(maxYMap, rectangle.Y + rectangle.ScaleY);
-                    //}
-
-
-                    //float maxCollisionOffset = 0;
-                    //foreach(var rectangle in this.Collision.AxisAlignedRectangles)
-                    //{
-                    //    maxCollisionOffset = -rectangle.RelativeY + rectangle.ScaleY;
-                    //}
-
-                    //float maxYAfterReposition = maxCollisionOffset + maxYMap;
-
-                    // keep the velocity and the position:
-                    var xDifference = positionBefore.X - this.Position.X;
-
-                    var tangent = new Microsoft.Xna.Framework.Vector2(repositionVector.Y, -repositionVector.X);
-
-                    currentSlope = Microsoft.Xna.Framework.MathHelper.ToDegrees( (float) System.Math.Atan2(tangent.Y, tangent.X));
-
-                    if(DirectionFacing == HorizontalDirection.Left)
-                    {
-                        currentSlope *= -1;
-                    }
-
-                    var multiplier = xDifference / tangent.X;
-
-                    this.Velocity.X = velocityBefore.X;
-                    this.Position.X = positionBefore.X;
-
-                    float topOfPolygon = float.NegativeInfinity;
-                    var polygon = shapeCollection.LastCollisionPolygons[0];
-                    
-                    for(int i = 0; i < polygon.Points.Count; i++)
-                    {
-                        var absolute = polygon.AbsolutePointPosition(i);
-
-                        topOfPolygon = System.Math.Max(topOfPolygon, absolute.Y);
-                    }
-                    var amountToAdd = multiplier * tangent.Y;
-
-                    // assumes that all rectangles in this are used for collision. This needs to be adjusted:
-                    foreach(var rectangle in this.Collision.AxisAlignedRectangles)
-                    {
-                        var overlap = topOfPolygon - rectangle.Bottom;
-                        if(overlap > 0)
-                        {
-                            amountToAdd = Math.Min(overlap, amountToAdd);
-                        }
-                        else
-                        {
-                            amountToAdd = 0;
-                        }
-                    }
-
-                    this.Position.Y += amountToAdd;
-
-                    this.YVelocity = polygon.TopParent.XVelocity;
-                    this.Position.Y += multiplier * tangent.Y;
-                    //this.Position.Y = Math.Min(this.Position.Y, maxYAfterReposition);
-                    this.ForceUpdateDependenciesDeep();
-                }
+                AdjustPositionAndVelocityForStandingOnSlope(positionBefore, velocityBefore, polygonCollidedWith);
             }
             return collided;
         }
 
+        private void AdjustPositionAndVelocityForStandingOnSlope(Microsoft.Xna.Framework.Vector3 positionBefore, Microsoft.Xna.Framework.Vector3 velocityBefore, global::FlatRedBall.Math.Geometry.Polygon polygonCollidedWith)
+        {
+            var repositionVector = new Microsoft.Xna.Framework.Vector2(0, 1);
+            foreach (var rect in this.Collision.AxisAlignedRectangles)
+            {
+                if (rect.LastMoveCollisionReposition.X != 0)
+                {
+                    repositionVector = rect.LastMoveCollisionReposition;
+                    break;
+                }
+            }
+            var shouldPreserve = DetermineIfHorizontalVelocityShouldBePreserved(velocityBefore.X, repositionVector);
+
+            if (shouldPreserve)
+            {
+                // keep the velocity and the position:
+                var xDifference = positionBefore.X - this.Position.X;
+
+                var tangent = new Microsoft.Xna.Framework.Vector2(repositionVector.Y, -repositionVector.X);
+
+                currentSlope = Microsoft.Xna.Framework.MathHelper.ToDegrees((float)System.Math.Atan2(tangent.Y, tangent.X));
+
+                if (DirectionFacing == HorizontalDirection.Left)
+                {
+                    currentSlope *= -1;
+                }
+
+                var multiplier = xDifference / tangent.X;
+
+                this.Velocity.X = velocityBefore.X;
+                this.Position.X = positionBefore.X;
+
+                float topOfPolygon = float.NegativeInfinity;
+
+                for (int i = 0; i < polygonCollidedWith.Points.Count; i++)
+                {
+                    var absolute = polygonCollidedWith.AbsolutePointPosition(i);
+
+                    topOfPolygon = System.Math.Max(topOfPolygon, absolute.Y);
+                }
+                var amountToAdd = multiplier * tangent.Y;
+
+                // assumes that all rectangles in this are used for collision. This needs to be adjusted:
+                foreach (var rectangle in this.Collision.AxisAlignedRectangles)
+                {
+                    var overlap = topOfPolygon - rectangle.Bottom;
+                    if (overlap > 0)
+                    {
+                        amountToAdd = Math.Min(overlap, amountToAdd);
+                    }
+                    else
+                    {
+                        amountToAdd = 0;
+                    }
+                }
+
+                this.Position.Y += amountToAdd;
+
+                this.YVelocity = polygonCollidedWith.TopParent.XVelocity;
+
+
+                //this.Position.Y = Math.Min(this.Position.Y, maxYAfterReposition);
+                this.ForceUpdateDependenciesDeep();
+            }
+        }
+
         
-        private bool DetermineIfHorizontalVelocityShouldBePreserved(float oldHorizontalVelocity, FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, 
+        private bool DetermineIfHorizontalVelocityShouldBePreserved(float oldHorizontalVelocity, 
             Microsoft.Xna.Framework.Vector2 repositionVector)
         {
             const float maxSlope = 80; // degrees
