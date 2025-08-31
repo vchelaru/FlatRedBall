@@ -1122,7 +1122,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                     this.Position.Y += amountToAdd;
 
-
+                    this.YVelocity = polygon.TopParent.XVelocity;
                     this.Position.Y += multiplier * tangent.Y;
                     //this.Position.Y = Math.Min(this.Position.Y, maxYAfterReposition);
                     this.ForceUpdateDependenciesDeep();
