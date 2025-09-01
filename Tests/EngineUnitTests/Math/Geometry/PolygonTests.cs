@@ -68,4 +68,63 @@ public class PolygonTests
         rectangle.Y.ShouldBe(-544);
     }
 
+
+    [Fact]
+    public void CollideAgainstMove_ShouldRespectMass0()
+    {
+        var first = Polygon.CreateRectangle(50, 50);
+        var second = Polygon.CreateRectangle(50, 50);
+        second.X = 90;
+
+        first.CollideAgainstMove(second, 0, 1);
+
+        first.X.ShouldBe(-10, "because this has 0 mass, so it should move fully");
+        second.X.ShouldBe(90, "because second has non-0 mass, first has 0 should move the first to the left");
+    }
+
+    [Fact]
+    public void CollideAgainstMove_ShouldRespectOtherMass0()
+    {
+        var first = Polygon.CreateRectangle(50, 50);
+        var second = Polygon.CreateRectangle(50, 50);
+        second.X = 90;
+
+        first.CollideAgainstMove(second, 1, 0);
+
+        first.X.ShouldBe(0);
+        second.X.ShouldBe(100);
+    }
+
+    [Fact]
+    public void CollideAgainstMove_ShouldRespectEqualMass()
+    {
+        var first = Polygon.CreateRectangle(50, 50);
+        var second = Polygon.CreateRectangle(50, 50);
+        second.X = 90;
+
+        first.CollideAgainstMove(second, 1, 1);
+
+        first.X.ShouldBe(-5);
+        second.X.ShouldBe(95);
+    }
+
+    [Fact]
+    public void CollideAgainstMove_ShouldRespectAsymmetricMass()
+    {
+        var first = Polygon.CreateRectangle(50, 50);
+        var second = Polygon.CreateRectangle(50, 50);
+        second.X = 90;
+
+        first.CollideAgainstMove(second, .25f, .75f);
+
+        first.X.ShouldBe(-7.5f);
+        second.X.ShouldBe(92.5f);
+    }
+
+    private Polygon CreatePolygonRectangle()
+    {
+        var polygon = Polygon.CreateRectangle(50, 50);
+
+        return polygon;
+    }
 }
