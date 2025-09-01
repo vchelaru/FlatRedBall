@@ -78,6 +78,8 @@ public class PolygonTests
 
         first.CollideAgainstMove(second, 0, 1);
 
+        first.Y.ShouldBe(0);
+        second.Y.ShouldBe(0);
         first.X.ShouldBe(-10, "because this has 0 mass, so it should move fully");
         second.X.ShouldBe(90, "because second has non-0 mass, first has 0 should move the first to the left");
     }
