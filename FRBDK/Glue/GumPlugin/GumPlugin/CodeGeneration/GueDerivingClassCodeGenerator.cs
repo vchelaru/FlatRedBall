@@ -1211,6 +1211,11 @@ public class GueDerivingClassCodeGenerator : Singleton<GueDerivingClassCodeGener
 
         string prefix = variableType;
 
+        if(variableType == null)
+        {
+            throw new InvalidOperationException($"Error trying to convert variable {variableSave} in {element} when generating Gum code because it doesn't have an assigned type");
+        }
+
         if (mTypeToQualifiedTypes.ContainsKey(prefix))
         {
             prefix = mTypeToQualifiedTypes[prefix];
