@@ -2722,7 +2722,8 @@ namespace FlatRedBall.Math.Geometry
             mBoundingRadius = (float)System.Math.Sqrt(boundingRadiusSquared);
         }
 
-        double mLastFillVertexArrayUpdate;
+        // So first-frame updates still happen
+        double mLastFillVertexArrayUpdate = -1;
 
         internal void FillVertexArray(bool forceUpdate)
         {

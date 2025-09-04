@@ -76,6 +76,9 @@ public class PolygonTests
         var second = Polygon.CreateRectangle(50, 50);
         second.X = 90;
 
+        first.ForceUpdateDependencies();
+        second.ForceUpdateDependencies();
+
         first.CollideAgainstMove(second, 0, 1);
 
         first.Y.ShouldBe(0);
@@ -91,6 +94,8 @@ public class PolygonTests
         var second = Polygon.CreateRectangle(50, 50);
         second.X = 90;
 
+        first.ForceUpdateDependencies();
+        second.ForceUpdateDependencies();
         first.CollideAgainstMove(second, 1, 0);
 
         first.X.ShouldBe(0);
@@ -104,6 +109,8 @@ public class PolygonTests
         var second = Polygon.CreateRectangle(50, 50);
         second.X = 90;
 
+        first.ForceUpdateDependencies();
+        second.ForceUpdateDependencies();
         first.CollideAgainstMove(second, 1, 1);
 
         first.X.ShouldBe(-5);
@@ -117,16 +124,11 @@ public class PolygonTests
         var second = Polygon.CreateRectangle(50, 50);
         second.X = 90;
 
+        first.ForceUpdateDependencies();
+        second.ForceUpdateDependencies();
         first.CollideAgainstMove(second, .25f, .75f);
 
         first.X.ShouldBe(-7.5f);
         second.X.ShouldBe(92.5f);
-    }
-
-    private Polygon CreatePolygonRectangle()
-    {
-        var polygon = Polygon.CreateRectangle(50, 50);
-
-        return polygon;
     }
 }

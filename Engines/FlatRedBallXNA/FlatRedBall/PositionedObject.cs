@@ -253,7 +253,7 @@ namespace FlatRedBall
         /// The value that was last used when calling UpdateDependencies.
         /// </summary>
         #endregion
-        protected double mLastDependencyUpdate;
+        protected double mLastDependencyUpdate = -1;
 
         #region XML Docs
         /// <summary>
