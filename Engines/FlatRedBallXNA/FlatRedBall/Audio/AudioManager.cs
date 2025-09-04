@@ -609,7 +609,7 @@ public static partial class AudioManager
     }
 
     /// <summary>
-    /// Plays the argument sound effect using a default Volume, pitch, and pan.
+    /// Plays the argument sound effect using a default Volume (MasterSoundVolume), pitch of 0, and pan of 0.
     /// </summary>
     /// <param name="soundEffect"></param>
     public static void Play(SoundEffect soundEffect)

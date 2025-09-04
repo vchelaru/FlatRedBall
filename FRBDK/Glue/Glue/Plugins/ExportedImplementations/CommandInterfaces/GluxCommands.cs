@@ -2573,7 +2573,7 @@ public class GluxCommands : IGluxCommands
 
             var nosContainer = ObjectFinder.Self.GetElementContaining(nos);
 
-            if (performSaveAndGenerateCode)
+            if (performSaveAndGenerateCode && nosContainer != null)
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosContainer);
             }
