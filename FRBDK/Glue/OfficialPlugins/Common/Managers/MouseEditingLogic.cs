@@ -5,6 +5,7 @@ using RenderingLibrary;
 using RenderingLibrary.Graphics;
 using RenderingLibrary.Math;
 using SkiaGum.GueDeriving;
+using SkiaGum.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -51,14 +52,16 @@ class MouseEditingLogic
     private int? StartDragSelectX = null;
     private int? StartDragSelectY = null;
     private Stopwatch LeftClickTimer = new Stopwatch();
-
+    private GumSKElement _canvas;
+    private TextureCoordinateSelectionViewModel _viewModel;
     private CameraLogic CameraLogic;
-    TextureCoordinateSelectionViewModel ViewModel => View.ViewModel;
 
     #endregion
 
-    public void Initialize(TextureCoordinateSelectionView view, CameraLogic cameraLogic)
+    public void Initialize(TextureCoordinateSelectionView view, GumSKElement canvas, TextureCoordinateSelectionViewModel viewModel, CameraLogic cameraLogic)
     {
+        _canvas = canvas;
+        _viewModel = viewModel;
         CameraLogic = cameraLogic;
         View = view;
         LeftClickTimer.Start();
@@ -69,7 +72,7 @@ class MouseEditingLogic
         //circle.XOrigin = RenderingLibrary.Graphics.HorizontalAlignment.Center;
         //circle.YOrigin = RenderingLibrary.Graphics.VerticalAlignment.Center;
 
-        //View.Canvas.Children.Add(circle);
+        //_canvas.Children.Add(circle);
     }
 
     public void HandleMousePush(MouseButtonEventArgs args)
@@ -86,7 +89,7 @@ class MouseEditingLogic
 
         //Not interacting with TextureCoordinateRectangle, move TextureCoordinateRectangle to this cell & init start drag select
         if(HandleGrabbed == null && !IsBodyGrabbed && args.ChangedButton == MouseButton.Left) {
-            View.SelectCell(args.GetPosition(View.Canvas), out int columnX, out int columnY);
+            View.SelectCell(args.GetPosition(_canvas), out int columnX, out int columnY);
             StartDragSelectX = columnX;
             StartDragSelectY = columnY;
         }
@@ -96,7 +99,7 @@ class MouseEditingLogic
     {
         //start drag select / not interacting with TextureCoordinateRectangle
         if(StartDragSelectX != null && !IsBodyGrabbed && args.LeftButton == MouseButtonState.Pressed) {
-            View.SelectDragCell(args.GetPosition(View.Canvas), (int)StartDragSelectX, (int)StartDragSelectY);
+            View.SelectDragCell(args.GetPosition(_canvas), (int)StartDragSelectX, (int)StartDragSelectY);
             return;
         }
 
@@ -104,11 +107,11 @@ class MouseEditingLogic
         {
             UpdateHandleOver(args);
         }
-        //var point = args.GetPosition(View.Canvas); 
+        //var point = args.GetPosition(_canvas); 
         //View.GetWorldPosition(point, out double x, out double y);
         //circle.X = (float)x;
         //circle.Y = (float)y;
-        //View.Canvas.InvalidateVisual();
+        //_canvas.InvalidateVisual();
         //System.Diagnostics.Debug.WriteLine($"Skia:{x}, {y} Window:({point})");
 
         UpdateGrabbed(args);
@@ -130,14 +133,14 @@ class MouseEditingLogic
 
             UpdateHandleOver(e);
             RefreshHandleVisuals();
-            View.Canvas.InvalidateVisual();
+            _canvas.InvalidateVisual();
         }
 
         // Copy int to decimal values to prevent "flickering" due to half pixels when moving on subsequent grabs:
-        View.ViewModel.TopTexturePixel = View.ViewModel.TopTexturePixelInt;
-        View.ViewModel.LeftTexturePixel = View.ViewModel.LeftTexturePixelInt;
-        View.ViewModel.SelectedWidthPixels = View.ViewModel.SelectedWidthPixelsInt;
-        View.ViewModel.SelectedHeightPixels = View.ViewModel.SelectedHeightPixelsInt;
+        _viewModel.TopTexturePixel = _viewModel.TopTexturePixelInt;
+        _viewModel.LeftTexturePixel = _viewModel.LeftTexturePixelInt;
+        _viewModel.SelectedWidthPixels = _viewModel.SelectedWidthPixelsInt;
+        _viewModel.SelectedHeightPixels = _viewModel.SelectedHeightPixelsInt;
     }
 
     private void UpdateHandleHighlight()
@@ -155,7 +158,7 @@ class MouseEditingLogic
 
     private void UpdateGrabbed(MouseEventArgs args)
     {
-        var newPosition = args.GetPosition(View.Canvas);
+        var newPosition = args.GetPosition(_canvas);
 
         /////////////////////Early Out//////////////////////
         if (args.LeftButton != MouseButtonState.Pressed || newPosition == LastGrabbedMousePoint)
@@ -165,15 +168,15 @@ class MouseEditingLogic
         ///////////////////End Early Out////////////////////
 
         var xDifference = (decimal)(
-            (newPosition.X - LastGrabbedMousePoint.X) * CameraLogic.WindowsScaleFactor / ViewModel.CurrentZoomScale);
+            (newPosition.X - LastGrabbedMousePoint.X) * CameraLogic.WindowsScaleFactor / _viewModel.CurrentZoomScale);
         var yDifference = (decimal)(
-            (newPosition.Y - LastGrabbedMousePoint.Y) * CameraLogic.WindowsScaleFactor / ViewModel.CurrentZoomScale);
+            (newPosition.Y - LastGrabbedMousePoint.Y) * CameraLogic.WindowsScaleFactor / _viewModel.CurrentZoomScale);
 
-        decimal SnappedX(decimal value) => MathFunctions.RoundDecimal(value, ViewModel.SnapChecked ? ViewModel.CellWidth : 1);
-        decimal SnappedY(decimal value) => MathFunctions.RoundDecimal(value, ViewModel.SnapChecked ? ViewModel.CellHeight : 1);
+        decimal SnappedX(decimal value) => MathFunctions.RoundDecimal(value, _viewModel.SnapChecked ? _viewModel.CellWidth : 1);
+        decimal SnappedY(decimal value) => MathFunctions.RoundDecimal(value, _viewModel.SnapChecked ? _viewModel.CellHeight : 1);
         if (HandleGrabbed != null)
         {
-            var viewModel = View.ViewModel;
+            var viewModel = _viewModel;
 
             if (xDifference != 0)
             {
@@ -186,7 +189,7 @@ class MouseEditingLogic
 
                     if(viewModel.SnapChecked) {
                         //Make sure it's on a snap line
-                        var off = viewModel.LeftTexturePixel % ViewModel.CellWidth;
+                        var off = viewModel.LeftTexturePixel % _viewModel.CellWidth;
                         viewModel.LeftTexturePixel -= off;
                         viewModel.SelectedWidthPixels += off;
                     }
@@ -198,7 +201,7 @@ class MouseEditingLogic
 
                     if(viewModel.SnapChecked) {
                         //Make sure it's on a snap line
-                        var off = viewModel.SelectedWidthPixels % ViewModel.CellWidth;
+                        var off = viewModel.SelectedWidthPixels % _viewModel.CellWidth;
                         viewModel.SelectedWidthPixels -= off;
                     }
                 }
@@ -214,7 +217,7 @@ class MouseEditingLogic
 
                     if(viewModel.SnapChecked) {
                         //Make sure it's on a snap line
-                        var off = viewModel.TopTexturePixel % ViewModel.CellHeight;
+                        var off = viewModel.TopTexturePixel % _viewModel.CellHeight;
                         viewModel.TopTexturePixel -= off;
                         viewModel.SelectedHeightPixels += off;
                     }
@@ -226,7 +229,7 @@ class MouseEditingLogic
 
                     if(viewModel.SnapChecked) {
                         //Make sure it's on a snap line
-                        var off = viewModel.SelectedHeightPixels % ViewModel.CellHeight;
+                        var off = viewModel.SelectedHeightPixels % _viewModel.CellHeight;
                         viewModel.SelectedHeightPixels -= off;
                     }
                 }
@@ -234,7 +237,7 @@ class MouseEditingLogic
         }
         else if (IsBodyGrabbed)
         {
-            var viewModel = View.ViewModel;
+            var viewModel = _viewModel;
             grabbedDifferenceX += xDifference;
             grabbedDifferenceY += yDifference;
 
@@ -242,10 +245,10 @@ class MouseEditingLogic
             viewModel.TopTexturePixel = yAnchor + SnappedY(grabbedDifferenceY);
 
             //Make sure it's on all the snap lines
-            viewModel.LeftTexturePixel -= viewModel.LeftTexturePixel % ViewModel.CellWidth;
-            viewModel.SelectedWidthPixels -= viewModel.SelectedWidthPixels % ViewModel.CellWidth;
-            viewModel.TopTexturePixel -= viewModel.TopTexturePixel % ViewModel.CellHeight;
-            viewModel.SelectedHeightPixels -= viewModel.SelectedHeightPixels % ViewModel.CellHeight;
+            viewModel.LeftTexturePixel -= viewModel.LeftTexturePixel % _viewModel.CellWidth;
+            viewModel.SelectedWidthPixels -= viewModel.SelectedWidthPixels % _viewModel.CellWidth;
+            viewModel.TopTexturePixel -= viewModel.TopTexturePixel % _viewModel.CellHeight;
+            viewModel.SelectedHeightPixels -= viewModel.SelectedHeightPixels % _viewModel.CellHeight;
         }
 
         LastGrabbedMousePoint = newPosition;
@@ -255,14 +258,14 @@ class MouseEditingLogic
     {
         var oldHandleOver = HandleOver;
 
-        var newHandleOver = View.GetHandleAt(args.GetPosition(View.Canvas));
+        var newHandleOver = View.GetHandleAt(args.GetPosition(_canvas));
 
         if (oldHandleOver != newHandleOver)
         {
             HandleOver = newHandleOver;
             RefreshHandleVisuals();
 
-            View.Canvas.InvalidateVisual();
+            _canvas.InvalidateVisual();
         }
 
     }
@@ -286,7 +289,7 @@ class MouseEditingLogic
     {
         if (args.LeftButton == MouseButtonState.Pressed)
         {
-            LastGrabbedMousePoint = args.GetPosition(View.Canvas);
+            LastGrabbedMousePoint = args.GetPosition(_canvas);
             var handleOver = View.GetHandleAt(LastGrabbedMousePoint);
 
             HandleGrabbed = handleOver;
@@ -300,13 +303,13 @@ class MouseEditingLogic
                 worldY >= textureCoordinateRectangle.GetAbsoluteTop() &&
                 worldY <= textureCoordinateRectangle.GetAbsoluteBottom();
 
-            View.Canvas.InvalidateVisual();
+            _canvas.InvalidateVisual();
 
 
             if(IsBodyGrabbed)
             {
-                xAnchor = ViewModel.LeftTexturePixel;
-                yAnchor = ViewModel.TopTexturePixel;
+                xAnchor = _viewModel.LeftTexturePixel;
+                yAnchor = _viewModel.TopTexturePixel;
                 grabbedDifferenceX = 0;
                 grabbedDifferenceY = 0;
             }
@@ -314,14 +317,14 @@ class MouseEditingLogic
             if (HandleGrabbed?.XOrigin == HorizontalAlignment.Right)
             {
                 xSideGrabbed = XSide.Left;
-                xAnchor = ViewModel.LeftTexturePixel + ViewModel.SelectedWidthPixels;
-                grabbedDifferenceX = ViewModel.SelectedWidthPixels;
+                xAnchor = _viewModel.LeftTexturePixel + _viewModel.SelectedWidthPixels;
+                grabbedDifferenceX = _viewModel.SelectedWidthPixels;
             }
             else if (HandleGrabbed?.XOrigin == HorizontalAlignment.Left)
             {
                 xSideGrabbed = XSide.Right;
-                xAnchor = ViewModel.LeftTexturePixel;
-                grabbedDifferenceX = ViewModel.SelectedWidthPixels;
+                xAnchor = _viewModel.LeftTexturePixel;
+                grabbedDifferenceX = _viewModel.SelectedWidthPixels;
 
             }
             else
@@ -332,14 +335,14 @@ class MouseEditingLogic
             if (HandleGrabbed?.YOrigin == VerticalAlignment.Bottom)
             {
                 ySideGrabbed = YSide.Top;
-                yAnchor = ViewModel.TopTexturePixel + ViewModel.SelectedHeightPixels;
-                grabbedDifferenceY = ViewModel.SelectedHeightPixels;
+                yAnchor = _viewModel.TopTexturePixel + _viewModel.SelectedHeightPixels;
+                grabbedDifferenceY = _viewModel.SelectedHeightPixels;
             }
             else if (HandleGrabbed?.YOrigin == VerticalAlignment.Top)
             {
                 ySideGrabbed = YSide.Bottom;
-                yAnchor = ViewModel.TopTexturePixel;
-                grabbedDifferenceY = ViewModel.SelectedHeightPixels;
+                yAnchor = _viewModel.TopTexturePixel;
+                grabbedDifferenceY = _viewModel.SelectedHeightPixels;
             }
             else
             {
