@@ -1,4 +1,5 @@
-﻿using OfficialPlugins.SpritePlugin.ViewModels;
+﻿using OfficialPlugins.Common.ViewModels;
+using OfficialPlugins.SpritePlugin.Managers;
 using OfficialPlugins.SpritePlugin.Views;
 using RenderingLibrary;
 using RenderingLibrary.Graphics;
@@ -10,7 +11,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Windows.Input;
 
-namespace OfficialPlugins.SpritePlugin.Managers;
+namespace OfficialPlugins.Common.Managers;
 
 #region Enums
 
@@ -28,35 +29,35 @@ enum YSide
 
 #endregion
 
-static class MouseEditingLogic
+class MouseEditingLogic
 {
     #region Fields/Properties
 
-    static XSide? xSideGrabbed;
-    static YSide? ySideGrabbed;
-    static decimal xAnchor;
-    static decimal yAnchor;
-    static decimal grabbedDifferenceX;
-    static decimal grabbedDifferenceY;
+    XSide? xSideGrabbed;
+    YSide? ySideGrabbed;
+    decimal xAnchor;
+    decimal yAnchor;
+    decimal grabbedDifferenceX;
+    decimal grabbedDifferenceY;
 
-    static TextureCoordinateSelectionView View;
-    private static System.Windows.Point LastGrabbedMousePoint;
+    TextureCoordinateSelectionView View;
+    private System.Windows.Point LastGrabbedMousePoint;
     //static ColoredCircleRuntime circle;
 
-    private static SkiaGum.GueDeriving.RoundedRectangleRuntime HandleOver;
-    private static SkiaGum.GueDeriving.RoundedRectangleRuntime HandleGrabbed;
-    private static bool IsBodyGrabbed;
+    private RoundedRectangleRuntime HandleOver;
+    private RoundedRectangleRuntime HandleGrabbed;
+    private bool IsBodyGrabbed;
 
-    private static int? StartDragSelectX = null;
-    private static int? StartDragSelectY = null;
-    private static Stopwatch LeftClickTimer = new Stopwatch();
+    private int? StartDragSelectX = null;
+    private int? StartDragSelectY = null;
+    private Stopwatch LeftClickTimer = new Stopwatch();
 
-    private static CameraLogic CameraLogic;
-    static TextureCoordinateSelectionViewModel ViewModel => View.ViewModel;
+    private CameraLogic CameraLogic;
+    TextureCoordinateSelectionViewModel ViewModel => View.ViewModel;
 
     #endregion
 
-    public static void Initialize(TextureCoordinateSelectionView view, CameraLogic cameraLogic)
+    public void Initialize(TextureCoordinateSelectionView view, CameraLogic cameraLogic)
     {
         CameraLogic = cameraLogic;
         View = view;
@@ -71,12 +72,12 @@ static class MouseEditingLogic
         //View.Canvas.Children.Add(circle);
     }
 
-    public static void HandleMousePush(MouseButtonEventArgs args)
+    public void HandleMousePush(MouseButtonEventArgs args)
     {
         UpdateHandleGrabbed(args);
 
         //double click
-        if(IsBodyGrabbed && (LeftClickTimer.ElapsedMilliseconds < System.Windows.Forms.SystemInformation.DoubleClickTime)) {
+        if(IsBodyGrabbed && LeftClickTimer.ElapsedMilliseconds < System.Windows.Forms.SystemInformation.DoubleClickTime) {
             HandleGrabbed = null;
             IsBodyGrabbed = false;
         }
@@ -84,17 +85,17 @@ static class MouseEditingLogic
             LeftClickTimer.Restart();
 
         //Not interacting with TextureCoordinateRectangle, move TextureCoordinateRectangle to this cell & init start drag select
-        if((HandleGrabbed == null) && (!IsBodyGrabbed) && (args.ChangedButton == MouseButton.Left)) {
+        if(HandleGrabbed == null && !IsBodyGrabbed && args.ChangedButton == MouseButton.Left) {
             View.SelectCell(args.GetPosition(View.Canvas), out int columnX, out int columnY);
             StartDragSelectX = columnX;
             StartDragSelectY = columnY;
         }
     }
 
-    public static void HandleMouseMove(MouseEventArgs args)
+    public void HandleMouseMove(MouseEventArgs args)
     {
         //start drag select / not interacting with TextureCoordinateRectangle
-        if((StartDragSelectX != null) && (!IsBodyGrabbed) && (args.LeftButton == MouseButtonState.Pressed)) {
+        if(StartDragSelectX != null && !IsBodyGrabbed && args.LeftButton == MouseButtonState.Pressed) {
             View.SelectDragCell(args.GetPosition(View.Canvas), (int)StartDragSelectX, (int)StartDragSelectY);
             return;
         }
@@ -115,7 +116,7 @@ static class MouseEditingLogic
         UpdateHandleHighlight();
     }
 
-    internal static void HandleMouseUp(MouseButtonEventArgs e)
+    internal void HandleMouseUp(MouseButtonEventArgs e)
     {
         StartDragSelectX = null;
         StartDragSelectY = null;
@@ -139,7 +140,7 @@ static class MouseEditingLogic
         View.ViewModel.SelectedHeightPixels = View.ViewModel.SelectedHeightPixelsInt;
     }
 
-    private static void UpdateHandleHighlight()
+    private void UpdateHandleHighlight()
     {
         if (HandleOver != null)
         {
@@ -152,7 +153,7 @@ static class MouseEditingLogic
 
     }
 
-    private static void UpdateGrabbed(MouseEventArgs args)
+    private void UpdateGrabbed(MouseEventArgs args)
     {
         var newPosition = args.GetPosition(View.Canvas);
 
@@ -168,8 +169,8 @@ static class MouseEditingLogic
         var yDifference = (decimal)(
             (newPosition.Y - LastGrabbedMousePoint.Y) * CameraLogic.WindowsScaleFactor / ViewModel.CurrentZoomScale);
 
-        decimal SnappedX(decimal value) => MathFunctions.RoundDecimal(value, ViewModel.SnapChecked ? (decimal)ViewModel.CellWidth : 1);
-        decimal SnappedY(decimal value) => MathFunctions.RoundDecimal(value, ViewModel.SnapChecked ? (decimal)ViewModel.CellHeight : 1);
+        decimal SnappedX(decimal value) => MathFunctions.RoundDecimal(value, ViewModel.SnapChecked ? ViewModel.CellWidth : 1);
+        decimal SnappedY(decimal value) => MathFunctions.RoundDecimal(value, ViewModel.SnapChecked ? ViewModel.CellHeight : 1);
         if (HandleGrabbed != null)
         {
             var viewModel = View.ViewModel;
@@ -234,8 +235,8 @@ static class MouseEditingLogic
         else if (IsBodyGrabbed)
         {
             var viewModel = View.ViewModel;
-            grabbedDifferenceX += (decimal)xDifference;
-            grabbedDifferenceY += (decimal)yDifference;
+            grabbedDifferenceX += xDifference;
+            grabbedDifferenceY += yDifference;
 
             viewModel.LeftTexturePixel = xAnchor + SnappedX(grabbedDifferenceX);
             viewModel.TopTexturePixel = yAnchor + SnappedY(grabbedDifferenceY);
@@ -250,7 +251,7 @@ static class MouseEditingLogic
         LastGrabbedMousePoint = newPosition;
     }
 
-    private static void UpdateHandleOver(MouseEventArgs args)
+    private void UpdateHandleOver(MouseEventArgs args)
     {
         var oldHandleOver = HandleOver;
 
@@ -266,7 +267,7 @@ static class MouseEditingLogic
 
     }
 
-    private static void RefreshHandleVisuals()
+    private void RefreshHandleVisuals()
     {
         foreach (var handle in View.TextureCoordinateRectangle.Handles)
         {
@@ -281,7 +282,7 @@ static class MouseEditingLogic
         }
     }
 
-    private static void UpdateHandleGrabbed(MouseButtonEventArgs args)
+    private void UpdateHandleGrabbed(MouseButtonEventArgs args)
     {
         if (args.LeftButton == MouseButtonState.Pressed)
         {

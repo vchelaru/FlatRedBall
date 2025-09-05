@@ -3,7 +3,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using GlueFormsCore.Extensions;
-using OfficialPlugins.SpritePlugin.ViewModels;
+using OfficialPlugins.Common.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 using WpfDataUi;

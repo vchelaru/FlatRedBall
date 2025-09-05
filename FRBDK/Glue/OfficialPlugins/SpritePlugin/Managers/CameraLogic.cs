@@ -1,6 +1,5 @@
 ﻿using Gum.Wireframe;
 using OfficialPlugins.Common.ViewModels;
-using OfficialPlugins.SpritePlugin.ViewModels;
 using OfficialPlugins.SpritePlugin.Views;
 using RenderingLibrary;
 using SkiaGum.GueDeriving;

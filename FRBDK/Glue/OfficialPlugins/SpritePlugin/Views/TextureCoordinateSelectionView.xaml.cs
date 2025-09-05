@@ -7,9 +7,10 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using OfficialPlugins.SpritePlugin.ViewModels;
 using RenderingLibrary;
 using System.ComponentModel;
+using OfficialPlugins.Common.Managers;
+using OfficialPlugins.Common.ViewModels;
 
 namespace OfficialPlugins.SpritePlugin.Views
 {
@@ -102,12 +103,16 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         CameraLogic CameraLogic;
 
+        MouseEditingLogic _mouseEditingLogic;
+
         #endregion
 
         #region Constructor/Initialize
         public TextureCoordinateSelectionView()
         {
             InitializeComponent();
+
+            _mouseEditingLogic = new MouseEditingLogic();
         }
 
         public void Initialize(CameraLogic cameraLogic)
@@ -121,7 +126,7 @@ namespace OfficialPlugins.SpritePlugin.Views
             // Initialize CameraLogic after initializing the background so the background
             // position can be set
             CameraLogic.Initialize(this, ViewModel, this.Canvas, this.BackgroundRectangle);
-            MouseEditingLogic.Initialize(this, cameraLogic);
+            _mouseEditingLogic.Initialize(this, cameraLogic);
 
             this.Canvas.Children.Add(MainSprite);
 
@@ -229,7 +234,7 @@ namespace OfficialPlugins.SpritePlugin.Views
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             CameraLogic.HandleMousePush(e);
-            MouseEditingLogic.HandleMousePush(e);
+            _mouseEditingLogic.HandleMousePush(e);
 
             // This allows the canvas to receive focus:
             // Source: https://social.msdn.microsoft.com/Forums/vstudio/en-US/ed6caee6-2cae-4db8-a2df-eafad44dbe37/mouse-focus-versus-keyboard-focus?forum=wpf#:~:text=In%20WPF%2C%20some%20elements%20will%20get%20keyboard%20focus,trick%3A%20userControl.MouseLeftButtonDown%20%2B%3D%20delegate%20%7B%20userControl.Focusable%20%3D%20true%3B
@@ -240,7 +245,7 @@ namespace OfficialPlugins.SpritePlugin.Views
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
             CameraLogic.HandleMouseMove(e);
-            MouseEditingLogic.HandleMouseMove(e);
+            _mouseEditingLogic.HandleMouseMove(e);
         }
 
         private void Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -251,7 +256,7 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            MouseEditingLogic.HandleMouseUp(e);
+            _mouseEditingLogic.HandleMouseUp(e);
         }
 
         internal RoundedRectangleRuntime GetHandleAt(Point lastMousePoint)

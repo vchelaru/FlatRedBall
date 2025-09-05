@@ -1,13 +1,12 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Math;
-using OfficialPlugins.Common.ViewModels;
 using SkiaGum.Renderables;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 
-namespace OfficialPlugins.SpritePlugin.ViewModels;
+namespace OfficialPlugins.Common.ViewModels;
 
 public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewModel
 {
@@ -131,9 +130,9 @@ public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewMod
     {
         double x = TextureWidth % CellWidth;
         double y = TextureHeight % CellHeight;
-        SnapWidthColor = (x == 0) ? System.Windows.Media.Brushes.Black : System.Windows.Media.Brushes.OrangeRed;
-        SnapHeightColor = (y == 0) ? System.Windows.Media.Brushes.Black : System.Windows.Media.Brushes.OrangeRed;
-        SnapWarningVisibility = (y == 0) && (x == 0) ? Visibility.Collapsed : Visibility.Visible;
+        SnapWidthColor = x == 0 ? System.Windows.Media.Brushes.Black : System.Windows.Media.Brushes.OrangeRed;
+        SnapHeightColor = y == 0 ? System.Windows.Media.Brushes.Black : System.Windows.Media.Brushes.OrangeRed;
+        SnapWarningVisibility = y == 0 && x == 0 ? Visibility.Collapsed : Visibility.Visible;
     }
 
     public TextureCoordinateSelectionViewModel()
