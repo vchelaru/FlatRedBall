@@ -57,13 +57,16 @@ namespace OfficialPlugins.SpritePlugin.Views
             {
                 TextureCoordinateSelectionWindow window;
                 TextureCoordinateSelectionViewModel viewModel;
-                float left, top, right, bottom;
 
-                window = new TextureCoordinateSelectionWindow();
+                viewModel = GetNewViewModel(currentNos, currentElement);
+
+                window = new TextureCoordinateSelectionWindow(viewModel);
                 var fullFile = GlueCommands.Self.FileCommands.GetFilePath(textureRfs);
                 window.TextureFilePath = fullFile;
 
-                viewModel = GetNewViewModel(currentNos, currentElement, window, out left, out top, out right, out bottom);
+
+
+
                 window.DataContext = viewModel;
 
                 if(LastViewModel != null)
@@ -89,43 +92,44 @@ namespace OfficialPlugins.SpritePlugin.Views
                     viewModel.WindowY = window.Top;
                 }
 
+                var oldLeft = viewModel.LeftTexturePixelInt;
+                var oldRight = viewModel.LeftTexturePixelInt + viewModel.SelectedWidthPixelsInt;
+                var oldTop = viewModel.TopTexturePixelInt;
+                var oldBottom = viewModel.TopTexturePixelInt + viewModel.SelectedHeightPixelsInt;
+
                 var result = window.ShowDialog();
 
                 if (result == true)
                 {
-                    ApplyViewModel(currentNos, currentElement, viewModel, left, top, right, bottom);
+                    ApplyViewModel(currentNos, currentElement, viewModel,
+                        oldLeft, oldTop, oldRight, oldBottom);
                 }
 
                 LastViewModel = viewModel;
             }
         }
 
-        private static TextureCoordinateSelectionViewModel GetNewViewModel(NamedObjectSave currentNos, GlueElement currentElement, 
-            TextureCoordinateSelectionWindow window, out float left, out float top, out float right, out float bottom)
+        private static TextureCoordinateSelectionViewModel GetNewViewModel(NamedObjectSave currentNos, GlueElement currentElement)
         {
             var viewModel = new TextureCoordinateSelectionViewModel();
-            left = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
+            var left = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
                 nameof(Sprite.LeftTexturePixel)) as float? ?? 0;
-            top = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
+            var top = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
                 nameof(Sprite.TopTexturePixel)) as float? ?? 0;
             float defaultWidth = 256;
             float defaultHeight = 256;
-            if (window.Texture != null)
-            {
-                defaultWidth = window.Texture.Width;
-                defaultHeight = window.Texture.Height;
-            }
+
             viewModel.TextureHeight = defaultHeight;
             viewModel.TextureWidth = defaultWidth;
 
-            right = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
+            var right = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
                 nameof(Sprite.RightTexturePixel)) as float? ?? defaultWidth;
             if (right == 0)
             {
                 right = defaultWidth;
             }
 
-            bottom = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
+            var bottom = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
                 nameof(Sprite.BottomTexturePixel)) as float? ?? defaultHeight;
             if (bottom == 0)
             {

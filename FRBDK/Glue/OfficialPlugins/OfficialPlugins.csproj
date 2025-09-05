@@ -232,6 +232,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="SpritePlugin\GumComponents\" />
     <Folder Include="SpritePlugin\ViewModels\" />
   </ItemGroup>
 

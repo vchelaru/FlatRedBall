@@ -1,4 +1,5 @@
-﻿using OfficialPlugins.Common.ViewModels;
+﻿using OfficialPlugins.Common.GumComponents;
+using OfficialPlugins.Common.ViewModels;
 using OfficialPlugins.SpritePlugin.Managers;
 using OfficialPlugins.SpritePlugin.Views;
 using RenderingLibrary;
@@ -54,14 +55,25 @@ class MouseEditingLogic
     private Stopwatch LeftClickTimer = new Stopwatch();
     private GumSKElement _canvas;
     private TextureCoordinateSelectionViewModel _viewModel;
+    private TextureCoordinateRectangle _textureCoordinateRectangle;
     private CameraLogic CameraLogic;
 
     #endregion
 
-    public void Initialize(TextureCoordinateSelectionView view, GumSKElement canvas, TextureCoordinateSelectionViewModel viewModel, CameraLogic cameraLogic)
+    public void Initialize(
+        TextureCoordinateSelectionView view,
+        GumSKElement canvas,
+        TextureCoordinateSelectionViewModel viewModel,
+        TextureCoordinateRectangle textureCoordinateRectangle,
+        CameraLogic cameraLogic)
     {
+        if(viewModel == null)
+        {
+            throw new ArgumentException(nameof(_viewModel));
+        }
         _canvas = canvas;
         _viewModel = viewModel;
+        _textureCoordinateRectangle = textureCoordinateRectangle;
         CameraLogic = cameraLogic;
         View = view;
         LeftClickTimer.Start();
@@ -103,9 +115,11 @@ class MouseEditingLogic
             return;
         }
 
+        var canvasPosition = args.GetPosition(_canvas);
+
         if (HandleGrabbed == null)
         {
-            UpdateHandleOver(args);
+            UpdateHandleOver(canvasPosition.X, canvasPosition.Y);
         }
         //var point = args.GetPosition(_canvas); 
         //View.GetWorldPosition(point, out double x, out double y);
@@ -126,12 +140,15 @@ class MouseEditingLogic
 
         if (HandleGrabbed != null)
         {
-            View.TextureCoordinateRectangle.MakeNormal(HandleGrabbed);
+            _textureCoordinateRectangle.MakeNormal(HandleGrabbed);
 
 
             HandleGrabbed = null;
 
-            UpdateHandleOver(e);
+            var canvasPosition = e.GetPosition(_canvas);
+
+
+            UpdateHandleOver(canvasPosition.X, canvasPosition.Y);
             RefreshHandleVisuals();
             _canvas.InvalidateVisual();
         }
@@ -147,11 +164,11 @@ class MouseEditingLogic
     {
         if (HandleOver != null)
         {
-            View.TextureCoordinateRectangle.MakeHighlighted(HandleOver);
+            _textureCoordinateRectangle.MakeHighlighted(HandleOver);
         }
         if (HandleOver != null)
         {
-            View.TextureCoordinateRectangle.MakeHighlighted(HandleOver);
+            _textureCoordinateRectangle.MakeHighlighted(HandleOver);
         }
 
     }
@@ -254,11 +271,15 @@ class MouseEditingLogic
         LastGrabbedMousePoint = newPosition;
     }
 
-    private void UpdateHandleOver(MouseEventArgs args)
+    private void UpdateHandleOver(double mouseX, double mouseY)
     {
         var oldHandleOver = HandleOver;
 
-        var newHandleOver = View.GetHandleAt(args.GetPosition(_canvas));
+        double x, y;
+
+        CameraLogic.GetWorldPosition(new System.Windows.Point(mouseX, mouseY), out x, out y);
+
+        var newHandleOver = _textureCoordinateRectangle.GetHandleAt(x, y);
 
         if (oldHandleOver != newHandleOver)
         {
@@ -272,15 +293,15 @@ class MouseEditingLogic
 
     private void RefreshHandleVisuals()
     {
-        foreach (var handle in View.TextureCoordinateRectangle.Handles)
+        foreach (var handle in _textureCoordinateRectangle.Handles)
         {
             if (handle == HandleOver || handle == HandleGrabbed)
             {
-                View.TextureCoordinateRectangle.MakeHighlighted(handle);
+                _textureCoordinateRectangle.MakeHighlighted(handle);
             }
             else
             {
-                View.TextureCoordinateRectangle.MakeNormal(handle);
+                _textureCoordinateRectangle.MakeNormal(handle);
             }
         }
     }
@@ -290,12 +311,14 @@ class MouseEditingLogic
         if (args.LeftButton == MouseButtonState.Pressed)
         {
             LastGrabbedMousePoint = args.GetPosition(_canvas);
-            var handleOver = View.GetHandleAt(LastGrabbedMousePoint);
+            var handleOver = _textureCoordinateRectangle.GetHandleAt(
+                LastGrabbedMousePoint.X,
+                LastGrabbedMousePoint.Y);
 
             HandleGrabbed = handleOver;
             RefreshHandleVisuals();
 
-            var textureCoordinateRectangle = View.TextureCoordinateRectangle;
+            var textureCoordinateRectangle = _textureCoordinateRectangle;
             CameraLogic.GetWorldPosition(LastGrabbedMousePoint, out double worldX, out double worldY);
             IsBodyGrabbed = HandleGrabbed == null &&
                 worldX >= textureCoordinateRectangle.GetAbsoluteLeft() &&

@@ -1,6 +1,5 @@
 ﻿using FlatRedBall.IO;
 using OfficialPlugins.SpritePlugin.Managers;
-using OfficialPlugins.SpritePlugin.GumComponents;
 using SkiaGum.GueDeriving;
 using SkiaSharp;
 using System;
@@ -11,6 +10,7 @@ using RenderingLibrary;
 using System.ComponentModel;
 using OfficialPlugins.Common.Managers;
 using OfficialPlugins.Common.ViewModels;
+using OfficialPlugins.Common.GumComponents;
 
 namespace OfficialPlugins.SpritePlugin.Views
 {
@@ -123,14 +123,15 @@ namespace OfficialPlugins.SpritePlugin.Views
             CreateMainSprite();
             CreateSpriteOutline();
 
+            TextureCoordinateRectangle = new TextureCoordinateRectangle();
+
             // Initialize CameraLogic after initializing the background so the background
             // position can be set
             CameraLogic.Initialize(this, ViewModel, this.Canvas, this.BackgroundRectangle);
-            _mouseEditingLogic.Initialize(this, this.Canvas, this.ViewModel, cameraLogic);
+            _mouseEditingLogic.Initialize(this, this.Canvas, this.ViewModel, TextureCoordinateRectangle, cameraLogic);
 
             this.Canvas.Children.Add(MainSprite);
 
-            TextureCoordinateRectangle = new TextureCoordinateRectangle();
 
             TextureCoordinateRectangle.SetBinding(
                 nameof(TextureCoordinateRectangle.X),

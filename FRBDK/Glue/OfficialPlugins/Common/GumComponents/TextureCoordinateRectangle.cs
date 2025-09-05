@@ -1,13 +1,17 @@
-﻿using Gum.Converters;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows;
+using Gum.Converters;
 using Gum.Wireframe;
+using OfficialPlugins.SpritePlugin.Managers;
 using RenderingLibrary.Graphics;
 using SkiaGum.GueDeriving;
 using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using HorizontalAlignment = RenderingLibrary.Graphics.HorizontalAlignment;
+using VerticalAlignment = RenderingLibrary.Graphics.VerticalAlignment;
 
-namespace OfficialPlugins.SpritePlugin.GumComponents;
+namespace OfficialPlugins.Common.GumComponents;
 
 public class TextureCoordinateRectangle : ContainerRuntime
 {
@@ -24,7 +28,7 @@ public class TextureCoordinateRectangle : ContainerRuntime
     private void Initialize()
     {
         RoundedRectangleRuntime mainRectangle = CreateLineRectangle();
-        this.Children.Add(mainRectangle);
+        Children.Add(mainRectangle);
 
         mainRectangle.Width = 100;
         mainRectangle.Height = 100;
@@ -79,7 +83,7 @@ public class TextureCoordinateRectangle : ContainerRuntime
         handle.YUnits = yUnits;
         handle.XOrigin = xOrigin;
         handle.YOrigin = yOrigin;
-        this.Children.Add(handle);
+        Children.Add(handle);
 
         Handles[nextHandleIndex] = handle;
         nextHandleIndex++;
@@ -111,5 +115,23 @@ public class TextureCoordinateRectangle : ContainerRuntime
         rectangle.IsFilled = false;
         rectangle.OutlineThickness = 1;
         return rectangle;
+    }
+
+    internal RoundedRectangleRuntime GetHandleAt(double x, double y)
+    {
+        foreach (var handle in Handles)
+        {
+            var left = handle.AbsoluteLeft;
+            var right = handle.AbsoluteRight;
+            var top = handle.AbsoluteTop;
+            var bottom = handle.AbsoluteBottom;
+
+            if (x >= left && x <= right &&
+                y >= top && y <= bottom)
+            {
+                return handle;
+            }
+        }
+        return null;
     }
 }
