@@ -36,6 +36,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         public ObservableCollection<AnimationFrameViewModel> VisibleChildren { get; set; } = 
             new ObservableCollection<AnimationFrameViewModel>();
 
+        public Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
+
         public override string ToString() => Name;
 
         public void SetFrom(AnimationChainSave animationChain, FilePath achxFilePath, int resolutionWidth, int resolutionHeight)
@@ -50,6 +52,19 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             }
         }
 
+        public bool ApplyTo(AnimationChainSave animationChainSave)
+        {
+            var toReturn = false;
+
+            if(animationChainSave.Name != this.Name)
+            {
+                animationChainSave.Name = this.Name;
+                toReturn = true;
+            }
+
+            return toReturn;
+        }
+
         public AnimationFrameViewModel AddAnimationFrame(AnimationFrameSave frame)
         {
             var frameVm = new AnimationFrameViewModel();
@@ -61,7 +76,6 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             return frameVm;
         }
 
-        public Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
 
         private void HandleFrameViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

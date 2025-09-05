@@ -18,7 +18,6 @@
     <StackPanel Orientation="Horizontal" Grid.Column="0">
       <Label Content="This is the ACHX Preview window. To edit the .achx: "/>
       <Button x:Name="OpenInAnimationEditorButton" Content="Click Here" Click="OpenInAnimationEditorButton_Click"/>
-      <Button Content="Test Atlas Export" Click="Button_Click"/>
     </StackPanel>
     <Grid Grid.Row="1">
       <Grid.ColumnDefinitions>
@@ -40,6 +39,7 @@
                 HierarchySource="{Binding VisibleRoot}"
                 ChildrenPath="VisibleChildren"
                 SelectedItem="{Binding SelectedItem}"
+                DisplayMemberPath="Text"
                 MouseDoubleClick="TreeListBox_MouseDoubleClick"
                 PreviewKeyDown="TreeListBox_PreviewKeyDown"
                 />

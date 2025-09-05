@@ -101,7 +101,6 @@ namespace OfficialPlugins.ContentPreview.Views
                 InitializeSettingsPropertyGrid();
 
                 ViewModel.Settings.PropertyChanged += HandleSettingsPropertyChanged;
-                ViewModel.AnimationChainCollectionChanged += HandleAnimationChainCollectionChanged;
                 ViewModel.FrameUpdatedByUi += HandleFrameUpdated;
             }
         }
@@ -153,9 +152,12 @@ namespace OfficialPlugins.ContentPreview.Views
             switch (e.PropertyName)
             {
                 case nameof(ViewModel.CurrentAnimationChain):
-
-                    TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
+                    // Refresh the texture before refreshing the outline, because the outline
+                    // depends on the Texture to decide where to position its bounds
                     TopWindowManager.RefreshTexture(achxFilePath, ViewModel.CurrentAnimationChain);
+
+                    
+                    TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
 
                     if (ViewModel.CurrentAnimationChain != null)
                     {
@@ -236,10 +238,6 @@ namespace OfficialPlugins.ContentPreview.Views
             });
         }
 
-        private void HandleAnimationChainCollectionChanged(AnimationChainViewModel model, NotifyCollectionChangedEventArgs args)
-        {
-            SaveCurrentAchx();
-        }
 
         HashSet<string> FramePropertiesWhichShouldNotTriggerSave = new()
         {
@@ -271,30 +269,8 @@ namespace OfficialPlugins.ContentPreview.Views
             TopGumCanvas.InvalidateVisual();
             BottomWindowManager.RefreshAnimationPreview(ViewModel);
             BottomGumCanvas.InvalidateVisual();
-
-            SaveCurrentAchx();
         }
 
-        private void SaveCurrentAchx()
-        {
-            // now save it:
-            var animationChain = ViewModel.BackgingData;
-            var filePath = this.achxFilePath;
-
-            GlueCommands.Self.FileCommands.IgnoreChangeOnFileUntil(
-                filePath, DateTimeOffset.Now.AddSeconds(2));
-            try
-            {
-                GlueCommands.Self.TryMultipleTimes(() =>
-                {
-                    animationChain.Save(filePath.FullPath);
-                });
-            }
-            catch (Exception ex)
-            {
-                GlueCommands.Self.PrintError(ex.ToString());
-            }
-        }
 
         #region Top Canvas Events
 
@@ -505,21 +481,6 @@ namespace OfficialPlugins.ContentPreview.Views
             {
                 GlueCommands.Self.FileCommands.OpenReferencedFileInDefaultProgram(rfs);
             }
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            var model = ViewModel.BackgingData;
-
-            var converter = new AtlasConverter();
-
-            var result = converter.SerializeAtlas(model, GlueCommands.Self.FileCommands.GetGlobalContentFolder().FullPath);
-
-            var fileName = ViewModel.AchxFilePath.RemoveExtension() + ".atlas";
-
-            GlueCommands.Self.FileCommands.SaveIfDiffers(fileName, result, ignoreNextChange: true);
-
-
         }
     }
 }

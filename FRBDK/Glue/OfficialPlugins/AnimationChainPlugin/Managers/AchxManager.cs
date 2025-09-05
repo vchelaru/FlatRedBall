@@ -1,13 +1,15 @@
-﻿using FlatRedBall.Glue.Plugins;
-using FlatRedBall.IO;
-using OfficialPlugins.AnimationChainPlugin.ViewModels;
-using OfficialPlugins.ContentPreview.Views;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
+using OfficialPlugins.AnimationChainPlugin.ViewModels;
+using OfficialPlugins.ContentPreview.Views;
+using SpineAtlasLibrary;
 
 namespace OfficialPlugins.AnimationChainPlugin.Managers
 {
@@ -27,19 +29,19 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             Plugin = plugin;
         }
 
-        public static AchxPreviewView GetView()
+        public AchxPreviewView GetView()
         {
             CreateViewIfNecessary();
 
             return View;
         }
 
-        private static void CreateViewIfNecessary()
+        private void CreateViewIfNecessary()
         {
             if (View == null)
             {
                 View = new AchxPreviewView();
-                ViewModel = new AchxViewModel();
+                ViewModel = new AchxViewModel(this);
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
                 View.DataContext = ViewModel;
                 View.Initialize(new SpritePlugin.Managers.CameraLogic(), new SpritePlugin.Managers.CameraLogic());
@@ -87,7 +89,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             Tab?.Focus();
         }
 
-        internal static void ShowTab(FilePath filePath)
+        internal void ShowTab(FilePath filePath)
         {
             var view = GetView();
             var changedFilePath = view.AchxFilePath != filePath;
@@ -123,5 +125,48 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 return View.GetIfIsHandlingHotkeys();
             }
         }
+
+        public void SaveCurrentAchx()
+        {
+            // now save it:
+            var animationChain = ViewModel.BackgingData;
+            var filePath = ViewModel.AchxFilePath;
+
+            GlueCommands.Self.FileCommands.IgnoreChangeOnFileUntil(
+                filePath, DateTimeOffset.Now.AddSeconds(2));
+            try
+            {
+                GlueCommands.Self.TryMultipleTimes(() =>
+                {
+                    if (filePath.Extension == "atlas")
+                    {
+                        //var converter = new AtlasConverter();
+                        //var contents = converter.SerializeToAtlas(animationChain);
+                        //System.IO.File.WriteAllText(filePath.FullPath, contents);
+
+                        var model = ViewModel.BackgingData;
+
+                        var converter = new AtlasConverter();
+
+                        var result = converter.SerializeAtlas(model, filePath.GetDirectoryContainingThis().FullPath);
+
+                        var fileName = ViewModel.AchxFilePath.RemoveExtension() + ".atlas";
+
+                        GlueCommands.Self.FileCommands.SaveIfDiffers(fileName, result, ignoreNextChange: true);
+
+
+                    }
+                    else
+                    {
+                        animationChain.Save(filePath.FullPath);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                GlueCommands.Self.PrintError(ex.ToString());
+            }
+        }
+
     }
 }

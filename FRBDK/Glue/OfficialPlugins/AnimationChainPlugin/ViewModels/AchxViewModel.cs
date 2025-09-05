@@ -2,10 +2,12 @@
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.IO;
+using OfficialPlugins.AnimationChainPlugin.Managers;
 using OfficialPlugins.Common.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 {
@@ -13,6 +15,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
     {
         public ZoomViewModel TopWindowZoom { get; set; }
         public ZoomViewModel BottomWindowZoom { get; set; }
+
+        private readonly AchxManager _achxManager;
 
         public SettingsViewModel Settings { get => Get<SettingsViewModel>(); private set => Set(value); }
 
@@ -123,8 +127,10 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public event Action<AnimationChainViewModel, NotifyCollectionChangedEventArgs> AnimationChainCollectionChanged;
 
-        public AchxViewModel()
+        public AchxViewModel(AchxManager achxManager)
         {
+            _achxManager = achxManager;
+
             Settings = new SettingsViewModel();
             TopWindowZoom = new ZoomViewModel();
             BottomWindowZoom = new ZoomViewModel();
@@ -181,10 +187,45 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         {
             var newViewModel = new AnimationChainViewModel();
             newViewModel.SetFrom(animationChainSave, AchxFilePath, ResolutionWidth, ResolutionHeight);
-            newViewModel.FrameUpdatedByUi += (frame, property) => FrameUpdatedByUi?.Invoke(frame, property);
-            newViewModel.PropertyChanged += (sender, args) => AnimationChainUpdatedByUi?.Invoke(newViewModel, args.PropertyName);
-            newViewModel.VisibleChildren.CollectionChanged += (sender, args) => AnimationChainCollectionChanged?.Invoke(newViewModel, args);
+            newViewModel.FrameUpdatedByUi += HandleFrameUpdatedByUi;
+            newViewModel.PropertyChanged += HandlePropertyChanged;
+            newViewModel.VisibleChildren.CollectionChanged += HandleAnimationChainCollectionChanged;
             VisibleRoot.Add(newViewModel);
         }
+
+        private void HandlePropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if(sender == null || e?.PropertyName == null)
+            {
+                return;
+            }
+            var viewModel = (AnimationChainViewModel)sender;
+            AnimationChainUpdatedByUi?.Invoke(viewModel, e.PropertyName);
+
+            switch(e.PropertyName)
+            {
+                case nameof(AnimationChainViewModel.Name):
+                    var didChange = viewModel.ApplyTo(viewModel.BackingModel);
+                    if(didChange)
+                    {
+                        _achxManager.SaveCurrentAchx();
+                    }
+                    break;
+            }
+        }
+
+        private void HandleFrameUpdatedByUi(AnimationFrameViewModel frame, string property)
+        {
+            FrameUpdatedByUi?.Invoke(frame, property);
+            _achxManager.SaveCurrentAchx();
+        }
+
+        private void HandleAnimationChainCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            AnimationChainCollectionChanged?.Invoke((AnimationChainViewModel)sender, e);
+
+            _achxManager.SaveCurrentAchx();
+        }
+
     }
 }

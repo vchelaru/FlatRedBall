@@ -25,20 +25,27 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
         private static List<MemberCategory> CreateMemberCategories(AnimationChainViewModel selectedAnimationChain)
         {
+            var isAtlas = selectedAnimationChain.FilePath.Extension == "atlas";
+            var isFullAchx = !isAtlas;
+
             List<MemberCategory> toReturn = new List<MemberCategory>();
 
             var mainCategory = new MemberCategory();
             toReturn.Add(mainCategory);
 
-            Add(nameof(AnimationChainViewModel.Name));
-            Add(nameof(AnimationChainViewModel.Duration));
+            Add(nameof(AnimationChainViewModel.Name), isReadOnly:false);
+
+            if(isFullAchx)
+            {
+                Add(nameof(AnimationChainViewModel.Duration), isReadOnly: true);
+            }
 
             return toReturn;
 
-            void Add(string propertyName)
+            void Add(string propertyName, bool isReadOnly)
             {
                 var member = new InstanceMember(propertyName, selectedAnimationChain);
-                member.IsReadOnly = true;
+                member.IsReadOnly = isReadOnly;
                 mainCategory.Members.Add(member);
             }
         }
@@ -54,10 +61,16 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             var currentCategory = new MemberCategory();
             list.Add(currentCategory);
 
+            var isAtlas = animationFrame.Parent?.FilePath.Extension == "atlas";
+            var isFullAchx = !isAtlas;
 
             var member = Add(nameof(animationFrame.RelativeTextureName), canWrite:true, typeof(FileSelectionDisplay));
             member.PropertiesToSetOnDisplayer[nameof(FileSelectionDisplay.Filter)] = "PNG|*.png";
-            Add(nameof(animationFrame.LengthInSeconds), canWrite: true);
+
+            if(isFullAchx)
+            {
+                Add(nameof(animationFrame.LengthInSeconds), canWrite: true);
+            }
 
             currentCategory = new MemberCategory();
             list.Add(currentCategory);
@@ -68,15 +81,21 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             Add(nameof(animationFrame.Width), canWrite: true);
             Add(nameof(animationFrame.Height), canWrite: true);
 
-            Add(nameof(animationFrame.FlipHorizontal), canWrite:true);
-            Add(nameof(animationFrame.FlipVertical), canWrite: true);
+            if(isFullAchx)
+            {
+                Add(nameof(animationFrame.FlipHorizontal), canWrite:true);
+                Add(nameof(animationFrame.FlipVertical), canWrite: true);
+            }
 
-            currentCategory = new MemberCategory();
-            list.Add(currentCategory);
-            currentCategory.Name = "Offset";
+            if(isFullAchx)
+            {
+                currentCategory = new MemberCategory();
+                list.Add(currentCategory);
+                currentCategory.Name = "Offset";
 
-            Add(nameof(animationFrame.RelativeX), canWrite:true);
-            Add(nameof(animationFrame.RelativeY), canWrite:true);
+                Add(nameof(animationFrame.RelativeX), canWrite:true);
+                Add(nameof(animationFrame.RelativeY), canWrite:true);
+            }
 
             grid.Categories.Clear();
             grid.Categories.AddRange(list);

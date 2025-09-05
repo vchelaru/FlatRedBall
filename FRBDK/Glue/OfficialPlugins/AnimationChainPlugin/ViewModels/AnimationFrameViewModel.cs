@@ -156,7 +156,25 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         [DependsOn(nameof(LengthInSeconds))]
         [DependsOn(nameof(RelativeTextureName))]
-        public string Text => $"{LengthInSeconds.ToString("0.00")} ({RelativeTextureName})";
+        [DependsOn(nameof(LeftCoordinate))]
+        [DependsOn(nameof(TopCoordinate))]
+        [DependsOn(nameof(Width))]
+        [DependsOn(nameof(Height))]
+        public string Text
+        {
+            get
+            {
+                var parent = this.Parent;
+                if(parent?.FilePath?.Extension == "atlas")
+                {
+                    return $"{LeftCoordinate}, {TopCoordinate}, {Width}, {Height}";
+                }
+                else
+                {
+                    return $"{LengthInSeconds.ToString("0.00")} ({RelativeTextureName})";
+                }
+            }
+        }
 
         public void SetFrom(AnimationChainViewModel parent, AnimationFrameSave animationFrame)
         {
@@ -272,5 +290,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
             return toReturn;
         }
+
+        public override string ToString() => Text;
     }
 }

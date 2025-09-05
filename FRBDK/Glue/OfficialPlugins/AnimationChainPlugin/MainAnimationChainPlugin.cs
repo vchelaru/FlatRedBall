@@ -34,7 +34,14 @@ public class MainAnimationChainPlugin : PluginBase
 
     public static MainAnimationChainPlugin Self { get; private set; }
 
+    AchxManager _achxManager;
+
     #endregion
+
+    public MainAnimationChainPlugin()
+    {
+        _achxManager = new AchxManager();
+    }
 
     public override void StartUp()
     {
@@ -193,7 +200,7 @@ public class MainAnimationChainPlugin : PluginBase
         {
             case "achx":
             case "atlas":
-                AchxManager.ShowTab(filePath);
+                _achxManager.ShowTab(filePath);
                 break;
             default:
                 AchxManager.HideTab();
