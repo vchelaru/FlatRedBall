@@ -1,19 +1,4 @@
-﻿using AsepriteDotNet;
-using FlatRedBall.Attributes;
-using FlatRedBall.Content.AnimationChain;
-using FlatRedBall.Glue.Controls.DataUi;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using FlatRedBall.IO;
-using OfficialPlugins.AnimationChainPlugin.Managers;
-using OfficialPlugins.AnimationChainPlugin.ViewModels;
-using OfficialPlugins.Common.Controls;
-using OfficialPlugins.SpritePlugin.Managers;
-using PropertyTools.Wpf;
-using RenderingLibrary;
-using SkiaGum.GueDeriving;
-using SkiaSharp;
-using SpineAtlasLibrary;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -25,6 +10,23 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using AsepriteDotNet;
+using FlatRedBall.Attributes;
+using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Controls.DataUi;
+using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
+using OfficialPlugins.AnimationChainPlugin.Managers;
+using OfficialPlugins.AnimationChainPlugin.ViewModels;
+using OfficialPlugins.Common.Controls;
+using OfficialPlugins.SpritePlugin.Managers;
+using PropertyTools.Wpf;
+using RenderingLibrary;
+using SkiaGum.GueDeriving;
+using SkiaSharp;
+using SpineAtlasLibrary;
+using HotkeyManager = OfficialPlugins.AnimationChainPlugin.Managers.HotkeyManager;
 
 namespace OfficialPlugins.ContentPreview.Views
 {
@@ -36,6 +38,8 @@ namespace OfficialPlugins.ContentPreview.Views
         #region Fields/Properties
 
         AchxViewModel ViewModel => DataContext as AchxViewModel;
+
+        HotkeyManager _hotkeyManager;
 
 
         //FilePath textureFilePath;
@@ -80,6 +84,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
         public AchxPreviewView()
         {
+            _hotkeyManager = new HotkeyManager();
             InitializeComponent();
 
             this.Loaded += HandleLoaded;
@@ -436,23 +441,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
         private void TreeListBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            var ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
-
-            Key key = (e.Key == Key.System ? e.SystemKey : e.Key);
-
-
-            // Check if CTRL+C was pressed
-            if (ctrlDown && key == Key.C)
-            {
-                AnimationChainCopyPasteManager.HandleCopy(ViewModel);
-                e.Handled = true;
-            }
-            // Check if CTRL+V was pressed
-            else if (ctrlDown && key == Key.V)
-            {
-                AnimationChainCopyPasteManager.HandlePaste(ViewModel);
-                e.Handled = true;
-            }
+            _hotkeyManager.HandleTreeViewKey(e, ViewModel);
         }
 
         internal bool GetIfIsHandlingHotkeys()

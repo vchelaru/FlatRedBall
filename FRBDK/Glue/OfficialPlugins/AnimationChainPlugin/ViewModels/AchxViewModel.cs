@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.Managers;
@@ -9,223 +10,293 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace OfficialPlugins.AnimationChainPlugin.ViewModels
+namespace OfficialPlugins.AnimationChainPlugin.ViewModels;
+
+internal class AchxViewModel : ViewModel
 {
-    internal class AchxViewModel : ViewModel
+    public ZoomViewModel TopWindowZoom { get; set; }
+    public ZoomViewModel BottomWindowZoom { get; set; }
+
+    private readonly AchxManager _achxManager;
+
+    public SettingsViewModel Settings { get => Get<SettingsViewModel>(); private set => Set(value); }
+
+    public FilePath AchxFilePath { get; set; }
+
+    public int ResolutionWidth
     {
-        public ZoomViewModel TopWindowZoom { get; set; }
-        public ZoomViewModel BottomWindowZoom { get; set; }
+        get => Get<int>();
+        set => Set(value);
+    }
 
-        private readonly AchxManager _achxManager;
+    public int ResolutionHeight
+    {
+        get => Get<int>();
+        set => Set(value);
+    }
 
-        public SettingsViewModel Settings { get => Get<SettingsViewModel>(); private set => Set(value); }
+    [DependsOn(nameof(ResolutionWidth))]
+    [DependsOn(nameof(ResolutionHeight))]
+    public string ResolutionDisplay => $"{ResolutionWidth}x{ResolutionHeight}";
 
-        public FilePath AchxFilePath { get; set; }
+    public ViewModel SelectedItem
+    {
+        get => Get<ViewModel>();
+        set => Set(value);
+    }
 
-        public int ResolutionWidth
+    public ObservableCollection<AnimationChainViewModel> VisibleRoot 
+    { 
+        get => Get<ObservableCollection<AnimationChainViewModel>>();
+        private set => Set(value);
+    }
+
+
+    [DependsOn(nameof(SelectedItem))]
+    public AnimationFrameViewModel SelectedAnimationFrame => 
+        SelectedItem as AnimationFrameViewModel;
+
+    [DependsOn(nameof(SelectedItem))]
+    public ShapeViewModel SelectedShape =>
+        SelectedItem as ShapeViewModel;
+
+    /// <summary>
+    /// The effective current AnimationChain, which could be directly selected or indirectly selected
+    /// by having one of its children selected
+    /// </summary>
+    [DependsOn(nameof(SelectedShape))]
+    [DependsOn(nameof(SelectedAnimationFrame))]
+    public AnimationFrameViewModel? CurrentAnimationFrame
+    {
+        get
         {
-            get => Get<int>();
-            set => Set(value);
-        }
-
-        public int ResolutionHeight
-        {
-            get => Get<int>();
-            set => Set(value);
-        }
-
-        [DependsOn(nameof(ResolutionWidth))]
-        [DependsOn(nameof(ResolutionHeight))]
-        public string ResolutionDisplay => $"{ResolutionWidth}x{ResolutionHeight}";
-
-        public ViewModel SelectedItem
-        {
-            get => Get<ViewModel>();
-            set => Set(value);
-        }
-
-        public ObservableCollection<AnimationChainViewModel> VisibleRoot 
-        { 
-            get => Get<ObservableCollection<AnimationChainViewModel>>();
-            private set => Set(value);
-        }
-
-
-        [DependsOn(nameof(SelectedItem))]
-        public AnimationFrameViewModel SelectedAnimationFrame => 
-            SelectedItem as AnimationFrameViewModel;
-
-        [DependsOn(nameof(SelectedItem))]
-        public ShapeViewModel SelectedShape =>
-            SelectedItem as ShapeViewModel;
-
-        /// <summary>
-        /// The effective current AnimationChain, which could be directly selected or indirectly selected
-        /// by having one of its children selected
-        /// </summary>
-        [DependsOn(nameof(SelectedShape))]
-        [DependsOn(nameof(SelectedAnimationFrame))]
-        public AnimationFrameViewModel CurrentAnimationFrame
-        {
-            get
+            if(SelectedShape != null)
             {
-                if(SelectedShape != null)
-                {
-                    return SelectedShape.Parent;
-                }
-                else
-                {
-                    return SelectedAnimationFrame;
-                }
+                return SelectedShape.Parent;
             }
-            set
+            else
             {
-                SelectedItem = value;
+                return SelectedAnimationFrame;
             }
         }
-
-        [DependsOn(nameof(SelectedItem))]
-        public AnimationChainViewModel CurrentAnimationChain
+        set
         {
-            get
-            {
-                var selectedItem = SelectedItem;
-                if(selectedItem is AnimationChainViewModel asAnimationChainViewModel)
-                {
-                    return asAnimationChainViewModel;
-                }
-                else if(selectedItem is AnimationFrameViewModel asAnimationFrameViewModel)
-                {
-                    return asAnimationFrameViewModel.Parent;
-                }
-                else if(selectedItem is ShapeViewModel asShapeViewModel)
-                {
-                    return asShapeViewModel.Parent?.Parent;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                SelectedItem = value;
-            }
+            SelectedItem = value;
         }
+    }
 
-        public AnimationChainListSave BackgingData { get; internal set; }
-
-        public event Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
-
-        // Event raised when an animation chain is updated by the UI,
-        // such as a new frame being added or a frame being removed.
-        // This is used rather than relying on the VisibleRoot because
-        // VisibleRoot updates when animations are loaded. We don't want 
-        // to react to properties changing when animations are loaded, only
-        // when the user interacts with the UI.
-        public event Action<AnimationChainViewModel, string> AnimationChainUpdatedByUi;
-
-        public event Action<AnimationChainViewModel, NotifyCollectionChangedEventArgs> AnimationChainCollectionChanged;
-
-        public AchxViewModel(AchxManager achxManager)
+    [DependsOn(nameof(SelectedItem))]
+    public AnimationChainViewModel? CurrentAnimationChain
+    {
+        get
         {
-            _achxManager = achxManager;
-
-            Settings = new SettingsViewModel();
-            TopWindowZoom = new ZoomViewModel();
-            BottomWindowZoom = new ZoomViewModel();
-
-            TopWindowZoom.CurrentZoomPercent = 100;
-            BottomWindowZoom.CurrentZoomPercent = 100;
-
-            VisibleRoot = new ObservableCollection<AnimationChainViewModel>();
-            //VisibleRoot.CollectionChanged += HandleAnimationChainViewModelCollectionChanged;
-        }
-
-        //private void HandleAnimationChainViewModelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        //{
-        //    if(e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Replace)
-        //    {
-        //        foreach(AnimationChainViewModel item in e.NewItems)
-        //        {
-        //            item.FrameUpdatedByUi += (frame, property) => FrameUpdatedByUi?.Invoke(frame, property);
-        //        }
-        //    }
-        //}
-
-        public void SetFrom(AnimationChainListSave animationChainListSave, FilePath achxFilePath, int resolutionWidth, int resolutionHeight)
-        {
-            VisibleRoot.Clear();
-
-            if (animationChainListSave == null) return;
-
-
-            AchxFilePath = achxFilePath;
-            ResolutionWidth = resolutionWidth;
-            ResolutionHeight = resolutionHeight;
-
-
-            foreach (var animationChain in animationChainListSave.AnimationChains)
+            var selectedItem = SelectedItem;
+            if(selectedItem is AnimationChainViewModel asAnimationChainViewModel)
             {
-                AddAnimationChain(animationChain);
+                return asAnimationChainViewModel;
+            }
+            else if(selectedItem is AnimationFrameViewModel asAnimationFrameViewModel)
+            {
+                return asAnimationFrameViewModel.Parent;
+            }
+            else if(selectedItem is ShapeViewModel asShapeViewModel)
+            {
+                return asShapeViewModel.Parent?.Parent;
+            }
+            else
+            {
+                return null;
             }
         }
-
-        public void AddAnimationChain(AnimationChainSave animationChainSave)
+        set
         {
-            AddAnimationChainInner(animationChainSave, broadcastAddition: true);
+            SelectedItem = value;
         }
+    }
 
-        /// <summary>
-        /// Adds the argument AnimationChainSave to this view model, and optionally broadcasts that it hs been added.
-        /// Broadcast should occur if the AnimationChain is added through user actions. The response to the broadcast will be at 
-        /// the plugin level, which will save the file.
-        /// </summary>
-        /// <param name="animationChainSave">The new AnimationChainSave</param>
-        /// <param name="broadcastAddition">Whether to broadcast the addition.</param>
-        private void AddAnimationChainInner(AnimationChainSave animationChainSave, bool broadcastAddition)
+    public AnimationChainListSave BackgingData { get; internal set; }
+
+    public event Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
+
+    // Event raised when an animation chain is updated by the UI,
+    // such as a new frame being added or a frame being removed.
+    // This is used rather than relying on the VisibleRoot because
+    // VisibleRoot updates when animations are loaded. We don't want 
+    // to react to properties changing when animations are loaded, only
+    // when the user interacts with the UI.
+    public event Action<AnimationChainViewModel, string> AnimationChainUpdatedByUi;
+
+    public event Action<AnimationChainViewModel, NotifyCollectionChangedEventArgs> AnimationChainCollectionChanged;
+
+    public AchxViewModel(AchxManager achxManager)
+    {
+        _achxManager = achxManager;
+
+        Settings = new SettingsViewModel();
+        TopWindowZoom = new ZoomViewModel();
+        BottomWindowZoom = new ZoomViewModel();
+
+        TopWindowZoom.CurrentZoomPercent = 100;
+        BottomWindowZoom.CurrentZoomPercent = 100;
+
+        VisibleRoot = new ObservableCollection<AnimationChainViewModel>();
+        VisibleRoot.CollectionChanged += HandleAnimationChainViewModelCollectionChanged;
+    }
+
+    private void HandleAnimationChainViewModelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        var shouldSave = false;
+        // add any new .achx's
+        if (e.Action == NotifyCollectionChangedAction.Add)
         {
-            var newViewModel = new AnimationChainViewModel();
-            newViewModel.SetFrom(animationChainSave, AchxFilePath, ResolutionWidth, ResolutionHeight);
-            newViewModel.FrameUpdatedByUi += HandleFrameUpdatedByUi;
-            newViewModel.PropertyChanged += HandlePropertyChanged;
-            newViewModel.VisibleChildren.CollectionChanged += HandleAnimationChainCollectionChanged;
-            VisibleRoot.Add(newViewModel);
-        }
+            var newItems = e.NewItems;
 
-        private void HandlePropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if(sender == null || e?.PropertyName == null)
+            if (newItems != null)
             {
-                return;
-            }
-            var viewModel = (AnimationChainViewModel)sender;
-            AnimationChainUpdatedByUi?.Invoke(viewModel, e.PropertyName);
-
-            switch(e.PropertyName)
-            {
-                case nameof(AnimationChainViewModel.Name):
-                    var didChange = viewModel.ApplyTo(viewModel.BackingModel);
-                    if(didChange)
+                foreach (AnimationChainViewModel newItem in newItems)
+                {
+                    // Is this already contained?
+                    if (this.BackgingData.AnimationChains.Contains(newItem.BackingModel) == false)
                     {
-                        _achxManager.SaveCurrentAchx();
+                        var index = this.VisibleRoot.IndexOf(newItem);
+
+                        this.BackgingData.AnimationChains.Insert(index, newItem.BackingModel);
+                        shouldSave = true;
                     }
-                    break;
+                }
+            }
+        }
+        else if (e.Action == NotifyCollectionChangedAction.Remove)
+        {
+            var oldItems = e.OldItems;
+            if (oldItems != null)
+            {
+                foreach (AnimationChainViewModel oldItem in oldItems)
+                {
+                    this.BackgingData.AnimationChains.Remove(oldItem.BackingModel);
+                    shouldSave = true;
+                }
             }
         }
 
-        private void HandleFrameUpdatedByUi(AnimationFrameViewModel frame, string property)
+        if(shouldSave)
         {
-            FrameUpdatedByUi?.Invoke(frame, property);
             _achxManager.SaveCurrentAchx();
         }
+    }
 
-        private void HandleAnimationChainCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    public void SetFrom(AnimationChainListSave animationChainListSave, FilePath achxFilePath, int resolutionWidth, int resolutionHeight)
+    {
+        VisibleRoot.Clear();
+
+        if (animationChainListSave == null) return;
+
+
+        AchxFilePath = achxFilePath;
+        ResolutionWidth = resolutionWidth;
+        ResolutionHeight = resolutionHeight;
+
+
+        foreach (var animationChain in animationChainListSave.AnimationChains)
         {
-            AnimationChainCollectionChanged?.Invoke((AnimationChainViewModel)sender, e);
+            AddAnimationChain(animationChain);
+        }
+    }
+
+    public AnimationChainViewModel AddAnimationChain(AnimationChainSave animationChainSave)
+    {
+        return AddAnimationChainInner(animationChainSave, broadcastAddition: true);
+    }
+
+    /// <summary>
+    /// Adds the argument AnimationChainSave to this view model, and optionally broadcasts that it hs been added.
+    /// Broadcast should occur if the AnimationChain is added through user actions. The response to the broadcast will be at 
+    /// the plugin level, which will save the file.
+    /// </summary>
+    /// <param name="animationChainSave">The new AnimationChainSave</param>
+    /// <param name="broadcastAddition">Whether to broadcast the addition.</param>
+    private AnimationChainViewModel AddAnimationChainInner(AnimationChainSave animationChainSave, bool broadcastAddition)
+    {
+        var newViewModel = new AnimationChainViewModel();
+        newViewModel.SetFrom(animationChainSave, AchxFilePath, ResolutionWidth, ResolutionHeight);
+        newViewModel.FrameUpdatedByUi += HandleFrameUpdatedByUi;
+        newViewModel.PropertyChanged += HandlePropertyChanged;
+        newViewModel.VisibleChildren.CollectionChanged += HandleAnimationChainCollectionChanged;
+        VisibleRoot.Add(newViewModel);
+
+        return newViewModel;
+    }
+
+    private void HandlePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if(sender == null || e?.PropertyName == null)
+        {
+            return;
+        }
+        var viewModel = (AnimationChainViewModel)sender;
+        AnimationChainUpdatedByUi?.Invoke(viewModel, e.PropertyName);
+
+        switch(e.PropertyName)
+        {
+            case nameof(AnimationChainViewModel.Name):
+                var didChange = viewModel.ApplyTo(viewModel.BackingModel);
+                if(didChange)
+                {
+                    _achxManager.SaveCurrentAchx();
+                }
+                break;
+        }
+    }
+
+    private void HandleFrameUpdatedByUi(AnimationFrameViewModel frame, string property)
+    {
+        FrameUpdatedByUi?.Invoke(frame, property);
+        _achxManager.SaveCurrentAchx();
+    }
+
+    private void HandleAnimationChainCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        AnimationChainCollectionChanged?.Invoke((AnimationChainViewModel)sender, e);
+
+
+
+        _achxManager.SaveCurrentAchx();
+    }
+
+    public void HandleDelete()
+    {
+        if (CurrentAnimationFrame != null)
+        {
+            GlueCommands.Self.DialogCommands.ShowYesNoMessageBox($"Delete {CurrentAnimationFrame}?",
+                yesAction: HandleDeleteConfirm);
+        }
+        else if(CurrentAnimationChain != null)
+        {
+            GlueCommands.Self.DialogCommands.ShowYesNoMessageBox($"Delete {CurrentAnimationChain}? ",
+                yesAction: HandleDeleteConfirm);
+        }
+    }
+
+    private void HandleDeleteConfirm()
+    {
+        if (CurrentAnimationFrame != null)
+        {
+            var parent = CurrentAnimationFrame.Parent;
+            parent.VisibleChildren.Remove(CurrentAnimationFrame);
+            CurrentAnimationFrame = null;
+
+            
 
             _achxManager.SaveCurrentAchx();
         }
+        else if(CurrentAnimationChain != null)
+        {
+            VisibleRoot.Remove(CurrentAnimationChain);
 
+            
+
+            CurrentAnimationChain = null;
+            _achxManager.SaveCurrentAchx();
+        }
     }
 }

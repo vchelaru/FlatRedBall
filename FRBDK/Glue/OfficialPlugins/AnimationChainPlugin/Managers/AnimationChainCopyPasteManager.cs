@@ -2,11 +2,13 @@
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.IO;
+using FlatRedBall.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace OfficialPlugins.AnimationChainPlugin.Managers
 {
@@ -59,7 +61,21 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                     {
                         var deserialized = FileManager.XmlDeserializeFromString<AnimationChainSave>(copiedXml);
 
+                        if(deserialized != null)
+                        {
+                            while(viewModel.VisibleRoot.Any(item => item.Name == deserialized.Name))
+                            {
+                                deserialized.Name = StringFunctions.IncrementNumberAtEnd(deserialized.Name);
+                            }
 
+                            var newVm = viewModel.AddAnimationChain(deserialized);
+
+                            if(viewModel.CurrentAnimationFrame != null)
+                            {
+                                viewModel.CurrentAnimationFrame = null;
+                            }
+                            viewModel.CurrentAnimationChain = newVm;
+                        }
 
                     }
                     break;
