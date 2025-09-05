@@ -44,7 +44,6 @@ public static partial class InputManager
 
     static Mouse mMouse;
 
-		#region XML Docs
     /// <summary>
     /// Reference to an IInputReceiver which will have its ReceiveInput method called every frame.
     /// </summary>
@@ -52,8 +51,7 @@ public static partial class InputManager
     /// If this reference is not null, the reference's ReceiveInput method is called in the InputManager.GetInputState method.
     /// <seealso cref="FlatRedBall.Gui.IInputReceiver"/>
     /// </remarks>
-    #endregion
-    static FlatRedBall.Gui.IInputReceiver mReceivingInput;
+    static FlatRedBall.Gui.IInputReceiver? mReceivingInput;
     // When a user clicks on an element which is an IInputReceiver,
     // it is set as the object which receieves input.  Whenever the
     // user clicks the mouse, the InputManager's receivingInput gets set.
@@ -181,7 +179,7 @@ public static partial class InputManager
     /// The current input receiver which has its input events called every frame
     /// if the game is active.
     /// </summary>
-    public static IInputReceiver InputReceiver
+    public static IInputReceiver? InputReceiver
     {
         get { return mReceivingInput; }
         set
