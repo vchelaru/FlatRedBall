@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallDesktopGLNet6", 
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpineAtlasLibrary", "SpineAtlasLibrary\SpineAtlasLibrary.csproj", "{8A9A4F17-D403-4D39-8B41-A093FB963FA5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{88C140EE-B29A-4E31-87F5-8CCB686A8A05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88C140EE-B29A-4E31-87F5-8CCB686A8A05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88C140EE-B29A-4E31-87F5-8CCB686A8A05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A9A4F17-D403-4D39-8B41-A093FB963FA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A9A4F17-D403-4D39-8B41-A093FB963FA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A9A4F17-D403-4D39-8B41-A093FB963FA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A9A4F17-D403-4D39-8B41-A093FB963FA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

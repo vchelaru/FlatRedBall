@@ -95,6 +95,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBallDesktopGLNet6", "..\..\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj", "{8AD810AF-716D-4BCE-A6C6-475E57E2F100}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpineAtlasLibrary", "..\AchxToSpineAtlas\SpineAtlasLibrary\SpineAtlasLibrary.csproj", "{6ABB2E55-A5CE-C536-3916-DFEDD470277C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -221,6 +223,10 @@ Global
 		{8AD810AF-716D-4BCE-A6C6-475E57E2F100}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AD810AF-716D-4BCE-A6C6-475E57E2F100}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AD810AF-716D-4BCE-A6C6-475E57E2F100}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ABB2E55-A5CE-C536-3916-DFEDD470277C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ABB2E55-A5CE-C536-3916-DFEDD470277C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ABB2E55-A5CE-C536-3916-DFEDD470277C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ABB2E55-A5CE-C536-3916-DFEDD470277C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -264,6 +270,7 @@ Global
 		{82348794-B260-45E4-AC62-68BD68E76A10} = {3DDD0995-4B47-47A2-82A4-F0A6367C9FF2}
 		{0BB8CBE3-8503-46C1-9272-D98E153A230E} = {69D428BA-766B-491B-8256-F0B68425B7DD}
 		{8AD810AF-716D-4BCE-A6C6-475E57E2F100} = {69D428BA-766B-491B-8256-F0B68425B7DD}
+		{6ABB2E55-A5CE-C536-3916-DFEDD470277C} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {878CCBB8-EADE-4F25-9DE7-D55D999D414A}

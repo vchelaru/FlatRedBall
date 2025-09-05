@@ -12,6 +12,7 @@ using PropertyTools.Wpf;
 using RenderingLibrary;
 using SkiaGum.GueDeriving;
 using SkiaSharp;
+using SpineAtlasLibrary;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -196,7 +197,19 @@ namespace OfficialPlugins.ContentPreview.Views
                 AnimationChainListSave animationChainListSave = null;
                 if (achxFilePath?.Exists() == true)
                 {
-                    animationChainListSave = AnimationChainListSave.FromFile(achxFilePath.FullPath);
+                    if(achxFilePath.Extension == "atlas")
+                    {
+                        var converter = new AtlasConverter();
+
+                        var contents = System.IO.File.ReadAllText(achxFilePath.FullPath);
+
+                        animationChainListSave = converter.DeserializeAtlas(contents);
+
+                    }
+                    else
+                    {
+                        animationChainListSave = AnimationChainListSave.FromFile(achxFilePath.FullPath);
+                    }
                 }
                 ViewModel.BackgingData = animationChainListSave;
                 ViewModel.AchxFilePath = achxFilePath;
@@ -492,6 +505,21 @@ namespace OfficialPlugins.ContentPreview.Views
             {
                 GlueCommands.Self.FileCommands.OpenReferencedFileInDefaultProgram(rfs);
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var model = ViewModel.BackgingData;
+
+            var converter = new AtlasConverter();
+
+            var result = converter.SerializeAtlas(model, GlueCommands.Self.FileCommands.GetGlobalContentFolder().FullPath);
+
+            var fileName = ViewModel.AchxFilePath.RemoveExtension() + ".atlas";
+
+            GlueCommands.Self.FileCommands.SaveIfDiffers(fileName, result, ignoreNextChange: true);
+
+
         }
     }
 }

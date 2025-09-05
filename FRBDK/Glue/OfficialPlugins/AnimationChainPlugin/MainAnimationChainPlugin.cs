@@ -21,219 +21,218 @@ using System.Windows.Navigation;
 
 using FileManager = ToolsUtilities.FileManager;
 
-namespace OfficialPlugins.AnimationChainPlugin
+namespace OfficialPlugins.AnimationChainPlugin;
+
+[Export(typeof(PluginBase))]
+public class MainAnimationChainPlugin : PluginBase
 {
-    [Export(typeof(PluginBase))]
-    public class MainAnimationChainPlugin : PluginBase
+    #region Fields/Properties
+
+    public override string FriendlyName => "Animation Chain Plugin";
+
+    public override Version Version => new Version(1, 0);
+
+    public static MainAnimationChainPlugin Self { get; private set; }
+
+    #endregion
+
+    public override void StartUp()
     {
-        #region Fields/Properties
+        Self = this;
+        AssignEvents();
+        this.AddErrorReporter(new AnimationChainErrorReporter());
 
-        public override string FriendlyName => "Animation Chain Plugin";
+        AchxManager.Initialize(this);
+    }
 
-        public override Version Version => new Version(1, 0);
+    private void AssignEvents()
+    {
+        this.ReactToNewFileHandler += HandleNewFile;
+        this.ReactToFileChange += HandleFileChanged;
+        this.ReactToNamedObjectChangedValue += NamedObjectVariableChangeLogic.HandleNamedObjectChangedValue;
+        this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
+        this.ReactToItemsSelected += HandleItemsSelected;
+        this.ReactToLoadedGluxEarly += HandleLoadedGluxEarly;
+        this.ReactToUnloadedGlux += HandleUnloadedGlux;
+        this.IsHandlingHotkeys += GetIfIsHandlingHotkeys;
+        //this.FillWithReferencedFiles += HandleFillWithReferencedFiles;
+        this.FillWithReferencedFiles += HandleFillWithReferencedFilesNew;
+    }
 
-        public static MainAnimationChainPlugin Self { get; private set; }
 
-        #endregion
-
-        public override void StartUp()
+    // See HandleFillWithReferencedFilesNew for info on why this isn't used
+    private ToolsUtilities.GeneralResponse HandleFillWithReferencedFiles(FilePath path, List<FilePath> list)
+    {
+        if(path.Extension == "achx")
         {
-            Self = this;
-            AssignEvents();
-            this.AddErrorReporter(new AnimationChainErrorReporter());
-
-            AchxManager.Initialize(this);
-        }
-
-        private void AssignEvents()
-        {
-            this.ReactToNewFileHandler += HandleNewFile;
-            this.ReactToFileChange += HandleFileChanged;
-            this.ReactToNamedObjectChangedValue += NamedObjectVariableChangeLogic.HandleNamedObjectChangedValue;
-            this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
-            this.ReactToItemsSelected += HandleItemsSelected;
-            this.ReactToLoadedGluxEarly += HandleLoadedGluxEarly;
-            this.ReactToUnloadedGlux += HandleUnloadedGlux;
-            this.IsHandlingHotkeys += GetIfIsHandlingHotkeys;
-            //this.FillWithReferencedFiles += HandleFillWithReferencedFiles;
-            this.FillWithReferencedFiles += HandleFillWithReferencedFilesNew;
-        }
-
-
-        // See HandleFillWithReferencedFilesNew for info on why this isn't used
-        private ToolsUtilities.GeneralResponse HandleFillWithReferencedFiles(FilePath path, List<FilePath> list)
-        {
-            if(path.Extension == "achx")
+            if(path.Exists())
             {
-                if(path.Exists())
-                {
-                    var acls = AnimationChainListSave.FromFile(path.FullPath);
-                    var newReferencedFiles = acls.GetReferencedFiles(RelativeType.Absolute).Select(item => new FilePath(item)).ToList();
+                var acls = AnimationChainListSave.FromFile(path.FullPath);
+                var newReferencedFiles = acls.GetReferencedFiles(RelativeType.Absolute).Select(item => new FilePath(item)).ToList();
 
-                    list.AddRange(newReferencedFiles);
+                list.AddRange(newReferencedFiles);
 
-                    return ToolsUtilities.GeneralResponse.SuccessfulResponse;
-                }
-                else
-                {
-                    return ToolsUtilities.GeneralResponse.UnsuccessfulWith("File does not exist: " + path.FullPath);
-                }
+                return ToolsUtilities.GeneralResponse.SuccessfulResponse;
             }
             else
             {
-                return ToolsUtilities.GeneralResponse.SuccessfulResponse;
+                return ToolsUtilities.GeneralResponse.UnsuccessfulWith("File does not exist: " + path.FullPath);
             }
         }
-
-        // Deadvivors has a lot of .achx files and 
-        // loading the project can be a bit slow. This
-        // method attempts to speed up the .achx file reference
-        // tracking by looping through the lines and looking for
-        // the <TextureName> XML tag. This seems to be faster than
-        // XML loading - my tests loaded a file 1000 times and it went
-        // from 0.7 seconds to 0.2 seconds. This is a little less flexible
-        // since it assumes TextureName rather than relying on reusable reference
-        // tracking, but modern .achx files only use this.
-        private ToolsUtilities.GeneralResponse HandleFillWithReferencedFilesNew(FilePath path, HashSet<FilePath> list)
+        else
         {
-            if (path.Extension == "achx")
+            return ToolsUtilities.GeneralResponse.SuccessfulResponse;
+        }
+    }
+
+    // Deadvivors has a lot of .achx files and 
+    // loading the project can be a bit slow. This
+    // method attempts to speed up the .achx file reference
+    // tracking by looping through the lines and looking for
+    // the <TextureName> XML tag. This seems to be faster than
+    // XML loading - my tests loaded a file 1000 times and it went
+    // from 0.7 seconds to 0.2 seconds. This is a little less flexible
+    // since it assumes TextureName rather than relying on reusable reference
+    // tracking, but modern .achx files only use this.
+    private ToolsUtilities.GeneralResponse HandleFillWithReferencedFilesNew(FilePath path, HashSet<FilePath> list)
+    {
+        if (path.Extension == "achx")
+        {
+            if (path.Exists())
             {
-                if (path.Exists())
+                var directory = path.GetDirectoryContainingThis();
+
+                // might be faster to read the entire file:
+                var contents = System.IO.File.ReadAllLines(path.FullPath);
+
+                var textureNameLength = "<TextureName>".Length;
+                foreach(var line in contents)
                 {
-                    var directory = path.GetDirectoryContainingThis();
-
-                    // might be faster to read the entire file:
-                    var contents = System.IO.File.ReadAllLines(path.FullPath);
-
-                    var textureNameLength = "<TextureName>".Length;
-                    foreach(var line in contents)
+                    if(line.Contains("<TextureName>"))
                     {
-                        if(line.Contains("<TextureName>"))
-                        {
-                            var startIndex = line.IndexOf("<TextureName>") + textureNameLength;
-                            var endIndex = line.IndexOf("</TextureName>");
-                            var textureName = line.Substring(startIndex, endIndex - startIndex);
-                            list.Add(directory + textureName);
-                        }
+                        var startIndex = line.IndexOf("<TextureName>") + textureNameLength;
+                        var endIndex = line.IndexOf("</TextureName>");
+                        var textureName = line.Substring(startIndex, endIndex - startIndex);
+                        list.Add(directory + textureName);
                     }
+                }
 
-                    return ToolsUtilities.GeneralResponse.SuccessfulResponse;
-                }
-                else
-                {
-                    return ToolsUtilities.GeneralResponse.UnsuccessfulWith("File does not exist: " + path.FullPath);
-                }
+                return ToolsUtilities.GeneralResponse.SuccessfulResponse;
             }
             else
             {
-                return ToolsUtilities.GeneralResponse.SuccessfulResponse;
+                return ToolsUtilities.GeneralResponse.UnsuccessfulWith("File does not exist: " + path.FullPath);
             }
         }
-
-        private bool GetIfIsHandlingHotkeys()
+        else
         {
-            return AchxManager.GetIfIsHandlingHotkeys();
+            return ToolsUtilities.GeneralResponse.SuccessfulResponse;
+        }
+    }
+
+    private bool GetIfIsHandlingHotkeys()
+    {
+        return AchxManager.GetIfIsHandlingHotkeys();
+    }
+
+    public new void RefreshErrors() => base.RefreshErrors();
+
+    private void HandleLoadedGluxEarly()
+    {
+        var ati = AssetTypeInfoManager.Self.TryGetAsepriteAti();
+        if(ati != null)
+        {
+            base.AddAssetTypeInfo(ati);
         }
 
-        public new void RefreshErrors() => base.RefreshErrors();
+        // Add a Gum animation too:
+        base.AddAssetTypeInfo(AssetTypeInfoManager.Self.GetGumAnimationChainListAti());
+    }
 
-        private void HandleLoadedGluxEarly()
+    private void HandleUnloadedGlux()
+    {
+        base.UnregisterAssetTypeInfos();
+    }
+
+    private bool TryHandleDoubleClick(ITreeNode tree)
+    {
+        if (tree.Tag is ReferencedFileSave asRfs)
         {
-            var ati = AssetTypeInfoManager.Self.TryGetAsepriteAti();
-            if(ati != null)
-            {
-                base.AddAssetTypeInfo(ati);
-            }
+            var extension = FileManager.GetExtension(asRfs.Name);
 
-            // Add a Gum animation too:
-            base.AddAssetTypeInfo(AssetTypeInfoManager.Self.GetGumAnimationChainListAti());
-        }
-
-        private void HandleUnloadedGlux()
-        {
-            base.UnregisterAssetTypeInfos();
-        }
-
-        private bool TryHandleDoubleClick(ITreeNode tree)
-        {
-            if (tree.Tag is ReferencedFileSave asRfs)
-            {
-                var extension = FileManager.GetExtension(asRfs.Name);
-
-                var filePath = GlueCommands.Self.GetAbsoluteFilePath(asRfs);
-
-                switch (extension)
-                {
-                    case "achx":
-                        // Nah, let's open AnimationEditor for now
-                        return false;
-                }
-            }
-
-            return false;
-        }
-
-        private void HandleItemsSelected(List<ITreeNode> list) 
-        {
-            var file = GlueState.Self.CurrentReferencedFileSave;
-
-
-            /////////////////Early Out///////////////////
-            if (file == null)
-            {
-                AchxManager.HideTab();
-                return;
-            }
-            ///////////////End Early Out/////////////////
-
-            var filePath = GlueCommands.Self.GetAbsoluteFilePath(file);
-
-            var extension = filePath.Extension;
+            var filePath = GlueCommands.Self.GetAbsoluteFilePath(asRfs);
 
             switch (extension)
             {
                 case "achx":
-                    AchxManager.ShowTab(filePath);
-                    break;
-                default:
-                    AchxManager.HideTab();
-                    break;
+                    // Nah, let's open AnimationEditor for now
+                    return false;
             }
         }
 
+        return false;
+    }
 
-        private void HandleFileChanged(FilePath filePath, FileChangeType fileChange)
+    private void HandleItemsSelected(List<ITreeNode> list) 
+    {
+        var file = GlueState.Self.CurrentReferencedFileSave;
+
+        /////////////////Early Out///////////////////
+        if (file == null)
         {
-            if (filePath.Extension == "achx")
-            {
-                this.RefreshErrors();
+            AchxManager.HideTab();
+            return;
+        }
+        ///////////////End Early Out/////////////////
 
-                if (AchxManager.AchxFilePath == filePath)
-                {
-                    AchxManager.ForceRefreshAchx(filePath);
-                }
+        var filePath = GlueCommands.Self.GetAbsoluteFilePath(file);
+
+        var extension = filePath.Extension;
+
+        switch (extension)
+        {
+            case "achx":
+            case "atlas":
+                AchxManager.ShowTab(filePath);
+                break;
+            default:
+                AchxManager.HideTab();
+                break;
+        }
+    }
+
+
+    private void HandleFileChanged(FilePath filePath, FileChangeType fileChange)
+    {
+        if (filePath.Extension == "achx")
+        {
+            this.RefreshErrors();
+
+            if (AchxManager.AchxFilePath == filePath)
+            {
+                AchxManager.ForceRefreshAchx(filePath);
             }
         }
+    }
 
-        private void HandleNewFile(ReferencedFileSave newFile, AssetTypeInfo assetTypeInfo)
+    private void HandleNewFile(ReferencedFileSave newFile, AssetTypeInfo assetTypeInfo)
+    {
+        var extension = FileManager.GetExtension(newFile.Name);
+        if(extension == "achx")
         {
-            var extension = FileManager.GetExtension(newFile.Name);
-            if(extension == "achx")
+            var file = GlueCommands.Self.GetAbsoluteFilePath(newFile);
+
+            if(file.Exists())
             {
-                var file = GlueCommands.Self.GetAbsoluteFilePath(newFile);
+                // load it and set the project file
+                var achx = AnimationChainListSave.FromFile(file.FullPath);
 
-                if(file.Exists())
+                var projectFile = FileManager.MakeRelative(GlueState.Self.GlueProjectFileName.FullPath, file.GetDirectoryContainingThis().FullPath);
+
+                if(projectFile != achx.ProjectFile)
                 {
-                    // load it and set the project file
-                    var achx = AnimationChainListSave.FromFile(file.FullPath);
-
-                    var projectFile = FileManager.MakeRelative(GlueState.Self.GlueProjectFileName.FullPath, file.GetDirectoryContainingThis().FullPath);
-
-                    if(projectFile != achx.ProjectFile)
-                    {
-                        achx.ProjectFile = projectFile;
-                        achx.Save(file.FullPath);
-                    }
+                    achx.ProjectFile = projectFile;
+                    achx.Save(file.FullPath);
                 }
             }
         }
