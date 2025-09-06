@@ -5,7 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
+#if FRB
 using BindableGue = Gum.Wireframe.GraphicalUiElement;
+#endif
 
 namespace Gum.Wireframe;
 
