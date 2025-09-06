@@ -65,12 +65,16 @@ namespace OfficialPlugins.SpritePlugin.Views
         public void SelectDragCell(Point MousePoint, int StartDragSelectX, int StartDragSelectY) 
         {
             CameraLogic.GetWorldPosition(MousePoint, out double worldX, out double worldY);
+
+
+
             linegrid.LineGridCell(worldX, worldY, out int ColX, out int ColY);
             if((ColX != StartDragSelectX) || (ColY != StartDragSelectY))
             {
                 var startok = linegrid.GetCellPosition(StartDragSelectX, StartDragSelectY, out float startLeft, out float startTop, out float startRight, out float startBottom);
                 var endok = linegrid.GetCellPosition(ColX, ColY, out float endLeft, out float endTop, out float endRight, out float endBottom);
-                if(startok && endok) {
+                if(startok && endok)
+                {
                     ViewModel.LeftTexturePixel = (decimal)Math.Min(startLeft, endLeft);
                     ViewModel.TopTexturePixel = (decimal)Math.Min(startTop, endTop);
                     if(startLeft + startRight < endLeft + endRight)
@@ -116,7 +120,7 @@ namespace OfficialPlugins.SpritePlugin.Views
             // Initialize CameraLogic after initializing the background so the background
             // position can be set
             CameraLogic.Initialize(this, ViewModel, this.Canvas, this.BackgroundRectangle);
-            _mouseEditingLogic.Initialize(this, this.Canvas, this.ViewModel, TextureCoordinateRectangle, cameraLogic);
+            _mouseEditingLogic.Initialize(this.Canvas, this.ViewModel, TextureCoordinateRectangle, cameraLogic);
 
             this.Canvas.Children.Add(MainSprite);
 

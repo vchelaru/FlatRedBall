@@ -520,8 +520,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         #region Properties
 
-        ITreeNode draggedTreeNode;
-        public ITreeNode DraggedTreeNode 
+        ITreeNode? draggedTreeNode;
+        public ITreeNode? DraggedTreeNode 
         {
             get => draggedTreeNode;
             set

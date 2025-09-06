@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Media.Media3D;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Math;
+using PropertyTools.DataAnnotations;
 using SkiaGum.Renderables;
 
 namespace OfficialPlugins.Common.ViewModels;
@@ -136,7 +137,7 @@ public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewMod
         SnapWarningVisibility = y == 0 && x == 0 ? Visibility.Collapsed : Visibility.Visible;
     }
 
-    public void SelectCell(float worldX, float worldY, out int columnX, out int columnY)
+    public void SelectCell(double worldX, double worldY, out int columnX, out int columnY)
     {
         columnX = (int)Math.Ceiling(worldX / CellWidth);
         columnY = (int)Math.Ceiling(worldY / CellHeight);
@@ -155,9 +156,39 @@ public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewMod
             SelectedWidthPixels = CellWidth;
             SelectedHeightPixels = CellHeight;
         }
-
-
     }
+
+    public void DoDragSelectionLogic(double worldX, double worldY, int startDraggingXCell, int startDraggingYCell )
+    {
+        int currentXCell1Based = (int)Math.Ceiling(worldX / CellWidth);
+        int currentYCell1Based = (int)Math.Ceiling(worldY / CellHeight);
+
+        var numcellsX = TextureWidth / CellWidth;
+        var numcellsY = TextureHeight / CellHeight;
+
+        var isStartOutOfBounds =
+            (startDraggingXCell < 0) || (startDraggingXCell > numcellsX) ||
+            (startDraggingYCell < 0) || (startDraggingYCell > numcellsY);
+
+        var isCurrentOutOfBounds =
+            (currentXCell1Based < 0) || (currentXCell1Based > numcellsX) ||
+            (currentYCell1Based < 0) || (currentYCell1Based > numcellsY);
+
+        if (!isStartOutOfBounds && !isCurrentOutOfBounds)
+        {
+            var minCellX = Math.Min(startDraggingXCell, currentXCell1Based)-1;
+            var maxCellX = Math.Max(startDraggingXCell, currentXCell1Based)-1;
+            var minCellY = Math.Min(startDraggingYCell, currentYCell1Based)-1;
+            var maxCellY = Math.Max(startDraggingYCell, currentYCell1Based)-1;
+
+            LeftTexturePixel = (decimal)minCellX * CellWidth;
+            TopTexturePixel = (decimal)minCellY * CellHeight;
+
+            SelectedWidthPixels = (maxCellX - minCellX + 1) * CellWidth;
+            SelectedHeightPixels = (maxCellY - minCellY + 1) * CellHeight;
+        }
+    }
+
 
     public TextureCoordinateSelectionViewModel()
     {

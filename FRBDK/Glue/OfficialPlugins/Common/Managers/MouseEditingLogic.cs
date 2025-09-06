@@ -42,7 +42,6 @@ class MouseEditingLogic
     decimal grabbedDifferenceX;
     decimal grabbedDifferenceY;
 
-    TextureCoordinateSelectionView View;
     private System.Windows.Point LastGrabbedMousePoint;
     //static ColoredCircleRuntime circle;
 
@@ -50,8 +49,8 @@ class MouseEditingLogic
     private RoundedRectangleRuntime HandleGrabbed;
     private bool IsBodyGrabbed;
 
-    private int? StartDragSelectX = null;
-    private int? StartDragSelectY = null;
+    private int? StartDragSelectX1Based = null;
+    private int? StartDragSelectY1Based = null;
     private Stopwatch LeftClickTimer = new Stopwatch();
     private GumSKElement _canvas;
     private TextureCoordinateSelectionViewModel _viewModel;
@@ -61,7 +60,6 @@ class MouseEditingLogic
     #endregion
 
     public void Initialize(
-        TextureCoordinateSelectionView view,
         GumSKElement canvas,
         TextureCoordinateSelectionViewModel viewModel,
         TextureCoordinateRectangle textureCoordinateRectangle,
@@ -75,7 +73,6 @@ class MouseEditingLogic
         _viewModel = viewModel;
         _textureCoordinateRectangle = textureCoordinateRectangle;
         CameraLogic = cameraLogic;
-        View = view;
         LeftClickTimer.Start();
 
         //circle = new ColoredCircleRuntime();
@@ -106,19 +103,20 @@ class MouseEditingLogic
             CameraLogic.GetWorldPosition(canvasPosition, out double worldX, out double worldY);
 
             _viewModel.SelectCell((float)worldX, (float)worldY, out int columnX, out int columnY);
-            StartDragSelectX = columnX;
-            StartDragSelectY = columnY;
+            StartDragSelectX1Based = columnX;
+            StartDragSelectY1Based = columnY;
         }
     }
 
     public void HandleMouseMove(MouseEventArgs args)
     {
         //start drag select / not interacting with TextureCoordinateRectangle
-        var isDragging = StartDragSelectX != null && !IsBodyGrabbed && args.LeftButton == MouseButtonState.Pressed;
+        var isDragging = StartDragSelectX1Based != null && !IsBodyGrabbed && args.LeftButton == MouseButtonState.Pressed;
         if (isDragging)
         {
-
-            View.SelectDragCell(args.GetPosition(_canvas), (int)StartDragSelectX!, (int)StartDragSelectY!);
+            var canvasPosition = args.GetPosition(_canvas);
+            CameraLogic.GetWorldPosition(canvasPosition,out double worldX, out double worldY);
+            _viewModel.DoDragSelectionLogic(worldX, worldY, (int)StartDragSelectX1Based!, (int)StartDragSelectY1Based!);
             _canvas.InvalidateVisual();
         }
         else
@@ -146,8 +144,8 @@ class MouseEditingLogic
 
     internal void HandleMouseUp(MouseButtonEventArgs e)
     {
-        StartDragSelectX = null;
-        StartDragSelectY = null;
+        StartDragSelectX1Based = null;
+        StartDragSelectY1Based = null;
 
         if (HandleGrabbed != null)
         {
