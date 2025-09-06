@@ -1579,14 +1579,14 @@ namespace FlatRedBall.Math.Geometry
             var secondMtv = getPolygonMTV(secondVertices);
             var mtv = firstMtv.LengthSquared() < secondMtv.LengthSquared() ? firstMtv : secondMtv;
 
-            if (firstMass == 0)
-            {
-                firstVectorResult = mtv.ToVector3();
-            }
-            else if (secondMass == 0)
-            {
-                secondVectorResult = mtv.ToVector3();
-            }
+            // perform legit mass calculations
+            var massRatio = firstMass / (firstMass + secondMass);
+            var firstMassRatio = 1.0f - massRatio;
+            var secondMassRatio = massRatio;
+
+            var mtvVec3 = mtv.ToVector3();
+            firstVectorResult = firstMassRatio * mtvVec3;
+            secondVectorResult = -secondMassRatio * mtvVec3;
 #if false
             firstVectorResult = new Vector3();
             secondVectorResult = new Vector3();
