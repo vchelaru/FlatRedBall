@@ -1,10 +1,11 @@
-﻿using FlatRedBall.Glue.MVVM;
-using FlatRedBall.Math;
-using SkiaGum.Renderables;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
+using System.Windows.Media.Media3D;
+using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Math;
+using SkiaGum.Renderables;
 
 namespace OfficialPlugins.Common.ViewModels;
 
@@ -133,6 +134,29 @@ public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewMod
         SnapWidthColor = x == 0 ? System.Windows.Media.Brushes.Black : System.Windows.Media.Brushes.OrangeRed;
         SnapHeightColor = y == 0 ? System.Windows.Media.Brushes.Black : System.Windows.Media.Brushes.OrangeRed;
         SnapWarningVisibility = y == 0 && x == 0 ? Visibility.Collapsed : Visibility.Visible;
+    }
+
+    public void SelectCell(float worldX, float worldY, out int columnX, out int columnY)
+    {
+        columnX = (int)Math.Ceiling(worldX / CellWidth);
+        columnY = (int)Math.Ceiling(worldY / CellHeight);
+
+        var numcellsX = TextureWidth / CellWidth;
+        var numcellsY = TextureHeight / CellHeight;
+
+        var isOutOfBounds =
+            (columnX < 0) || (columnX > numcellsX) ||
+            (columnY < 0) || (columnY > numcellsY);
+
+        if(!isOutOfBounds)
+        {
+            LeftTexturePixel = (columnX - 1) * CellWidth;
+            TopTexturePixel = (columnY - 1) * CellHeight;
+            SelectedWidthPixels = CellWidth;
+            SelectedHeightPixels = CellHeight;
+        }
+
+
     }
 
     public TextureCoordinateSelectionViewModel()

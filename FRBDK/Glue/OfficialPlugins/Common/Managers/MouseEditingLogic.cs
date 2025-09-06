@@ -100,8 +100,12 @@ class MouseEditingLogic
             LeftClickTimer.Restart();
 
         //Not interacting with TextureCoordinateRectangle, move TextureCoordinateRectangle to this cell & init start drag select
-        if(HandleGrabbed == null && !IsBodyGrabbed && args.ChangedButton == MouseButton.Left) {
-            View.SelectCell(args.GetPosition(_canvas), out int columnX, out int columnY);
+        if(HandleGrabbed == null && !IsBodyGrabbed && args.ChangedButton == MouseButton.Left)
+        {
+            var canvasPosition = args.GetPosition(_canvas);
+            CameraLogic.GetWorldPosition(canvasPosition, out double worldX, out double worldY);
+
+            _viewModel.SelectCell((float)worldX, (float)worldY, out int columnX, out int columnY);
             StartDragSelectX = columnX;
             StartDragSelectY = columnY;
         }
@@ -110,29 +114,34 @@ class MouseEditingLogic
     public void HandleMouseMove(MouseEventArgs args)
     {
         //start drag select / not interacting with TextureCoordinateRectangle
-        if(StartDragSelectX != null && !IsBodyGrabbed && args.LeftButton == MouseButtonState.Pressed) {
-            View.SelectDragCell(args.GetPosition(_canvas), (int)StartDragSelectX, (int)StartDragSelectY);
-            return;
-        }
-
-        var canvasPosition = args.GetPosition(_canvas);
-
-        if (HandleGrabbed == null)
+        var isDragging = StartDragSelectX != null && !IsBodyGrabbed && args.LeftButton == MouseButtonState.Pressed;
+        if (isDragging)
         {
-            UpdateHandleOver(canvasPosition.X, canvasPosition.Y);
+
+            View.SelectDragCell(args.GetPosition(_canvas), (int)StartDragSelectX!, (int)StartDragSelectY!);
+            _canvas.InvalidateVisual();
         }
-        //var point = args.GetPosition(_canvas); 
-        //View.GetWorldPosition(point, out double x, out double y);
-        //circle.X = (float)x;
-        //circle.Y = (float)y;
-        //_canvas.InvalidateVisual();
-        //System.Diagnostics.Debug.WriteLine($"Skia:{x}, {y} Window:({point})");
+        else
+        {
+            var canvasPosition = args.GetPosition(_canvas);
 
-        UpdateGrabbed(args);
+            if (HandleGrabbed == null)
+            {
+                UpdateHandleOver(canvasPosition.X, canvasPosition.Y);
+            }
+            //var point = args.GetPosition(_canvas); 
+            //View.GetWorldPosition(point, out double x, out double y);
+            //circle.X = (float)x;
+            //circle.Y = (float)y;
+            //_canvas.InvalidateVisual();
+            //System.Diagnostics.Debug.WriteLine($"Skia:{x}, {y} Window:({point})");
 
-        UpdateHandleHighlight();
+            UpdateGrabbed(args);
 
-        _canvas.InvalidateVisual();
+            UpdateHandleHighlight();
+            _canvas.InvalidateVisual();
+        }
+
     }
 
     internal void HandleMouseUp(MouseButtonEventArgs e)

@@ -62,18 +62,6 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         public LineGridRuntime linegrid { get; private set; }
 
-        public void SelectCell(Point position, out int columnX, out int columnY)
-        {
-            CameraLogic.GetWorldPosition(position, out double worldX, out double worldY);
-            linegrid.LineGridCell(worldX, worldY, out columnX, out columnY);
-            if(linegrid.GetCellPosition(columnX, columnY, out float left, out float top, out float right, out float bottom)) {
-                ViewModel.LeftTexturePixel = (decimal)left;
-                ViewModel.TopTexturePixel = (decimal)top;
-                ViewModel.SelectedWidthPixels = (decimal)right;
-                ViewModel.SelectedHeightPixels = (decimal)bottom;
-            }
-        }
-
         public void SelectDragCell(Point MousePoint, int StartDragSelectX, int StartDragSelectY) 
         {
             CameraLogic.GetWorldPosition(MousePoint, out double worldX, out double worldY);
