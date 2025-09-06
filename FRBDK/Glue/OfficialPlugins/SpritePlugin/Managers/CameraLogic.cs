@@ -95,6 +95,8 @@ public class CameraLogic
     {
         var newPosition = args.GetPosition(View);
 
+        bool handled = false;
+
         if(args.MiddleButton == MouseButtonState.Pressed
            && LastMiddleMouseButtonPoint != null
            && newPosition != LastMiddleMouseButtonPoint)
@@ -107,10 +109,12 @@ public class CameraLogic
 
             Canvas.InvalidateVisual();
 
-            LastMiddleMouseButtonPoint = newPosition;
-            return true;
+            handled = true;
         }
-        return false;
+
+        LastMiddleMouseButtonPoint = newPosition;
+
+        return handled;
     }
 
     public bool HandleMouseWheel(MouseWheelEventArgs args)

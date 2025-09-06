@@ -45,8 +45,8 @@ class MouseEditingLogic
     private System.Windows.Point LastGrabbedMousePoint;
     //static ColoredCircleRuntime circle;
 
-    private RoundedRectangleRuntime HandleOver;
-    private RoundedRectangleRuntime HandleGrabbed;
+    private RoundedRectangleRuntime? HandleOver;
+    private RoundedRectangleRuntime? HandleGrabbed;
     private bool IsBodyGrabbed;
 
     private int? StartDragSelectX1Based = null;
@@ -65,10 +65,6 @@ class MouseEditingLogic
         TextureCoordinateRectangle textureCoordinateRectangle,
         CameraLogic cameraLogic)
     {
-        if(viewModel == null)
-        {
-            throw new ArgumentException(nameof(_viewModel));
-        }
         _canvas = canvas;
         _viewModel = viewModel;
         _textureCoordinateRectangle = textureCoordinateRectangle;
@@ -147,6 +143,7 @@ class MouseEditingLogic
         StartDragSelectX1Based = null;
         StartDragSelectY1Based = null;
 
+
         if (HandleGrabbed != null)
         {
             _textureCoordinateRectangle.MakeNormal(HandleGrabbed);
@@ -167,6 +164,10 @@ class MouseEditingLogic
         _viewModel.LeftTexturePixel = _viewModel.LeftTexturePixelInt;
         _viewModel.SelectedWidthPixels = _viewModel.SelectedWidthPixelsInt;
         _viewModel.SelectedHeightPixels = _viewModel.SelectedHeightPixelsInt;
+
+
+        IsBodyGrabbed = false;
+        HandleGrabbed = null;
     }
 
     private void UpdateHandleHighlight()
