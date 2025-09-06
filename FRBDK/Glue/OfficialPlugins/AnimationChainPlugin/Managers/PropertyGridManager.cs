@@ -38,5 +38,9 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             PropertyGrid.Refresh();
         }
 
+        internal static void RefreshGrid()
+        {
+            PropertyGrid.Refresh();
+        }
     }
 }

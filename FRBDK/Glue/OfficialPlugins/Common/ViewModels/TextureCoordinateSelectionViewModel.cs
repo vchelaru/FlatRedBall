@@ -126,6 +126,19 @@ public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewMod
         }
     }
 
+    public void SetCoordinatesWithout(decimal left, decimal top, decimal width, decimal height)
+    {
+        SetWithoutNotifying(left, nameof(LeftTexturePixel));
+        SetWithoutNotifying(top, nameof(TopTexturePixel));
+        SetWithoutNotifying(width, nameof(SelectedWidthPixels));
+        SetWithoutNotifying(height, nameof(SelectedHeightPixels));
+
+        NotifyPropertyChanged(nameof(LeftTexturePixel));
+        NotifyPropertyChanged(nameof(TopTexturePixel));
+        NotifyPropertyChanged(nameof(SelectedWidthPixels));
+        NotifyPropertyChanged(nameof(SelectedHeightPixels));
+    }
+
     public void CheckCellTextureDivision()
     {
         double x = TextureWidth % CellWidth;

@@ -116,6 +116,48 @@ namespace OfficialPlugins.ContentPreview.Views
 
         #region Initialization
 
+        public void Initialize(CameraLogic topWindowCameraLogic, CameraLogic bottomWindowCameraLogic)
+        {
+            this.TopWindowCameraLogic = topWindowCameraLogic;
+            this.BottomWindowCameraLogic = bottomWindowCameraLogic;
+
+            TopWindowManager = new TopWindowManager(TopGumCanvas, this, topWindowCameraLogic,
+                ViewModel?.TopWindowZoom, ViewModel.Settings);
+
+            BottomWindowManager = new BottomWindowManager(BottomGumCanvas, this, BottomWindowCameraLogic,
+                ViewModel?.BottomWindowZoom, ViewModel.Settings);
+
+            TopGumCanvas.Children.Add(_textureCoordinateRectangle);
+
+            _textureCoordinateRectangle.SetBinding(
+                nameof(_textureCoordinateRectangle.X),
+                nameof(_textureCoordinateSelectionViewModel.LeftTexturePixelInt));
+
+            _textureCoordinateRectangle.SetBinding(
+                nameof(_textureCoordinateRectangle.Y),
+                nameof(_textureCoordinateSelectionViewModel.TopTexturePixelInt));
+
+            _textureCoordinateRectangle.SetBinding(
+                nameof(_textureCoordinateRectangle.Width),
+                nameof(_textureCoordinateSelectionViewModel.SelectedWidthPixelsInt));
+
+            _textureCoordinateRectangle.SetBinding(
+                nameof(_textureCoordinateRectangle.Height),
+                nameof(_textureCoordinateSelectionViewModel.SelectedHeightPixelsInt));
+
+            // Set the binding context *after* adding to the canvas:
+            _textureCoordinateRectangle.BindingContext = _textureCoordinateSelectionViewModel;
+            // initially make it invisible:
+            _textureCoordinateRectangle.Visible = false;
+            _textureCoordinateSelectionViewModel.PropertyChanged += HandleTextureCoordinatePropertyChanged;
+
+            _mouseEditingLogic.Initialize(
+                TopGumCanvas,
+                _textureCoordinateSelectionViewModel,
+                _textureCoordinateRectangle,
+                topWindowCameraLogic);
+        }
+
         private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (ViewModel != null)
@@ -153,45 +195,6 @@ namespace OfficialPlugins.ContentPreview.Views
             TopWindowManager.FillSpriteToView(ViewModel);
         }
 
-        public void Initialize(CameraLogic topWindowCameraLogic, CameraLogic bottomWindowCameraLogic)
-        {
-            this.TopWindowCameraLogic = topWindowCameraLogic;
-            this.BottomWindowCameraLogic = bottomWindowCameraLogic;
-
-            TopWindowManager = new TopWindowManager(TopGumCanvas, this, topWindowCameraLogic,
-                ViewModel?.TopWindowZoom, ViewModel.Settings);
-
-            BottomWindowManager = new BottomWindowManager(BottomGumCanvas, this, BottomWindowCameraLogic,
-                ViewModel?.BottomWindowZoom, ViewModel.Settings);
-
-            TopGumCanvas.Children.Add(_textureCoordinateRectangle);
-
-            _textureCoordinateRectangle.SetBinding(
-                nameof(_textureCoordinateRectangle.X),
-                nameof(_textureCoordinateSelectionViewModel.LeftTexturePixelInt));
-
-            _textureCoordinateRectangle.SetBinding(
-                nameof(_textureCoordinateRectangle.Y),
-                nameof(_textureCoordinateSelectionViewModel.TopTexturePixelInt));
-
-            _textureCoordinateRectangle.SetBinding(
-                nameof(_textureCoordinateRectangle.Width),
-                nameof(_textureCoordinateSelectionViewModel.SelectedWidthPixelsInt));
-
-            _textureCoordinateRectangle.SetBinding(
-                nameof(_textureCoordinateRectangle.Height),
-                nameof(_textureCoordinateSelectionViewModel.SelectedHeightPixelsInt));
-
-            // Set the binding context *after* adding to the canvas:
-            _textureCoordinateRectangle.BindingContext = _textureCoordinateSelectionViewModel;
-
-            _mouseEditingLogic.Initialize(
-                TopGumCanvas,
-                _textureCoordinateSelectionViewModel,
-                _textureCoordinateRectangle,
-                topWindowCameraLogic);
-        }
-
         #endregion
 
         private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -221,8 +224,67 @@ namespace OfficialPlugins.ContentPreview.Views
                     RefreshTopWindowScrollBars();
 
                     break;
+                case nameof(ViewModel.CurrentAnimationFrame):
+                    _textureCoordinateRectangle.Visible = ViewModel.CurrentAnimationFrame != null;
+                    if(ViewModel.CurrentAnimationFrame != null)
+                    {
+                        _textureCoordinateSelectionViewModel.TextureWidth = TopWindowManager.MainSprite.Texture?.Width ?? 0;
+                        _textureCoordinateSelectionViewModel.TextureHeight = TopWindowManager.MainSprite.Texture?.Height ?? 0;
+                        UpdateTextureCoordinateViewModelToCurrentFrame();
+
+
+                        //_textureCoordinateSelectionViewModel.SetFrom(ViewModel.CurrentAnimationFrame, TopWindowManager.MainSprite.Texture);
+                    }
+                    break;
+            }
+            
+        }
+
+        private void UpdateTextureCoordinateViewModelToCurrentFrame()
+        {
+            if(ViewModel.CurrentAnimationFrame == null)
+            {
+                return;
+            }
+            _textureCoordinateSelectionViewModel.SetCoordinatesWithout(
+                (decimal)ViewModel.CurrentAnimationFrame.LeftCoordinate,
+                (decimal)ViewModel.CurrentAnimationFrame.TopCoordinate,
+                (decimal)ViewModel.CurrentAnimationFrame.Width,
+                (decimal)ViewModel.CurrentAnimationFrame.Height);
+        }
+
+        private void HandleTextureCoordinatePropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            var frame = ViewModel.CurrentAnimationFrame;
+
+            if(frame == null)
+            {
+                return;
+            }
+
+            switch(e.PropertyName)
+            {
+                case nameof(_textureCoordinateSelectionViewModel.LeftTexturePixel):
+                case nameof(_textureCoordinateSelectionViewModel.SelectedWidthPixels):
+                    var leftToSet = (float)_textureCoordinateSelectionViewModel.LeftTexturePixel;
+                    var rightToSet = leftToSet + (float)_textureCoordinateSelectionViewModel.SelectedWidthPixels;
+                    frame.LeftCoordinate = leftToSet;
+                    frame.RightCoordinate = rightToSet;
+
+                    PropertyGridManager.RefreshGrid();
+                    break;
+                case nameof(_textureCoordinateSelectionViewModel.TopTexturePixel):
+                case nameof(_textureCoordinateSelectionViewModel.SelectedHeightPixels):
+                    var topToSet = (float)_textureCoordinateSelectionViewModel.TopTexturePixel;
+                    var bottomToSet = topToSet + (float)_textureCoordinateSelectionViewModel.SelectedHeightPixels; 
+                    frame.TopCoordinate = topToSet;
+                    frame.BottomCoordinate = bottomToSet;
+
+                    PropertyGridManager.RefreshGrid();
+                    break;
             }
         }
+
 
         private void HandleSettingsPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -310,6 +372,7 @@ namespace OfficialPlugins.ContentPreview.Views
             TopGumCanvas.InvalidateVisual();
             BottomWindowManager.RefreshAnimationPreview(ViewModel);
             BottomGumCanvas.InvalidateVisual();
+            UpdateTextureCoordinateViewModelToCurrentFrame();
         }
 
         internal bool GetIfIsHandlingHotkeys()
@@ -337,7 +400,10 @@ namespace OfficialPlugins.ContentPreview.Views
         {
             TopWindowCameraLogic.HandleMousePush(e);
 
-            _mouseEditingLogic.HandleMousePush(e);
+            if(ViewModel.CurrentAnimationFrame != null)
+            {
+                _mouseEditingLogic.HandleMousePush(e);
+            }
 
             // This allows the canvas to receive focus:
             // Source: https://social.msdn.microsoft.com/Forums/vstudio/en-US/ed6caee6-2cae-4db8-a2df-eafad44dbe37/mouse-focus-versus-keyboard-focus?forum=wpf#:~:text=In%20WPF%2C%20some%20elements%20will%20get%20keyboard%20focus,trick%3A%20userControl.MouseLeftButtonDown%20%2B%3D%20delegate%20%7B%20userControl.Focusable%20%3D%20true%3B
@@ -352,8 +418,18 @@ namespace OfficialPlugins.ContentPreview.Views
             {
                 RefreshTopWindowScrollBars();
             }
+            if (ViewModel.CurrentAnimationFrame != null)
+            {
+                _mouseEditingLogic.HandleMouseMove(e);
+            }
+        }
 
-            _mouseEditingLogic.HandleMouseMove(e);
+        private void TopGumCanvas_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (ViewModel.CurrentAnimationFrame != null)
+            {
+                _mouseEditingLogic.HandleMouseUp(e);
+            }
         }
 
         private void TopGumCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -372,11 +448,6 @@ namespace OfficialPlugins.ContentPreview.Views
         {
             TopGumCanvas.ForceGumLayout();
             RefreshTopWindowScrollBars();
-        }
-
-        private void TopGumCanvas_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            _mouseEditingLogic.HandleMouseUp(e);
         }
 
         public void ResetCamera() => TopWindowManager.ResetCamera(ViewModel);

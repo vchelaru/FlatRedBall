@@ -142,7 +142,8 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             {
                 if (ViewModel.CurrentAnimationFrame != null)
                 {
-                    CreatePolygonFor(ViewModel.CurrentAnimationFrame.BackingModel);
+                    // don't create polygons for frames - this is handled by the resizable region
+                    //CreatePolygonFor(ViewModel.CurrentAnimationFrame.BackingModel);
                 }
                 else if (ViewModel.CurrentAnimationChain != null)
                 {
