@@ -41,7 +41,6 @@ namespace OfficialPlugins.ContentPreview.Views
 
         HotkeyManager _hotkeyManager;
 
-
         //FilePath textureFilePath;
         //FilePath TextureFilePath
         //{
@@ -70,8 +69,6 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
-
-
         public SKBitmap Texture => TopWindowManager.Texture;
 
         CameraLogic TopWindowCameraLogic;
@@ -79,6 +76,11 @@ namespace OfficialPlugins.ContentPreview.Views
 
         TopWindowManager TopWindowManager;
         BottomWindowManager BottomWindowManager;
+
+        HashSet<string> FramePropertiesWhichShouldNotTriggerSave = new()
+        {
+            nameof(AnimationFrameViewModel.Text)
+        };
 
         #endregion
 
@@ -148,9 +150,6 @@ namespace OfficialPlugins.ContentPreview.Views
         }
 
         #endregion
-
-
-
 
         private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -243,12 +242,6 @@ namespace OfficialPlugins.ContentPreview.Views
             });
         }
 
-
-        HashSet<string> FramePropertiesWhichShouldNotTriggerSave = new()
-        {
-            nameof(AnimationFrameViewModel.Text)
-        };
-
         private void HandleFrameUpdated(AnimationFrameViewModel frame, string propertyName)
         {
 
@@ -276,6 +269,24 @@ namespace OfficialPlugins.ContentPreview.Views
             BottomGumCanvas.InvalidateVisual();
         }
 
+        internal bool GetIfIsHandlingHotkeys()
+        {
+
+            var focusedElement = Keyboard.FocusedElement as DependencyObject;
+
+            while(focusedElement != null)
+            {
+                if(focusedElement is ListBox)
+                {
+                    return true;
+                }
+                else
+                {
+                    focusedElement = VisualTreeHelper.GetParent(focusedElement);
+                }
+            }
+            return false;
+        }
 
         #region Top Canvas Events
 
@@ -315,6 +326,17 @@ namespace OfficialPlugins.ContentPreview.Views
             RefreshTopWindowScrollBars();
         }
 
+        public void ResetCamera() => TopWindowManager.ResetCamera(ViewModel);
+
+        private void FocusWholeToAnimation(AnimationChainSave backingModel)
+        {
+            if (backingModel.Frames.Count > 0)
+            {
+                var firstFrame = backingModel.Frames[0];
+                TopWindowManager.FocusWholeToFrame(firstFrame, ViewModel);
+            }
+        }
+
         #endregion
 
         #region Bottom Canvas
@@ -343,7 +365,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
         #endregion
 
-        public void ResetCamera() => TopWindowManager.ResetCamera(ViewModel);
+        #region TreeView Events
 
         private void TreeListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -365,13 +387,9 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
-        private void FocusWholeToAnimation(AnimationChainSave backingModel)
+        private void TreeListBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            if (backingModel.Frames.Count > 0)
-            {
-                var firstFrame = backingModel.Frames[0];
-                TopWindowManager.FocusWholeToFrame(firstFrame, ViewModel);
-            }
+            _hotkeyManager.HandleTreeViewKey(e, ViewModel);
         }
 
         private TreeListBoxItem GetTreeViewItemFromOriginalSource(DependencyObject originalSource)
@@ -383,6 +401,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
             return originalSource as TreeListBoxItem;
         }
+        #endregion
 
         #region Scroll Bar Logic
 
@@ -438,30 +457,6 @@ namespace OfficialPlugins.ContentPreview.Views
 
 
         #endregion
-
-        private void TreeListBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            _hotkeyManager.HandleTreeViewKey(e, ViewModel);
-        }
-
-        internal bool GetIfIsHandlingHotkeys()
-        {
-
-            var focusedElement = Keyboard.FocusedElement as DependencyObject;
-
-            while(focusedElement != null)
-            {
-                if(focusedElement is ListBox)
-                {
-                    return true;
-                }
-                else
-                {
-                    focusedElement = VisualTreeHelper.GetParent(focusedElement);
-                }
-            }
-            return false;
-        }
 
         private void OpenInAnimationEditorButton_Click(object sender, RoutedEventArgs e)
         {
