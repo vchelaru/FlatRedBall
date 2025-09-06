@@ -39,36 +39,37 @@ public class TextureCoordinateRectangle : ContainerRuntime
 
         CreateHandle(
             GeneralUnitType.PixelsFromSmall, GeneralUnitType.PixelsFromSmall,
-            HorizontalAlignment.Right, VerticalAlignment.Bottom);
+            HorizontalAlignment.Right, VerticalAlignment.Bottom, "BottomRight");
 
         CreateHandle(
             GeneralUnitType.PixelsFromMiddle, GeneralUnitType.PixelsFromSmall,
-            HorizontalAlignment.Center, VerticalAlignment.Bottom);
+            HorizontalAlignment.Center, VerticalAlignment.Bottom, "BottomCenter");
 
         CreateHandle(GeneralUnitType.PixelsFromLarge, GeneralUnitType.PixelsFromSmall,
-            HorizontalAlignment.Left, VerticalAlignment.Bottom);
+            HorizontalAlignment.Left, VerticalAlignment.Bottom, "BottomLeft");
 
         CreateHandle(GeneralUnitType.PixelsFromLarge, GeneralUnitType.PixelsFromMiddle,
-            HorizontalAlignment.Left, VerticalAlignment.Center);
+            HorizontalAlignment.Left, VerticalAlignment.Center, "Left");
 
         CreateHandle(GeneralUnitType.PixelsFromLarge, GeneralUnitType.PixelsFromLarge,
-            HorizontalAlignment.Left, VerticalAlignment.Top);
+            HorizontalAlignment.Left, VerticalAlignment.Top, "TopLeft");
 
         CreateHandle(GeneralUnitType.PixelsFromMiddle, GeneralUnitType.PixelsFromLarge,
-            HorizontalAlignment.Center, VerticalAlignment.Top);
+            HorizontalAlignment.Center, VerticalAlignment.Top, "TopCenter");
 
         CreateHandle(GeneralUnitType.PixelsFromSmall, GeneralUnitType.PixelsFromLarge,
-            HorizontalAlignment.Right, VerticalAlignment.Top);
+            HorizontalAlignment.Right, VerticalAlignment.Top, "TopRight");
 
         CreateHandle(GeneralUnitType.PixelsFromSmall, GeneralUnitType.PixelsFromMiddle,
-            HorizontalAlignment.Right, VerticalAlignment.Center);
+            HorizontalAlignment.Right, VerticalAlignment.Center, "Right");
     }
 
     int nextHandleIndex = 0;
     private RoundedRectangleRuntime CreateHandle(GeneralUnitType xUnits, GeneralUnitType yUnits, 
-        HorizontalAlignment xOrigin, VerticalAlignment yOrigin)
+        HorizontalAlignment xOrigin, VerticalAlignment yOrigin, string name)
     {
         var handle = CreateLineRectangle();
+        handle.Name = name;
         const int handleSize = 12;
         handle.Width = handleSize;
         handle.WidthUnits = Gum.DataTypes.DimensionUnitType.ScreenPixel;

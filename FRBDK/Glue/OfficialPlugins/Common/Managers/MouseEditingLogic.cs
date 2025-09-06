@@ -131,6 +131,8 @@ class MouseEditingLogic
         UpdateGrabbed(args);
 
         UpdateHandleHighlight();
+
+        _canvas.InvalidateVisual();
     }
 
     internal void HandleMouseUp(MouseButtonEventArgs e)
@@ -311,15 +313,15 @@ class MouseEditingLogic
         if (args.LeftButton == MouseButtonState.Pressed)
         {
             LastGrabbedMousePoint = args.GetPosition(_canvas);
+            CameraLogic.GetWorldPosition(LastGrabbedMousePoint, out double worldX, out double worldY);
             var handleOver = _textureCoordinateRectangle.GetHandleAt(
-                LastGrabbedMousePoint.X,
-                LastGrabbedMousePoint.Y);
+                worldX,
+                worldY);
 
             HandleGrabbed = handleOver;
             RefreshHandleVisuals();
 
             var textureCoordinateRectangle = _textureCoordinateRectangle;
-            CameraLogic.GetWorldPosition(LastGrabbedMousePoint, out double worldX, out double worldY);
             IsBodyGrabbed = HandleGrabbed == null &&
                 worldX >= textureCoordinateRectangle.GetAbsoluteLeft() &&
                 worldX <= textureCoordinateRectangle.GetAbsoluteRight() &&
