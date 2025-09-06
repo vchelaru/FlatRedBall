@@ -1579,97 +1579,14 @@ namespace FlatRedBall.Math.Geometry
             var secondMtv = getPolygonMTV(secondVertices);
             var mtv = firstMtv.LengthSquared() < secondMtv.LengthSquared() ? firstMtv : secondMtv;
 
-            if (firstMass == 0)
-            {
-                firstVectorResult = mtv.ToVector3();
-            }
-            else if (secondMass == 0)
-            {
-                secondVectorResult = mtv.ToVector3();
-            }
-#if false
-            firstVectorResult = new Vector3();
-            secondVectorResult = new Vector3();
-            int firstLengthMinusOne = firstVertices.Length - 1;
-            int secondLengthMinusOne = secondVertices.Length - 1;
+            // perform legit mass calculations
+            var massRatio = firstMass / (firstMass + secondMass);
+            var firstMassRatio = 1.0f - massRatio;
+            var secondMassRatio = massRatio;
 
-            Vector2 smallestOverlapVector = new Vector2();
-            float? smallestOverlapLength = null;
-
-            Vector2 vectorForPoint = new Vector2();
-
-            secondVectorIndex = -1;
-
-            for (int i = 0; i < firstLengthMinusOne; i++)
-            {
-
-                float firstVectorX = firstVertices[i + 1].Position.X - firstVertices[i].Position.X;
-                float firstVectorY = firstVertices[i + 1].Position.Y - firstVertices[i].Position.Y;
-
-                // normal is -y, x
-                var normalizedSurface = Vector2.Normalize(new Vector2(-firstVectorY, firstVectorX));
-
-                float minSecond = float.PositiveInfinity;
-
-                int smallestIndexForThisEdge = -1;
-                for (int j = 0; j < secondLengthMinusOne; j++)
-                {
-                    vectorForPoint.X = secondVertices[j].Position.X - firstVertices[i].Position.X;
-                    vectorForPoint.Y = secondVertices[j].Position.Y - firstVertices[i].Position.Y;
-
-                    var result = Vector2.Dot(vectorForPoint, normalizedSurface);
-
-                    if (result < minSecond)
-                    {
-                        minSecond = result;
-                        smallestIndexForThisEdge = j;
-                    }
-                }
-
-                var overlaps = minSecond < 0;
-
-                if (overlaps)
-                {
-                    var valueToUse = -minSecond;
-
-                    bool shouldConsider = (normalizedSurface.X < 0 && (firstRepositionDirections & RepositionDirections.Left) == RepositionDirections.Left) ||
-                        (normalizedSurface.X > 0 && (firstRepositionDirections & RepositionDirections.Right) == RepositionDirections.Right) ||
-                        (normalizedSurface.Y < 0 && (firstRepositionDirections & RepositionDirections.Down) == RepositionDirections.Down) ||
-                        (normalizedSurface.Y > 0 && (firstRepositionDirections & RepositionDirections.Up) == RepositionDirections.Up);
-
-
-                    if (shouldConsider && (smallestOverlapLength == null || System.Math.Abs(valueToUse) < System.Math.Abs(smallestOverlapLength.Value)))
-                    {
-                        smallestOverlapLength = valueToUse;
-                        smallestOverlapVector = normalizedSurface;
-                        secondVectorIndex = smallestIndexForThisEdge;
-                    }
-                }
-                else
-                {
-                    smallestOverlapLength = null;
-
-                    // no possible collision
-                    break;
-                }
-
-            }
-
-            if (smallestOverlapLength != null)
-            {
-                var totalMass = firstMass + secondMass;
-                var thisRatioToMove = 1 - (firstMass / totalMass);
-                var otherRatiotoMove = (firstMass / totalMass);
-
-                firstVectorResult.X = -thisRatioToMove * smallestOverlapVector.X * smallestOverlapLength.Value;
-                firstVectorResult.Y = -thisRatioToMove * smallestOverlapVector.Y * smallestOverlapLength.Value;
-
-
-                secondVectorResult.X = otherRatiotoMove * smallestOverlapVector.X * smallestOverlapLength.Value;
-                secondVectorResult.Y = otherRatiotoMove * smallestOverlapVector.Y * smallestOverlapLength.Value;
-
-            }
-#endif
+            var mtvVec3 = mtv.ToVector3();
+            firstVectorResult = firstMassRatio * mtvVec3;
+            secondVectorResult = -secondMassRatio * mtvVec3;
         }
 
 
