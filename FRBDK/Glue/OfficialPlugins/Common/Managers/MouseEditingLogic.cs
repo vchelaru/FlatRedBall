@@ -97,7 +97,7 @@ class MouseEditingLogic
             LeftClickTimer.Restart();
 
         //Not interacting with TextureCoordinateRectangle, move TextureCoordinateRectangle to this cell & init start drag select
-        if(HandleGrabbed == null && !IsBodyGrabbed && args.ChangedButton == MouseButton.Left)
+        if(HandleGrabbed == null && !IsBodyGrabbed && args.ChangedButton == MouseButton.Left && _viewModel.SnapChecked)
         {
             var canvasPosition = args.GetPosition(_canvas);
             CameraLogic.GetWorldPosition(canvasPosition, out double worldX, out double worldY);
