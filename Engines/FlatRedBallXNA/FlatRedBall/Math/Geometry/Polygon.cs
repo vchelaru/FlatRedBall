@@ -1147,7 +1147,9 @@ namespace FlatRedBall.Math.Geometry
 
                 VertexPositionColor[] otherVertices = polygon.mVertices;
 
-                CollideAgainstMovePreview(thisMass, otherMass, ref thisMoveCollisionReposition, ref argumentPolygonMoveCollisionReposition, otherVertices, !this.isConcaveCache, !polygon.isConcaveCache);
+                CollideAgainstMovePreview(thisMass, otherMass, ref thisMoveCollisionReposition, ref argumentPolygonMoveCollisionReposition, otherVertices,
+                    !this.isConcaveCache,
+                    !polygon.isConcaveCache);
 
                 toReturn = true;
                 return toReturn;
