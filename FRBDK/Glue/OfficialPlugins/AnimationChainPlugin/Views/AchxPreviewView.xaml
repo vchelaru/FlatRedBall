@@ -82,10 +82,11 @@
 
 
           <wpf1:GumSKElement x:Name="TopGumCanvas"
-                        MouseDown="TopGumCanvas_MouseDown"
-                        MouseMove="TopGumCanvas_MouseMove"
-                        MouseWheel="TopGumCanvas_MouseWheel"
-                        SizeChanged="TopGumCanvas_SizeChanged" Margin="0,0,0,8" Grid.RowSpan="3"
+                             MouseDown="TopGumCanvas_MouseDown"
+                             MouseMove="TopGumCanvas_MouseMove"
+                             MouseWheel="TopGumCanvas_MouseWheel"
+                             MouseUp="TopGumCanvas_MouseUp"
+                             SizeChanged="TopGumCanvas_SizeChanged" Margin="0,0,0,8" Grid.RowSpan="3"
                                    ></wpf1:GumSKElement>
           <ScrollBar Grid.Column="1" x:Name="TopWindowVerticalSrollBar" ValueChanged="TopWindowVerticalSrollBar_ValueChanged" Grid.RowSpan="3"/>
           <ScrollBar Orientation="Horizontal" Grid.Row="2" x:Name="TopWindowHorizontalScrollBar" ValueChanged="TopWindowHorizontalScrollBar_ValueChanged"/>

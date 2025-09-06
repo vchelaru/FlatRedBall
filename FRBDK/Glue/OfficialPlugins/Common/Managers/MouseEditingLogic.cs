@@ -270,11 +270,14 @@ class MouseEditingLogic
             viewModel.LeftTexturePixel = xAnchor + SnappedX(grabbedDifferenceX);
             viewModel.TopTexturePixel = yAnchor + SnappedY(grabbedDifferenceY);
 
-            //Make sure it's on all the snap lines
-            viewModel.LeftTexturePixel -= viewModel.LeftTexturePixel % _viewModel.CellWidth;
-            viewModel.SelectedWidthPixels -= viewModel.SelectedWidthPixels % _viewModel.CellWidth;
-            viewModel.TopTexturePixel -= viewModel.TopTexturePixel % _viewModel.CellHeight;
-            viewModel.SelectedHeightPixels -= viewModel.SelectedHeightPixels % _viewModel.CellHeight;
+            if(_viewModel.SnapChecked)
+            {
+                //Make sure it's on all the snap lines
+                viewModel.LeftTexturePixel -= viewModel.LeftTexturePixel % _viewModel.CellWidth;
+                viewModel.SelectedWidthPixels -= viewModel.SelectedWidthPixels % _viewModel.CellWidth;
+                viewModel.TopTexturePixel -= viewModel.TopTexturePixel % _viewModel.CellHeight;
+                viewModel.SelectedHeightPixels -= viewModel.SelectedHeightPixels % _viewModel.CellHeight;
+            }
         }
 
         LastGrabbedMousePoint = newPosition;

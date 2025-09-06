@@ -12,7 +12,6 @@ namespace OfficialPlugins.Common.ViewModels;
 
 public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewModel
 {
-
     public decimal LeftTexturePixel
     {
         get => Get<decimal>();
@@ -57,11 +56,10 @@ public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewMod
     [DependsOn(nameof(CurrentZoomPercent))]
     public float CurrentZoomScale => CurrentZoomPercent / 100.0f;
 
-    public float CurrentZoomPercent {
+    public float CurrentZoomPercent
+    {
         get => Get<float>();
-        set {
-            Set(value);
-        }
+        set => Set(value);
     }
 
     public double WindowX { get; set; }

@@ -40,15 +40,16 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
         {
             if (View == null)
             {
-                View = new AchxPreviewView();
                 ViewModel = new AchxViewModel(this);
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
+
+                View = new AchxPreviewView();
                 View.DataContext = ViewModel;
                 View.Initialize(new SpritePlugin.Managers.CameraLogic(), new SpritePlugin.Managers.CameraLogic());
             }
         }
 
-        private static void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private static void HandleViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {

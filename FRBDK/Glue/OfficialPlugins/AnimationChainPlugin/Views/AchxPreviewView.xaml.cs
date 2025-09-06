@@ -20,6 +20,9 @@ using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.Managers;
 using OfficialPlugins.AnimationChainPlugin.ViewModels;
 using OfficialPlugins.Common.Controls;
+using OfficialPlugins.Common.GumComponents;
+using OfficialPlugins.Common.Managers;
+using OfficialPlugins.Common.ViewModels;
 using OfficialPlugins.SpritePlugin.Managers;
 using PropertyTools.Wpf;
 using RenderingLibrary;
@@ -82,11 +85,24 @@ namespace OfficialPlugins.ContentPreview.Views
             nameof(AnimationFrameViewModel.Text)
         };
 
+        MouseEditingLogic _mouseEditingLogic;
+        TextureCoordinateSelectionViewModel _textureCoordinateSelectionViewModel;
+        TextureCoordinateRectangle _textureCoordinateRectangle;
+
         #endregion
 
         public AchxPreviewView()
         {
             _hotkeyManager = new HotkeyManager();
+
+            _mouseEditingLogic = new MouseEditingLogic();
+
+
+            _textureCoordinateSelectionViewModel = new TextureCoordinateSelectionViewModel();
+            _textureCoordinateSelectionViewModel.SnapChecked = false;
+
+            _textureCoordinateRectangle = new TextureCoordinateRectangle();
+
             InitializeComponent();
 
             this.Loaded += HandleLoaded;
@@ -147,6 +163,33 @@ namespace OfficialPlugins.ContentPreview.Views
 
             BottomWindowManager = new BottomWindowManager(BottomGumCanvas, this, BottomWindowCameraLogic,
                 ViewModel?.BottomWindowZoom, ViewModel.Settings);
+
+            TopGumCanvas.Children.Add(_textureCoordinateRectangle);
+
+            _textureCoordinateRectangle.SetBinding(
+                nameof(_textureCoordinateRectangle.X),
+                nameof(_textureCoordinateSelectionViewModel.LeftTexturePixelInt));
+
+            _textureCoordinateRectangle.SetBinding(
+                nameof(_textureCoordinateRectangle.Y),
+                nameof(_textureCoordinateSelectionViewModel.TopTexturePixelInt));
+
+            _textureCoordinateRectangle.SetBinding(
+                nameof(_textureCoordinateRectangle.Width),
+                nameof(_textureCoordinateSelectionViewModel.SelectedWidthPixelsInt));
+
+            _textureCoordinateRectangle.SetBinding(
+                nameof(_textureCoordinateRectangle.Height),
+                nameof(_textureCoordinateSelectionViewModel.SelectedHeightPixelsInt));
+
+            // Set the binding context *after* adding to the canvas:
+            _textureCoordinateRectangle.BindingContext = _textureCoordinateSelectionViewModel;
+
+            _mouseEditingLogic.Initialize(
+                TopGumCanvas,
+                _textureCoordinateSelectionViewModel,
+                _textureCoordinateRectangle,
+                topWindowCameraLogic);
         }
 
         #endregion
@@ -293,7 +336,8 @@ namespace OfficialPlugins.ContentPreview.Views
         private void TopGumCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             TopWindowCameraLogic.HandleMousePush(e);
-            //MouseEditingLogic.HandleMousePush(e);
+
+            _mouseEditingLogic.HandleMousePush(e);
 
             // This allows the canvas to receive focus:
             // Source: https://social.msdn.microsoft.com/Forums/vstudio/en-US/ed6caee6-2cae-4db8-a2df-eafad44dbe37/mouse-focus-versus-keyboard-focus?forum=wpf#:~:text=In%20WPF%2C%20some%20elements%20will%20get%20keyboard%20focus,trick%3A%20userControl.MouseLeftButtonDown%20%2B%3D%20delegate%20%7B%20userControl.Focusable%20%3D%20true%3B
@@ -308,7 +352,8 @@ namespace OfficialPlugins.ContentPreview.Views
             {
                 RefreshTopWindowScrollBars();
             }
-            //MouseEditingLogic.HandleMouseMove(e);
+
+            _mouseEditingLogic.HandleMouseMove(e);
         }
 
         private void TopGumCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -317,6 +362,9 @@ namespace OfficialPlugins.ContentPreview.Views
             if(changed)
             {
                 RefreshTopWindowScrollBars();
+
+                _textureCoordinateSelectionViewModel.CurrentZoomPercent = TopGumCanvas.SystemManagers.Renderer.Camera.Zoom * 100;
+
             }
         }
 
@@ -324,6 +372,11 @@ namespace OfficialPlugins.ContentPreview.Views
         {
             TopGumCanvas.ForceGumLayout();
             RefreshTopWindowScrollBars();
+        }
+
+        private void TopGumCanvas_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _mouseEditingLogic.HandleMouseUp(e);
         }
 
         public void ResetCamera() => TopWindowManager.ResetCamera(ViewModel);
