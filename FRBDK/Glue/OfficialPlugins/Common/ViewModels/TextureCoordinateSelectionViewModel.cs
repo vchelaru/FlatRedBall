@@ -12,6 +12,7 @@ namespace OfficialPlugins.Common.ViewModels;
 
 public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewModel
 {
+    #region Fields/Properties
     public decimal LeftTexturePixel
     {
         get => Get<decimal>();
@@ -126,6 +127,17 @@ public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewMod
         }
     }
 
+    #endregion
+
+    public TextureCoordinateSelectionViewModel()
+    {
+        CurrentZoomPercent = 100;
+        CellWidth = 16;
+        CellHeight = 16;
+        SnapChecked = true;
+        SnapHeightChecked = false;
+    }
+
     public void SetCoordinatesWithout(decimal left, decimal top, decimal width, decimal height)
     {
         SetWithoutNotifying(left, nameof(LeftTexturePixel));
@@ -200,13 +212,4 @@ public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewMod
         }
     }
 
-
-    public TextureCoordinateSelectionViewModel()
-    {
-        CurrentZoomPercent = 100;
-        CellWidth = 16;
-        CellHeight = 16;
-        SnapChecked = true;
-        SnapHeightChecked = false;
-    }
 }

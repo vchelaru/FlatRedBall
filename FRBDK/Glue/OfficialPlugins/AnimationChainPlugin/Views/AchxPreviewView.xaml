@@ -26,6 +26,7 @@
         <ColumnDefinition></ColumnDefinition>
       </Grid.ColumnDefinitions>
 
+      <!-- Tab control for animation and settings...-->
       <TabControl themes:FrbTabControl.PreferTabTruncation="True">
         <TabItem Header="Animations"
                          themes:FrbTabControl.TruncationIcon="RunFast">
@@ -68,15 +69,31 @@
 
       <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"/>
 
-
+      <!-- Grid displaying the top and bottom Skia windows -->
       <Grid Grid.Column="2" x:Name="PreviewGrid">
         <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"></RowDefinition>
           <RowDefinition Height="223*"></RowDefinition>
           <RowDefinition Height="5"></RowDefinition>
           <RowDefinition Height="65*"></RowDefinition>
           <RowDefinition Height="157*"/>
         </Grid.RowDefinitions>
-        <Grid  Grid.Row="0">
+
+        <!-- Top Window Settings (snapping) -->
+        <StackPanel Orientation="Horizontal">
+          <CheckBox
+            Content="Snap to grid"
+            IsChecked="{Binding IsSnappingChecked}"
+            />
+          <TextBox
+            Margin="10,0,0,0"
+            Text="{Binding SnappingSize}"
+            IsEnabled="{Binding IsSnappingChecked}"
+            Width="44"
+            
+            />
+        </StackPanel>
+        <Grid  Grid.Row="1">
           <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -100,14 +117,14 @@
           <ScrollBar Orientation="Horizontal" Grid.Row="2" x:Name="TopWindowHorizontalScrollBar" ValueChanged="TopWindowHorizontalScrollBar_ValueChanged"/>
 
         </Grid>
-        <GridSplitter Grid.Row="1"
+        <GridSplitter Grid.Row="2"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Center"
                           ResizeBehavior="PreviousAndNext"
                           ShowsPreview="True"
                           Height="6"
                           />
-        <Grid x:Name="BottomHalfGrid" Grid.Row="2" Grid.RowSpan="2">
+        <Grid x:Name="BottomHalfGrid" Grid.Row="3" Grid.RowSpan="2">
           <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>

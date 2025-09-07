@@ -8,6 +8,7 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.ViewModels;
+using OfficialPlugins.Common.ViewModels;
 using OfficialPlugins.ContentPreview.Views;
 using SpineAtlasLibrary;
 
@@ -40,10 +41,12 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
         {
             if (View == null)
             {
-                ViewModel = new AchxViewModel(this);
+                TextureCoordinateSelectionViewModel textureCoordinateSelectionViewModel =
+                    new TextureCoordinateSelectionViewModel();
+                ViewModel = new AchxViewModel(this, textureCoordinateSelectionViewModel);
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
 
-                View = new AchxPreviewView(ViewModel);
+                View = new AchxPreviewView(ViewModel, textureCoordinateSelectionViewModel);
                 View.Initialize(new SpritePlugin.Managers.CameraLogic(), new SpritePlugin.Managers.CameraLogic());
             }
         }

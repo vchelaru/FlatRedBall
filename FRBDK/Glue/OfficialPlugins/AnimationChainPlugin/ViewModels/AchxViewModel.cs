@@ -15,10 +15,13 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels;
 
 internal class AchxViewModel : ViewModel
 {
+    #region Fields/Properties
+
     public ZoomViewModel TopWindowZoom { get; set; }
     public ZoomViewModel BottomWindowZoom { get; set; }
 
     private readonly AchxManager _achxManager;
+    private readonly TextureCoordinateSelectionViewModel _textureCoordinateSelectionViewModel;
 
     public SettingsViewModel Settings { get => Get<SettingsViewModel>(); private set => Set(value); }
 
@@ -131,9 +134,34 @@ internal class AchxViewModel : ViewModel
 
     public event Action<AnimationChainViewModel, NotifyCollectionChangedEventArgs> AnimationChainCollectionChanged;
 
-    public AchxViewModel(AchxManager achxManager)
+    public bool IsSnappingChecked
+    {
+        get => _textureCoordinateSelectionViewModel.SnapChecked;
+        set
+        {
+            _textureCoordinateSelectionViewModel.SnapChecked = value;
+            NotifyPropertyChanged(nameof(IsSnappingChecked));
+        }
+    }
+
+    public ushort SnappingSize
+    {
+        get => _textureCoordinateSelectionViewModel.CellWidth;
+        set
+        {
+            _textureCoordinateSelectionViewModel.CellWidth = value;
+            _textureCoordinateSelectionViewModel.CellHeight = value;
+            NotifyPropertyChanged(nameof(SnappingSize));
+        }
+    }
+
+    #endregion
+
+    public AchxViewModel(AchxManager achxManager,
+        TextureCoordinateSelectionViewModel textureCoordinateSelectionViewModel)
     {
         _achxManager = achxManager;
+        _textureCoordinateSelectionViewModel = textureCoordinateSelectionViewModel;
 
         Settings = new SettingsViewModel();
         TopWindowZoom = new ZoomViewModel();

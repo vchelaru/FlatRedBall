@@ -88,20 +88,25 @@ namespace OfficialPlugins.ContentPreview.Views
         MouseEditingLogic _mouseEditingLogic;
         TextureCoordinateSelectionViewModel _textureCoordinateSelectionViewModel;
         TextureCoordinateRectangle _textureCoordinateRectangle;
+        LineGridRuntime _lineGridRuntime;
 
         #endregion
 
-        internal AchxPreviewView(AchxViewModel viewModel)
+        internal AchxPreviewView(AchxViewModel viewModel,
+            TextureCoordinateSelectionViewModel textureCoordinateSelectionViewModel)
         {
             _hotkeyManager = new HotkeyManager();
 
             _mouseEditingLogic = new MouseEditingLogic();
 
 
-            _textureCoordinateSelectionViewModel = new TextureCoordinateSelectionViewModel();
+            _textureCoordinateSelectionViewModel = textureCoordinateSelectionViewModel;
             _textureCoordinateSelectionViewModel.SnapChecked = false;
 
             _textureCoordinateRectangle = new TextureCoordinateRectangle();
+
+            _lineGridRuntime = new LineGridRuntime();
+            // todo - finish here:
 
             InitializeComponent();
 
