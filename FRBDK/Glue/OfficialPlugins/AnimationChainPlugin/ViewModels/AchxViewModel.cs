@@ -117,6 +117,7 @@ internal class AchxViewModel : ViewModel
 
     public AnimationChainListSave BackingData { get; internal set; }
     public ICommand AddAnimationCommand { get; internal set; }
+    public ICommand AddFrameCommand { get; internal set; }
 
     public event Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
 
@@ -145,6 +146,7 @@ internal class AchxViewModel : ViewModel
         VisibleRoot.CollectionChanged += HandleAnimationChainViewModelCollectionChanged;
 
         AddAnimationCommand = new CommandBase(HandleAddAnimation);
+        AddFrameCommand = new CommandBase(HandleAddFrame);
     }
 
     private void HandleAddAnimation()
@@ -152,7 +154,37 @@ internal class AchxViewModel : ViewModel
         // temp - just add it to make sure it works:
         var animationChainSave = new AnimationChainSave();
         animationChainSave.Name = "NewAnimation";
-        AddAnimationChain(animationChainSave);
+        var newAnimationChain = AddAnimationChain(animationChainSave);
+
+        CurrentAnimationChain = newAnimationChain;
+
+        if (this.AchxFilePath?.Extension == "atlas")
+        {
+            // all animations in an atlas must have exactly 1 frame:
+            HandleAddFrame();
+        }
+
+    }
+
+    private void HandleAddFrame()
+    {
+        var currentChain = CurrentAnimationChain;
+
+        ////////////////////////Early out////////////////////////
+        if(currentChain == null)
+        {
+            return;
+        }
+        ////////////////////////End Early Out/////////////////////
+
+        var frame = new AnimationFrameSave();
+
+        if(this.AchxFilePath?.Extension == "atlas")
+        {
+            // see if any files are already referenced
+        }
+
+        currentChain.AddAnimationFrame(frame);
 
     }
 

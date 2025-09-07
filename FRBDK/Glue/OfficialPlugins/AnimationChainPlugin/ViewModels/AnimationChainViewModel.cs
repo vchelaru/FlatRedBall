@@ -1,13 +1,15 @@
-﻿using FlatRedBall.Content.AnimationChain;
-using FlatRedBall.Glue.MVVM;
-using FlatRedBall.IO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.MVVM;
+using FlatRedBall.IO;
+using OfficialPlugins.AnimationChainPlugin.Managers;
 
 namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 {
@@ -32,13 +34,50 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public AnimationChainSave BackingModel { get; private set; }
 
-
         public ObservableCollection<AnimationFrameViewModel> VisibleChildren { get; set; } = 
             new ObservableCollection<AnimationFrameViewModel>();
 
         public Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
 
-        public override string ToString() => Name;
+        public AnimationChainViewModel()
+        {
+            VisibleChildren.CollectionChanged += HandleCollectionChanged;
+        }
+
+        private void HandleCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            var shouldSave = false;
+            // add any new .achx's
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                var newItems = e.NewItems;
+
+                if (newItems != null)
+                {
+                    foreach (AnimationFrameViewModel newItem in newItems)
+                    {
+                        // Is this already contained?
+                        if (this.BackingModel.Frames.Contains(newItem.BackingModel) == false)
+                        {
+                            var index = this.VisibleChildren.IndexOf(newItem);
+
+                            this.BackingModel.Frames.Insert(index, newItem.BackingModel);
+                        }
+                    }
+                }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                var oldItems = e.OldItems;
+                if (oldItems != null)
+                {
+                    foreach (AnimationFrameViewModel oldItem in oldItems)
+                    {
+                        this.BackingModel.Frames.Remove(oldItem.BackingModel);
+                    }
+                }
+            }
+        }
 
         public void SetFrom(AnimationChainSave animationChain, FilePath achxFilePath, int resolutionWidth, int resolutionHeight)
         {
@@ -89,5 +128,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
                 FrameUpdatedByUi?.Invoke(vm, e.PropertyName);
             }
         }
+
+        public override string ToString() => Name;
     }
 }

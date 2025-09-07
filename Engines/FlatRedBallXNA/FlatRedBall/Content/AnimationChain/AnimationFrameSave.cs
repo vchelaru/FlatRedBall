@@ -254,5 +254,10 @@ namespace FlatRedBall.Content.AnimationChain
 
             return toReturn;
         }
+
+        public override string ToString()
+        {
+            return $"{TextureName} {LeftCoordinate} {TopCoordinate} {RightCoordinate} {BottomCoordinate}";
+        }
     }
 }

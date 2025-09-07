@@ -11,6 +11,8 @@ using FlatRedBall.Math;
 namespace SpineAtlasLibrary;
 public class AtlasConverter
 {
+    const string emtpyFileName = "\"\"";
+
     public string SerializeAtlas(AnimationChainListSave animationChainListSave, string destinationLocation)
     {
         if (animationChainListSave.AnimationChains.Count == 0)
@@ -28,7 +30,14 @@ public class AtlasConverter
 
         var relativeTexture = FlatRedBall.IO.FileManager.MakeRelative(textureFull, destinationDirectory);
 
-        stringBuilder.AppendLine(relativeTexture);
+        if(string.IsNullOrEmpty(relativeTexture))
+        {
+            stringBuilder.AppendLine(emtpyFileName);
+        }
+        else
+        {
+            stringBuilder.AppendLine(relativeTexture);
+        }
 
         var size = GetImageSize(textureFull);
 
@@ -197,7 +206,9 @@ public class AtlasConverter
                     return null;
                 }
                 var frame = new AnimationFrameSave();
-                frame.TextureName = texture;
+                frame.TextureName = texture == emtpyFileName
+                    ? string.Empty
+                    : texture;
                 frame.LeftCoordinate = x;
                 frame.TopCoordinate = y;
                 frame.RightCoordinate = x + width;

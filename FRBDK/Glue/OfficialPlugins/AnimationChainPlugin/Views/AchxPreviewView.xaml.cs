@@ -552,11 +552,11 @@ namespace OfficialPlugins.ContentPreview.Views
 
             if(ViewModel.CurrentAnimationChain != null)
             {
-                //AnimationListBoxContextMenu.Items.Add(new MenuItem()
-                //{
-                //    Header = "Add Frame",
-                //    Command = ViewModel.AddAnimationCommand
-                //});
+                AnimationListBoxContextMenu.Items.Add(new MenuItem()
+                {
+                    Header = "Add Frame",
+                    Command = ViewModel.AddFrameCommand
+                });
             }
         }
 
