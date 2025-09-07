@@ -43,8 +43,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 ViewModel = new AchxViewModel(this);
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
 
-                View = new AchxPreviewView();
-                View.DataContext = ViewModel;
+                View = new AchxPreviewView(ViewModel);
                 View.Initialize(new SpritePlugin.Managers.CameraLogic(), new SpritePlugin.Managers.CameraLogic());
             }
         }
@@ -130,7 +129,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
         public void SaveCurrentAchx()
         {
             // now save it:
-            var animationChain = ViewModel.BackgingData;
+            var animationChain = ViewModel.BackingData;
             var filePath = ViewModel.AchxFilePath;
 
             GlueCommands.Self.FileCommands.IgnoreChangeOnFileUntil(
@@ -145,7 +144,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                         //var contents = converter.SerializeToAtlas(animationChain);
                         //System.IO.File.WriteAllText(filePath.FullPath, contents);
 
-                        var model = ViewModel.BackgingData;
+                        var model = ViewModel.BackingData;
 
                         var converter = new AtlasConverter();
 

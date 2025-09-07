@@ -9,6 +9,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace OfficialPlugins.AnimationChainPlugin.ViewModels;
 
@@ -114,7 +115,8 @@ internal class AchxViewModel : ViewModel
         }
     }
 
-    public AnimationChainListSave BackgingData { get; internal set; }
+    public AnimationChainListSave BackingData { get; internal set; }
+    public ICommand AddAnimationCommand { get; internal set; }
 
     public event Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
 
@@ -141,6 +143,17 @@ internal class AchxViewModel : ViewModel
 
         VisibleRoot = new ObservableCollection<AnimationChainViewModel>();
         VisibleRoot.CollectionChanged += HandleAnimationChainViewModelCollectionChanged;
+
+        AddAnimationCommand = new CommandBase(HandleAddAnimation);
+    }
+
+    private void HandleAddAnimation()
+    {
+        // temp - just add it to make sure it works:
+        var animationChainSave = new AnimationChainSave();
+        animationChainSave.Name = "NewAnimation";
+        AddAnimationChain(animationChainSave);
+
     }
 
     private void HandleAnimationChainViewModelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -156,11 +169,11 @@ internal class AchxViewModel : ViewModel
                 foreach (AnimationChainViewModel newItem in newItems)
                 {
                     // Is this already contained?
-                    if (this.BackgingData.AnimationChains.Contains(newItem.BackingModel) == false)
+                    if (this.BackingData.AnimationChains.Contains(newItem.BackingModel) == false)
                     {
                         var index = this.VisibleRoot.IndexOf(newItem);
 
-                        this.BackgingData.AnimationChains.Insert(index, newItem.BackingModel);
+                        this.BackingData.AnimationChains.Insert(index, newItem.BackingModel);
                         shouldSave = true;
                     }
                 }
@@ -173,7 +186,7 @@ internal class AchxViewModel : ViewModel
             {
                 foreach (AnimationChainViewModel oldItem in oldItems)
                 {
-                    this.BackgingData.AnimationChains.Remove(oldItem.BackingModel);
+                    this.BackingData.AnimationChains.Remove(oldItem.BackingModel);
                     shouldSave = true;
                 }
             }

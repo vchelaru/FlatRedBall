@@ -35,14 +35,22 @@
               <RowDefinition Height="5"></RowDefinition>
               <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
+
+            <!-- Main ListBox - eventually will get broken up into 2 list boxes -->
+
             <pt:TreeListBox x:Name="ListBox"
                 HierarchySource="{Binding VisibleRoot}"
                 ChildrenPath="VisibleChildren"
                 SelectedItem="{Binding SelectedItem}"
                 DisplayMemberPath="Text"
                 MouseDoubleClick="TreeListBox_MouseDoubleClick"
-                PreviewKeyDown="TreeListBox_PreviewKeyDown"
-                />
+                PreviewKeyDown="TreeListBox_PreviewKeyDown">
+
+              <pt:TreeListBox.ContextMenu>
+                <ContextMenu x:Name="AnimationListBoxContextMenu">
+                </ContextMenu>
+              </pt:TreeListBox.ContextMenu>
+            </pt:TreeListBox>
             <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"/>
             <ScrollViewer Grid.Row="2">
               <wpfdataui:DataUiGrid x:Name="PropertyGrid"></wpfdataui:DataUiGrid>

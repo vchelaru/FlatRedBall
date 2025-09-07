@@ -36,7 +36,7 @@ namespace OfficialPlugins.ContentPreview.Views
     /// <summary>
     /// Interaction logic for AchxPreviewView.xaml
     /// </summary>
-    public partial class AchxPreviewView : UserControl
+    partial class AchxPreviewView : UserControl
     {
         #region Fields/Properties
 
@@ -91,7 +91,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
         #endregion
 
-        public AchxPreviewView()
+        internal AchxPreviewView(AchxViewModel viewModel)
         {
             _hotkeyManager = new HotkeyManager();
 
@@ -107,11 +107,17 @@ namespace OfficialPlugins.ContentPreview.Views
 
             this.Loaded += HandleLoaded;
 
-            this.DataContextChanged += HandleDataContextChanged;
+            DataContext = viewModel;
+            ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
+            InitializeSettingsPropertyGrid();
+
+            ViewModel.Settings.PropertyChanged += HandleSettingsPropertyChanged;
+            ViewModel.FrameUpdatedByUi += HandleFrameUpdated;
             //MemberCategoryManager.SetMemberCategories(PropertyGrid);
 
             PropertyGridManager.Initialize(PropertyGrid);
 
+            RefreshTreeViewContextMenu();
         }
 
         #region Initialization
@@ -158,17 +164,6 @@ namespace OfficialPlugins.ContentPreview.Views
                 topWindowCameraLogic);
         }
 
-        private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (ViewModel != null)
-            {
-                ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
-                InitializeSettingsPropertyGrid();
-
-                ViewModel.Settings.PropertyChanged += HandleSettingsPropertyChanged;
-                ViewModel.FrameUpdatedByUi += HandleFrameUpdated;
-            }
-        }
 
         private void InitializeSettingsPropertyGrid()
         {
@@ -223,6 +218,8 @@ namespace OfficialPlugins.ContentPreview.Views
                     TopGumCanvas.ForceGumLayout();
                     RefreshTopWindowScrollBars();
 
+                    RefreshTreeViewContextMenu();
+
                     break;
                 case nameof(ViewModel.CurrentAnimationFrame):
                     _textureCoordinateRectangle.Visible = ViewModel.CurrentAnimationFrame != null;
@@ -235,6 +232,8 @@ namespace OfficialPlugins.ContentPreview.Views
 
                         //_textureCoordinateSelectionViewModel.SetFrom(ViewModel.CurrentAnimationFrame, TopWindowManager.MainSprite.Texture);
                     }
+                    RefreshTreeViewContextMenu();
+
                     break;
             }
             
@@ -316,13 +315,28 @@ namespace OfficialPlugins.ContentPreview.Views
 
                         animationChainListSave = converter.DeserializeAtlas(contents);
 
+                        if(animationChainListSave == null)
+                        {
+                            if(string.IsNullOrEmpty(contents))
+                            {
+                                // it's an empty atlas file
+                                animationChainListSave = new AnimationChainListSave();
+                                animationChainListSave.FileName = achxFilePath.FullPath;
+
+                            }
+                            else
+                            {
+                                GlueCommands.Self.PrintError("Error loading atlas file into .achx:\n" + contents);
+                            }
+                        }
+
                     }
                     else
                     {
                         animationChainListSave = AnimationChainListSave.FromFile(achxFilePath.FullPath);
                     }
                 }
-                ViewModel.BackgingData = animationChainListSave;
+                ViewModel.BackingData = animationChainListSave;
                 ViewModel.AchxFilePath = achxFilePath;
 
                 TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
@@ -489,7 +503,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
         #endregion
 
-        #region TreeView Events
+        #region TreeView Events/Logic
 
         private void TreeListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -525,6 +539,27 @@ namespace OfficialPlugins.ContentPreview.Views
 
             return originalSource as TreeListBoxItem;
         }
+
+        private void RefreshTreeViewContextMenu()
+        {
+            AnimationListBoxContextMenu.Items.Clear();
+
+            AnimationListBoxContextMenu.Items.Add(new MenuItem()
+            {
+                Header = "Add Animation",
+                Command = ViewModel.AddAnimationCommand
+            });
+
+            if(ViewModel.CurrentAnimationChain != null)
+            {
+                //AnimationListBoxContextMenu.Items.Add(new MenuItem()
+                //{
+                //    Header = "Add Frame",
+                //    Command = ViewModel.AddAnimationCommand
+                //});
+            }
+        }
+
         #endregion
 
         #region Scroll Bar Logic

@@ -19,11 +19,11 @@ public class AtlasConverter
         }
         var stringBuilder = new StringBuilder();
 
-        var firstFrame = animationChainListSave.AnimationChains.First(item => item.Frames.Count > 0).Frames[0];
+        var firstFrame = animationChainListSave.AnimationChains.FirstOrDefault(item => item.Frames.Count > 0)?.Frames.FirstOrDefault();
 
-        var texture = firstFrame.TextureName?.Replace("\\", "/");
+        var texture = firstFrame?.TextureName?.Replace("\\", "/");
 
-        var textureFull = Path.Combine(destinationLocation, texture);
+        string textureFull = texture != null ? Path.Combine(destinationLocation, texture) : string.Empty;
         var destinationDirectory = Path.GetDirectoryName(destinationLocation);
 
         var relativeTexture = FlatRedBall.IO.FileManager.MakeRelative(textureFull, destinationDirectory);
@@ -38,11 +38,21 @@ public class AtlasConverter
         {
             if (animationChain.Frames.Count == 0)
             {
+                // we still want to save the atlas so that the file can be saved
+                stringBuilder.AppendLine(animationChain.Name);
+                // Well inject some bogus animation frame:
+                WriteFrameCooordinates(
+                    stringBuilder,
+                    new AnimationFrameSave
+                    {
+                        RightCoordinate = 32,
+                        BottomCoordinate = 32
+                    });
                 continue;
             }
 
 
-            if (animationChain.Frames.Count == 1)
+            else if (animationChain.Frames.Count == 1)
             {
                 stringBuilder.AppendLine(animationChain.Name);
                 var frame = animationChain.Frames[0];
@@ -80,16 +90,29 @@ public class AtlasConverter
 
     static Size GetImageSize(string filename)
     {
-        using FileStream fileStream = File.OpenRead(filename);
-        using BinaryReader br = new BinaryReader(fileStream);
-        br.BaseStream.Position = 16;
-        byte[] widthbytes = new byte[sizeof(int)];
-        for (int i = 0; i < sizeof(int); i++) widthbytes[sizeof(int) - 1 - i] = br.ReadByte();
-        int width = BitConverter.ToInt32(widthbytes, 0);
-        byte[] heightbytes = new byte[sizeof(int)];
-        for (int i = 0; i < sizeof(int); i++) heightbytes[sizeof(int) - 1 - i] = br.ReadByte();
-        int height = BitConverter.ToInt32(heightbytes, 0);
-        return new Size(width, height);
+        if(System.IO.File.Exists(filename))
+        {
+            try
+            {
+
+                using FileStream fileStream = File.OpenRead(filename);
+                using BinaryReader br = new BinaryReader(fileStream);
+                br.BaseStream.Position = 16;
+                byte[] widthbytes = new byte[sizeof(int)];
+                for (int i = 0; i < sizeof(int); i++) widthbytes[sizeof(int) - 1 - i] = br.ReadByte();
+                int width = BitConverter.ToInt32(widthbytes, 0);
+                byte[] heightbytes = new byte[sizeof(int)];
+                for (int i = 0; i < sizeof(int); i++) heightbytes[sizeof(int) - 1 - i] = br.ReadByte();
+                int height = BitConverter.ToInt32(heightbytes, 0);
+                return new Size(width, height);
+            }
+            catch
+            {
+                // do nothing, let the default happen
+            }
+        }
+
+        return new Size(32, 32);
     }
 
     private void WriteFrameCooordinates(StringBuilder stringBuilder, AnimationFrameSave frame)
