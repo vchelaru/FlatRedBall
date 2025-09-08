@@ -162,6 +162,22 @@ namespace OfficialPlugins.ContentPreview.Views
             _textureCoordinateRectangle.Visible = false;
             _textureCoordinateSelectionViewModel.PropertyChanged += HandleTextureCoordinatePropertyChanged;
 
+
+            TopGumCanvas.Children.Add(_lineGridRuntime);
+            _lineGridRuntime.BindingContext = _textureCoordinateSelectionViewModel;
+            _lineGridRuntime.SetBinding(
+                nameof(_lineGridRuntime.Visible),
+                nameof(_textureCoordinateSelectionViewModel.SnapChecked));
+
+            _lineGridRuntime.SetBinding(
+                nameof(_lineGridRuntime.CellHeight),
+                nameof(_textureCoordinateSelectionViewModel.CellHeight));
+
+            _lineGridRuntime.SetBinding(
+                nameof(_lineGridRuntime.CellWidth),
+                nameof(_textureCoordinateSelectionViewModel.CellWidth));
+
+
             _mouseEditingLogic.Initialize(
                 TopGumCanvas,
                 _textureCoordinateSelectionViewModel,
@@ -261,30 +277,37 @@ namespace OfficialPlugins.ContentPreview.Views
         {
             var frame = ViewModel.CurrentAnimationFrame;
 
-            if(frame == null)
-            {
-                return;
-            }
 
             switch(e.PropertyName)
             {
                 case nameof(_textureCoordinateSelectionViewModel.LeftTexturePixel):
                 case nameof(_textureCoordinateSelectionViewModel.SelectedWidthPixels):
-                    var leftToSet = (float)_textureCoordinateSelectionViewModel.LeftTexturePixel;
-                    var rightToSet = leftToSet + (float)_textureCoordinateSelectionViewModel.SelectedWidthPixels;
-                    frame.LeftCoordinate = leftToSet;
-                    frame.RightCoordinate = rightToSet;
+                    if(frame != null)
+                    {
+                        var leftToSet = (float)_textureCoordinateSelectionViewModel.LeftTexturePixel;
+                        var rightToSet = leftToSet + (float)_textureCoordinateSelectionViewModel.SelectedWidthPixels;
+                        frame.LeftCoordinate = leftToSet;
+                        frame.RightCoordinate = rightToSet;
+                        PropertyGridManager.RefreshGrid();
+                    }
 
-                    PropertyGridManager.RefreshGrid();
                     break;
                 case nameof(_textureCoordinateSelectionViewModel.TopTexturePixel):
                 case nameof(_textureCoordinateSelectionViewModel.SelectedHeightPixels):
-                    var topToSet = (float)_textureCoordinateSelectionViewModel.TopTexturePixel;
-                    var bottomToSet = topToSet + (float)_textureCoordinateSelectionViewModel.SelectedHeightPixels; 
-                    frame.TopCoordinate = topToSet;
-                    frame.BottomCoordinate = bottomToSet;
+                    if(frame != null)
+                    {
+                        var topToSet = (float)_textureCoordinateSelectionViewModel.TopTexturePixel;
+                        var bottomToSet = topToSet + (float)_textureCoordinateSelectionViewModel.SelectedHeightPixels; 
+                        frame.TopCoordinate = topToSet;
+                        frame.BottomCoordinate = bottomToSet;
 
-                    PropertyGridManager.RefreshGrid();
+                        PropertyGridManager.RefreshGrid();
+                    }
+                    break;
+                case nameof(_textureCoordinateSelectionViewModel.CellWidth):
+                case nameof(_textureCoordinateSelectionViewModel.CellHeight):
+                case nameof(_textureCoordinateSelectionViewModel.SnapChecked):
+                    TopGumCanvas.InvalidateVisual();
                     break;
             }
         }
