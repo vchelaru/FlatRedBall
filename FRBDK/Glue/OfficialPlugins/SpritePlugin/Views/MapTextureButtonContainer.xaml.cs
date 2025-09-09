@@ -119,8 +119,8 @@ namespace OfficialPlugins.SpritePlugin.Views
             float defaultWidth = 256;
             float defaultHeight = 256;
 
-            viewModel.TextureHeight = defaultHeight;
-            viewModel.TextureWidth = defaultWidth;
+            viewModel.TextureHeight = (int)defaultHeight;
+            viewModel.TextureWidth = (int)defaultWidth;
 
             var right = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
                 nameof(Sprite.RightTexturePixel)) as float? ?? defaultWidth;

@@ -69,8 +69,16 @@ public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewMod
     public double WindowWidth { get; set; }
     public double WindowHeight { get; set; }
 
-    public double TextureWidth { get; set; }
-    public double TextureHeight { get; set; }
+    public float TextureWidth
+    {
+        get => Get<float>();
+        set => Set(value);
+    }
+    public float TextureHeight
+    {
+        get => Get<float>();
+        set => Set(value);
+    }
 
     public bool SnapChecked
     {

@@ -88,12 +88,16 @@ namespace OfficialPlugins.ContentPreview.Views
         MouseEditingLogic _mouseEditingLogic;
         TextureCoordinateSelectionViewModel _textureCoordinateSelectionViewModel;
         TextureCoordinateRectangle _textureCoordinateRectangle;
+
         LineGridRuntime _lineGridRuntime;
+        RoundedRectangleRuntime _spriteOutlineRectangle;
 
         #endregion
 
         internal AchxPreviewView(AchxViewModel viewModel,
-            TextureCoordinateSelectionViewModel textureCoordinateSelectionViewModel)
+            TextureCoordinateSelectionViewModel textureCoordinateSelectionViewModel,
+            CameraLogic topWindowCameraLogic,
+            CameraLogic bottomWindowCameraLogic)
         {
             _hotkeyManager = new HotkeyManager();
 
@@ -123,12 +127,7 @@ namespace OfficialPlugins.ContentPreview.Views
             PropertyGridManager.Initialize(PropertyGrid);
 
             RefreshTreeViewContextMenu();
-        }
 
-        #region Initialization
-
-        public void Initialize(CameraLogic topWindowCameraLogic, CameraLogic bottomWindowCameraLogic)
-        {
             this.TopWindowCameraLogic = topWindowCameraLogic;
             this.BottomWindowCameraLogic = bottomWindowCameraLogic;
 
@@ -177,6 +176,33 @@ namespace OfficialPlugins.ContentPreview.Views
                 nameof(_lineGridRuntime.CellWidth),
                 nameof(_textureCoordinateSelectionViewModel.CellWidth));
 
+            _lineGridRuntime.SetBinding(
+                nameof(_lineGridRuntime.Width),
+                nameof(_textureCoordinateSelectionViewModel.TextureWidth));
+
+            _lineGridRuntime.SetBinding(
+                nameof(_lineGridRuntime.Height),
+                nameof(_textureCoordinateSelectionViewModel.TextureHeight));
+
+            _spriteOutlineRectangle = new RoundedRectangleRuntime();
+            TopGumCanvas.Children.Add(_spriteOutlineRectangle);
+
+            _spriteOutlineRectangle.BindingContext = _textureCoordinateSelectionViewModel;
+            _spriteOutlineRectangle.IsFilled = false;
+            _spriteOutlineRectangle.StrokeWidth = 1;
+            _spriteOutlineRectangle.CornerRadius = 0;
+            _spriteOutlineRectangle.SetBinding(
+                nameof(_spriteOutlineRectangle.Visible),
+                nameof(_textureCoordinateSelectionViewModel.SnapChecked));
+
+            _spriteOutlineRectangle.SetBinding(
+                nameof(_spriteOutlineRectangle.Width),
+                nameof(_textureCoordinateSelectionViewModel.TextureWidth));
+
+
+            _spriteOutlineRectangle.SetBinding(
+                nameof(_spriteOutlineRectangle.Height),
+                nameof(_textureCoordinateSelectionViewModel.TextureHeight));
 
             _mouseEditingLogic.Initialize(
                 TopGumCanvas,
@@ -185,6 +211,7 @@ namespace OfficialPlugins.ContentPreview.Views
                 topWindowCameraLogic);
         }
 
+        #region Initialization
 
         private void InitializeSettingsPropertyGrid()
         {
@@ -222,7 +249,6 @@ namespace OfficialPlugins.ContentPreview.Views
                     // depends on the Texture to decide where to position its bounds
                     TopWindowManager.RefreshTexture(achxFilePath, ViewModel.CurrentAnimationChain);
 
-                    
                     TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
 
                     if (ViewModel.CurrentAnimationChain != null)
@@ -241,6 +267,10 @@ namespace OfficialPlugins.ContentPreview.Views
 
                     RefreshTreeViewContextMenu();
 
+                    _textureCoordinateSelectionViewModel.TextureWidth = TopWindowManager.MainSprite.Texture?.Width ?? 0;
+                    _textureCoordinateSelectionViewModel.TextureHeight = TopWindowManager.MainSprite.Texture?.Height ?? 0;
+
+
                     break;
                 case nameof(ViewModel.CurrentAnimationFrame):
                     _textureCoordinateRectangle.Visible = ViewModel.CurrentAnimationFrame != null;
@@ -249,9 +279,6 @@ namespace OfficialPlugins.ContentPreview.Views
                         _textureCoordinateSelectionViewModel.TextureWidth = TopWindowManager.MainSprite.Texture?.Width ?? 0;
                         _textureCoordinateSelectionViewModel.TextureHeight = TopWindowManager.MainSprite.Texture?.Height ?? 0;
                         UpdateTextureCoordinateViewModelToCurrentFrame();
-
-
-                        //_textureCoordinateSelectionViewModel.SetFrom(ViewModel.CurrentAnimationFrame, TopWindowManager.MainSprite.Texture);
                     }
                     RefreshTreeViewContextMenu();
 

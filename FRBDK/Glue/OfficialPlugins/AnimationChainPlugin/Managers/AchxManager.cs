@@ -46,8 +46,8 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 ViewModel = new AchxViewModel(this, textureCoordinateSelectionViewModel);
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
 
-                View = new AchxPreviewView(ViewModel, textureCoordinateSelectionViewModel);
-                View.Initialize(new SpritePlugin.Managers.CameraLogic(), new SpritePlugin.Managers.CameraLogic());
+                View = new AchxPreviewView(ViewModel, textureCoordinateSelectionViewModel,
+                    new SpritePlugin.Managers.CameraLogic(), new SpritePlugin.Managers.CameraLogic());
             }
         }
 

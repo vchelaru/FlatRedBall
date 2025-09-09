@@ -39,6 +39,8 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
         SettingsViewModel settingsViewModel;
 
+        public SKBitmap? MainTexture => MainSprite?.Texture;
+
         #endregion
 
 
