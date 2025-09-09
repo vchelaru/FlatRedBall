@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using FlatRedBall.Glue.Services;
 using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.ViewModels;
 using OfficialPlugins.Common.ViewModels;
@@ -47,7 +49,10 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
 
                 View = new AchxPreviewView(ViewModel, textureCoordinateSelectionViewModel,
-                    new SpritePlugin.Managers.CameraLogic(), new SpritePlugin.Managers.CameraLogic());
+                    new SpritePlugin.Managers.CameraLogic(), new SpritePlugin.Managers.CameraLogic(),
+                    Builder.Get<IDialogCommands>()
+
+                    );
             }
         }
 
