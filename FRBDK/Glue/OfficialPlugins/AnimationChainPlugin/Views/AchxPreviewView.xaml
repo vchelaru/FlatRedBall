@@ -18,8 +18,8 @@
     <StackPanel Orientation="Horizontal" Grid.Column="0">
       <Menu>
         <MenuItem Header="...">
-          <MenuItem Header="Open in External AnimationEditor"/>
-          <MenuItem Header="Export"/>
+          <MenuItem Header="Open in External AnimationEditor" Click="OpenInAnimationEditorButton_Click"/>
+          <MenuItem Header="Export" Click="ExportClicked"/>
         </MenuItem>
         
       </Menu>

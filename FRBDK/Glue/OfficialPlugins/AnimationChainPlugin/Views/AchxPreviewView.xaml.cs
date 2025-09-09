@@ -16,6 +16,7 @@ using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.Controls.DataUi;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.Managers;
 using OfficialPlugins.AnimationChainPlugin.ViewModels;
@@ -86,6 +87,7 @@ namespace OfficialPlugins.ContentPreview.Views
         };
 
         MouseEditingLogic _mouseEditingLogic;
+        private readonly IDialogCommands _dialogCommands;
         TextureCoordinateSelectionViewModel _textureCoordinateSelectionViewModel;
         TextureCoordinateRectangle _textureCoordinateRectangle;
 
@@ -97,11 +99,14 @@ namespace OfficialPlugins.ContentPreview.Views
         internal AchxPreviewView(AchxViewModel viewModel,
             TextureCoordinateSelectionViewModel textureCoordinateSelectionViewModel,
             CameraLogic topWindowCameraLogic,
-            CameraLogic bottomWindowCameraLogic)
+            CameraLogic bottomWindowCameraLogic,
+            IDialogCommands dialogCommands)
         {
             _hotkeyManager = new HotkeyManager();
 
             _mouseEditingLogic = new MouseEditingLogic();
+
+            _dialogCommands = dialogCommands;
 
 
             _textureCoordinateSelectionViewModel = textureCoordinateSelectionViewModel;
@@ -679,6 +684,12 @@ namespace OfficialPlugins.ContentPreview.Views
             {
                 GlueCommands.Self.FileCommands.OpenReferencedFileInDefaultProgram(rfs);
             }
+        }
+
+        private void ExportClicked(object sender, RoutedEventArgs e)
+        {
+            var filter ="AnimationEditor (.achx)|*.achx|Spine Atlas|*.atlas";
+            var result = _dialogCommands.ShowSaveDialog(filter);
         }
     }
 }

@@ -1231,6 +1231,29 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
+        #region General IO
+
+        public (DialogResult DialogResult, FilePath? FilePath) ShowSaveDialog(string filter)
+        {
+            SaveFileDialog fileDialog = new SaveFileDialog();
+            fileDialog.Filter = filter;
+            DialogResult result = fileDialog.ShowDialog();
+
+            FilePath? filePath = null;
+
+            if(result == DialogResult.OK)
+            {
+                filePath = fileDialog.FileName;
+            }
+
+            return (result, filePath);
+
+        }
+
+
+
+        #endregion
+
         #region State Categories
 
         public async void ShowAddNewCategoryDialog()
