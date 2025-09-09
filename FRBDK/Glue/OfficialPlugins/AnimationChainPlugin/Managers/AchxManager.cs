@@ -106,7 +106,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
             if (Tab == null)
             {
-                Tab = Plugin.CreateTab(view, "ACHX Preview", TabLocation.Center);
+                Tab = Plugin.CreateTab(view, "Animation Editor", TabLocation.Center);
             }
 
             Tab.Show();
