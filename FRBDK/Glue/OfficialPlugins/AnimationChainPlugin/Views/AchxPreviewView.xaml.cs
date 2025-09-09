@@ -360,44 +360,9 @@ partial class AchxPreviewView : UserControl
     {
         GlueCommands.Self.DoOnUiThread(() =>
         {
-            var previouslySelected = ViewModel.CurrentAnimationChain;
-
             achxFilePath = achxFilePath ?? this.AchxFilePath;
 
-            AnimationChainListSave animationChainListSave = null;
-            if (achxFilePath?.Exists() == true)
-            {
-                if(achxFilePath.Extension == "atlas")
-                {
-                    var converter = new AtlasConverter();
-
-                    var contents = System.IO.File.ReadAllText(achxFilePath.FullPath);
-
-                    animationChainListSave = converter.DeserializeAtlas(contents);
-
-                    if(animationChainListSave == null)
-                    {
-                        if(string.IsNullOrEmpty(contents))
-                        {
-                            // it's an empty atlas file
-                            animationChainListSave = new AnimationChainListSave();
-                            animationChainListSave.FileName = achxFilePath.FullPath;
-
-                        }
-                        else
-                        {
-                            GlueCommands.Self.PrintError("Error loading atlas file into .achx:\n" + contents);
-                        }
-                    }
-
-                }
-                else
-                {
-                    animationChainListSave = AnimationChainListSave.FromFile(achxFilePath.FullPath);
-                }
-            }
-            ViewModel.BackingData = animationChainListSave;
-            ViewModel.AchxFilePath = achxFilePath;
+            ViewModel.LoadAchx(achxFilePath);
 
             TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
             
@@ -408,15 +373,10 @@ partial class AchxPreviewView : UserControl
                 BottomWindowManager.ForceRefreshMainAnimationSpriteTexture(TopWindowManager.TextureFilePath);
             }
 
-            ViewModel.SetFrom(animationChainListSave, achxFilePath, 
+            ViewModel.SetFrom(ViewModel.BackingData, achxFilePath, 
                 TopWindowManager.MainSprite.Texture?.Width??0,
                 TopWindowManager.MainSprite.Texture?.Height??0);
 
-            if(preserveSelection && previouslySelected != null)
-            {
-                ViewModel.CurrentAnimationChain = ViewModel.VisibleRoot
-                    .FirstOrDefault(item => item.Name == previouslySelected.Name);
-            }
 
         });
     }

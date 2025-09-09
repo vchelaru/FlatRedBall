@@ -12,6 +12,7 @@ internal class HotkeyManager
     public void HandleTreeViewKey(System.Windows.Input.KeyEventArgs e, AchxViewModel viewModel)
     {
         var ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+        var altDown = (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt;
 
         Key key = (e.Key == Key.System ? e.SystemKey : e.Key);
 
@@ -31,6 +32,16 @@ internal class HotkeyManager
         else if(key == Key.Delete)
         {
             viewModel.HandleDelete();
+            e.Handled = true;
+        }
+        else if(altDown && key == Key.Up)
+        {
+            viewModel.MoveSelectionUp();
+            e.Handled = true;
+        }
+        else if(altDown && key == Key.Down)
+        {
+            viewModel.MoveSelectionDown();
             e.Handled = true;
         }
     }

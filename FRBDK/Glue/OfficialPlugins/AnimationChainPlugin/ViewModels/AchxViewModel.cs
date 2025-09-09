@@ -3,12 +3,14 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Input;
+using FlatRedBall.AnimationEditorForms.Data;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.IO;
+using Newtonsoft.Json;
 using OfficialPlugins.AnimationChainPlugin.Managers;
 using OfficialPlugins.Common.ViewModels;
 using SpineAtlasLibrary;
@@ -63,6 +65,7 @@ internal class AchxViewModel : ViewModel
     [DependsOn(nameof(SelectedItem))]
     public AnimationFrameViewModel SelectedAnimationFrame => 
         SelectedItem as AnimationFrameViewModel;
+
 
     [DependsOn(nameof(SelectedItem))]
     public ShapeViewModel SelectedShape =>
@@ -225,7 +228,7 @@ internal class AchxViewModel : ViewModel
 
     }
 
-    private void HandleAnimationChainViewModelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    private void HandleAnimationChainViewModelCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         var shouldSave = false;
         // add any new .achx's
@@ -260,8 +263,17 @@ internal class AchxViewModel : ViewModel
                 }
             }
         }
+        else if(e.Action == NotifyCollectionChangedAction.Move)
+        {
+            var oldIndex = e.OldStartingIndex;
+            var newIndex = e.NewStartingIndex;
+            var itemToMove = this.BackingData.AnimationChains[oldIndex];
+            this.BackingData.AnimationChains.RemoveAt(oldIndex);
+            this.BackingData.AnimationChains.Insert(newIndex, itemToMove);
+            shouldSave = true;
+        }
 
-        if(shouldSave)
+        if (shouldSave)
         {
             _achxManager.SaveCurrentAchx();
         }
@@ -395,6 +407,68 @@ internal class AchxViewModel : ViewModel
         }
     }
 
+    public void LoadAchx(FilePath filePath)
+    {
+        var previouslySelected = CurrentAnimationChain;
+
+        AnimationChainListSave animationChainListSave = null;
+        if (filePath.Exists() == true)
+        {
+            if (filePath.Extension == "atlas")
+            {
+                var converter = new AtlasConverter();
+
+                var contents = System.IO.File.ReadAllText(filePath.FullPath);
+
+                animationChainListSave = converter.DeserializeAtlas(contents);
+
+                if (animationChainListSave == null)
+                {
+                    if (string.IsNullOrEmpty(contents))
+                    {
+                        // it's an empty atlas file
+                        animationChainListSave = new AnimationChainListSave();
+                        animationChainListSave.FileName = filePath.FullPath;
+
+                    }
+                    else
+                    {
+                        GlueCommands.Self.PrintError("Error loading atlas file into .achx:\n" + contents);
+                    }
+                }
+
+            }
+            else
+            {
+                animationChainListSave = AnimationChainListSave.FromFile(filePath.FullPath);
+            }
+
+            FilePath aesjFile = filePath.RemoveExtension() + ".aesj";
+
+            if(aesjFile.Exists())
+            {
+                try
+                {
+                    var allText = FileManager.FromFileText(aesjFile.FullPath);
+
+                    var deserialized = JsonConvert.DeserializeObject<AESettingsSave>(allText);
+
+                    _textureCoordinateSelectionViewModel.SnapChecked = deserialized.SnapToGrid;
+                    _textureCoordinateSelectionViewModel.CellHeight = (ushort)deserialized.GridSize;
+                    _textureCoordinateSelectionViewModel.CellWidth = (ushort)deserialized.GridSize;
+                }
+                catch
+                {
+                    // no biggie
+                }
+            }
+        }
+
+
+        BackingData = animationChainListSave;
+        AchxFilePath = filePath;
+    }
+
     public void SaveCurrentAchx(FilePath? forcedFilePath = null)
     {
         // now save it:
@@ -429,11 +503,70 @@ internal class AchxViewModel : ViewModel
                 {
                     animationChain.Save(filePath.FullPath);
                 }
+
+                var companionFile = filePath.RemoveExtension() + ".aesj";
+
+                var properties = new AESettingsSave()
+                {
+                    SnapToGrid = this.IsSnappingChecked,
+                    GridSize = this.SnappingSize,
+                };
+
+                var serialized = JsonConvert.SerializeObject(properties, Formatting.Indented);
+                _fileCommands.SaveIfDiffers(companionFile, serialized, ignoreNextChange: true);
             });
         }
         catch (Exception ex)
         {
             GlueCommands.Self.PrintError(ex.ToString());
+        }
+    }
+
+    internal void MoveSelectionUp()
+    {
+
+        if(CurrentAnimationFrame != null)
+        {
+            var parent = CurrentAnimationFrame.Parent;
+            var index = parent.VisibleChildren.IndexOf(CurrentAnimationFrame);
+
+            if(index > 0)
+            {
+                parent.VisibleChildren.Move(index, index - 1);
+                CurrentAnimationFrame = parent.VisibleChildren[index - 1];
+            }
+        }
+        else if(CurrentAnimationChain != null)
+        {
+            var index = VisibleRoot.IndexOf(CurrentAnimationChain);
+            if(index > 0)
+            {
+                VisibleRoot.Move(index, index - 1);
+                CurrentAnimationChain = VisibleRoot[index - 1];
+            }
+        }
+    }
+    internal void MoveSelectionDown()
+    {
+        if (CurrentAnimationFrame != null)
+        {
+            var parent = CurrentAnimationFrame.Parent;
+
+            var index = parent.VisibleChildren.IndexOf(CurrentAnimationFrame);
+            if (index < parent.VisibleChildren.Count - 1)
+            {
+                parent.VisibleChildren.Move(index, index + 1);
+                CurrentAnimationFrame = parent.VisibleChildren[index + 1];
+            }
+        }
+        else if (CurrentAnimationChain != null)
+        {
+            var index = VisibleRoot.IndexOf(CurrentAnimationChain);
+            if (index < VisibleRoot.Count - 1)
+            {
+                VisibleRoot.Move(index, index + 1);
+                CurrentAnimationChain = VisibleRoot[index + 1];
+            }
         }
     }
 }
