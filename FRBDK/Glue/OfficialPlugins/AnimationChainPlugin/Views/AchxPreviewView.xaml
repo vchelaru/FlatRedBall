@@ -23,8 +23,6 @@
         </MenuItem>
         
       </Menu>
-      <Label Content="This is the ACHX Preview window. To edit the .achx: "/>
-      <Button x:Name="OpenInAnimationEditorButton" Content="Click Here" Click="OpenInAnimationEditorButton_Click"/>
     </StackPanel>
     <Grid Grid.Row="1">
       <Grid.ColumnDefinitions>

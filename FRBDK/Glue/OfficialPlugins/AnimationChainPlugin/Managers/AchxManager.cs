@@ -45,7 +45,9 @@ internal class AchxManager
         {
             TextureCoordinateSelectionViewModel textureCoordinateSelectionViewModel =
                 new TextureCoordinateSelectionViewModel();
-            ViewModel = new AchxViewModel(this, textureCoordinateSelectionViewModel);
+            ViewModel = new AchxViewModel(this, textureCoordinateSelectionViewModel,
+                Builder.Get<IDialogCommands>(),
+                Builder.Get<IFileCommands>());
             ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
 
             View = new AchxPreviewView(ViewModel, textureCoordinateSelectionViewModel,
@@ -136,44 +138,7 @@ internal class AchxManager
 
     public void SaveCurrentAchx()
     {
-        // now save it:
-        var animationChain = ViewModel.BackingData;
-        var filePath = ViewModel.AchxFilePath;
-
-        GlueCommands.Self.FileCommands.IgnoreChangeOnFileUntil(
-            filePath, DateTimeOffset.Now.AddSeconds(2));
-        try
-        {
-            GlueCommands.Self.TryMultipleTimes(() =>
-            {
-                if (filePath.Extension == "atlas")
-                {
-                    //var converter = new AtlasConverter();
-                    //var contents = converter.SerializeToAtlas(animationChain);
-                    //System.IO.File.WriteAllText(filePath.FullPath, contents);
-
-                    var model = ViewModel.BackingData;
-
-                    var converter = new AtlasConverter();
-
-                    var result = converter.SerializeAtlas(model, filePath.GetDirectoryContainingThis().FullPath);
-
-                    var fileName = ViewModel.AchxFilePath.RemoveExtension() + ".atlas";
-
-                    GlueCommands.Self.FileCommands.SaveIfDiffers(fileName, result, ignoreNextChange: true);
-
-
-                }
-                else
-                {
-                    animationChain.Save(filePath.FullPath);
-                }
-            });
-        }
-        catch (Exception ex)
-        {
-            GlueCommands.Self.PrintError(ex.ToString());
-        }
+        ViewModel.SaveCurrentAchx();
     }
 
 }

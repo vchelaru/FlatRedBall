@@ -1,15 +1,17 @@
-﻿using FlatRedBall.Content.AnimationChain;
-using FlatRedBall.Glue.MVVM;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using FlatRedBall.Graphics.Animation;
-using FlatRedBall.IO;
-using OfficialPlugins.AnimationChainPlugin.Managers;
-using OfficialPlugins.Common.ViewModels;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Input;
+using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using FlatRedBall.Graphics.Animation;
+using FlatRedBall.IO;
+using OfficialPlugins.AnimationChainPlugin.Managers;
+using OfficialPlugins.Common.ViewModels;
+using SpineAtlasLibrary;
 
 namespace OfficialPlugins.AnimationChainPlugin.ViewModels;
 
@@ -22,6 +24,8 @@ internal class AchxViewModel : ViewModel
 
     private readonly AchxManager _achxManager;
     private readonly TextureCoordinateSelectionViewModel _textureCoordinateSelectionViewModel;
+    private readonly IFileCommands _fileCommands;
+    private readonly IDialogCommands _dialogCommands;
 
     public SettingsViewModel Settings { get => Get<SettingsViewModel>(); private set => Set(value); }
 
@@ -158,10 +162,15 @@ internal class AchxViewModel : ViewModel
     #endregion
 
     public AchxViewModel(AchxManager achxManager,
-        TextureCoordinateSelectionViewModel textureCoordinateSelectionViewModel)
+        TextureCoordinateSelectionViewModel textureCoordinateSelectionViewModel,
+        IDialogCommands dialogCommands,
+        IFileCommands fileCommands)
     {
         _achxManager = achxManager;
         _textureCoordinateSelectionViewModel = textureCoordinateSelectionViewModel;
+        _fileCommands = fileCommands;
+
+        _dialogCommands = dialogCommands;
 
         Settings = new SettingsViewModel();
         TopWindowZoom = new ZoomViewModel();
@@ -370,6 +379,61 @@ internal class AchxViewModel : ViewModel
 
             CurrentAnimationChain = null;
             _achxManager.SaveCurrentAchx();
+        }
+    }
+
+    internal void HandleExportClicked()
+    {
+        var filter = "AnimationEditor (.achx)|*.achx|Spine Atlas|*.atlas";
+        var result = _dialogCommands.ShowSaveDialog(filter);
+
+        if(result.DialogResult == System.Windows.Forms.DialogResult.OK)
+        {
+            var filePath = result.FilePath;
+
+            SaveCurrentAchx(filePath);
+        }
+    }
+
+    public void SaveCurrentAchx(FilePath? forcedFilePath = null)
+    {
+        // now save it:
+        var animationChain = BackingData;
+        var filePath = forcedFilePath ?? AchxFilePath;
+
+        _fileCommands.IgnoreChangeOnFileUntil(
+            filePath, DateTimeOffset.Now.AddSeconds(2));
+        try
+        {
+            GlueCommands.Self.TryMultipleTimes(() =>
+            {
+                if (filePath.Extension == "atlas")
+                {
+                    //var converter = new AtlasConverter();
+                    //var contents = converter.SerializeToAtlas(animationChain);
+                    //System.IO.File.WriteAllText(filePath.FullPath, contents);
+
+                    var model = BackingData;
+
+                    var converter = new AtlasConverter();
+
+                    var result = converter.SerializeAtlas(model, filePath.GetDirectoryContainingThis().FullPath);
+
+                    var fileName = AchxFilePath.RemoveExtension() + ".atlas";
+
+                    _fileCommands.SaveIfDiffers(filePath, result, ignoreNextChange: true);
+
+
+                }
+                else
+                {
+                    animationChain.Save(filePath.FullPath);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            GlueCommands.Self.PrintError(ex.ToString());
         }
     }
 }

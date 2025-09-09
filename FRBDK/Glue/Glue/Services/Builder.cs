@@ -29,6 +29,7 @@ public class Builder
         builder.Services.AddSingleton<FileReferenceManager>(FileReferenceManager.Self);
         builder.Services.AddSingleton<DragDropManager>(DragDropManager.Self);
         builder.Services.AddSingleton<IDialogCommands>(GlueCommands.Self.DialogCommands);
+        builder.Services.AddSingleton<IFileCommands>(GlueCommands.Self.FileCommands);
 
         App = builder.Build();
 

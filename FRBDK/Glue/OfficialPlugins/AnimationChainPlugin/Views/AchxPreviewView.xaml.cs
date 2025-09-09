@@ -688,7 +688,6 @@ partial class AchxPreviewView : UserControl
 
     private void ExportClicked(object sender, RoutedEventArgs e)
     {
-        var filter ="AnimationEditor (.achx)|*.achx|Spine Atlas|*.atlas";
-        var result = _dialogCommands.ShowSaveDialog(filter);
+        ViewModel.HandleExportClicked();
     }
 }
