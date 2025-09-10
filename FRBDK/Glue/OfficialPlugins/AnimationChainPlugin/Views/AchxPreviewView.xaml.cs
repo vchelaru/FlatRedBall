@@ -129,7 +129,8 @@ partial class AchxPreviewView : UserControl
         ViewModel.FrameUpdatedByUi += HandleFrameUpdated;
         //MemberCategoryManager.SetMemberCategories(PropertyGrid);
 
-        PropertyGridManager.Initialize(PropertyGrid);
+        var memberCategoryManager = new MemberCategoryManager(new NameVerifier(), _dialogCommands);
+        PropertyGridManager.Initialize(PropertyGrid, memberCategoryManager);
 
         RefreshTreeViewContextMenu();
 

@@ -86,7 +86,7 @@ internal class AchxManager
                 else if(ViewModel.CurrentAnimationChain != null)
                 {
                     View.PropertyGrid.Visibility = System.Windows.Visibility.Visible;
-                    PropertyGridManager.ShowInPropertyGrid(ViewModel.CurrentAnimationChain);
+                    PropertyGridManager.ShowInPropertyGrid(ViewModel.CurrentAnimationChain, ViewModel);
                 }
                 break;
         }

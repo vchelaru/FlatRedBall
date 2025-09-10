@@ -11,30 +11,32 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
     public static class PropertyGridManager
     {
         static DataUiGrid PropertyGrid;
+        private static MemberCategoryManager _memberCategoryManager;
 
-        internal static void Initialize(DataUiGrid propertyGrid)
+        internal static void Initialize(DataUiGrid propertyGrid, MemberCategoryManager memberCategoryManager)
         {
             PropertyGrid = propertyGrid;
+            _memberCategoryManager = memberCategoryManager;
         }
 
-        internal static void ShowInPropertyGrid(AnimationChainViewModel selectedAnimationChain)
+        internal static void ShowInPropertyGrid(AnimationChainViewModel selectedAnimationChain, AchxViewModel allAnimations)
         {
             PropertyGrid.Instance = selectedAnimationChain;
-            MemberCategoryManager.SetMemberCategories(PropertyGrid, selectedAnimationChain);
+            _memberCategoryManager.SetMemberCategories(PropertyGrid, selectedAnimationChain, allAnimations);
             PropertyGrid.Refresh();
         }
 
         internal static void ShowInPropertyGrid(AnimationFrameViewModel selectedAnimationFrame)
         {
             PropertyGrid.Instance = selectedAnimationFrame;
-            MemberCategoryManager.SetMemberCategories(PropertyGrid, selectedAnimationFrame);
+            _memberCategoryManager.SetMemberCategories(PropertyGrid, selectedAnimationFrame);
             PropertyGrid.Refresh();
         }
 
         internal static void ShowInPropertyGrid(CircleViewModel circle)
         {
             PropertyGrid.Instance = circle;
-            MemberCategoryManager.SetMemberCategories(PropertyGrid, circle);
+            _memberCategoryManager.SetMemberCategories(PropertyGrid, circle);
             PropertyGrid.Refresh();
         }
 
