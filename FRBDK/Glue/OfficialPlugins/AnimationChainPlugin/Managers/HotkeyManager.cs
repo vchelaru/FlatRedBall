@@ -26,7 +26,8 @@ internal class HotkeyManager
         // Check if CTRL+V was pressed
         else if (ctrlDown && key == Key.V)
         {
-            AnimationChainCopyPasteManager.HandlePaste(viewModel);
+            viewModel.HandlePaste(AnimationChainCopyPasteManager.CopiedXml, AnimationChainCopyPasteManager.CopiedType);
+            //AnimationChainCopyPasteManager.HandlePaste(viewModel);
             e.Handled = true;
         }
         else if(key == Key.Delete)

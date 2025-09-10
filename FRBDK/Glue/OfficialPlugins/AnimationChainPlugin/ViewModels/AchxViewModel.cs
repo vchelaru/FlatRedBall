@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Input;
 using FlatRedBall.AnimationEditorForms.Data;
 using FlatRedBall.Content.AnimationChain;
@@ -10,6 +11,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.IO;
+using FlatRedBall.Utilities;
 using Newtonsoft.Json;
 using OfficialPlugins.AnimationChainPlugin.Managers;
 using OfficialPlugins.Common.ViewModels;
@@ -407,6 +409,58 @@ internal class AchxViewModel : ViewModel
         }
     }
 
+    public void HandlePaste(string copiedXml, CopiedType copiedType)
+    {
+        /////////////early out/////////////////////
+        if (string.IsNullOrEmpty(copiedXml))
+        {
+            return;
+        }
+        //////////end early out////////////////////
+
+        switch (copiedType)
+        {
+            case CopiedType.AnimationChains:
+                {
+                    var deserialized = FileManager.XmlDeserializeFromString<AnimationChainSave>(copiedXml);
+
+                    if (deserialized != null)
+                    {
+                        while (VisibleRoot.Any(item => item.Name == deserialized.Name))
+                        {
+                            deserialized.Name = StringFunctions.IncrementNumberAtEnd(deserialized.Name);
+                        }
+
+                        var newVm = AddAnimationChain(deserialized);
+
+                        if (CurrentAnimationFrame != null)
+                        {
+                            CurrentAnimationFrame = null;
+                        }
+                        CurrentAnimationChain = newVm;
+                    }
+
+                }
+                break;
+            case CopiedType.AnimationFrames:
+                {
+                    var chainVmToAddTo = CurrentAnimationChain;
+                    if (chainVmToAddTo != null)
+                    {
+                        var deserialized = FileManager.XmlDeserializeFromString<AnimationFrameSave>(copiedXml);
+                        // add it to the backing model first, so that when it's added to the VM, the save picks up the add:
+                        chainVmToAddTo.BackingModel.Frames.Add(deserialized);
+
+                        var newFrame = chainVmToAddTo.AddAnimationFrame(deserialized);
+                        CurrentAnimationFrame = newFrame;
+                    }
+                }
+
+                break;
+        }
+
+    }
+
     public void LoadAchx(FilePath filePath)
     {
         var previouslySelected = CurrentAnimationChain;
@@ -546,6 +600,7 @@ internal class AchxViewModel : ViewModel
             }
         }
     }
+
     internal void MoveSelectionDown()
     {
         if (CurrentAnimationFrame != null)
