@@ -1440,6 +1440,13 @@ namespace FlatRedBall.Math
             return (X * X + Y * Y);
         }
 
+        public static double Distance(double x1, double y1, double x2, double y2)
+        {
+            double xDistance = x2 - x1;
+            double yDistance = y2 - y1;
+            return System.Math.Sqrt(xDistance * xDistance + yDistance * yDistance);
+        }
+
         public static Vector3 AngleToVector(float radians)
         {
             return new Vector3((float)System.Math.Cos((double)radians), (float)System.Math.Sin((double)radians), 0f);

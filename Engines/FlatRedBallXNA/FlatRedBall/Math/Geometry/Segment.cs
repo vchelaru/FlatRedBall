@@ -290,7 +290,7 @@ namespace FlatRedBall.Math.Geometry
 
         public float DistanceTo(double x, double y)
         {
-            if(Point1 == Point2)
+            if (Point1 == Point2)
             {
                 return (Point1 - new Point(x, y)).ToVector3().Length();
             }
@@ -298,21 +298,21 @@ namespace FlatRedBall.Math.Geometry
             {
                 float segmentLength = (float)this.GetLength();
 
-                Vector2 normalizedLine = new Vector2(
+                var normalizedLine = new Vector2(
                     (float)(Point2.X - Point1.X) / segmentLength,
                     (float)(Point2.Y - Point1.Y) / segmentLength);
 
-                Vector2 pointVector = new Vector2((float)(x - Point1.X), (float)(y - Point1.Y));
+                var pointVector = new Vector2((float)(x - Point1.X), (float)(y - Point1.Y));
 
-                float length = Vector2.Dot(pointVector, normalizedLine);
+                var length = Vector2.Dot(pointVector, normalizedLine);
 
                 if (length < 0)
                 {
-                    return (float)(new Segment(x, y, Point1.X, Point1.Y).GetLength());
+                    return (float)MathFunctions.Distance(x, y, Point1.X, Point1.Y);
                 }
                 else if (length > segmentLength)
                 {
-                    return (float)(new Segment(x, y, Point2.X, Point2.Y).GetLength());
+                    return (float)MathFunctions.Distance(x, y, Point2.X, Point2.Y);
                 }
                 else
                 {
@@ -328,7 +328,7 @@ namespace FlatRedBall.Math.Geometry
                     return (float)System.Math.Sqrt(xDistanceSquared + yDistanceSquared);
                 }
             }
-        }   
+        }
 
         public float DistanceTo(Point point, out Segment connectingSegment)
         {
