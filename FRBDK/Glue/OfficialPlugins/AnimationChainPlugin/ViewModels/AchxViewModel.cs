@@ -130,6 +130,7 @@ internal class AchxViewModel : ViewModel
     public AnimationChainListSave BackingData { get; internal set; }
     public ICommand AddAnimationCommand { get; internal set; }
     public ICommand AddFrameCommand { get; internal set; }
+    public ICommand SortAnimationsAlphabeticallyCommand { get; internal set; }
 
     public event Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
 
@@ -189,6 +190,23 @@ internal class AchxViewModel : ViewModel
 
         AddAnimationCommand = new CommandBase(HandleAddAnimation);
         AddFrameCommand = new CommandBase(HandleAddFrame);
+        SortAnimationsAlphabeticallyCommand = new CommandBase(HandleSortAnimationsAlphabetically);
+    }
+
+    private void HandleSortAnimationsAlphabetically()
+    {
+        // Sort the items by Name property
+        var sorted = VisibleRoot.OrderBy(vm => vm.Name, StringComparer.OrdinalIgnoreCase).ToList();
+
+        // Rearrange the collection to match the sorted order
+        for (int i = 0; i < sorted.Count; i++)
+        {
+            var currentIndex = VisibleRoot.IndexOf(sorted[i]);
+            if (currentIndex != i)
+            {
+                VisibleRoot.Move(currentIndex, i);
+            }
+        }
     }
 
     private void HandleAddAnimation()

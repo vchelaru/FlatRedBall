@@ -37,8 +37,19 @@ class MouseEditingLogic
 
     XSide? xSideGrabbed;
     YSide? ySideGrabbed;
+    /// <summary>
+    /// The X position that remains static when moving the handles. If the user grabbed the left side
+    /// of the selection, then the xAnchor is the right side. If the user grabbed the right side of the
+    /// selection, then the anchor is the left side.
+    /// </summary>
     decimal xAnchor;
+    /// <summary>
+    /// The Y position that remains static when moving the handles. If the user grabbed the top side
+    /// of the selection, then the yAnchor is the bottom side. If the user grabbed the bottom side of the
+    /// selection, then the anchor is the top side.
+    /// </summary>
     decimal yAnchor;
+
     decimal grabbedDifferenceX;
     decimal grabbedDifferenceY;
 
@@ -123,12 +134,6 @@ class MouseEditingLogic
             {
                 UpdateHandleOver(canvasPosition.X, canvasPosition.Y);
             }
-            //var point = args.GetPosition(_canvas); 
-            //View.GetWorldPosition(point, out double x, out double y);
-            //circle.X = (float)x;
-            //circle.Y = (float)y;
-            //_canvas.InvalidateVisual();
-            //System.Diagnostics.Debug.WriteLine($"Skia:{x}, {y} Window:({point})");
 
             UpdateGrabbed(args);
 
@@ -155,7 +160,7 @@ class MouseEditingLogic
 
 
             UpdateHandleOver(canvasPosition.X, canvasPosition.Y);
-            RefreshHandleVisuals();
+            RefreshHandleHighlightedVisuals();
             _canvas.InvalidateVisual();
         }
 
@@ -172,11 +177,11 @@ class MouseEditingLogic
 
     private void UpdateHandleHighlight()
     {
-        if (HandleOver != null)
+        if (HandleGrabbed != null)
         {
-            _textureCoordinateRectangle.MakeHighlighted(HandleOver);
+            _textureCoordinateRectangle.MakeHighlighted(HandleGrabbed);
         }
-        if (HandleOver != null)
+        else if (HandleOver != null)
         {
             _textureCoordinateRectangle.MakeHighlighted(HandleOver);
         }
@@ -209,27 +214,81 @@ class MouseEditingLogic
             {
                 if(xSideGrabbed == XSide.Left)
                 {
+                    var oldRightSide = viewModel.RightTexturePixelInt;
+
                     grabbedDifferenceX -= xDifference;
 
                     viewModel.SelectedWidthPixels = SnappedX(grabbedDifferenceX);
                     viewModel.LeftTexturePixel = xAnchor - SnappedX(grabbedDifferenceX);
 
-                    if(viewModel.SnapChecked) {
+                    if(viewModel.SnapChecked)
+                    {
                         //Make sure it's on a snap line
                         var off = viewModel.LeftTexturePixel % _viewModel.CellWidth;
                         viewModel.LeftTexturePixel -= off;
                         viewModel.SelectedWidthPixels += off;
                     }
+
+                    // See if we've moved too far and are crossing over the sides.
+                    if (viewModel.LeftTexturePixelInt > oldRightSide && xDifference > 0)
+                    {
+                        var newRightSide = viewModel.RightTexturePixel;
+                        // We've flipped, so flip which side we're dragging
+                        xSideGrabbed = XSide.Right;
+                        viewModel.LeftTexturePixel = oldRightSide;
+                        viewModel.SelectedWidthPixels = newRightSide - oldRightSide;
+
+                        if (HandleGrabbed == _textureCoordinateRectangle.TopLeftHandle)
+                        {
+                            HandleGrabbed = _textureCoordinateRectangle.TopRightHandle;
+                        }
+                        if (HandleGrabbed == _textureCoordinateRectangle.LeftHandle)
+                        {
+                            HandleGrabbed = _textureCoordinateRectangle.RightHandle;
+                        }
+                        if (HandleGrabbed == _textureCoordinateRectangle.BottomLeftHandle)
+                        {
+                            HandleGrabbed = _textureCoordinateRectangle.BottomRightHandle;
+                        }
+                        RefreshHandleHighlightedVisuals();
+                    }
+
                 }
                 else if(xSideGrabbed == XSide.Right)
                 {
+                    var oldLeftSide = viewModel.LeftTexturePixelInt;
+
                     grabbedDifferenceX += xDifference;
                     viewModel.SelectedWidthPixels = SnappedX(grabbedDifferenceX);
 
-                    if(viewModel.SnapChecked) {
+                    if(viewModel.SnapChecked)
+                    {
                         //Make sure it's on a snap line
                         var off = viewModel.SelectedWidthPixels % _viewModel.CellWidth;
                         viewModel.SelectedWidthPixels -= off;
+                    }
+
+                    if(viewModel.RightTexturePixelInt < oldLeftSide && xDifference < 0)
+                    {
+                        var newLeftSide = viewModel.LeftTexturePixel;
+                        // We've flipped, so flip which side we're dragging
+                        xSideGrabbed = XSide.Left;
+                        viewModel.SelectedWidthPixels = newLeftSide - oldLeftSide;
+                        viewModel.LeftTexturePixel = newLeftSide;
+
+                        if (HandleGrabbed == _textureCoordinateRectangle.TopRightHandle)
+                        {
+                            HandleGrabbed = _textureCoordinateRectangle.TopLeftHandle;
+                        }
+                        if (HandleGrabbed == _textureCoordinateRectangle.RightHandle)
+                        {
+                            HandleGrabbed = _textureCoordinateRectangle.LeftHandle;
+                        }
+                        if (HandleGrabbed == _textureCoordinateRectangle.BottomRightHandle)
+                        {
+                            HandleGrabbed = _textureCoordinateRectangle.BottomLeftHandle;
+                        }
+                        RefreshHandleHighlightedVisuals();
                     }
                 }
 
@@ -238,26 +297,77 @@ class MouseEditingLogic
             {
                 if(ySideGrabbed == YSide.Top)
                 {
+                    var oldBottomSide = viewModel.BottomTexturePixelInt;
+
                     grabbedDifferenceY -= yDifference;
+
                     viewModel.SelectedHeightPixels = SnappedY(grabbedDifferenceY);
                     viewModel.TopTexturePixel = yAnchor - SnappedY(grabbedDifferenceY);
 
-                    if(viewModel.SnapChecked) {
+                    if(viewModel.SnapChecked)
+                    {
                         //Make sure it's on a snap line
                         var off = viewModel.TopTexturePixel % _viewModel.CellHeight;
                         viewModel.TopTexturePixel -= off;
                         viewModel.SelectedHeightPixels += off;
                     }
+
+                    if(viewModel.TopTexturePixel > oldBottomSide && yDifference > 0)
+                    {
+                        var newBottomSide = viewModel.BottomTexturePixel;
+                        // We've flipped, so flip which side we're dragging
+                        ySideGrabbed = YSide.Bottom;
+                        viewModel.TopTexturePixel = oldBottomSide;
+                        viewModel.SelectedHeightPixels = newBottomSide - oldBottomSide;
+                        if (HandleGrabbed == _textureCoordinateRectangle.TopLeftHandle)
+                        {
+                            HandleGrabbed = _textureCoordinateRectangle.BottomLeftHandle;
+                        }
+                        if (HandleGrabbed == _textureCoordinateRectangle.TopCenterHandle)
+                        {
+                            HandleGrabbed = _textureCoordinateRectangle.BottomCenterHandle;
+                        }
+                        if (HandleGrabbed == _textureCoordinateRectangle.TopRightHandle)
+                        {
+                            HandleGrabbed = _textureCoordinateRectangle.BottomRightHandle;
+                        }
+                        RefreshHandleHighlightedVisuals();
+                    }
                 }
                 else if(ySideGrabbed == YSide.Bottom)
                 {
+                    var oldTopSide = viewModel.TopTexturePixelInt;
+
                     grabbedDifferenceY += yDifference;
                     viewModel.SelectedHeightPixels = SnappedY(grabbedDifferenceY);
 
-                    if(viewModel.SnapChecked) {
+                    if(viewModel.SnapChecked)
+                    {
                         //Make sure it's on a snap line
                         var off = viewModel.SelectedHeightPixels % _viewModel.CellHeight;
                         viewModel.SelectedHeightPixels -= off;
+                    }
+
+                    if(viewModel.BottomTexturePixelInt < oldTopSide && yDifference < 0)
+                    {
+                        var newTopSide = viewModel.TopTexturePixel;
+                        // We've flipped, so flip which side we're dragging
+                        ySideGrabbed = YSide.Top;
+                        viewModel.SelectedHeightPixels = newTopSide - oldTopSide;
+                        viewModel.TopTexturePixel = newTopSide;
+                        if (HandleGrabbed == _textureCoordinateRectangle.BottomLeftHandle)
+                        {
+                            HandleGrabbed = _textureCoordinateRectangle.TopLeftHandle;
+                        }
+                        if (HandleGrabbed == _textureCoordinateRectangle.BottomCenterHandle)
+                        {
+                            HandleGrabbed = _textureCoordinateRectangle.TopCenterHandle;
+                        }
+                        if (HandleGrabbed == _textureCoordinateRectangle.BottomRightHandle)
+                        {
+                            HandleGrabbed = _textureCoordinateRectangle.TopRightHandle;
+                        }
+                        RefreshHandleHighlightedVisuals();
                     }
                 }
             }
@@ -297,24 +407,41 @@ class MouseEditingLogic
         if (oldHandleOver != newHandleOver)
         {
             HandleOver = newHandleOver;
-            RefreshHandleVisuals();
+            RefreshHandleHighlightedVisuals();
 
             _canvas.InvalidateVisual();
         }
 
     }
 
-    private void RefreshHandleVisuals()
+    private void RefreshHandleHighlightedVisuals()
     {
-        foreach (var handle in _textureCoordinateRectangle.Handles)
+        if(HandleGrabbed != null)
         {
-            if (handle == HandleOver || handle == HandleGrabbed)
+            foreach (var handle in _textureCoordinateRectangle.Handles)
             {
-                _textureCoordinateRectangle.MakeHighlighted(handle);
+                if (handle == HandleGrabbed)
+                {
+                    _textureCoordinateRectangle.MakeHighlighted(handle);
+                }
+                else
+                {
+                    _textureCoordinateRectangle.MakeNormal(handle);
+                }
             }
-            else
+        }
+        else
+        {
+            foreach (var handle in _textureCoordinateRectangle.Handles)
             {
-                _textureCoordinateRectangle.MakeNormal(handle);
+                if (handle == HandleOver)
+                {
+                    _textureCoordinateRectangle.MakeHighlighted(handle);
+                }
+                else
+                {
+                    _textureCoordinateRectangle.MakeNormal(handle);
+                }
             }
         }
     }
@@ -330,7 +457,7 @@ class MouseEditingLogic
                 worldY);
 
             HandleGrabbed = handleOver;
-            RefreshHandleVisuals();
+            RefreshHandleHighlightedVisuals();
 
             var textureCoordinateRectangle = _textureCoordinateRectangle;
             IsBodyGrabbed = HandleGrabbed == null &&
@@ -350,18 +477,21 @@ class MouseEditingLogic
                 grabbedDifferenceY = 0;
             }
 
+            // Handles on the left side of the rectangle have their XOrigin on the right side.
+            // We can "cheat" by looking at that value:
             if (HandleGrabbed?.XOrigin == HorizontalAlignment.Right)
             {
+                // If the XOrigin is on the right side, that means the user grabbed one of the left-side handles
                 xSideGrabbed = XSide.Left;
                 xAnchor = _viewModel.LeftTexturePixel + _viewModel.SelectedWidthPixels;
                 grabbedDifferenceX = _viewModel.SelectedWidthPixels;
             }
             else if (HandleGrabbed?.XOrigin == HorizontalAlignment.Left)
             {
+                // If the XOrigin is on the left side, that means the user grabbed one of the right-side handles
                 xSideGrabbed = XSide.Right;
                 xAnchor = _viewModel.LeftTexturePixel;
                 grabbedDifferenceX = _viewModel.SelectedWidthPixels;
-
             }
             else
             {

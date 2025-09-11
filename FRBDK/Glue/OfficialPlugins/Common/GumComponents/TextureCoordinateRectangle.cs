@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using Gum.Converters;
@@ -23,6 +24,14 @@ public class TextureCoordinateRectangle : ContainerRuntime
 
     public TextureCoordinateRectangle() : base() { Initialize(); }
 
+    public RoundedRectangleRuntime TopLeftHandle => Handles.First(item => item.Name == "TopLeft");
+    public RoundedRectangleRuntime TopCenterHandle => Handles.First(item => item.Name == "TopCenter");
+    public RoundedRectangleRuntime TopRightHandle => Handles.First(item => item.Name == "TopRight");
+    public RoundedRectangleRuntime RightHandle => Handles.First(item => item.Name == "Right");
+    public RoundedRectangleRuntime BottomRightHandle => Handles.First(item => item.Name == "BottomRight");
+    public RoundedRectangleRuntime BottomCenterHandle => Handles.First(item => item.Name == "BottomCenter");
+    public RoundedRectangleRuntime BottomLeftHandle => Handles.First(item => item.Name == "BottomLeft");
+    public RoundedRectangleRuntime LeftHandle => Handles.First(item => item.Name == "Left");
 
 
     private void Initialize()
@@ -34,34 +43,38 @@ public class TextureCoordinateRectangle : ContainerRuntime
         mainRectangle.Height = 100;
         mainRectangle.CornerRadius = 0;
         mainRectangle.StrokeWidth = 1;
-        mainRectangle.WidthUnits = Gum.DataTypes.DimensionUnitType.Percentage;
-        mainRectangle.HeightUnits = Gum.DataTypes.DimensionUnitType.Percentage;
+        mainRectangle.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfParent;
+        mainRectangle.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfParent;
 
+        // Note - the names here tell you which handle we're dealing with. Keep in mind
+        // that the names are correct, and the alignments may seem like they are the opposite.
+        // For example, handles on the left side are going to have a HorizontalAlignment of Right
+        // because their right side touches the outer edge of the rectangle.
         CreateHandle(
             GeneralUnitType.PixelsFromSmall, GeneralUnitType.PixelsFromSmall,
-            HorizontalAlignment.Right, VerticalAlignment.Bottom, "BottomRight");
+            HorizontalAlignment.Right, VerticalAlignment.Bottom, "TopLeft");
 
         CreateHandle(
             GeneralUnitType.PixelsFromMiddle, GeneralUnitType.PixelsFromSmall,
-            HorizontalAlignment.Center, VerticalAlignment.Bottom, "BottomCenter");
+            HorizontalAlignment.Center, VerticalAlignment.Bottom, "TopCenter");
 
         CreateHandle(GeneralUnitType.PixelsFromLarge, GeneralUnitType.PixelsFromSmall,
-            HorizontalAlignment.Left, VerticalAlignment.Bottom, "BottomLeft");
+            HorizontalAlignment.Left, VerticalAlignment.Bottom, "TopRight");
 
         CreateHandle(GeneralUnitType.PixelsFromLarge, GeneralUnitType.PixelsFromMiddle,
-            HorizontalAlignment.Left, VerticalAlignment.Center, "Left");
+            HorizontalAlignment.Left, VerticalAlignment.Center, "Right");
 
         CreateHandle(GeneralUnitType.PixelsFromLarge, GeneralUnitType.PixelsFromLarge,
-            HorizontalAlignment.Left, VerticalAlignment.Top, "TopLeft");
+            HorizontalAlignment.Left, VerticalAlignment.Top, "BottomRight");
 
         CreateHandle(GeneralUnitType.PixelsFromMiddle, GeneralUnitType.PixelsFromLarge,
-            HorizontalAlignment.Center, VerticalAlignment.Top, "TopCenter");
+            HorizontalAlignment.Center, VerticalAlignment.Top, "BottomCenter");
 
         CreateHandle(GeneralUnitType.PixelsFromSmall, GeneralUnitType.PixelsFromLarge,
-            HorizontalAlignment.Right, VerticalAlignment.Top, "TopRight");
+            HorizontalAlignment.Right, VerticalAlignment.Top, "BottomLeft");
 
         CreateHandle(GeneralUnitType.PixelsFromSmall, GeneralUnitType.PixelsFromMiddle,
-            HorizontalAlignment.Right, VerticalAlignment.Center, "Right");
+            HorizontalAlignment.Right, VerticalAlignment.Center, "Left");
     }
 
     int nextHandleIndex = 0;
@@ -100,12 +113,31 @@ public class TextureCoordinateRectangle : ContainerRuntime
         handle.IsFilled = false;
     }
 
+    bool hasMadeRight = false;
     internal void MakeHighlighted(RoundedRectangleRuntime handle)
     {
         const int handleSize = 14;
-        handle.Width = handleSize;
-        handle.Height = handleSize;
-        handle.IsFilled = true;
+        // need to figure out why we are getting highlights
+        // not working when crossing over on the X. To do this, output
+        // which handle is being highlighted:
+
+
+        if(!handle.IsFilled)
+        {
+            if(handle.Name == "Left" && hasMadeRight)
+            {
+                int m = 3;
+            }
+            System.Diagnostics.Debug.WriteLine($"Making {handle} highlighted");
+            handle.Width = handleSize;
+            handle.Height = handleSize;
+            handle.IsFilled = true;
+        }
+
+        if(handle.Name == "Right")
+        {
+            hasMadeRight = true;
+        }
     }
 
     private static RoundedRectangleRuntime CreateLineRectangle()

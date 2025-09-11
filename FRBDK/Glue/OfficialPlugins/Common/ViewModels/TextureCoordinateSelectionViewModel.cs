@@ -19,6 +19,7 @@ public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewMod
         set => Set(value);
     }
 
+
     int Rounded(decimal value) => MathFunctions.RoundToInt((double)value);
 
     [DependsOn(nameof(LeftTexturePixel))]
@@ -50,6 +51,18 @@ public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewMod
 
     [DependsOn(nameof(SelectedHeightPixels))]
     public int SelectedHeightPixelsInt => Rounded(SelectedHeightPixels);
+
+    [DependsOn(nameof(LeftTexturePixel))]
+    [DependsOn(nameof(SelectedWidthPixels))]
+    public decimal RightTexturePixel => LeftTexturePixel + SelectedWidthPixels;
+    public int RightTexturePixelInt => Rounded(RightTexturePixel);
+
+
+
+    [DependsOn(nameof(TopTexturePixel))]
+    [DependsOn(nameof(SelectedHeightPixels))]
+    public decimal BottomTexturePixel => TopTexturePixel + SelectedHeightPixels;
+    public int BottomTexturePixelInt => Rounded(BottomTexturePixel);
 
     public List<int> ZoomPercentages { get; set; } =
         new List<int> { 4000, 2000, 1500, 1000, 750, 500, 350, 200, 100, 75, 50, 25, 10, 5 };

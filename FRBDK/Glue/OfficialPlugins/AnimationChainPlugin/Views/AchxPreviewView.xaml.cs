@@ -579,6 +579,15 @@ partial class AchxPreviewView : UserControl
                 Command = ViewModel.AddFrameCommand
             });
         }
+
+        AnimationListBoxContextMenu.Items.Add(new Separator());
+
+        AnimationListBoxContextMenu.Items.Add(new MenuItem()
+        {
+            Header = "Sort Animations Alphabetically",
+            Command = ViewModel.SortAnimationsAlphabeticallyCommand
+        });
+
     }
 
     #endregion
