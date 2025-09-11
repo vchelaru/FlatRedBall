@@ -578,6 +578,12 @@ partial class AchxPreviewView : UserControl
                 Header = "Add Frame",
                 Command = ViewModel.AddFrameCommand
             });
+
+            AnimationListBoxContextMenu.Items.Add(new MenuItem()
+            {
+                Header = "Adjust All Frame Time",
+                Command = ViewModel.AdjustAllFrameTimeCommand
+            });
         }
 
         AnimationListBoxContextMenu.Items.Add(new Separator());

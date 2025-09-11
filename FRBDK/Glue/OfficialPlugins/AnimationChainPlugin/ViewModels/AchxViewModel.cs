@@ -14,6 +14,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Utilities;
 using Newtonsoft.Json;
 using OfficialPlugins.AnimationChainPlugin.Managers;
+using OfficialPlugins.AnimationChainPlugin.Views;
 using OfficialPlugins.Common.ViewModels;
 using SpineAtlasLibrary;
 
@@ -130,6 +131,7 @@ internal class AchxViewModel : ViewModel
     public AnimationChainListSave BackingData { get; internal set; }
     public ICommand AddAnimationCommand { get; internal set; }
     public ICommand AddFrameCommand { get; internal set; }
+    public ICommand AdjustAllFrameTimeCommand { get; internal set; }
     public ICommand SortAnimationsAlphabeticallyCommand { get; internal set; }
 
     public event Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
@@ -190,6 +192,7 @@ internal class AchxViewModel : ViewModel
 
         AddAnimationCommand = new CommandBase(HandleAddAnimation);
         AddFrameCommand = new CommandBase(HandleAddFrame);
+        AdjustAllFrameTimeCommand = new CommandBase(HandleAdjustAllFrameTime);
         SortAnimationsAlphabeticallyCommand = new CommandBase(HandleSortAnimationsAlphabetically);
     }
 
@@ -246,6 +249,23 @@ internal class AchxViewModel : ViewModel
 
         currentChain.AddAnimationFrame(frame);
 
+    }
+
+    private void HandleAdjustAllFrameTime()
+    {
+        // todo - this should create a view based on the viewmodel
+        var viewModel = new AnimationChainTimeScaleViewModel(
+            this.CurrentAnimationChain);
+
+        var view = new AnimationChainTimeScaleWindow();
+        view.DataContext = viewModel;
+
+        var result = view.ShowDialog();
+
+        if(result == true)
+        {
+            viewModel.ApplyToAnimation();
+        }
     }
 
     private void HandleAnimationChainViewModelCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
