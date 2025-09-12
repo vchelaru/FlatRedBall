@@ -114,8 +114,6 @@ partial class AchxPreviewView : UserControl
 
         _textureCoordinateRectangle = new TextureCoordinateRectangle();
 
-        _lineGridRuntime = new LineGridRuntime();
-        // todo - finish here:
 
         InitializeComponent();
 
@@ -168,8 +166,10 @@ partial class AchxPreviewView : UserControl
         _textureCoordinateSelectionViewModel.PropertyChanged += HandleTextureCoordinatePropertyChanged;
 
 
+        _lineGridRuntime = new LineGridRuntime();
         TopGumCanvas.Children.Add(_lineGridRuntime);
         _lineGridRuntime.BindingContext = _textureCoordinateSelectionViewModel;
+        _lineGridRuntime.Color = SKColor.Parse("#55FFFFFF");
         _lineGridRuntime.SetBinding(
             nameof(_lineGridRuntime.Visible),
             nameof(_textureCoordinateSelectionViewModel.SnapChecked));
