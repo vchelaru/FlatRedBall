@@ -214,7 +214,6 @@ internal class AchxViewModel : ViewModel
 
     private void HandleAddAnimation()
     {
-        // temp - just add it to make sure it works:
         var animationChainSave = new AnimationChainSave();
         animationChainSave.Name = "NewAnimation";
         var newAnimationChain = AddAnimationChain(animationChainSave);
@@ -241,7 +240,7 @@ internal class AchxViewModel : ViewModel
         ////////////////////////End Early Out/////////////////////
 
         var frame = new AnimationFrameSave();
-
+        frame.FrameLength = .1f;
         if(this.AchxFilePath?.Extension == "atlas")
         {
             // see if any files are already referenced
