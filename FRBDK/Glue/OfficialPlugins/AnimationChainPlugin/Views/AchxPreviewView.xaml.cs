@@ -93,6 +93,7 @@ partial class AchxPreviewView : UserControl
 
     LineGridRuntime _lineGridRuntime;
     RoundedRectangleRuntime _spriteOutlineRectangle;
+    AnimationChainVisualEditingManager _animationChainVisualEditingManager;
 
     #endregion
 
@@ -105,7 +106,6 @@ partial class AchxPreviewView : UserControl
         _hotkeyManager = new HotkeyManager();
 
         _mouseEditingLogic = new MouseEditingLogic();
-
         _dialogCommands = dialogCommands;
 
 
@@ -117,6 +117,7 @@ partial class AchxPreviewView : UserControl
 
         InitializeComponent();
 
+        _animationChainVisualEditingManager = new AnimationChainVisualEditingManager(TopGumCanvas, topWindowCameraLogic);
         this.Loaded += HandleLoaded;
 
         DataContext = viewModel;
@@ -439,7 +440,10 @@ partial class AchxPreviewView : UserControl
         {
             _mouseEditingLogic.HandleMousePush(e);
         }
-
+        else if (ViewModel.CurrentAnimationChain != null)
+        {
+            _animationChainVisualEditingManager.HandleMousePush(e);
+        }
         // This allows the canvas to receive focus:
         // Source: https://social.msdn.microsoft.com/Forums/vstudio/en-US/ed6caee6-2cae-4db8-a2df-eafad44dbe37/mouse-focus-versus-keyboard-focus?forum=wpf#:~:text=In%20WPF%2C%20some%20elements%20will%20get%20keyboard%20focus,trick%3A%20userControl.MouseLeftButtonDown%20%2B%3D%20delegate%20%7B%20userControl.Focusable%20%3D%20true%3B
         TopGumCanvas.Focusable = true;
@@ -456,6 +460,10 @@ partial class AchxPreviewView : UserControl
         if (ViewModel.CurrentAnimationFrame != null)
         {
             _mouseEditingLogic.HandleMouseMove(e);
+        }
+        else if(ViewModel.CurrentAnimationChain != null)
+        {
+            _animationChainVisualEditingManager.HandleMouseMove(e);
         }
     }
 
