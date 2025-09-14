@@ -1,15 +1,16 @@
 ﻿using FlatRedBall.IO;
 using OfficialPlugins.SpritePlugin.Managers;
-using OfficialPlugins.SpritePlugin.GumComponents;
 using SkiaGum.GueDeriving;
 using SkiaSharp;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using OfficialPlugins.SpritePlugin.ViewModels;
 using RenderingLibrary;
 using System.ComponentModel;
+using OfficialPlugins.Common.Managers;
+using OfficialPlugins.Common.ViewModels;
+using OfficialPlugins.Common.GumComponents;
 
 namespace OfficialPlugins.SpritePlugin.Views
 {
@@ -61,27 +62,19 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         public LineGridRuntime linegrid { get; private set; }
 
-        public void SelectCell(Point position, out int columnX, out int columnY)
-        {
-            CameraLogic.GetWorldPosition(position, out double worldX, out double worldY);
-            linegrid.LineGridCell(worldX, worldY, out columnX, out columnY);
-            if(linegrid.GetCellPosition(columnX, columnY, out float left, out float top, out float right, out float bottom)) {
-                ViewModel.LeftTexturePixel = (decimal)left;
-                ViewModel.TopTexturePixel = (decimal)top;
-                ViewModel.SelectedWidthPixels = (decimal)right;
-                ViewModel.SelectedHeightPixels = (decimal)bottom;
-            }
-        }
-
         public void SelectDragCell(Point MousePoint, int StartDragSelectX, int StartDragSelectY) 
         {
             CameraLogic.GetWorldPosition(MousePoint, out double worldX, out double worldY);
+
+
+
             linegrid.LineGridCell(worldX, worldY, out int ColX, out int ColY);
             if((ColX != StartDragSelectX) || (ColY != StartDragSelectY))
             {
                 var startok = linegrid.GetCellPosition(StartDragSelectX, StartDragSelectY, out float startLeft, out float startTop, out float startRight, out float startBottom);
                 var endok = linegrid.GetCellPosition(ColX, ColY, out float endLeft, out float endTop, out float endRight, out float endBottom);
-                if(startok && endok) {
+                if(startok && endok)
+                {
                     ViewModel.LeftTexturePixel = (decimal)Math.Min(startLeft, endLeft);
                     ViewModel.TopTexturePixel = (decimal)Math.Min(startTop, endTop);
                     if(startLeft + startRight < endLeft + endRight)
@@ -102,12 +95,16 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         CameraLogic CameraLogic;
 
+        MouseEditingLogic _mouseEditingLogic;
+
         #endregion
 
         #region Constructor/Initialize
         public TextureCoordinateSelectionView()
         {
             InitializeComponent();
+
+            _mouseEditingLogic = new MouseEditingLogic();
         }
 
         public void Initialize(CameraLogic cameraLogic)
@@ -118,14 +115,15 @@ namespace OfficialPlugins.SpritePlugin.Views
             CreateMainSprite();
             CreateSpriteOutline();
 
+            TextureCoordinateRectangle = new TextureCoordinateRectangle();
+
             // Initialize CameraLogic after initializing the background so the background
             // position can be set
             CameraLogic.Initialize(this, ViewModel, this.Canvas, this.BackgroundRectangle);
-            MouseEditingLogic.Initialize(this, cameraLogic);
+            _mouseEditingLogic.Initialize(this.Canvas, this.ViewModel, TextureCoordinateRectangle, cameraLogic);
 
             this.Canvas.Children.Add(MainSprite);
 
-            TextureCoordinateRectangle = new TextureCoordinateRectangle();
 
             TextureCoordinateRectangle.SetBinding(
                 nameof(TextureCoordinateRectangle.X),
@@ -229,7 +227,7 @@ namespace OfficialPlugins.SpritePlugin.Views
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             CameraLogic.HandleMousePush(e);
-            MouseEditingLogic.HandleMousePush(e);
+            _mouseEditingLogic.HandleMousePush(e);
 
             // This allows the canvas to receive focus:
             // Source: https://social.msdn.microsoft.com/Forums/vstudio/en-US/ed6caee6-2cae-4db8-a2df-eafad44dbe37/mouse-focus-versus-keyboard-focus?forum=wpf#:~:text=In%20WPF%2C%20some%20elements%20will%20get%20keyboard%20focus,trick%3A%20userControl.MouseLeftButtonDown%20%2B%3D%20delegate%20%7B%20userControl.Focusable%20%3D%20true%3B
@@ -240,7 +238,7 @@ namespace OfficialPlugins.SpritePlugin.Views
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
             CameraLogic.HandleMouseMove(e);
-            MouseEditingLogic.HandleMouseMove(e);
+            _mouseEditingLogic.HandleMouseMove(e);
         }
 
         private void Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -251,7 +249,7 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            MouseEditingLogic.HandleMouseUp(e);
+            _mouseEditingLogic.HandleMouseUp(e);
         }
 
         internal RoundedRectangleRuntime GetHandleAt(Point lastMousePoint)

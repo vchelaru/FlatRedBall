@@ -1,93 +1,142 @@
-﻿using FlatRedBall.Content.AnimationChain;
-using FlatRedBall.Glue.MVVM;
-using FlatRedBall.IO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.MVVM;
+using FlatRedBall.IO;
+using OfficialPlugins.AnimationChainPlugin.Managers;
 
-namespace OfficialPlugins.AnimationChainPlugin.ViewModels
+namespace OfficialPlugins.AnimationChainPlugin.ViewModels;
+
+internal class AnimationChainViewModel : ViewModel
 {
-    internal class AnimationChainViewModel : ViewModel
+    [DependsOn(nameof(Name))]
+    public string Text => Name;
+
+    public FilePath FilePath { get; set; }
+
+    public string Name
     {
-        [DependsOn(nameof(Name))]
-        public string Text => Name;
+        get => Get<string>();
+        set => Set(value);
+    }
 
-        public FilePath FilePath { get; set; }
+    public float Duration
+    {
+        get => Get<float>();
+        private set => Set(value);
+    }
 
-        public string Name
+    public AnimationChainSave BackingModel { get; private set; }
+
+    public ObservableCollection<AnimationFrameViewModel> VisibleChildren { get; set; } = 
+        new ObservableCollection<AnimationFrameViewModel>();
+
+    public Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
+
+    public AnimationChainViewModel()
+    {
+        VisibleChildren.CollectionChanged += HandleCollectionChanged;
+    }
+
+    private void HandleCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        var shouldSave = false;
+        // add any new .achx's
+        if (e.Action == NotifyCollectionChangedAction.Add)
         {
-            get => Get<string>();
-            set => Set(value);
-        }
+            var newItems = e.NewItems;
 
-        public float Duration
-        {
-            get => Get<float>();
-            private set => Set(value);
-        }
-
-        public AnimationChainSave BackingModel { get; private set; }
-
-
-        public ObservableCollection<AnimationFrameViewModel> VisibleChildren { get; set; } = 
-            new ObservableCollection<AnimationFrameViewModel>();
-
-        public Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
-
-        public override string ToString() => Name;
-
-        public void SetFrom(AnimationChainSave animationChain, FilePath achxFilePath, int resolutionWidth, int resolutionHeight)
-        {
-            FilePath = achxFilePath;
-            BackingModel = animationChain;
-            Name = animationChain.Name;
-
-            foreach(var frame in animationChain.Frames)
+            if (newItems != null)
             {
-                AddAnimationFrame(frame);
+                foreach (AnimationFrameViewModel newItem in newItems)
+                {
+                    // Is this already contained?
+                    if (this.BackingModel.Frames.Contains(newItem.BackingModel) == false)
+                    {
+                        var index = this.VisibleChildren.IndexOf(newItem);
+
+                        this.BackingModel.Frames.Insert(index, newItem.BackingModel);
+                    }
+                }
             }
         }
-
-        public bool ApplyTo(AnimationChainSave animationChainSave)
+        else if (e.Action == NotifyCollectionChangedAction.Remove)
         {
-            var toReturn = false;
-
-            if(animationChainSave.Name != this.Name)
+            var oldItems = e.OldItems;
+            if (oldItems != null)
             {
-                animationChainSave.Name = this.Name;
-                toReturn = true;
+                foreach (AnimationFrameViewModel oldItem in oldItems)
+                {
+                    this.BackingModel.Frames.Remove(oldItem.BackingModel);
+                }
             }
-
-            return toReturn;
         }
-
-        public AnimationFrameViewModel AddAnimationFrame(AnimationFrameSave frame)
+        else if(e.Action == NotifyCollectionChangedAction.Move)
         {
-            var frameVm = new AnimationFrameViewModel();
-            frameVm.SetFrom(this, frame);
-            frameVm.PropertyChanged += HandleFrameViewModelPropertyChanged;
-            VisibleChildren.Add(frameVm);
+            var oldIndex = e.OldStartingIndex;
+            var newIndex = e.NewStartingIndex;
+            var itemToMove = this.BackingModel.Frames[oldIndex];
 
-            Duration = VisibleChildren.Sum(item => item.LengthInSeconds);
-            return frameVm;
-        }
-
-
-        private void HandleFrameViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var vm = (AnimationFrameViewModel)sender;
-            var frame = vm.BackingModel;
-
-            var changed = vm.ApplyToFrame(frame);
-
-            if(changed)
-            {
-                FrameUpdatedByUi?.Invoke(vm, e.PropertyName);
-            }
+            this.BackingModel.Frames.RemoveAt(oldIndex);
+            this.BackingModel.Frames.Insert(newIndex, itemToMove);
         }
     }
+
+    public void SetFrom(AnimationChainSave animationChain, FilePath achxFilePath, int resolutionWidth, int resolutionHeight)
+    {
+        FilePath = achxFilePath;
+        BackingModel = animationChain;
+        Name = animationChain.Name;
+
+        foreach(var frame in animationChain.Frames)
+        {
+            AddAnimationFrame(frame);
+        }
+    }
+
+    public bool ApplyTo(AnimationChainSave animationChainSave)
+    {
+        var toReturn = false;
+
+        if(animationChainSave.Name != this.Name)
+        {
+            animationChainSave.Name = this.Name;
+            toReturn = true;
+        }
+
+        return toReturn;
+    }
+
+    public AnimationFrameViewModel AddAnimationFrame(AnimationFrameSave frame)
+    {
+        var frameVm = new AnimationFrameViewModel();
+        frameVm.SetFrom(this, frame);
+        frameVm.PropertyChanged += HandleFrameViewModelPropertyChanged;
+        VisibleChildren.Add(frameVm);
+
+        Duration = VisibleChildren.Sum(item => item.LengthInSeconds);
+        return frameVm;
+    }
+
+
+    private void HandleFrameViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        var vm = (AnimationFrameViewModel)sender;
+        var frame = vm.BackingModel;
+
+        var changed = vm.ApplyToFrame(frame);
+
+        if(changed)
+        {
+            FrameUpdatedByUi?.Invoke(vm, e.PropertyName);
+        }
+    }
+
+    public override string ToString() => Name;
 }

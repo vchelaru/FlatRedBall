@@ -1,114 +1,120 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using GlueFormsCore.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
+namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+
+public interface IDialogCommands
 {
-    public interface IDialogCommands
-    {
-        #region File
+    #region File
 
-        Task ShowAddExistingFileDialog();
+    Task ShowAddExistingFileDialog();
 
-        Task<ReferencedFileSave> ShowAddNewFileDialogAsync(AddNewFileViewModel viewModel = null, GlueElement element = null);
+    Task<ReferencedFileSave> ShowAddNewFileDialogAsync(AddNewFileViewModel viewModel = null, GlueElement element = null);
 
-        #endregion
+    #endregion
 
-        #region Entity
+    #region Entity
 
-        void ShowAddNewEntityDialog(AddEntityViewModel viewModel = null);
+    void ShowAddNewEntityDialog(AddEntityViewModel viewModel = null);
 
-        AddEntityViewModel CreateAddNewEntityViewModel();
+    AddEntityViewModel CreateAddNewEntityViewModel();
 
-        #endregion
+    #endregion
 
-        #region NamedObjectSave
+    #region NamedObjectSave
 
-        void AskToRemoveObject(NamedObjectSave namedObjectToRemove, bool saveAndRegenerate = true);
+    void AskToRemoveObject(NamedObjectSave namedObjectToRemove, bool saveAndRegenerate = true);
 
-        void AskToRemoveObjectList(List<NamedObjectSave> namedObjectsToRemove, bool saveAndRegenerate = true);
+    void AskToRemoveObjectList(List<NamedObjectSave> namedObjectsToRemove, bool saveAndRegenerate = true);
 
 
-        Task<NamedObjectSave> ShowAddNewObjectDialog(FlatRedBall.Glue.ViewModels.AddObjectViewModel addObjectViewModel = null);
+    Task<NamedObjectSave> ShowAddNewObjectDialog(FlatRedBall.Glue.ViewModels.AddObjectViewModel addObjectViewModel = null);
 
-        #endregion
+    #endregion
 
-        #region Screen
+    #region Screen
 
-        void ShowAddNewScreenDialog(AddScreenViewModel viewModel = null);
+    void ShowAddNewScreenDialog(AddScreenViewModel viewModel = null);
 
-        #endregion
+    #endregion
 
-        #region Event
+    #region Event
 
-        void ShowAddNewEventDialog(NamedObjectSave eventOwner);
-        void ShowAddNewEventDialog(AddEventViewModel viewModel);
-        void ShowAddNewEventDialog(GlueElement glueElement);
+    void ShowAddNewEventDialog(NamedObjectSave eventOwner);
+    void ShowAddNewEventDialog(AddEventViewModel viewModel);
+    void ShowAddNewEventDialog(GlueElement glueElement);
 
-        #endregion
+    #endregion
 
-        void ShowLoadProjectDialog();
+    void ShowLoadProjectDialog();
 
-        #region StateSave
+    #region StateSave
 
-        void ShowAddNewStateDialog();
-
-
-        #endregion
-
-        #region StateSaveCategory
-
-        void ShowAddNewCategoryDialog();
-
-        #endregion
-
-        #region Message Box
-
-        void ShowMessageBox(string message, string caption = "");
-        System.Windows.MessageBoxResult ShowYesNoMessageBox(string message, string caption = "Confirm", Action yesAction = null, Action noAction = null);
-
-        #endregion
-
-        void FocusTab(string dialogTitle);
-
-        #region Variable
-
-        void ShowAddNewVariableDialog(Controls.CustomVariableType variableType = Controls.CustomVariableType.Exposed, 
-            string tunnelingObject = "",
-            string tunneledVariableName = "", GlueElement container = null);
-        #endregion
-
-        #region Spinners
-
-        void ShowSpinner(string text);
-        void HideSpinner();
-
-        #endregion
-
-        #region Toast
-
-        /// <summary>
-        /// Shows toast for the argument amount of time. If null, the default time is used.
-        /// Calling this multiple times changes the text and resets the timer.
-        /// </summary>
-        /// <param name="text">The text to display</param>
-        /// <param name="timeToShowToast">The amount of time. If null, the default time is used.</param>
-        void ShowToast(string text, TimeSpan? timeToShowToast = null);
-
-        void HideToast();
-
-        #endregion
-
-        void SetFormOwner(System.Windows.Forms.Form form);
-        void FocusOnTreeView();
-        void MoveToCursor(System.Windows.Window window);
-
-        bool IsModalWindowOpen();
+    void ShowAddNewStateDialog();
 
 
-        void GoToDefinitionOfSelection();
-    }
+    #endregion
+
+    #region StateSaveCategory
+
+    void ShowAddNewCategoryDialog();
+
+    #endregion
+
+    #region Message Box
+
+    void ShowMessageBox(string message, string caption = "");
+    System.Windows.MessageBoxResult ShowYesNoMessageBox(string message, string caption = "Confirm", Action yesAction = null, Action noAction = null);
+
+    #endregion
+
+    void FocusTab(string dialogTitle);
+
+    #region Variable
+
+    void ShowAddNewVariableDialog(Controls.CustomVariableType variableType = Controls.CustomVariableType.Exposed, 
+        string tunnelingObject = "",
+        string tunneledVariableName = "", GlueElement container = null);
+    #endregion
+
+    #region Spinners
+
+    void ShowSpinner(string text);
+    void HideSpinner();
+
+    #endregion
+
+    #region Toast
+
+    /// <summary>
+    /// Shows toast for the argument amount of time. If null, the default time is used.
+    /// Calling this multiple times changes the text and resets the timer.
+    /// </summary>
+    /// <param name="text">The text to display</param>
+    /// <param name="timeToShowToast">The amount of time. If null, the default time is used.</param>
+    void ShowToast(string text, TimeSpan? timeToShowToast = null);
+
+    void HideToast();
+
+    #endregion
+
+    #region General IO
+
+    (DialogResult DialogResult, FilePath? FilePath) ShowSaveDialog(string filter);
+
+    #endregion
+
+    void SetFormOwner(System.Windows.Forms.Form form);
+    void FocusOnTreeView();
+    void MoveToCursor(System.Windows.Window window);
+
+    bool IsModalWindowOpen();
+
+
+    void GoToDefinitionOfSelection();
 }

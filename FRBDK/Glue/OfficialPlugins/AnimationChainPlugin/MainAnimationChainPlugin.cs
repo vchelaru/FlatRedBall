@@ -1,5 +1,6 @@
 ﻿using FlatRedBall;
 using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.IO;
@@ -64,6 +65,21 @@ public class MainAnimationChainPlugin : PluginBase
         this.IsHandlingHotkeys += GetIfIsHandlingHotkeys;
         //this.FillWithReferencedFiles += HandleFillWithReferencedFiles;
         this.FillWithReferencedFiles += HandleFillWithReferencedFilesNew;
+        this.AddNewFileOptionsHandler += HandleAddNewFileOptions;
+    }
+
+    private void HandleAddNewFileOptions(CustomizableNewFileWindow newFileWindow)
+    {
+        // we can always add Atlas support
+        var viewModel = newFileWindow.ViewModel;
+
+        AssetTypeInfo? spineAtlasAti = AvailableAssetTypes.Self.AllAssetTypes
+            .FirstOrDefault(item => item.QualifiedRuntimeTypeName.QualifiedType == "Spine.Atlas");
+
+        if(spineAtlasAti != null)
+        {
+            viewModel.AllOptions.Add(spineAtlasAti);
+        }
     }
 
 

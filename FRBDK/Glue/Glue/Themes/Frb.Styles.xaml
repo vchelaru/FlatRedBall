@@ -909,6 +909,10 @@
     </Setter>
   </Style>
 
+  <Style TargetType="{x:Type Menu}">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
   <!-- SubmenuItem -->
 
   <ControlTemplate x:Key="{x:Static MenuItem.SubmenuItemTemplateKey}"
@@ -1072,6 +1076,80 @@
                      Value="false">
         <Setter Property="Foreground"
                         Value="{DynamicResource Frb.Brushes.Foreground.Disabled}" />
+      </Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <!-- Top-level HEADER -->
+  <ControlTemplate x:Key="{x:Static MenuItem.TopLevelHeaderTemplateKey}"
+                 TargetType="{x:Type MenuItem}">
+    <Border Name="Border" Background="{TemplateBinding Background}">
+      <Grid Background="Transparent">
+        <ContentPresenter
+        Name="HeaderHost"
+        ContentSource="Header"
+        RecognizesAccessKey="True"
+        Margin="8,0,8,0"
+        VerticalAlignment="Center"/>
+        <Popup
+        Name="PART_Popup"
+        AllowsTransparency="True"
+        Focusable="False"
+        IsOpen="{TemplateBinding IsSubmenuOpen}"
+        Placement="Bottom"
+        PopupAnimation="Slide">
+          <Border
+          Name="TopLevelPopupBorder"
+          Background="{DynamicResource Frb.Surface01}"
+          BorderBrush="{DynamicResource Frb.Brushes.Contrast03}"
+          BorderThickness="1"
+          SnapsToDevicePixels="True">
+            <StackPanel IsItemsHost="True"
+                      KeyboardNavigation.DirectionalNavigation="Cycle"/>
+          </Border>
+        </Popup>
+      </Grid>
+    </Border>
+
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsHighlighted" Value="True">
+        <Setter TargetName="Border"
+              Property="Background"
+              Value="{DynamicResource Frb.Brushes.Primary.Transparent}"/>
+      </Trigger>
+      <Trigger SourceName="PART_Popup"
+             Property="Popup.AllowsTransparency" Value="True">
+        <Setter TargetName="TopLevelPopupBorder"
+              Property="CornerRadius" Value="4"/>
+        <Setter TargetName="TopLevelPopupBorder"
+              Property="Padding" Value="0,3,0,3"/>
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Foreground"
+              Value="{DynamicResource Frb.Brushes.Foreground.Disabled}"/>
+      </Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <!-- Top-level ITEM -->
+  <ControlTemplate x:Key="{x:Static MenuItem.TopLevelItemTemplateKey}"
+                 TargetType="{x:Type MenuItem}">
+    <Border Name="Border" Background="{TemplateBinding Background}">
+      <ContentPresenter
+      ContentSource="Header"
+      RecognizesAccessKey="True"
+      Margin="8,0,8,0"
+      VerticalAlignment="Center"/>
+    </Border>
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsHighlighted" Value="True">
+        <Setter TargetName="Border"
+              Property="Background"
+              Value="{DynamicResource Frb.Brushes.Primary.Transparent}"/>
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Foreground"
+              Value="{DynamicResource Frb.Brushes.Foreground.Disabled}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>

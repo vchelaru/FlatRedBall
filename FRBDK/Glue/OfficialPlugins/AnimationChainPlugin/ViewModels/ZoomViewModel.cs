@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 {
-    internal class ZoomViewModel : ViewModel, ICameraZoomViewModel
+    public class ZoomViewModel : ViewModel, ICameraZoomViewModel
     {
         [DependsOn(nameof(CurrentZoomPercent))]
         public float CurrentZoomScale => CurrentZoomPercent / 100.0f;
