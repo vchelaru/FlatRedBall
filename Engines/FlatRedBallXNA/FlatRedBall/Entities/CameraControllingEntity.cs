@@ -348,31 +348,41 @@ public class CameraControllingEntity : PositionedObject
         }
 
         // Even if we want to lerp, if we are outside of the bounds of the map and if
-        // the camera can fit within the map (on either axis) then we don't lerp smooth:
+        // the camera can fit within the map (on either axis) then we don't lerp smooth.
+        // Update September 15, 2025 - If the camera can fit, we shouldn't snap, this causes weird popping whenever
+        // zoom changes. Instead, we should just push the 
         if (Map != null && (effectiveTargetApproachStyleX != TargetApproachStyle.Immediate))
         {
-            var canFitX = Camera.OrthogonalWidth <= Map.Width;
-            var canFitY = Camera.OrthogonalHeight <= Map.Height;
+            var canFitX = Camera.OrthogonalWidth <= Map.Width - (2 * ExtraMapPadding);
+            var canFitY = Camera.OrthogonalHeight <= Map.Height - (2 * ExtraMapPadding);
             if (canFitX)
             {
-                if (X - Camera.OrthogonalWidth / 2 < Map.Left)
+                if (X - Camera.OrthogonalWidth / 2 < Map.Left + ExtraMapPadding)
                 {
-                    effectiveTargetApproachStyleX = TargetApproachStyle.Immediate;
+                    // See update September 15, 2025 above
+                    //effectiveTargetApproachStyleX = TargetApproachStyle.Immediate;
+                    this.X = Map.Left + ExtraMapPadding + Camera.OrthogonalWidth / 2f;
                 }
-                else if (X + Camera.OrthogonalWidth / 2 > Map.Left + Map.Width)
+                else if (X + Camera.OrthogonalWidth / 2 > Map.Left + Map.Width - ExtraMapPadding)
                 {
-                    effectiveTargetApproachStyleX = TargetApproachStyle.Immediate;
+                    // See update September 15, 2025 above
+                    //effectiveTargetApproachStyleX = TargetApproachStyle.Immediate;
+                    this.X = Map.Left + Map.Width - ExtraMapPadding - Camera.OrthogonalWidth / 2f;
                 }
             }
             if (canFitY)
             {
-                if (Y + Camera.OrthogonalHeight / 2 > Map.Top)
+                if (Y + Camera.OrthogonalHeight / 2 > Map.Top - ExtraMapPadding)
                 {
-                    effectiveTargetApproachStyleY = TargetApproachStyle.Immediate;
+                    // See update September 15, 2025 above
+                    //effectiveTargetApproachStyleY = TargetApproachStyle.Immediate;
+                    this.Y = Map.Top - ExtraMapPadding - Camera.OrthogonalHeight / 2f;
                 }
-                else if (Y - Camera.OrthogonalHeight / 2 < Map.Top - Map.Height)
+                else if (Y - Camera.OrthogonalHeight / 2 < Map.Top - Map.Height + ExtraMapPadding)
                 {
-                    effectiveTargetApproachStyleY = TargetApproachStyle.Immediate;
+                    // See update September 15, 2025 above
+                    //effectiveTargetApproachStyleY = TargetApproachStyle.Immediate;
+                    this.Y = Map.Top - Map.Height + ExtraMapPadding + Camera.OrthogonalHeight / 2f;
                 }
             }
         }
@@ -604,11 +614,11 @@ public class CameraControllingEntity : PositionedObject
 
         if (Map != null)
         {
-            min.X = System.Math.Max(min.X, Map.Left);
-            min.Y = System.Math.Max(min.Y, Map.Top - Map.Height);
+            min.X = System.Math.Max(min.X, Map.Left + ExtraMapPadding);
+            min.Y = System.Math.Max(min.Y, Map.Top - Map.Height + ExtraMapPadding);
 
-            max.X = System.Math.Min(max.X, Map.Left + Map.Width);
-            max.Y = System.Math.Min(max.Y, Map.Top);
+            max.X = System.Math.Min(max.X, Map.Left + Map.Width - ExtraMapPadding);
+            max.Y = System.Math.Min(max.Y, Map.Top - ExtraMapPadding);
         }
 
 
