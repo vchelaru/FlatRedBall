@@ -68,6 +68,30 @@ public class PolygonTests
         rectangle.Y.ShouldBe(-544);
     }
 
+    [Fact]
+    public void CollideAgainstBounce_ShouldStopXVelocity_OnHorizontalReposition()
+    {
+        var rectangle = new AxisAlignedRectangle();
+        rectangle.Width = 10;
+        rectangle.Height = 10;
+
+        var polygon = new Polygon();
+        polygon.Points = new List<Point>
+        {
+            new Point(-10, 10),
+            new Point(0, 0),
+            new Point(-10, 0),
+            new Point(-10, 10)
+        };
+
+        rectangle.X = 5 - .1f;
+        rectangle.XVelocity = -10;
+
+        rectangle.CollideAgainstBounce(polygon, 0, 1, 0);
+
+        rectangle.X.ShouldBe(5);
+        rectangle.XVelocity.ShouldBe(0);
+    }
 
     [Fact]
     public void CollideAgainstMove_ShouldRespectMass0()
