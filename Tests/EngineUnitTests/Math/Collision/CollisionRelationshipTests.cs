@@ -106,6 +106,14 @@ public class CollisionRelationshipTests
         // save resulting player position
         var compositeCollisionX = player.X;
         var compositeCollisionY = player.Y;
+        
+        rectangle = new AxisAlignedRectangle();
+        rectangle.Width = 10;
+        rectangle.Height = 1;
+
+        player = new Player();
+        player.Collision.Add(rectangle);
+        rectangle.AttachTo(player);
 
         // ramp with the same incline as the shape collection
         var largePolygon = new Polygon();
