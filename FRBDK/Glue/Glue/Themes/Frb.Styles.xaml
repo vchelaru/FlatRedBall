@@ -8,7 +8,7 @@
                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
                     xmlns:converters="clr-namespace:FlatRedBall.Glue.Themes.Converters"
-                    xmlns:wpfDataUi="clr-namespace:WpfDataUi;assembly=WpfDataUiCore">
+                    xmlns:wpfDataUi="clr-namespace:WpfDataUi;assembly=WpfDataUi">
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="/Themes/Frb.Brushes.xaml"/>
@@ -26,7 +26,7 @@
 
   <SolidColorBrush x:Key="MaterialDesign.Brush.Foreground" Color="{DynamicResource Frb.Colors.Foreground}" />
 
-  <!-- This is a clone of a style that normally would be applied to a Window. 
+  <!-- This is a clone of a style that normally would be applied to a Window.
     However, we don't have a Window control to apply it to -->
 
   <Style x:Key="TopLevelControl" TargetType="{x:Type Control}">
@@ -102,7 +102,7 @@
                                 BorderBrush="{TemplateBinding Foreground}"
                                 BorderThickness="1"
                                 Background="Transparent"
-                                CornerRadius="1" 
+                                CornerRadius="1"
                                 Opacity="1.0"
                                 />
 
@@ -375,8 +375,8 @@
           <Setter Property="Template">
             <Setter.Value>
               <ControlTemplate TargetType="ComboBoxItem">
-                <Border x:Name="Border" 
-                                        Padding="3,2" 
+                <Border x:Name="Border"
+                                        Padding="3,2"
                                         BorderThickness="1">
                   <ContentPresenter />
                 </Border>
@@ -420,15 +420,15 @@
                                           themes:FrbButton.BorderCornerRadius="0">
                 <materialDesign:PackIcon x:Name="DropDownIcon" Kind="ChevronDown"/>
               </ToggleButton>
-              <ToggleButton x:Name="ContentToggle" 
-                                          Grid.Column="0" 
+              <ToggleButton x:Name="ContentToggle"
+                                          Grid.Column="0"
                                           IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,
-            RelativeSource={RelativeSource TemplatedParent}}" 
-                                          TextElement.FontSize="{TemplateBinding TextElement.FontSize}" 
-                                          Background="Transparent" Foreground="{TemplateBinding Foreground}" 
+            RelativeSource={RelativeSource TemplatedParent}}"
+                                          TextElement.FontSize="{TemplateBinding TextElement.FontSize}"
+                                          Background="Transparent" Foreground="{TemplateBinding Foreground}"
                                           BorderThickness="0">
 
-                <ContentPresenter x:Name="ContentPresenter" 
+                <ContentPresenter x:Name="ContentPresenter"
                                                   Margin="3,0,0,0"
                                                   VerticalAlignment="Center"
                                                   HorizontalAlignment="Left"
@@ -453,13 +453,13 @@
                                    AllowsTransparency="True"
                                  Opacity="1">
                 <Border x:Name="PopupBorder"
-                                        HorizontalAlignment="Stretch" 
+                                        HorizontalAlignment="Stretch"
                                         Height="Auto"
                                         MinWidth="{TemplateBinding ActualWidth}"
                                         MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                         BorderThickness="1"
-                                        BorderBrush="{DynamicResource Frb.Brushes.Contrast03}" 
-                                        Background="{DynamicResource Frb.Surface01}" 
+                                        BorderBrush="{DynamicResource Frb.Brushes.Contrast03}"
+                                        Background="{DynamicResource Frb.Surface01}"
                                         CornerRadius="3"
                                         Padding="4">
 
@@ -654,9 +654,9 @@
         <ControlTemplate.Resources>
 
         </ControlTemplate.Resources>
-        <Border BorderBrush="{TemplateBinding BorderBrush}" 
-                        BorderThickness="{TemplateBinding BorderThickness}" 
-                        Background="{TemplateBinding Background}" 
+        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}"
                         CornerRadius="0"
                         SnapsToDevicePixels="True">
           <Grid>
@@ -668,7 +668,7 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 Background="{TemplateBinding BorderBrush}"
                                 HorizontalAlignment="Stretch">
-              <ContentPresenter 
+              <ContentPresenter
                                 ContentSource="Header"
                                 TextElement.Foreground="{TemplateBinding Foreground}">
                 <ContentPresenter.Resources>
@@ -1410,9 +1410,9 @@
               <Ellipse x:Name="OuterEllipse" Width="12" Height="12" VerticalAlignment="Center" HorizontalAlignment="Center"  Fill="Transparent" Stroke="{DynamicResource Frb.Brushes.Foreground}" StrokeThickness="1"/>
               <Ellipse x:Name="InnerEllipse" Width="6" Height="6" VerticalAlignment="Center" HorizontalAlignment="Center"  Fill="Transparent" StrokeThickness="0"/>
             </Grid>
-            <ContentPresenter Grid.Column="1" 
-                                             Margin="4,0,0,0" 
-                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+            <ContentPresenter Grid.Column="1"
+                                             Margin="4,0,0,0"
+                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                              ContentSource="Content"/>
           </Grid>
@@ -1452,9 +1452,9 @@
 
   <ControlTemplate x:Key="SliderThumbTemplate" TargetType="Slider">
     <Grid>
-      <Border Background="{TemplateBinding Background}" 
-                        Opacity="0.4" 
-                        Height="4" 
+      <Border Background="{TemplateBinding Background}"
+                        Opacity="0.4"
+                        Height="4"
                         CornerRadius="4" />
       <Track x:Name="PART_Track">
         <Track.DecreaseRepeatButton>
