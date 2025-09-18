@@ -60,7 +60,7 @@ public class CollisionRelationshipTests
     }
 
     [Fact]
-    void RectangleVsPolygonAndVsCompositePolygon_Identical()
+    void RectangleVsPolygonAndVsCompositePolygon_IdenticalResponse()
     {
         var rectangle = new AxisAlignedRectangle();
         rectangle.Width = 10;
