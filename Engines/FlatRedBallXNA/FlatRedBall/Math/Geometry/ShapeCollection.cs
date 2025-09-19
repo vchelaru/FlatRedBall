@@ -1611,7 +1611,12 @@ namespace FlatRedBall.Math.Geometry
 
         }
 
-
+        public List<List<(Vector2, Action)>> CollideAgainstResponse(ShapeCollection shapeCollection, float thisMass, float otherMass)
+        {
+            this.LastCollisionCallDeepCheckCount = 0;
+            shapeCollection.LastCollisionCallDeepCheckCount = 0;
+            return ShapeCollectionCollision.CollideShapeAgainstThisResponse(this, shapeCollection, otherMass, thisMass);
+        }
 
         public bool CollideAgainstMove(ShapeCollection shapeCollection, float thisMass, float otherMass)
         {

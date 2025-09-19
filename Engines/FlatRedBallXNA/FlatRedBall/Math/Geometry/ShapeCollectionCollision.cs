@@ -1,6 +1,7 @@
 
 using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace FlatRedBall.Math.Geometry
 {	
@@ -3358,6 +3359,13 @@ namespace FlatRedBall.Math.Geometry
             thisShapeCollection.mSuppressLastCollisionClear = false;
             return returnValue;
 		}
+
+        internal static List<List<(Vector2, Action)>> CollideShapeAgainstThisResponse(ShapeCollection thisShapeCollection, ShapeCollection shapeToCollideAgainstThis, float otherMass, float thisMass)
+        {
+            // TODO: implement me
+            return new List<List<(Vector2, Action)>>();
+        }
+
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, ShapeCollection shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
 		{
 			thisShapeCollection.ClearLastCollisionLists();

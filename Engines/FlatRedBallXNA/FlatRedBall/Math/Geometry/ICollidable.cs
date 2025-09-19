@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Vector2 = Microsoft.Xna.Framework.Vector2;
+
 namespace FlatRedBall.Math.Geometry
 {
     /// <summary>
@@ -133,6 +135,10 @@ namespace FlatRedBall.Math.Geometry
             return thisInstance.Collision.CollideAgainstBounce(other, thisMass, otherMass, elasticity);
         }
 
+        public static List<List<(Vector2, Action)>> CollideAgainstResponse(this ICollidable thisInstance, ShapeCollection other, float thisMass, float otherMass)
+        {
+            return thisInstance.Collision.CollideAgainstResponse(other, thisMass, otherMass);
+        } 
 
         public static bool CollideAgainst<T>(this ICollidable thisInstance, PositionedObjectList<T> other) where T : PositionedObject, ICollidable
         {

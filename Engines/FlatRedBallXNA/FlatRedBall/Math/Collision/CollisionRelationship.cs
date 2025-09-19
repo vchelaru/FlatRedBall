@@ -5,8 +5,11 @@ using FlatRedBall.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace FlatRedBall.Math.Collision
 {
@@ -2116,7 +2119,10 @@ namespace FlatRedBall.Math.Collision
             }
             else if (CollisionType == CollisionType.BounceCollision)
             {
-                return CollideAgainstConsiderSubCollisionBounce(first, second);
+                //return CollideAgainstConsiderSubCollisionBounce(first, second);
+                // HACK: prototype that considers all responses before applying them
+                var collisions = CollideAgainstResponse(first, second);
+                return true;
             }
             else if(CollisionType == CollisionType.MoveSoftCollision)
             {
@@ -2221,6 +2227,10 @@ namespace FlatRedBall.Math.Collision
             {
                 return first.CollideAgainstBounce(second, moveFirstMass, moveSecondMass, bounceElasticity);
             }
+        }
+        private List<List<(Vector2, Action)>> CollideAgainstResponse(FirstCollidableT first, ShapeCollection second)
+        {
+            return first.CollideAgainstResponse(second, moveFirstMass, moveSecondMass);
         }
     }
 
@@ -2423,7 +2433,6 @@ namespace FlatRedBall.Math.Collision
                 return first.CollideAgainstBounce(second, moveFirstMass, moveSecondMass, bounceElasticity);
             }
         }
-
     }
 
     #endregion
