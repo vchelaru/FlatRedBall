@@ -1,7 +1,9 @@
 
 using Microsoft.Xna.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace FlatRedBall.Math.Geometry
 {	
@@ -3360,9 +3362,68 @@ namespace FlatRedBall.Math.Geometry
             return returnValue;
 		}
 
-        internal static List<List<(Vector2, Action)>> CollideShapeAgainstThisResponse(ShapeCollection thisShapeCollection, ShapeCollection shapeToCollideAgainstThis, float otherMass, float thisMass)
+        internal static List<List<(Vector2, Action)>> CollideShapeAgainstThisResponse
+        (
+            ShapeCollection thisShapeCollection,
+            ShapeCollection shapeToCollideAgainstThis,
+            float otherMass,
+            float thisMass
+        )
         {
             // TODO: implement me
+
+            // permutations
+            // circles against circles
+            // circles against rectangles
+            // circles against polygons
+            // x rectangles against circles
+            // rectangles againt rectangles
+            // rectangles against polygons
+            // x polygons against circles
+            // x polygons against rectangles
+            // polygons against polygons
+
+            // sigh, this hits the heap -- why?! C#!!
+            static object[] GetCollectionArrays(ShapeCollection collection) {
+                return new object[]{
+                    collection.mAxisAlignedRectangles,
+                    collection.mCircles,
+                    collection.mPolygons,
+                    collection.mLines,
+                    collection.mCapsule2Ds,
+                    collection.mSpheres,
+                    collection.mAxisAlignedCubes
+                };
+            };
+            object[] thisShapeTypes = GetCollectionArrays(thisShapeCollection);
+            object[] otherShapeTypes = GetCollectionArrays(shapeToCollideAgainstThis);
+
+            for (int i = 0; i < thisShapeTypes.Length; ++i)
+            {
+                for (int j = i; j < otherShapeTypes.Length; ++j)
+                {
+                    var thisShapes = thisShapeTypes[i] as IList;
+                    var otherShapes = otherShapeTypes[j] as IList;
+
+                    for (int k = 0; k < thisShapes?.Count; ++k)
+                    {
+                        for (var l = 0; l < otherShapes?.Count; ++l)
+                        {
+                            var thisShape = thisShapes[k];
+                            var otherShape = otherShapes[l];
+
+                            // collide this against other shape!!
+
+                            // HACK: for now lets just consider axis aligned rectangles against polygons lol
+                            if (thisShape is AxisAlignedRectangle && otherShape is Polygon)
+                            {
+                                ((AxisAlignedRectangle)thisShape).CollideAgainstResponse((Polygon)otherShape, thisMass, otherMass);
+                            }
+                        }
+                    }
+                }
+            }
+            
             return new List<List<(Vector2, Action)>>();
         }
 

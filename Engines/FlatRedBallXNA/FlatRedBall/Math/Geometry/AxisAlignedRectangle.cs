@@ -431,6 +431,10 @@ namespace FlatRedBall.Math.Geometry
         /// <returns>Whether collision has occurred.</returns>
         public bool CollideAgainst(ICollidable collidable) => CollideAgainst(collidable.Collision);
 
+        public List<List<(Vector2, Action)>> CollideAgainstResponse(Polygon polygon, float thisMass, float otherMass) {
+            polygon.CollideAgainstResponse(this, otherMass, thisMass);
+        }
+        
         public bool CollideAgainstMove(Circle circle, float thisMass, float otherMass)
         {
 #if DEBUG
