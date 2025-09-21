@@ -146,7 +146,7 @@ public class TextureCoordinateRectangle : ContainerRuntime
         rectangle.Color = SKColors.White;
         rectangle.StrokeWidthUnits = Gum.DataTypes.DimensionUnitType.ScreenPixel;
         rectangle.IsFilled = false;
-        rectangle.OutlineThickness = 1;
+        rectangle.StrokeWidth = 1;
         return rectangle;
     }
 
