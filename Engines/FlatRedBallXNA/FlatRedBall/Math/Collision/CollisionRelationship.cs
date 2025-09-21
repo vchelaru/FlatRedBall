@@ -2119,12 +2119,45 @@ namespace FlatRedBall.Math.Collision
             }
             else if (CollisionType == CollisionType.BounceCollision)
             {
-                //return CollideAgainstConsiderSubCollisionBounce(first, second);
-                // HACK: prototype that considers all responses before applying them
-                var collisions = CollideAgainstResponse(first, second);
-                return true;
+                // maximum number of times to resolve before giving up
+                var maxResolves = 5;
+
+                bool collisionsOccurred = false;
+                for (int i = 0; i < maxResolves; ++i)
+                {
+                    var collisions = CollideAgainstResponse(first, second);
+                    collisionsOccurred |= collisions.Count > 0;
+
+                    if (collisions.Count == 0)
+                    {
+                        break;
+                    }
+
+                    foreach (var collisionResult in collisions)
+                    {
+                        // TODO: maybe we dont need to store all the responses -- just reject anything that isnt the shortest. lol
+                        // only apply the response of the shortest mtv
+                        (Vector2, Action)? shortest = null;
+                        foreach (var response in collisionResult)
+                        {
+                            if (shortest == null)
+                            {
+                                shortest = response;
+                                continue;
+                            }
+
+                            if (response.Item1.LengthSquared() < shortest?.Item1.LengthSquared())
+                            {
+                                shortest = response;
+                            }
+                        }
+                        shortest?.Item2();
+                    }
+                }
+
+                return collisionsOccurred;
             }
-            else if(CollisionType == CollisionType.MoveSoftCollision)
+            else if (CollisionType == CollisionType.MoveSoftCollision)
             {
                 return CollideAgainstConsiderSubCollisionMoveSoft(first, second);
             }

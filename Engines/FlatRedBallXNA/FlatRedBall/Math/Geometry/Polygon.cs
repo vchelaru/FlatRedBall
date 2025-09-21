@@ -712,6 +712,58 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
         throw new NotImplementedException("This method hasn't been implemented yet.  Please complain on the FlatRedBall forums.");
     }
 
+    public (Vector2, Action) CollideAgainstResponse(AxisAlignedRectangle rectangle, float thisMass, float otherMass)
+    {
+        // convert rectangle to vertex array, no heap allocation
+        Span<VertexPositionColor> rectVertices = stackalloc VertexPositionColor[5];
+        rectVertices[0].Position.X = rectangle.Left;
+        rectVertices[0].Position.Y = rectangle.Top;
+
+        rectVertices[1].Position.X = rectangle.Right;
+        rectVertices[1].Position.Y = rectangle.Top;
+
+        rectVertices[2].Position.X = rectangle.Right;
+        rectVertices[2].Position.Y = rectangle.Bottom;
+
+        rectVertices[3].Position.X = rectangle.Left;
+        rectVertices[3].Position.Y = rectangle.Bottom;
+
+        rectVertices[4] = rectVertices[0];
+
+        var firstMtv = new Vector3();
+        var secondMtv = new Vector3();
+        int index = 0;
+        GetSeparatingVectors
+        (
+            mVertices,
+            rectVertices.ToArray(), // TODO: GetSeparatingVectors should really just take spans in so we have options to limit heap allocation
+            thisMass,
+            otherMass,
+            RepositionDirections.All,
+            RepositionDirections.All,
+            out firstMtv,
+            out secondMtv,
+            out index
+        );
+
+        // direction kinda unimportant
+        // TODO: i think we just need displacement, dont need the whole vec
+        var displacementVec = firstMtv - secondMtv;
+
+        return
+        (
+            new Vector2(displacementVec.X, displacementVec.Y),
+            () => {
+                mLastMoveCollisionReposition = firstMtv;
+                rectangle.mLastMoveCollisionReposition.X = secondMtv.X;
+                rectangle.mLastMoveCollisionReposition.Y = secondMtv.Y;
+
+                TopParent.Position += mLastMoveCollisionReposition;
+                rectangle.TopParent.Position += secondMtv;
+                ForceUpdateDependencies();
+            }
+        );
+    }
 
     public bool CollideAgainstMove(Polygon polygon, float thisMass, float otherMass)
     {

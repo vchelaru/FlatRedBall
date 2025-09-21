@@ -3398,6 +3398,7 @@ namespace FlatRedBall.Math.Geometry
             object[] thisShapeTypes = GetCollectionArrays(thisShapeCollection);
             object[] otherShapeTypes = GetCollectionArrays(shapeToCollideAgainstThis);
 
+            List<List<(Vector2, Action)>> relationshipCollisionResults = new List<List<(Vector2, Action)>>();
             for (int i = 0; i < thisShapeTypes.Length; ++i)
             {
                 for (int j = i; j < otherShapeTypes.Length; ++j)
@@ -3407,6 +3408,7 @@ namespace FlatRedBall.Math.Geometry
 
                     for (int k = 0; k < thisShapes?.Count; ++k)
                     {
+                        List<(Vector2, Action)> shapeCollisionResults = new List<(Vector2, Action)>();
                         for (var l = 0; l < otherShapes?.Count; ++l)
                         {
                             var thisShape = thisShapes[k];
@@ -3417,14 +3419,22 @@ namespace FlatRedBall.Math.Geometry
                             // HACK: for now lets just consider axis aligned rectangles against polygons lol
                             if (thisShape is AxisAlignedRectangle && otherShape is Polygon)
                             {
-                                ((AxisAlignedRectangle)thisShape).CollideAgainstResponse((Polygon)otherShape, thisMass, otherMass);
+                                var collisionResult = ((AxisAlignedRectangle)thisShape).CollideAgainstResponse((Polygon)otherShape, thisMass, otherMass);
+                                if (collisionResult.Item1.LengthSquared() > 0)
+                                {
+                                    shapeCollisionResults.Add(collisionResult);
+                                }
                             }
+                        }
+                        if (shapeCollisionResults.Count > 0)
+                        {
+                            relationshipCollisionResults.Add(shapeCollisionResults);
                         }
                     }
                 }
             }
-            
-            return new List<List<(Vector2, Action)>>();
+
+            return relationshipCollisionResults;
         }
 
 		internal static bool CollideShapeAgainstThisMove(ShapeCollection thisShapeCollection, ShapeCollection shapeToCollideAgainstThis, bool considerAxisBasedPartitioning, Axis axisToUse, float shapeMass, float collectionMass)
