@@ -1076,11 +1076,15 @@ namespace FlatRedBall.Math.Geometry
                 normalized.Normalize();
             }
 
-            if(elasticity > 0)
+            var isOneStationary =
+                (object1.Velocity == Vector3.Zero && object1.Acceleration == Vector3.Zero) ||
+                (object2.Velocity == Vector3.Zero && object2.Acceleration == Vector3.Zero);
+
+            if (elasticity > 0 && isOneStationary)
             {
-                if (object1.Drag == 0)
                 {
-                    var velocityAtStartOfFrame = object1.Velocity - object1.Acceleration * TimeManager.SecondDifference;
+                    var velocityAtStartOfFrame = object1.Velocity / (1 - object1.Drag * TimeManager.SecondDifference);
+                    velocityAtStartOfFrame = velocityAtStartOfFrame - object1.Acceleration * TimeManager.SecondDifference;
 
                     var distanceCoveredThisFrame = object1.Acceleration * TimeManager.SecondDifferenceSquaredDividedByTwo + velocityAtStartOfFrame * TimeManager.SecondDifference;
                     var distanceOutside = distanceCoveredThisFrame + object1Reposition.ToVector3();
@@ -1117,10 +1121,8 @@ namespace FlatRedBall.Math.Geometry
                         double twoTimesA = 2.0 * aValue;
 
                         double timeSpentOutside = GetSolution(bValue, discriminantSquareRoot, twoTimesA);
-                        double timeSpentInside = TimeManager.SecondDifference - timeSpentOutside;
 
-                        // Now we can adjust the velocity according to the acceleration value
-                        object1.Velocity.Y -= (float)(object1.Acceleration.Y * timeSpentInside * System.Math.Abs(normalized.Y));
+                        object1.Velocity.Y = (float)(velocityAtStartOfFrame.Y + object1.Acceleration.Y * timeSpentOutside);
                     }
 
                     #endregion
@@ -1136,18 +1138,17 @@ namespace FlatRedBall.Math.Geometry
                         double twoTimesA = 2.0 * aValue;
 
                         double timeSpentOutside = GetSolution(bValue, discriminantSquareRoot, twoTimesA);
-                        double timeSpentInside = TimeManager.SecondDifference - timeSpentOutside;
 
                         // Now we can adjust the velocity according to the acceleration value
-                        object1.Velocity.X -= (float)(object1.Acceleration.X * timeSpentInside * System.Math.Abs(normalized.X));
+                        object1.Velocity.X = (float)(velocityAtStartOfFrame.X + object1.Acceleration.X * timeSpentOutside);
                     }
-
-                    #endregion
                 }
 
-                if (object2.Drag == 0)
+                #endregion
+
                 {
-                    var velocityAtStartOfFrame = object2.Velocity - object2.Acceleration * TimeManager.SecondDifference;
+                    var velocityAtStartOfFrame = object2.Velocity / (1 - object2.Drag * TimeManager.SecondDifference);
+                    velocityAtStartOfFrame = velocityAtStartOfFrame - object2.Acceleration * TimeManager.SecondDifference;
 
                     var distanceCoveredThisFrame = object2.Acceleration * TimeManager.SecondDifferenceSquaredDividedByTwo + velocityAtStartOfFrame * TimeManager.SecondDifference;
                     var distanceOutside = distanceCoveredThisFrame + -object1Reposition.ToVector3();
@@ -1164,10 +1165,9 @@ namespace FlatRedBall.Math.Geometry
                         double twoTimesA = 2.0 * aValue;
 
                         double timeSpentOutside = GetSolution(bValue, discriminantSquareRoot, twoTimesA);
-                        double timeSpentInside = TimeManager.SecondDifference - timeSpentOutside;
 
                         // Now we can adjust the velocity according to the acceleration value
-                        object2.Velocity.Y -= (float)(object2.Acceleration.Y * timeSpentInside * System.Math.Abs(normalized.Y));
+                        object2.Velocity.Y = (float)(velocityAtStartOfFrame.Y + object2.Acceleration.Y * timeSpentOutside);
                     }
 
                     #endregion
@@ -1184,10 +1184,9 @@ namespace FlatRedBall.Math.Geometry
                         double twoTimesA = 2.0 * aValue;
 
                         double timeSpentOutside = GetSolution(bValue, discriminantSquareRoot, twoTimesA);
-                        double timeSpentInside = TimeManager.SecondDifference - timeSpentOutside;
 
                         // Now we can adjust the velocity according to the acceleration value
-                        object2.Velocity.X -= (float)(object2.Acceleration.X * timeSpentInside * System.Math.Abs(normalized.X));
+                        object2.Velocity.X = (float)(velocityAtStartOfFrame.X + object2.Acceleration.X * timeSpentOutside);
                     }
 
                     #endregion
