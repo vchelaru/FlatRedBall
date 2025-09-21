@@ -56,11 +56,15 @@ public class CollisionRelationshipTests
 
         relationship.DoCollisions();
 
-        player.XVelocity.ShouldBeLessThan(0, "because the rectangle hit the ShapeCollection at a slope");
+        player.XVelocity.ShouldBeLessThan(0, "because the rectangle hit the ShapeCollection at a slope, and it shouldn't completely stop");
+        player.XVelocity.ShouldBeGreaterThan(-10,
+            "because the rectangle hit a slope that should slow down its horizontal velocity a bit");
+        player.YVelocity.ShouldBeGreaterThan(0,
+            "because the rectangle hit a slope that should adjust the velocity upward slightly");
     }
 
     [Fact]
-    void RectangleVsPolygonAndVsCompositePolygon_IdenticalResponse()
+    public void RectangleVsPolygonAndVsCompositePolygon_IdenticalResponse()
     {
         var rectangle = new AxisAlignedRectangle();
         rectangle.Width = 10;
