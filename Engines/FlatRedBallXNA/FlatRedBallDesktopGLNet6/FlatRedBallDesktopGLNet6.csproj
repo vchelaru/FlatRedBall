@@ -1,9 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+
+    
 		<DefineConstants>TRACE;MONOGAME; DESKTOP_GL; MONOGAME_381</DefineConstants>
-		<Title>FlatRedBall (.NET 6 Desktop GL)</Title>
+		<Title>FlatRedBall (.NET Desktop GL)</Title>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Description>FlatRedBall Game Engine</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -11,6 +13,10 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Nullable>enable</Nullable>
 
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -24,6 +30,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="AsepriteDotNet" Version="1.9.0" />
-		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
 	</ItemGroup>
 </Project>

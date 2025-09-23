@@ -11,7 +11,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\..\Gum\SkiaGum.Wpf.NetCore3_0\SkiaGum.Wpf.Net6.csproj" />
 		<ProjectReference Include="..\..\..\..\Gum\SkiaGumMonogame\SkiaGumMonogame.csproj" />
-		<ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
 		<ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj" />
 		<ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
 		<ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />

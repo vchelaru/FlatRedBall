@@ -124,15 +124,17 @@ namespace BuildServerUploaderConsole.Processes
 
                 var strippedEngineName = FileManager.RemoveExtension( FileManager.RemovePath(engine.EngineCSProjLocation));
 
-                UpdateTemplateNuget(strippedEngineName, templateName);
+                UpdateTemplateNuget(strippedEngineName, templateName, engine);
             }
         }
 
-        private void UpdateTemplateNuget(string engineName, string templateName)
+        private void UpdateTemplateNuget(string engineName, string templateName, EngineData engine)
         {
-            var matchingEngine = AllData.Engines.First(item => item.EngineCSProjLocation?.Contains($"{engineName}.csproj") == true);
-            var templateLocation = matchingEngine.TemplateCsProjFolder + templateName + ".csproj";
-            ModifyNugetVersionInAssembly(DirectoryHelper.TemplateDirectory + templateLocation, engineName, GetVersionString(IsBeta));
+            var templateLocation = engine.TemplateCsProjFolder + templateName + ".csproj";
+
+            var fullTemplateCsprojLocation = DirectoryHelper.TemplateDirectory + templateLocation;
+
+            ModifyNugetVersionInAssembly(fullTemplateCsprojLocation, engineName, GetVersionString(IsBeta));
         }
 
         private static void ModifyAssemblyInfoVersion(string assemblyInfoLocation, string versionString)
@@ -165,23 +167,23 @@ namespace BuildServerUploaderConsole.Processes
 
         }
 
-        private void ModifyNugetVersionInAssembly(string csprojLocation, string packageName, string versionString)
+        private void ModifyNugetVersionInAssembly(string templateCsprojLocation, string packageName, string versionString)
         {
-            if (System.IO.File.Exists(csprojLocation) == false)
+            if (System.IO.File.Exists(templateCsprojLocation) == false)
             {
-                throw new ArgumentException($"Could not find file {csprojLocation}");
+                throw new ArgumentException($"Could not find file {templateCsprojLocation}");
             }
 
-            string csprojText = FileManager.FromFileText(csprojLocation);
+            string csprojText = FileManager.FromFileText(templateCsprojLocation);
 
             csprojText = System.Text.RegularExpressions.Regex.Replace(csprojText,
                         $"<PackageReference Include=\"{packageName}\" Version=\"[0-9]*.[0-9]*.[0-9]*.[0-9]*\" />",
                         $"<PackageReference Include=\"{packageName}\" Version=\"{versionString}\" />");
 
-            Results.WriteMessage("Modified " + csprojLocation + $" to have FlatRedBall Nuget package {versionString}");
+            Results.WriteMessage("Modified " + templateCsprojLocation + $" to have FlatRedBall Nuget package {versionString}");
 
 
-            FileManager.SaveText(csprojText, csprojLocation);
+            FileManager.SaveText(csprojText, templateCsprojLocation);
         }
 
     }
