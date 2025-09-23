@@ -930,10 +930,13 @@ public class GueDerivingClassCodeGenerator : Singleton<GueDerivingClassCodeGener
 
     private void GenerateRemoveFromManagers(ElementSave elementSave, ICodeBlock classBlock)
     {
-        var method = classBlock.Function("public override void", "RemoveFromManagers");
+        if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GraphicalUiElementRemoveFromManagersIsVirtual)
+        {
+            var method = classBlock.Function("public override void", "RemoveFromManagers");
 
-        method.Line("StopAnimations();");
-        method.Line("base.RemoveFromManagers();");
+            method.Line("StopAnimations();");
+            method.Line("base.RemoveFromManagers();");
+        }
     }
 
 
@@ -1199,13 +1202,16 @@ public class GueDerivingClassCodeGenerator : Singleton<GueDerivingClassCodeGener
         }
         else if(variableSave.Type == "Gum.DataTypes.DimensionUnitType" || variableSave.Type == "DimensionUnitType")
         {
-            if(variableValue == "Percentage")
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.ObsoleteGumDimensionUnitTypes)
             {
-                variableValue = "PercentageOfParent";
-            }
-            else if(variableValue == "RelativeToContainer")
-            {
-                variableValue = "RelativeToParent";
+                if(variableValue == "Percentage")
+                {
+                    variableValue = "PercentageOfParent";
+                }
+                else if(variableValue == "RelativeToContainer")
+                {
+                    variableValue = "RelativeToParent";
+                }
             }
         }
 

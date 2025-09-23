@@ -152,7 +152,60 @@ namespace BuildServerUploaderConsole.Data
                 Engines.Add(engine);
 
             }
-            // FNA Desktop
+            // Desktop GL Net 9
+            {
+                var engine = new EngineData();
+                engine.Name = "MonoGame DesktopGL .NET 9.0+";
+
+                engine.EngineCSProjLocation = @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj";
+
+                engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
+                engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
+                engine.TemplateCsProjFolder = @"FlatRedBallDesktopGlMonoGameTemplate\FlatRedBallDesktopGlMonoGameTemplate\";
+
+                // This is the built folder when building FlatRedBall.Forms sln
+                // All files below (DebugFiles and ReleaseFiles) should be contained
+                // in that output folder because the project should reference those files
+                var debugBinFolder = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGlNet6\bin\Debug\net8.0\";
+                var releaseBinFolder = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGlNet6\bin\Release\net8.0\";
+
+
+                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBallDesktopGLNet6.dll");
+                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBallDesktopGLNet6.pdb");
+
+                engine.DebugFiles.Add($"{debugBinFolder}StateInterpolation.DesktopNet6.dll");
+                engine.DebugFiles.Add($"{debugBinFolder}StateInterpolation.DesktopNet6.pdb");
+
+                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBall.Forms.DesktopGlNet6.dll");
+                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBall.Forms.DesktopGlNet6.pdb");
+
+                engine.DebugFiles.Add($"{debugBinFolder}GumCore.DesktopGlNet6.dll");
+                engine.DebugFiles.Add($"{debugBinFolder}GumCore.DesktopGlNet6.pdb");
+
+                engine.DebugFiles.Add($@"Gum\SvgPlugin\SkiaInGumShared\bin\Debug\net8.0\SkiaInGum.dll");
+                engine.DebugFiles.Add($@"Gum\SvgPlugin\SkiaInGumShared\bin\Debug\net8.0\SkiaInGum.pdb");
+
+
+                engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBallDesktopGLNet6.dll");
+                engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBallDesktopGLNet6.pdb");
+
+                engine.ReleaseFiles.Add($"{releaseBinFolder}StateInterpolation.DesktopNet6.dll");
+                engine.ReleaseFiles.Add($"{releaseBinFolder}StateInterpolation.DesktopNet6.pdb");
+
+                engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBall.Forms.DesktopGlNet6.dll");
+                engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBall.Forms.DesktopGlNet6.pdb");
+
+                engine.ReleaseFiles.Add($"{releaseBinFolder}GumCore.DesktopGlNet6.dll");
+                engine.ReleaseFiles.Add($"{releaseBinFolder}GumCore.DesktopGlNet6.pdb");
+
+                engine.ReleaseFiles.Add($@"Gum\SvgPlugin\SkiaInGumShared\bin\Release\net8.0\SkiaInGum.dll");
+                engine.ReleaseFiles.Add($@"Gum\SvgPlugin\SkiaInGumShared\bin\Release\net8.0\SkiaInGum.pdb");
+
+
+                Engines.Add(engine);
+
+            }
+            // FNA Desktop (.net 7)
             {
                 var engine = new EngineData();
                 engine.Name = "FNA DesktopGL .NET 7.0";
