@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace FlatRedBallDesktopGlNet6Template
+namespace FlatRedBallDesktopGlMonoGameTemplate
 {
     /// <summary>
     /// The main class.
