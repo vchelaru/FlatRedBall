@@ -13,11 +13,20 @@ namespace Npc.Data
 
         static EmptyTemplates()
         {
-            Add("Desktop GL .NET 8 (Windows, Mac, Linux) - MonoGame", "FlatRedBallDesktopGlNet6Template", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallDesktopGlNet6Template.zip");
-            Add("Android .NET (Phone, Tablet, Fire TV) - MonoGame", "FlatRedBallAndroidMonoGameTemplate", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallAndroidMonoGameTemplate.zip");
-            Add("iOS .NET (iPhone, iPad, iPod Touch) - MonoGame", "FlatRedBalliOSMonoGameTemplate", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBalliOSMonoGameTemplate.zip");
-            Add("Web (Browsers) - Kni", "FlatRedBallWebTemplate", "https://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallWebTemplate.zip");
-            Add("FNA .NET 7 (Windows, Mac, Linux)", "FlatRedBallDesktopFnaTemplate", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallDesktopFnaTemplate.zip");
+            Add("Desktop GL .NET 9 (Windows, Mac, Linux) - MonoGame", "FlatRedBallDesktopGlMonoGameTemplate",
+                "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallDesktopGlMonoGameTemplate.zip");
+
+            Add("Android .NET (Phone, Tablet, Fire TV) - MonoGame", "FlatRedBallAndroidMonoGameTemplate",
+                "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallAndroidMonoGameTemplate.zip");
+
+            Add("iOS .NET (iPhone, iPad, iPod Touch) - MonoGame", "FlatRedBalliOSMonoGameTemplate",
+                "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBalliOSMonoGameTemplate.zip");
+
+            Add("Web (Browsers) - Kni", "FlatRedBallWebTemplate",
+                "https://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallWebTemplate.zip");
+
+            Add("FNA .NET 7 (Windows, Mac, Linux)", "FlatRedBallDesktopFnaTemplate",
+                "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallDesktopFnaTemplate.zip");
 
             Projects.Add(new AddNewLocalProjectOption());
         }

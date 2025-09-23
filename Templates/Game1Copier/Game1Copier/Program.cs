@@ -34,6 +34,11 @@ namespace Game1Copier
                 DestinationGameFile = "FlatRedBallAndroidMonoGameTemplate/FlatRedBallAndroidMonoGameTemplate/Game1.cs",
                 Namespace = "FlatRedBallAndroidMonoGameTemplate"
             },
+            new TemplateInformation {
+                DestinationGameFile = "FlatRedBallDesktopGlMonoGameTemplate/FlatRedBallDesktopGlMonoGameTemplate/Game1.cs",
+                Namespace = "FlatRedBallDesktopGlMonoGameTemplate"
+            },
+
         };
         static void Main(string[] args)
         {
