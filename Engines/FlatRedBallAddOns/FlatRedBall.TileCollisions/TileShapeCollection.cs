@@ -1172,7 +1172,16 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
-
+        /// <summary>
+        /// Adjust the contained AxisAlignedRectnagle RepositionDirections so any rectangle which previously had no
+        /// RepositionDirections due to being fully surrounded now repositions "outward". This method recursively
+        /// adds reposition directions to all rectangles so that any collision inside a large shape pushes objects out.
+        /// This can reduce tunneling and improve bouncing collision.
+        /// </summary>
+        /// <param name="absoluteLeftOob">The optional left edge of the map, usually obtained from the LayeredTileMap.</param>
+        /// <param name="absoluteTopOob">The optional top edge of the map, usually obtained from the LayeredTileMap.</param>
+        /// <param name="absoluteRightOob">The optional right edge of the map, usually obtained from the LayeredTileMap.</param>
+        /// <param name="absoluteBottomOob">The optional bottom edge of the map, usually obtained from the LayeredTileMap.</param>
         public void AssignAllShapesToRepositionOutward(float? absoluteLeftOob = null, float? absoluteTopOob = null, float? absoluteRightOob = null, float? absoluteBottomOob = null)
         {
             List<AxisAlignedRectangle> rectanglesWithNoneReposition = new List<AxisAlignedRectangle>();
@@ -1288,6 +1297,13 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
+        /// <summary>
+        /// Modifies the RepositionDirections for any rectangles on the edges of the TileShapeCollection so they do not push colliding objects out of bounds.
+        /// </summary>
+        /// <param name="absoluteLeftOob">The left edge of the map, usually obtained from the LayeredTileMap.</param>
+        /// <param name="absoluteTopOob">The top edge of the map, usually obtained from the LayeredTileMap.</param>
+        /// <param name="absoluteRightOob">The right edge of the map, usually obtained from the LayeredTileMap.</param>
+        /// <param name="absoluteBottomOob">The bottom edge of the map, usually obtained from the LayeredTileMap.</param>
         public void SetRepositionDirectionsForNoOutOfBounds(float absoluteLeftOob, float absoluteTopOob, float absoluteRightOob, float absoluteBottomOob)
         {
             for (int i = 0; i < this.Rectangles.Count; i++)
