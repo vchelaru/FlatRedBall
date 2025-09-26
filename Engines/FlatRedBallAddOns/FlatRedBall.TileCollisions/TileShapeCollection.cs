@@ -1172,12 +1172,13 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
-        public void AssignAllShapesToRepositionOutward()
+
+        public void AssignAllShapesToRepositionOutward(float? absoluteLeftOob = null, float? absoluteTopOob = null, float? absoluteRightOob = null, float? absoluteBottomOob = null)
         {
             List<AxisAlignedRectangle> rectanglesWithNoneReposition = new List<AxisAlignedRectangle>();
 
             // fill it with any rectangles
-            for(int i = 0; i < this.Rectangles.Count; i++)
+            for (int i = 0; i < this.Rectangles.Count; i++)
             {
                 var rectangle = this.Rectangles[i];
                 if (rectangle.RepositionDirections == RepositionDirections.None)
@@ -1247,22 +1248,27 @@ namespace FlatRedBall.TileCollisions
                         var belowRight = this.GetRectangleAtPosition(rectangle.X + width, rectangle.Y - width);
                         var belowLeft = this.GetRectangleAtPosition(rectangle.X - width, rectangle.Y - width);
 
-                        if (aboveRight == null)
+                        bool isOobRight = rectangle.X + width > absoluteRightOob;
+                        bool isOobLeft = rectangle.X - width < absoluteLeftOob;
+                        bool isOobAbove = rectangle.Y + width > absoluteTopOob;
+                        bool isOobBelow = rectangle.Y - width < absoluteBottomOob;
+
+                        if (aboveRight == null && !isOobRight && !isOobAbove)
                         {
                             rectangle.RepositionDirections |= RepositionDirections.Right;
                             rectangle.RepositionDirections |= RepositionDirections.Up;
                         }
-                        if (aboveLeft == null)
+                        if (aboveLeft == null && !isOobLeft && !isOobAbove)
                         {
                             rectangle.RepositionDirections |= RepositionDirections.Left;
                             rectangle.RepositionDirections |= RepositionDirections.Up;
                         }
-                        if (belowRight == null)
+                        if (belowRight == null && !isOobRight && !isOobBelow)
                         {
                             rectangle.RepositionDirections |= RepositionDirections.Right;
                             rectangle.RepositionDirections |= RepositionDirections.Down;
                         }
-                        if (belowLeft == null)
+                        if (belowLeft == null && !isOobLeft && !isOobBelow)
                         {
                             rectangle.RepositionDirections |= RepositionDirections.Left;
                             rectangle.RepositionDirections |= RepositionDirections.Down;
@@ -1282,6 +1288,30 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
+        public void SetRepositionDirectionsForNoOutOfBounds(float absoluteLeftOob, float absoluteTopOob, float absoluteRightOob, float absoluteBottomOob)
+        {
+            for (int i = 0; i < this.Rectangles.Count; i++)
+            {
+                var rectangle = this.Rectangles[i];
+
+                if (rectangle.X - GridSize < absoluteLeftOob)
+                {
+                    rectangle.RepositionDirections &= ~RepositionDirections.Left;
+                }
+                if (rectangle.X + GridSize > absoluteRightOob)
+                {
+                    rectangle.RepositionDirections &= ~RepositionDirections.Right;
+                }
+                if (rectangle.Y + GridSize > absoluteTopOob)
+                {
+                    rectangle.RepositionDirections &= ~RepositionDirections.Up;
+                }
+                if (rectangle.Y - GridSize < absoluteBottomOob)
+                {
+                    rectangle.RepositionDirections &= ~RepositionDirections.Down;
+                }
+            }
+        } 
 
         public void UpdateShapesForCloudCollision()
         {
