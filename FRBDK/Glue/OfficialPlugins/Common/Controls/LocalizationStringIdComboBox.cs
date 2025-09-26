@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
-using WpfDataUiCore.Controls;
+using WpfDataUi.Controls;
 
 namespace OfficialPlugins.Common.Controls
 {

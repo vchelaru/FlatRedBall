@@ -383,7 +383,9 @@ public partial class Camera : PositionedObject
     }
 
 
-    [Obsolete("Do not use this property - it is confusingly named, only functions with non-ortho cameras, and will go away in future versions of FRB")]
+    [Obsolete("Do not use this property - it is confusingly named, only functions with non-ortho cameras, and will go away in future versions of FRB. " +
+        "Instead, use AbsoluteLeftXEdgeAt or AbsoluteRightXEdgeAt which works for both 2D and 3D cameras. " +
+        "If your game is 2D, you can use AbsoluteLeftXEdge and AbsoluteRightXEdge which do not take a Z value.")]
 
     public float XEdge
     {
@@ -391,7 +393,9 @@ public partial class Camera : PositionedObject
     }
 
 
-    [Obsolete("Do not use this property - it is confusingly named, only functions with non-ortho cameras, and will go away in future versions of FRB")]
+    [Obsolete("Do not use this property - it is confusingly named, only functions with non-ortho cameras, and will go away in future versions of FRB. " +
+        "Instead use AbsoluteTopYEdgeAt or AbsoluteBottomYEdgeAt which works for both 2D and 3D cameras. " +
+        "If your game is 2D, you can use AbsoluteTopYEdge and AbsoluteBottomYEdge which do not take a Z value.")]
     public float YEdge
     {
         get { return mYEdge; }

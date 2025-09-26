@@ -14,7 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WpfDataUi.Controls;
-using WpfDataUiCore.Controls;
+using WpfDataUi.Controls;
 
 namespace OfficialPlugins.SpritePlugin.Managers
 {
@@ -31,7 +31,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
         {
             AdjustIgnoreAnimationVariables();
 
-            var shouldHaveAddSetCollisionFromAnimation = 
+            var shouldHaveAddSetCollisionFromAnimation =
                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasSetCollisionFromAnimation;
 
             if(shouldHaveAddSetCollisionFromAnimation)

@@ -403,6 +403,14 @@ namespace GlueControl.Editing
 
         #endregion
 
+        public static void DrawRepositionDirections(FlatRedBall.TileCollisions.TileShapeCollection tileShapeCollection)
+        {
+            foreach (var rectangle in tileShapeCollection.Rectangles)
+            {
+                DrawRepositionDirections(rectangle);
+            }
+        }
+
         public static void DrawRepositionDirections(AxisAlignedRectangle rectangle)
         {
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Up))

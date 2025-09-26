@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <RollForward>Major</RollForward>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <TieredCompilation>false</TieredCompilation>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefineConstants>MONOGAME;DESKTOP_GL;MONOGAME_381</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <RootNamespace>FlatRedBallDesktopGlMonoGameTemplate</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Icon.ico" />
+    <None Remove="Icon.bmp" />
+    <None Remove="**\*.glsj" />
+	  <None Remove="**\*.glej" />
+	  <None Remove="**\*.gluj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Game1.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icon.ico" />
+    <EmbeddedResource Include="Icon.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FlatRedBallDesktopGLNet6" Version="2025.6.12.69" />
+    
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.5-develop.11" />
+    <PackageReference Include="SkiaSharp" Version="3.119.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FlatRedBall.Forms.DesktopGlNet6">
+      <HintPath>Libraries\DesktopGl\Debug\FlatRedBall.Forms.DesktopGlNet6.dll</HintPath>
+    </Reference>
+    <Reference Include="GumCore.DesktopGlNet6">
+      <HintPath>Libraries\DesktopGl\Debug\GumCore.DesktopGlNet6.dll</HintPath>
+    </Reference>
+    <Reference Include="SkiaInGum">
+      <HintPath>Libraries\DesktopGl\Debug\SkiaInGum.dll</HintPath>
+    </Reference>
+    <Reference Include="StateInterpolation.DesktopNet6">
+      <HintPath>Libraries\DesktopGl\Debug\StateInterpolation.DesktopNet6.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Content\Shader.fx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\shader.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\ShaderForcePoint.fx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\ShaderForcePoint.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
+    <Message Text="Restoring dotnet tools" Importance="High" />
+    <Exec Command="dotnet tool restore" />
+  </Target>
+</Project>
