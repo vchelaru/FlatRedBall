@@ -19,7 +19,7 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
 
     /// <summary>
     /// Whether the Polygon object can have its Points assigned to null.
-    /// Normally this is false, which means assigning Points to null will 
+    /// Normally this is false, which means assigning Points to null will
     /// result in an exception. This is set to true in edit mode to enable
     /// the user to change polygon points without the game crashing.
     /// </summary>
@@ -136,7 +136,7 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
             // shape visibility itself is somewhat inefficient.
             // Having this here breaks Glue gencode which sets visibility
             // once when shape visibility response is off, then once again
-            // with it on. 
+            // with it on.
             //if (value != mVisible)
             {
                 mVisible = value;
@@ -158,12 +158,12 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
     /// Point[] points = new Point[5];
     /// points[0].X = 100;
     /// points[0].Y = 100;
-    /// 
+    ///
     /// points[1].X = 100;
     /// points[1].Y = -100;
-    /// 
+    ///
     /// ...
-    /// 
+    ///
     /// polygonInstance.Points = points;
     /// </example>
     public IList<Point> Points
@@ -225,7 +225,7 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
     /// </summary>
     /// <remarks>
     /// This value is reset every time CollideAgainstMove is called whether there is a
-    /// successful collision or not.  If there is no collision, this value is set to 
+    /// successful collision or not.  If there is no collision, this value is set to
     /// Vector3.Zero.  If reactions to collisions such as physics are being implemented
     /// using this value, then the behavior should be tested and applied after every
     /// call to CollideAgainstMove.
@@ -450,7 +450,7 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
 
             #endregion
 
-            // Now see if any points on the polygon 
+            // Now see if any points on the polygon
 
             // First check the points inside the polygon.  This will get the deepest points first
             // as opposed to segment checks.  This is also faster.
@@ -861,11 +861,11 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
             double amountToMoveOnX;
             double amountToMoveOnY;
 
-            // If length is equal to 0, 
-            // that means that the circle 
-            // falls directly on the polygon's 
-            // edge.  When this occurrs, the direction 
-            // to move is unknown.  So we need to find the 
+            // If length is equal to 0,
+            // that means that the circle
+            // falls directly on the polygon's
+            // edge.  When this occurrs, the direction
+            // to move is unknown.  So we need to find the
             // normal of the surface to know the direction to
             // move.  To get the normal we'll first look at the
             // point before on the polygon, and figure out the normal
@@ -1233,9 +1233,9 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
 
             for (int i = 0; i < mPoints.Length; i++)
             {
-                // The other polygon should have already been updated, so no 
+                // The other polygon should have already been updated, so no
                 // need to do the calculation for the points again:
-                //if (polygon.IsPointInside(ref mPoints[i], ref Position, ref mRotationMatrix)) 
+                //if (polygon.IsPointInside(ref mPoints[i], ref Position, ref mRotationMatrix))
                 //if (polygon.IsPointInside(ref mVertices[i].Position))
                 if (Polygon.IsPointInside(mVertices[i].Position.X, mVertices[i].Position.Y, otherVertices))
                 {
@@ -1349,7 +1349,7 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
                 Vector3 vector3Step4This = Vector3.Zero;
 
                 // Step 1: This segment that intersects with other segment can be moved one of two ways. Get each distance
-                // Step 2: Get the shortest distance of the two values obtained in step 1 
+                // Step 2: Get the shortest distance of the two values obtained in step 1
                 // Step 3: Perform step 1 and step 2 on the other segment against this segment (opposite order) and get the shortest distance of the two
                 // Step 4: See if the result of step 3 is the shortest distance obtained so far
                 for (int i = 0; i < sidesTouching.Count; i++)
@@ -1866,7 +1866,7 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
     /// Gets a random point inside of a polygon which can be convex or concave.
     /// However, concave polygons use a brute force approach, which can be slow
     /// and may not find a valid point within the provided number of tries.
-    /// 
+    ///
     /// Convex polygons will always return a valid Vector3 on the first try.
     /// </summary>
     /// <param name="numberOfTries">The number of tries to get a point in concave polygon</param>
@@ -1889,7 +1889,7 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
     /// <summary>
     /// Gets a random point inside of this polygon. This does
     /// not support random points in a concave polygon.
-    /// 
+    ///
     /// For concave polygons, consider using GetRandomPositionInThisSlow.
     /// </summary>
     /// <returns>A random position in this shape.</returns>
@@ -1904,7 +1904,7 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
     /// This private method does the heavy lifting for finding points but has an internal-use-only
     /// argument to force explicit overriding for concave polygons
     /// </summary>
-    /// <param name="overrideConcaveWarning">Whether to get a point that may not actually be inside 
+    /// <param name="overrideConcaveWarning">Whether to get a point that may not actually be inside
     /// the polygon if the polygon is concave.</param>
     /// <returns>A point which may not be inside if the polygon is concave</returns>
     /// <exception cref="InvalidOperationException">An exception thrown for concave polygons if the warning isn't overridden.</exception>
@@ -2059,7 +2059,7 @@ public class Polygon : PositionedObject, IEquatable<Polygon>, IVisible, IMouseOv
         // it's the same as the first, and again because we are going to compare against
         // another inner loop
 
-        // July 30, 202 - this is really really slow for large polygons, so 
+        // July 30, 202 - this is really really slow for large polygons, so
         // this function has been replaced with a faster one:
         //for (int firstPoint = 0; firstPoint < mPoints.Length - 2; firstPoint++)
         //{

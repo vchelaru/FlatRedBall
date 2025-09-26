@@ -50,6 +50,7 @@ public class CollisionRelationshipTests
 
         player.X = 5 - .1f;
         player.XVelocity = -10;
+        player.ForceUpdateDependencies();
 
         var relationship = CollisionManager.Self.CreateRelationship(player, polygonShapeCollection);
         relationship.SetBounceCollision(0, 1, 0);
