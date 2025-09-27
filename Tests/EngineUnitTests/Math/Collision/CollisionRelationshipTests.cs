@@ -15,33 +15,34 @@ public class CollisionRelationshipTests
     [Fact]
     public void RectangleVsShapeCollection_ShouldNotSnag()
     {
-        var rectangle = new AxisAlignedRectangle();
-        rectangle.Width = 10;
-        rectangle.Height = 1;
+        var rectangle = new AxisAlignedRectangle{
+            Width = 10,
+            Height = 1
+        };
 
-        Player player = new Player();
+        Player player = new();
         player.Collision.Add(rectangle);
         rectangle.AttachTo(player);
 
         var rectangleShapeCollection = new ShapeCollection();
         rectangleShapeCollection.AxisAlignedRectangles.Add(rectangle);
 
-        var polygon = new Polygon();
-        polygon.Points = new List<Point>
-        {
-            new Point(-10, 10),
-            new Point(0, 0),
-            new Point(-10, 0),
-            new Point(-10, 10)
+        var polygon = new Polygon{
+            Points = {
+                new (-10, 10),
+                new (0, 0),
+                new (-10, 0),
+                new (-10, 10)
+            }
         };
 
-        var polygon2 = new Polygon();
-        polygon2.Points = new List<Point>
-        {
-            new Point(0, 0),
-            new Point(10, -10),
-            new Point(0, -10),
-            new Point(0, 0)
+        var polygon2 = new Polygon {
+            Points = {
+                new (0, 0),
+                new (10, -10),
+                new (0, -10),
+                new (0, 0)
+            }
         };
 
         var polygonShapeCollection = new ShapeCollection();
@@ -111,7 +112,7 @@ public class CollisionRelationshipTests
         // save resulting player position
         var compositeCollisionX = player.X;
         var compositeCollisionY = player.Y;
-        
+
         rectangle = new AxisAlignedRectangle();
         rectangle.Width = 10;
         rectangle.Height = 1;
