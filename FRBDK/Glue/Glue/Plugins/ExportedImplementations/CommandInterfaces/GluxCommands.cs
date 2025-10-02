@@ -464,7 +464,7 @@ public class GluxCommands : IGluxCommands
 
     public void RemoveFileCache(object objectAskingForCache)
     {
-        objectsAskingForCache.Remove(objectsAskingForCache);
+        objectsAskingForCache.Remove(objectAskingForCache);
 
         if(objectsAskingForCache.Count == 0)
         {
