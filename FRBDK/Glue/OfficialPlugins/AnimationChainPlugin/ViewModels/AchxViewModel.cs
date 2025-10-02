@@ -534,6 +534,12 @@ internal class AchxViewModel : ViewModel
                 animationChainListSave = AnimationChainListSave.FromFile(filePath.FullPath);
             }
 
+            if(animationChainListSave != null )
+            {
+                // this tool requires pixel coords:
+                animationChainListSave.CoordinateType = FlatRedBall.Graphics.TextureCoordinateType.Pixel;
+            }
+
             FilePath aesjFile = filePath.RemoveExtension() + ".aesj";
 
             if(aesjFile.Exists())
