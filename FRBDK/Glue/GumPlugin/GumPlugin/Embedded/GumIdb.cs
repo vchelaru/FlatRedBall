@@ -160,6 +160,7 @@ namespace FlatRedBall.Gum
             // FlatRedBall uses premult alpha.
             RenderingLibrary.Graphics.Renderer.NormalBlendState =
                 global::Gum.BlendState.AlphaBlend;
+            mManagers.Renderer.IsUsingPremultipliedAlpha = true;
             //Microsoft.Xna.Framework.Graphics.BlendState.AlphaBlend;
 
             // August 31 - I don't know if we should do this:
