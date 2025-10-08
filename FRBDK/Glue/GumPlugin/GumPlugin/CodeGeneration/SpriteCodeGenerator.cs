@@ -81,7 +81,7 @@ internal class SpriteCodeGenerator
         GenerateAnimationChainsProperty(classBodyBlock);
         if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.TimeManagerHasDelaySeconds)
         {
-            GeneratePlayAnimationsAsync(classBodyBlock);
+            GeneratePlayAnimationChainsAsync(classBodyBlock);
 
             GenerateTimeIntoAnimation(classBodyBlock);
         }
@@ -166,15 +166,23 @@ internal class SpriteCodeGenerator
 
     }
 
-    private static void GeneratePlayAnimationsAsync(ICodeBlock classBodyBlock)
+    private static void GeneratePlayAnimationChainsAsync(ICodeBlock classBodyBlock)
     {
         var version = GlueState.Self.CurrentGlueProject.FileVersion;
         var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
             GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
         var hasProtectedAnimationProperties = version >= (int)GlueProjectSave.GluxVersions.GraphicalUiElementProtectedAnimationProperties;
 
+        classBodyBlock.Line("[System.Obsolete(\"Use PlayAnimationChainsAsync instead\")]");
         var playAnimationsAsyncMethodBlock = classBodyBlock.Function("public async System.Threading.Tasks.Task", "PlayAnimationsAsync", "params string[] animations");
-        var foreachBlock = playAnimationsAsyncMethodBlock.ForEach("var animation in animations");
+        playAnimationsAsyncMethodBlock.Line("await PlayAnimationChainsAsync(animations);");
+
+
+        var playAnimationChainssAsyncMethodBlock = classBodyBlock.Function("public async System.Threading.Tasks.Task", "PlayAnimationChainsAsync", "params string[] animations");
+
+
+
+        var foreachBlock = playAnimationChainssAsyncMethodBlock.ForEach("var animation in animations");
         {
             if (hasCommon)
             {
