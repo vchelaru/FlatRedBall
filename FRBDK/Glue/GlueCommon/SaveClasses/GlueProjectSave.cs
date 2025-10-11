@@ -189,6 +189,9 @@ namespace FlatRedBall.Glue.SaveClasses
             // and also March 15, 2025
             ObsoleteGumDimensionUnitTypes = 64,
 
+            // October 10, 2025
+            GumHasIRenderTargetTextureReferencer = 65,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -198,7 +201,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GumVisualHasRenderTarget;
+        public const int LatestVersion = (int)GluxVersions.GumHasIRenderTargetTextureReferencer;
 
         public int FileVersion { get; set; }
 

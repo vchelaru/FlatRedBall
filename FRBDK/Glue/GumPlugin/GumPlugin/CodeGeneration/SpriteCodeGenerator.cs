@@ -67,6 +67,23 @@ internal class SpriteCodeGenerator
 
     }
 
+    public void AddAdditionalInheritance(StandardElementSave standardElementSave, List<string> inheritanceList)
+    {
+        if (standardElementSave.Name != "Sprite")
+        {
+            return;
+        }
+        var hasIRenderTargetTextureReferencer = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumHasIRenderTargetTextureReferencer;
+
+        if (!hasIRenderTargetTextureReferencer)
+        {
+            return;
+        }
+
+        inheritanceList.Add("global::RenderingLibrary.Graphics.IRenderTargetTextureReferencer");
+
+    }
+
     public void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)
     {
         if (standardElementSave.Name != "Sprite")
@@ -85,6 +102,7 @@ internal class SpriteCodeGenerator
 
             GenerateTimeIntoAnimation(classBodyBlock);
         }
+        GenerateIRenderTargetTextureReferencerProperties(classBodyBlock);
 
         StandardsCodeGenerator.Self.GenerateVariable(classBodyBlock, "ContainedSprite",
             new VariableSave { Name = "Texture", Type = "Microsoft.Xna.Framework.Graphics.Texture2D" },
@@ -132,6 +150,7 @@ internal class SpriteCodeGenerator
                 .Line("UpdateTextureValuesFrom(ContainedSprite);");
         }
     }
+
     private void GenerateAnimationChainsProperty(ICodeBlock classBodyBlock)
     {
         var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
@@ -230,5 +249,34 @@ internal class SpriteCodeGenerator
         textureCoordinatesMethodBlock.Line("this.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt((frbAnimationFrame.RightCoordinate - frbAnimationFrame.LeftCoordinate) * frbAnimationFrame.Texture.Width);");
         textureCoordinatesMethodBlock.Line("this.TextureTop = FlatRedBall.Math.MathFunctions.RoundToInt(frbAnimationFrame.TopCoordinate * frbAnimationFrame.Texture.Height);");
         textureCoordinatesMethodBlock.Line("this.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt((frbAnimationFrame.BottomCoordinate - frbAnimationFrame.TopCoordinate) * frbAnimationFrame.Texture.Height);");
+    }
+
+    private void GenerateIRenderTargetTextureReferencerProperties(ICodeBlock classBodyBlock)
+    {
+        var hasIRenderTargetTextureReferencer = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumHasIRenderTargetTextureReferencer;
+
+        if(!hasIRenderTargetTextureReferencer)
+        {
+            return;
+        }
+
+        var property = classBodyBlock.Property(
+            "public global::RenderingLibrary.Graphics.IRenderableIpso?",
+            "RenderTargetTextureSource");
+
+        property.Get()
+            .Line("return ContainedSprite.RenderTargetTextureSource;");
+
+        property.Set()
+            .If("ContainedSprite.RenderTargetTextureSource != value")
+            .Line("ContainedSprite.RenderTargetTextureSource = value;")
+            .Line("UpdateLayout();");
+
+        property = classBodyBlock.Property(
+            "global::RenderingLibrary.Graphics.IRenderableIpso?",
+            "global::RenderingLibrary.Graphics.IRenderTargetTextureReferencer.RenderTargetTextureSource");
+
+        property.Get()
+            .Line("return ContainedSprite.RenderTargetTextureSource;");
     }
 }
