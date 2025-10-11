@@ -640,7 +640,12 @@ namespace FlatRedBall.Graphics
 
             mCapsule2Ds = new PositionedObjectList<Capsule2D>();
             mCapsule2Ds.Name = "Layered Capsule2Ds";
-            
+
+#if DEBUG
+            // needed for faster debug mode:
+            mLines.AddInternalHashSet();
+#endif
+
             mVisible = true;
         }
 
