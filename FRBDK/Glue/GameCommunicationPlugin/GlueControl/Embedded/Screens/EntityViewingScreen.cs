@@ -86,8 +86,9 @@ namespace GlueControl.Screens
 
             try
             {
-                foreach (var item in FlatRedBall.SpriteManager.ManagedPositionedObjects)
+                for (int i = 0; i < SpriteManager.ManagedPositionedObjects.Count; i++)
                 {
+                    PositionedObject item = FlatRedBall.SpriteManager.ManagedPositionedObjects[i];
                     if (item is FlatRedBall.Entities.IEntity entity)
                     {
                         entity.ActivityEditMode();
