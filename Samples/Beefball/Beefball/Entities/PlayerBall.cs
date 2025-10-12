@@ -1,4 +1,5 @@
 using FlatRedBall.Input;
+using StateInterpolationPlugin;
 
 namespace Beefball.Entities
 {
@@ -58,7 +59,10 @@ namespace Beefball.Entities
                 YVelocity = normalizedY * DashSpeed;
 
                 CurrentDashCategoryState = DashCategory.Tired;
-                InterpolateToState(DashCategory.Rested, DashFrequency);
+                _ = TweenerManager.Self.TweenAsync(
+                    this,
+                    value => InterpolateBetween(DashCategory.Tired, DashCategory.Rested, value),
+                    0, 1, DashFrequency);
             }
         }
 
