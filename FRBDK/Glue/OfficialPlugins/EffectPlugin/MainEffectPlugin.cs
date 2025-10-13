@@ -33,15 +33,20 @@ namespace OfficialPlugins.EffectPlugin
 
         public override void StartUp()
         {
+            AssignEvents();
+
+            AddEffectContentsToDictionary();
+
+            AssetTypeInfoManager.Initialize();
+        }
+
+        private void AssignEvents()
+        {
             this.ReactToLoadedGlux += HandleLoadGlux;
             this.ReactToUnloadedGlux += HandleUnloadGlux;
             this.AddNewFileOptionsHandler += ShowFxFileOptions;
             this.ReactToNewFileHandler = ReactToNewFile;
             this.ReactToFileRemoved += HandleFileRemoved;
-
-            AddEffectContentsToDictionary();
-
-            AssetTypeInfoManager.Initialize();
         }
 
         private void HandleFileRemoved(GlueElement element, ReferencedFileSave save)

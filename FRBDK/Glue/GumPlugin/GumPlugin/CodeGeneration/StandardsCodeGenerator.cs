@@ -251,7 +251,19 @@ namespace GumPlugin.CodeGeneration
 
             // This needs to be public because it can be exposed as public in a public class
             //ICodeBlock currentBlock = codeBlock.Class("partial", runtimeClassName, " : Gum.Wireframe.GraphicalUiElement");
-            ICodeBlock classBodyBlock = codeBlock.Class("public partial", runtimeClassName, " : global::Gum.Wireframe.GraphicalUiElement");
+
+            List<string> inheritanceList = new List<string>();
+            inheritanceList.Add("global::Gum.Wireframe.GraphicalUiElement");
+            AddAdditionalInheritance(standardElementSave, inheritanceList);
+
+            string inheritance = string.Empty;
+            if(inheritanceList.Count > 0)
+            {
+                inheritance = " : " + string.Join(", ", inheritanceList);
+            }
+
+
+            ICodeBlock classBodyBlock = codeBlock.Class("public partial", runtimeClassName, inheritance);
 
             GueDerivingClassCodeGenerator.Self.GenerateConstructor(standardElementSave, classBodyBlock, runtimeClassName);
 
@@ -271,6 +283,11 @@ namespace GumPlugin.CodeGeneration
             GenerateAdditionalMethods(standardElementSave, classBodyBlock);
 
             return true;
+        }
+
+        private void AddAdditionalInheritance(StandardElementSave standardElementSave, List<string> inheritanceList)
+        {
+            _spriteCodeGenerator.AddAdditionalInheritance(standardElementSave, inheritanceList);
         }
 
         private void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)

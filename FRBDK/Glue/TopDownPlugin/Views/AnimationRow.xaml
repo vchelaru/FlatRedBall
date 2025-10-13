@@ -1,14 +1,14 @@
 ﻿<UserControl x:Class="TopDownPlugin.Views.AnimationRow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUi"
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
 
              xmlns:local="clr-namespace:TopDownPlugin.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="250" d:DesignWidth="200">
     <Border BorderBrush="Gray" BorderThickness="1">
 
@@ -17,7 +17,7 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <wpfdataui:DataUiGrid CategoriesOrientation="Horizontal" x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
+            <wpfdataui:DataUiGrid Orientation="Horizontal" x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
             <StackPanel Grid.Column="1">
                 <Button x:Name="CloseButton" Command="{Binding RemoveCommand}" Content="{materialDesign:PackIcon CloseCircle}" Style="{DynamicResource ToolIcon}"/>
                 <Button x:Name="MoveUpButton" Command="{Binding MoveUpCommand}" Content="{materialDesign:PackIcon Kind=MenuUp}" Style="{DynamicResource IconButton}"/>

@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.IO;
+using OfficialPlugins.Common.ViewModels;
 using SkiaSharp;
 using System.Windows;
 
@@ -16,9 +17,11 @@ namespace OfficialPlugins.SpritePlugin.Views
         }
         public SKBitmap Texture => InnerView.Texture;
 
-        public TextureCoordinateSelectionWindow()
+        public TextureCoordinateSelectionWindow(TextureCoordinateSelectionViewModel viewModel)
         {
             InitializeComponent();
+
+            this.DataContext = viewModel;
 
             InnerView.Initialize(new Managers.CameraLogic());
             // Intentionally do not move the window to the cursor. Users place this where they want it.

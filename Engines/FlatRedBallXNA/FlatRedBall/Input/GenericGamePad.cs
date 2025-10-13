@@ -384,7 +384,15 @@ namespace FlatRedBall.Input
         internal void Update()
         {
 #if MONOGAME
-            var state = Joystick.GetState(GamepadIndex);
+            JoystickState state;
+            try
+            {
+                state = Joystick.GetState(GamepadIndex);
+            }
+            catch
+            {
+                return;
+            }
 
 #if MONOGAME_381
 

@@ -10,7 +10,7 @@ using WpfDataUi;
 using WpfDataUi.DataTypes;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Plugins;
-using WpfDataUiCore.Controls;
+using WpfDataUi.Controls;
 
 namespace OfficialPlugins.CustomVariablePlugin;
 

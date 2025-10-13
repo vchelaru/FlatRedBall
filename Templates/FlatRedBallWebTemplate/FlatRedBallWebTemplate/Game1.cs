@@ -1,12 +1,16 @@
-﻿using FlatRedBall;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Input.Touch;
-using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+
+using FlatRedBall;
+using FlatRedBall.Graphics;
+using FlatRedBall.Screens;
+using Microsoft.Xna.Framework;
+
+using System.Linq;
+
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBallWebTemplate
 {
@@ -14,7 +18,7 @@ namespace FlatRedBallWebTemplate
     {
         GraphicsDeviceManager graphics;
 
-
+        
         partial void GeneratedInitializeEarly();
         partial void GeneratedInitialize();
         partial void GeneratedUpdate(Microsoft.Xna.Framework.GameTime gameTime);
@@ -24,7 +28,9 @@ namespace FlatRedBallWebTemplate
         public Game1() : base()
         {
             graphics = new GraphicsDeviceManager(this);
-
+            // HiDef is required for web, but proably for all other platforms too, so let's set it 
+            // outside of any #if's
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
 #if  ANDROID || IOS
             graphics.IsFullScreen = true;
 #elif WINDOWS || DESKTOP_GL
@@ -35,15 +41,15 @@ namespace FlatRedBallWebTemplate
 
         protected override void Initialize()
         {
-#if IOS
+            #if IOS
             var bounds = UIKit.UIScreen.MainScreen.Bounds;
             var nativeScale = UIKit.UIScreen.MainScreen.Scale;
             var screenWidth = (int)(bounds.Width * nativeScale);
             var screenHeight = (int)(bounds.Height * nativeScale);
             graphics.PreferredBackBufferWidth = screenWidth;
             graphics.PreferredBackBufferHeight = screenHeight;
-#endif
-
+            #endif
+        
             GeneratedInitializeEarly();
 
             FlatRedBallServices.InitializeFlatRedBall(this, graphics);

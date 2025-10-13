@@ -11,7 +11,6 @@ using FlatRedBall.Instructions;
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using Microsoft.Xna.Framework;
-using WpfDataUi.Controls;
 using FlatRedBall.Glue.Plugins;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 

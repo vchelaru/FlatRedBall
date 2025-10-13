@@ -231,9 +231,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         public ObservableCollection<BookmarkViewModel> Bookmarks { get; private set; } = new ObservableCollection<BookmarkViewModel>();
 
-        public BookmarkViewModel SelectedBookmark
+        public BookmarkViewModel? SelectedBookmark
         {
-            get => Get<BookmarkViewModel>();
+            get => Get<BookmarkViewModel?>();
             set => Set(value);
         }
 

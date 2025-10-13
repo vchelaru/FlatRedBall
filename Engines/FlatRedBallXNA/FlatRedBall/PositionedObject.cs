@@ -2157,7 +2157,7 @@ namespace FlatRedBall
 
             TimedActivityRelative(secondDifference, secondDifferenceSquaredDividedByTwo);
         }
-        #region XML Docs
+
         /// <summary>
         /// Performs the every-frame relative position and relative rotation changing activity.
         /// </summary>
@@ -2169,7 +2169,6 @@ namespace FlatRedBall
         /// </remarks>
         /// <param name="secondDifference">The amount of time since last frame.</param>
         /// <param name="secondDifferenceSquaredDividedByTwo">Pre-calculated ((secondDifference*secondDifference) ^2) / 2.</param>
-        #endregion
         void TimedActivityRelative(float secondDifference,
             double secondDifferenceSquaredDividedByTwo)
         {
