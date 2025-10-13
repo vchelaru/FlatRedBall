@@ -741,8 +741,8 @@ namespace FlatRedBall.Math.Geometry
         }
 
         /// <summary>
-        /// Returns whether this AxisAlignedRectangle and the argument AxisAlignedRectangle overkap,
-        /// and reposition sthe two according ot their relative masses.
+        /// Returns whether this AxisAlignedRectangle and the argument AxisAlignedRectangle overlap,
+        /// and reposition the two according ot their relative masses.
         /// </summary>
         /// <param name="rectangle">The other rectangle to collide against.</param>
         /// <param name="thisMass">This mass relative to the other rectangle.</param>
